@@ -4,19 +4,19 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 100,
-    "sources": 532,
+    "sources": 529,
     "sources_by_kind": {
-      "provenance": 220,
-      "sentence": 141,
+      "provenance": 219,
+      "sentence": 139,
       "scope": 73,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 60,
+    "layout_timing_modules": 59,
     "items_by_original_status": {
       "read_complete": 14,
-      "read_partial": 58,
-      "unread": 11,
+      "read_partial": 60,
+      "unread": 9,
       "no_original_code": 17
     },
     "items_by_visibility": {
@@ -670,6 +670,26 @@
       ]
     },
     {
+      "id": "dark-screen-fade",
+      "difference": "剧情压黑的每级明暗按 alpha n／16 画，原版每级混合（0x461479）未读；节拍已照原版（每 3 tick 一级、16 级、不等待）",
+      "original": "对象 700 过程 0x43e2d0：[0x4c1ca8] 每 3 tick ±1（0..16），actDarkScreen／actDeleteDarkScreen 都不等待；每级画法 0x461479 未读",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_tick_counts.md"
+      ],
+      "remake": "OpeningCinematics._step_dark_screen 每 3 tick 一级，alpha＝级数／16",
+      "remake_code": [
+        "game/battle/runtime/opening/OpeningCinematics.gd:_step_dark_screen"
+      ],
+      "original_status": "read_partial",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "标题与过场",
+      "sources": [
+        "provenance:game/battle/runtime/opening/OpeningCinematics.gd|timing|provisional|",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#32e3b886b5"
+      ]
+    },
+    {
       "id": "draw-depth-states",
       "difference": "单位与建筑的遮挡顺序：原版两段全局状态分支（深度封顶 22／再加 23）与同桶建立顺序未读透；planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模",
       "original": "32 px 行排序已读；defProcObjectMove 固定 obj_Plane 已读；两段全局状态分支与其余效果过程未读透",
@@ -817,6 +837,27 @@
       ]
     },
     {
+      "id": "script-walk-speed",
+      "difference": "剧情 actMoveDispWait 按直线滑动（原版进同一走路状态 0x32，+0x80 置 0x1800 后的寻路与帧处理未读）；剧情走步声按相对帧 0／3；插播恢复语义暂定。走速已照 0x4543d8 表",
+      "original": "opcode 55 → VM 状态 0x37（0x452eac）→ 0x4501f0：目标格心、速度写 +0x98、状态 0x32、+0x80 |= 0x1800；0x1800 位对 0x4111d0 路线与 0x45e5a6 帧推进的影响未读",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_tick_counts.md"
+      ],
+      "remake": "OpeningStoryObjects._move_disp 走速按 walk_pixels_per_tick，路径为起点到终点直线",
+      "remake_code": [
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_move_disp"
+      ],
+      "original_status": "read_partial",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "剧情走位",
+      "sources": [
+        "provenance:game/battle/runtime/ActorRuntime.gd|audio|provisional|",
+        "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|rules|provisional|",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#f1812c4aa6"
+      ]
+    },
+    {
       "id": "stage-placement",
       "difference": "组合物件子偏移与图层、engGLASS 透明度、世界大小取自贴图是重制读法；云漂移与移動背景视差已照原版（云逐 tick 按角度／速度 16.16 走、出界按地图＋图尺寸逐轴回绕，移動背景随镜头走 obj_Score/640、obj_HitPoint/480），只差原版在效果演出期间与选项位关闭时把云藏起并停住未接，移動背景按显示帧而非逐 tick 取镜头",
       "original": "原完整物件放置公式未恢复；云漂移／回绕与移動背景视差已读完并整镜像实测（0x43ccf0 的 mapobjCloud／mapobjMoveBG 分支）",
@@ -890,23 +931,24 @@
     },
     {
       "id": "cam-script-walk-variants",
-      "difference": "剧情里几种特殊走法（边走边消失、跟随行走、移动显示等待）镜头不跟人走；不带 Wait 的剧情行走重制开走即把镜头切到演员，原版镜头不动",
-      "original": "actWalkAndDeleteWait（0x450450 状态 0x36）、actWalkFollow*、actMoveDispWait 的镜头规则未读；不带 Wait 的行走原版不带镜头（R7-CAM 读法）",
+      "difference": "actWalkFollow(Wait) 跟随行走的镜头规则未读，重制不动镜头；其余剧情行走镜头已照原版（不带 Wait 不动、Wait 先缓动居中再开走并跟随）",
+      "original": "0x453b90 状态 0x32 sub 0（0x453d44）与跟随（0x454039）都查 +0x50；actWalkAndDelete(Wait) 0x450450 状态 0x36 sub 0x63→0 走同一组 sub（0x453d27）；actMoveDispWait 0x4501f0 也进状态 0x32；actWalkFollow* 的对象状态未读",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "OpeningStoryObjects 只在带 Wait 的行走逐 tick 跟随；不带 Wait 的行走开走即瞬切到演员",
+      "remake": "OpeningStoryObjects._walk_follow 不请求镜头",
       "remake_code": [
-        "game/battle/runtime/opening/OpeningStoryObjects.gd"
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_walk_follow"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
       "effort": "M",
       "category": "镜头",
       "sources": [
-        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#007f1d0195",
-        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#b795e0c8ea",
-        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#c94e71db0e"
+        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#316196e704",
+        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5287ca512d",
+        "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#cfd2b4b4db",
+        "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#d01089a754"
       ]
     },
     {
@@ -2223,49 +2265,6 @@
       ]
     },
     {
-      "id": "dark-screen-fade",
-      "difference": "剧情压黑（actDarkScreen）0.8 s 渐暗是估值，原版对象 700 的逐 tick 亮度未读",
-      "original": "渐暗节拍在对象 700 的过程里，未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md"
-      ],
-      "remake": "OpeningCinematics.DARK_SCREEN_FADE_SECONDS",
-      "remake_code": [
-        "game/battle/runtime/opening/OpeningCinematics.gd:_darken_screen"
-      ],
-      "original_status": "unread",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "标题与过场",
-      "sources": [
-        "provenance:game/battle/runtime/opening/OpeningCinematics.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#bc563f9d25",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#17b232e51f"
-      ]
-    },
-    {
-      "id": "script-walk-speed",
-      "difference": "剧情走位 actMoveDispWait 的速度单位按 px／tick 读，原版该分支（状态 0x37）未读",
-      "original": "opcode 55 状态 case 0x37 的 speed 语义未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md"
-      ],
-      "remake": "BattleOpeningCoordinator 按 px／tick",
-      "remake_code": [
-        "game/battle/runtime/BattleOpeningCoordinator.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "剧情走位",
-      "sources": [
-        "provenance:game/battle/runtime/ActorRuntime.gd|audio|provisional|",
-        "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|rules|provisional|",
-        "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#b9d95de4eb"
-      ]
-    },
-    {
       "id": "shape-override-cadence",
       "difference": "剧情换形（actChangeShape）期间的动画节拍按站立节拍，原版此状态未读",
       "original": "脚本换形期间的演员状态未读",
@@ -2322,7 +2321,7 @@
       "sources": [
         "matrix:Camera curve",
         "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#35c5395ff4",
-        "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91"
+        "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#d01089a754"
       ]
     },
     {
@@ -2393,8 +2392,7 @@
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#705a20c6c6",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f2b15754a0",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f854695a12",
-        "sentence:docs/evidence_packets/static_reverse/original_extra_action.md#dd086872a0",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#d0f8d68007"
+        "sentence:docs/evidence_packets/static_reverse/original_extra_action.md#dd086872a0"
       ]
     },
     {

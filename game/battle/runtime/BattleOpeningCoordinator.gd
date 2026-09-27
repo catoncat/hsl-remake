@@ -17,7 +17,8 @@ extends Node
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
 ##   rules: remake-invented
 ##     (confirm outside dialogue fast-forwards walks and scrolls under OPT-PACE 快／極快 only — the original has no skip)
-##   rules: provisional (actMoveDispWait speed unit read as px per tick, cutscene resume semantics)
+##   rules: provisional
+##     (actMoveDispWait slides straight — the +0x80 0x1800 route handling is unread; cutscene resume semantics)
 ##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
@@ -27,7 +28,6 @@ extends Node
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##     (4 px per tick default walk)
-##   timing: provisional (actMoveDispWait speed read as px per tick — its state 0x37 path is unread)
 ##   audio: resource-derived content/imported/hsl/chapter01/scripts
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##     (PlayMusic restarts the track from the top, −1 keeps the current one; the track is resolved at generation)
@@ -103,6 +103,10 @@ var story_records: Array[Dictionary] = []
 var _blocking_motion := true
 var _blocking_unit_id := ""
 var _pending_deletes: Array[String] = []
+## A Wait walk sets off only once the camera is centred on its walker (0x453b90 state 0x32 sub 0:
+## 0x43bf30(actor, 0) every tick until it returns 1); `_pending_walk` starts it after the scroll.
+var _pending_walk := Callable()
+var _pending_walk_seconds := 0.0
 ## Story cast, inserts, walks, deletes, shapes, story-object sprites and markers.
 var story_objects: RefCounted = OpeningStoryObjects.create(self)
 ## Section title, dark screen, film, camera and cutscene entry／exit (OpeningCinematics).
@@ -340,9 +344,32 @@ func tick(delta: float) -> void:
 	# actShowWinFailStatus waits on the board (0x450840 case 0x1f → 0x407320).
 	if str(event.get("kind", "")) == "winfail_board_refresh" and winfail_board != null and winfail_board.busy():
 		return
+	if _pending_walk.is_valid():
+		_pending_walk_seconds -= maxf(delta, 0.0)
+		if _pending_walk_seconds <= 0.0:
+			_flush_pending_walk()
+		return
 	wait_remaining -= maxf(delta, 0.0)
 	if wait_remaining <= 0.0 and (not _blocking_motion or not _blocking_busy()) and not fading:
 		advance("automatic_stage")
+
+
+## Runs `start_walk` after `seconds` of camera scroll (at once when 0).
+func _defer_walk(seconds: float, start_walk: Callable) -> void:
+	_flush_pending_walk()
+	if seconds <= 0.0:
+		start_walk.call()
+		return
+	_pending_walk = start_walk
+	_pending_walk_seconds = seconds
+
+
+func _flush_pending_walk() -> void:
+	if _pending_walk.is_valid():
+		var start_walk := _pending_walk
+		_pending_walk = Callable()
+		_pending_walk_seconds = 0.0
+		start_walk.call()
 
 
 ## A Wait token holds the timeline until `unit_id` ("" = every actor) stops walking.
@@ -408,6 +435,7 @@ static func _is_confirm(event: InputEvent) -> bool:
 func fast_forward_motion(trigger: String) -> int:
 	if not active or story_finished:
 		return 0
+	_flush_pending_walk()
 	var landed := 0
 	for actor in runtime.actors_root.get_children():
 		if actor is ActorRuntime and actor.is_moving() and not actor.last_path.is_empty():
@@ -447,6 +475,7 @@ func advance(trigger: String = "confirm") -> Dictionary:
 	if str(timeline.current_event().get("kind", "")) == "dialogue_message_id" and runtime.opening_overlay.advance_page():
 		return summary()
 	_finish_winfail_board()
+	_flush_pending_walk()
 	last_transition = timeline.advance(trigger)
 	step_count += 1
 	var current: Dictionary = timeline.current_event()

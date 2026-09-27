@@ -19,7 +19,8 @@ extends RefCounted
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   timing: provisional (0.8 s dark-screen fade until the obj_ScreenDarker 700 process is read)
+##   timing: provisional
+##     (dark level n of obj_ScreenDarker 700 drawn as alpha n／16 — the 0x461479 per-level blend is unread)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##     (§3.4: the film player stops the music and nothing resumes it)
 
@@ -29,10 +30,12 @@ const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-## actDarkScreen inserts obj_ScreenDarker (700) and the VM does not wait; the object's
-## darkening cadence is unread, so the remake fades in and (actDeleteDarkScreen) out over
-## this provisional duration.
-const DARK_SCREEN_FADE_SECONDS := 0.8
+## actDarkScreen (opcode 48, 0x452102 → 0x43e2a0) inserts obj_ScreenDarker (700) with no VM
+## wait; its process 0x43e2d0 raises the dark level [0x4c1ca8] by one every 3 ticks (+0x94 =
+## 0x30003) from 0 to 16, then holds. actDeleteDarkScreen (opcode 49, 0x452123 → 0x43e270) sets
+## 0x10000, again with no wait: the level falls by one every 3 ticks to 0 and the object deletes.
+const DARK_SCREEN_LEVELS := 16
+const DARK_SCREEN_TICKS_PER_LEVEL := 3
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 ## actShowSectionName (opcode 12, original_tick_counts.md §2): 0x452f32 steps sub-state
 ## +0x8c once per tick and then draws two layers at the view's (0x140, 0xf0):
@@ -72,6 +75,7 @@ var _title_elapsed := 0.0
 var _title_state: Dictionary = {}
 ## A key／click reached the hold (skip_section_title): the next sub-state 4 tick takes it.
 var _title_skip_pending := false
+var _dark_fade: Tween
 var _dark_screen: ColorRect
 ## The film playing over the scene (actPlayMovie / a skipped battle's win-section film);
 ## the timeline and the card wait for it. Null when no film plays.
@@ -354,6 +358,20 @@ func _focus_camera_on_unit(unit_id: String, scroll: bool, source_event_id: Strin
 	return seconds
 
 
+## 0x43bf30(actor, 0) for a Wait walk: the walker's own pixel (no cell rounding) eased to the
+## view's script focus at the story step; returns the scroll seconds (0 when already there).
+func _centre_camera_on_walker(unit_id: String, source_event_id: String) -> float:
+	var actor: Node = runtime.actor_node_for_unit(unit_id)
+	if actor == null or runtime.camera_controller == null:
+		return 0.0
+	var target: Vector2 = runtime.camera_controller.clamped_position(BattleCameraController.focus_centre(actor.position))
+	var seconds := 0.0
+	if runtime.camera.position.round() != target.round():
+		seconds = _scroll_camera(target)
+	coordinator.camera_records.append({"source_event_id": source_event_id, "unit_id": unit_id, "target": target, "scroll": true, "walk_centre": true, "duration_seconds": seconds})
+	return seconds
+
+
 func _scroll_camera_to_position(event: Dictionary) -> void:
 	## actScrollBGToPos,x,y: the cell centre of (x,y) is scrolled to the view's script
 	## focus (see script_position_camera_centre); the centre is clamped to the map.
@@ -367,7 +385,7 @@ func _scroll_camera_to_position(event: Dictionary) -> void:
 
 
 func _darken_screen(event: Dictionary) -> void:
-	## Remake fade to black; the original fade duration is unresolved.
+	## Dark level n draws as alpha n／16 (the 0x461479 blend per level is unread: provisional).
 	if _dark_screen == null:
 		_dark_screen = ColorRect.new()
 		_dark_screen.name = "StoryDarkScreen"
@@ -377,10 +395,26 @@ func _darken_screen(event: Dictionary) -> void:
 		var ui: Node = runtime.get_node("UI")
 		ui.add_child(_dark_screen)
 		ui.move_child(_dark_screen, 0)
-	var fade := coordinator.create_tween()
-	fade.tween_property(_dark_screen, "color", Color(0, 0, 0, 1), DARK_SCREEN_FADE_SECONDS)
-	coordinator.wait_remaining = DARK_SCREEN_FADE_SECONDS
-	coordinator.story_records.append({"kind": "screen_darken", "source_event_id": str(event.get("id", "")), "seconds": DARK_SCREEN_FADE_SECONDS})
+	var seconds := _step_dark_screen(DARK_SCREEN_LEVELS)
+	coordinator.story_records.append({"kind": "screen_darken", "source_event_id": str(event.get("id", "")), "seconds": seconds})
+
+
+## Steps the dark level from its current value to `to_level`, one level per 3 ticks; returns
+## the seconds the fade takes. The script runs on meanwhile (neither token waits).
+func _step_dark_screen(to_level: int) -> float:
+	if _dark_fade != null and _dark_fade.is_valid():
+		_dark_fade.kill()
+	var from_level := roundi(_dark_screen.color.a * DARK_SCREEN_LEVELS)
+	var levels := absi(to_level - from_level)
+	var seconds := OriginalTick.seconds(levels * DARK_SCREEN_TICKS_PER_LEVEL)
+	if levels == 0:
+		return 0.0
+	var direction := signi(to_level - from_level)
+	_dark_fade = coordinator.create_tween()
+	_dark_fade.tween_method(func(elapsed: float) -> void:
+		var steps := mini(int(floor(elapsed / OriginalTick.TICK_SECONDS + 0.001)) / DARK_SCREEN_TICKS_PER_LEVEL, levels)
+		_dark_screen.color = Color(0, 0, 0, float(from_level + steps * direction) / DARK_SCREEN_LEVELS), 0.0, seconds, seconds)
+	return seconds
 
 
 ## actPlayMovie: the film named by the compiled event (params.movie, from
@@ -542,11 +576,9 @@ func _scroll_camera_to_position_speed(event: Dictionary) -> void:
 
 
 func _clear_dark_screen(event: Dictionary) -> void:
-	## actDeleteDarkScreen: fade the story dark rect back out (remake duration).
+	## actDeleteDarkScreen: the level falls from where it is (0x43e2d0 state 2).
 	if _dark_screen == null:
 		coordinator.story_records.append({"kind": "screen_darken_clear", "source_event_id": str(event.get("id", "")), "status": "no_dark_screen"})
 		return
-	var fade := coordinator.create_tween()
-	fade.tween_property(_dark_screen, "color", Color(0, 0, 0, 0), DARK_SCREEN_FADE_SECONDS)
-	coordinator.wait_remaining = DARK_SCREEN_FADE_SECONDS
-	coordinator.story_records.append({"kind": "screen_darken_clear", "source_event_id": str(event.get("id", "")), "seconds": DARK_SCREEN_FADE_SECONDS})
+	var seconds := _step_dark_screen(0)
+	coordinator.story_records.append({"kind": "screen_darken_clear", "source_event_id": str(event.get("id", "")), "seconds": seconds})

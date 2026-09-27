@@ -160,17 +160,18 @@ func _start_walk(event: Dictionary, wait_variant: bool = true) -> void:
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "actor_walk_disp_wait", "reason": "unbound_actor"})
 		return
 	var delta := Vector2(float(str(args[2])), float(str(args[3])))
-	var start: Vector2 = _motion_end(actor)
-	var target: Vector2 = start + delta
-	if not coordinator.story_mode:
-		var final_target: Vector2 = runtime.actor_world_position_for_grid(runtime.unit_grid_coord(unit_id))
-		if target.distance_to(final_target) < 1.0:
-			target = final_target
-	_move_actor(actor, unit_id, start, target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4))
-	coordinator._block_on(unit_id)
-	coordinator.cinematics._focus_camera_on_unit(unit_id, false, str(event.get("id", "")))
-	if wait_variant:
-		_camera_follows_last_walk()
+	var start_walk := func() -> void:
+		var start: Vector2 = _motion_end(actor)
+		var target: Vector2 = start + delta
+		if not coordinator.story_mode:
+			var final_target: Vector2 = runtime.actor_world_position_for_grid(runtime.unit_grid_coord(unit_id))
+			if target.distance_to(final_target) < 1.0:
+				target = final_target
+		_move_actor(actor, unit_id, start, target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4))
+		coordinator._block_on(unit_id)
+		if wait_variant:
+			_camera_follows_last_walk()
+	_start_story_walk(unit_id, wait_variant, str(event.get("id", "")), start_walk)
 
 
 ## The script speed argument (0 → the default speed 4); missing → 0.
@@ -298,14 +299,15 @@ func _walk_inserted_object(event: Dictionary, blocking: bool = true) -> void:
 	# Story scenes have no PlayLoop cell and walk to the script pixel itself.
 	var args: Array = event.get("args", [])
 	var target: Vector2 = _story_world([args[0], args[1]]) if coordinator.story_mode and args.size() >= 2 else runtime.actor_world_position_for_grid(runtime.unit_grid_coord(unit_id))
-	_move_actor(actor, unit_id, actor.position, target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 2))
-	coordinator.cinematics._focus_camera_on_unit(unit_id, false, str(event.get("id", "")))
-	if blocking:
-		_camera_follows_last_walk()
-		coordinator._block_on(unit_id)
-	else:
-		coordinator.wait_remaining = coordinator.default_step_seconds
-		coordinator._blocking_motion = false
+	var start_walk := func() -> void:
+		_move_actor(actor, unit_id, actor.position, target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 2))
+		if blocking:
+			_camera_follows_last_walk()
+			coordinator._block_on(unit_id)
+		else:
+			coordinator.wait_remaining = coordinator.default_step_seconds
+			coordinator._blocking_motion = false
+	_start_story_walk(unit_id, blocking, str(event.get("id", "")), start_walk)
 	_pending_insert = {}
 
 
@@ -415,18 +417,20 @@ func _walk_absolute(event: Dictionary, blocking: bool, delete_after: bool) -> vo
 	if actor == null or args.size() < 4:
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": str(event.get("kind", "")), "reason": "unbound_actor"})
 		return
-	var start: Vector2 = _motion_end(actor)
 	var target := _story_world([args[2], args[3]])
-	_move_actor(actor, unit_id, start, target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4))
-	if blocking and not delete_after:
-		_camera_follows_last_walk()
-	if blocking:
-		coordinator._block_on(unit_id)
-	else:
-		coordinator.wait_remaining = coordinator.default_step_seconds
-		coordinator._blocking_motion = false
-	if delete_after:
-		coordinator._pending_deletes.append(unit_id)
+	# actWalkAndDelete(Wait) (0x450450: state 0x36 sub 0x63 → 0) walks through the same state
+	# 0x32 subs (0x453d27), so its Wait form centres and follows like actWalkWait.
+	var start_walk := func() -> void:
+		_move_actor(actor, unit_id, _motion_end(actor), target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4))
+		if blocking:
+			_camera_follows_last_walk()
+			coordinator._block_on(unit_id)
+		else:
+			coordinator.wait_remaining = coordinator.default_step_seconds
+			coordinator._blocking_motion = false
+		if delete_after:
+			coordinator._pending_deletes.append(unit_id)
+	_start_story_walk(unit_id, blocking, str(event.get("id", "")), start_walk)
 
 
 func _walk_relative(event: Dictionary, blocking: bool) -> void:
@@ -566,8 +570,11 @@ func _restore_shape(event: Dictionary) -> void:
 
 
 func _move_disp(event: Dictionary) -> void:
-	## actMoveDispWait,token,inst,dx,dy,speed: pixel slide (no footsteps) at the
-	## script speed read as pixels per original frame; blocking.
+	## actMoveDispWait,token,inst,dx,dy,speed (opcode 55 → VM state 0x37 at 0x452eac →
+	## 0x4501f0): the actor enters the same walk state 0x32 with +0x80 |= 0x1800, so the
+	## speed goes through the walk table 0x4543d8 (1／2／2／4／8 px per tick, 0 and others 4)
+	## and the Wait pointer centres the camera first and follows. The remake slides straight
+	## (the 0x1800 route／frame handling is unread).
 	var args: Array = event.get("args", [])
 	var bound := _bound_actor(event, 0)
 	var unit_id: String = bound[0]
@@ -576,16 +583,20 @@ func _move_disp(event: Dictionary) -> void:
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "actor_move_disp_wait", "reason": "unbound_actor"})
 		return
 	var delta := Vector2(float(str(args[2])), float(str(args[3])))
-	var speed := maxf(float(str(args[4]).to_int()), 1.0) if args.size() > 4 else 2.0
-	var start: Vector2 = _motion_end(actor)
-	var target: Vector2 = start + delta
-	var seconds: float = delta.length() / (speed * coordinator.move_pixels_per_frame_hz)
-	actor.move_along([start, target], seconds, true)
-	coordinator.wait_remaining = seconds
-	coordinator._block_on(unit_id)
-	coordinator.motion_records.append({"kind": "move_disp", "unit_id": unit_id, "source_event_id": str(event.get("id", "")), "source_token": str(event.get("source_token", "")),
-		"start_world": start, "target_world": target, "duration_seconds": seconds, "speed_arg": speed})
-	coordinator.cinematics._focus_camera_on_unit(unit_id, false, str(event.get("id", "")))
+	var speed_arg := _speed_arg(args, 4)
+	var start_walk := func() -> void:
+		var start: Vector2 = _motion_end(actor)
+		var target: Vector2 = start + delta
+		var pixels_per_tick: float = coordinator.walk_pixels_per_tick(int(speed_arg))
+		var seconds: float = delta.length() / (pixels_per_tick * coordinator.move_pixels_per_frame_hz)
+		actor.move_along([start, target], seconds, true)
+		coordinator.wait_remaining = seconds
+		coordinator._block_on(unit_id)
+		_last_walk = {"start": start, "points": [target], "pixels_per_tick": pixels_per_tick * coordinator.move_pixels_per_frame_hz * OriginalTick.TICK_SECONDS}
+		_camera_follows_last_walk()
+		coordinator.motion_records.append({"kind": "move_disp", "unit_id": unit_id, "source_event_id": str(event.get("id", "")), "source_token": str(event.get("source_token", "")),
+			"start_world": start, "target_world": target, "duration_seconds": seconds, "speed_arg": speed_arg})
+	_start_story_walk(unit_id, true, str(event.get("id", "")), start_walk)
 
 
 func _show_position_marker(event: Dictionary) -> void:
@@ -627,6 +638,19 @@ func _release_position_overlay() -> void:
 	if _position_overlay != null and is_instance_valid(_position_overlay):
 		_position_overlay.queue_free()
 	_position_overlay = null
+
+
+## A Wait walk first scrolls the camera to centre its walker (0x453b90 state 0x32 sub 0 →
+## 0x43bf30(actor, 0): object pixel at the view's (320,192), story step 16, tolerance 4) and
+## sets off once it arrives; a plain walk (+0x50 = 0) skips the centring and never touches
+## the camera (sub 0 at 0x453d44, follow at 0x454039 both test +0x50).
+func _start_story_walk(unit_id: String, wait_variant: bool, source_event_id: String, start_walk: Callable) -> void:
+	var seconds := 0.0
+	if wait_variant:
+		seconds = coordinator.cinematics._centre_camera_on_walker(unit_id, source_event_id)
+	coordinator._defer_walk(seconds, start_walk)
+	if seconds > 0.0:
+		coordinator._blocking_motion = false
 
 
 ## The Wait walks (actWalkWait／actWalkDispWait／actWalkPrevInsertObjectWait: 0x44fcf0／0x44fd90／

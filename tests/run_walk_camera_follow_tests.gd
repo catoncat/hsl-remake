@@ -188,6 +188,17 @@ func _opening_wait_walk() -> void:
 		var leonard = scene.actor_node_for_unit("leonard")
 		leonard.move_along([leonard.last_path[0]], 0.0)
 		coordinator.story_objects._walk_relative({"id": "test_wait_walk", "args": ["SID_PLAYER0", "1", "0", "-256", "4"], "kind": "actor_walk_disp_wait"}, true)
+		# A Wait walk first eases the camera onto the walker (0x453d44 → 0x43bf30) and only then
+		# starts walking; the follow trace begins from the centred camera.
+		# Outside the live opening the coordinator's tick is idle, so the harness releases the
+		# deferred walk itself once the centring scroll has settled.
+		for _centring in range(400):
+			if not coordinator._pending_walk.is_valid():
+				break
+			if controller.scroll_mode == "":
+				coordinator._flush_pending_walk()
+				break
+			await process_frame
 		var walk: Dictionary = coordinator.story_objects._last_walk
 		var expected := _expected_trace(scene, walk["start"], walk["points"], 4.0)
 		_assert_true(controller.follow_count == before + 1 and controller._follow_trace == expected, "the Wait form of the same walk is followed (%s)" % controller.scroll_mode)

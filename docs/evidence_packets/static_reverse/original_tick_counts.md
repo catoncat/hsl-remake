@@ -1,12 +1,12 @@
 # 以 tick 计的原版时长：数字寿命、章节标题、边缘滚动、脚本行走速度
 
-> evidence: static-derived: object-process and STORY VM state machines read from hsl01.exe; runtime-measured: 2026-09-24 recording of the 棄卒 title card (§2); provisional: rows marked 未读 · status: live · functions: 0x401060, 0x401c20, 0x4038a0, 0x406d20, 0x406eb0, 0x408580, 0x42c3f0, 0x42d280, 0x42dc50, 0x42dc80, 0x43e2a0, 0x43e4a0, 0x43e570, 0x4423c0, 0x44fcf0, 0x451818, 0x452102, 0x452f32, 0x453111, 0x45e307, 0x45e525, 0x45e91e, 0x45f5f7, 0x45f7cb, 0x4607f9, 0x460989, 0x46098f, 0x4609c0, 0x4609f1, 0x460a06, 0x461479, 0x461982, 0x462154, 0x463eeb, 0x464c22, 0x4699fd, 0x46b691, 0x46bede · tools: hsl_exe_decompile.py · updated: 2026-09-27
+> evidence: static-derived: object-process and STORY VM state machines read from hsl01.exe; runtime-measured: 2026-09-24 recording of the 棄卒 title card (§2); provisional: rows marked 未读 · status: live · functions: 0x401060, 0x401c20, 0x4038a0, 0x406d20, 0x406eb0, 0x408580, 0x42c3f0, 0x42d280, 0x42dc50, 0x42dc80, 0x43e270, 0x43e2a0, 0x43e2d0, 0x43e4a0, 0x43e570, 0x4423c0, 0x44fcf0, 0x4501f0, 0x45136a, 0x451818, 0x452102, 0x452123, 0x452eac, 0x452f32, 0x453111, 0x45e307, 0x45e525, 0x45e91e, 0x45f5f7, 0x45f7cb, 0x4607f9, 0x460989, 0x46098f, 0x4609c0, 0x4609f1, 0x460a06, 0x461479, 0x461982, 0x462154, 0x463eeb, 0x464c22, 0x4699fd, 0x46b691, 0x46bede · tools: hsl_exe_decompile.py · updated: 2026-09-28
 
 ## 结论
 
-- 原版以主循环 tick 计的演出计数已从对象过程与 STORY VM 状态机读出：地图数字 kind 1–6 寿命 46 tick（第 32 tick 放行），红色伤害数字 10×位数＋34；章节标题 582 tick（任意键最短 263）；边缘滚动 12 px/tick；脚本行走 speed→1／2／4／8 px/tick；普攻守方中立 32 tick、命中停留 68＋10×位数、落空 56，屏幕过渡变暗／变亮各 16；攻方开场 24 tick 缩放＋32 tick 叠层（static-derived）。
+- 原版以主循环 tick 计的演出计数已从对象过程与 STORY VM 状态机读出：地图数字 kind 1–6 寿命 46 tick（第 32 tick 放行），红色伤害数字 10×位数＋34；章节标题 582 tick（任意键最短 263）；边缘滚动 12 px/tick；脚本行走（含 actMoveDispWait）speed→1／2／4／8 px/tick；剧情压黑每 3 tick 一级、16 级（48 tick），actDarkScreen／actDeleteDarkScreen 都不等待；普攻守方中立 32 tick、命中停留 68＋10×位数、落空 56，屏幕过渡变暗／变亮各 16；攻方开场 24 tick 缩放＋32 tick 叠层（static-derived）。
 - 重制 `CombatPresentationTiming`、`OpeningCinematics`／`BattleOpeningCoordinator`、`BattleCameraController`／`WorldMapRuntime`、`BattleCombatCutin` 按这些计数经 `OriginalTick`（16 ms/tick）换算（static-derived）。
-- 差异：对象 700 渐暗、`mapobjFlash`、击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional；像素混合未逐像素对照（provisional）。
+- 差异：对象 700 每级明暗的画法（`0x461479`）按 alpha n／16 近似（provisional）；`mapobjFlash`、击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional；像素混合未逐像素对照（provisional）。
 
 ## 证据
 
@@ -58,11 +58,15 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 ### 4. 脚本 `actWalk` 系列：速度参数存入角色 `+0x98`
 
-VM 处理器（opcode 2–7，`0x4508a8` 等）把 `[code][serial][x][y][speed]` 交给 `0x44fcf0`：目标格中心化（`& ~31 + 16`），`+0x4a`／`+0x48` 目标，`word[+0x98] = speed`，`+0x8c = 0x320000`（行走状态 0x32），`+0x50` = 删除／Wait 标志。消费在 `0x453b90` 状态 0x32 sub 2 的跳转表 `0x4543d8`（[original_script_camera_scroll](original_script_camera_scroll.md)）：speed 1 → 1 px/tick、2／3 → 2、0／4／其他 → 4、8 → 8——与 [tick 率包](../runtime_observations/original_tick_rate/README.md) 实测玩家 4 px/tick 一致。重制 `BattleOpeningCoordinator.walk_pixels_per_tick(speed)` 用同一张表，速度 × 62.5 px/s。`actMoveDispWait`（opcode 55，状态 case 0x37）的 speed 语义未读，重制仍按 px/tick 读（provisional）。
+VM 处理器（opcode 2–7，`0x4508a8` 等）把 `[code][serial][x][y][speed]` 交给 `0x44fcf0`：目标格中心化（`& ~31 + 16`），`+0x4a`／`+0x48` 目标，`word[+0x98] = speed`，`+0x8c = 0x320000`（行走状态 0x32），`+0x50` = 删除／Wait 标志。消费在 `0x453b90` 状态 0x32 sub 2 的跳转表 `0x4543d8`（[original_script_camera_scroll](original_script_camera_scroll.md)）：speed 1 → 1 px/tick、2／3 → 2、0／4／其他 → 4、8 → 8——与 [tick 率包](../runtime_observations/original_tick_rate/README.md) 实测玩家 4 px/tick 一致。重制 `BattleOpeningCoordinator.walk_pixels_per_tick(speed)` 用同一张表，速度 × 62.5 px/s。`actMoveDispWait`（opcode 55）：VM 处理器 `0x45136a` 存 code／serial／dx／dy／speed 并进 VM 状态 0x37；`0x452eac` 调 `0x4501f0(code, serial, dx, dy, speed, Wait 时 VM)`，它把「当前像素＋位移」格心化写进 `+0x4a`／`+0x48`、speed 写 `word[+0x98]`、`+0x80 |= 0x1800`、`+0x8c = 0x320000`——与 actWalkDisp 进同一行走状态，走速走同一张 `0x4543d8` 表。重制 `OpeningStoryObjects._move_disp` 改用 `walk_pixels_per_tick`（static-derived）；`0x1800` 位让 `0x453ba3` 每 tick 调 `0x45e5a6` 推进形态帧，对 `0x4111d0` 路线的影响未读，重制按直线滑（provisional）。
 
 ### 5. `actDarkScreen`（opcode 48）：不等待，交给对象 700
 
-`0x452102` 调 `0x43e2a0(0)`：`0x45e307(0, 0, 700, 0)` 插入 `obj_ScreenDarker`（OBJ-ALL.H 700）并置 `+0x90 = 0`，VM 立即继续（无等待状态）。渐暗节拍在对象 700 的过程里，**未读**——重制 `OpeningCinematics.DARK_SCREEN_FADE_SECONDS` 保持 provisional，替换证据是该过程每 tick 的亮度步进。
+`0x452102` 调 `0x43e2a0(0)`：`0x45e307(0, 0, 700, 0)` 插入 `obj_ScreenDarker`（OBJ-ALL.H 700）并置 `+0x90 = 0`，VM 立即继续（无等待状态）。
+
+对象 700 的过程 `0x43e2d0`（过程表 `0x477d28`；由 `+0x90` 放行指针契约与 `0x43e2a0` 对应）：初始化消息 `+0x94` 为 0 时置 `0x30003`（重装 3、计数 3），暗度级 `[0x4c1ca8] = 0`；状态 0 每 tick 计数 −1，归零重装 3 并级 +1，到 16 进状态 1（**48 tick 渐暗**，16 级阶梯）；状态 1 保持；带 `0x10000` 时转状态 2（状态 1 先置级 16），每 3 tick 级 −1，到 0 删对象并放行 `+0x90`。每 tick 以 `0x461479(0x4c1c80)` 提交绘制。`actDeleteDarkScreen`（opcode 49，`0x452123`）调 `0x43e270(对象, 0)`：`+0x80 |= 0x10000`、`+0x90 = 0`，同样**不等待**；渐暗中途收到则从当前级往下退。
+
+重制 `OpeningCinematics._step_dark_screen`：每 3 tick 一级、从当前级走到 16 或 0，两个 token 不再挡脚本（static-derived）；每级明暗按 alpha 级数／16 画，`0x461479` 的逐级混合未读（provisional）。
 
 ### 6. 普攻切入的守方对象 `defProcAnimalDefense`（`0x4038a0`，slot 23）：受击停留
 

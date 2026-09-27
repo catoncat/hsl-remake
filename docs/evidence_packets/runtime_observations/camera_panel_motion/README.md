@@ -7,7 +7,7 @@
 - 原版镜头每 tick 每轴走剩余距离的一半（战斗上限 32 px、剧情 16 px），被对准的点落在画面 (320,192)；结算前先滑到受益者；走路时镜头与走路的人同步平移、不追终点（runtime-measured＋static-derived）。
 - 原版面板按所在一侧滑入、每帧去剩余约 1/8（约 0.62 s），关闭原路约 20 px／帧滑出（约 0.23 s），压暗并行淡入淡出；胜负条件面板 WINDOW60 32 tick 溶解淡入、等按键、34 tick 淡出，溶解是含字面板整体 16 级交叉淡化（`0x4699fd`）；敌方移动前先铺蓝色移动范围 0.20–0.48 s；普攻切入的白光球在地图之上放大（runtime-measured；static-derived：`0x413a80`）。
 - 重制 `BattleCameraController`、`BattlePanelMotion`、`BattleWinFailBoard`、`BattleAiMovePreview`、`BattleCombatCutin._show_opening` 按这些量值实现（static-derived／runtime-measured）。
-- 差异：面板滑动曲线与压暗层级是录屏拟合（provisional，差异清单 `panel-slide-formula`）；移动预告用一个 16 tick 固定值（provisional，`ai-move-preview-timing`）；面板部件按矩形分侧（remake-invented）；部分脚本行走变体的镜头规则未读（`cam-script-walk-variants`）。
+- 差异：面板滑动曲线与压暗层级是录屏拟合（provisional，差异清单 `panel-slide-formula`）；移动预告用一个 16 tick 固定值（provisional，`ai-move-preview-timing`）；面板部件按矩形分侧（remake-invented）；actWalkFollow(Wait) 的镜头规则未读（`cam-script-walk-variants`）。
 
 ## 证据
 
@@ -50,7 +50,7 @@
 | --- | --- | --- |
 | `0x4411cb..0x441286` | `defProcEnemy = 5` → `0x43ede0`（敌方与友军 AI 共用） | 每 tick 按路径码（1 上／2 下／3 左／4 右，`0x4c63c0` 路径表）把演员亚像素偏移 ±4；**以走之前的位置**比较：右走 `x > [0x4c0960]`、左走 `x < [0x4c0968]`、下走 `y > [0x4c0964]`、上走 `y < [0x4c096c]` 时 `0x42dc50` 请求同向 ±4；`+0x9e = 8` 每格 8 tick；快进键（`[0x4c6390] & 0x600` 或 `[0x4c1d78]`）时同一 tick 走两遍 |
 | `0x443f5a..0x44400d` | `defProcPlayer = 3` → `0x443330` | 与上一行逐条相同（同一组常量、同一组比较） |
-| `0x453fbd..0x454039` | 剧情演员 `0x453b90` 状态 0x32 sub 3／6 | 同一组边界，步长＝脚本速度（1／2／4／8 px）；只在 `+0x50 ≠ 0`（Wait 变体：`actWalkWait`／`actWalkDispWait`／`actWalkPrevInsertObjectWait` 经 `0x44fcf0`／`0x44fd90`／`0x44fed0` 写入 VM 指针）时请求；`actWalkAndDelete(Wait)` 走 `0x450450` 的状态 0x36，未读 |
+| `0x453fbd..0x454039` | 剧情演员 `0x453b90` 状态 0x32 sub 3／6 | 同一组边界，步长＝脚本速度（1／2／4／8 px）；只在 `+0x50 ≠ 0`（Wait 变体：`actWalkWait`／`actWalkDispWait`／`actWalkPrevInsertObjectWait` 经 `0x44fcf0`／`0x44fd90`／`0x44fed0` 写入 VM 指针）时请求；`actWalkAndDelete(Wait)`（`0x450450` 状态 0x36，sub 0..6 回到同一行走 sub `0x453d27`）与 `actMoveDispWait`（`0x4501f0` 进状态 0x32）同样按 `+0x50` 请求 |
 
 四个边界是**常量**，不随镜头变：`0x46bb02(640, 480)`（启动时由 `0x42f1bd` 经 `0x46d187` 调用）与关卡装载 `0x46bb65` 写 `[0x4c0960] = 320`、`[0x4c0964] = 240`、`[0x4c0968] = 地图宽 − 320`、`[0x4c096c] = 地图高 − 240`（视口 `0x4bfcbc／0x4bfcc0 = 640／480`，`0x46133a`）。走路的人每走一步，镜头就同向走同样一步，除非这个人站在「朝他走的方向、离地图边不足半个视口」的区域里。镜头不先居中、不追终点，人在画面里的相对位置不变。`0x46bede`：主循环 `0x42d8a8..0x42d8b5` 每帧把累计请求 `0x4c1b98／0x4c1b9c` 交给它，它把请求加到镜头 `0x4c091c／0x4c0920`、夹到 `[0, 0x4c0958]`／`[0, 0x4c095c]`、调 `0x4613ea` 设视口——一次加完，不分帧。`0x4402dc..0x44141d`：AI 过程里按 `0x45e882` 步长 16 移动的虚拟光标（`0x4c2c8c／0x4c2c90`）也用同一组边界带镜头，结论见 [施法覆盖层](../../static_reverse/original_cast_overlays.md) 起手的镜头。
 
@@ -185,7 +185,6 @@ Godot Movie Maker 640×480、60 fps，第 51 战产品开场 → 首控 → 状�
 
 - 只有待领物（无经验无金钱）时原版也会滑镜头，重制此时没有奖励格、不滑（罕见）。
 - 快进键：镜头 +12 步长与走路同 tick 走两遍未接（重制无该输入）。
-- 非 Wait 脚本行走在重制里仍在开走时瞬切到演员（原版不动镜头）。
-- `actWalkAndDeleteWait`（状态 0x36）、`actWalkFollow*`、`actMoveDispWait` 的镜头规则未读，重制不跟随；
+- `actWalkFollow*` 的镜头规则未读，重制不跟随；
 - 移动预告两簇时长用一个固定值（provisional）。
 - 面板部件分侧、右下框出现时机、加点窗关闭方向为 remake-invented。

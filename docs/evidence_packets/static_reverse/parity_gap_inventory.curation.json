@@ -886,16 +886,16 @@
     },
     {
       "id": "dark-screen-fade",
-      "difference": "剧情压黑（actDarkScreen）0.8 s 渐暗是估值，原版对象 700 的逐 tick 亮度未读",
-      "original": "渐暗节拍在对象 700 的过程里，未读",
+      "difference": "剧情压黑的每级明暗按 alpha n／16 画，原版每级混合（0x461479）未读；节拍已照原版（每 3 tick 一级、16 级、不等待）",
+      "original": "对象 700 过程 0x43e2d0：[0x4c1ca8] 每 3 tick ±1（0..16），actDarkScreen／actDeleteDarkScreen 都不等待；每级画法 0x461479 未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "OpeningCinematics.DARK_SCREEN_FADE_SECONDS",
+      "remake": "OpeningCinematics._step_dark_screen 每 3 tick 一级，alpha＝级数／16",
       "remake_code": [
-        "game/battle/runtime/opening/OpeningCinematics.gd:_darken_screen"
+        "game/battle/runtime/opening/OpeningCinematics.gd:_step_dark_screen"
       ],
-      "original_status": "unread",
+      "original_status": "read_partial",
       "visibility": "some_levels",
       "effort": "S",
       "category": "标题与过场"
@@ -987,16 +987,16 @@
     },
     {
       "id": "script-walk-speed",
-      "difference": "剧情走位 actMoveDispWait 的速度单位按 px／tick 读，原版该分支（状态 0x37）未读",
-      "original": "opcode 55 状态 case 0x37 的 speed 语义未读",
+      "difference": "剧情 actMoveDispWait 按直线滑动（原版进同一走路状态 0x32，+0x80 置 0x1800 后的寻路与帧处理未读）；剧情走步声按相对帧 0／3；插播恢复语义暂定。走速已照 0x4543d8 表",
+      "original": "opcode 55 → VM 状态 0x37（0x452eac）→ 0x4501f0：目标格心、速度写 +0x98、状态 0x32、+0x80 |= 0x1800；0x1800 位对 0x4111d0 路线与 0x45e5a6 帧推进的影响未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "BattleOpeningCoordinator 按 px／tick",
+      "remake": "OpeningStoryObjects._move_disp 走速按 walk_pixels_per_tick，路径为起点到终点直线",
       "remake_code": [
-        "game/battle/runtime/BattleOpeningCoordinator.gd"
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_move_disp"
       ],
-      "original_status": "unread",
+      "original_status": "read_partial",
       "visibility": "some_levels",
       "effort": "S",
       "category": "剧情走位"
@@ -1712,14 +1712,14 @@
     },
     {
       "id": "cam-script-walk-variants",
-      "difference": "剧情里几种特殊走法（边走边消失、跟随行走、移动显示等待）镜头不跟人走；不带 Wait 的剧情行走重制开走即把镜头切到演员，原版镜头不动",
-      "original": "actWalkAndDeleteWait（0x450450 状态 0x36）、actWalkFollow*、actMoveDispWait 的镜头规则未读；不带 Wait 的行走原版不带镜头（R7-CAM 读法）",
+      "difference": "actWalkFollow(Wait) 跟随行走的镜头规则未读，重制不动镜头；其余剧情行走镜头已照原版（不带 Wait 不动、Wait 先缓动居中再开走并跟随）",
+      "original": "0x453b90 状态 0x32 sub 0（0x453d44）与跟随（0x454039）都查 +0x50；actWalkAndDelete(Wait) 0x450450 状态 0x36 sub 0x63→0 走同一组 sub（0x453d27）；actMoveDispWait 0x4501f0 也进状态 0x32；actWalkFollow* 的对象状态未读",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "OpeningStoryObjects 只在带 Wait 的行走逐 tick 跟随；不带 Wait 的行走开走即瞬切到演员",
+      "remake": "OpeningStoryObjects._walk_follow 不请求镜头",
       "remake_code": [
-        "game/battle/runtime/opening/OpeningStoryObjects.gd"
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_walk_follow"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -2127,9 +2127,6 @@
     "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|rules|remake-invented|": {
       "item": "script-fast-forward"
     },
-    "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|timing|provisional|": {
-      "item": "script-walk-speed"
-    },
     "provenance:game/sim/BattleScenario.gd|rules|remake-invented|": {
       "no_visible_effect": "场景 JSON 合同与归一化，是重制内部数据结构"
     },
@@ -2321,18 +2318,6 @@
     },
     "provenance:game/battle/scene/BattlePresentation.gd|timing|provisional|": {
       "item": "map-strike-effects"
-    },
-    "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|docs/OPTIONS.md": {
-      "item": "learning-notice"
-    },
-    "provenance:game/battle/scene/BattleRewardFloater.gd|strings|remake-invented|docs/OPTIONS.md": {
-      "item": "learning-notice"
-    },
-    "provenance:game/battle/scene/BattleAftermath.gd|strings|remake-invented|docs/OPTIONS.md": {
-      "item": "learning-notice"
-    },
-    "provenance:game/battle/scene/BattleSceneOverlays.gd|timing|provisional|": {
-      "item": "highlight-colours"
     },
     "provenance:game/battle/scene/BattleSceneInput.gd|rules|remake-invented|": {
       "item": "home-recenter"
@@ -2913,10 +2898,6 @@
       "item": "floater-lifetimes",
       "text": "EXP／KILL／$ 浮字是 `obj_ShowNumber` kind 1／4（`0x4084e0`→`0x408580`），寿命计数在 `0x408580` 内未读；"
     },
-    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#bc563f9d25": {
-      "item": "dark-screen-fade",
-      "text": "`actDarkScreen` 原版是否逐 tick 渐暗未读；"
-    },
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#c5e5888398": {
       "item": "map-object-flash",
       "text": "`mapobjFlash` 的 `defProcStandObject` 分支未读"
@@ -3021,10 +3002,6 @@
       "item": "script-walk-path",
       "text": "洪泛缓冲 `*0x4c1a64`／`*0x4c1a68` 的具体尺寸（地图外能走多远）未读；"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#17b232e51f": {
-      "item": "dark-screen-fade",
-      "text": "渐暗节拍在对象 700 的过程里，**未读**——重制 `OpeningCinematics.DARK_SCREEN_FADE_SECONDS` 保持 provisional，替换证据是该过程每 tick 的亮度步进。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#1e230aa201": {
       "item": "closeup-object-timing",
       "text": "未读"
@@ -3036,10 +3013,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#76ea25becd": {
       "no_visible_effect": "数字对象与守方对象同 tick 处理顺序，差异 ±1 tick（16 ms）",
       "text": "±1 tick：数字对象与守方对象在同一 tick 内的处理顺序未读。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#b9d95de4eb": {
-      "item": "script-walk-speed",
-      "text": "`actMoveDispWait`（opcode 55，状态 case 0x37）的 speed 语义未读，重制仍按 px/tick 读（provisional）。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#e924ca2fa8": {
       "item": "closeup-composition",
@@ -3093,14 +3066,6 @@
         "floater-extra-words"
       ]
     },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#b795e0c8ea": {
-      "item": "cam-script-walk-variants",
-      "text": "`actWalkAndDeleteWait`（状态 0x36）、`actWalkFollow*`、`actMoveDispWait` 的镜头规则未读，重制不跟随；"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#c94e71db0e": {
-      "item": "cam-script-walk-variants",
-      "text": "`actWalkAndDelete(Wait)` 走 `0x450450` 的状态 0x36，未读"
-    },
     "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#e9d9d6c1f8": {
       "item": "panel-slide-formula",
       "text": "provisional：原压暗过程未读，层级是亮度比的拟合，节拍按录屏 tick 数折成 16 ms tick。"
@@ -3149,9 +3114,6 @@
     },
     "provenance:game/battle/scene/BattleDialogue.gd|timing|remake-invented|": {
       "item": "dialogue-timing"
-    },
-    "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|选魔法／道具目标与选移动格时谁亮未拍": {
-      "item": "highlight-colours"
     },
     "provenance:game/battle/scene/LevelUpStars.gd|timing|remake-invented|": {
       "no_visible_effect": "星光的随机落点／速度／停留取表现 RNG（原全局 0x458c10 流），分布与原版同一区间"
@@ -3405,12 +3367,6 @@
       "item": "town-event-timing",
       "text": "点 16 命運的神殿没有 track，进入方式（脚本 `teSetBMWalkToPoint` 或直接进入）未读。"
     },
-    "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）": {
-      "item": [
-        "title-ornaments",
-        "memoir-list"
-      ]
-    },
     "scope:docs/evidence_packets/static_reverse/original_job_stats.md|provisional|合成初始化": {
       "item": "npc-level-policy"
     },
@@ -3481,10 +3437,6 @@
       "no_visible_effect": "行动后的菜单集合由公共行动恢复包决定，本包只管集合与几何",
       "text": "菜单事件位的完整语义、行动后留哪几项的上层选择不由本包证明（未读）。"
     },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#007f1d0195": {
-      "item": "cam-script-walk-variants",
-      "text": "部分脚本行走变体的镜头规则未读（`cam-script-walk-variants`）。"
-    },
     "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9": {
       "item": "cast-lead-phase",
       "text": "效果开始是否等姿势未读（`cast-lead-phase`）。"
@@ -3516,10 +3468,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#62fdc3fe42": {
       "item": "identity-bar-bits",
       "text": "差异：位 0x100（条上印数字）的置位者未读、氣力条是重制自创（差异清单 `identity-bar-bits`，provisional）；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91": {
-      "item": "cam-random-scroll",
-      "text": "actScrollBGToRandomPos 未读。"
     },
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#d003b16b63": {
       "item": "closeup-object-timing",
@@ -3641,6 +3589,54 @@
       "item": "special-object-motion",
       "text": "对象寿命与舞台外对象的飞行按 `shape_number × (shape_delay+1)` 推读，`defProcObjectMove` 与 `obj_Data7` 运动程序未读。"
     },
+    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#316196e704": {
+      "item": "cam-script-walk-variants",
+      "text": "`actWalkFollow*` 的镜头规则未读，重制不跟随；"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5287ca512d": {
+      "item": "cam-script-walk-variants",
+      "text": "actWalkFollow(Wait) 的镜头规则未读（`cam-script-walk-variants`）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#cfd2b4b4db": {
+      "item": "cam-script-walk-variants",
+      "text": "actWalkFollow(Wait) 的对象状态与镜头规则未读，重制不动镜头；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#d01089a754": {
+      "item": [
+        "cam-script-walk-variants",
+        "cam-random-scroll"
+      ],
+      "text": "actWalkFollow(Wait) 的镜头规则与 actScrollBGToRandomPos 未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#32e3b886b5": {
+      "item": "dark-screen-fade",
+      "text": "每级明暗按 alpha 级数／16 画，`0x461479` 的逐级混合未读（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#f1812c4aa6": {
+      "item": "script-walk-speed",
+      "text": "`0x1800` 位让 `0x453ba3` 每 tick 调 `0x45e5a6` 推进形态帧，对 `0x4111d0` 路线的影响未读，重制按直线滑（provisional）。"
+    },
+    "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|docs/OPTIONS.md": {
+      "item": "learning-notice"
+    },
+    "provenance:game/battle/scene/BattleRewardFloater.gd|strings|remake-invented|docs/OPTIONS.md": {
+      "item": "learning-notice"
+    },
+    "provenance:game/battle/scene/BattleAftermath.gd|strings|remake-invented|docs/OPTIONS.md": {
+      "item": "learning-notice"
+    },
+    "provenance:game/battle/scene/BattleSceneOverlays.gd|timing|provisional|": {
+      "item": "highlight-colours"
+    },
+    "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|选魔法／道具目标与选移动格时谁亮未拍": {
+      "item": "highlight-colours"
+    },
+    "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）": {
+      "item": [
+        "title-ornaments",
+        "memoir-list"
+      ]
+    },
     "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#c06f5fe340": {
       "item": "closeup-object-timing",
       "text": "绝技片段结束后的变暗／变亮过渡重制未做，数字尾巴因此在片段内走完而非叠在过渡下；"
@@ -3662,10 +3658,6 @@
         "cast-lead-phase"
       ],
       "text": "未读（保留 provisional）：`mapobjFlash` 亮度步进（TYPE.H：`objsScore = level, objsHitPoint = delay`，字段尚未导出到 map_objects）、击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#d0f8d68007": {
-      "item": "timing-estimates",
-      "text": "差异：对象 700 渐暗、`mapobjFlash`、击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional；"
     },
     "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点": {
       "item": "cast-strip-missing"
