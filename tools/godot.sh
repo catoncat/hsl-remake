@@ -13,6 +13,14 @@ if [[ $# -eq 0 ]]; then
   exit 2
 fi
 
+# Headless runs (imports, suites, sweeps) get an isolated HOME under ignored/ so they never read or
+# overwrite the real user directory (campaign_progress.json, memoirs, settings). A 2026-09-27 suite
+# run in the real HOME rewrote a real campaign save. HSL_REAL_HOME=1 opts out (tools/play.sh sets it).
+if [[ " $* " == *" --headless "* && "${HSL_REAL_HOME:-}" != 1 && "${HOME:-}" != "$ROOT/ignored/"* ]]; then
+  export HOME="$ROOT/ignored/lane-home"
+  mkdir -p "$HOME"
+fi
+
 # Git ignore rules do not stop Godot importing raw captures. Prepare this before
 # every entry, including the first play in a checkout that has never run verify.
 mkdir -p "$ROOT/ignored"

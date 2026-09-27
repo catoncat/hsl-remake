@@ -6,7 +6,7 @@ extends CanvasLayer
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md#7-普攻切入的攻方开场
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#12
 ##     (one full-size actor per shot over BG051; frame_001 whited-out board)
-##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##     (the zoom grows over the battlefield map, centred (320,240), before the white-out)
 ##   layout: provisional
@@ -22,7 +22,7 @@ extends CanvasLayer
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: provisional (0.12 s attack-flash hold until defProcAttackFlash is read in ticks)
-##   timing: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   timing: remake-invented (the borrowed 氣刃斬 staging used only by synthetic clips)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 ## The presenters skill_effects/manifest.json names: `skill_effects` (the script player, every
@@ -37,7 +37,7 @@ const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
+const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
 ## Original attack frames and delay order in a compact remake presentation. The source pose
 ## order runs at Timing.PLAYBACK_SPEED × the original tick rate (1.0 unless the developer
 ## switch slows it).
@@ -49,7 +49,7 @@ const AnimalCastLead = preload("res://game/battle/scene/AnimalCastLead.gd")
 const StatEnhancementRules = preload("res://game/sim/StatEnhancementRules.gd")
 const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 const ShowNumberStyle = preload("res://game/battle/runtime/ShowNumberStyle.gd")
-const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
+const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
 ## The word of the NUM513 glyph: a miss reads MISS on the result line and the map (0x404643 kind 5).
 const MISS_TEXT := "MISS"
 ## 0x404290: an ordinary shot's defender object spawns its red damage number at (320, camera
@@ -69,10 +69,10 @@ var _reported_unconfigured := false
 var clips: Array[Dictionary] = []
 var elapsed := 0.0
 ## OPT-PACE (docs/OPTIONS.md), read once as an exchange's first clip is queued (play on an empty
-## queue): the multiplier on this node's frame delta (Timing.PACE_CLOSEUP) and, under 極快,
+## queue): the multiplier on this node's frame delta (Timing.PACE_CUTIN) and, under 極快,
 ## the close-up layer hidden while the clips still run in order.
 var pace := 1.0
-var closeup_hidden := false
+var cutin_hidden := false
 var panel: Control
 var background: ColorRect
 var attacker_sprite: Sprite2D
@@ -81,7 +81,7 @@ var flash_sprite: Sprite2D
 ## The result line: only the captions the original has no glyph for (cure／buff words, the
 ## weapon-effect line); the numbers are `result_number`'s original glyphs.
 var result: Label
-## The result numbers of the current shot (ResultNumberFloat children, clocked by the clip).
+## The result numbers of the current shot (ResultNumberFloater children, clocked by the clip).
 var result_number: Node2D
 var _result_key: Array = []
 var skill: Dictionary
@@ -231,10 +231,10 @@ func play(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counte
 		push_error("Combat cut-in played without a combat manifest: the scenario declares no resources.combat_animation")
 	if clips.is_empty():
 		var pace_value := GameOptions.value("OPT-PACE")
-		pace = float(Timing.PACE_CLOSEUP.get(pace_value, 1.0))
-		if closeup_hidden != (pace_value == Timing.PACE_HIDDEN_CLOSEUP):
-			closeup_hidden = not closeup_hidden
-			visible = not closeup_hidden
+		pace = float(Timing.PACE_CUTIN.get(pace_value, 1.0))
+		if cutin_hidden != (pace_value == Timing.PACE_HIDDEN_CUTIN):
+			cutin_hidden = not cutin_hidden
+			visible = not cutin_hidden
 	var attacker_view := attacker.duplicate(true)
 	var defender_view := defender.duplicate(true)
 	attacker_view.merge(strike.get("attacker_before", {}), true)
@@ -303,7 +303,7 @@ func cast_lead(clip: Dictionary, channel: String = "special") -> Dictionary:
 				cast_leads[skipped_key] = AnimalCastLead.skipped(channel == "magic")
 			return cast_leads[skipped_key]
 		# A side-swapped caster (0x446be0) plays the mirrored lead.
-		var mirrored := CloseupLayout.side_swapped(clip.get("attacker_unit", {}))
+		var mirrored := CutinLayout.side_swapped(clip.get("attacker_unit", {}))
 		var key: String = row + ":" + channel + (":mirrored" if mirrored else "")
 		if not cast_leads.has(key):
 			var textures: Array = []
@@ -468,7 +468,7 @@ func _process(delta: float) -> void:
 	# Each close-up object reads its own actor's side-swap bit at init (0x446be0): the
 	# attacker 0x401ddf (x zoom −1 about its anchor), its aniSetXYDisp x negated (0x4021b8)
 	# and its aniSetAdd／SubSpeed angle reflected (0x45e785) — the program's x motion mirrors.
-	var attacker_mirrored := CloseupLayout.side_swapped(clip["attacker_unit"])
+	var attacker_mirrored := CutinLayout.side_swapped(clip["attacker_unit"])
 	var facing := -1.0 if attacker_mirrored else 1.0
 	_set_frame(attacker_sprite, clip["attacker"], frame, attacker_mirrored)
 	if dispatch.has("presentation_transform_states"):
@@ -493,11 +493,11 @@ func _process(delta: float) -> void:
 	var defender: Dictionary = manifest["actors"][clip["defender"]]
 	# The defender object 0x4038a0 reads its own actor's bit (0x4044ae): x zoom −1 and the hit
 	# move flag exchanged, so a side-swapped victim also shifts and recoils the other way.
-	var defender_mirrored := CloseupLayout.side_swapped(clip["defender_unit"])
+	var defender_mirrored := CutinLayout.side_swapped(clip["defender_unit"])
 	_set_frame(defender_sprite, clip["defender"], int(defender["hurt_frame"]) if hurt else 0, defender_mirrored)
 	# Knock-back (hit) or dodge slide (miss) from the roll, along the object's hit move flag.
 	if clip["impact_emitted"]:
-		defender_sprite.position.x += CloseupLayout.reaction_x(defender, hit, OriginalTick.ticks(elapsed - impact_time), defender_mirrored)
+		defender_sprite.position.x += CutinLayout.reaction_x(defender, hit, OriginalTick.ticks(elapsed - impact_time), defender_mirrored)
 	var flash: Dictionary = actor["flash"]
 	# aniInsertAttackFlash belongs to the attacker's pose, before cutting to the victim.
 	flash_sprite.visible = elapsed >= strike_time and elapsed < minf(strike_time + 0.12, float(schedule["target"])) and not flash.is_empty()
@@ -507,7 +507,7 @@ func _process(delta: float) -> void:
 		# attacker hands 0x401310 its mirror flag: the flash is drawn at x zoom −1 about that
 		# point, the displacement itself is not negated (0x402231 adds it as read).
 		var displacement: Array = actor["attack_flash_offset"]
-		_set_effect(flash_sprite, flash, CloseupLayout.attacker_anchor() + Vector2(float(displacement[0]), float(displacement[1])), 1.0, attacker_mirrored)
+		_set_effect(flash_sprite, flash, CutinLayout.attacker_anchor() + Vector2(float(displacement[0]), float(displacement[1])), 1.0, attacker_mirrored)
 	# The source hurt pose carries the reaction; do not paint the whole person red.
 	defender_sprite.modulate = Color.WHITE
 	# Hold the source hurt pose. Map aftermath owns the later death fade.
@@ -609,7 +609,7 @@ static func strike_feedback(strike: Dictionary) -> String:
 
 
 ## Draws the strike's result `age_ticks` after its numbers spawned at `point`: `entries`
-## (ResultNumberFloat spawns; null = result_spawns, aniShowHitResult) in the original glyphs,
+## (ResultNumberFloater spawns; null = result_spawns, aniShowHitResult) in the original glyphs,
 ## and on the result line the captions that have no glyph (caption_feedback).
 func show_result(strike: Dictionary, age_ticks: float, point: Vector2 = SCRIPT_NUMBER_POINT, entries: Variant = null) -> void:
 	result.text = caption_feedback(strike)
@@ -620,7 +620,7 @@ func show_result(strike: Dictionary, age_ticks: float, point: Vector2 = SCRIPT_N
 		_result_key = key
 		for number in result_number.get_children():
 			number.free()
-		ResultNumberFloat.spawn_all(result_number, spawns, point, false)
+		ResultNumberFloater.spawn_all(result_number, spawns, point, false)
 	result_number.show()
 	for number in result_number.get_children():
 		number.draw_at(age_ticks)
@@ -638,7 +638,7 @@ func result_text() -> String:
 	return "\n".join(lines)
 
 
-## The numbers aniShowHitResult (0x404643) spawns for a strike (ResultNumberFloat.spawns): the
+## The numbers aniShowHitResult (0x404643) spawns for a strike (ResultNumberFloater.spawns): the
 ## red HP loss; for a support／stat receipt its heal and MP numbers (never MISS — its captions
 ## say what took); MISS when shows_miss; a utility special that took no HP, or a hit that took
 ## none, spawns nothing.
@@ -647,9 +647,9 @@ static func result_spawns(strike: Dictionary) -> Array[Dictionary]:
 		var amounts := {"damage": 0, "heal": 0, "mp": 0}
 		for part in feedback_parts(strike):
 			if amounts.has(str(part["kind"])): amounts[str(part["kind"])] = int(part["text"])
-		return ResultNumberFloat.spawns(amounts["damage"], amounts["heal"], amounts["mp"], false)
-	if shows_miss(strike): return ResultNumberFloat.spawns(0, 0, 0, true)
-	return ResultNumberFloat.spawns(strike_actual_damage(strike), 0, 0, false)
+		return ResultNumberFloater.spawns(amounts["damage"], amounts["heal"], amounts["mp"], false)
+	if shows_miss(strike): return ResultNumberFloater.spawns(0, 0, 0, true)
+	return ResultNumberFloater.spawns(strike_actual_damage(strike), 0, 0, false)
 
 
 ## An ordinary shot's number (0x404290): the red HP loss of a hit; a miss spawns nothing.
@@ -772,16 +772,16 @@ func _apply_source_frame(sprite: Sprite2D, frame: Dictionary) -> void:
 	sprite.scale = Vector2.ONE
 
 
-## The victim's neutral spot in its shot (CloseupLayout: the shot line shifted by the row's
+## The victim's neutral spot in its shot (CutinLayout: the shot line shifted by the row's
 ## hit move flag); a defender without a manifest row stands on the shot line.
 func defender_anchor(clip: Dictionary) -> Vector2:
 	# A moon-dance target clip names no `defender` row (MoonDancePresentation targets by unit).
 	var row: Dictionary = manifest.get("actors", {}).get(str(clip.get("defender", "")), {})
-	return CloseupLayout.defender_anchor(row, CloseupLayout.side_swapped(clip.get("defender_unit", {}))) if not row.is_empty() else CloseupLayout.attacker_anchor()
+	return CutinLayout.defender_anchor(row, CutinLayout.side_swapped(clip.get("defender_unit", {}))) if not row.is_empty() else CutinLayout.attacker_anchor()
 
 
 func _show_shot(clip: Dictionary, target_shot: bool) -> void:
-	attacker_sprite.position = CloseupLayout.attacker_anchor()
+	attacker_sprite.position = CutinLayout.attacker_anchor()
 	defender_sprite.position = defender_anchor(clip)
 	attacker_sprite.visible = not target_shot
 	defender_sprite.visible = target_shot
@@ -832,13 +832,13 @@ func _process_borrowed_skill(clip: Dictionary) -> void:
 	flash_sprite.hide()
 	var casting: Array = special_frames(clip)
 	if casting.is_empty():
-		_set_frame(attacker_sprite, clip["attacker"], 0, CloseupLayout.side_swapped(clip["attacker_unit"]))
+		_set_frame(attacker_sprite, clip["attacker"], 0, CutinLayout.side_swapped(clip["attacker_unit"]))
 	else:
 		# The strip's panels play in order across the 0.5 s lead (banner first, then the
 		# insets), the moon-dance reading of the same 3-panel shape; remake pacing.
 		_apply_source_frame(attacker_sprite, casting[mini(casting.size() - 1, int(elapsed * casting.size() / 0.5))])
-	attacker_sprite.position = CloseupLayout.attacker_anchor()
-	_set_frame(defender_sprite, clip["defender"], 0, CloseupLayout.side_swapped(clip["defender_unit"]))
+	attacker_sprite.position = CutinLayout.attacker_anchor()
+	_set_frame(defender_sprite, clip["defender"], 0, CutinLayout.side_swapped(clip["defender_unit"]))
 	defender_sprite.position = defender_anchor(clip)
 	defender_sprite.modulate = Color.WHITE
 	if not clip["release_emitted"]:
@@ -854,7 +854,7 @@ func _process_borrowed_skill(clip: Dictionary) -> void:
 	# P001_201..207 (and the up rows' P0xx_201..203) are already-composed cast panels with
 	# center anchors, not standing actors with foot anchors. Keep the entire source panel
 	# above the HUD; a caster without a strip stands on the shot line like an ordinary strike.
-	attacker_sprite.position = Vector2(320, 160) if not casting.is_empty() else CloseupLayout.attacker_anchor()
+	attacker_sprite.position = Vector2(320, 160) if not casting.is_empty() else CutinLayout.attacker_anchor()
 	var member := "MAGIC\\SP01_%03d.SHP" % (1 + int(elapsed * 15) % 2)
 	var effect_position := Vector2(lerpf(700, 320, clampf(elapsed / 0.5, 0, 1)), 160)
 	blade.visible = elapsed < 0.5 or (hit and elapsed < 0.75)
@@ -862,9 +862,9 @@ func _process_borrowed_skill(clip: Dictionary) -> void:
 		member = "MAGIC\\SP01_%03d.SHP" % (11 + mini(4, int((elapsed - 0.5) * 20)))
 		effect_position = Vector2(320, 160)
 		if hit:
-			_set_frame(defender_sprite, clip["defender"], int(manifest["actors"][clip["defender"]]["hurt_frame"]), CloseupLayout.side_swapped(clip["defender_unit"]))
+			_set_frame(defender_sprite, clip["defender"], int(manifest["actors"][clip["defender"]]["hurt_frame"]), CutinLayout.side_swapped(clip["defender_unit"]))
 		if manifest.get("actors", {}).has(clip["defender"]):
-			defender_sprite.position.x += CloseupLayout.reaction_x(manifest["actors"][clip["defender"]], hit, OriginalTick.ticks(elapsed - 0.5), CloseupLayout.side_swapped(clip["defender_unit"]))
+			defender_sprite.position.x += CutinLayout.reaction_x(manifest["actors"][clip["defender"]], hit, OriginalTick.ticks(elapsed - 0.5), CutinLayout.side_swapped(clip["defender_unit"]))
 	# specCode01 starts the original left-facing projectile at (700, 160).
 	_set_effect(blade, skill["images"][member], effect_position, 1.0)
 	if hit and elapsed >= 0.5 and elapsed < 1.0:
@@ -876,9 +876,9 @@ func _process_borrowed_skill(clip: Dictionary) -> void:
 			sparks[i].modulate.a = 1.0 - burst_time * 2
 			sparks[i].show()
 	if elapsed > 0.9:
-		_set_frame(attacker_sprite, clip["attacker"], 0, CloseupLayout.side_swapped(clip["attacker_unit"]))
+		_set_frame(attacker_sprite, clip["attacker"], 0, CutinLayout.side_swapped(clip["attacker_unit"]))
 		if hit and int(clip["strike"]["defender_hp_after"]) > 0:
-			_set_frame(defender_sprite, clip["defender"], 0, CloseupLayout.side_swapped(clip["defender_unit"]))
+			_set_frame(defender_sprite, clip["defender"], 0, CutinLayout.side_swapped(clip["defender_unit"]))
 	# The name caption belongs to the map range (BattleAttackCue.caption); the line shows the result alone.
 	result.visible = clip["impact_emitted"]
 	result.position.y = 264

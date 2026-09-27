@@ -28,17 +28,17 @@ extends SceneTree
 ## pair), the growth halves a birth reads, the placement source (STORY actions, the assembler's
 ## blocked-cell move, off-grid endpoint) and, per birth, its lowest／highest outcome (bounds).
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
-const Presence = preload("res://game/sim/BattlePresenceRules.gd")
-const Reward = preload("res://game/sim/BattleRewardRules.gd")
-const Progression = preload("res://game/sim/ProgressionRules.gd")
-const EntryGrowth = preload("res://game/sim/EntryGrowthRules.gd")
-const Permanent = preload("res://game/sim/PermanentCapabilityRules.gd")
-const Navigation = preload("res://game/sim/AINavigationRules.gd")
-const Roles = preload("res://game/sim/ActorRoleRules.gd")
+const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
+const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
+const EntryGrowthRules = preload("res://game/sim/EntryGrowthRules.gd")
+const PermanentCapabilityRules = preload("res://game/sim/PermanentCapabilityRules.gd")
+const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 
 const SCHEMA := "hsl_opening_snapshot_remake.v1"
 const DROP_SUFFIXES := ["_source", "_evidence_tier", "_note", "_evidence"]
@@ -113,9 +113,9 @@ func _range(text: String) -> Array:
 func _run(path: String, mode: String, seed: int, with_bounds: bool) -> Dictionary:
 	var scenario := BattleScenario.load_file(path)
 	if not bool(scenario.get("ok", false)): return {"error": "scenario_load:%s" % str(scenario.get("error", scenario.get("reason", "")))}
-	var loop := Loop.create([], "", scenario, seed)
+	var loop := BattlePlayLoop.create([], "", scenario, seed)
 	if not bool(loop.get("scenario_ok", false)): return {"error": "scenario:%s" % str(loop.get("scenario_error", ""))}
-	loop[GlobalRandom.LOOP_KEY] = GlobalRandom.seeded(seed)
+	loop[GlobalRandomStream.LOOP_KEY] = GlobalRandomStream.seeded(seed)
 	if mode == "g0":
 		for unit in loop["units"]:
 			if unit.get("growth_profile", {}).get("allocation") == "manual": continue
@@ -124,17 +124,17 @@ func _run(path: String, mode: String, seed: int, with_bounds: bool) -> Dictionar
 			unit["script_insert"] = insertion
 	var templates := {}
 	for unit in loop["units"]: templates[str(unit["id"])] = _plain(unit.get("inventory", []))
-	loop = Loop.initialize_roster_growth(loop)
+	loop = BattlePlayLoop.initialize_roster_growth(loop)
 	if not bool(loop.get("scenario_ok", false)): return {"error": "births:%s" % str(loop.get("scenario_error", ""))}
-	loop = Loop._resolve_outcome(loop)
-	loop = Loop.begin_battle(loop)
+	loop = BattlePlayLoop._resolve_outcome(loop)
+	loop = BattlePlayLoop.begin_battle(loop)
 	var layout := CoreTurnQueue.registry_layout(loop["units"])
 	var units: Array = []
 	for index in range(loop["units"].size()):
 		var unit: Dictionary = _unit(loop, loop["units"][index], layout.find(index), with_bounds)
 		unit["extra"]["inventory_template"] = templates.get(str(unit["id"]), [])
 		units.append(unit)
-	return {"global_after": loop[GlobalRandom.LOOP_KEY], "interaction": str(loop.get("interaction", "")),
+	return {"global_after": loop[GlobalRandomStream.LOOP_KEY], "interaction": str(loop.get("interaction", "")),
 		"turn": int(loop.get("turn", 0)), "units": units}
 
 
@@ -148,16 +148,16 @@ func _unit(loop: Dictionary, unit: Dictionary, slot: int, with_bounds: bool) -> 
 	var skills: Array = book.get("supported_initial_ids", []).duplicate()
 	for record in unit.get("learned_skills", []): skills.append(str(record["id"]))
 	var reward: Dictionary = loop.get("reward_data", {}).get("actors", {}).get(code, {})
-	var extra := {"registry_slot": slot, "living": Presence.living(unit),
-		"exp_threshold": Progression.exp_to_next(int(unit.get("level", 1))), "skill_ids": skills,
+	var extra := {"registry_slot": slot, "living": BattlePresenceRules.living(unit),
+		"exp_threshold": ProgressionRules.exp_to_next(int(unit.get("level", 1))), "skill_ids": skills,
 		"status_capability_flags": int(book.get("status_capability_flags", 0)), "double_attack": bool(book.get("double_attack", false)),
 		"move_magic_use": bool(book.get("move_magic_use", false)), "carry_items": _plain(reward.get("carry_items", []))}
 	if unit.has("growth_profile") and unit.has("permanent_gains"):
-		extra["source"] = _plain(EntryGrowth.effective_profile(unit, Permanent.effective_profile(unit))["source"])
-	if not reward.is_empty(): extra["carried_gold"] = Reward.carried_gold(unit, int(reward.get("gold", 0)))
+		extra["source"] = _plain(EntryGrowthRules.effective_profile(unit, PermanentCapabilityRules.effective_profile(unit))["source"])
+	if not reward.is_empty(): extra["carried_gold"] = BattleRewardRules.carried_gold(unit, int(reward.get("gold", 0)))
 	var declared: Dictionary = loop.get("ai_profiles", {}).get("actors", {}).get(code, {}).get("profile", {})
-	if not declared.is_empty(): extra["ai_profile"] = _plain(Navigation.instance_profile(unit, declared))
-	extra["side_mask"] = Roles.side_mask(unit)
+	if not declared.is_empty(): extra["ai_profile"] = _plain(AINavigationRules.instance_profile(unit, declared))
+	extra["side_mask"] = ActorRoleRules.side_mask(unit)
 	var placed: Dictionary = unit.get("position_source", {})
 	extra["position"] = {"actions": placed.get("story_movements", []).map(func(m): return str(m.get("action", ""))),
 		"insert": str(placed.get("opening_insert", {}).get("kind", "")), "story_endpoint": _plain(placed.get("story_endpoint")),
@@ -220,7 +220,7 @@ func _variant(loop: Dictionary, unit: Dictionary, reward: Dictionary, target: Ar
 		calls[0] += 1
 		if index < target.size(): return mini(int(target[index]), bound - 1)
 		return bound - 1 if top else 0
-	var proposal := EntryGrowth.propose(birth["input"], rng)
+	var proposal := EntryGrowthRules.propose(birth["input"], rng)
 	if not proposal["ok"]: return {}
 	var next := unit.duplicate(true)
 	var record := birth.duplicate(true)
@@ -231,23 +231,23 @@ func _variant(loop: Dictionary, unit: Dictionary, reward: Dictionary, target: Ar
 	if unit.has("entry_readjust"):
 		var again: Dictionary = unit["entry_readjust"].duplicate(true)
 		for key in ["level", "exp", "stamina", "kill_exp", "gold", "attributes"]: again["input"][key] = result[key]
-		var second := EntryGrowth.propose(again["input"], func(bound: int) -> int: return bound - 1 if top else 0)
+		var second := EntryGrowthRules.propose(again["input"], func(bound: int) -> int: return bound - 1 if top else 0)
 		if not second["ok"]: return {}
 		again["draws"] = second["draws"]
 		again["result"] = second["result"]
 		next["entry_readjust"] = again
 		result = second["result"]
 	for key in ["level", "exp", "stamina", "kill_exp"]: next[key] = result[key]
-	for key in EntryGrowth.KEYS: next["combat_profile"][key] = result["attributes"][key]
-	if Progression.refresh_input_error(next, loop["equipment_items"]) != "": return {}
-	next = Progression._refreshed_growth_stats(next, loop["equipment_items"])
+	for key in EntryGrowthRules.KEYS: next["combat_profile"][key] = result["attributes"][key]
+	if ProgressionRules.refresh_input_error(next, loop["equipment_items"]) != "": return {}
+	next = ProgressionRules._refreshed_growth_stats(next, loop["equipment_items"])
 	next["hp"] = next["max_hp"]
 	next["mp"] = next["max_mp"]
 	var bound := {}
 	for key in BOUND_KEYS: bound[key] = _plain(next[key])
-	bound["source"] = _plain(EntryGrowth.effective_profile(next, Permanent.effective_profile(next))["source"])
-	bound["exp_threshold"] = Progression.exp_to_next(int(next["level"]))
-	if not reward.is_empty(): bound["carried_gold"] = Reward.carried_gold(next, int(reward.get("gold", 0)))
+	bound["source"] = _plain(EntryGrowthRules.effective_profile(next, PermanentCapabilityRules.effective_profile(next))["source"])
+	bound["exp_threshold"] = ProgressionRules.exp_to_next(int(next["level"]))
+	if not reward.is_empty(): bound["carried_gold"] = BattleRewardRules.carried_gold(next, int(reward.get("gold", 0)))
 	return bound
 
 

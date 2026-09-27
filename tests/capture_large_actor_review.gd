@@ -1,7 +1,7 @@
 extends "res://tests/capture_position_equipment_review.gd"
 ## Source terrain/art, authored encounters, actual controls and normal clocks.
 ## No injected RNG/result, terrain edits or direct action/queue advancement in play.
-const LargeCases = preload("res://tests/run_large_actor_tests.gd")
+const run_large_actor_tests = preload("res://tests/run_large_actor_tests.gd")
 const LARGE_OUT := "res://ignored/large-actor-review/"
 const BIND_LARGE := "magic:magicEARTH:magicCode05"
 var body_entries: Array = []
@@ -36,10 +36,10 @@ func write_receipt(filename:String)->void:
 func fixture_gear(actor:Dictionary,loop:Dictionary,slot:String,code:int)->void:
 	actor["equipment"]=actor["equipment"].filter(func(e):return e["slot"]!=slot)
 	actor["equipment"].append({"slot":slot,"item_code":code,"name":loop["equipment_items"][str(code)]["name"]})
-	actor["equipment"].sort_custom(func(a,b):return Loop.EquipmentRules.SLOTS.find(a["slot"])<Loop.EquipmentRules.SLOTS.find(b["slot"]))
+	actor["equipment"].sort_custom(func(a,b):return BattlePlayLoop.EquipmentRules.SLOTS.find(a["slot"])<BattlePlayLoop.EquipmentRules.SLOTS.find(b["slot"]))
 
 func afflict(actor:Dictionary,kind:String,turns:int,strength:int=0)->void:
-	var result:=Loop.StatusEffectRules.apply(actor,kind,turns,strength)
+	var result:=BattlePlayLoop.StatusEffectRules.apply(actor,kind,turns,strength)
 	check(result["ok"],"valid supplied affliction: "+kind)
 	if result["ok"]:actor.merge(result["changes"],true)
 
@@ -58,15 +58,15 @@ func setup_large()->void:
 	var loop:=BattleFixture.loop();loop["units"]=[];loop["reinforcement_templates"]=[]
 	chosen_role="026" if mode in ["empty_area","ai_resource"] else "001" if mode in ["edge_series","escape"] else "039"
 	var stock:=BattleFixture.loop()
-	var actor:=LargeCases.source_large() if chosen_role=="039" else Loop.unit(stock,"enemy026_1" if chosen_role=="026" else "leonard")
-	actor.merge({"id":"leonard","coord":Vector2i(13,17),"player_commandable":true,"battle_actor_role":Loop.ROLE_PLAYER},true)
+	var actor:=run_large_actor_tests.source_large() if chosen_role=="039" else BattlePlayLoop.unit(stock,"enemy026_1" if chosen_role=="026" else "leonard")
+	actor.merge({"id":"leonard","coord":Vector2i(13,17),"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_PLAYER},true)
 	actor["growth_profile"]["allocation"]="manual";actor["growth_profile"]["source"]["hit_point"]+=500;actor["growth_profile"]["source"]["speed"]+=180
-	actor.merge(Loop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
+	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 	actor["hp"]=actor["max_hp"];actor["mp"]=actor["max_mp"];actor["hit_bonus_accum"]=1000
 	actor["inventory"]=[227,233,231,231,248,241,12 if chosen_role=="001" else 232,0]
-	var end:=Loop.unit(stock,"enemy023_1")
-	end.merge({"id":"observer_end","coord":Vector2i(20,21),"battle_actor_role":Loop.ROLE_PLAYER,"player_commandable":true,"live_speed":100},true)
-	var enemy:=LargeCases.source_large()
+	var end:=BattlePlayLoop.unit(stock,"enemy023_1")
+	end.merge({"id":"observer_end","coord":Vector2i(20,21),"battle_actor_role":BattlePlayLoop.ROLE_PLAYER,"player_commandable":true,"live_speed":100},true)
+	var enemy:=run_large_actor_tests.source_large()
 	enemy.merge({"coord":Vector2i(16,17),"hp":500,"max_hp":500,"no_attack":true,"live_speed":50,"inventory":[0,0,0,0,0,0,0,0]},true)
 	loop["units"]=[actor,end,enemy]
 	if mode=="movement":
@@ -82,28 +82,28 @@ func setup_large()->void:
 		loop["units"].append(later);actor["exp"]=99
 		TestSuite.own(loop, "skill_book")["actors"]["039"]["double_attack"]=true;afflict(actor,"poison",3,7)
 	if mode in ["support","cure_item","skip_resume"]:
-		LargeCases.spell_kit(loop)
+		run_large_actor_tests.spell_kit(loop)
 		TestSuite.own(loop, "skill_book")["actors"]["039"]["move_magic_use"]=true
-		actor=Loop._unit(loop,"leonard");actor["hp"]=actor["max_hp"]
+		actor=BattlePlayLoop._unit(loop,"leonard");actor["hp"]=actor["max_hp"]
 	if mode in ["support","cure_item"]:
 		var patient:=enemy.duplicate(true)
-		patient.merge({"id":"patient039","battle_actor_role":Loop.ROLE_PLAYER,"player_commandable":true,"hp":4,"live_speed":80},true)
+		patient.merge({"id":"patient039","battle_actor_role":BattlePlayLoop.ROLE_PLAYER,"player_commandable":true,"hp":4,"live_speed":80},true)
 		afflict(patient,"paralysis",2);afflict(patient,"poison",3,7);afflict(patient,"no_magic",2)
 		loop["units"].append(patient);enemy["coord"]=Vector2i(20,17)
 		if mode=="support":afflict(actor,"poison",3,7)
 		else:actor["mp"]=0;afflict(actor,"no_magic",2)
 	if mode in ["empty_area","ai_resource"]:
-		LargeCases.spell_kit(loop);actor=Loop._unit(loop,"leonard")
+		run_large_actor_tests.spell_kit(loop);actor=BattlePlayLoop._unit(loop,"leonard")
 		actor["coord"]=Vector2i(9,14);enemy["coord"]=Vector2i(13,14)
 		TestSuite.own(loop, "skill_book")["skills"][BIND_LARGE]["fields"].merge({"status_hit_ratio":"100","use_ratio":"100"},true)
 		if mode=="empty_area":
-			var second:=Loop.unit(stock,"enemy021_1");second.merge({"id":"small_target","coord":Vector2i(11,15),"no_attack":true,"hp":500,"max_hp":500,"live_speed":40},true)
+			var second:=BattlePlayLoop.unit(stock,"enemy021_1");second.merge({"id":"small_target","coord":Vector2i(11,15),"no_attack":true,"hp":500,"max_hp":500,"live_speed":40},true)
 			loop["units"].append(second);actor["exp"]=99
 	if mode in ["ai_resource","ai_retarget","skip_resume"]:
 		var observer:=end.duplicate(true)
 		observer.merge({"id":"observer","coord":Vector2i(6,18),"live_speed":300},true);loop["units"].append(observer)
 	if mode.begins_with("ai_"):
-		actor["battle_actor_role"]=Loop.ROLE_FRIENDLY;actor["player_commandable"]=false;actor["growth_profile"]["allocation"]="fixed_template"
+		actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY;actor["player_commandable"]=false;actor["growth_profile"]["allocation"]="fixed_template"
 		fixture_gear(actor,loop,"accessory2",227);actor["inventory"]=[0,0,0,0,0,0,0,0]
 		if mode=="ai_resource":
 			fixture_gear(actor,loop,"accessory1",232);actor["mp"]=16
@@ -117,7 +117,7 @@ func setup_large()->void:
 		actor["hp"]=20;actor["mp"]=0;afflict(actor,"paralysis",2);afflict(actor,"poison",3,7);afflict(actor,"no_magic",2)
 		actor["status_counters"]["paralysis"]=1 # Supplied remaining time, not an invalid newly sampled one-turn application.
 	if mode in ["victory","defeat","escape"]:
-		actor=Loop._unit(loop,"leonard");enemy=Loop._unit(loop,"enemy039_1")
+		actor=BattlePlayLoop._unit(loop,"leonard");enemy=BattlePlayLoop._unit(loop,"enemy039_1")
 		var view=scene.get_node("BattlePresentation");view._shown_story_events.assign(loop["event_log"])
 		if mode=="victory":enemy["hp"]=1
 		elif mode=="defeat":
@@ -125,14 +125,14 @@ func setup_large()->void:
 		else:actor["coord"]=Vector2i(13,10);enemy["coord"]=Vector2i(16,20);landing=loop["escape_zone"][0]
 	for a in loop["units"]:
 		a["grid_coord"]=a["coord"];a["ai_home_coord"]=a["coord"]
-		check(Loop.TraversalRules.placement_error(a,loop["units"],loop["tiles"],loop["map_size"])=="","source map accepts complete body: "+a["id"])
-	loop["turn_queue"]=Loop.CoreTurnQueue.rebuild(loop["units"])
+		check(BattlePlayLoop.TraversalRules.placement_error(a,loop["units"],loop["tiles"],loop["map_size"])=="","source map accepts complete body: "+a["id"])
+	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 	var starter:="observer" if mode in ["skip_resume","ai_resource","ai_retarget"] else "leonard"
-	check(Loop.CoreTurnQueue.current(loop["turn_queue"])["id"]==starter,"fixture starts at its actual queue owner")
-	scene.apply_loop(Loop._return_to_player(loop,starter), "test")
+	check(BattlePlayLoop.CoreTurnQueue.current(loop["turn_queue"])["id"]==starter,"fixture starts at its actual queue owner")
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,starter), "test")
 	scene.settlement_controller.checkpoint_path=LARGE_OUT+mode+".save"
 	for node in scene.actors_root.get_children():scene.actors_root.remove_child(node);node.queue_free()
-	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(Loop.unit(loop,starter)["coord"])
+	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(BattlePlayLoop.unit(loop,starter)["coord"])
 	var view=scene.get_node("BattlePresentation");view.turn_end_cue.finish(scene.play_loop)
 	view.experience_presented.connect(func(e):experience_events.append(e.duplicate(true)))
 	view.cutin.impact.connect(func(s,_a,_d,c):
@@ -144,14 +144,14 @@ func body_state(loop:Dictionary)->Array:
 	var result:Array=[]
 	for a in loop["units"]:
 		var row:=compact(a);row["traversal"]=a["traversal"];row["level"]=a["level"];row["exp"]=a["exp"];row["equipment"]=a["equipment"]
-		row["occupied_cells"]=[] if a["defeated"] else Loop.Footprint.cells(a)
+		row["occupied_cells"]=[] if a["defeated"] else BattlePlayLoop.Footprint.cells(a)
 		result.append(row)
 	return result
 
 func save_restore()->void:
 	var before:Dictionary=scene.play_loop.duplicate(true)
 	await key(KEY_F5)
-	var verified:=LargeCases.Save.read(scene.settlement_controller.checkpoint_path, before)
+	var verified:=run_large_actor_tests.BattleCheckpoint.read(scene.settlement_controller.checkpoint_path, before)
 	check(verified["ok"] and verified["snapshot"]["loop"]==before,"F5 writes an actual valid whole-body/phase checkpoint")
 	await key(KEY_F9)
 	check(scene.play_loop==before and body_state(scene.play_loop)==body_state(before),"F9 restores one actor per body without replaying state or actions")
@@ -184,8 +184,8 @@ func play_large()->void:
 	var terminal:bool=mode in ["victory","defeat","escape"]
 	match mode:
 		"trial":
-			check(scene.play_loop["scenario_ok"] and Loop.unit(scene.play_loop,"large039_friend")["actor_id"]=="039","published trial starts with source039 and actual controls")
-			var edge:Vector2i=Loop.unit(scene.play_loop,"large039_friend")["coord"]+Vector2i.LEFT
+			check(scene.play_loop["scenario_ok"] and BattlePlayLoop.unit(scene.play_loop,"large039_friend")["actor_id"]=="039","published trial starts with source039 and actual controls")
+			var edge:Vector2i=BattlePlayLoop.unit(scene.play_loop,"large039_friend")["coord"]+Vector2i.LEFT
 			await shot("trial-before-inspection")
 			await point(scene.grid_cell_center_to_logical_position(edge));await create_timer(0.15).timeout
 			check(scene.status_panel.visible and scene.status_panel.inspected_unit_id=="large039_friend","clicking non-current giant body edge inspects the same actor")
@@ -196,47 +196,47 @@ func play_large()->void:
 			await hover(scene.grid_cell_center_to_logical_position(blocked));await shot("whole-body-blocked")
 			var before:Dictionary=scene.play_loop.duplicate(true);await point(scene.grid_cell_center_to_logical_position(blocked));check(scene.play_loop==before,"friendly outer-cell blocker rejects the whole-body landing without spending movement")
 			await escape();await create_timer(0.3).timeout;await move_to(landing)
-			check(observed["last_path"].size()>Loop._manhattan(observed["last_path"][0],landing)+1,"actual whole-body route detours around a friendly occupied ring")
+			check(observed["last_path"].size()>BattlePlayLoop._manhattan(observed["last_path"][0],landing)+1,"actual whole-body route detours around a friendly occupied ring")
 			await save_restore();await escape();await create_timer(0.15).timeout
-			check(Loop.unit(scene.play_loop,"leonard")["coord"]==Vector2i(8,21),"actual cancellation reclaims every original body cell")
+			check(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"]==Vector2i(8,21),"actual cancellation reclaims every original body cell")
 			check(scene.interaction_state=="move_select" and scene.move_overlay.visible,"cancel restores the source move-selection phase")
 			await shot("cancelled-body");await escape();await settle("leonard")
 			await move_to(landing);await attack_at(Vector2i(14,21));await settle("observer_end")
 		"edge_series":
 			await change_item(12,"weapon");await change_item(227,"accessory2");await move_to(Vector2i(10,14))
 			await attack_at(Vector2i(11,14));await settle("leonard")
-			check(Loop.CombatSequence.strikes(receipt).size()==4 and observed.has("again"),"edge-selected main/counter two-hit series finishes before the second action")
+			check(BattlePlayLoop.CombatSequence.strikes(receipt).size()==4 and observed.has("again"),"edge-selected main/counter two-hit series finishes before the second action")
 			await save_restore();await wait_to("observer_end")
 			check(resource_beats.filter(func(e):return e["kind"]=="poison").size()==1,"four edge impacts do not multiply the owner's final poison tick")
 		"giant_combat":
 			await change_item(227,"accessory2");await attack_at(Vector2i(15,17));await settle("leonard")
-			check(receipt["followups"].is_empty() and Loop.unit(scene.play_loop,"leonard")["level"]>1 and observed.has("growth"),"large killing strike truncates its followup and completes native EXP/manual growth")
-			for cell in Loop.Footprint.cells(Loop.unit(scene.play_loop,"enemy039_1")):check(Loop.unit_id_at_coord(scene.play_loop,cell)=="","all nine defeated cells are released")
+			check(receipt["followups"].is_empty() and BattlePlayLoop.unit(scene.play_loop,"leonard")["level"]>1 and observed.has("growth"),"large killing strike truncates its followup and completes native EXP/manual growth")
+			for cell in BattlePlayLoop.Footprint.cells(BattlePlayLoop.unit(scene.play_loop,"enemy039_1")):check(BattlePlayLoop.unit_id_at_coord(scene.play_loop,cell)=="","all nine defeated cells are released")
 			await save_restore();await move_to(Vector2i(14,17));await attack_at(Vector2i(15,19));await settle("observer_end")
 			check(receipt["defender_id"]=="later039" and receipt["followups"].size()==1,"second action reaches another living body with an independent series")
 		"empty_area":
 			await change_item(232,"accessory1");await move_to(Vector2i(10,14))
-			var old_mp:int=Loop.unit(scene.play_loop,"leonard")["mp"]
-			check(Loop.unit_id_at_coord(scene.play_loop,Vector2i(11,14))=="","chosen area center is empty ground")
+			var old_mp:int=BattlePlayLoop.unit(scene.play_loop,"leonard")["mp"]
+			check(BattlePlayLoop.unit_id_at_coord(scene.play_loop,Vector2i(11,14))=="","chosen area center is empty ground")
 			await cast_at(BIND_LARGE,Vector2i(11,14));await settle("observer_end")
-			check(receipt["affected_targets"].size()==2 and Loop.unit(scene.play_loop,"leonard")["mp"]==old_mp-16,"one moved empty-center cast affects each large/small target once and pays once")
+			check(receipt["affected_targets"].size()==2 and BattlePlayLoop.unit(scene.play_loop,"leonard")["mp"]==old_mp-16,"one moved empty-center cast affects each large/small target once and pays once")
 		"support":
 			await change_item(227,"accessory2");await move_to(Vector2i(13,16))
-			var old:Dictionary=Loop.unit(scene.play_loop,"patient039")["status_counters"].duplicate(true)
-			await cast_at(PositionCases.HEAL,Vector2i(15,16));await settle("leonard")
-			check(receipt["healing"]>0 and Loop.unit(scene.play_loop,"patient039")["status_counters"]==old,"body-edge healing leaves poison/paralysis/silence and their times alone")
-			await save_restore();await move_to(Vector2i(13,15));await cast_at(PositionCases.CURE,Vector2i(14,17));await settle("observer_end")
-			check(receipt["affected_targets"].size()==2 and Loop.StatusEffectRules.paralyzed(Loop.unit(scene.play_loop,"patient039")) and not Loop.StatusEffectRules.poisoned(Loop.unit(scene.play_loop,"patient039")),"second moved empty-center cure deduplicates two bodies without curing paralysis")
+			var old:Dictionary=BattlePlayLoop.unit(scene.play_loop,"patient039")["status_counters"].duplicate(true)
+			await cast_at(run_position_equipment_tests.HEAL,Vector2i(15,16));await settle("leonard")
+			check(receipt["healing"]>0 and BattlePlayLoop.unit(scene.play_loop,"patient039")["status_counters"]==old,"body-edge healing leaves poison/paralysis/silence and their times alone")
+			await save_restore();await move_to(Vector2i(13,15));await cast_at(run_position_equipment_tests.CURE,Vector2i(14,17));await settle("observer_end")
+			check(receipt["affected_targets"].size()==2 and BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(scene.play_loop,"patient039")) and not BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(scene.play_loop,"patient039")),"second moved empty-center cure deduplicates two bodies without curing paralysis")
 		"cure_item":
 			await move_to(Vector2i(13,16));await click(scene.action_menu.get_node("MagicCommand"))
-			check(scene.magic_panel.choices[PositionCases.WIND].disabled,"silenced empty-MP large actor cannot use a spell after moving")
+			check(scene.magic_panel.choices[run_position_equipment_tests.WIND].disabled,"silenced empty-MP large actor cannot use a spell after moving")
 			await shot("disabled-magic");await escape();await create_timer(0.3).timeout
 			await use_at(248,"patient039");await settle("observer_end")
-			check(scene.play_loop["last_item_use"]["cured_paralysis"] and not Loop.StatusEffectRules.paralyzed(Loop.unit(scene.play_loop,"patient039")),"resource/status fallback walks then uses one real stone at the large body's edge")
+			check(scene.play_loop["last_item_use"]["cured_paralysis"] and not BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(scene.play_loop,"patient039")),"resource/status fallback walks then uses one real stone at the large body's edge")
 		"skip_resume":
 			await save_restore();var saved:Dictionary=scene.play_loop.duplicate(true)
 			await wait_to("observer_end");var after:Dictionary=scene.play_loop.duplicate(true)
-			check(body_entries.size()==1 and not observed.has("again") and not Loop.StatusEffectRules.paralyzed(Loop.unit(after,"leonard")),"paralyzed large owner skips once, keeps occupation and expires without granting another action")
+			check(body_entries.size()==1 and not observed.has("again") and not BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(after,"leonard")),"paralyzed large owner skips once, keeps occupation and expires without granting another action")
 			await key(KEY_F9);check(scene.play_loop==saved,"pre-skip checkpoint returns before the pending queue entry")
 			await wait_to("observer_end");check(scene.play_loop==after,"resumed skip preserves resource RNG, tail order and queue outcome")
 			await save_restore();await wait_to("observer");await wait_to("leonard")
@@ -247,7 +247,7 @@ func play_large()->void:
 			check(pair_receipts.size()==2,"AI executes exactly two independent actions")
 			if mode=="ai_resource":
 				check(pair_receipts[0].get("skill_id")==BIND_LARGE and not pair_receipts[1].has("skill_id") and pair_receipts[1]["counter"].is_empty(),"AI casts on a body then redecides a zero-MP physical action against its paralyzed target")
-			else:check(pair_receipts[0]["defender_id"]=="enemy039_1" and pair_receipts[1]["defender_id"]=="later039" and Loop.unit(scene.play_loop,"enemy039_1")["defeated"],"large AI releases killed body and replans a path to another candidate for its second action")
+			else:check(pair_receipts[0]["defender_id"]=="enemy039_1" and pair_receipts[1]["defender_id"]=="later039" and BattlePlayLoop.unit(scene.play_loop,"enemy039_1")["defeated"],"large AI releases killed body and replans a path to another candidate for its second action")
 		"victory","defeat":
 			await change_item(227,"accessory2");await attack_at(Vector2i(15,17));await settle("",true)
 		"escape":
@@ -256,9 +256,9 @@ func play_large()->void:
 	var final:Dictionary=scene.play_loop.duplicate(true)
 	routes.append({"mode":mode,"initial_units":body_state(initial_loop),"skill_overrides":initial_loop["skill_book"]["actors"].get(chosen_role,{}),"final_units":body_state(final),"receipts":pair_receipts,"impacts":cues,"entries":body_entries,"beats":resource_beats,"observed":observed,"saves_checked":saves_checked,"equipment_previews":equipment_previews,"experience":experience_events,"sounds":sound_paths.keys(),"extra_action":final["extra_action"],"action_end_sequence":final["action_end_sequence"],"outcome":final["battle_outcome"]})
 	if terminal:
-		check(not final["extra_action"]["pending"] and Loop.finish_exhausted_action(final)==final and Loop.step_ai_turn(final)==final,"terminal blocks all extra actions, resource tails and AI movement")
+		check(not final["extra_action"]["pending"] and BattlePlayLoop.finish_exhausted_action(final)==final and BattlePlayLoop.step_ai_turn(final)==final,"terminal blocks all extra actions, resource tails and AI movement")
 		reload_current_scene();await create_timer(0.35).timeout;scene=current_scene
-		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["extra_action"]==Loop.ExtraActionRules.empty() and scene.play_loop["action_end_sequence"]==0,"actual restart clears old body deaths, state and action transactions")
+		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["extra_action"]==BattlePlayLoop.ExtraActionRules.empty() and scene.play_loop["action_end_sequence"]==0,"actual restart clears old body deaths, state and action transactions")
 		routes.back()["restarted"]=true
 
 func settle(id:String,terminal:bool=false)->void:

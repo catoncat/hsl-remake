@@ -1,8 +1,8 @@
 extends "res://tests/capture_growth_lifecycle_review.gd"
 ## Source level001 and explicit setup-only encounter variants, driven by inputs.
 ## Runtime/PlayLoop perform all subsequent actions; no injected effect or RNG.
-const Ohm = preload("res://tests/run_ohm_village_tests.gd")
-const Arrow = preload("res://game/sim/PoisonArrowRules.gd")
+const run_ohm_village_tests = preload("res://tests/run_ohm_village_tests.gd")
+const PoisonArrowRules = preload("res://game/sim/PoisonArrowRules.gd")
 const VillageScene = preload("res://game/battle/development/OhmVillage.tscn")
 const OHM_OUT := "res://ignored/ohm-village-review/"
 var arrow_signals := [0,0]
@@ -41,7 +41,7 @@ func run() -> void:
 func setup_ohm() -> void:
 	impacts=[];events=[];sounds={};observed={};saves=0;receipts=[];receipt_sequences={};item_receipts=[];item_seen={};serial=0
 	learning_texts=[];ai_receipts=[];recorded_ai={};arrow_signals=[0,0];opening_messages=[];arrow_receipt={};player_decisions=[]
-	Campaign.pending={};Campaign.last_entry={};owner_id="hu"
+	CampaignProgress.pending={};CampaignProgress.last_entry={};owner_id="hu"
 	scene=VillageScene.instantiate()
 	if mode not in ["opening","natural"]:scene.startup_mode="dev_first_control"
 	root.add_child(scene);current_scene=scene
@@ -49,58 +49,58 @@ func setup_ohm() -> void:
 	check(scene.play_loop["scenario_ok"],"actual Ohm scene loads: "+str(scene.play_loop.get("scenario_error")))
 	if mode not in ["opening","natural"]:
 		scene.set_process(false)
-		var loop: Dictionary = Ohm.fixture()
+		var loop: Dictionary = run_ohm_village_tests.fixture()
 		if mode in ["insert61","insert62"]:
-			var sample:=Ohm.insertion_fixture("061" if mode=="insert61" else "062")
+			var sample:=run_ohm_village_tests.insertion_fixture("061" if mode=="insert61" else "062")
 			loop=sample["loop"]
 			scene.first_battle_scenario=sample["scenario"]
 		if mode=="double":
-			Loop._unit(loop,"hu")["inventory"]=[69,227,0,0,0,0,0,0]
-			Loop._unit(loop,"actor028_1")["coord"]=Vector2i(15,22)
-			Loop._unit(loop,"actor028_1")["ai_home_coord"]=Vector2i(15,22)
-		Loop._unit(loop,"hu")["hit_bonus_accum"]=1000
-		if mode=="silence":Loop._unit(loop,"hu").merge(Loop.StatusEffectRules.apply(Loop.unit(loop,"hu"),"no_magic",3)["changes"],true)
-		if mode=="limited":Loop._unit(loop,"hu")["stamina"]=19
-		if mode=="mixed":Loop._unit(loop,"actor028_2")["hp"]=1
+			BattlePlayLoop._unit(loop,"hu")["inventory"]=[69,227,0,0,0,0,0,0]
+			BattlePlayLoop._unit(loop,"actor028_1")["coord"]=Vector2i(15,22)
+			BattlePlayLoop._unit(loop,"actor028_1")["ai_home_coord"]=Vector2i(15,22)
+		BattlePlayLoop._unit(loop,"hu")["hit_bonus_accum"]=1000
+		if mode=="silence":BattlePlayLoop._unit(loop,"hu").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(loop,"hu"),"no_magic",3)["changes"],true)
+		if mode=="limited":BattlePlayLoop._unit(loop,"hu")["stamina"]=19
+		if mode=="mixed":BattlePlayLoop._unit(loop,"actor028_2")["hp"]=1
 		if mode=="clear":
 			# Terminal preconditions only; the last action and source win0 are real.
 			for actor in loop["units"]:
-				if actor["battle_actor_role"]==Loop.ROLE_ENEMY:
+				if actor["battle_actor_role"]==BattlePlayLoop.ROLE_ENEMY:
 					actor["hp"]=1 if actor["id"] in ["actor028_1","actor028_2"] else 0
 					actor["defeated"]=actor["hp"]==0
 		if mode=="retreat":
 			for id in ["actor028_5","actor028_6"]:
-				Loop._unit(loop,id)["hp"]=0;Loop._unit(loop,id)["defeated"]=true
-			Loop._unit(loop,"actor028_1")["hp"]=1
+				BattlePlayLoop._unit(loop,id)["hp"]=0;BattlePlayLoop._unit(loop,id)["defeated"]=true
+			BattlePlayLoop._unit(loop,"actor028_1")["hp"]=1
 		if mode=="defeat":
-			var hero:=Loop._unit(loop,"leonard")
+			var hero:=BattlePlayLoop._unit(loop,"leonard")
 			hero["growth_profile"]["source"]["speed"]+=290
-			hero.merge(Loop.ProgressionRules.refresh_growth_stats(hero,loop["equipment_items"]),true)
+			hero.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(hero,loop["equipment_items"]),true)
 			hero["hp"]=1;hero["hit_bonus_accum"]=1000
-			var enemy:=Loop._unit(loop,"actor028_1")
+			var enemy:=BattlePlayLoop._unit(loop,"actor028_1")
 			enemy["coord"]=Vector2i(17,19);enemy["ai_home_coord"]=enemy["coord"]
 			enemy["growth_profile"]["source"].merge({"attack_power":5000,"attack_back":100},true)
-			enemy.merge(Loop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hit_bonus_accum"]=1000
+			enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hit_bonus_accum"]=1000
 		if mode=="villagers":
 			for actor in loop["units"]:
 				if actor["actor_id"] in ["061","062"]:
 					actor["hp"]=0;actor["defeated"]=true
-			var last:=Loop._unit(loop,"actor061_1")
+			var last:=BattlePlayLoop._unit(loop,"actor061_1")
 			last["hp"]=1;last["defeated"]=false;last["coord"]=Vector2i(18,22)
-			var enemy:=Loop._unit(loop,"actor028_1")
+			var enemy:=BattlePlayLoop._unit(loop,"actor028_1")
 			enemy["coord"]=Vector2i(18,23);enemy["ai_home_coord"]=enemy["coord"]
 			enemy["growth_profile"]["source"].merge({"attack_power":5000,"speed":280},true)
-			enemy.merge(Loop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hit_bonus_accum"]=1000
-		loop["turn_queue"]=Loop.CoreTurnQueue.rebuild(loop["units"])
-		loop=Loop._return_to_player(loop,"hu")
+			enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hit_bonus_accum"]=1000
+		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+		loop=BattlePlayLoop._return_to_player(loop,"hu")
 		if mode in ["ai_current","ai_paralysis"]:
-			loop=Ohm.ai_fixture(mode=="ai_paralysis")
+			loop=run_ohm_village_tests.ai_fixture(mode=="ai_paralysis")
 			owner_id="leonard"
 		scene.apply_loop(loop, "test")
 		for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 		scene.unit_grid_coords.clear()
 		scene.resume_turn_presentation()
-		scene.center_camera_on_grid(Loop.unit(loop,"hu")["coord"])
+		scene.center_camera_on_grid(BattlePlayLoop.unit(loop,"hu")["coord"])
 		scene.set_process(true)
 	initial_state=scene.play_loop.duplicate(true)
 	var view=scene.get_node("BattlePresentation")
@@ -164,13 +164,13 @@ func _process(_delta:float) -> bool:
 	return false
 
 func arrow_release(strike:Dictionary,_actor:Dictionary,_target:Dictionary,_counter:bool) -> void:
-	if strike.get("skill_id")!=Arrow.ID:return
+	if strike.get("skill_id")!=PoisonArrowRules.ID:return
 	arrow_signals[0]+=1
 	await shot("arrow-release-"+str(arrow_signals[0]))
 
 func arrow_impact(strike:Dictionary,actor:Dictionary,target:Dictionary,counter:bool) -> void:
 	impacts.append({"strike":strike.duplicate(true),"attacker":actor["id"],"defender":target["id"],"counter":counter})
-	if strike.get("skill_id")!=Arrow.ID:return
+	if strike.get("skill_id")!=PoisonArrowRules.ID:return
 	arrow_signals[1]+=1
 	check(not scene.action_menu.visible and not scene.growth_panel.visible,"poison impact occurs before successor input and growth")
 	await create_timer(0.25).timeout
@@ -178,12 +178,12 @@ func arrow_impact(strike:Dictionary,actor:Dictionary,target:Dictionary,counter:b
 
 func cast_arrow(center:Vector2i) -> void:
 	await click(scene.action_menu.get_node("SpecialCommand"))
-	if scene.play_loop["interaction"]=="special_select":await click(scene.magic_panel.choices[Arrow.ID])
-	check(scene.play_loop["interaction"]=="attack_select" and scene.play_loop["selected_skill_id"]==Arrow.ID,"actual Hu special selects his original ability")
+	if scene.play_loop["interaction"]=="special_select":await click(scene.magic_panel.choices[PoisonArrowRules.ID])
+	check(scene.play_loop["interaction"]=="attack_select" and scene.play_loop["selected_skill_id"]==PoisonArrowRules.ID,"actual Hu special selects his original ability")
 	await hover(scene.grid_cell_center_to_logical_position(center))
 	await shot("arrow-targets")
 	await point(scene.grid_cell_center_to_logical_position(center))
-	check(scene.play_loop.get("last_attack",{}).get("skill_id")==Arrow.ID,"real control commits Poison Arrow")
+	check(scene.play_loop.get("last_attack",{}).get("skill_id")==PoisonArrowRules.ID,"real control commits Poison Arrow")
 	arrow_receipt=scene.play_loop["last_attack"].duplicate(true)
 	await create_timer(0.35).timeout
 	await shot("arrow-source-panels")
@@ -191,7 +191,7 @@ func cast_arrow(center:Vector2i) -> void:
 func save_restore() -> void:
 	var before:Dictionary=scene.play_loop.duplicate(true)
 	await key(KEY_F5)
-	var stored:=Ohm.Save.read(scene.settlement_controller.checkpoint_path, before)
+	var stored:=run_ohm_village_tests.BattleCheckpoint.read(scene.settlement_controller.checkpoint_path, before)
 	check(stored["ok"] and stored["snapshot"]["loop"]==before,"real Ohm F5 stores exact source/growth/action state")
 	await key(KEY_F9)
 	check(scene.play_loop==before,"real Ohm F9 does not reroll, relearn, pay or settle again")
@@ -211,11 +211,11 @@ func play_ohm() -> void:
 		ai_receipts=scene.play_loop["last_ai_actions"].duplicate(true)
 		var actions:Array=ai_receipts.filter(func(a):return a.get("actor_id")=="hu")
 		if mode=="ai_current":
-			check(actions.size()==2 and actions[0].get("skill_id")==Arrow.ID and actions[1].get("skill_id")!=Arrow.ID,"real AI plays its owned special then replans its resource-depleted second action")
+			check(actions.size()==2 and actions[0].get("skill_id")==PoisonArrowRules.ID and actions[1].get("skill_id")!=PoisonArrowRules.ID,"real AI plays its owned special then replans its resource-depleted second action")
 			check(arrow_signals==[1,1],"AI special has one rendered release and impact, not one per independent action")
 		else:
 			check(actions.size()==1 and actions[0].get("kind")=="paralysis_skip" and arrow_signals==[0,0],"paralyzed AI skips once without invisible special payment or a White Wings repeat")
-			check(not Loop.StatusEffectRules.paralyzed(Loop.unit(scene.play_loop,"hu")),"paralysis release is visible before next player control")
+			check(not BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(scene.play_loop,"hu")),"paralysis release is visible before next player control")
 		await save_restore()
 	elif mode in ["insert61","insert62","double"]:
 		await play_extended()
@@ -230,10 +230,10 @@ func play_ohm() -> void:
 		await settle("")
 		await save_restore()
 	elif mode=="limited":
-		check(Loop.command_available(scene.play_loop,"special") and not Loop.can_use_special(scene.play_loop,"hu"),"nineteen stamina opens the skill page but cannot pay the twenty-stamina special")
+		check(BattlePlayLoop.command_available(scene.play_loop,"special") and not BattlePlayLoop.can_use_special(scene.play_loop,"hu"),"nineteen stamina opens the skill page but cannot pay the twenty-stamina special")
 		await shot("insufficient-stamina")
 		await change_gear(0,"weapon")
-		check(Loop.unit(scene.play_loop,"hu")["weapon_code"]==0 and not Loop.command_available(scene.play_loop,"attack"),"actual bow removal does not invent a melee range")
+		check(BattlePlayLoop.unit(scene.play_loop,"hu")["weapon_code"]==0 and not BattlePlayLoop.command_available(scene.play_loop,"attack"),"actual bow removal does not invent a melee range")
 		await change_gear(61,"weapon")
 		await save_restore()
 	elif mode in ["defeat","villagers"]:
@@ -247,8 +247,8 @@ func play_ohm() -> void:
 		await save_restore()
 	else:
 		if mode=="silence":
-			var actor:=Loop.unit(scene.play_loop,"hu")
-			var choices:Array=Loop.movement_cells(scene.play_loop).filter(func(c):return c!=actor["coord"] and Loop.SkillTargetRules.cells(c,Loop.skill_fields(scene.play_loop,Arrow.ID),scene.play_loop["skill_target_data"],scene.play_loop["map_size"]).has(Vector2i(15,21)))
+			var actor:=BattlePlayLoop.unit(scene.play_loop,"hu")
+			var choices:Array=BattlePlayLoop.movement_cells(scene.play_loop).filter(func(c):return c!=actor["coord"] and BattlePlayLoop.SkillTargetRules.cells(c,BattlePlayLoop.skill_fields(scene.play_loop,PoisonArrowRules.ID),scene.play_loop["skill_target_data"],scene.play_loop["map_size"]).has(Vector2i(15,21)))
 			choices.sort_custom(func(a,b):return a.distance_squared_to(actor["coord"])<b.distance_squared_to(actor["coord"]))
 			check(not choices.is_empty(),"actual map offers a legal moved special location")
 			await move_to(choices[0])
@@ -256,8 +256,8 @@ func play_ohm() -> void:
 		await cast_arrow(Vector2i(15,21))
 		await settle("",mode in ["retreat","clear"])
 		var special:Dictionary=arrow_receipt
-		check(arrow_signals==[1,1] and special.get("skill_id")==Arrow.ID,"one cast produces exactly one release and impact")
-		check(Loop.unit(before,"hu")["stamina"]-int(special["resource_payment"]["after"])==20,"real multi-target special pays twenty stamina once")
+		check(arrow_signals==[1,1] and special.get("skill_id")==PoisonArrowRules.ID,"one cast produces exactly one release and impact")
+		check(BattlePlayLoop.unit(before,"hu")["stamina"]-int(special["resource_payment"]["after"])==20,"real multi-target special pays twenty stamina once")
 		check(special["affected_targets"].size()==2,"real range reaches two distinct actors")
 		if mode=="mixed":check(special["affected_targets"].any(func(r):return r["defender_hp_after"]==0) and special["affected_targets"].any(func(r):return r["defender_hp_after"]>0),"one arrow cast mixes lethal and nonlethal results")
 		if mode=="retreat":check(scene.play_loop["winfail_runtime"]["resolved"]["key"]=="win_1","actual kill triggers the source enemy retreat, not a fabricated player escape")
@@ -266,11 +266,11 @@ func play_ohm() -> void:
 	var row:Dictionary={"mode":mode,"initial_units":initial_state["units"],"final_units":scene.play_loop["units"].duplicate(true),"outcome":scene.play_loop["battle_outcome"],"opening_messages":opening_messages.duplicate(),"receipts":receipts.duplicate(true),"impacts":impacts.duplicate(true),"ai_actions":ai_receipts.duplicate(true),"learning_texts":learning_texts.duplicate(),"sounds":sounds.keys(),"saves":saves,"arrow_signals":arrow_signals.duplicate(),"arrow_receipt":arrow_receipt.duplicate(true),"decisions":player_decisions.duplicate(true),"restarted":false}
 	if mode in ["retreat","clear","defeat","villagers","natural"]:
 		var frozen:Dictionary=scene.play_loop.duplicate(true)
-		check(Loop.step_ai_turn(frozen)==frozen and Loop.finish_exhausted_action(frozen)==frozen,"terminal cannot execute late growth, poison or another action")
+		check(BattlePlayLoop.step_ai_turn(frozen)==frozen and BattlePlayLoop.finish_exhausted_action(frozen)==frozen,"terminal cannot execute late growth, poison or another action")
 		reload_current_scene()
 		await create_timer(0.5).timeout
 		scene=current_scene
-		check(not BattleOutcome.decided(scene.play_loop) and scene.scenario_path==Ohm.SCENE,"actual restart returns to the formal Ohm scenario")
+		check(not BattleOutcome.decided(scene.play_loop) and scene.scenario_path==run_ohm_village_tests.SCENE,"actual restart returns to the formal Ohm scenario")
 		row["restarted"]=true
 	routes.append(row)
 
@@ -278,21 +278,21 @@ func play_extended() -> void:
 	if mode=="double":
 		await change_gear(69,"weapon")
 		await change_gear(227,"accessory2")
-		check(Loop.attack_count(scene.play_loop,Loop.unit(scene.play_loop,"hu"))["count"]==2,"actual UI equip reads native double_attack")
+		check(BattlePlayLoop.attack_count(scene.play_loop,BattlePlayLoop.unit(scene.play_loop,"hu"))["count"]==2,"actual UI equip reads native double_attack")
 	var before:Dictionary=scene.play_loop.duplicate(true)
 	await attack("actor028_1")
 	var combat:Dictionary=scene.play_loop["last_combat"].duplicate(true)
 	await settle("hu")
 	check(scene.play_loop["extra_action"]["pending"] and not scene.play_loop["moved_this_action"],"complete ordinary sequence gives one independent fresh second action")
 	if mode=="double":
-		var strikes:Array=Loop.CombatSequence.strikes(combat).filter(func(s):return not s.get("is_counter",false))
+		var strikes:Array=BattlePlayLoop.CombatSequence.strikes(combat).filter(func(s):return not s.get("is_counter",false))
 		check(strikes.size()==2 and strikes[0]["defender_hp_after"]>0 and strikes[1]["defender_hp_after"]>0,"rendered double bow performs two nonlethal strikes within one action")
 	else:
 		check(scene.play_loop["units"].size()==19,"first actual attack creates exactly one scripted villager")
 		var born:Dictionary=scene.play_loop["units"].back()
 		check(born["entry_growth"]["input"]["parameters"]==[20,3],"new villager uses the actual script adjustment and continued stream")
-		check(born["battle_actor_role"]==Loop.ROLE_FRIENDLY and not born["player_commandable"] and born["level"]>1,"script inserted friendly remains noncommandable with real adjusted level")
-		check(Loop.unit(scene.play_loop,"hu")["status_counters"]["poison"]==Loop.unit(before,"hu")["status_counters"]["poison"],"first independent action does not execute poison tail")
+		check(born["battle_actor_role"]==BattlePlayLoop.ROLE_FRIENDLY and not born["player_commandable"] and born["level"]>1,"script inserted friendly remains noncommandable with real adjusted level")
+		check(BattlePlayLoop.unit(scene.play_loop,"hu")["status_counters"]["poison"]==BattlePlayLoop.unit(before,"hu")["status_counters"]["poison"],"first independent action does not execute poison tail")
 		await inspect_villager(born["id"])
 	await save_restore()
 	await cast_arrow(Vector2i(15,21))
@@ -300,12 +300,12 @@ func play_extended() -> void:
 	check(arrow_receipt["resource_payment"]["amount"]==20 and arrow_signals==[1,1],"second independent action is exactly one Poison Arrow, never one per ordinary strike")
 	if mode!="double":
 		check(scene.play_loop["units"].size()==20,"rearmed event continues the stream into a second distinct villager")
-		check(Loop.ReinforcementGrowth.state_error(scene.play_loop)=="","both births remain consistent after actual combat, growth, status tail and AI")
+		check(BattlePlayLoop.ReinforcementGrowth.state_error(scene.play_loop)=="","both births remain consistent after actual combat, growth, status tail and AI")
 		await inspect_villager(scene.play_loop["units"].back()["id"])
 	await save_restore()
 
 func inspect_villager(id:String) -> void:
-	var actor:=Loop.unit(scene.play_loop,id)
+	var actor:=BattlePlayLoop.unit(scene.play_loop,id)
 	scene.center_camera_on_grid(actor["coord"])
 	await hover(scene.grid_cell_center_to_logical_position(actor["coord"]))
 	await point(scene.grid_cell_center_to_logical_position(actor["coord"]))
@@ -318,32 +318,32 @@ func play_natural() -> void:
 	for action_index in range(120):
 		if BattleOutcome.decided(scene.play_loop):break
 		var loop:Dictionary=scene.play_loop
-		var actor:=Loop.unit(loop,scene.selected_unit_id)
-		var foes:Array=loop["units"].filter(func(a):return a["battle_actor_role"]==Loop.ROLE_ENEMY and Loop.Presence.living(a))
+		var actor:=BattlePlayLoop.unit(loop,scene.selected_unit_id)
+		var foes:Array=loop["units"].filter(func(a):return a["battle_actor_role"]==BattlePlayLoop.ROLE_ENEMY and BattlePlayLoop.Presence.living(a))
 		var decision:Dictionary={"actor":actor["id"],"turn":loop["turn"],"coord":actor["coord"],"hp":actor["hp"],"stamina":actor["stamina"]}
 		player_decisions.append(decision)
 		if int(actor["hp"])*2<int(actor["max_hp"]) and actor["inventory"].has(241):
 			decision["kind"]="heal_item"
 			await use_item_real(241,actor["id"])
 			await settle("");continue
-		if actor["id"]=="hu" and Loop.command_available(loop,"special") and Loop.can_use_special(loop,"hu"):
-			var fields:=Loop.skill_fields(loop,Arrow.ID)
-			var centers:=Loop.SkillTargetRules.candidate_centers(actor,loop["units"],fields,loop["skill_target_data"],loop["map_size"],actor["coord"])
-			var selectable:=Loop.SkillTargetRules.cells(actor["coord"],fields,loop["skill_target_data"],loop["map_size"])
+		if actor["id"]=="hu" and BattlePlayLoop.command_available(loop,"special") and BattlePlayLoop.can_use_special(loop,"hu"):
+			var fields:=BattlePlayLoop.skill_fields(loop,PoisonArrowRules.ID)
+			var centers:=BattlePlayLoop.SkillTargetRules.candidate_centers(actor,loop["units"],fields,loop["skill_target_data"],loop["map_size"],actor["coord"])
+			var selectable:=BattlePlayLoop.SkillTargetRules.cells(actor["coord"],fields,loop["skill_target_data"],loop["map_size"])
 			centers=centers.filter(func(c):return selectable.has(c))
 			if not centers.is_empty():
 				decision["kind"]="poison_arrow";decision["center"]=centers[0]
 				await cast_arrow(centers[0]);await settle("");continue
-		var reachable:Array=foes.filter(func(a):return Loop.Footprint.contact(a,Loop.attack_cells(loop)) is Vector2i)
+		var reachable:Array=foes.filter(func(a):return BattlePlayLoop.Footprint.contact(a,BattlePlayLoop.attack_cells(loop)) is Vector2i)
 		if not reachable.is_empty():
 			reachable.sort_custom(func(a,b):return int(a["hp"])<int(b["hp"]))
 			decision["kind"]="ordinary";decision["target"]=reachable[0]["id"]
 			await attack(reachable[0]["id"]);await settle("");continue
 		if not loop["moved_this_action"]:
-			var pattern:=Loop.weapon_pattern(loop,actor)
+			var pattern:=BattlePlayLoop.weapon_pattern(loop,actor)
 			var best:Vector2i=actor["coord"]
 			var best_score:=1000000
-			for cell in Loop.movement_cells(loop):
+			for cell in BattlePlayLoop.movement_cells(loop):
 				if cell==actor["coord"]:continue
 				var score:=1000000
 				for foe in foes:

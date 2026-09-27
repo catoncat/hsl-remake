@@ -36,7 +36,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##     (ANIMAL random／angle／round／tornado geometry, off-stage flights, static hold of the objects effect_motion.json
 ##     lists unrestored, eff_proc_Global at screen centre — manifest policy)
 ##   layout: remake-invented (Cast_Star ring around a caster without an imported m_shape strip)
-##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   strings: resource-derived content/generated/hsl/skills/special_effect_scripts.json
 ##   strings: remake-invented content/generated/hsl/skills/authored_effect_scripts.json
 ##     (the authored skills' names and scripts, sequel content from content/authored/roles/skills.json)
@@ -63,7 +63,7 @@ const SCRIPTS_PATH := "res://content/generated/hsl/skills/special_effect_scripts
 const AUTHORED_SCRIPTS_PATH := "res://content/generated/hsl/skills/authored_effect_scripts.json"
 const CASTING_PATH := ContentPaths.MAGE_MAGIC
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
+const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
 const STAGE_SIZE := Vector2(640, 320)
@@ -166,7 +166,7 @@ static func _stand(host: CanvasLayer, sprite: Sprite2D, row: String, frame: int,
 	if not host.manifest["actors"].has(row):
 		sprite.hide()
 		return false
-	host._set_frame(sprite, row, frame, CloseupLayout.side_swapped(unit))
+	host._set_frame(sprite, row, frame, CutinLayout.side_swapped(unit))
 	return true
 
 
@@ -550,7 +550,7 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	if attack_phase:
 		if lead_ticks == 0 or bool(timeline["show_attacker"]):
 			_stand(host, host.attacker_sprite, clip["attacker"], 0, clip["attacker_unit"])
-			host.attacker_sprite.position = CloseupLayout.attacker_anchor()
+			host.attacker_sprite.position = CutinLayout.attacker_anchor()
 		else:
 			# The cast object has ended (phase 101); the attack script owns the shot.
 			host.attacker_sprite.hide()
@@ -560,14 +560,14 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 		var hurt: bool = hit and bool(clip["impact_emitted"]) and script_tick < float(timeline["result_tick"]) + RESULT_HOLD_TICKS
 		var hurt_frame: int = int(host.manifest["actors"].get(clip["defender"], {}).get("hurt_frame", 0))
 		_stand(host, host.defender_sprite, clip["defender"], hurt_frame if hurt else 0, clip["defender_unit"])
-		host.defender_sprite.position = (Vector2(480, CloseupLayout.SHOT_ANCHOR.y) if double_page else host.defender_anchor(clip)) + timeline["xy_disp"]
+		host.defender_sprite.position = (Vector2(480, CutinLayout.SHOT_ANCHOR.y) if double_page else host.defender_anchor(clip)) + timeline["xy_disp"]
 		# The same defender object 0x4038a0: knock-back on a hit, dodge slide on a miss, from the roll.
 		var defender_row: Dictionary = host.manifest.get("actors", {}).get(clip["defender"], {})
 		if clip["impact_emitted"] and not defender_row.is_empty():
-			host.defender_sprite.position.x += CloseupLayout.reaction_x(defender_row, hit, script_tick - float(timeline["impact_tick"]), CloseupLayout.side_swapped(clip["defender_unit"]))
+			host.defender_sprite.position.x += CutinLayout.reaction_x(defender_row, hit, script_tick - float(timeline["impact_tick"]), CutinLayout.side_swapped(clip["defender_unit"]))
 		host.defender_sprite.modulate = Color.WHITE
 		if double_page and _stand(host, host.attacker_sprite, clip["attacker"], 0, clip["attacker_unit"]):
-			host.attacker_sprite.position = Vector2(160, CloseupLayout.SHOT_ANCHOR.y)
+			host.attacker_sprite.position = Vector2(160, CutinLayout.SHOT_ANCHOR.y)
 			host.attacker_sprite.show()
 	draw(clip, script_tick / TICKS_PER_SECOND, [Vector2.ZERO])
 	var shown := script_tick >= float(timeline["result_tick"])

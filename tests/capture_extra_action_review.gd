@@ -1,6 +1,6 @@
 extends "res://tests/capture_equipment_mobility_review.gd"
 ## Real equipment, second-action controls, two independent receipts and recovery.
-const ExtraCases = preload("res://tests/run_extra_attack_tests.gd")
+const run_extra_attack_tests = preload("res://tests/run_extra_attack_tests.gd")
 const EXTRA_OUT := "res://ignored/extra-action-review/"
 var owner := "leonard"
 var first_snapshot := {}
@@ -42,26 +42,26 @@ func setup_extra() -> void:
 	await create_timer(0.15).timeout
 	scene.get_node("BattleMusic").stop()
 	var loop := BattleFixture.loop()
-	var player := Loop.unit(loop,"leonard")
-	var enemy := Loop.unit(loop,"enemy021_1")
-	var ally := Loop.unit(loop,"enemy023_1")
+	var player := BattlePlayLoop.unit(loop,"leonard")
+	var enemy := BattlePlayLoop.unit(loop,"enemy021_1")
+	var ally := BattlePlayLoop.unit(loop,"enemy023_1")
 	player.merge({"coord":Vector2i(8,8),"live_speed":120,"hp":30,"max_hp":30,"inventory":[227,193,12,241,241,246,0,0]},true)
 	player["hit_bonus_accum"] = 1000
 	enemy.merge({"coord":Vector2i(11,8),"live_speed":90,"hp":500,"max_hp":500,"inventory":[0,0,0,0,0,0,0,0]},true)
 	enemy["combat_profile"]["attack_back"] = 0
-	ally.merge({"coord":Vector2i(17,19),"live_speed":100,"hp":100,"max_hp":100,"player_commandable":true,"battle_actor_role":Loop.ROLE_PLAYER},true)
+	ally.merge({"coord":Vector2i(17,19),"live_speed":100,"hp":100,"max_hp":100,"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_PLAYER},true)
 	loop["units"] = [player,enemy,ally]; loop["reinforcement_templates"] = []
 	owner = "leonard"
 	if mode in ["move_attack_cast","growth_kill","support_cure"]:
 		player["mp"] = 100; player["max_mp"] = 100
 		player["growth_profile"]["source"].merge({"has_magic":true,"magic_point":50},true)
-		TestSuite.own(loop, "skill_book")["actors"]["001"]["supported_initial_ids"] = [ExtraCases.WIND,ExtraCases.HEAL,ExtraCases.CURE]
+		TestSuite.own(loop, "skill_book")["actors"]["001"]["supported_initial_ids"] = [run_extra_attack_tests.WIND,run_extra_attack_tests.HEAL,run_extra_attack_tests.CURE]
 	if mode in ["wait_status","support_cure"]:
 		player["hp"] = 20
-		player.merge(Loop.StatusEffectRules.apply(player,"poison",3,7)["changes"],true)
+		player.merge(BattlePlayLoop.StatusEffectRules.apply(player,"poison",3,7)["changes"],true)
 	if mode == "support_cure":
 		ally["coord"] = Vector2i(9,8); ally["hp"] = 4
-		ally.merge(Loop.StatusEffectRules.apply(ally,"poison",3,7)["changes"],true)
+		ally.merge(BattlePlayLoop.StatusEffectRules.apply(ally,"poison",3,7)["changes"],true)
 	if mode == "double_series":
 		player["growth_profile"]["source"]["hit_point"] += 300
 		player["hp"] = 330; player["max_hp"] = 330
@@ -80,27 +80,27 @@ func setup_extra() -> void:
 	if mode in ["victory","escape"]:
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
 		if mode == "escape":
-			player = Loop._unit(loop,"leonard"); Loop._unit(loop,"enemy021_1")["coord"] = Vector2i(17,18)
+			player = BattlePlayLoop._unit(loop,"leonard"); BattlePlayLoop._unit(loop,"enemy021_1")["coord"] = Vector2i(17,18)
 			landing = loop["escape_zone"][0]
 			var found := false
 			for y in range(loop["map_size"].y):
 				for x in range(loop["map_size"].x):
 					var point := Vector2i(x,y)
-					if loop["tiles"].get(point,{}).get("blocks_movement",false) or loop["escape_zone"].has(point) or Loop.unit_id_at_coord(loop,point) not in ["","leonard"]: continue
+					if loop["tiles"].get(point,{}).get("blocks_movement",false) or loop["escape_zone"].has(point) or BattlePlayLoop.unit_id_at_coord(loop,point) not in ["","leonard"]: continue
 					player["coord"] = point
-					var path := Loop.movement_path(loop,"leonard",landing)
+					var path := BattlePlayLoop.movement_path(loop,"leonard",landing)
 					if path.size() >= 2 and path.size() <= 5: found = true; break
 				if found: break
 			check(found,"source escape destination is reachable during the independent second action")
 	if mode.begins_with("ai_"):
 		var source := BattleFixture.loop()
-		var ai := Loop.unit(source,"enemy026_1")
+		var ai := BattlePlayLoop.unit(source,"enemy026_1")
 		ai.merge({"coord":Vector2i(8,8),"live_speed":110,"hp":100,"max_hp":100,"mp":100,"max_mp":100,"inventory":[0,0,0,0,0,0,0,0]},true)
 		ai["equipment"].append({"slot":"accessory2","item_code":227})
 		player.merge({"coord":Vector2i(12,9),"hp":500,"max_hp":500,"live_speed":70},true)
-		ally["battle_actor_role"] = Loop.ROLE_ENEMY
-		var initial := Loop.unit(source,"enemy024_1")
-		initial.merge({"id":"extra-initial","coord":Vector2i(6,14),"live_speed":130,"player_commandable":true,"battle_actor_role":Loop.ROLE_ENEMY},true)
+		ally["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
+		var initial := BattlePlayLoop.unit(source,"enemy024_1")
+		initial.merge({"id":"extra-initial","coord":Vector2i(6,14),"live_speed":130,"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_ENEMY},true)
 		loop["units"] = [ai,player,ally,initial]
 		owner = ai["id"]
 		var profile: Dictionary = TestSuite.own(loop, "ai_profiles")["actors"]["026"]["profile"]
@@ -108,20 +108,20 @@ func setup_extra() -> void:
 		TestSuite.own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"] = "100"
 		TestSuite.own(loop, "skill_book")["skills"]["magic:magicFIRE:magicCode01"]["fields"]["use_ratio"] = "0"
 		if mode == "ai_no_mp": ai["mp"] = 0
-		if mode == "ai_silence": ai.merge(Loop.StatusEffectRules.apply(ai,"no_magic",2)["changes"],true)
+		if mode == "ai_silence": ai.merge(BattlePlayLoop.StatusEffectRules.apply(ai,"no_magic",2)["changes"],true)
 		if mode == "ai_support":
-			TestSuite.own(loop, "skill_book")["actors"]["026"]["supported_initial_ids"] = [ExtraCases.HEAL]
-			TestSuite.own(loop, "skill_book")["skills"][ExtraCases.HEAL]["fields"]["use_ratio"] = "100"
+			TestSuite.own(loop, "skill_book")["actors"]["026"]["supported_initial_ids"] = [run_extra_attack_tests.HEAL]
+			TestSuite.own(loop, "skill_book")["skills"][run_extra_attack_tests.HEAL]["fields"]["use_ratio"] = "100"
 			profile.merge({"ai_check_hp":100,"ai_help_otherhp":100},true)
 			ally["coord"] = Vector2i(12,9); ally["hp"] = 4; ally["max_hp"] = 400; player["coord"] = Vector2i(18,18)
 	for actor in loop["units"]:
 		actor["grid_coord"] = actor["coord"]; actor["ai_home_coord"] = actor["coord"]
 		check(not loop["tiles"].get(actor["coord"],{}).get("blocks_movement",false),"fixture actor starts on the source ground")
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop,"extra-initial" if mode.begins_with("ai_") else "leonard"), "test")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"extra-initial" if mode.begins_with("ai_") else "leonard"), "test")
 	scene.settlement_controller.checkpoint_path = EXTRA_OUT+mode+".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
-	scene.unit_grid_coords.clear(); scene.resume_turn_presentation(); scene.center_camera_on_grid(Loop.unit(loop,owner)["coord"])
+	scene.unit_grid_coords.clear(); scene.resume_turn_presentation(); scene.center_camera_on_grid(BattlePlayLoop.unit(loop,owner)["coord"])
 	var view = scene.get_node("BattlePresentation")
 	view.experience_presented.connect(func(growth):experience_events.append(growth.duplicate(true)))
 	view.cutin.released.connect(func(s,_a,_d,c):cues.append(["release",s["attacker_id"],c]))
@@ -155,7 +155,7 @@ func change_item(code: int, slot: String, cancellation: bool = false) -> void:
 		await click(item_button(code))
 		if slot.begins_with("accessory"): await click(find_button(scene.item_panel.page_root,"飾品 "+slot.right(1)))
 	await click(scene.item_panel.confirm_button); await create_timer(0.3).timeout
-	check(Loop.EquipmentRules.equipped_code(Loop.unit(scene.play_loop,"leonard")["equipment"],slot) == code,"real equipment confirmation updates the selected slot")
+	check(BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(scene.play_loop,"leonard")["equipment"],slot) == code,"real equipment confirmation updates the selected slot")
 	check(scene.play_loop["extra_action"] == before["extra_action"] and scene.play_loop["turn_queue"] == before["turn_queue"],"free equipment confirmation neither spends nor replenishes the current action")
 
 
@@ -168,7 +168,7 @@ func open_equipment_real() -> void:
 
 func cast_real(id: String, target: String) -> void:
 	await click(scene.action_menu.get_node("MagicCommand")); await click(scene.magic_panel.choices[id])
-	await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,target)["coord"]))
+	await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,target)["coord"]))
 	receipt = scene.play_loop["last_attack"].duplicate(true)
 	check(receipt.get("skill_id") == id,"actual magic selection commits this action's source ability")
 	pair_receipts.append(receipt.duplicate(true))
@@ -185,7 +185,7 @@ func play_extra() -> void:
 		check(pair_receipts.all(func(action):return action["actor_id"] == owner),"the extra AI action belongs to the same original actor")
 		if mode == "ai_no_mp" or mode == "ai_silence": check(pair_receipts.all(func(action):return not action.has("skill_id")),"unavailable spells retain the physical fallback on both actions")
 		else:
-			check(pair_receipts.all(func(action):return action.get("skill_id") == (ExtraCases.HEAL if mode == "ai_support" else ExtraCases.WIND)),"AI recomputes the expected owned spell for both actions")
+			check(pair_receipts.all(func(action):return action.get("skill_id") == (run_extra_attack_tests.HEAL if mode == "ai_support" else run_extra_attack_tests.WIND)),"AI recomputes the expected owned spell for both actions")
 			check(pair_receipts[1].has("sequence") and pair_receipts[0].has("sequence") and pair_receipts[1]["sequence"] == pair_receipts[0]["sequence"] + 1,"two AI casts have two unique receipts")
 	else:
 		if mode == "double_series": await change_item(12,"weapon")
@@ -193,47 +193,47 @@ func play_extra() -> void:
 		first_snapshot = scene.play_loop.duplicate(true)
 		if mode in ["move_attack_cast","double_series","growth_kill"]:
 			await move_to(Vector2i(10,8)); await attack_target(); pair_receipts.append(receipt.duplicate(true))
-		elif mode == "support_cure": await cast_real(ExtraCases.HEAL,"enemy023_1")
+		elif mode == "support_cure": await cast_real(run_extra_attack_tests.HEAL,"enemy023_1")
 		else: await click(scene.action_menu.get_node("WaitCommand"))
 		await until_control("leonard",false)
 		check(transition_seen and scene.play_loop["extra_action"]["pending"] and scene.play_loop["turn_queue"] == first_snapshot["turn_queue"],"first action returns to the same owner and queue after all feedback")
 		check(not scene.play_loop["moved_this_action"] and not scene.play_loop["attacked_this_action"],"second-action controls have fresh move and offense budgets")
 		if mode in ["wait_status","support_cure"]:
-			check(Loop.unit(scene.play_loop,"leonard")["hp"] == Loop.unit(first_snapshot,"leonard")["hp"] and Loop.unit(scene.play_loop,"leonard")["status_counters"] == Loop.unit(first_snapshot,"leonard")["status_counters"],"no hidden poison tick occurs between actions")
+			check(BattlePlayLoop.unit(scene.play_loop,"leonard")["hp"] == BattlePlayLoop.unit(first_snapshot,"leonard")["hp"] and BattlePlayLoop.unit(scene.play_loop,"leonard")["status_counters"] == BattlePlayLoop.unit(first_snapshot,"leonard")["status_counters"],"no hidden poison tick occurs between actions")
 		if mode == "equip_restore":
 			await open_equipment_real()
 			await click(scene.item_panel.equipment_view.slot_controls["accessory2"])
 			await click(scene.item_panel.confirm_button); await create_timer(0.3).timeout
-			check(not Loop.ExtraActionRules.equipment(Loop.unit(scene.play_loop,"leonard"),scene.play_loop["equipment_items"])["enabled"] and scene.play_loop["extra_action"]["pending"],"actual removal preserves the already-granted second action")
+			check(not BattlePlayLoop.ExtraActionRules.equipment(BattlePlayLoop.unit(scene.play_loop,"leonard"),scene.play_loop["equipment_items"])["enabled"] and scene.play_loop["extra_action"]["pending"],"actual removal preserves the already-granted second action")
 			await save_restore()
 			await change_item(227,"accessory2")
 		elif mode == "wait_status":
 			await click(scene.action_menu.get_node("StatusCommand")); await shot("second-status"); await escape(); await create_timer(0.3).timeout
 		elif mode == "growth_kill":
-			check(Loop.unit(scene.play_loop,"leonard")["level"] == 2 and observed.has("growth"),"first-action kill settles EXP, loot and growth before the second action")
+			check(BattlePlayLoop.unit(scene.play_loop,"leonard")["level"] == 2 and observed.has("growth"),"first-action kill settles EXP, loot and growth before the second action")
 			await save_restore()
 		if mode in ["move_attack_cast","growth_kill"]:
-			await move_to(Vector2i(10,9)); await cast_real(ExtraCases.WIND,"enemy021_2" if mode == "growth_kill" else "enemy021_1")
+			await move_to(Vector2i(10,9)); await cast_real(run_extra_attack_tests.WIND,"enemy021_2" if mode == "growth_kill" else "enemy021_1")
 		elif mode == "double_series": await attack_target(); pair_receipts.append(receipt.duplicate(true))
-		elif mode == "support_cure": await cast_real(ExtraCases.CURE,"leonard")
+		elif mode == "support_cure": await cast_real(run_extra_attack_tests.CURE,"leonard")
 		elif mode in ["victory","defeat"]: await move_to(Vector2i(10,8)); await attack_target(); pair_receipts.append(receipt.duplicate(true))
 		elif mode == "escape": await move_to(landing); await click(scene.action_menu.get_node("WaitCommand"))
 		else: await click(scene.action_menu.get_node("WaitCommand"))
 		await until_control("enemy023_1",terminal)
 		check(not scene.play_loop["extra_action"]["pending"],"completed pair or terminal outcome cannot grant a third action")
 		if not terminal: check(scene.play_loop["turn_queue"]["index"] == 1,"both actions use one original queue slot")
-		if mode == "wait_status": check(Loop.unit(scene.play_loop,"leonard")["hp"] == int(Loop.unit(first_snapshot,"leonard")["hp"]) - 7,"two Waits produce exactly one final poison tick")
-		if mode == "support_cure": check(Loop.unit(scene.play_loop,"leonard")["status_counters"]["poison"] == 0 and Loop.unit(scene.play_loop,"enemy023_1")["status_counters"]["poison"] == 0,"second action cures both friends before final status settlement")
-		if mode == "double_series": check(pair_receipts.size() == 2 and pair_receipts.all(func(r):return Loop.CombatSequence.strikes(r).size() >= 3),"two independent actions each retain their complete extra-strike and counter series")
+		if mode == "wait_status": check(BattlePlayLoop.unit(scene.play_loop,"leonard")["hp"] == int(BattlePlayLoop.unit(first_snapshot,"leonard")["hp"]) - 7,"two Waits produce exactly one final poison tick")
+		if mode == "support_cure": check(BattlePlayLoop.unit(scene.play_loop,"leonard")["status_counters"]["poison"] == 0 and BattlePlayLoop.unit(scene.play_loop,"enemy023_1")["status_counters"]["poison"] == 0,"second action cures both friends before final status settlement")
+		if mode == "double_series": check(pair_receipts.size() == 2 and pair_receipts.all(func(r):return BattlePlayLoop.CombatSequence.strikes(r).size() >= 3),"two independent actions each retain their complete extra-strike and counter series")
 	if terminal: await save_restore()
 	var view = scene.get_node("BattlePresentation")
 	check(not view.extra_action_cue.label.visible and not scene.ai_playback_active,"final successor/result clears the extra-action cue and AI playback")
 	routes.append({"mode":mode,"transition_seen":transition_seen,"extra_action":scene.play_loop["extra_action"],"receipts":pair_receipts,"observed":observed,
-		"cues":cues,"experience":experience_events,"owner_after":compact(Loop.unit(scene.play_loop,owner)),"equipment":Loop.unit(scene.play_loop,owner)["equipment"],
+		"cues":cues,"experience":experience_events,"owner_after":compact(BattlePlayLoop.unit(scene.play_loop,owner)),"equipment":BattlePlayLoop.unit(scene.play_loop,owner)["equipment"],
 		"outcome":scene.play_loop["battle_outcome"],"next_actor":scene.selected_unit_id,"sounds":sound_paths.keys()})
 	if terminal:
 		reload_current_scene(); await create_timer(0.3).timeout; scene = current_scene
-		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["extra_action"] == Loop.ExtraActionRules.empty() and not Loop.ExtraActionRules.equipment(Loop.unit(scene.play_loop,"leonard"),scene.play_loop["equipment_items"])["enabled"],"real retry clears the previous repeat and restores default equipment")
+		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["extra_action"] == BattlePlayLoop.ExtraActionRules.empty() and not BattlePlayLoop.ExtraActionRules.equipment(BattlePlayLoop.unit(scene.play_loop,"leonard"),scene.play_loop["equipment_items"])["enabled"],"real retry clears the previous repeat and restores default equipment")
 		routes.back()["restarted"] = true
 
 

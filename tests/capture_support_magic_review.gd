@@ -2,8 +2,8 @@ extends SceneTree
 ## Normal-clock, real Control/map input. Grants and encounter setup are explicit
 ## fixtures; no original runtime or natural first-battle availability is claimed.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Cases = preload("res://tests/run_support_magic_tests.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const run_support_magic_tests = preload("res://tests/run_support_magic_tests.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/support-magic-review/"
 var scene: Node
@@ -59,26 +59,26 @@ func setup(ai: bool) -> void:
 	await create_timer(0.2).timeout
 	scene.get_node("BattleMusic").stop()
 	var source := BattleFixture.loop()
-	var loop := Cases.fixture(ai)
+	var loop := run_support_magic_tests.fixture(ai)
 	loop["tiles"] = source["tiles"]
 	loop["map_size"] = source["map_size"]
 	loop["ai_calls"] = []
 	if mode in ["cure_area", "ai_cure"]:
 		for actor in [loop["units"][0], loop["units"][1]]:
-			actor.merge(Loop.StatusEffectRules.apply(actor, "poison", 2, 10)["changes"], true)
-		loop["units"][1].merge(Loop.StatusEffectRules.apply(loop["units"][1], "no_magic", 2)["changes"], true)
+			actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, "poison", 2, 10)["changes"], true)
+		loop["units"][1].merge(BattlePlayLoop.StatusEffectRules.apply(loop["units"][1], "no_magic", 2)["changes"], true)
 	if ai:
 		var owner: Dictionary = loop["units"][0]
-		TestSuite.own(loop, "skill_book")["actors"][owner["actor_id"]]["supported_initial_ids"] = [Cases.HEAL, Cases.CURE]
-		for id in [Cases.HEAL, Cases.CURE]: TestSuite.own(loop, "skill_book")["skills"][id]["fields"]["use_ratio"] = "100"
+		TestSuite.own(loop, "skill_book")["actors"][owner["actor_id"]]["supported_initial_ids"] = [run_support_magic_tests.HEAL, run_support_magic_tests.CURE]
+		for id in [run_support_magic_tests.HEAL, run_support_magic_tests.CURE]: TestSuite.own(loop, "skill_book")["skills"][id]["fields"]["use_ratio"] = "100"
 		TestSuite.own(loop, "ai_profiles")["actors"][owner["actor_id"]]["profile"].merge({"ai_att_magic": 100, "ai_check_hp": 100, "ai_check_dying": 0}, true)
 		loop["units"][2]["live_speed"] = 110
 		loop["units"][1]["hp"] = 100
 		if mode == "ai_cure": owner["hp"] = 100
 		if mode == "ai_empty_mp": owner["mp"] = 0
-		loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
+		loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 		loop["interaction"] = "idle"
-		loop = Loop.select_player_unit(loop, "leonard")
+		loop = BattlePlayLoop.select_player_unit(loop, "leonard")
 	scene.apply_loop(loop, "test")
 	for child in scene.actors_root.get_children():
 		scene.actors_root.remove_child(child)
@@ -95,7 +95,7 @@ func setup(ai: bool) -> void:
 
 
 func player_route() -> void:
-	var id: String = {"heal_self": Cases.HEAL, "heal_ally": Cases.HEAL, "greater_heal": Cases.GREATER, "life_heal": Cases.LIFE, "cure_area": Cases.CURE}[mode]
+	var id: String = {"heal_self": run_support_magic_tests.HEAL, "heal_ally": run_support_magic_tests.HEAL, "greater_heal": run_support_magic_tests.GREATER, "life_heal": run_support_magic_tests.LIFE, "cure_area": run_support_magic_tests.CURE}[mode]
 	var target_id := "leonard" if mode == "heal_self" else "enemy023_1"
 	var before: Dictionary = scene.play_loop.duplicate(true)
 	await click(scene.action_menu.get_node("MagicCommand"))
@@ -103,7 +103,7 @@ func player_route() -> void:
 	if mode == "heal_self": await shot("list")
 	await click(scene.magic_panel.choices[id])
 	check(scene.interaction_state == "attack_select", "support skill enters actual map targeting")
-	await hover(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop, target_id)["coord"]))
+	await hover(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop, target_id)["coord"]))
 	check(scene.get_node("BattlePresentation").target_vitals.visible, "friend/self hover has the shared live target preview")
 	await shot("range")
 	await escape()
@@ -111,7 +111,7 @@ func player_route() -> void:
 	await create_timer(0.25).timeout
 	await click(scene.action_menu.get_node("MagicCommand"))
 	await click(scene.magic_panel.choices[id])
-	await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop, target_id)["coord"]))
+	await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop, target_id)["coord"]))
 	var receipt: Dictionary = scene.play_loop["last_attack"].duplicate(true)
 	check(receipt.get("skill_id") == id, "actual map click commits the selected support skill")
 	if receipt.get("skill_id") != id: return
@@ -119,14 +119,14 @@ func player_route() -> void:
 	check(observed, "normal playback shows the support impact before returning control")
 	check(scene.play_loop["last_combat"]["sequence"] == receipt["sequence"] and scene.play_loop["turn_queue"]["index"] == 1, "visual playback adds neither an extra payment nor an extra turn")
 	if mode == "cure_area":
-		check(Loop.unit(scene.play_loop, "leonard")["status_counters"]["poison"] == 0 and Loop.unit(scene.play_loop, target_id)["status_counters"] == {"poison": 0, "paralysis": 0, "no_magic": 2}, "actual area cure clears both friends and preserves ally silence")
+		check(BattlePlayLoop.unit(scene.play_loop, "leonard")["status_counters"]["poison"] == 0 and BattlePlayLoop.unit(scene.play_loop, target_id)["status_counters"] == {"poison": 0, "paralysis": 0, "no_magic": 2}, "actual area cure clears both friends and preserves ally silence")
 	else:
-		check(receipt["healing"] > 0 and Loop.unit(scene.play_loop, target_id)["hp"] == receipt["defender_hp_after"], "positive map feedback agrees with settled HP")
+		check(receipt["healing"] > 0 and BattlePlayLoop.unit(scene.play_loop, target_id)["hp"] == receipt["defender_hp_after"], "positive map feedback agrees with settled HP")
 	if target_id == scene.selected_unit_id: await click(scene.action_menu.get_node("StatusCommand"))
-	else: await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop, target_id)["coord"]))
+	else: await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop, target_id)["coord"]))
 	check(scene.status_panel.visible, "post-cast status is accessible through real controls")
 	await shot("status")
-	routes.append({"mode": mode, "receipt": receipt, "caster_after": compact(Loop.unit(scene.play_loop, "leonard")), "target_after": compact(Loop.unit(scene.play_loop, target_id)), "next_actor": scene.selected_unit_id, "index": scene.play_loop["turn_queue"]["index"]})
+	routes.append({"mode": mode, "receipt": receipt, "caster_after": compact(BattlePlayLoop.unit(scene.play_loop, "leonard")), "target_after": compact(BattlePlayLoop.unit(scene.play_loop, target_id)), "next_actor": scene.selected_unit_id, "index": scene.play_loop["turn_queue"]["index"]})
 
 
 func ai_route() -> void:
@@ -134,11 +134,11 @@ func ai_route() -> void:
 	var observed := await until_actor("enemy023_1", mode != "ai_empty_mp")
 	check(observed or mode == "ai_empty_mp", "normal-clock AI support effect is visible")
 	var action: Dictionary = scene.play_loop["last_ai_action"].duplicate(true)
-	var caster := Loop.unit(scene.play_loop, "enemy026_1")
+	var caster := BattlePlayLoop.unit(scene.play_loop, "enemy026_1")
 	if mode == "ai_empty_mp":
 		check(action.get("kind") == "use_item" and caster["mp"] == 0 and caster["hp"] > 4, "actual AI falls back to medicine with no MP")
 	else:
-		check(action.get("skill_id") == (Cases.CURE if mode == "ai_cure" else Cases.HEAL) and action.get("defender_id") == "enemy026_1", "actual Wait leads to exactly the intended self spell")
+		check(action.get("skill_id") == (run_support_magic_tests.CURE if mode == "ai_cure" else run_support_magic_tests.HEAL) and action.get("defender_id") == "enemy026_1", "actual Wait leads to exactly the intended self spell")
 		check(caster["mp"] == (96 if mode == "ai_cure" else 94) and caster["inventory"][0] == 241, "AI magic consumes one fee and preserves its medicine")
 		if mode == "ai_cure": check(caster["status_counters"]["poison"] == 0 and caster["hp"] == 100, "self cure prevents the following owner poison tick")
 	check(scene.play_loop["turn_queue"]["index"] == 2 and scene.play_loop["last_ai_actions"].size() == 1, "Wait, one AI action, then one controllable successor")
@@ -275,7 +275,7 @@ func check(ok: bool, label: String) -> void:
 		push_error(mode + ": " + label)
 
 
-## A caption Label's rect, or a result number's (ResultNumberFloat) glyph rect at its current rise.
+## A caption Label's rect, or a result number's (ResultNumberFloater) glyph rect at its current rise.
 func feedback_rect(node: Node) -> Rect2:
 	if node is Node2D:
 		var rect: Rect2 = node.bounds()

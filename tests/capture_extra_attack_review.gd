@@ -1,6 +1,6 @@
 extends "res://tests/capture_ordinary_special_review.gd"
 ## Real buttons/map input, unchanged clocks, source art/audio and explicit fixtures.
-const ExtraCases = preload("res://tests/run_extra_attack_tests.gd")
+const run_extra_attack_tests = preload("res://tests/run_extra_attack_tests.gd")
 const OUTPUT := "res://ignored/extra-attack-review/"
 var snapshots: Array = []
 
@@ -43,12 +43,12 @@ func prepare_case() -> void:
 	scene.set_process(false)
 	await create_timer(0.15).timeout
 	scene.get_node("BattleMusic").stop()
-	var loop := ExtraCases.fixture(mode != "equip_move" and mode != "counter_defeat", mode in ["double_counter","counter_defeat","ai_move"])
+	var loop := run_extra_attack_tests.fixture(mode != "equip_move" and mode != "counter_defeat", mode in ["double_counter","counter_defeat","ai_move"])
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
 	for unit in loop["units"]: unit["hp"] = 500; unit["max_hp"] = 500
-	var owner := Loop._unit(loop,"leonard")
-	var target := Loop._unit(loop,"enemy021_1")
+	var owner := BattlePlayLoop._unit(loop,"leonard")
+	var target := BattlePlayLoop._unit(loop,"enemy021_1")
 	if mode == "equip_move":
 		owner["inventory"] = [12,0,0,0,0,0,0,0]
 		target["coord"] = Vector2i(10,8)
@@ -77,22 +77,22 @@ func prepare_case() -> void:
 		owner["combat_profile"]["live_hit_ratio"] = 0
 		target["combat_profile"]["avoid_hit_ratio"] = 20
 	if mode == "special":
-		owner.merge(Loop.StatusEffectRules.apply(owner,"no_magic",2)["changes"],true)
-		Loop.skill_fields(loop,"special:magicOTHER:magicCode01")["hit_ratio"] = "100"
+		owner.merge(BattlePlayLoop.StatusEffectRules.apply(owner,"no_magic",2)["changes"],true)
+		BattlePlayLoop.skill_fields(loop,"special:magicOTHER:magicCode01")["hit_ratio"] = "100"
 	if mode in ["final_kill","escape"]:
 		loop["turn"] = 6
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
 		if mode == "escape":
-			Loop._unit(loop,"leonard")["coord"] = loop["escape_zone"][0]
-			Loop._unit(loop,"leonard")["exp"] = 23
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop,"leonard"), "test")
+			BattlePlayLoop._unit(loop,"leonard")["coord"] = loop["escape_zone"][0]
+			BattlePlayLoop._unit(loop,"leonard")["exp"] = 23
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"leonard"), "test")
 	scene.settlement_controller.checkpoint_path = OUTPUT + mode + ".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()
 	for unit in scene.play_loop["units"]: unit["grid_coord"] = unit["coord"]
 	scene.resume_turn_presentation()
-	scene.center_camera_on_grid(Loop.unit(scene.play_loop,"leonard")["coord"])
+	scene.center_camera_on_grid(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"])
 	var view = scene.get_node("BattlePresentation")
 	view.experience_presented.connect(func(growth):experience_events.append(growth.duplicate(true)))
 	view.cutin.released.connect(func(s,_a,_d,c):cues.append(["release",c,int(s.get("strike_number",1))]))
@@ -104,15 +104,15 @@ func prepare_case() -> void:
 func play_case() -> void:
 	if mode == "equip_move":
 		await equip(12,true)
-		check(Loop.attack_count(scene.play_loop,Loop.unit(scene.play_loop,"leonard"))["count"] == 2,"actual sword confirmation enables one extra strike")
-		var old_coord: Vector2i = Loop.unit(scene.play_loop,"leonard")["coord"]
+		check(BattlePlayLoop.attack_count(scene.play_loop,BattlePlayLoop.unit(scene.play_loop,"leonard"))["count"] == 2,"actual sword confirmation enables one extra strike")
+		var old_coord: Vector2i = BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"]
 		await click(scene.action_menu.get_node("MoveCommand"))
-		check(Loop.movement_cells(scene.play_loop).has(Vector2i(9,8)),"source map has a legal approach to the target")
+		check(BattlePlayLoop.movement_cells(scene.play_loop).has(Vector2i(9,8)),"source map has a legal approach to the target")
 		await point(scene.grid_cell_center_to_logical_position(Vector2i(9,8)))
 		for _attempt in range(200):
 			if not scene.has_actor_motion() and scene.action_menu.visible and not scene.action_menu.is_expanding(): break
 			await create_timer(0.02).timeout
-		check(Loop.unit(scene.play_loop,"leonard")["coord"] != old_coord and scene.pending_move_revert,"real Move reaches a pending position before attack")
+		check(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"] != old_coord and scene.pending_move_revert,"real Move reaches a pending position before attack")
 	var before: Dictionary = scene.play_loop.duplicate(true)
 	if mode in ["ai_move","escape"]:
 		await click(scene.action_menu.get_node("WaitCommand"))
@@ -120,7 +120,7 @@ func play_case() -> void:
 		var command := "SpecialCommand" if mode == "special" else "AttackCommand"
 		await click(scene.action_menu.get_node(command))
 		if scene.play_loop["interaction"] == "special_select": await click(scene.magic_panel.choices["special:magicOTHER:magicCode01"])
-		await hover(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,"enemy021_1")["coord"]))
+		await hover(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"enemy021_1")["coord"]))
 		check(scene.interaction_state == "attack_select","real control enters targeting")
 		check(not scene.get_node("BattlePresentation").combat_label.visible,"target preview shows no overhead 命中／2擊 line (UI6 照原版)")
 		await shot("target")
@@ -129,13 +129,13 @@ func play_case() -> void:
 		await create_timer(0.3).timeout
 		await click(scene.action_menu.get_node(command))
 		if scene.play_loop["interaction"] == "special_select": await click(scene.magic_panel.choices["special:magicOTHER:magicCode01"])
-		await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,"enemy021_1")["coord"]))
+		await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"enemy021_1")["coord"]))
 		receipt = scene.play_loop["last_attack"].duplicate(true)
 	await await_finished()
 	if mode == "escape":
-		check(cues.is_empty() and experience_events.is_empty() and Loop.unit(scene.play_loop,"leonard")["exp"] == 23,"Wait/escape does not turn the extra-hit passive into a second action or EXP award")
+		check(cues.is_empty() and experience_events.is_empty() and BattlePlayLoop.unit(scene.play_loop,"leonard")["exp"] == 23,"Wait/escape does not turn the extra-hit passive into a second action or EXP award")
 	else:
-		var strikes := Loop.CombatSequence.strikes(receipt)
+		var strikes := BattlePlayLoop.CombatSequence.strikes(receipt)
 		var expected: Array = []
 		for strike in strikes:
 			expected.append(["release",bool(strike.get("is_counter",false)),int(strike.get("strike_number",1))])
@@ -149,12 +149,12 @@ func play_case() -> void:
 		check(not sound_paths.is_empty(),"actual source audio advances during playback")
 		if mode == "ai_move": check(observed.has("movement") and receipt["attacker_id"] == "enemy021_1" and scene.play_loop["last_ai_actions"].size() == 1,"AI movement, two blows and two counterblows are one accepted action")
 		if mode in ["early_kill","late_kill","final_kill"]:
-			check(Loop.unit(scene.play_loop,"enemy021_1")["defeated"] and receipt["rewards"]["kills"].size() == 1 and observed.has("dialogue") and observed.has("experience"),"early/late lethal hit retains actor until dialogue and earns one kill/EXP award")
+			check(BattlePlayLoop.unit(scene.play_loop,"enemy021_1")["defeated"] and receipt["rewards"]["kills"].size() == 1 and observed.has("dialogue") and observed.has("experience"),"early/late lethal hit retains actor until dialogue and earns one kill/EXP award")
 		if mode == "miss":
 			check(strikes.any(func(hit):return not hit["hit"]),"low-accuracy real input route includes a naturally missed blow")
 			for hit in strikes:
 				if not hit["hit"]: check(hit["actual_damage"] == 0 and hit["experience_basis"]["points"] == 0,"a missed blow has no fake damage or EXP even when another blow hits")
-		if mode == "special": check(Loop.unit(scene.play_loop,"leonard")["stamina"] == 0,"extra attack does not duplicate a legal special under silence or charge it twice")
+		if mode == "special": check(BattlePlayLoop.unit(scene.play_loop,"leonard")["stamina"] == 0,"extra attack does not duplicate a legal special under silence or charge it twice")
 		if mode not in ["counter_defeat","final_kill"]: check(scene.play_loop["turn_queue"]["index"] == (2 if mode == "ai_move" else 1),"entire series hands control to exactly the expected successor")
 	var terminal := mode in ["counter_defeat","final_kill","escape"]
 	if terminal:
@@ -163,14 +163,14 @@ func play_case() -> void:
 		await key(KEY_F9)
 		check(scene.play_loop == saved,"terminal save/load preserves every hit, kill and final award without replay")
 		await shot("restored")
-	routes.append({"mode":mode,"receipt":receipt,"actor":compact(Loop.unit(scene.play_loop,"leonard")),"cues":cues,"experience_events":experience_events,"observed":observed,"snapshots":snapshots,"sounds":sound_paths.keys(),"outcome":scene.play_loop["battle_outcome"],"next_actor":scene.selected_unit_id})
+	routes.append({"mode":mode,"receipt":receipt,"actor":compact(BattlePlayLoop.unit(scene.play_loop,"leonard")),"cues":cues,"experience_events":experience_events,"observed":observed,"snapshots":snapshots,"sounds":sound_paths.keys(),"outcome":scene.play_loop["battle_outcome"],"next_actor":scene.selected_unit_id})
 	if terminal:
 		reload_current_scene()
 		for _attempt in range(20):
 			if is_instance_valid(current_scene): break
 			await process_frame
 		scene = current_scene
-		var restarted: bool = is_instance_valid(scene) and not BattleOutcome.decided(scene.play_loop) and Loop.unit(scene.play_loop,"leonard")["hp"] == 30
+		var restarted: bool = is_instance_valid(scene) and not BattleOutcome.decided(scene.play_loop) and BattlePlayLoop.unit(scene.play_loop,"leonard")["hp"] == 30
 		check(restarted,"real retry starts the unchanged default battle")
 		routes.back()["restarted"] = restarted
 

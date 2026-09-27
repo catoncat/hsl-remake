@@ -3,9 +3,9 @@ extends SceneTree
 ## still pending: the loot window is not a quiet boundary) and saves after the hand-off,
 ## resume loads that save with F9 in a new process. Fixtures change HP/stock/initiative,
 ## never rewards.
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Cases = preload("res://tests/run_battle_reward_tests.gd")
-const Save = preload("res://game/battle/runtime/BattleCheckpoint.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const run_battle_reward_tests = preload("res://tests/run_battle_reward_tests.gd")
+const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const OUT := "res://ignored/battle-reward-review/"
@@ -40,7 +40,7 @@ func run() -> void:
 	create_timer(150).timeout.connect(func(): push_error("Reward review timed out"); quit(2))
 	if mode == "prepare":
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
-		await setup(Cases.fixture())
+		await setup(run_battle_reward_tests.fixture())
 		await attack_to_loot("initial")
 		var panel = scene.settlement_controller.panel
 		check(scene.play_loop["gold"] == 100 and panel.rows.size() == 2, "one real strike generates the two carried important items and $100")
@@ -52,7 +52,7 @@ func run() -> void:
 		check(scene.play_loop == before and not panel.holding(), "倉庫 returns the held item to the pool without moving inventory")
 		await click(panel.rows[0])
 		await key(KEY_ESCAPE)
-		check(scene.play_loop["settlement"]["pending"].size() == 1 and Loop.unit(scene.play_loop, "leonard")["inventory"].count(281) == 1, "Esc drops the held item into the first free bag slot, claiming exactly one instance")
+		check(scene.play_loop["settlement"]["pending"].size() == 1 and BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].count(281) == 1, "Esc drops the held item into the first free bag slot, claiming exactly one instance")
 		await key(KEY_F5)
 		check(not FileAccess.file_exists(PATH), "F5 is refused while loot is still pending (Loop.loot_waiting is not a quiet boundary)")
 		await shot("partial-save-refused")
@@ -71,14 +71,14 @@ func run() -> void:
 		await create_timer(0.4).timeout
 		check(scene.selected_unit_id == "enemy023_1" and scene.play_loop["turn_queue"]["index"] == 1, "completed loot hands off exactly once to the next controlled actor")
 		await key(KEY_F5)
-		var saved := Save.read(PATH, scene.play_loop)
+		var saved := BattleCheckpoint.read(PATH, scene.play_loop)
 		check(saved["ok"] and saved["snapshot"]["loop"] == scene.play_loop, "F5 after the hand-off saves the claimed state")
 		await shot("claimed-saved")
 	else:
 		# The fixture scenario has no product opening (so no Continue Save button): F9 loads the checkpoint.
 		await setup({})
 		await shot("startup-resume")
-		var saved := Save.read(PATH, scene.play_loop)
+		var saved := BattleCheckpoint.read(PATH, scene.play_loop)
 		check(saved["ok"], "previous process left a valid checkpoint")
 		await key(KEY_F9)
 		await create_timer(0.4).timeout
@@ -107,7 +107,7 @@ func setup(loop: Dictionary, post_report: bool = false) -> void:
 	scene.settlement_controller.checkpoint_path = PATH
 	if not loop.is_empty():
 		scene.start_dev_first_control_harness()
-		Loop._unit(loop, "leonard")["hit_bonus_accum"] = 9
+		BattlePlayLoop._unit(loop, "leonard")["hit_bonus_accum"] = 9
 		scene.apply_loop(loop, "test")
 		for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 		scene.unit_grid_coords.clear()
@@ -121,7 +121,7 @@ func setup(loop: Dictionary, post_report: bool = false) -> void:
 func attack_to_loot(label: String) -> void:
 	await click(scene.action_menu.get_node("AttackCommand"))
 	check(scene.interaction_state == "attack_select", "visible Attack enters target selection")
-	await click_point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop, "enemy021_1")["coord"]))
+	await click_point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop, "enemy021_1")["coord"]))
 	var view = scene.get_node("BattlePresentation")
 	for _attempt in range(1200):
 		await create_timer(0.025).timeout
@@ -136,7 +136,7 @@ func attack_to_loot(label: String) -> void:
 
 
 func full_inventory() -> void:
-	await setup(Cases.fixture(true))
+	await setup(run_battle_reward_tests.fixture(true))
 	await attack_to_loot("full")
 	var panel = scene.settlement_controller.panel
 	var before: Dictionary = scene.play_loop.duplicate(true)
@@ -148,7 +148,7 @@ func full_inventory() -> void:
 	check(scene.play_loop == before and not panel.holding(), "returned item preserves both pools")
 	await click(panel.rows[0])
 	await click(panel.slots[0])
-	check(Loop.unit(scene.play_loop, "leonard")["inventory"].has(281) and scene.play_loop["settlement"]["pending"][0]["code"] == 241, "displaced medicine remains in loot after exchange")
+	check(BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].has(281) and scene.play_loop["settlement"]["pending"][0]["code"] == 241, "displaced medicine remains in loot after exchange")
 	await shot("full-exchanged")
 	await click(panel.rows[1])
 	await click(panel.slots[1])
@@ -175,13 +175,13 @@ func full_inventory() -> void:
 	check(panel.visible and panel.rows.size() == 1 and scene.play_loop["settlement"]["pending"].size() == 2, "next actor can reopen deferred items through Status as one (code, 2) row")
 	await click(panel.drop_button)
 	await click(panel.drop_button)
-	check(scene.play_loop["settlement"]["abandoned"].size() == 2 and scene.play_loop["gold"] == 100 and Loop.unit(scene.play_loop, "leonard")["inventory"].has(282), "confirmed abandonment preserves accepted items and wallet")
+	check(scene.play_loop["settlement"]["abandoned"].size() == 2 and scene.play_loop["gold"] == 100 and BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].has(282), "confirmed abandonment preserves accepted items and wallet")
 
 
 func terminal_loot() -> void:
-	var loop := Cases.fixture()
+	var loop := run_battle_reward_tests.fixture()
 	loop["units"] = loop["units"].filter(func(actor): return actor["id"] in ["leonard", "enemy021_1"])
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 	loop["turn"] = 6
 	await setup(loop, true) # Explicit post-report fixture; victory itself is not overridden.
 	await attack_to_loot("terminal")

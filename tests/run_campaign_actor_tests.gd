@@ -1,8 +1,8 @@
 extends "res://tests/support/TestSuite.gd"
-const Initialize = preload("res://game/sim/ActorInitializationRules.gd")
-const Growth = preload("res://game/sim/ProgressionRules.gd")
-const Entry = preload("res://game/sim/EntryGrowthRules.gd")
-const Equipment = preload("res://game/sim/EquipmentRules.gd")
+const ActorInitializationRules = preload("res://game/sim/ActorInitializationRules.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
+const EntryGrowthRules = preload("res://game/sim/EntryGrowthRules.gd")
+const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const ELEMENTS := ["magicEARTH","magicWATER","magicAIR","magicFIRE","magicMIND","magicOTHER","magicOTHER2"]
 
 ## Actors whose template declares source.runtime_blockers (collected while iterating the
@@ -48,7 +48,7 @@ func run() -> void:
 		var actor: Dictionary = data["actor"].duplicate(true)
 		actor["coord"] = Vector2i.ZERO
 		var before := actor.duplicate(true)
-		var prepared := Initialize.prepare(actor,book,ai,progression,{},equipment,0)
+		var prepared := ActorInitializationRules.prepare(actor,book,ai,progression,{},equipment,0)
 		check(actor == before,"initialization leaves source template immutable: "+code)
 		var blockers: Array = data["source"].get("runtime_blockers", [])
 		if not blockers.is_empty():
@@ -59,13 +59,13 @@ func run() -> void:
 			blocked_actors.append(code)
 			check(not prepared["ok"] and prepared["reason"] == "unsupported_equipment","source blocker is explicit, not a silent substitute: "+code)
 			actor["equipment"] = []
-			prepared = Initialize.prepare(actor,book,ai,progression,{},equipment,0)
+			prepared = ActorInitializationRules.prepare(actor,book,ai,progression,{},equipment,0)
 		check(prepared["ok"],"source actor initializes with complete dependencies: "+code)
 		if not prepared["ok"]: continue
 		templates[code] = prepared["actor"]
 		initial_rows += 1
 		check(prepared["actor"]["traversal"] == data["source"]["traversal"],"source traversal survives initialization: "+code)
-		check(Growth.JobStats.supported(prepared["actor"]["growth_profile"]),"source numeric job is supported: "+code)
+		check(ProgressionRules.JobStats.supported(prepared["actor"]["growth_profile"]),"source numeric job is supported: "+code)
 	check(templates.size() == initial_rows and initial_rows >= 25,"all requested and encounter source templates exist (%d)" % initial_rows)
 	for row in packet["stats"]:
 		var c: Dictionary = row["input"]
@@ -77,10 +77,10 @@ func run() -> void:
 		actor["combat_profile"].merge(c["attributes"],true)
 		actor.merge({"hp":int(c["hp"]),"mp":int(c["mp"]),"level":int(c["level"]),"base_move_point":int(c["base_move"]),"equipment":[]},true)
 		for i in range(6):
-			if int(c["equipment"][i]): actor["equipment"].append({"slot":Equipment.SLOTS[i],"item_code":int(c["equipment"][i])})
-		check(Growth.refresh_input_error(actor,equipment) == "","numeric input remains valid: "+str(c))
+			if int(c["equipment"][i]): actor["equipment"].append({"slot":EquipmentRules.SLOTS[i],"item_code":int(c["equipment"][i])})
+		check(ProgressionRules.refresh_input_error(actor,equipment) == "","numeric input remains valid: "+str(c))
 		for native in row["native"]:
-			actor = Growth.refresh_growth_stats(actor,equipment)
+			actor = ProgressionRules.refresh_growth_stats(actor,equipment)
 			var expected: Dictionary = native["values"]
 			for key in ["max_hp","max_mp","move_point"]: check(actor[key] == expected[key],"complete native refresh "+key)
 			check(actor["hp"] == expected["current_hp"] and actor["mp"] == expected["current_mp"] and actor["live_speed"] == expected["speed"],"native current-resource clamps and speed")
@@ -92,16 +92,16 @@ func run() -> void:
 		var expected: Dictionary = row["native"]
 		var profile: Dictionary = roles[c["actor"]]["profile"]
 		if c["kind"] == "infer":
-			check(Entry.inferred_level(c["attributes"]) == int(expected["level"]),"source level inference")
+			check(EntryGrowthRules.inferred_level(c["attributes"]) == int(expected["level"]),"source level inference")
 			continue
 		if c["kind"] == "allocate":
-			var allocation := Entry.allocate(c["attributes"],int(c["level"]),int(c["exp"]),mini(2000,(int(c["level"])+1)*50),profile["caps"],int(profile["job_code"]),int(c["points"]))
+			var allocation := EntryGrowthRules.allocate(c["attributes"],int(c["level"]),int(c["exp"]),mini(2000,(int(c["level"])+1)*50),profile["caps"],int(profile["job_code"]),int(c["points"]))
 			check(allocation["attributes"] == expected["attributes"] and allocation["level"] == int(expected["level"]) and allocation["exp"] == int(expected["exp"]),"new job native quotas and cap fallback")
 			continue
 		var source: Dictionary = entry_sources[c["actor"]]
 		var input := {"job":int(profile["job_code"]),"caps":profile["caps"],"attributes":c["attributes"],"level":int(c["level"]),"exp":int(c["exp"]),"stamina":int(c["stamina"]),"object_kind":int(c["object_kind"]),"parameters":[int(c["range"]),int(c["dispersion"])],"party_levels":c["party"],"gold":int(source["gold"]),"kill_exp":int(source["kill_exp"])}
 		var cursor := [0]
-		var proposal := Entry.propose(input,func(bound):
+		var proposal := EntryGrowthRules.propose(input,func(bound):
 			check(cursor[0] < row["draws"].size(),"no extra birth draw")
 			if cursor[0] >= row["draws"].size(): return 0
 			var draw: Dictionary = row["draws"][cursor[0]]; cursor[0] += 1
@@ -110,7 +110,7 @@ func run() -> void:
 		check(proposal["ok"] and cursor[0] == row["draws"].size(),"new job entry adjustment completes")
 		if not proposal["ok"]: continue
 		for key in ["level","exp","stamina","gold","kill_exp","attributes"]: check(proposal["result"][key] == expected[key],"original adjusted "+key)
-		for key in Entry.SOURCE_KEYS: check(int(profile["source"][key])+int(proposal["result"]["source_gains"][key]) == int(expected["source"][key]),"independent birth source layer")
+		for key in EntryGrowthRules.SOURCE_KEYS: check(int(profile["source"][key])+int(proposal["result"]["source_gains"][key]) == int(expected["source"][key]),"independent birth source layer")
 	learning_cases(packet,book)
 
 func learning_cases(packet: Dictionary, book: Dictionary) -> void:
@@ -122,9 +122,9 @@ func learning_cases(packet: Dictionary, book: Dictionary) -> void:
 		for element in ELEMENTS: masks[c["kind"]+":"+element] = 0xffffffff if c["existing"] else 0
 		sample["learning"]["actors"]["fixture"] = masks
 		var attrs := {}
-		for i in range(4): attrs[Entry.KEYS[i]] = int(c["attributes"][i])
+		for i in range(4): attrs[EntryGrowthRules.KEYS[i]] = int(c["attributes"][i])
 		var actor := {"actor_id":"fixture","growth_profile":{"job_code":int(c["job"]),"allocation":"manual"},"level":int(c["level"])+1,"combat_profile":attrs,"learned_skills":[]}
-		var acquired := Growth.Learning.acquire(actor,sample,c["kind"])
+		var acquired := ProgressionRules.Learning.acquire(actor,sample,c["kind"])
 		var actual: Array = row["native"]["masks"].map(func(_x):return 0xffffffff if c["existing"] else 0)
 		for learned in acquired["added"]:
 			var pieces: PackedStringArray = learned["id"].split(":")

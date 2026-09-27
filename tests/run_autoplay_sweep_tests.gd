@@ -45,10 +45,10 @@ const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
-const Brain = preload("res://tests/support/AutoplayBrain.gd")
+const AutoplayBrain = preload("res://tests/support/AutoplayBrain.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const RegenDiff = preload("res://tests/support/RegenDiff.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 
 const RESULTS_PATH := "res://content/generated/hsl/development/autoplay/results.json"
 const COMPARISON_PATH := "res://content/generated/hsl/development/autoplay/brain_comparison.json"
@@ -78,7 +78,7 @@ func _run() -> void:
 	var only: Array = Array(OS.get_environment("HSL_AUTOPLAY_LEVELS").split(",", false))
 	if only.is_empty():
 		only = Array(OS.get_environment("HSL_SWEEP_LEVELS").split(",", false))
-	var mode := Brain.mode_from_environment()
+	var mode := AutoplayBrain.mode_from_environment()
 	var known := _load_known_dead_ends()
 	var loop_seed := Autoplay.ensure_loop_seed()
 	var party: Array = Array(OS.get_environment("HSL_AUTOPLAY_PARTY").split(",", false))
@@ -98,7 +98,7 @@ func _run() -> void:
 			continue
 		var result := await _autoplay_battle(str(key), str(entry.get("scenario", "")), party, mode, handoff)
 		var line := Autoplay.format_line(str(key), result)
-		if mode != Brain.MODE_GREEDY:
+		if mode != AutoplayBrain.MODE_GREEDY:
 			line += " brain=%s plans=%d kinds=%s allocations=%d actions=%s" % [mode, int(result["brain"]["plans"]), JSON.stringify(result["brain"]["plan_kinds"]), int(result["brain"]["allocations"]), JSON.stringify(result["actions"])]
 			if result["brain"].has("lookahead"):
 				line += " lookahead=%s" % JSON.stringify(result["brain"]["lookahead"])
@@ -113,12 +113,12 @@ func _run() -> void:
 	var seconds := float(Time.get_ticks_msec() - started) / 1000.0
 	_assert_true(unknown_dead_ends.is_empty(), "every dead_end is listed in %s: unknown=%s" % [KNOWN_DEAD_ENDS_PATH, str(unknown_dead_ends)])
 	var compared := ""
-	if only.is_empty() and party.is_empty() and handoff.is_empty() and mode == Brain.MODE_GREEDY and loop_seed == Autoplay.DEFAULT_LOOP_SEED and is_equal_approx(Autoplay.stat_scale_from_environment(), 1.0):
+	if only.is_empty() and party.is_empty() and handoff.is_empty() and mode == AutoplayBrain.MODE_GREEDY and loop_seed == Autoplay.DEFAULT_LOOP_SEED and is_equal_approx(Autoplay.stat_scale_from_environment(), 1.0):
 		compared = _write_and_compare_results(results, loop_seed)
 	await TestSuite.settle_wall_clock(self, 0.3)
 	await process_frame
 	var summary := "battles=%d win=%d fail=%d dead_end=%d seconds=%.1f" % [results.size(), tally[Autoplay.OUTCOME_WIN], tally[Autoplay.OUTCOME_FAIL], tally[Autoplay.OUTCOME_DEAD_END], seconds]
-	if mode != Brain.MODE_GREEDY:
+	if mode != AutoplayBrain.MODE_GREEDY:
 		summary += " brain=%s" % mode
 	if not known_dead_ends.is_empty():
 		summary += " known_dead_ends=%s" % ",".join(known_dead_ends)
@@ -139,9 +139,9 @@ func _run_compare(campaign: Dictionary) -> void:
 	Autoplay.ensure_loop_seed()
 	var modes: Array = Array(OS.get_environment("HSL_AUTOPLAY_BRAIN_MODES").split(",", false))
 	if modes.is_empty():
-		modes = [Brain.MODE_GREEDY, Brain.MODE_SCORED]
+		modes = [AutoplayBrain.MODE_GREEDY, AutoplayBrain.MODE_SCORED]
 	for mode in modes:
-		_assert_true(mode in Brain.MODES, "HSL_AUTOPLAY_BRAIN_MODES entry %s is a known brain mode %s" % [str(mode), str(Brain.MODES)])
+		_assert_true(mode in AutoplayBrain.MODES, "HSL_AUTOPLAY_BRAIN_MODES entry %s is a known brain mode %s" % [str(mode), str(AutoplayBrain.MODES)])
 	var repeats := COMPARE_REPEATS
 	if OS.get_environment("HSL_AUTOPLAY_BRAIN_REPEATS").is_valid_int():
 		repeats = maxi(1, int(OS.get_environment("HSL_AUTOPLAY_BRAIN_REPEATS")))
@@ -188,7 +188,7 @@ func _run_compare(campaign: Dictionary) -> void:
 	if only.is_empty() and failures.is_empty():
 		var policies := {}
 		for mode in modes:
-			policies[mode] = Brain.POLICIES[mode]
+			policies[mode] = AutoplayBrain.POLICIES[mode]
 		var payload := {"schema": "hsl_autoplay_brain_comparison.v1", "policies": policies,
 			"selection": "first %d main-line battles (key < 500) whose greedy outcome in results.json is fail, in campaign order" % COMPARE_BATTLES,
 			"round_limit": Autoplay.DEFAULT_ROUND_LIMIT, "seed": Autoplay.ensure_loop_seed(), "repeats": repeats, "modes": modes, "levels": levels, "evidence_tier": "current-godot",
@@ -247,7 +247,7 @@ func _saved_handoff(path: String) -> Dictionary:
 func _boot(path: String, party: Array, handoff: Dictionary = {}) -> Node:
 	# Each battle starts the process's global stream afresh from the seed, so a battle's AI
 	# and opening levels do not depend on which battles a shard played before it.
-	GlobalRandom.reset_session()
+	GlobalRandomStream.reset_session()
 	CampaignProgress.pending = {}
 	if not handoff.is_empty():
 		CampaignProgress.pending = handoff.duplicate(true)
@@ -283,7 +283,7 @@ func _party_carry(path: String, party: Array) -> Dictionary:
 	return {"schema": "hsl_campaign_carry.v1", "units": units, "loop": {}, "restore_vitals": true}
 
 
-func _autoplay_battle(key: String, path: String, party: Array, mode: String = Brain.MODE_GREEDY, handoff: Dictionary = {}) -> Dictionary:
+func _autoplay_battle(key: String, path: String, party: Array, mode: String = AutoplayBrain.MODE_GREEDY, handoff: Dictionary = {}) -> Dictionary:
 	var label := "level %s (%s)" % [key, path.get_file()]
 	var scene = await _boot(path, party, handoff)
 	var result: Dictionary
@@ -294,7 +294,7 @@ func _autoplay_battle(key: String, path: String, party: Array, mode: String = Br
 		var scaled := Autoplay.apply_stat_scale(scene.play_loop, Autoplay.stat_scale_from_environment())
 		if not (scaled["scaled"] as Array).is_empty():
 			scene.apply_loop(scaled["loop"], "test")
-		result = await Autoplay.play_battle(self, scene, Autoplay.DEFAULT_ROUND_LIMIT, Autoplay.ensure_loop_seed(), Brain.create(mode))
+		result = await Autoplay.play_battle(self, scene, Autoplay.DEFAULT_ROUND_LIMIT, Autoplay.ensure_loop_seed(), AutoplayBrain.create(mode))
 	CampaignProgress.pending = {}
 	await _free(scene)
 	return result

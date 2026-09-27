@@ -9,7 +9,7 @@ extends SceneTree
 ## ignored/r7-dialogue-board-review/. Needs a rendered window.
 ##
 ##   tools/godot.sh --script res://tests/capture_dialogue_board_review.gd
-const Dialogue = preload("res://game/battle/scene/BattleDialogue.gd")
+const BattleDialogue = preload("res://game/battle/scene/BattleDialogue.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const OUT := "res://ignored/r7-dialogue-board-review/"
 var failures: Array[String] = []
@@ -36,7 +36,7 @@ func run() -> void:
 		tile.size = Vector2(64, 60)
 		tile.color = Color(0.55, 0.5, 0.42) if (index + index / 10) % 2 == 0 else Color(0.35, 0.42, 0.3)
 		stage.add_child(tile)
-	var board = Dialogue.new()
+	var board = BattleDialogue.new()
 	stage.add_child(board)
 	await process_frame
 	board.set_process(false)
@@ -59,20 +59,20 @@ func run() -> void:
 	_check(board.end_marker.visible and board.window_rows()[3] == "!!", "369's last page ends on !! with □")
 	board.clear_message()
 	# The closed board leaves a dissolving copy on the scene clock; let it go before the next shot.
-	await create_timer(Dialogue.DISSOLVE_OUT_SECONDS + 0.1).timeout
+	await create_timer(BattleDialogue.DISSOLVE_OUT_SECONDS + 0.1).timeout
 	board.configure_portraits("res://content/imported/hsl/chapter01/battle063/portraits/manifest.json")
 	var hall: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/imported/hsl/chapter01/battle063/message_text_evidence.json"))["messages"]
 	board.show_face_message("997", "???", str(hall["997"]), "SHAPE\\FACE0054.SHP")
 	_step(board, 60)
 	await shot("05-shape-message-top-slot")
-	_check(board.position.y == Dialogue.PANEL_TOP_TOP_SLOT, "the actShapeMessage line is on the top slot")
+	_check(board.position.y == BattleDialogue.PANEL_TOP_TOP_SLOT, "the actShapeMessage line is on the top slot")
 	board.clear_message()
 	# The closed board leaves a dissolving copy on the scene clock; let it go before the next shot.
-	await create_timer(Dialogue.DISSOLVE_OUT_SECONDS + 0.1).timeout
+	await create_timer(BattleDialogue.DISSOLVE_OUT_SECONDS + 0.1).timeout
 	board.show_narration("712", "不好啦！")
 	_step(board, 60)
 	await shot("06-narration-centred")
-	_check(board.position.x + Dialogue.BOARD_AT.x == Dialogue.NARRATION_BOARD_X, "the narration board is centred")
+	_check(board.position.x + BattleDialogue.BOARD_AT.x == BattleDialogue.NARRATION_BOARD_X, "the narration board is centred")
 	print("DIALOGUE_BOARD_REVIEW_", "PASS" if failures.is_empty() else "FAIL", " out=", OUT)
 	for failure in failures:
 		push_error(failure)

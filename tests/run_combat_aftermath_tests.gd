@@ -1,12 +1,12 @@
 extends SceneTree
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -24,7 +24,7 @@ func check(ok: bool, label: String) -> void:
 func fixture() -> Node:
 	# Every fixture boots from the seeded global stream, not from where the previous
 	# fixture's opening and AI left the process stream (opening levels decide the gold).
-	GlobalRandom.reset_session()
+	GlobalRandomStream.reset_session()
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
 	root.add_child(scene)
@@ -32,20 +32,20 @@ func fixture() -> Node:
 	scene.set_process(false)
 	TestSuite.stop_audio(scene.get_node("BattleMusic"))
 	scene.get_node("BattlePresentation").cutin.set_process(false)
-	var player := Loop._unit(scene.play_loop, "leonard")
+	var player := BattlePlayLoop._unit(scene.play_loop, "leonard")
 	player["live_speed"] = 100
 	player["stamina"] = 60
-	var next := Loop._unit(scene.play_loop, "enemy023_1")
+	var next := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
 	next["growth_profile"]["source"]["speed"] += 99 - int(next["live_speed"])
-	next.merge(Loop.ProgressionRules.refresh_growth_stats(next,scene.play_loop["equipment_items"]),true)
+	next.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(next,scene.play_loop["equipment_items"]),true)
 	next["player_commandable"] = true
-	next["battle_actor_role"] = Loop.ROLE_PLAYER
-	var enemy := Loop._unit(scene.play_loop, "enemy021_1")
+	next["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
+	var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.UP
 	enemy["hp"] = 1
 	enemy["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0] # This suite isolates death/EXP/gold; loot has its own live tests.
-	scene.play_loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(scene.play_loop["units"])
-	scene.apply_loop(Loop.select_player_unit(scene.play_loop, "leonard"), "test")
+	scene.play_loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(scene.play_loop["units"])
+	scene.apply_loop(BattlePlayLoop.select_player_unit(scene.play_loop, "leonard"), "test")
 	scene.ai_playback_active = false
 	scene.interaction_state = "action_menu"
 	scene.apply_loop(scene.play_loop, "test")
@@ -55,7 +55,7 @@ func fixture() -> Node:
 func attack(scene: Node, command: String = "attack", missed: bool = false) -> void:
 	scene.menus.choose_command(command)
 	if command == "special": scene.menus._choose_magic("special:magicOTHER:magicCode01")
-	scene.apply_loop(Loop.attack_target(scene.play_loop, "enemy021_1", func(n): return n - 1 if missed else 0), "test")
+	scene.apply_loop(BattlePlayLoop.attack_target(scene.play_loop, "enemy021_1", func(n): return n - 1 if missed else 0), "test")
 	scene.finish_attack_attempt()
 
 
@@ -72,7 +72,7 @@ func finish_cutin(scene: Node) -> void:
 ## on BattleAftermath.disposal_started — the one death-sound entry for every death source).
 func death_sounds(scene: Node, unit_id: String) -> int:
 	var view = scene.get_node("BattlePresentation")
-	var path := ActorSpriteKey.audio_binding(Loop.unit(scene.play_loop, unit_id), "dead", [view.audio_manifest, view.shared_audio_manifest])
+	var path := ActorSpriteKey.audio_binding(BattlePlayLoop.unit(scene.play_loop, unit_id), "dead", [view.audio_manifest, view.shared_audio_manifest])
 	check(path != "", "the death sound of %s is bound" % unit_id)
 	var count := 0
 	for child in view.get_children():
@@ -148,20 +148,20 @@ func lethal_case(command: String, fps: int) -> void:
 	tail.experience_presented.connect(func(growth): rewards.append(growth))
 	var level_ups: Array = []
 	tail.level_up_presented.connect(func(growth): level_ups.append(growth))
-	Loop._unit(scene.play_loop, "leonard")["exp"] = 99
+	BattlePlayLoop._unit(scene.play_loop, "leonard")["exp"] = 99
 	scene._process(0)
 	check(scene.actor_node_for_unit("leonard").highlight_kind() == "actor" and scene.actor_node_for_unit("enemy021_1").highlight_kind() == "", "the unit choosing its command carries the actor highlight")
 	scene.menus.choose_command(command)
 	if command == "special": scene.menus._choose_magic("special:magicOTHER:magicCode01")
 	scene.hovered_unit_id = "enemy021_1"
-	scene.hovered_grid_cell = Loop.unit(scene.play_loop, "enemy021_1")["coord"]
+	scene.hovered_grid_cell = BattlePlayLoop.unit(scene.play_loop, "enemy021_1")["coord"]
 	scene._process(0)
 	scene._process(0)
 	check(scene.interaction_state == "attack_select" and scene.actor_node_for_unit("enemy021_1").highlight_kind() == "target", "the legal target under the target cursor carries the target highlight (%s, %s)" % [scene.interaction_state, scene.actor_node_for_unit("enemy021_1").highlight_kind()])
 	attack(scene, command)
 	var settled: Dictionary = scene.play_loop.duplicate(true)
 	var actor: Node2D = scene.actor_node_for_unit("enemy021_1")
-	check(actor.visible and Loop.unit(settled, "enemy021_1")["defeated"], "logical death stays visible before its exchange")
+	check(actor.visible and BattlePlayLoop.unit(settled, "enemy021_1")["defeated"], "logical death stays visible before its exchange")
 	scene._process(0)
 	scene._process(view.attack_cue.duration)
 	view.cutin._process(1.8)
@@ -209,7 +209,7 @@ func lethal_case(command: String, fps: int) -> void:
 	var recipient: Node2D = scene.actor_node_for_unit("leonard")
 	check(recipient.is_posing() and sprite_path(recipient).ends_with("/001-M0001.png"), "the recipient takes its use_magic pose with the LEVEL UP float (%s)" % sprite_path(recipient))
 	var showers: Array = tail.trailing.filter(func(entry): return entry["node"] is LevelUpStars)
-	check(showers.size() == 1 and showers[0]["node"].stars.size() == 36 and showers[0]["coord"] == Loop.unit(settled, "leonard")["coord"] and showers[0]["node"].visible, "36 LEVEL UP stars rise over the recipient")
+	check(showers.size() == 1 and showers[0]["node"].stars.size() == 36 and showers[0]["coord"] == BattlePlayLoop.unit(settled, "leonard")["coord"] and showers[0]["node"].visible, "36 LEVEL UP stars rise over the recipient")
 	scene.ui_audio.stop()
 	for _frame in range(fps / 4): scene._process(1.0 / fps)
 	check(not scene.ui_audio.playing and level_ups.size() == 1, "the level-up sound plays once")
@@ -220,7 +220,7 @@ func lethal_case(command: String, fps: int) -> void:
 	scene.growth_panel.confirm_button.pressed.emit()
 	scene._process(0)
 	var after: Dictionary = scene.play_loop.duplicate(true)
-	check(after["selected_unit_id"] == "enemy023_1" and not Loop.action_exhausted(after), "one exhausted action hands off to the immediate next player")
+	check(after["selected_unit_id"] == "enemy023_1" and not BattlePlayLoop.action_exhausted(after), "one exhausted action hands off to the immediate next player")
 	scene._process(0.2)
 	view.refresh(scene.play_loop, scene.map_config, true, true, 10)
 	check(scene.play_loop == after and rewards.size() == 1 and deaths.size() == 1 and not actor.visible, "old receipt refresh neither resurrects the victim nor repeats a reward/turn")
@@ -232,12 +232,12 @@ func nonlethal_and_miss() -> void:
 	for missed in [false, true]:
 		var scene := fixture()
 		var view = scene.get_node("BattlePresentation")
-		var enemy := Loop._unit(scene.play_loop, "enemy021_1")
+		var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 		enemy["hp"] = 100
 		enemy["max_hp"] = 100
 		enemy["no_attack"] = true
 		if missed:
-			Loop._unit(scene.play_loop, "leonard")["combat_profile"]["live_hit_ratio"] = 0
+			BattlePlayLoop._unit(scene.play_loop, "leonard")["combat_profile"]["live_hit_ratio"] = 0
 			enemy["combat_profile"]["avoid_hit_ratio"] = 100
 		attack(scene, "attack", missed)
 		finish_cutin(scene)
@@ -251,16 +251,16 @@ func nonlethal_and_miss() -> void:
 
 func counter_defeat() -> void:
 	var scene := fixture()
-	var player := Loop._unit(scene.play_loop, "leonard")
+	var player := BattlePlayLoop._unit(scene.play_loop, "leonard")
 	player["hp"] = 1
 	player["combat_profile"]["live_attack_damage"] = 1
-	var enemy := Loop._unit(scene.play_loop, "enemy021_1")
+	var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 	enemy["hp"] = 100
 	enemy["max_hp"] = 100
 	enemy["growth_profile"]["source"]["defense"] += 1000 - int(enemy["combat_profile"]["live_defense"])
 	enemy["growth_profile"]["source"]["attack_back"] += 100 - int(enemy["combat_profile"]["attack_back"])
 	enemy["growth_profile"]["source"]["attack_power"] += 1000 - int(enemy["combat_profile"]["live_attack_damage"])
-	enemy.merge(Loop.ProgressionRules.refresh_growth_stats(enemy,scene.play_loop["equipment_items"]),true)
+	enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy,scene.play_loop["equipment_items"]),true)
 	enemy["hp"] = 100;enemy["max_hp"] = 100
 	attack(scene)
 	var settled: Dictionary = scene.play_loop.duplicate(true)
@@ -295,8 +295,8 @@ func multi_target() -> void:
 	# receipt, including a secondary victim. This is not a native spell claim.
 	var scene := fixture()
 	var view = scene.get_node("BattlePresentation")
-	var secondary := Loop._unit(scene.play_loop, "enemy021_2")
-	secondary["coord"] = Loop.unit(scene.play_loop, "leonard")["coord"] + Vector2i.RIGHT
+	var secondary := BattlePlayLoop._unit(scene.play_loop, "enemy021_2")
+	secondary["coord"] = BattlePlayLoop.unit(scene.play_loop, "leonard")["coord"] + Vector2i.RIGHT
 	attack(scene)
 	var receipt: Dictionary = scene.play_loop["last_combat"]
 	var first := receipt.duplicate(true)
@@ -304,8 +304,8 @@ func multi_target() -> void:
 	var second := first.duplicate(true)
 	second["defender_id"] = secondary["id"]
 	receipt["affected_targets"] = [first, second]
-	Loop._set_unit_hp(scene.play_loop, secondary["id"], 0)
-	Loop._set_unit_defeated(scene.play_loop, secondary["id"], true)
+	BattlePlayLoop._set_unit_hp(scene.play_loop, secondary["id"], 0)
+	BattlePlayLoop._set_unit_defeated(scene.play_loop, secondary["id"], true)
 	scene.apply_loop(scene.play_loop, "test")
 	check(scene.actor_node_for_unit(secondary["id"]).visible, "secondary lethal target is retained before the first refresh")
 	finish_cutin(scene)
@@ -339,7 +339,7 @@ func terminal_victory() -> void:
 	scene.play_loop["objective_phase"] = "escape"
 	scene.play_loop["win_statuses"] = [0, 1]
 	for unit in scene.play_loop["units"]:
-		if unit["battle_actor_role"] == Loop.ROLE_ENEMY and unit["id"] != "enemy021_1":
+		if unit["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY and unit["id"] != "enemy021_1":
 			unit["hp"] = 0
 			unit["defeated"] = true
 	attack(scene)
@@ -371,14 +371,14 @@ func terminal_victory_level_up(skip: bool) -> void:
 	scene.play_loop["objective_phase"] = "escape"
 	scene.play_loop["win_statuses"] = [0, 1]
 	for unit in scene.play_loop["units"]:
-		if unit["battle_actor_role"] == Loop.ROLE_ENEMY and unit["id"] != "enemy021_1":
+		if unit["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY and unit["id"] != "enemy021_1":
 			unit["hp"] = 0
 			unit["defeated"] = true
-	Loop._unit(scene.play_loop, "leonard")["exp"] = 99
+	BattlePlayLoop._unit(scene.play_loop, "leonard")["exp"] = 99
 	attack(scene)
 	var view = scene.get_node("BattlePresentation")
 	var label := " (skip seam)" if skip else ""
-	check(BattleOutcome.won(scene.play_loop) and int(Loop.unit(scene.play_loop, "leonard")["pending_stat_points"]) == 5, "the final blow wins and levels 雷歐納德" + label)
+	check(BattleOutcome.won(scene.play_loop) and int(BattlePlayLoop.unit(scene.play_loop, "leonard")["pending_stat_points"]) == 5, "the final blow wins and levels 雷歐納德" + label)
 	finish_cutin(scene)
 	confirm(scene)
 	scene._process(1)
@@ -397,7 +397,7 @@ func terminal_victory_level_up(skip: bool) -> void:
 	check(shown.size() == 3 and shown[0].begins_with("EXP ") and shown[1].begins_with("$ ") and shown[2] == "LEVEL UP" and level_up_sound and not view.battle_finished, "the floats run EXP → $ → LEVEL UP with its sound, before the window, the result waits (%s)%s" % [str(shown), label])
 	check(not view.aftermath.busy() and scene.growth_panel.visible and str(scene.growth_panel.source_unit["id"]) == "leonard", "the final blow's level-up window opens after the floats" + label)
 	check(not view.battle_finished, "the battle end waits for the level-up window" + label)
-	var before: Dictionary = Loop.unit(scene.play_loop, "leonard")
+	var before: Dictionary = BattlePlayLoop.unit(scene.play_loop, "leonard")
 	if skip:
 		scene.growth_panel.hide() # the harness skip seam; a player cannot close before OK
 	else:
@@ -405,14 +405,14 @@ func terminal_victory_level_up(skip: bool) -> void:
 			scene.growth_panel.choices["con"]["plus"].pressed.emit()
 		scene.growth_panel.confirm_button.pressed.emit()
 	scene._process(0)
-	var after: Dictionary = Loop.unit(scene.play_loop, "leonard")
+	var after: Dictionary = BattlePlayLoop.unit(scene.play_loop, "leonard")
 	check(not scene.growth_panel.visible and view.battle_finished and BattleOutcome.won(scene.play_loop), "the victory result follows the closed window" + label)
 	if skip:
-		check(int(after["pending_stat_points"]) == 5 and int(Loop.CampaignCarryRules.capture(scene.play_loop)["units"]["leonard"]["pending_stat_points"]) == 5, "skipped points stay on the member and ride the carry")
+		check(int(after["pending_stat_points"]) == 5 and int(BattlePlayLoop.CampaignCarryRules.capture(scene.play_loop)["units"]["leonard"]["pending_stat_points"]) == 5, "skipped points stay on the member and ride the carry")
 		scene._process(0)
 		check(not scene.growth_panel.visible and view.battle_finished, "a skipped window does not reopen over the result")
 	else:
-		check(int(after["pending_stat_points"]) == 0 and int(after["combat_profile"]["con"]) == int(before["combat_profile"]["con"]) + 5 and int(Loop.CampaignCarryRules.capture(scene.play_loop)["units"]["leonard"]["attributes"]["con"]) == int(after["combat_profile"]["con"]), "the points commit on the won loop and ride the carry")
+		check(int(after["pending_stat_points"]) == 0 and int(after["combat_profile"]["con"]) == int(before["combat_profile"]["con"]) + 5 and int(BattlePlayLoop.CampaignCarryRules.capture(scene.play_loop)["units"]["leonard"]["attributes"]["con"]) == int(after["combat_profile"]["con"]), "the points commit on the won loop and ride the carry")
 	scene.queue_free()
 	await process_frame
 
@@ -424,12 +424,12 @@ func kill_loot_level_up_order() -> void:
 	var scene := fixture()
 	var view = scene.get_node("BattlePresentation")
 	var aftermath = view.aftermath
-	Loop._unit(scene.play_loop, "leonard")["exp"] = 99
-	Loop._unit(scene.play_loop, "enemy021_1")["inventory"] = [281, 0, 0, 0, 0, 0, 0, 0] # an important drop always drops
+	BattlePlayLoop._unit(scene.play_loop, "leonard")["exp"] = 99
+	BattlePlayLoop._unit(scene.play_loop, "enemy021_1")["inventory"] = [281, 0, 0, 0, 0, 0, 0, 0] # an important drop always drops
 	var level_ups: Array = []
 	aftermath.level_up_presented.connect(func(growth): level_ups.append(growth))
 	attack(scene)
-	check(Loop.loot_waiting(scene.play_loop) and int(Loop.unit(scene.play_loop, "leonard")["level"]) == 2, "the kill both drops loot and levels 雷歐納德")
+	check(BattlePlayLoop.loot_waiting(scene.play_loop) and int(BattlePlayLoop.unit(scene.play_loop, "leonard")["level"]) == 2, "the kill both drops loot and levels 雷歐納德")
 	finish_cutin(scene)
 	confirm(scene)
 	var order: Array[String] = []
@@ -441,7 +441,7 @@ func kill_loot_level_up_order() -> void:
 			check(aftermath.holding_for_loot() and level_ups.is_empty() and aftermath.reward_label.text != "LEVEL UP", "the LEVEL UP float waits behind the get-item window")
 			loot_seen_before_level_up = true
 			var settlement: Dictionary = scene.play_loop["settlement"]
-			scene.apply_loop(Loop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
+			scene.apply_loop(BattlePlayLoop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
 		if aftermath.busy() and aftermath.reward_label.visible and (order.is_empty() or order.back() != aftermath.reward_label.text):
 			order.append(str(aftermath.reward_label.text))
 			if aftermath.reward_label.text == "LEVEL UP":
@@ -469,7 +469,7 @@ func installed_dead_message() -> void:
 	var scripted := {"speaker": "", "speaker_id": "377", "messages": [{"id": "375"}]}
 	for word in [villager["dead_message"], cleared["dead_message"], scripted]:
 		var scene := fixture()
-		Loop._unit(scene.play_loop, "enemy021_1")["dead_message"] = (word as Dictionary).duplicate(true)
+		BattlePlayLoop._unit(scene.play_loop, "enemy021_1")["dead_message"] = (word as Dictionary).duplicate(true)
 		scene.apply_loop(scene.play_loop, "test")
 		var view = scene.get_node("BattlePresentation")
 		var tail = view.aftermath
@@ -490,7 +490,7 @@ func installed_dead_message() -> void:
 		scene._process(tail.FADE_SECONDS)
 		scene._process(0)
 		check(not actor.visible and tail.reward_label.visible and tail.reward_label.text.contains("EXP"), "the reward follows the fade as for a row line")
-		check(Loop.unit(scene.play_loop, "enemy021_1")["defeated"] and scene.play_loop == settled, "the installed word never changes committed state")
+		check(BattlePlayLoop.unit(scene.play_loop, "enemy021_1")["defeated"] and scene.play_loop == settled, "the installed word never changes committed state")
 		scene.queue_free()
 		await process_frame
 
@@ -499,12 +499,12 @@ func installed_dead_message() -> void:
 ## the clip's `released`, where 0x402fd1 calls 0x4071e0 with the Cast_Star burst — not before.
 func map_magic_lead_pose() -> void:
 	var scene := fixture()
-	var caster := Loop._unit(scene.play_loop, "enemy026_1")
-	var target := Loop._unit(scene.play_loop, "enemy023_1")
+	var caster := BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
+	var target := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
 	target["coord"] = caster["coord"] + Vector2i.RIGHT
 	caster["mp"] = 100
 	var id := "magic:magicFIRE:magicCode01"
-	var receipt := LoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, Loop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
+	var receipt := BattleLoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
 	check(not receipt.is_empty(), "the lead-pose fixture resolves a map spell")
 	caster["actor_id"] = "025"
 	scene.apply_loop(scene.play_loop, "test")
@@ -546,13 +546,13 @@ func item_use_pose() -> void:
 func map_magic() -> void:
 	for key in ["fire", "wind"]:
 		var scene := fixture()
-		var caster := Loop._unit(scene.play_loop, "enemy026_1")
-		var target := Loop._unit(scene.play_loop, "enemy023_1")
+		var caster := BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
+		var target := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
 		target["hp"] = 1
 		target["coord"] = caster["coord"] + Vector2i.RIGHT
 		caster["mp"] = 100
 		var id: String = "magic:magicAIR:magicCode01" if key == "wind" else "magic:magicFIRE:magicCode01"
-		var receipt := LoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, Loop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
+		var receipt := BattleLoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
 		check(not receipt.is_empty() and receipt["defender_hp_after"] == 0 and receipt.get("experience",{}).get("allocation")=="automatic" and receipt["experience"]["gained"]>0, "source AI magic commits its own automatic EXP, not player points: " + key)
 		var settled: Dictionary = scene.play_loop.duplicate(true)
 		scene.apply_loop(scene.play_loop, "test")

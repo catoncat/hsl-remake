@@ -1,7 +1,6 @@
 extends "res://tests/capture_priest_review.gd"
 ## Real rendered inputs after one declared setup. No runtime battle/RNG mutation.
-const StatCases = preload("res://tests/run_support_magic_tests.gd")
-const Stats = preload("res://game/sim/StatEnhancementRules.gd")
+const StatEnhancementRules = preload("res://game/sim/StatEnhancementRules.gd")
 const STAT_OUT := "res://ignored/stat-magic-review/"
 var receipts: Array = []
 var receipt_sequences := {}
@@ -34,19 +33,19 @@ func setup_stat() -> void:
 	scene.settlement_controller.checkpoint_path = STAT_OUT + mode + ".save"
 	if mode != "manual":
 		scene.set_process(false)
-		var loop := StatCases.stat_fixture()
-		var actor := Loop._unit(loop,"tina")
-		var ally := Loop._unit(loop,"companion")
-		var foe := Loop._unit(loop,"enemy026_1")
+		var loop := run_support_magic_tests.stat_fixture()
+		var actor := BattlePlayLoop._unit(loop,"tina")
+		var ally := BattlePlayLoop._unit(loop,"companion")
+		var foe := BattlePlayLoop._unit(loop,"enemy026_1")
 		foe["no_attack"] = true; foe["mp"] = 0; foe["inventory"] = [0,0,0,0,0,0,0,0]
 		if mode in ["dispel","ai_dispel"]:
-			StatCases.buff(loop,foe["id"],"attack_up",3,24)
-			StatCases.buff(loop,foe["id"],"defense_up",4,30)
+			run_support_magic_tests.buff(loop,foe["id"],"attack_up",3,24)
+			run_support_magic_tests.buff(loop,foe["id"],"defense_up",4,30)
 			for key in ["poison","no_magic","paralysis"]:
-				foe.merge(Loop.StatusEffectRules.apply(foe,key,3,7 if key == "poison" else 0)["changes"],true)
+				foe.merge(BattlePlayLoop.StatusEffectRules.apply(foe,key,3,7 if key == "poison" else 0)["changes"],true)
 		if mode in ["melee","growth","silence","victory","defeat","escape"]:
-			StatCases.buff(loop,"tina","attack_up",4,24)
-			StatCases.buff(loop,"tina","defense_up",4,30)
+			run_support_magic_tests.buff(loop,"tina","attack_up",4,24)
+			run_support_magic_tests.buff(loop,"tina","defense_up",4,30)
 		if mode in ["melee","victory","defeat"]:
 			foe["coord"] = Vector2i(15,16); actor["hit_bonus_accum"] = 1000
 		if mode in ["growth","victory"]: actor["exp"] = 99
@@ -61,36 +60,36 @@ func setup_stat() -> void:
 		if mode == "silence":
 			actor["hp"] -= 20
 			foe["coord"] = Vector2i(15,16) # Moon Dance covers the adjacent body, not a two-cell gap.
-			actor.merge(Loop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
+			actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
 		if mode == "paralysis":
-			actor.merge(Loop.StatusEffectRules.apply(actor,"paralysis",2)["changes"],true)
+			actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"paralysis",2)["changes"],true)
 			actor["status_counters"]["paralysis"] = 1
-			StatCases.buff(loop,"tina","attack_up",1,24)
+			run_support_magic_tests.buff(loop,"tina","attack_up",1,24)
 			actor["equipment"].append({"slot":"accessory2","item_code":227})
 		if mode.begins_with("ai_"):
-			actor["player_commandable"] = false; actor["battle_actor_role"] = Loop.ROLE_FRIENDLY
+			actor["player_commandable"] = false; actor["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY
 			actor["no_attack"] = true; actor["inventory"] = [0,0,0,0,0,0,0,0]
 			actor["equipment"] = actor["equipment"].filter(func(s): return not s["slot"].begins_with("accessory"))
 			actor["equipment"].append_array([{"slot":"accessory1","item_code":232},{"slot":"accessory2","item_code":227}])
 			ally["growth_profile"]["source"]["speed"] = 300
-			TestSuite.own(loop, "skill_book")["actors"]["002"]["supported_initial_ids"] = [StatCases.DISPEL] if mode == "ai_dispel" else [StatCases.ATT,StatCases.DEF]
+			TestSuite.own(loop, "skill_book")["actors"]["002"]["supported_initial_ids"] = [run_support_magic_tests.DISPEL] if mode == "ai_dispel" else [run_support_magic_tests.ATT,run_support_magic_tests.DEF]
 			TestSuite.own(loop, "ai_profiles")["actors"]["002"]["profile"].merge({"ai_check_hp":0,"ai_check_dying":0,"ai_help_otherhp":0,"ai_help_status":0,"ai_help_attack":100,"ai_att_magic":100},true)
-			for id in [StatCases.ATT,StatCases.DEF,StatCases.DISPEL]: TestSuite.own(loop, "skill_book")["skills"][id]["fields"]["use_ratio"] = "100"
+			for id in [run_support_magic_tests.ATT,run_support_magic_tests.DEF,run_support_magic_tests.DISPEL]: TestSuite.own(loop, "skill_book")["skills"][id]["fields"]["use_ratio"] = "100"
 			if mode == "ai_buff": ally["coord"] = Vector2i(19,15); foe["coord"] = Vector2i(20,18)
 			if mode == "ai_blocked":
 				actor["mp"] = 0
-				actor.merge(Loop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
+				actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
 		if mode == "victory": foe["hp"] = 1
 		if mode == "defeat":
 			actor["hp"] = 1; foe["no_attack"] = false; foe["hit_bonus_accum"] = 1000
 			foe["growth_profile"]["source"].merge({"attack_back":100,"attack_power":1000},true)
 		if mode == "escape": actor["coord"] = Vector2i(13,10); ally["coord"] = Vector2i(13,11); foe["coord"] = Vector2i(12,10)
 		for unit in loop["units"]:
-			unit.merge(Loop.ProgressionRules.refresh_growth_stats(unit,loop["equipment_items"]),true)
+			unit.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(unit,loop["equipment_items"]),true)
 			unit["grid_coord"] = unit["coord"]; unit["ai_home_coord"] = unit["coord"]
-			check(Loop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"]) == "","fixture is on legal source terrain")
-		loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-		scene.apply_loop(Loop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
+			check(BattlePlayLoop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"]) == "","fixture is on legal source terrain")
+		loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+		scene.apply_loop(BattlePlayLoop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
 		for art in scene.actors_root.get_children(): scene.actors_root.remove_child(art); art.queue_free()
 		scene.unit_grid_coords.clear(); scene.resume_turn_presentation()
 		scene.center_camera_on_grid(actor["coord"]); scene.set_process(true)
@@ -149,7 +148,7 @@ func settle(id: String, terminal: bool = false) -> void:
 func cast_stat(id: String, target: String) -> void:
 	await click(scene.action_menu.get_node("MagicCommand"))
 	await click(scene.magic_panel.choices[id])
-	var coord: Vector2i = Loop.unit(scene.play_loop,target)["coord"]
+	var coord: Vector2i = BattlePlayLoop.unit(scene.play_loop,target)["coord"]
 	await hover(scene.grid_cell_center_to_logical_position(coord)); await shot("target-"+id.get_slice(":",2))
 	await point(scene.grid_cell_center_to_logical_position(coord))
 	check(scene.play_loop["last_attack"].get("skill_id") == id,"actual target click commits selected spell")
@@ -166,30 +165,30 @@ func play_stat() -> void:
 	var start_id := "companion" if mode.begins_with("ai_") or mode == "paralysis" else "tina"
 	await settle(start_id)
 	if mode == "manual":
-		await cast_stat(StatCases.DEF,"companion"); await settle("companion")
-		check(Stats.power(Loop.unit(scene.play_loop,"companion"),"defense_up") > 0,"published training is playable through real controls")
+		await cast_stat(run_support_magic_tests.DEF,"companion"); await settle("companion")
+		check(StatEnhancementRules.power(BattlePlayLoop.unit(scene.play_loop,"companion"),"defense_up") > 0,"published training is playable through real controls")
 	elif mode == "repeat":
 		await change_gear(227,"accessory2")
-		await cast_stat(StatCases.ATT,"tina"); await settle("tina")
-		var first := Stats.word(Loop.unit(scene.play_loop,"tina"),"attack_up")
+		await cast_stat(run_support_magic_tests.ATT,"tina"); await settle("tina")
+		var first := StatEnhancementRules.word(BattlePlayLoop.unit(scene.play_loop,"tina"),"attack_up")
 		check(scene.play_loop["extra_action"]["pending"] and scene.play_loop["action_end_sequence"] == 0,"first independent cast does not tick duration")
 		await status_page("tina"); await save_restore()
-		await cast_stat(StatCases.ATT,"tina"); await settle("companion")
-		var second := Stats.word(Loop.unit(scene.play_loop,"tina"),"attack_up")
+		await cast_stat(run_support_magic_tests.ATT,"tina"); await settle("companion")
+		var second := StatEnhancementRules.word(BattlePlayLoop.unit(scene.play_loop,"tina"),"attack_up")
 		check((second >> 16) >= (first >> 16) and (second >> 16) <= 96 and (second & 65535) > (first & 65535),"repeat merges duration and strength without adding a duplicate bonus")
 		check(scene.play_loop["action_end_sequence"] == 1,"only final independent action ticks once")
 	elif mode == "expiry":
-		await cast_stat(StatCases.DEF,"tina"); await settle("companion")
+		await cast_stat(run_support_magic_tests.DEF,"tina"); await settle("companion")
 		for _turn in range(6):
-			if Stats.word(Loop.unit(scene.play_loop,"tina"),"defense_up") == 0: break
+			if StatEnhancementRules.word(BattlePlayLoop.unit(scene.play_loop,"tina"),"defense_up") == 0: break
 			await return_to_tina(); await status_page("tina"); await save_restore()
 			await click(scene.action_menu.get_node("WaitCommand")); await settle("companion")
-		check(Stats.word(Loop.unit(scene.play_loop,"tina"),"defense_up") == 0 and events.any(func(e): return e.get("expired",[]).has("defense_up")),"real queue progression expires defense and displays the completed change")
-		check(Loop.unit(scene.play_loop,"tina")["combat_profile"]["live_defense"] == Loop.unit(initial_state,"tina")["combat_profile"]["live_defense"],"expired defense returns to exact source-plus-equipment value")
+		check(StatEnhancementRules.word(BattlePlayLoop.unit(scene.play_loop,"tina"),"defense_up") == 0 and events.any(func(e): return e.get("expired",[]).has("defense_up")),"real queue progression expires defense and displays the completed change")
+		check(BattlePlayLoop.unit(scene.play_loop,"tina")["combat_profile"]["live_defense"] == BattlePlayLoop.unit(initial_state,"tina")["combat_profile"]["live_defense"],"expired defense returns to exact source-plus-equipment value")
 	elif mode == "dispel":
-		var before: Dictionary = Loop.unit(scene.play_loop,"enemy026_1")["status_counters"].duplicate(true)
-		await cast_stat(StatCases.DISPEL,"enemy026_1"); await settle("companion")
-		var after := Loop.unit(scene.play_loop,"enemy026_1")
+		var before: Dictionary = BattlePlayLoop.unit(scene.play_loop,"enemy026_1")["status_counters"].duplicate(true)
+		await cast_stat(run_support_magic_tests.DISPEL,"enemy026_1"); await settle("companion")
+		var after := BattlePlayLoop.unit(scene.play_loop,"enemy026_1")
 		check(int(after["status_flags"]) == 7,"dispel removes only the two positive combat states")
 		for key in ["poison","no_magic","paralysis"]: check(after["status_counters"][key] == before[key],"dispel preserves exact packed condition: "+key)
 	elif mode == "movement":
@@ -198,53 +197,53 @@ func play_stat() -> void:
 		await move_to(Vector2i(15,16)); await click(scene.action_menu.get_node("MagicCommand")); await escape(); await settle("tina")
 		await escape(); await create_timer(0.3).timeout; await escape(); await settle("tina")
 		check(scene.play_loop["units"] == before["units"] and not scene.play_loop["moved_this_action"],"cancel returns phase and position without payment or a status tick")
-		await move_to(Vector2i(15,16)); await cast_stat(StatCases.DEF,"companion"); await settle("tina"); await save_restore()
+		await move_to(Vector2i(15,16)); await cast_stat(run_support_magic_tests.DEF,"companion"); await settle("tina"); await save_restore()
 		await change_gear(0,"accessory1"); await move_to(Vector2i(14,16))
-		check(not Loop.command_available(scene.play_loop,"magic"),"second action uses current removed movement permission")
-		await change_gear(232,"accessory1"); await cast_stat(StatCases.ATT,"tina"); await settle("companion")
+		check(not BattlePlayLoop.command_available(scene.play_loop,"magic"),"second action uses current removed movement permission")
+		await change_gear(232,"accessory1"); await cast_stat(run_support_magic_tests.ATT,"tina"); await settle("companion")
 		check(scene.play_loop["action_end_sequence"] == 1,"re-equipping allows the existing moved phase without resetting its action")
 	elif mode == "melee":
 		await change_gear(227,"accessory2"); await attack("enemy026_1"); await settle("tina"); await save_restore()
 		check(impacts.size() == 4 and impacts.filter(func(r): return r["counter"]).size() == 2,"buffed ordinary and counter double sequences remain separate strikes")
-		await cast_stat(StatCases.DEF,"tina"); await settle("companion")
+		await cast_stat(run_support_magic_tests.DEF,"tina"); await settle("companion")
 		check(scene.play_loop["action_end_sequence"] == 1,"double strike and recast still have one owner tail")
 	elif mode == "growth":
 		await change_gear(227,"accessory2"); await change_gear(228,"accessory1")
-		await cast_stat(StatCases.DEF,"companion"); await settle("tina")
-		check(observed.has("growth") and Loop.unit(scene.play_loop,"tina")["level"] > 1,"support contribution reaches final equipment-modified EXP and real allocation")
+		await cast_stat(run_support_magic_tests.DEF,"companion"); await settle("tina")
+		check(observed.has("growth") and BattlePlayLoop.unit(scene.play_loop,"tina")["level"] > 1,"support contribution reaches final equipment-modified EXP and real allocation")
 		await change_gear(87,"weapon"); await status_page("tina"); await save_restore()
 		await cast_heal("companion"); await settle("companion")
 		check(impacts.any(func(e): return e["strike"].get("healing",0) > 0),"buffed growth and weapon refresh preserve actual healing and costs")
 	elif mode in ["empty_mp","silence"]:
 		await change_gear(227,"accessory2")
 		await click(scene.action_menu.get_node("MagicCommand"))
-		check(scene.magic_panel.choices[StatCases.ATT].disabled,"MP or silence disables actual buff control")
+		check(scene.magic_panel.choices[run_support_magic_tests.ATT].disabled,"MP or silence disables actual buff control")
 		await shot("disabled"); await escape(); await settle("tina")
 		await use_item_real(244 if mode == "empty_mp" else 241,"tina"); await settle("tina"); await save_restore()
-		if mode == "empty_mp": await cast_stat(StatCases.DEF,"tina")
+		if mode == "empty_mp": await cast_stat(run_support_magic_tests.DEF,"tina")
 		else:
 			await click(scene.action_menu.get_node("SpecialCommand"))
 			var moon := "special:magicOTHER:magicCode06"
 			if scene.play_loop["interaction"] == "special_select": await click(scene.magic_panel.choices[moon])
-			await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,"tina")["coord"]))
+			await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"tina")["coord"]))
 			check(scene.play_loop["last_attack"].get("skill_id") == moon,"silence blocks MP spells while the owned special still pays stamina")
 		await settle("companion")
 	elif mode == "paralysis":
-		check(observed.has("skip") and not scene.play_loop["extra_action"]["pending"] and Stats.word(Loop.unit(scene.play_loop,"tina"),"attack_up") == 0,"paralysis skips once and final tail expires the supplied buff")
-		await return_to_tina(); await cast_stat(StatCases.ATT,"tina"); await settle("tina")
+		check(observed.has("skip") and not scene.play_loop["extra_action"]["pending"] and StatEnhancementRules.word(BattlePlayLoop.unit(scene.play_loop,"tina"),"attack_up") == 0,"paralysis skips once and final tail expires the supplied buff")
+		await return_to_tina(); await cast_stat(run_support_magic_tests.ATT,"tina"); await settle("tina")
 		check(scene.play_loop["extra_action"]["pending"],"next normal entry can cast and receives its own legitimate second action")
 	elif mode.begins_with("ai_"):
 		await click(scene.action_menu.get_node("WaitCommand")); await settle("companion")
 		var actions: Array = scene.play_loop["last_ai_actions"].filter(func(a): return a.get("actor_id") == "tina")
 		check(actions.size() == 2,"AI uses two current independent decisions")
 		if mode == "ai_buff":
-			check(actions.all(func(a): return a.get("skill_id") in [StatCases.ATT,StatCases.DEF]) and actions[0]["skill_id"] != actions[1]["skill_id"],"AI never repeats an already present matching buff")
-			check(observed.has("movement") and (int(Loop.unit(scene.play_loop,"companion")["status_flags"]) & 0x30) == 0x30,"AI moves to a legal cast position and supports the same living ally")
+			check(actions.all(func(a): return a.get("skill_id") in [run_support_magic_tests.ATT,run_support_magic_tests.DEF]) and actions[0]["skill_id"] != actions[1]["skill_id"],"AI never repeats an already present matching buff")
+			check(observed.has("movement") and (int(BattlePlayLoop.unit(scene.play_loop,"companion")["status_flags"]) & 0x30) == 0x30,"AI moves to a legal cast position and supports the same living ally")
 		elif mode == "ai_dispel":
-			check(actions[0].get("skill_id") == StatCases.DISPEL and not actions[1].has("skill_id"),"AI dispels the enhanced enemy then rejects obsolete second-cast coverage")
+			check(actions[0].get("skill_id") == run_support_magic_tests.DISPEL and not actions[1].has("skill_id"),"AI dispels the enhanced enemy then rejects obsolete second-cast coverage")
 		else: check(actions.all(func(a): return not a.has("skill_id")) and impacts.is_empty(),"no MP, silence and no ordinary attack yield valid non-spell fallback")
 	else:
-		await change_gear(227,"accessory2"); await cast_stat(StatCases.DEF,"tina"); await settle("tina"); await save_restore()
+		await change_gear(227,"accessory2"); await cast_stat(run_support_magic_tests.DEF,"tina"); await settle("tina"); await save_restore()
 		if mode == "escape": await move_to(Vector2i(14,10)); await click(scene.action_menu.get_node("WaitCommand"))
 		else: await attack("enemy026_1")
 		await settle("",true)
@@ -254,7 +253,7 @@ func play_stat() -> void:
 		"events":events.duplicate(true),"observed":observed.duplicate(true),"sounds":sounds.keys(),"saves":saves,"restarted":false}
 	if mode in ["victory","defeat","escape"]:
 		var frozen: Dictionary = scene.play_loop.duplicate(true)
-		check(Loop.step_ai_turn(frozen) == frozen and Loop.finish_exhausted_action(frozen) == frozen,"terminal cannot apply another cast, tail or action")
+		check(BattlePlayLoop.step_ai_turn(frozen) == frozen and BattlePlayLoop.finish_exhausted_action(frozen) == frozen,"terminal cannot apply another cast, tail or action")
 		reload_current_scene(); await create_timer(0.4).timeout; scene = current_scene
 		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["units"].all(func(u): return (int(u["status_flags"]) & 0x30) == 0),"actual restart uses initial unbuffed trial state")
 		row["restarted"] = true

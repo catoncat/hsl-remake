@@ -86,5 +86,5 @@ static func pairs_score(pairs: Array, id: int) -> int:
 
 ## The next-level pair the handler writes for STORY057's "0" argument.
 static func next_level_event(decision: Dictionary) -> Array:
-	var level := int(decision.get("level", DEFAULT_FINAL))
-	return [level, level]
+	var level_no := int(decision.get("level", DEFAULT_FINAL))
+	return [level_no, level_no]

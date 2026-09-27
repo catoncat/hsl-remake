@@ -11,6 +11,7 @@ fi
 # instead of a Godot scan of every file) when nothing it imports changed since the last success.
 log="$(mktemp "${TMPDIR:-/tmp}/hsl-play-import.XXXXXX")"
 trap 'rm -f -- "$log"' EXIT
+export HSL_REAL_HOME=1  # playing uses the real user directory (saves, settings)
 if ! GODOT_BIN="$GODOT_BIN" "$ROOT/tools/godot.sh" --headless --import > "$log" 2>&1; then
   cat "$log" >&2
   echo "Asset import failed; refusing to open an incomplete game window." >&2

@@ -17,9 +17,9 @@ extends RefCounted
 ## at the end of each rule suite re-hashes them and fails the suite naming any block a rule
 ## (or the suite) wrote in place — the shared blocks are read-only by contract.
 
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
-const _GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
-const _DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 
 ## Result-line prefix, e.g. "STAMINA_TESTS" → "STAMINA_TESTS_PASS checks=409".
 var tag := ""
@@ -90,7 +90,7 @@ func no_rng(_bound: int) -> int:
 ## The random streams a battle loop carries, by the name the helpers below take: tests read
 ## and set them through these helpers instead of the loop's internal keys.
 ## "reward" names the stream kill drops and birth carry draw: the global one (0x44f5d3／0x407c86).
-const STREAM_KEYS := {"global": _GlobalRandomStream.LOOP_KEY, "damage": _DamageRandomStream.LOOP_KEY, "reward": _GlobalRandomStream.LOOP_KEY}
+const STREAM_KEYS := {"global": GlobalRandomStream.LOOP_KEY, "damage": DamageRandomStream.LOOP_KEY, "reward": GlobalRandomStream.LOOP_KEY}
 
 
 ## `loop`'s words of `stream` ("global", "damage" or "reward"); null when absent.
@@ -104,7 +104,7 @@ static func set_stream(loop: Dictionary, stream: String, words: Variant) -> void
 
 ## Puts `loop`'s global or damage stream at the generator's seeded(`seed`) words.
 static func seed_stream(loop: Dictionary, stream: String, seed: int) -> void:
-	set_stream(loop, stream, _GlobalRandomStream.seeded(seed) if stream == "global" else _DamageRandomStream.seeded(seed))
+	set_stream(loop, stream, GlobalRandomStream.seeded(seed) if stream == "global" else DamageRandomStream.seeded(seed))
 
 
 ## True when `after` holds `stream` where `before` left it: nothing between them drew.
@@ -120,14 +120,14 @@ static func continues(previous: Dictionary, next: Dictionary) -> bool:
 ## True when a campaign carry (or a saved state) holds no global stream — neither the live
 ## words (0x4795d4／0x4795d8 are outside the original's save) nor the retired v5 key.
 static func carries_no_stream(carry: Dictionary) -> bool:
-	return not carry.has(_GlobalRandomStream.LOOP_KEY) and not carry.has("initialization_rng")
+	return not carry.has(GlobalRandomStream.LOOP_KEY) and not carry.has("initialization_rng")
 
 
 ## Fails the suite for every read-only configuration block written in place since the
 ## registry was last cleared (a failure, not a check, so the PASS check count is the same
 ## with or without the freeze). Clears the registry for the next suite.
 func assert_config_frozen() -> void:
-	for key in LoopConfig.thaw():
+	for key in BattleLoopConfig.thaw():
 		failures.append("%s wrote the shared configuration block %s in place" % [tag, str(key)])
 
 

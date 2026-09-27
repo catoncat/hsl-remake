@@ -9,7 +9,7 @@ extends Control
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05
 ##     (frame_006 value x positions)
-##   layout: runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##     (resist row: gems at (138 + 48·i, 450) in the close-up, value glyphs from x 149 + 48·i)
 ##   layout: resource-derived content/imported/hsl/chapter01/portraits/manifest.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_stamina.md

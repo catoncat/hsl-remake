@@ -51,7 +51,7 @@ lane R7-POSE（2026-09-25）。回答差异清单三条「原版怎样」：`map
 
 **揭位顺序**：按数字字符串从左（高位）到右。录屏 203.25 s 特写里先出现 2× 的「2」带白色光晕、约 10 tick 后成「22」、之后小字停住（`ignored/pose/tile_203.png`）；两位相同，无法从像素区分先高位还是先个位——顺序以静态为准，任务书「先个位再补全」的说法是模型命名，不采用。
 
-**重制**：`DamageNumberFloat`（`state_at` 逐 tick 重放上面的计数器；NUM100..109、NUM510 由 `hsl generate reward_floats` 导入），经 `ResultNumberFloat`（kind 0／2／3／5 一个入口：hold、寿命、上浮、字形布局）用于特写（普通一击 (320,200)、命中后 40 tick；脚本一击 (320,180)）、地图一击与地图法术（目标 (x, y−0x34)）、法术状态结果、道具（(x, y−0x30)）与回合末（(x, y−48)）。数字不上浮，寿命按 kind 0。附加词（暴擊／擊倒／反擊）UI6 已照原版去掉。MISS 是 NUM513 字形（kind 5）；原版无字形的说明词（中毒、解毒、增益等）仍是白色 Label，放在数字上方。
+**重制**：`DamageNumberFloater`（`state_at` 逐 tick 重放上面的计数器；NUM100..109、NUM510 由 `hsl generate reward_floats` 导入），经 `ResultNumberFloater`（kind 0／2／3／5 一个入口：hold、寿命、上浮、字形布局）用于特写（普通一击 (320,200)、命中后 40 tick；脚本一击 (320,180)）、地图一击与地图法术（目标 (x, y−0x34)）、法术状态结果、道具（(x, y−0x30)）与回合末（(x, y−48)）。数字不上浮，寿命按 kind 0。附加词（暴擊／擊倒／反擊）UI6 已照原版去掉。MISS 是 NUM513 字形（kind 5）；原版无字形的说明词（中毒、解毒、增益等）仍是白色 Label，放在数字上方。
 
 **录像对照**（lane DIGITS，2026-09-26，`ignored/digits/orig/`）：地图法术红字「19」的墨框中心比量表顶高约 57 px，道具绿字「29」高约 52.5 px——量表顶取 y＋5 时两者分别合 (y−0x34) 与 (y−0x30)（字形原点在字高一半）；两位逐位 2× 放大、白闪，第二位约晚 0.217 s（按本机 19.4 ms/tick ≈ 11 tick，静态 10），不上浮，可见约 0.98 s（≈ 51 tick，静态 54，末几级近乎不可见）。绿字回复（道具）约 16 tick 后开始淡出，每 2 tick 上 1 px，与 kind 2 一致。录像里没有蓝色 MP 数字。
 
@@ -63,7 +63,7 @@ lane R7-POSE（2026-09-25）。回答差异清单三条「原版怎样」：`map
 
 ## 5. 剩余差异与边界
 
-- 特写与地图法术的数字已改用原版字形（lane DIGITS）：特写 `BattleCombatCutin.result_number`、法术 `MagicImpactPresentation` 都走 `ResultNumberFloat`；`CombatPresentationTiming.damage_number_seconds` 已改为 34＋10×位数，调用方已不再用它。
+- 特写与地图法术的数字已改用原版字形（lane DIGITS）：特写 `BattleCombatCutin.result_number`、法术 `MagicImpactPresentation` 都走 `ResultNumberFloater`；`CombatPresentationTiming.damage_number_seconds` 已改为 34＋10×位数，调用方已不再用它。
 - 特写片段的结尾仍由片段自己的时钟决定：脚本一击 `RESULT_HOLD_TICKS` 40 tick 后收片段，两位红字（54 tick）的淡出尾会被截掉；普通一击同理。
 - 无 m_shape 引导的施法者：原版 `0x403128` 前等待的 `+0x90` 计数未读；录屏支持姿势与 Cast_Star 同时，重制在片段开始姿势（provisional）。原版施法音 `0x193` 在引导**结束**、与姿势同刻放，重制在引导开始放（`SkillEffectScriptPlayer`，法术 lane）。
 - 录屏 026 的火球在姿势结束（471.60 s）才开始，重制的效果在 1.1 s Cast_Star 环后开始、与 88 tick 姿势有 ≈0.3 s 重叠；效果开始是否等姿势，由施法对象子状态 5 之后的逐 tick 读决定（未读）。
@@ -74,5 +74,5 @@ lane R7-POSE（2026-09-25）。回答差异清单三条「原版怎样」：`map
 
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
-- `game/battle/scene/DamageNumberFloat.gd` layout：0x408746..0x408888: first digit at x − 7 × (digits − 1), 14 px apart; zoom 0x20000 newest, 0x18000 previous, 0x40000 flash; draw modes 0x20000000／0x28000000／0x2c000000
-- `game/battle/scene/DamageNumberFloat.gd` timing：init 0x4085ef: +0x90 = 0x20005, +0x94 = 0x10000, +0x98 = 0xa000a, +0x9c = 0x10006, level 16; one hold tick; digit step 10 ticks; settle 0x10012; level −1 a tick; life 10 × digits + 34 ticks
+- `game/battle/scene/DamageNumberFloater.gd` layout：0x408746..0x408888: first digit at x − 7 × (digits − 1), 14 px apart; zoom 0x20000 newest, 0x18000 previous, 0x40000 flash; draw modes 0x20000000／0x28000000／0x2c000000
+- `game/battle/scene/DamageNumberFloater.gd` timing：init 0x4085ef: +0x90 = 0x20005, +0x94 = 0x10000, +0x98 = 0xa000a, +0x9c = 0x10006, level 16; one hold tick; digit step 10 ticks; settle 0x10012; level −1 a tick; life 10 × digits + 34 ticks

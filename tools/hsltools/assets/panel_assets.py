@@ -32,7 +32,7 @@ MEMBERS = dict(ICONS, **{f'bar_hp{i}': f'SHAPE\\BAR_HP{i}.SHP' for i in range(1,
 MEMBERS.update({name: 'SHAPE\\' + name + '.SHP' for name in ('WINDOW21', 'WINDOW31', 'WINDOW41', 'WINDOW70', 'BT_ADD2')})
 # The five element gems (earth, water, wind, fire, mind): 0x42f4fc loads MAGICON1..5 into the
 # handle table 0x4c3460 indexed by element 0..4; the identity strip's resist row shows one before
-# each of its five values (docs/evidence_packets/runtime_observations/closeup_floaters/README.md).
+# each of its five values (docs/evidence_packets/runtime_observations/cutin_floaters/README.md).
 MEMBERS.update({f'magicon{i}': f'SHAPE\\MAGICON{i}.SHP' for i in range(1, 6)})
 # The section-title band: actShowSectionName (0x451818) loads SHAPE\LEVELSEC.SHP and 0x452f32 draws
 # it subtractively behind the level's WORD name (docs/evidence_packets/static_reverse/original_tick_counts.md §2).

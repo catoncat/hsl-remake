@@ -12,7 +12,7 @@ const BattleCameraController = preload("res://game/battle/runtime/BattleCameraCo
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const PanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
+const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const CONTROLLER_PATH := "res://game/battle/runtime/BattleCameraController.gd"
 ## Panels that must open and close through BattlePanelMotion (the modal list and the loot
 ## window; checked in BattleSceneMenus／BattleSettlementController by the attach census).
@@ -232,16 +232,16 @@ func _test_panel_open_curve() -> void:
 	var offset := Vector2(260, 0)
 	var trace: Array[int] = []
 	while offset != Vector2.ZERO and trace.size() < 80:
-		offset = PanelMotion.open_step(offset)
+		offset = BattlePanelMotion.open_step(offset)
 		trace.append(int(offset.x))
 	_assert_eq(trace.slice(0, 7), [228, 200, 175, 154, 135, 119, 105], "an eighth of the rest per tick, as the recording's 230, 202, 178, 156, 136, 120, 104")
 	_assert_true(trace.size() >= 25 and trace.size() <= 36, "a 260 px slide takes about 0.4–0.6 s of ticks (%d)" % trace.size())
 	_assert_true(trace[-3] - trace[-2] == 2 and trace[-1] == 0, "the slide ends in 2 px steps")
-	_assert_eq(PanelMotion.side_of(Rect2(0, 0, 640, 168)), "top", "the vitals strip comes from above")
-	_assert_eq(PanelMotion.side_of(Rect2(12, 174, 224, 264)), "left", "the left column comes from the left")
-	_assert_eq(PanelMotion.side_of(Rect2(252, 174, 376, 160)), "right", "the right column comes from the right")
-	_assert_eq(PanelMotion.off_screen_offset(Rect2(252, 174, 376, 160), "right"), Vector2(388, 0), "a right part starts just past the right edge")
-	_assert_eq(PanelMotion.off_screen_offset(Rect2(12, 174, 224, 264), "left"), Vector2(-236, 0), "a left part starts just past the left edge")
+	_assert_eq(BattlePanelMotion.side_of(Rect2(0, 0, 640, 168)), "top", "the vitals strip comes from above")
+	_assert_eq(BattlePanelMotion.side_of(Rect2(12, 174, 224, 264)), "left", "the left column comes from the left")
+	_assert_eq(BattlePanelMotion.side_of(Rect2(252, 174, 376, 160)), "right", "the right column comes from the right")
+	_assert_eq(BattlePanelMotion.off_screen_offset(Rect2(252, 174, 376, 160), "right"), Vector2(388, 0), "a right part starts just past the right edge")
+	_assert_eq(BattlePanelMotion.off_screen_offset(Rect2(12, 174, 224, 264), "left"), Vector2(-236, 0), "a left part starts just past the left edge")
 
 
 ## The motion never moves a Control: layout and hit testing stay the panel's own, only the
@@ -252,8 +252,8 @@ func _test_status_panel_motion() -> void:
 	var panel = preload("res://game/battle/scene/BattleStatusPanel.gd").new()
 	root.add_child(panel)
 	await process_frame
-	var motion = PanelMotion.attach(panel)
-	_assert_true(PanelMotion.attach(panel) == motion, "a panel carries one motion")
+	var motion = BattlePanelMotion.attach(panel)
+	_assert_true(BattlePanelMotion.attach(panel) == motion, "a panel carries one motion")
 	var positions := {}
 	for child in panel.get_children():
 		if child is Control:
@@ -292,7 +292,7 @@ func _test_panel_shade_fade() -> void:
 	var panel = preload("res://game/battle/scene/BattleStatusPanel.gd").new()
 	host.add_child(panel)
 	await process_frame
-	var motion = PanelMotion.attach(panel)
+	var motion = BattlePanelMotion.attach(panel)
 	_assert_eq(motion.shades_of(panel).size(), 1, "the status page has one screen-wide shade")
 	var shade: ColorRect = motion.shades_of(panel)[0]
 	for part in motion.parts_of(panel):

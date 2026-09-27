@@ -13,7 +13,7 @@ extends SceneTree
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const ForceWin = preload("res://tests/support/BattleForceWin.gd")
+const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const HALF_VIEW := Vector2(320, 240)
 
@@ -175,8 +175,8 @@ func _opening_wait_walk() -> void:
 				# Walking north below the map's last half view: 0x453fbd requests nothing.
 				_assert_true(controller.scroll_mode != "follow", "Leonard's walk inside the bottom half view leaves the camera clamped")
 			print("WALK_CAMERA_FOLLOW opening_walk start=%s camera=%s world=%s follows=%s" % [walk["start"], scene.camera.position, scene.map_config.world_size, controller.scroll_mode == "follow"])
-		if str(coordinator.summary().get("current_event_kind", "")) in ForceWin.CLICK_THROUGH_KINDS:
-			coordinator.handle_input(ForceWin.click())
+		if str(coordinator.summary().get("current_event_kind", "")) in BattleForceWin.CLICK_THROUGH_KINDS:
+			coordinator.handle_input(BattleForceWin.click())
 		await process_frame
 	_assert_true(checked, "the opening reached Leonard's walk")
 	# After the opening: a Wait walk that leaves the bottom half view is followed 4 px per tick

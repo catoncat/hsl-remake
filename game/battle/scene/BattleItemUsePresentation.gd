@@ -24,8 +24,8 @@ extends Node2D
 ##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
 ##     (sfxUseItem 402 = WAV\MHEAL001.WAV, played by 0x409e40 as the item applies)
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
-const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
+const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
@@ -107,7 +107,7 @@ func _ready() -> void:
 	var assets: Dictionary = BattleUISkin.data()["assets"]
 	for key in ["bar_hp4", "bar_hp5", "bar_hp6"]:
 		_art[key] = {"texture": load(str(assets[key]["res_path"])), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
-	var flash: Dictionary = BattleRewardFloat.manifest()["assets"]["damage_flash"]
+	var flash: Dictionary = BattleRewardFloater.manifest()["assets"]["damage_flash"]
 	_art["flash"] = {"texture": load(str(flash["res_path"])), "origin": Vector2(float(flash["draw_origin"][0]), float(flash["draw_origin"][1]))}
 	for kind in SPARK_FRAME_NAMES:
 		for frame in range(SPARK_FRAMES): _frame(str(SPARK_FRAME_NAMES[kind]) % (frame + 1))
@@ -290,16 +290,16 @@ func _start_numbers(tick: int) -> void:
 	var entries: Array[Dictionary] = []
 	for pair in [["restored_hp", "hp", "heal"], ["restored_mp", "mp", "mp"]]:
 		if int(effect.get(pair[0], 0)) > 0 or int(written.get(pair[1], -1)) == 0:
-			entries.append({"kind": pair[2], "value": int(effect.get(pair[0], 0)), "hold": ResultNumberFloat.MP_AFTER_HP_HOLD_TICKS if not entries.is_empty() else 0})
+			entries.append({"kind": pair[2], "value": int(effect.get(pair[0], 0)), "hold": ResultNumberFloater.MP_AFTER_HP_HOLD_TICKS if not entries.is_empty() else 0})
 	var bottom := target_point.y - 41.0
-	for number in ResultNumberFloat.spawn_all(self, entries, target_point + NUMBER_OFFSET):
+	for number in ResultNumberFloater.spawn_all(self, entries, target_point + NUMBER_OFFSET):
 		number.name = "ItemUse" + str(number.kind).capitalize()
 		number.finished.connect(number.queue_free)
 		numbers.append(number)
 		bottom = minf(bottom, number.bounds().position.y)
 	# The last number is the waiter: released on its 32nd shown tick; with no number 0x440402
 	# ends on the next tick.
-	release_tick = tick + (ResultNumberFloat.hidden_ticks(int(entries.back()["hold"])) + Timing.SHOW_NUMBER_RELEASE_TICKS if not entries.is_empty() else 1)
+	release_tick = tick + (ResultNumberFloater.hidden_ticks(int(entries.back()["hold"])) + Timing.SHOW_NUMBER_RELEASE_TICKS if not entries.is_empty() else 1)
 	var last_life := 0
 	for number in numbers: last_life = maxi(last_life, number.life_ticks())
 	visual_end_tick = maxi(visual_end_tick, tick + last_life)

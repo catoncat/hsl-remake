@@ -7,8 +7,8 @@ extends SceneTree
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 
@@ -36,10 +36,10 @@ func run() -> void:
 	DirAccess.make_dir_recursive_absolute(OUT)
 	CampaignProgress.reset_campaign()
 	var scenario := BattleScenario.load_file(SCENARIO_PATH)
-	var loop := PlayLoop.create([], "", scenario)
+	var loop := BattlePlayLoop.create([], "", scenario)
 	loop["scenario_id"] = str(scenario.get("id", ""))
 	loop["gold"] = 1234
-	var carry := CarryRules.capture(loop)
+	var carry := CampaignCarryRules.capture(loop)
 	var bag: Array = carry["units"]["leonard"]["inventory"]
 	for code in [SILVER_SWORD, LONG_BOW, POTION]:
 		bag[bag.find(0)] = code

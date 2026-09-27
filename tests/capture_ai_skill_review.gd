@@ -1,9 +1,9 @@
 extends SceneTree
 ## Actual Wait input, normal runtime movement/casting/feedback and player handoff.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Cases = preload("res://tests/run_ai_skill_tests.gd")
-const Fixtures = preload("res://tests/run_ai_decision_tests.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const run_ai_skill_tests = preload("res://tests/run_ai_skill_tests.gd")
+const run_ai_decision_tests = preload("res://tests/run_ai_decision_tests.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/ai-skill-review/"
 var failures: Array[String] = []
@@ -48,16 +48,16 @@ func route(key: String) -> void:
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
 	scene.get_node("BattleMusic").stop()
-	var fixture := Cases.area_fixture() if key == "poison" else Fixtures.live_fixture()
+	var fixture := run_ai_skill_tests.area_fixture() if key == "poison" else run_ai_decision_tests.live_fixture()
 	fixture["tiles"] = scene.play_loop["tiles"]
 	fixture["map_size"] = scene.play_loop["map_size"]
-	var caster := Loop._unit(fixture, "enemy026_1")
+	var caster := BattlePlayLoop._unit(fixture, "enemy026_1")
 	TestSuite.own(fixture, "ai_profiles")["actors"][caster["actor_id"]]["profile"]["ai_att_magic"] = 100
-	if key == "poison": Loop.skill_fields(fixture, Cases.POISON)["use_ratio"] = "100"
+	if key == "poison": BattlePlayLoop.skill_fields(fixture, run_ai_skill_tests.POISON)["use_ratio"] = "100"
 	else:
 		for name in ["wind", "fire"]:
 			TestSuite.own(fixture, "skill_book")["skills"]["magic:magicAIR:magicCode01" if name == "wind" else "magic:magicFIRE:magicCode01"]["fields"]["use_ratio"] = "100" if name == key else "0"
-	var initial := Loop.unit(fixture, "enemy023_1")
+	var initial := BattlePlayLoop.unit(fixture, "enemy023_1")
 	initial.merge({"id": "review-initial", "coord": Vector2i(2, 8), "live_speed": 110}, true)
 	fixture["units"].append(initial)
 	for unit in fixture["units"]:
@@ -66,9 +66,9 @@ func route(key: String) -> void:
 	for child in scene.actors_root.get_children():
 		scene.actors_root.remove_child(child)
 		child.queue_free()
-	fixture["turn_queue"] = Loop.CoreTurnQueue.rebuild(fixture["units"])
+	fixture["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(fixture["units"])
 	var before := fixture.duplicate(true)
-	scene.apply_loop(Loop._return_to_player(fixture, initial["id"]), "test")
+	scene.apply_loop(BattlePlayLoop._return_to_player(fixture, initial["id"]), "test")
 	scene.interaction_state = scene.play_loop["interaction"]
 	scene.menus.rebuild_action_menu_buttons()
 	scene.center_camera_on_grid(Vector2i(10, 10))
@@ -122,13 +122,13 @@ func route(key: String) -> void:
 	var action: Dictionary = scene.play_loop.get("last_ai_action", {})
 	check(action.get("magic_key") == key and action.get("kind") == "move_then_attack", "actual source spell and casting move " + key)
 	check(scene.play_loop["last_ai_actions"].size() == 1 and scene.play_loop["turn_queue"]["index"] == 2, "one AI action hands off exactly once " + key)
-	check(Loop.unit(scene.play_loop, "enemy026_1")["mp"] == caster["mp"] - int(action.get("resource_payment", {}).get("amount", -1)), "one visible cast pays the receipt amount " + key)
+	check(BattlePlayLoop.unit(scene.play_loop, "enemy026_1")["mp"] == caster["mp"] - int(action.get("resource_payment", {}).get("amount", -1)), "one visible cast pays the receipt amount " + key)
 	if key == "poison": check(action.get("affected_targets", []).size() == 3 and action.get("target_id") == "area-center", "rendered area cast uses the three-target center")
 	await create_timer(0.3).timeout
 	check(scene.action_menu.is_visible_in_tree(), "successor command menu is visible " + key)
 	await shot(key + "-handoff")
 	records.append({"spell": key, "before": before, "action": action, "moving": moving, "casting": casting,
-		"lead_in": lead_in, "feedback": feedback_samples, "handoff": settled, "next_actor": scene.selected_unit_id, "caster_after": Loop.unit(scene.play_loop, "enemy026_1")})
+		"lead_in": lead_in, "feedback": feedback_samples, "handoff": settled, "next_actor": scene.selected_unit_id, "caster_after": BattlePlayLoop.unit(scene.play_loop, "enemy026_1")})
 	scene.queue_free()
 	await process_frame
 	await create_timer(0.3).timeout
@@ -146,7 +146,7 @@ func check(ok: bool, label: String) -> void:
 		push_error(label)
 
 
-## A caption Label's rect, or a result number's (ResultNumberFloat) glyph rect at its current rise.
+## A caption Label's rect, or a result number's (ResultNumberFloater) glyph rect at its current rise.
 func feedback_rect(node: Node) -> Rect2:
 	if node is Node2D:
 		var rect: Rect2 = node.bounds()

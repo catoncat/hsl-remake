@@ -18,10 +18,10 @@ extends "res://tests/support/TestSuite.gd"
 ## and the next action's scan no longer sees that attack (0x4c1ce8 is cleared when an
 ## action starts).
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const Winfail = preload("res://game/sim/WinfailScenarioRules.gd")
+const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 
 const SCENARIO_PATH := "res://content/battles/battle_051.json"
@@ -41,9 +41,9 @@ func run() -> void:
 
 
 func _battle() -> Dictionary:
-	var loop := Loop.create([], "", BattleScenario.load_file(SCENARIO_PATH), 7)
+	var loop := BattlePlayLoop.create([], "", BattleScenario.load_file(SCENARIO_PATH), 7)
 	_assert_true(bool(loop.get("scenario_ok", false)), "battle_051 PlayLoop creates (%s)" % str(loop.get("scenario_error", "")))
-	return Loop.begin_battle(loop)
+	return BattlePlayLoop.begin_battle(loop)
 
 
 func _complete_action(loop: Dictionary) -> Dictionary:
@@ -51,9 +51,9 @@ func _complete_action(loop: Dictionary) -> Dictionary:
 	## (deterministic; no RNG, no strike, so no attack-context scan interferes).
 	match str(loop.get("interaction", "")):
 		"action_menu":
-			return Loop.begin_wait_resolution(loop)
+			return BattlePlayLoop.begin_wait_resolution(loop)
 		"ai_resolving":
-			return Loop._advance_current_actor(loop)
+			return BattlePlayLoop._advance_current_actor(loop)
 	_assert_true(false, "no completable action in %s (%s)" % [str(loop.get("interaction", "")), str(loop.get("scenario_error", ""))])
 	return loop
 
@@ -122,19 +122,19 @@ func _one_event_per_scan() -> void:
 	for unit in loop["units"]:
 		var class_id := str(unit.get("class_id", ""))
 		if int(downed.get(class_id, 0)) > 0:
-			Loop._set_unit_defeated(loop, str(unit["id"]), true)
+			BattlePlayLoop._set_unit_defeated(loop, str(unit["id"]), true)
 			downed[class_id] = int(downed[class_id]) - 1
 	_assert_eq(downed, {"Enemy021": 0, "Enemy026": 0}, "three 021 and one 026 are down")
 	_assert_eq(loop.get("event_statuses", []), [0, 1, 2, 3], "both reinforcement events are armed")
 	var before := _fired(loop).size()
 	loop = _complete_action(loop)
 	_assert_eq(_fired_keys(loop, before), ["event_0"], "one completed action starts only the first holding event (0x44ee20 returns after it)")
-	_assert_eq(Winfail.spawned_reinforcement_count(loop, "Enemy026"), 0, "the 026 recruit is not asked for in the same scan")
-	_assert_eq(Winfail.spawned_reinforcement_count(loop, "Enemy021"), 1, "event 0's recruit landed")
+	_assert_eq(WinfailScenarioRules.spawned_reinforcement_count(loop, "Enemy026"), 0, "the 026 recruit is not asked for in the same scan")
+	_assert_eq(WinfailScenarioRules.spawned_reinforcement_count(loop, "Enemy021"), 1, "event 0's recruit landed")
 	before = _fired(loop).size()
 	loop = _complete_action(loop)
 	_assert_eq(_fired_keys(loop, before), ["event_1"], "the next completed action starts event 1")
-	_assert_eq(Winfail.spawned_reinforcement_count(loop, "Enemy026"), 1, "event 1's recruit landed one action later")
+	_assert_eq(WinfailScenarioRules.spawned_reinforcement_count(loop, "Enemy026"), 1, "event 1's recruit landed one action later")
 
 
 func _exec_winfail_process_rescans() -> void:
@@ -163,30 +163,30 @@ func _attack_read_by_completion_scan() -> void:
 	var loop := _custom_rules(_reach_player(_battle()), [
 		_section("event", 60, [["actCheckPlayerAttacked", "SID_PLAYER0", "SID_ENEMY021"], ["actMessage", "SID_PLAYER0", 1, 780]]),
 	])
-	var armed := Loop.choose_command(loop, "attack")
+	var armed := BattlePlayLoop.choose_command(loop, "attack")
 	var target_id := ""
-	for cell in Loop.attack_cells(armed, "leonard"):
-		if Loop.unit_id_at_coord(armed, cell) == "":
+	for cell in BattlePlayLoop.attack_cells(armed, "leonard"):
+		if BattlePlayLoop.unit_id_at_coord(armed, cell) == "":
 			for unit in armed["units"]:
 				if str(unit.get("class_id", "")) == "Enemy021" and not bool(unit.get("defeated", false)):
 					target_id = str(unit["id"])
-					Loop._set_unit_coord(armed, target_id, cell)
+					BattlePlayLoop._set_unit_coord(armed, target_id, cell)
 					unit["max_hp"] = 9999  # survives the strike: no loot settlement to close first
 					unit["hp"] = 9999
 					break
 			break
 	_assert_true(target_id != "", "a 021 stands in Leonard's attack range")
 	var turn_before := int(armed.get("turn", 1))
-	var struck := Loop.attack_target(armed, target_id, zero)
+	var struck := BattlePlayLoop.attack_target(armed, target_id, zero)
 	_assert_true(not (struck.get("last_attack", {}) as Dictionary).is_empty(), "Leonard's strike settled")
 	_assert_true(_fired_entry(struck, "event_60").is_empty(), "the strike itself scans nothing (the original has no per-strike scan)")
-	var done := Loop.finish_exhausted_action(struck)
+	var done := BattlePlayLoop.finish_exhausted_action(struck)
 	var entry := _fired_entry(done, "event_60")
 	_assert_true(not entry.is_empty(), "the attack action's completion scan reads the attacker and fires the attacked event")
 	_assert_eq(str(entry.get("context", "")), "attack", "the completion scan of an attack action runs in the attack context")
 	_assert_eq(int(entry.get("turn", 0)), turn_before, "it precedes the queue advance")
 	_assert_eq(_fired_keys(done).count("event_60"), 1, "an attack action is scanned once")
-	var rearmed := Loop.copy(done)
+	var rearmed := BattlePlayLoop.copy(done)
 	(rearmed["event_statuses"] as Array).append(60)
 	var before := _fired(rearmed).size()
 	rearmed = _complete_action(rearmed)
@@ -198,8 +198,8 @@ func _custom_rules(loop: Dictionary, sections: Array) -> Dictionary:
 	## opening bindings keep SID_PLAYER0/1 → leonard).
 	var seed := {"schema": "hsl_battle_seed.v1", "level": 999, "evidence_tier": "test-fixture", "script_objects": [],
 		"scripts": {"story": {"sections": []}, "winfail": {"sections": sections}}}
-	var next := Loop.copy(loop)
-	var rules := Winfail.rules_from_seed(seed)
+	var next := BattlePlayLoop.copy(loop)
+	var rules := WinfailScenarioRules.rules_from_seed(seed)
 	next["winfail_script_rules"] = rules
 	for kind in ["win", "fail", "event"]:
 		next["%s_statuses" % kind] = []
@@ -224,15 +224,15 @@ func _wait_rereads_after_poison_tail() -> void:
 	## the HP-low event in the same action, before the queue advances.
 	var loop := _custom_rules(_reach_player(_battle()), [_section("event", 40, [["actCheckPlayerHPLow", "SID_PLAYER0", 1, 50], ["actMessage", "SID_PLAYER0", 1, 777]])])
 	_assert_eq(str(loop.get("selected_unit_id", "")), "leonard", "Leonard holds the action menu")
-	var leonard := Loop._unit(loop, "leonard")
+	var leonard := BattlePlayLoop._unit(loop, "leonard")
 	var max_hp := int(leonard["max_hp"])
 	leonard["hp"] = max_hp * 6 / 10
 	var poisoned := StatusEffectRules.apply(leonard, "poison", 2, max_hp / 5)
 	_assert_true(bool(poisoned.get("ok", false)), "Leonard is poisoned (%s)" % str(poisoned.get("reason", "")))
 	leonard.merge(poisoned.get("changes", {}), true)
 	var turn_before := int(loop.get("turn", 1))
-	var after := Loop.choose_command(loop, "wait")
-	_assert_true(int(Loop.unit(after, "leonard")["hp"]) * 100 <= 50 * max_hp, "the Wait's poison tick drops Leonard to half HP or below")
+	var after := BattlePlayLoop.choose_command(loop, "wait")
+	_assert_true(int(BattlePlayLoop.unit(after, "leonard")["hp"]) * 100 <= 50 * max_hp, "the Wait's poison tick drops Leonard to half HP or below")
 	var entry := _fired_entry(after, "event_40")
 	_assert_true(not entry.is_empty(), "the HP-low event fires after the poisoned Wait completes")
 	_assert_eq(int(entry.get("turn", 0)), turn_before, "the scan precedes the queue advance (fired in round %d)" % turn_before)
@@ -244,8 +244,8 @@ func _item_use_rereads_and_decides() -> void:
 	## arrival event, whose chain arms an unconditional win: the battle is decided in
 	## that action, in the same round, without waiting for a strike or a boundary.
 	var loop := _reach_player(_battle())
-	var leonard := Loop._unit(loop, "leonard")
-	var cells: Array = Loop.movement_cells(Loop.choose_command(loop, "move"), "leonard")
+	var leonard := BattlePlayLoop._unit(loop, "leonard")
+	var cells: Array = BattlePlayLoop.movement_cells(BattlePlayLoop.choose_command(loop, "move"), "leonard")
 	var destination: Vector2i = leonard["coord"]
 	for cell in cells:
 		if cell != leonard["coord"]:
@@ -258,16 +258,16 @@ func _item_use_rereads_and_decides() -> void:
 		_section("event", 41, [["actCheckPlayerArrivePos", "SID_PLAYER0", 1, px, py, px + 31, py + 31], ["actInsertWinStatus", 0]]),
 		_section("win", 0, [["actTRUE"]]),
 	])
-	leonard = Loop._unit(loop, "leonard")
+	leonard = BattlePlayLoop._unit(loop, "leonard")
 	leonard["hp"] = maxi(1, int(leonard["max_hp"]) / 2)
 	var inventory: Array = leonard["inventory"]
 	if not inventory.has(241):
 		inventory[inventory.find(0)] = 241
-	loop = Loop.move_unit_to(Loop.choose_command(loop, "move"), destination)
-	_assert_eq(Loop.unit(loop, "leonard")["coord"], destination, "Leonard moved onto the arrival cell")
+	loop = BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop, "move"), destination)
+	_assert_eq(BattlePlayLoop.unit(loop, "leonard")["coord"], destination, "Leonard moved onto the arrival cell")
 	_assert_true(_fired_entry(loop, "event_41").is_empty(), "moving alone completes no action and scans nothing")
 	var turn_before := int(loop.get("turn", 1))
-	loop = Loop.use_item(loop, "241")
+	loop = BattlePlayLoop.use_item(loop, "241")
 	_assert_true(int(loop.get("item_use_sequence", 0)) > 0, "the potion was used")
 	var entry := _fired_entry(loop, "event_41")
 	_assert_true(not entry.is_empty(), "the arrival event fires after the item use completes")

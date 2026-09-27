@@ -9,8 +9,8 @@ extends SceneTree
 ##   tools/play.sh --screen 0 --write-movie ignored/r31/magic-cast.avi --fixed-fps 60 \
 ##     --disable-vsync --script res://tests/capture_magic_cast_review.gd
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const SPELL := "magic:magicAIR:magicCode01"
 var scene: Node
 var view: Node
@@ -38,9 +38,9 @@ func run() -> void:
 	view = scene.get_node("BattlePresentation")
 	view._map_config = scene.map_config
 	var loop: Dictionary = scene.play_loop.duplicate(true)
-	var caster: Dictionary = Loop._unit(loop, "enemy026_1")
+	var caster: Dictionary = BattlePlayLoop._unit(loop, "enemy026_1")
 	caster["mp"] = 100
-	var leonard: Dictionary = Loop._unit(loop, "leonard")
+	var leonard: Dictionary = BattlePlayLoop._unit(loop, "leonard")
 	leonard["coord"] = caster["coord"] + Vector2i(1, 0)
 	# Non-lethal: with the scene's own processing paused for the fixture, a kill would leave
 	# the pending death disposal in place.
@@ -48,7 +48,7 @@ func run() -> void:
 	leonard["max_hp"] = 200
 	# The receipt comes from the mage's own rules (026's spell); the presentation row is then
 	# 緹娜's, whose m_shape strip is imported (026's m_shape is commented out in ANIMAL.TXT).
-	var receipt := LoopCombat._resolve_skill(loop, caster["id"], leonard["id"], SPELL, Loop.skill_fields(loop, SPELL), caster["coord"], func(_n): return 0)
+	var receipt := BattleLoopCombat._resolve_skill(loop, caster["id"], leonard["id"], SPELL, BattlePlayLoop.skill_fields(loop, SPELL), caster["coord"], func(_n): return 0)
 	caster["actor_id"] = "002"
 	scene.apply_loop(loop, "test")
 	scene.menus.set_action_menu_visible(false)

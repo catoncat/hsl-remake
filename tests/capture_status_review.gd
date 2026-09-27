@@ -1,6 +1,6 @@
 extends SceneTree
 ## Bounded rendered fixture: actual viewport mouse events, no desktop input.
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/status-review/"
 var scene: Node
@@ -26,19 +26,19 @@ func run() -> void:
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
 	scene.get_node("BattleMusic").stop()
-	var actor := Loop._unit(scene.play_loop, "leonard")
+	var actor := BattlePlayLoop._unit(scene.play_loop, "leonard")
 	actor["hp"] = actor["max_hp"]
 	actor["live_speed"] = 100
 	actor["status_flags"] = 3
 	actor["status_counters"] = {"poison": (7 << 16) | 2, "paralysis": 0, "no_magic": 2}
-	var ally := Loop._unit(scene.play_loop, "enemy023_1")
+	var ally := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
 	ally["coord"] = actor["coord"] + Vector2i.RIGHT
 	ally["live_speed"] = 99
 	ally["player_commandable"] = true
-	ally["battle_actor_role"] = Loop.ROLE_PLAYER
+	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
 	ally["inventory"] = [246, 0, 0, 0, 0, 0, 0, 0]
-	scene.play_loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(scene.play_loop["units"])
-	scene.apply_loop(Loop.select_player_unit(scene.play_loop, "leonard"), "test")
+	scene.play_loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(scene.play_loop["units"])
+	scene.apply_loop(BattlePlayLoop.select_player_unit(scene.play_loop, "leonard"), "test")
 	scene._process(0.0)
 	await create_timer(0.3).timeout
 	await click(scene.action_menu.get_node("StatusCommand"))
@@ -60,7 +60,7 @@ func run() -> void:
 	check(scene.play_loop == before and scene.item_panel.page == "inventory", "right-click cancel changes no battle state")
 	await click(scene.item_panel.rows.get_node("Item_246_3"))
 	await click(scene.item_panel.target_buttons["leonard"])
-	var cured := Loop.unit(scene.play_loop, "leonard")
+	var cured := BattlePlayLoop.unit(scene.play_loop, "leonard")
 	check(cured["status_flags"] == 2 and cured["status_counters"] == {"poison": 0, "paralysis": 0, "no_magic": 1}, "only poison cleared; silence ticks exactly once")
 	check(cured["hp"] == cured["max_hp"] and cured["inventory"].count(246) == 0, "one antidote consumed with no poison damage after cure")
 	check(scene.selected_unit_id == "enemy023_1" and not scene.ai_playback_active, "next ally is not skipped")

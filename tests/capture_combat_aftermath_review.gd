@@ -1,6 +1,6 @@
 extends SceneTree
 ## Real rendered frames and normal input; all fixture grants are listed in the receipt.
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/combat-aftermath-review/"
 var scene: Node
@@ -37,9 +37,9 @@ func run() -> void:
 			check(scene.interaction_state == "special_select" and scene.magic_panel.visible, "特殊技 opens the skill page first (original skill page)")
 			await click(scene.magic_panel.choices["special:magicOTHER:magicCode01"].get_global_rect().get_center())
 		check(scene.interaction_state == "attack_select", "actual menu input opens target selection")
-		await click(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop, "enemy021_1")["coord"]))
+		await click(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop, "enemy021_1")["coord"]))
 		check(scene.play_loop.get("last_combat", {}).get("hit", false), "fixture attack really hit; a random miss is not relabeled as a kill")
-		check(Loop.unit(scene.play_loop, "enemy021_1")["hp"] == 0, "actual attack resolves the lethal hit")
+		check(BattlePlayLoop.unit(scene.play_loop, "enemy021_1")["hp"] == 0, "actual attack resolves the lethal hit")
 		var settled: Dictionary = scene.play_loop.duplicate(true)
 		await until(func(): return view.cutin.busy() and view.cutin.clips[0]["impact_emitted"])
 		check(not view.dialogue_active() and not view.aftermath.reward_label.visible, "close-up precedes all map feedback")
@@ -67,7 +67,7 @@ func run() -> void:
 		scene.growth_panel.hide() # harness skip seam: right click／Esc cannot close the window before OK
 		await until(func(): return scene.selected_unit_id == "enemy023_1" and scene.action_menu.visible)
 		await create_timer(0.35).timeout
-		check(Loop.unit(scene.play_loop, "leonard")["exp"] == earned - 1 and not Loop.action_exhausted(scene.play_loop), "exactly one native award and one successor")
+		check(BattlePlayLoop.unit(scene.play_loop, "leonard")["exp"] == earned - 1 and not BattlePlayLoop.action_exhausted(scene.play_loop), "exactly one native award and one successor")
 		await shot("successor")
 		scene.queue_free()
 		await process_frame
@@ -87,21 +87,21 @@ func fixture() -> void:
 	current_scene = scene
 	scene.start_dev_first_control_harness()
 	view = scene.get_node("BattlePresentation")
-	var player := Loop._unit(scene.play_loop, "leonard")
+	var player := BattlePlayLoop._unit(scene.play_loop, "leonard")
 	# Isolate this historical death/EXP/growth route from the separate loot modal.
-	Loop._unit(scene.play_loop, "enemy021_1")["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
+	BattlePlayLoop._unit(scene.play_loop, "enemy021_1")["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
 	player["exp"] = 99
 	player["stamina"] = 60
 	player["live_speed"] = 100
-	var ally := Loop._unit(scene.play_loop, "enemy023_1")
+	var ally := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
 	ally["live_speed"] = 99
 	ally["player_commandable"] = true
-	ally["battle_actor_role"] = Loop.ROLE_PLAYER
-	var enemy := Loop._unit(scene.play_loop, "enemy021_1")
+	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
+	var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	enemy["hp"] = 1
-	scene.play_loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(scene.play_loop["units"])
-	scene.apply_loop(Loop.select_player_unit(scene.play_loop, "leonard"), "test")
+	scene.play_loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(scene.play_loop["units"])
+	scene.apply_loop(BattlePlayLoop.select_player_unit(scene.play_loop, "leonard"), "test")
 	scene.ai_playback_active = false
 	scene.interaction_state = "action_menu"
 	scene.apply_loop(scene.play_loop, "test")

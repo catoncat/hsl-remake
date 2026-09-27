@@ -28,7 +28,7 @@ const COUNT_RIGHT := 332
 ## Description WINDOW50 at (252,390): 15 px lines from (x+8, y+12), row 16, centred in 360 px.
 const DESCRIPTION_AT := Vector2(252, 390)
 ## `$:` WINDOW40 at (20,442); nine-cell amount ends at x=208. Buttons BCMD08/15/14 centred at y=429.
-const MONEY_AT := Vector2(20, 442)
+const GOLD_AT := Vector2(20, 442)
 const BUTTON_CENTRES := {"drop": 285, "storage": 346, "exit": 468}
 const BUTTON_Y := 429
 var rows: Array[Button] = []
@@ -107,7 +107,7 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	BattleUISkin.clear_panel(self)
 	_build_bag()
 	_build_list()
-	_build_money(gold)
+	_build_gold(gold)
 	_build_buttons()
 	description_box = Control.new()
 	description_box.position = DESCRIPTION_AT
@@ -231,9 +231,9 @@ func _rebuild_rows() -> void:
 	if hand_icon != null: move_child(hand_icon, get_child_count() - 1)
 
 
-func _build_money(gold: int) -> void:
-	BattleUISkin.board(self, "WINDOW40", MONEY_AT)
-	var amount := BattleUISkin.text(self, MONEY_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
+func _build_gold(gold: int) -> void:
+	BattleUISkin.board(self, "WINDOW40", GOLD_AT)
+	var amount := BattleUISkin.text(self, GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
 	amount.text = str(gold)
 	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 

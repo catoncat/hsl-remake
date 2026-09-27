@@ -1,8 +1,8 @@
 extends SceneTree
 ## Two bounded routes through real Wait controls and the live AI/presentation loop.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Cases = preload("res://tests/run_ai_decision_tests.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const run_ai_decision_tests = preload("res://tests/run_ai_decision_tests.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/ai-decision-review/"
 var failures: Array[String] = []
@@ -41,8 +41,8 @@ func route(owner: String) -> void:
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
 	scene.get_node("BattleMusic").stop()
-	var fixture := Cases.live_fixture(owner)
-	var first := Loop.unit(fixture, "enemy023_1")
+	var fixture := run_ai_decision_tests.live_fixture(owner)
+	var first := BattlePlayLoop.unit(fixture, "enemy023_1")
 	first["id"] = "review-initial"
 	first["coord"] = Vector2i(1, 1)
 	first["live_speed"] = 110
@@ -52,10 +52,10 @@ func route(owner: String) -> void:
 	for child in scene.actors_root.get_children():
 		scene.actors_root.remove_child(child)
 		child.queue_free()
-	if owner == "leonard": Loop._unit(fixture, owner)["stamina"] = 60
+	if owner == "leonard": BattlePlayLoop._unit(fixture, owner)["stamina"] = 60
 	else: TestSuite.own(fixture, "ai_profiles")["actors"]["026"]["profile"]["ai_att_magic"] = 100
-	fixture["turn_queue"] = Loop.CoreTurnQueue.rebuild(fixture["units"])
-	scene.apply_loop(Loop._return_to_player(fixture, first["id"]), "test")
+	fixture["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(fixture["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(fixture, first["id"]), "test")
 	scene.interaction_state = scene.play_loop["interaction"]
 	scene.menus.rebuild_action_menu_buttons()
 	scene.center_camera_on_grid(Vector2i(9, 8))

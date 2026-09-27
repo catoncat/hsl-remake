@@ -6,14 +6,14 @@ extends SceneTree
 ## offered before, whether the member is the current actor, or whose turn it is. Level 3
 ## (雷歐納德／緹娜／琥, 琥 acts first) is the three-member formation.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
-const Checkpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
-const ForceWin = preload("res://tests/support/BattleForceWin.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const SCENARIO := "res://content/battles/battle_003.json"
 var checks := 0
 var failures: Array[String] = []
@@ -55,7 +55,7 @@ func run() -> void:
 func _start() -> Node:
 	# Every case boots from the seeded global stream, not from where the previous case's
 	# opening and enemy turns left the process stream (the formation must be the same).
-	GlobalRandom.reset_session()
+	GlobalRandomStream.reset_session()
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	scene.scenario_path = SCENARIO
 	scene.startup_mode = "dev_first_control"
@@ -74,15 +74,15 @@ func _close(scene: Node) -> void:
 
 ## Levels the member up once in place (as a settled EXP award would) and mirrors the loop.
 func _level_up(scene: Node, id: String) -> void:
-	var unit: Dictionary = Loop._unit(scene.play_loop, id)
-	unit["exp"] = Loop.ProgressionRules.exp_to_next(int(unit["level"])) - 1
-	unit.merge(Loop.ProgressionRules.resolve_experience(unit, 1, scene.play_loop["equipment_items"]), true)
+	var unit: Dictionary = BattlePlayLoop._unit(scene.play_loop, id)
+	unit["exp"] = BattlePlayLoop.ProgressionRules.exp_to_next(int(unit["level"])) - 1
+	unit.merge(BattlePlayLoop.ProgressionRules.resolve_experience(unit, 1, scene.play_loop["equipment_items"]), true)
 	scene.apply_loop(scene.play_loop, "test")
 
 
 func _state(scene: Node) -> String:
 	var view = scene.get_node("BattlePresentation")
-	return "inter=%s sel=%s busy=%s dlg=%s loot=%s motion=%s modal=%s script=%s" % [scene.interaction_state, scene.selected_unit_id, view.combat_busy(scene.play_loop), view.dialogue_active(), Loop.loot_waiting(scene.play_loop), scene.has_actor_motion(), scene.modal_open(), scene.ScriptPresentation.pending(scene)]
+	return "inter=%s sel=%s busy=%s dlg=%s loot=%s motion=%s modal=%s script=%s" % [scene.interaction_state, scene.selected_unit_id, view.combat_busy(scene.play_loop), view.dialogue_active(), BattlePlayLoop.loot_waiting(scene.play_loop), scene.has_actor_motion(), scene.modal_open(), scene.ScriptPresentation.pending(scene)]
 
 
 func _offered_to(scene: Node) -> String:
@@ -108,13 +108,13 @@ func _test_second_member_at_lower_level() -> void:
 	scene.growth_panel.hide() # harness skip seam: points stay, the same level is not offered again
 	scene._process(0.0)
 	check(not scene.growth_panel.visible, "a skipped level is not offered every frame")
-	var hu_level := int(Loop.unit(scene.play_loop, "hu")["level"])
+	var hu_level := int(BattlePlayLoop.unit(scene.play_loop, "hu")["level"])
 	_level_up(scene, "tina")
-	check(int(Loop.unit(scene.play_loop, "tina")["level"]) < hu_level, "緹娜 levels up to a level below the one already offered to 琥")
+	check(int(BattlePlayLoop.unit(scene.play_loop, "tina")["level"]) < hu_level, "緹娜 levels up to a level below the one already offered to 琥")
 	scene._process(0.0)
 	check(_offered_to(scene) == "tina", "another member's lower level-up still opens its own window (per-member offer)")
 	_spend_all(scene)
-	check(not scene.growth_panel.visible and int(Loop.unit(scene.play_loop, "tina")["pending_stat_points"]) == 0, "a non-current member's allocation commits through allocate_growth")
+	check(not scene.growth_panel.visible and int(BattlePlayLoop.unit(scene.play_loop, "tina")["pending_stat_points"]) == 0, "a non-current member's allocation commits through allocate_growth")
 	check(scene.selected_unit_id == "hu" and scene.interaction_state == Interaction.ACTION_MENU, "allocating for 緹娜 leaves 琥's turn untouched")
 	scene._process(0.0)
 	check(not scene.growth_panel.visible, "琥's skipped level is not reoffered")
@@ -129,12 +129,12 @@ func _test_status_reaches_any_member() -> void:
 	scene._process(0.0)
 	check(_offered_to(scene) == "leonard", "雷歐納德's level-up is offered while 琥 acts " + _state(scene))
 	scene.growth_panel.hide()
-	scene.status_panel.show_unit(Loop.unit(scene.play_loop, "leonard"))
+	scene.status_panel.show_unit(BattlePlayLoop.unit(scene.play_loop, "leonard"))
 	check(scene.status_panel.growth_button.visible, "雷歐納德's status page shows his unspent points")
 	scene.status_panel.growth_button.pressed.emit()
 	check(_offered_to(scene) == "leonard" and not scene.status_panel.visible, "成長點 reopens the window for the inspected non-current member")
 	_spend_all(scene)
-	check(int(Loop.unit(scene.play_loop, "leonard")["pending_stat_points"]) == 0, "the reopened window commits 雷歐納德's points")
+	check(int(BattlePlayLoop.unit(scene.play_loop, "leonard")["pending_stat_points"]) == 0, "the reopened window commits 雷歐納德's points")
 	await _close(scene)
 
 
@@ -148,18 +148,18 @@ func _test_enemy_turn_counter_level_up(final_blow: bool = false) -> void:
 	var loop: Dictionary = scene.play_loop
 	if final_blow:
 		for unit in loop["units"]:
-			if unit["battle_actor_role"] == Loop.ROLE_ENEMY and unit["id"] != "actor028_2" and Loop.Presence.living(unit):
-				Loop._set_unit_defeated(loop, unit["id"], true)
-	var tina: Dictionary = Loop._unit(loop, "tina")
-	var foe: Dictionary = Loop._unit(loop, "actor028_2")
+			if unit["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY and unit["id"] != "actor028_2" and BattlePlayLoop.Presence.living(unit):
+				BattlePlayLoop._set_unit_defeated(loop, unit["id"], true)
+	var tina: Dictionary = BattlePlayLoop._unit(loop, "tina")
+	var foe: Dictionary = BattlePlayLoop._unit(loop, "actor028_2")
 	for step in [Vector2i.RIGHT, Vector2i.LEFT, Vector2i.UP, Vector2i.DOWN]:
 		if foe["coord"] == tina["coord"] + step: break
 		var at: Vector2i = tina["coord"] + step
-		if Loop.unit_id_at_coord(loop, at) == "" and Loop.TraversalRules.placement_error(foe.merged({"coord": at}, true), loop["units"], loop["tiles"], loop["map_size"]) == "":
+		if BattlePlayLoop.unit_id_at_coord(loop, at) == "" and BattlePlayLoop.TraversalRules.placement_error(foe.merged({"coord": at}, true), loop["units"], loop["tiles"], loop["map_size"]) == "":
 			foe["coord"] = at
 			break
-	check(Loop.Footprint.overlaps(foe, Loop.attack_cells(loop, "tina")), "028_2 stands in 緹娜's counter reach")
-	tina["exp"] = Loop.ProgressionRules.exp_to_next(int(tina["level"])) - 1
+	check(BattlePlayLoop.Footprint.overlaps(foe, BattlePlayLoop.attack_cells(loop, "tina")), "028_2 stands in 緹娜's counter reach")
+	tina["exp"] = BattlePlayLoop.ProgressionRules.exp_to_next(int(tina["level"])) - 1
 	tina["hit_bonus_accum"] = 1000
 	foe["hp"] = 1
 	loop["interaction"] = Interaction.AI_RESOLVING
@@ -173,15 +173,15 @@ func _test_enemy_turn_counter_level_up(final_blow: bool = false) -> void:
 		fought = loop.duplicate(true)
 		var rng := RandomNumberGenerator.new()
 		rng.seed = seed
-		strike = LoopCombat._resolve_exchange(fought, "actor028_2", "tina", rng)
-		if not strike.get("counter", {}).is_empty() and int(Loop.unit(fought, "actor028_2")["hp"]) == 0: break
+		strike = BattleLoopCombat._resolve_exchange(fought, "actor028_2", "tina", rng)
+		if not strike.get("counter", {}).is_empty() and int(BattlePlayLoop.unit(fought, "actor028_2")["hp"]) == 0: break
 	loop = fought
 	if final_blow:
 		# The foe's action completes in its own death sequence (0x407510 → win scan).
-		loop = Loop._resolve_outcome(Loop.BattleScenarioRuleAdapter.run_event_hooks(loop, true))
+		loop = BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop, true))
 		check(BattleOutcome.won(loop), "the counter on the last foe wins inside the enemy step")
 	check(not strike.is_empty() and not strike.get("counter", {}).is_empty(), "the foe's strike draws 緹娜's counter")
-	check(int(Loop.unit(loop, "tina")["level"]) > level_before and int(Loop.unit(loop, "actor028_2")["hp"]) == 0, "the counter kills the foe and levels 緹娜")
+	check(int(BattlePlayLoop.unit(loop, "tina")["level"]) > level_before and int(BattlePlayLoop.unit(loop, "actor028_2")["hp"]) == 0, "the counter kills the foe and levels 緹娜")
 	scene.apply_loop(loop, "test")
 	scene.resume_turn_presentation()
 	check(scene.ai_playback_active or final_blow, "the enemy turn is playing back")
@@ -195,10 +195,10 @@ func _test_enemy_turn_counter_level_up(final_blow: bool = false) -> void:
 		if aftermath.stage == "experience": saw_float = true
 		if aftermath.stage == "level_up" and saw_float: saw_level_up = true
 		if view.dialogue_active(): view.advance_dialogue()
-		if Loop.loot_waiting(scene.play_loop):
+		if BattlePlayLoop.loot_waiting(scene.play_loop):
 			# The get-item window (0x442720 phase 4) precedes the level-up window; 稍後.
 			var settlement: Dictionary = scene.play_loop["settlement"]
-			scene.apply_loop(Loop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
+			scene.apply_loop(BattlePlayLoop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
 		scene._process(1.0 / 60.0)
 		if scene.growth_panel.visible:
 			opened_after_float = saw_float and not aftermath.busy()
@@ -215,7 +215,7 @@ func _test_enemy_turn_counter_level_up(final_blow: bool = false) -> void:
 		var view = scene.get_node("BattlePresentation")
 		check(not view.battle_finished and not scene.opening_coordinator.active, "the enemy-turn final blow holds the victory cutscene and result behind the window")
 	_spend_all(scene)
-	check(not scene.growth_panel.visible and int(Loop.unit(scene.play_loop, "tina")["pending_stat_points"]) == 0, "緹娜's points commit during the enemy turn")
+	check(not scene.growth_panel.visible and int(BattlePlayLoop.unit(scene.play_loop, "tina")["pending_stat_points"]) == 0, "緹娜's points commit during the enemy turn")
 	if final_blow:
 		var view = scene.get_node("BattlePresentation")
 		var coordinator = scene.opening_coordinator
@@ -225,7 +225,7 @@ func _test_enemy_turn_counter_level_up(final_blow: bool = false) -> void:
 		scene.set_process(true)
 		for _frame in range(1200):
 			if view.battle_finished: break
-			if coordinator.active and str(coordinator.summary().get("current_event_kind", "")) in ForceWin.CLICK_THROUGH_KINDS: coordinator.handle_input(ForceWin.click())
+			if coordinator.active and str(coordinator.summary().get("current_event_kind", "")) in BattleForceWin.CLICK_THROUGH_KINDS: coordinator.handle_input(BattleForceWin.click())
 			elif view.dialogue_active(): view.advance_dialogue()
 			await process_frame
 		check(view.battle_finished and BattleOutcome.won(scene.play_loop) and not scene.ai_playback_active, "the victory result follows the enemy-turn window (%s)" % _state(scene))
@@ -245,9 +245,9 @@ func _test_terminal_victory_offers_before_story(skip: bool) -> void:
 	_level_up(scene, "tina")
 	var loop: Dictionary = scene.play_loop.duplicate(true)
 	for unit in loop["units"]:
-		if unit["battle_actor_role"] == Loop.ROLE_ENEMY and Loop.Presence.living(unit):
-			Loop._set_unit_defeated(loop, unit["id"], true)
-	loop = Loop._resolve_outcome(Loop.BattleScenarioRuleAdapter.run_event_hooks(loop))
+		if unit["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY and BattlePlayLoop.Presence.living(unit):
+			BattlePlayLoop._set_unit_defeated(loop, unit["id"], true)
+	loop = BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop))
 	check(BattleOutcome.won(loop) and scene.ScriptPresentation.timeline(scene, "win_0").get("playable_event_count", 0) > 0, "level 3's clear wins through win_0's closing cutscene" + label)
 	scene.apply_loop(loop, "test")
 	scene.mirror_interaction()
@@ -268,27 +268,27 @@ func _test_terminal_victory_offers_before_story(skip: bool) -> void:
 		scene.growth_panel.hide() # the harness skip seam; a player cannot close before OK
 	else:
 		_spend_all(scene)
-	var tina: Dictionary = Loop.unit(scene.play_loop, "tina")
+	var tina: Dictionary = BattlePlayLoop.unit(scene.play_loop, "tina")
 	check(not scene.growth_panel.visible and int(tina["pending_stat_points"]) == (5 if skip else 0), "the window closes; the points %s%s" % ["stay" if skip else "commit on the won loop", label])
 	var cutscene_played := false
 	for _frame in range(1200):
 		if view.battle_finished: break
 		if coordinator.active:
 			cutscene_played = true
-			if str(coordinator.summary().get("current_event_kind", "")) in ForceWin.CLICK_THROUGH_KINDS: coordinator.handle_input(ForceWin.click())
+			if str(coordinator.summary().get("current_event_kind", "")) in BattleForceWin.CLICK_THROUGH_KINDS: coordinator.handle_input(BattleForceWin.click())
 		elif view.dialogue_active():
 			view.advance_dialogue()
 		await process_frame
 	check(cutscene_played and view.battle_finished and BattleOutcome.won(scene.play_loop), "the victory cutscene, then the result page, follow the window (%s)%s" % [_state(scene), label])
 	check(not scene.growth_panel.visible, "the window does not reopen over the result" + label)
-	var carried := int(Loop.CampaignCarryRules.capture(scene.play_loop)["units"]["tina"]["pending_stat_points"])
+	var carried := int(BattlePlayLoop.CampaignCarryRules.capture(scene.play_loop)["units"]["tina"]["pending_stat_points"])
 	check(carried == (5 if skip else 0), "the carry keeps exactly the unspent points" + label)
 	await _close(scene)
 	if not skip: return
 	var next = await _start()
 	next.set_process(false)
 	# The carried member (CampaignCarryRules keeps pending_stat_points) is not the first actor.
-	Loop._unit(next.play_loop, "tina")["pending_stat_points"] = carried
+	BattlePlayLoop._unit(next.play_loop, "tina")["pending_stat_points"] = carried
 	next.apply_loop(next.play_loop, "test")
 	next._process(0.0)
 	check(next.selected_unit_id == "hu" and _offered_to(next) == "tina", "carried points open the member's window at the next battle's first control")
@@ -302,8 +302,8 @@ func _test_terminal_defeat_offers_nothing() -> void:
 	scene.set_process(false)
 	_level_up(scene, "hu")
 	var loop: Dictionary = scene.play_loop.duplicate(true)
-	Loop._set_unit_defeated(loop, "leonard", true)
-	loop = Loop._resolve_outcome(loop)
+	BattlePlayLoop._set_unit_defeated(loop, "leonard", true)
+	loop = BattlePlayLoop._resolve_outcome(loop)
 	check(BattleOutcome.lost(loop), "雷歐納德's fall loses level 3")
 	scene.apply_loop(loop, "test")
 	scene.mirror_interaction()
@@ -314,13 +314,13 @@ func _test_terminal_defeat_offers_nothing() -> void:
 		if view.dialogue_active(): view.advance_dialogue()
 		await process_frame
 	check(not scene.growth_panel.visible and view.battle_finished and not scene.menus.terminal_growth_pending(), "a defeat shows its result without a level-up window (%s)" % _state(scene))
-	check(Loop.allocate_growth(scene.play_loop, "hu", {"con": 1}) == scene.play_loop, "a lost loop rejects allocation")
+	check(BattlePlayLoop.allocate_growth(scene.play_loop, "hu", {"con": 1}) == scene.play_loop, "a lost loop rejects allocation")
 	await _close(scene)
 
 
 func _test_checkpoint_offers() -> void:
-	var loop: Dictionary = Loop.create([], "", Loop.BattleScenario.load_file(SCENARIO))
-	var legacy := Checkpoint.growth_offered_levels({"growth_notified_level": 9}, loop)
-	check(legacy.size() == loop["units"].size() and int(legacy["hu"]) == int(Loop.unit(loop, "hu")["level"]), "a pre-per-member save restores every member as offered at its current level")
-	var saved := Checkpoint.growth_offered_levels({"growth_offered_levels": {"hu": 5}}, loop)
+	var loop: Dictionary = BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file(SCENARIO))
+	var legacy := BattleCheckpoint.growth_offered_levels({"growth_notified_level": 9}, loop)
+	check(legacy.size() == loop["units"].size() and int(legacy["hu"]) == int(BattlePlayLoop.unit(loop, "hu")["level"]), "a pre-per-member save restores every member as offered at its current level")
+	var saved := BattleCheckpoint.growth_offered_levels({"growth_offered_levels": {"hu": 5}}, loop)
 	check(saved == {"hu": 5}, "a per-member save restores its own offers")

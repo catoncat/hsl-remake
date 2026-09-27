@@ -1,7 +1,7 @@
 extends Node2D
 ## One result number as the original spawns it through 0x4084e0(x, y, value, waiter, kind, hold)
 ## → defProcShowNumber (0x408580), drawn with the original glyphs: kind 0 red damage
-## (DamageNumberFloat: NUM100..109 revealed digit by digit, no rise), kind 2 green heal
+## (DamageNumberFloater: NUM100..109 revealed digit by digit, no rise), kind 2 green heal
 ## (NUM200..209), kind 3 blue MP (NUM300..309), kind 5 MISS (NUM513 alone). Kinds 2／3／5 hold
 ## level 16 for 16 ticks, then −1 every 2 ticks to 0 at tick 46, rising 1 px every other tick;
 ## digits start at x − 7 × (digits − 1), 14 px apart, each glyph placed by its SHP draw origin;
@@ -15,8 +15,8 @@ extends Node2D
 ##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
-const DamageNumberFloat = preload("res://game/battle/scene/DamageNumberFloat.gd")
-const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const DamageNumberFloater = preload("res://game/battle/scene/DamageNumberFloater.gd")
+const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 ## Result number kinds with an original glyph set (ShowNumberStyle kinds).
 const KINDS := ["damage", "heal", "mp", "miss"]
@@ -34,7 +34,7 @@ var clocked := true
 var done := false
 ## What the number shows: its digits, or MISS.
 var text := ""
-## The DamageNumberFloat (damage) or the glyph sprites' parent (heal／MP／MISS).
+## The DamageNumberFloater (damage) or the glyph sprites' parent (heal／MP／MISS).
 var number: Node2D
 
 
@@ -61,7 +61,7 @@ static func spawns(damage: int, healing: int, restored_mp: int, miss: bool) -> A
 static func spawn_all(parent: Node, entries: Array[Dictionary], point: Vector2, self_clocked: bool = true) -> Array[Node2D]:
 	var numbers: Array[Node2D] = []
 	for entry in entries:
-		var number: Node2D = (load("res://game/battle/scene/ResultNumberFloat.gd") as GDScript).new()
+		var number: Node2D = (load("res://game/battle/scene/ResultNumberFloater.gd") as GDScript).new()
 		number.clocked = self_clocked
 		number.position = point
 		parent.add_child(number)
@@ -82,7 +82,7 @@ func present(number_kind: String, value: int = 0, hold_ticks: int = 0) -> void:
 	if number != null:
 		number.free()
 	if kind == "damage":
-		number = DamageNumberFloat.new()
+		number = DamageNumberFloater.new()
 		number.name = "DamageDigits"
 		add_child(number)
 		number.set_process(false)
@@ -97,7 +97,7 @@ func present(number_kind: String, value: int = 0, hold_ticks: int = 0) -> void:
 			text = MISS_WORD
 		else:
 			# 0x408580: first glyph at x − ((digits − 1) + prefix units) × pitch／2; kinds 2／3 carry no prefix.
-			var layout: Dictionary = BattleRewardFloat.manifest()["layout"]["show_number"]
+			var layout: Dictionary = BattleRewardFloater.manifest()["layout"]["show_number"]
 			var pitch := int(layout["pitch"])
 			text = str(amount)
 			var x := -((text.length() - 1) + int(layout["prefix_units"][kind])) * (pitch / 2)
@@ -109,7 +109,7 @@ func present(number_kind: String, value: int = 0, hold_ticks: int = 0) -> void:
 
 
 func _glyph(key: String, x: int) -> void:
-	var record: Dictionary = BattleRewardFloat.manifest()["assets"][key]
+	var record: Dictionary = BattleRewardFloater.manifest()["assets"][key]
 	var sprite := Sprite2D.new()
 	sprite.texture = load(record["res_path"])
 	sprite.centered = false
@@ -121,7 +121,7 @@ func _glyph(key: String, x: int) -> void:
 
 ## The glyphs' rectangle at 1× in the parent's coordinates, at the spawn point (before any rise).
 func bounds() -> Rect2:
-	var assets: Dictionary = BattleRewardFloat.manifest()["assets"]
+	var assets: Dictionary = BattleRewardFloater.manifest()["assets"]
 	var keys: Array[String] = []
 	var xs: Array[int] = []
 	if kind == "miss":
@@ -150,8 +150,8 @@ static func hidden_ticks(hold_ticks: int) -> int:
 ## Ticks from the spawn to the deletion of a `number_kind` number of `digits` digits.
 static func life_of(number_kind: String, digits: int, hold_ticks: int = 0) -> int:
 	if number_kind == "damage":
-		return hidden_ticks(hold_ticks) - DamageNumberFloat.HOLD_TICKS + DamageNumberFloat.life_ticks(digits)
-	return hidden_ticks(hold_ticks) + BattleRewardFloat.SHOW_NUMBER_TICKS
+		return hidden_ticks(hold_ticks) - DamageNumberFloater.HOLD_TICKS + DamageNumberFloater.life_ticks(digits)
+	return hidden_ticks(hold_ticks) + BattleRewardFloater.SHOW_NUMBER_TICKS
 
 
 func life_ticks() -> int:
@@ -165,12 +165,12 @@ func draw_at(tick: float) -> bool:
 	if kind == "damage":
 		number.visible = alive
 		if alive:
-			number.draw_at(ticks - float(hidden_ticks(hold) - DamageNumberFloat.HOLD_TICKS))
+			number.draw_at(ticks - float(hidden_ticks(hold) - DamageNumberFloater.HOLD_TICKS))
 	else:
 		var age := ticks - float(hidden_ticks(hold))
 		number.visible = alive and age >= 0.0
 		if number.visible:
-			number.modulate.a = BattleRewardFloat.level(age) / float(DamageNumberFloat.LEVELS)
+			number.modulate.a = BattleRewardFloater.level(age) / float(DamageNumberFloater.LEVELS)
 			number.position.y = -floorf(age / 2.0)
 	visible = alive
 	if alive:

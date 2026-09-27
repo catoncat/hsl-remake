@@ -451,7 +451,7 @@
       "original": "位图字库已解码（简体字形在繁体码位）：全角 24×24／16×15、半角 12×24／8×15（FONT.15 半角下移 2 px），前进＝格宽、无额外字距（0x42f230／0x42f308／0x4608e4）；AI 施法名字幕 0x43e110／0x43e1c0 用 [0x4c1ae0]＝FONT.24",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_font_script/README.md",
-        "docs/evidence_packets/runtime_observations/closeup_floaters/README.md"
+        "docs/evidence_packets/runtime_observations/cutin_floaters/README.md"
       ],
       "remake": "OriginalBitmapFont：hsl generate original_bitmap_font 从 hsl.pak 解码用到的 1837 个全角字＋半角 0x20–0x7e 成两张图集，一个 FontFile 按字号挂两面（行高 24／16、不缩放、无系统字回退）；SimplifiedDisplay 启动时按 OPT-FONT 换默认主题字体；BattleAttackCue 施法名字幕用主题字体 24 号正文面",
       "remake_code": [
@@ -492,9 +492,9 @@
         "docs/evidence_packets/runtime_observations/map_pose_floaters/README.md",
         "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
       ],
-      "remake": "ResultNumberFloat（kind 0 经 DamageNumberFloat）接入 BattleCombatCutin.result_number、MagicImpactPresentation、BattlePresentation、BattleTurnEndCue；片段结束即隐藏",
+      "remake": "ResultNumberFloater（kind 0 经 DamageNumberFloater）接入 BattleCombatCutin.result_number、MagicImpactPresentation、BattlePresentation、BattleTurnEndCue；片段结束即隐藏",
       "remake_code": [
-        "game/battle/scene/ResultNumberFloat.gd",
+        "game/battle/scene/ResultNumberFloater.gd",
         "game/battle/scene/BattleCombatCutin.gd:show_result",
         "game/battle/scene/SkillEffectScriptPlayer.gd"
       ],
@@ -508,7 +508,7 @@
       "difference": "飘字已照原版只显示数字，数字用原版字形（UI6 去附加词、DIGITS 换字形）；剩没有原字形的说明字，今为白色 Label、放在数字上方：净化／增益说明与「未回復」、武器附加效果行（中毒／中毒延長…）、状态施加说明（中毒／禁魔／麻痺／衰弱／免疫／未生效）、道具的永久加成／解毒／增益／氣力行、回合末「麻痺解除」「增益結束 −N」、法术／辅助选目标的「N 個目標」",
       "original": "0x404643 只生 HP／MP 数字或 MISS，零变化的增益不出字；录屏飘字只有数字；命中率在底部面板",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/closeup_floaters/README.md",
+        "docs/evidence_packets/runtime_observations/cutin_floaters/README.md",
         "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
       ],
       "remake": "原版路径照原版（数字旁无附加词、选目标无头顶命中行），OPT-INFO=公開 时恢复改良：地图／特写数字上方的反擊／連擊 n/m／暴擊／閃避／擊倒、回复与 MP 数字旁的 HP／MP、回合末的中毒／轉化＋HP／MP、普攻与绝技选目标的「命中 N%」「2擊」（OPTIONS-S2）；两条路径都有：BattleCombatCutin.caption_feedback 的说明与武器效果行、BattlePresentation 的状态说明／道具说明／「N 個目標」、BattleTurnEndCue 的麻痺解除／增益結束",
@@ -529,15 +529,15 @@
     },
     {
       "id": "floater-lifetimes",
-      "difference": "数字寿命已照原版读值（红字 10×位数＋34 tick；绿／蓝／MISS、EXP／$ 为 hold＋46 tick，每 2 tick 上 1 px）；剩没有原字形的说明字借用 46 tick 上浮，回合末最后一个绿／蓝数字的收尾按 46 tick（ResultNumberFloat 为 47，差 1 tick）",
+      "difference": "数字寿命已照原版读值（红字 10×位数＋34 tick；绿／蓝／MISS、EXP／$ 为 hold＋46 tick，每 2 tick 上 1 px）；剩没有原字形的说明字借用 46 tick 上浮，回合末最后一个绿／蓝数字的收尾按 46 tick（ResultNumberFloater 为 47，差 1 tick）",
       "original": "defProcShowNumber（0x408580）寿命已读：kind 0 逐位 10 tick、揭完停 18、层级 16→0；kind 1–6 层级 16 停 16 tick 后每 2 tick 减 1、第 46 tick 删除；hold（+0xa8）期间不画",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md",
         "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md"
       ],
-      "remake": "ResultNumberFloat／DamageNumberFloat／BattleRewardFloat 按 tick 计；说明字 Label 与回合末节拍用 Timing.SHOW_NUMBER_SECONDS",
+      "remake": "ResultNumberFloater／DamageNumberFloater／BattleRewardFloater 按 tick 计；说明字 Label 与回合末节拍用 Timing.SHOW_NUMBER_SECONDS",
       "remake_code": [
-        "game/battle/scene/ResultNumberFloat.gd",
+        "game/battle/scene/ResultNumberFloater.gd",
         "game/battle/scene/BattleTurnEndCue.gd",
         "game/battle/scene/BattleAftermath.gd"
       ],
@@ -551,7 +551,7 @@
       "difference": "反击击杀时原版有第二份金钱累加器，重制一次行动只飘一份 $（$ 字形已是原版 NUM500，lane DIGITS 未动）",
       "original": "反击方第二份金钱累加器 0x4c2978",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/closeup_floaters/README.md"
+        "docs/evidence_packets/runtime_observations/cutin_floaters/README.md"
       ],
       "remake": "一次行动合并一个 $ 总数",
       "remake_code": [
@@ -586,9 +586,9 @@
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_growth_lifecycle.md"
       ],
-      "remake": "BattleRewardFloat 的学技提示",
+      "remake": "BattleRewardFloater 的学技提示",
       "remake_code": [
-        "game/battle/scene/BattleRewardFloat.gd"
+        "game/battle/scene/BattleRewardFloater.gd"
       ],
       "original_status": "no_original_code",
       "visibility": "rare",
@@ -1683,7 +1683,7 @@
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/system_menu/README.md"
       ],
-      "remake": "RemakeOptionsPage＋GameOptions（注册表 content/authored/options/remake_options.json，设置存 GameSettings preset／presentation）；Tab 入口是自动加载 RemakeOptionsHotkey（最高游戏层之上、SceneTree 暂停）；页关闭且值变了通知 remake_options_listeners 组；各选项接读点后的差异记在对应条目（已接：OPT-TREASURE→BattleSceneRuntime reveal_all_chests，关页即重画；OPT-PACE 快／極快 的演出时钟倍率 CombatPresentationTiming.PACE_CLOSEUP／PACE_MAP）",
+      "remake": "RemakeOptionsPage＋GameOptions（注册表 content/authored/options/remake_options.json，设置存 GameSettings preset／presentation）；Tab 入口是自动加载 RemakeOptionsHotkey（最高游戏层之上、SceneTree 暂停）；页关闭且值变了通知 remake_options_listeners 组；各选项接读点后的差异记在对应条目（已接：OPT-TREASURE→BattleSceneRuntime reveal_all_chests，关页即重画；OPT-PACE 快／極快 的演出时钟倍率 CombatPresentationTiming.PACE_CUTIN／PACE_MAP）",
       "remake_code": [
         "game/settings/RemakeOptionsPage.gd",
         "game/settings/RemakeOptionsHotkey.gd",
@@ -1843,11 +1843,11 @@
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/map_pose_floaters/README.md"
       ],
-      "remake": "LevelUpStars／DamageNumberFloat 用 BLEND_MODE_ADD 且 alpha＝层级/16；ResultNumberFloat 的 kind 2／3／5 用 modulate.a＝层级/16",
+      "remake": "LevelUpStars／DamageNumberFloater 用 BLEND_MODE_ADD 且 alpha＝层级/16；ResultNumberFloater 的 kind 2／3／5 用 modulate.a＝层级/16",
       "remake_code": [
         "game/battle/scene/LevelUpStars.gd",
-        "game/battle/scene/DamageNumberFloat.gd",
-        "game/battle/scene/ResultNumberFloat.gd"
+        "game/battle/scene/DamageNumberFloater.gd",
+        "game/battle/scene/ResultNumberFloater.gd"
       ],
       "original_status": "read_partial",
       "visibility": "every_battle",
@@ -2448,10 +2448,10 @@
     "provenance:game/battle/scene/BattlePresentation.gd|timing|provisional|": {
       "item": "map-strike-effects"
     },
-    "provenance:game/battle/scene/BattleRewardFloat.gd|layout|remake-invented|": {
+    "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|": {
       "item": "learning-notice"
     },
-    "provenance:game/battle/scene/BattleRewardFloat.gd|strings|remake-invented|": {
+    "provenance:game/battle/scene/BattleRewardFloater.gd|strings|remake-invented|": {
       "item": "learning-notice"
     },
     "provenance:game/battle/scene/BattleSceneInput.gd|rules|remake-invented|": {
@@ -3438,7 +3438,7 @@
     "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|说话人／目标／行动者高亮的颜色与脉动只来自这一份录屏": {
       "item": "highlight-colours"
     },
-    "provenance:game/battle/scene/DamageNumberFloat.gd|timing|provisional|": {
+    "provenance:game/battle/scene/DamageNumberFloater.gd|timing|provisional|": {
       "item": "additive-level-blend"
     },
     "provenance:game/battle/scene/LevelUpStars.gd|timing|provisional|": {

@@ -82,7 +82,7 @@ RULE_KEYS: dict[str, str] = {
     'draw_mode': 'BattleSceneStage.sync_actor_row additive sprite (the placed object\'s obj_Mode display mode engADDCOLOR: the level-37 gems, level 80\'s 怨念體; optional, ordinary draw when absent)',
     'no_showshape': 'BattleSceneStage.spawn_actor_node → ActorRuntime.hide_shape (PLAYERS no_showshape, +0xa0 bit 0x20 read at 0x4420ef: the object is never drawn — the level-12／26 hull pieces 101; optional, drawn when absent)',
     'shared_record': 'SharedRecordRules.sync pools the HP of every living unit carrying the same value (the PLAYERS row of an obj_Data7 with bit 31: the level-12／26 hull pieces share one live record, 0x42bdb0; optional, own HP when absent)',
-    'side_swapped': 'CloseupLayout.side_swapped → every close-up object of the unit mirrors: ordinary／special attacker and its attack flash, the cast lead, the defender with its hit move flag exchanged (0x446be0 reads live +0xa0 & 8: set by the obj_Data9 swap 0x407fc3, flipped by each actSetPlayerMode 0x45073c — WinfailActions; optional, false when absent)',
+    'side_swapped': 'CutinLayout.side_swapped → every close-up object of the unit mirrors: ordinary／special attacker and its attack flash, the cast lead, the defender with its hit move flag exchanged (0x446be0 reads live +0xa0 & 8: set by the obj_Data9 swap 0x407fc3, flipped by each actSetPlayerMode 0x45073c — WinfailActions; optional, false when absent)',
 }
 # Evidence ledgers carried as data for the reader and the evidence checks, by JSON path;
 # no rule reads them, so they are never required at any level. An authored unit simply

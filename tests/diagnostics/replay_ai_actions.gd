@@ -36,7 +36,7 @@ extends "res://tests/diagnostics/export_enemy_turns.gd"
 ## values the remake never asked for), context, decision (TURNDUMP_DECISION summary per step).
 ## stdout: REPLAY_RUN per job, REPLAY_DONE at the end.
 
-const Presence = preload("res://game/sim/BattlePresenceRules.gd")
+const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 ## The original's chain call sites (priority／support chain rolls, HP tests, action class, MAGIC／SPECIAL lists,
 ## area order, side walk, buff aid) and the remake draw points of the same phase.
 const CHAIN_SITES := ["0x440db5", "0x440ddf", "0x440e1b", "0x440e57", "0x440e93", "0x440ecf", "0x40c138", "0x40c061", "0x40d500",
@@ -183,7 +183,7 @@ func _fresh(job: Dictionary) -> Dictionary:
 
 
 func _replay(prep: Dictionary, opts: Dictionary, rounds: Array, meta: Dictionary, result: Dictionary, mode: String, stop_after: int = 1 << 30) -> Dictionary:
-	var loop: Dictionary = Loop.copy(prep["loop"])
+	var loop: Dictionary = BattlePlayLoop.copy(prep["loop"])
 	var first_turn := int(prep["first_turn"])
 	var last_turn := first_turn + int(opts["turns"]) - 1
 	var flat: Array = []
@@ -246,13 +246,13 @@ func _replay(prep: Dictionary, opts: Dictionary, rounds: Array, meta: Dictionary
 					feeder.prime([])
 					var before_skip := loop
 					var mark_skip := feeder.log.size()
-					loop = Loop.step_ai_turn(loop, source)
+					loop = BattlePlayLoop.step_ai_turn(loop, source)
 					if loop.get("last_ai_actions", []).size() != before_skip.get("last_ai_actions", []).size():
 						var skipped := _action_entry(before_skip, loop, feeder.log.slice(mark_skip))
 						skipped.erase("draws")
 						result["uncompared"].append(skipped)
 					continue
-				var actor := Loop._unit(loop, cur_id)
+				var actor := BattlePlayLoop._unit(loop, cur_id)
 				var context: Array = sticky.duplicate()
 				var origin := Vector2i(int(expected["from"][0]), int(expected["from"][1]))
 				if actor.get("coord") != origin:
@@ -262,7 +262,7 @@ func _replay(prep: Dictionary, opts: Dictionary, rounds: Array, meta: Dictionary
 				pending = {"actor": cur_id, "entries": [], "decisions": [], "context": context}
 			var before := loop
 			var mark := feeder.log.size()
-			loop = Loop.step_ai_turn(loop, source)
+			loop = BattlePlayLoop.step_ai_turn(loop, source)
 			if loop.get("last_ai_actions", []).size() == before.get("last_ai_actions", []).size(): continue
 			var entry := _action_entry(before, loop, feeder.log.slice(mark))
 			pending["entries"].append(entry)
@@ -313,7 +313,7 @@ func _finish(loop: Dictionary, pending: Dictionary, expected: Dictionary, after:
 	result["rows"].append({"k": k, "round": int(expected["round"]), "actor": str(expected["actor"]), "original": original, "remake": merged, "same": same,
 		"drawn": feeder.drawn.duplicate(), "exhausted": feeder.exhausted.duplicate(), "leftover": feeder.remaining(),
 		"context": pending["context"], "decision": pending["decisions"]})
-	var actor := Loop._unit(loop, str(expected["actor"]))
+	var actor := BattlePlayLoop._unit(loop, str(expected["actor"]))
 	if not actor.is_empty():
 		if expected.get("to") is Array: actor["coord"] = Vector2i(int(expected["to"][0]), int(expected["to"][1]))
 		if after.has("chase"): actor["ai_target_id"] = "" if after["chase"] == null else _id(str(after["chase"]))
@@ -328,7 +328,7 @@ func _sync_hp(loop: Dictionary, tracked: Dictionary, sticky: Array) -> void:
 		var id := str(unit["id"])
 		if not tracked.has(id): continue
 		var want := int(tracked[id])
-		var alive := Presence.living(unit)
+		var alive := BattlePresenceRules.living(unit)
 		if want <= 0 and alive:
 			unit["hp"] = 0
 			unit["defeated"] = true

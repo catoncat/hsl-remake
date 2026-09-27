@@ -19,8 +19,8 @@ extends SceneTree
 ##
 ##   tools/godot.sh --headless --script res://tests/capture_map_pose_floaters_review.gd     # log only
 ##   tools/play.sh --screen 0 --script res://tests/capture_map_pose_floaters_review.gd -- <out_dir>
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const FIXTURE := "res://content/battles/first_battle.json"
 var out_dir := ""
@@ -64,13 +64,13 @@ func fixture() -> Node:
 
 func cast_case() -> void:
 	var scene: Node = await fixture()
-	var caster := Loop._unit(scene.play_loop, "enemy026_1")
-	var target := Loop._unit(scene.play_loop, "enemy023_1")
+	var caster := BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
+	var target := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
 	target["coord"] = caster["coord"] + Vector2i.RIGHT
 	target["hp"] = 200
 	caster["mp"] = 100
 	var id := "magic:magicFIRE:magicCode01"
-	LoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, Loop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
+	BattleLoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
 	scene.apply_loop(scene.play_loop, "capture")
 	var actor: Node2D = scene.actor_node_for_unit(caster["id"])
 	for _guard in range(600):
@@ -87,16 +87,16 @@ func cast_case() -> void:
 
 func level_up_case() -> void:
 	var scene: Node = await fixture()
-	var player := Loop._unit(scene.play_loop, "leonard")
-	var enemy := Loop._unit(scene.play_loop, "enemy021_1")
+	var player := BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 	player["exp"] = 99
 	enemy["coord"] = player["coord"] + Vector2i.UP
 	enemy["hp"] = 1
 	enemy["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
-	scene.apply_loop(Loop.select_player_unit(scene.play_loop, "leonard"), "capture")
+	scene.apply_loop(BattlePlayLoop.select_player_unit(scene.play_loop, "leonard"), "capture")
 	scene.interaction_state = "action_menu"
 	scene.menus.choose_command("attack")
-	scene.apply_loop(Loop.attack_target(scene.play_loop, "enemy021_1", func(_n): return 0), "capture")
+	scene.apply_loop(BattlePlayLoop.attack_target(scene.play_loop, "enemy021_1", func(_n): return 0), "capture")
 	scene.finish_attack_attempt()
 	var view: Node = scene.get_node("BattlePresentation")
 	var actor: Node2D = scene.actor_node_for_unit("leonard")
@@ -118,7 +118,7 @@ func digits_case() -> void:
 	var scene: Node = await fixture()
 	var view: Node = scene.get_node("BattlePresentation")
 	# The camera opens on 雷歐納德; 021 starts ten rows north, off screen — stand it next to him.
-	Loop._unit(scene.play_loop, "enemy021_1")["coord"] = Loop._unit(scene.play_loop, "leonard")["coord"] + Vector2i.UP
+	BattlePlayLoop._unit(scene.play_loop, "enemy021_1")["coord"] = BattlePlayLoop._unit(scene.play_loop, "leonard")["coord"] + Vector2i.UP
 	scene.apply_loop(scene.play_loop, "capture")
 	for _guard in range(600):
 		await process_frame
@@ -126,8 +126,8 @@ func digits_case() -> void:
 	# During a real impact the combat is busy and the ring menu is hidden; this direct call is not.
 	scene.interaction_state = "idle"
 	scene.menus.set_action_menu_visible(false)
-	var attacker := Loop.unit(scene.play_loop, "leonard")
-	var defender := Loop.unit(scene.play_loop, "enemy021_1")
+	var attacker := BattlePlayLoop.unit(scene.play_loop, "leonard")
+	var defender := BattlePlayLoop.unit(scene.play_loop, "enemy021_1")
 	var strike := {"hit": true, "critical": true, "damage": 57, "actual_damage": 57, "defender_hp_after": 9,
 		"defender_id": defender["id"], "attacker_id": attacker["id"]}
 	view._present_impact(strike, attacker, defender, false)

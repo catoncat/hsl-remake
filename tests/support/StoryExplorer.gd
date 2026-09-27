@@ -25,11 +25,11 @@ extends RefCounted
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const MapRules = preload("res://game/world/WorldMapRules.gd")
-const WorldActions = preload("res://game/world/WorldScriptActions.gd")
-const TownRules = preload("res://game/sim/TownEventRules.gd")
+const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
+const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
+const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const EndingDispatchRules = preload("res://game/sim/EndingDispatchRules.gd")
-const ForceWin = preload("res://tests/support/BattleForceWin.gd")
+const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 
 const WORLD_MAP_PATH := "res://content/imported/hsl/global/world_map/world_map.json"
 const MAP_SCENE := "res://content/world/world_map_scene.json"
@@ -89,7 +89,7 @@ var handoffs: Array[Dictionary] = []
 func _init(scene_tree: SceneTree, battle_player: Callable) -> void:
 	tree = scene_tree
 	play_formal_battle = battle_player
-	world_map = MapRules.load_world_map(WORLD_MAP_PATH)
+	world_map = WorldMapRules.load_world_map(WORLD_MAP_PATH)
 
 
 func note(line: String) -> void:
@@ -109,9 +109,9 @@ static func click() -> InputEventMouseButton:
 ## 76 / 77 / 78 starts at the STORY057 hand-off instead for finale QA.
 static func start_after_ohm_village(gold: int = 5000) -> void:
 	CampaignProgress.reset_campaign()
-	var seeded: Dictionary = WorldActions.ensure_state({}, CampaignProgress.load_campaign())
+	var seeded: Dictionary = WorldScriptActions.ensure_state({}, CampaignProgress.load_campaign())
 	var world: Dictionary = seeded["state"]
-	world = TownRules.apply_script_town_actions(world, [{"name": "actSetTownExecEvent", "args": ["town_歐姆村", "9"]}], TownRules.load_towndef(TOWNDEF_PATH))["state"]
+	world = TownEventRules.apply_script_town_actions(world, [{"name": "actSetTownExecEvent", "args": ["town_歐姆村", "9"]}], TownEventRules.load_towndef(TOWNDEF_PATH))["state"]
 	var ending_mode := OS.get_environment("HSL_EXPLORER_ENDING").strip_edges()
 	var initial_path := STORY_057 if ending_mode in ["76", "77", "78"] else MAP_SCENE
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": initial_path, "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": gold}}, "from_scenario_id": "ohm_village_battle", "world": world}
@@ -251,7 +251,7 @@ func play_scene(scene: Node) -> String:
 			coordinator.choose_select_option(0)
 		elif scene.party_equipment_screen != null and scene.party_equipment_screen.active:
 			scene.party_equipment_screen.close()  # actEnterStorageWindow: leave the party as it is
-		elif str(coordinator.summary().get("current_event_kind", "")) in ForceWin.CLICK_THROUGH_KINDS:
+		elif str(coordinator.summary().get("current_event_kind", "")) in BattleForceWin.CLICK_THROUGH_KINDS:
 			coordinator.handle_input(click())
 		await tree.process_frame
 		frames += 1
@@ -405,7 +405,7 @@ func dismiss_card(map: Node) -> void:
 
 
 func town_signature(state: Dictionary, point_id: int) -> String:
-	var town_id := MapRules.town_id_for_point(world_map, point_id)
+	var town_id := WorldMapRules.town_id_for_point(world_map, point_id)
 	var town: Dictionary = (state.get("towns", {}) as Dictionary).get(str(town_id), {})
 	return "%d:%s:%d" % [town_id, JSON.stringify(town.get("tree", {})), int(town.get("exec_event", 0))]
 
@@ -413,9 +413,9 @@ func town_signature(state: Dictionary, point_id: int) -> String:
 ## What makes a point worth visiting now: a town whose menu tree / armed event we have
 ## not exhausted, or a point whose current event we have not yet arrived on.
 func interesting(state: Dictionary, point_id: int) -> bool:
-	if MapRules.point_type(state, world_map, point_id) == "bmpmTown":
+	if WorldMapRules.point_type(state, world_map, point_id) == "bmpmTown":
 		return not towns_explored.has(town_signature(state, point_id))
-	return not arrived_keys.has("%d:%d" % [point_id, MapRules.point_event(state, world_map, point_id)])
+	return not arrived_keys.has("%d:%d" % [point_id, WorldMapRules.point_event(state, world_map, point_id)])
 
 
 ## Shortest revealed path from here to the nearest interesting point ([] when none).
@@ -431,7 +431,7 @@ func path_to_interesting(state: Dictionary, here: int) -> Array:
 				path.push_front(cursor)
 				cursor = int(previous[cursor])
 			return path
-		for next in MapRules.reachable_points(state, world_map, point):
+		for next in WorldMapRules.reachable_points(state, world_map, point):
 			if not previous.has(next):
 				previous[next] = point
 				queue.append(next)
@@ -456,7 +456,7 @@ func explore_map(scene: Node) -> String:
 			return OUTCOME_HANDOFF
 		var here: int = map.current_point()
 		# The town we stand on, when its tree / armed event changed since we exhausted it.
-		if MapRules.point_type(map.state, world_map, here) == "bmpmTown" and map.town_runtime == null and interesting(map.state, here):
+		if WorldMapRules.point_type(map.state, world_map, here) == "bmpmTown" and map.town_runtime == null and interesting(map.state, here):
 			var sig := town_signature(map.state, here)
 			towns_explored[sig] = true
 			note("map: reopen town at %d" % here)
@@ -464,7 +464,7 @@ func explore_map(scene: Node) -> String:
 			if CampaignProgress.has_pending():
 				return OUTCOME_HANDOFF
 			if map.town_runtime != null:
-				await explore_town(map.town_runtime, MapRules.town_id_for_point(world_map, here))
+				await explore_town(map.town_runtime, WorldMapRules.town_id_for_point(world_map, here))
 				if CampaignProgress.has_pending():
 					return OUTCOME_HANDOFF
 			continue
@@ -472,8 +472,8 @@ func explore_map(scene: Node) -> String:
 		if path.is_empty():
 			return OUTCOME_EXHAUSTED
 		var target: int = int(path[0])
-		var event_key := "%d:%d" % [target, MapRules.point_event(map.state, world_map, target)]
-		var town_sig := town_signature(map.state, target) if MapRules.point_type(map.state, world_map, target) == "bmpmTown" else ""
+		var event_key := "%d:%d" % [target, WorldMapRules.point_event(map.state, world_map, target)]
+		var town_sig := town_signature(map.state, target) if WorldMapRules.point_type(map.state, world_map, target) == "bmpmTown" else ""
 		note("map: %d -> %d" % [here, target])
 		await travel(map, target)
 		arrived_keys[event_key] = true
@@ -481,7 +481,7 @@ func explore_map(scene: Node) -> String:
 			return OUTCOME_HANDOFF
 		if map.town_runtime != null:
 			towns_explored[town_sig] = true
-			await explore_town(map.town_runtime, MapRules.town_id_for_point(world_map, target))
+			await explore_town(map.town_runtime, WorldMapRules.town_id_for_point(world_map, target))
 			if CampaignProgress.has_pending():
 				return OUTCOME_HANDOFF
 		await dismiss_card(map)

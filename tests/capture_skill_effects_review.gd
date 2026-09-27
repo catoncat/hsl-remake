@@ -4,8 +4,8 @@ extends SceneTree
 ## mark, the result), written to ignored/r7-skill-effects/. Needs a rendered window.
 ##
 ##   tools/godot.sh --script res://tests/capture_skill_effects_review.gd [-- skill_id ...]
-const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleCombatCutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/r7-skill-effects/"
 ## Element families: 天雷猛襲劍 (AIR, its own SP00_003 panel), 碎岩擊 (EARTH, the level-36 boss
@@ -29,7 +29,7 @@ func run() -> void:
 	root.size = Vector2i(640, 480)
 	root.position = DisplayServer.screen_get_position(root.current_screen) + Vector2i(60, 80)
 	DirAccess.make_dir_recursive_absolute(OUT)
-	var cutin = Cutin.new()
+	var cutin = BattleCombatCutin.new()
 	root.add_child(cutin)
 	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	cutin.set_process(false)

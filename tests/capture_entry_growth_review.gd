@@ -1,8 +1,8 @@
 extends "res://tests/capture_script_wait_review.gd"
-const BirthFixture = preload("res://tests/EntryGrowthFixture.gd")
-const BirthTests = preload("res://tests/run_entry_growth_tests.gd")
-const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
-const LoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
+const EntryGrowthFixture = preload("res://tests/EntryGrowthFixture.gd")
+const run_entry_growth_tests = preload("res://tests/run_entry_growth_tests.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattleLoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
 const BIRTH_OUT := "res://ignored/entry-growth-review/"
 var created_ids: Array = []
 var birth_history := {}
@@ -25,25 +25,25 @@ func run() -> void:
 func setup_birth() -> void:
 	impacts=[];events=[];sounds={};observed={};saves=0;receipts=[];receipt_sequences={};item_receipts=[];item_seen={};serial=0
 	script_seen={};ai_seen={};ai_actions=[];guard_captions=[];created_ids=[];birth_history={}
-	Campaign.pending={};Campaign.last_entry={}
-	sample=BirthFixture.build(mode);owner_id=sample["owner_id"]
+	CampaignProgress.pending={};CampaignProgress.last_entry={}
+	sample=EntryGrowthFixture.build(mode);owner_id=sample["owner_id"]
 	scene=load("res://game/battle/development/MobileJobsTrial.tscn").instantiate();root.add_child(scene);current_scene=scene;scene.set_process(false)
 	scene.settlement_controller.checkpoint_path=BIRTH_OUT+mode+".save"
 	scene.first_battle_scenario=sample["scenario"].duplicate(true);scene.apply_loop(sample["loop"].duplicate(true), "test")
 	for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
-	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(Loop.unit(scene.play_loop,owner_id)["coord"]);scene.set_process(true)
+	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(BattlePlayLoop.unit(scene.play_loop,owner_id)["coord"]);scene.set_process(true)
 	initial_state=scene.play_loop.duplicate(true)
 	await settle(owner_id)
 
 func settle(id: String, terminal: bool=false) -> void:
 	await super.settle(id,terminal)
-	check(Loop.ReinforcementGrowth.state_error(scene.play_loop)=="","birth source and independent RNG order valid at every quiet boundary")
-	for actor in BirthTests.created(scene.play_loop):
+	check(BattlePlayLoop.ReinforcementGrowth.state_error(scene.play_loop)=="","birth source and independent RNG order valid at every quiet boundary")
+	for actor in run_entry_growth_tests.created(scene.play_loop):
 		if not created_ids.has(actor["id"]):created_ids.append(actor["id"]);birth_history[actor["id"]]=actor["entry_growth"].duplicate(true)
 		check(actor["entry_growth"]==birth_history[actor["id"]],"later combat, resource tails and refresh cannot mutate birth receipt")
 
 func inspect_birth(id: String) -> void:
-	var actor:=Loop.unit(scene.play_loop,id)
+	var actor:=BattlePlayLoop.unit(scene.play_loop,id)
 	var contact:Vector2i=actor["coord"]
 	await hover(scene.grid_cell_center_to_logical_position(contact))
 	await point(scene.grid_cell_center_to_logical_position(contact))
@@ -69,16 +69,16 @@ func play_birth() -> void:
 	if mode in ["wing","support"]:
 		await change_gear(232,"accessory1")
 		await move_to(Vector2i(13,16))
-		await cast_stat(Mobile.WIND if mode=="wing" else BirthFixture.Events.HEAL,sample["target_id"])
+		await cast_stat(run_mobile_jobs_tests.WIND if mode=="wing" else EntryGrowthFixture.ScriptDepartureFixture.HEAL,sample["target_id"])
 	else:
 		if mode=="states":
-			await click(scene.action_menu.get_node("MagicCommand"));check(scene.magic_panel.choices[Mobile.WIND].disabled,"silence and empty MP reject current spell before the action");await shot("restricted-magic");await escape();await settle(owner_id)
+			await click(scene.action_menu.get_node("MagicCommand"));check(scene.magic_panel.choices[run_mobile_jobs_tests.WIND].disabled,"silence and empty MP reject current spell before the action");await shot("restricted-magic");await escape();await settle(owner_id)
 		await attack(sample["target_id"])
 	await settle("")
 	if mode in ["blocked","class_blocked"]:
-		check(created_ids.is_empty() and BirthTests.created(scene.play_loop).is_empty(),"full footprint occupied: real event is pending and creates no birth")
+		check(created_ids.is_empty() and run_entry_growth_tests.created(scene.play_loop).is_empty(),"full footprint occupied: real event is pending and creates no birth")
 		if mode=="class_blocked":
-			check(Loop.unit(scene.play_loop,sample["target_id"])["defeated"] and not BattleOutcome.decided(scene.play_loop),"last original class member is dead but its pending recruit prevents premature victory")
+			check(BattlePlayLoop.unit(scene.play_loop,sample["target_id"])["defeated"] and not BattleOutcome.decided(scene.play_loop),"last original class member is dead but its pending recruit prevents premature victory")
 			await shot("class-victory-pending")
 		await save_restore()
 		for i in range(4):
@@ -88,9 +88,9 @@ func play_birth() -> void:
 		await move_to(Vector2i(16,17) if mode=="class_blocked" else Vector2i(16,16));await click(scene.action_menu.get_node("WaitCommand"));await settle("")
 	check(created_ids.size()==1,"one new actor is fully initialized and visible after the real trigger")
 	if created_ids.is_empty():return
-	var id:String=created_ids[0];var born:=Loop.unit(scene.play_loop,id)
+	var id:String=created_ids[0];var born:=BattlePlayLoop.unit(scene.play_loop,id)
 	check(born["actor_id"]==sample["code"] and born["entry_growth"]["input"]["parameters"]==sample["parameters"],"actual role and script adjustment map into the same instance")
-	check(born["entry_growth"]["result"]["source_level"]==Loop.ReinforcementGrowth.Entry.inferred_level(initial_state["reinforcement_templates"][0]["combat_profile"]),"entry inferred level uses original base attributes")
+	check(born["entry_growth"]["result"]["source_level"]==BattlePlayLoop.ReinforcementGrowth.Entry.inferred_level(initial_state["reinforcement_templates"][0]["combat_profile"]),"entry inferred level uses original base attributes")
 	check(born["entry_growth"]["draws"].is_empty() if mode=="zero" else not born["entry_growth"]["draws"].is_empty(),"explicit zero differs from randomized entry")
 	await inspect_birth(id);await save_restore()
 	if mode=="repeat":
@@ -100,7 +100,7 @@ func play_birth() -> void:
 		await inspect_birth(created_ids[1]);await save_restore()
 	elif mode=="states":
 		await use_item_real(247,owner_id);await settle("")
-		check(not Loop.StatusEffectRules.magic_blocked(Loop.unit(scene.play_loop,owner_id)) and Loop.StatusEffectRules.poisoned(Loop.unit(scene.play_loop,owner_id)),"real clear-silence item leaves poison and birth records intact")
+		check(not BattlePlayLoop.StatusEffectRules.magic_blocked(BattlePlayLoop.unit(scene.play_loop,owner_id)) and BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(scene.play_loop,owner_id)),"real clear-silence item leaves poison and birth records intact")
 	elif mode in ["victory","class_blocked"]:
 		if mode=="class_blocked":
 			await finish_class_recruit(id)
@@ -112,7 +112,7 @@ func play_birth() -> void:
 	elif mode=="defeat":
 		_drive_defeat_controls()
 		await settle("",true)
-		check(scene.play_loop["battle_outcome"]==BirthFixture.Rules.DEFEAT_OUTCOME,"grown enemy's real decision and physical attack cause defeat")
+		check(scene.play_loop["battle_outcome"]==EntryGrowthFixture.WinfailScenarioRules.DEFEAT_OUTCOME,"grown enemy's real decision and physical attack cause defeat")
 		check(ai_actions.any(func(a):return a.get("actor_id")==id and a.get("kind") in ["attack","move_then_attack"]),"the new actor, not the departed seed, performs the fatal physical decision")
 	elif mode in ["escape","carry"]:
 		await return_to_owner();await move_to(Vector2i(13,16));await click(scene.action_menu.get_node("WaitCommand"));await settle("",true)
@@ -127,18 +127,18 @@ func play_birth() -> void:
 	await save_restore()
 	var row:Dictionary={"mode":mode,"initial":initial_state["units"],"template":initial_state["reinforcement_templates"],"final":scene.play_loop["units"].duplicate(true),"created_ids":created_ids.duplicate(),"birth_receipts":birth_history.duplicate(true),"rng_before":seed_before,"rng_after":scene.play_loop["global_rng"],"wait_cursor":scene.play_loop["script_wait_cursor"],"script_cursor":scene.script_cutscene_consumed,"ai_actions":ai_actions.duplicate(true),"combat":receipts.duplicate(true),"events":events.duplicate(true),"observed":observed.duplicate(true),"sounds":sounds.keys(),"saves":saves,"outcome":scene.play_loop["battle_outcome"],"restarted":false}
 	if mode=="carry":
-		var carry:=Loop.CampaignCarryRules.capture(scene.play_loop);await close_scene()
-		Campaign.pending={"scenario_path":Mobile.PATH,"carry":carry}
+		var carry:=BattlePlayLoop.CampaignCarryRules.capture(scene.play_loop);await close_scene()
+		CampaignProgress.pending={"scenario_path":run_mobile_jobs_tests.PATH,"carry":carry}
 		scene=load("res://game/battle/development/MobileJobsTrial.tscn").instantiate();root.add_child(scene);current_scene=scene
 		scene.settlement_controller.checkpoint_path=BIRTH_OUT+"carry-destination.save"
 		await settle("")
-		check(Campaign.pending.is_empty() and scene.play_loop["campaign_carry_receipt"]["errors"].is_empty() and not carry.has("initialization_rng") and not carry.has("global_rng") and BirthTests.created(scene.play_loop).is_empty(),"fresh battle carries the controlled party but not prior enemies or any random stream of theirs")
+		check(CampaignProgress.pending.is_empty() and scene.play_loop["campaign_carry_receipt"]["errors"].is_empty() and not carry.has("initialization_rng") and not carry.has("global_rng") and run_entry_growth_tests.created(scene.play_loop).is_empty(),"fresh battle carries the controlled party but not prior enemies or any random stream of theirs")
 		await save_restore();row["carry_destination"]=scene.play_loop["units"].duplicate(true)
 	elif mode in ["victory","defeat","escape","class_blocked"]:
-		var frozen:Dictionary=scene.play_loop.duplicate(true);LoopScript._maintain_script_pressure(frozen)
-		check(frozen==scene.play_loop and Loop.step_ai_turn(frozen)==frozen,"terminal rejects later spawn and AI callbacks")
+		var frozen:Dictionary=scene.play_loop.duplicate(true);BattleLoopScript._maintain_script_pressure(frozen)
+		check(frozen==scene.play_loop and BattlePlayLoop.step_ai_turn(frozen)==frozen,"terminal rejects later spawn and AI callbacks")
 		reload_current_scene();await create_timer(0.4).timeout;scene=current_scene
-		check(scene.play_loop["scenario_ok"] and BirthTests.created(scene.play_loop).is_empty(),"restart constructs a fresh encounter without replayed birth increments")
+		check(scene.play_loop["scenario_ok"] and run_entry_growth_tests.created(scene.play_loop).is_empty(),"restart constructs a fresh encounter without replayed birth increments")
 		row["restarted"]=true
 	routes.append(row)
 
@@ -147,9 +147,9 @@ func finish_class_recruit(id: String) -> void:
 	# lead to another ordinary action, not a wait for a nonexistent terminal page.
 	for attempt in range(8):
 		await return_to_owner()
-		var actor:=Loop.unit(scene.play_loop,owner_id)
-		var target:=Loop.unit(scene.play_loop,id)
-		var choice:=LoopAI._ai_physical_choice(scene.play_loop,actor,target,Loop._movement_envelope(scene.play_loop,owner_id))
+		var actor:=BattlePlayLoop.unit(scene.play_loop,owner_id)
+		var target:=BattlePlayLoop.unit(scene.play_loop,id)
+		var choice:=BattleLoopAI._ai_physical_choice(scene.play_loop,actor,target,BattlePlayLoop._movement_envelope(scene.play_loop,owner_id))
 		if choice.is_empty():
 			await click(scene.action_menu.get_node("WaitCommand"));await settle("")
 			continue

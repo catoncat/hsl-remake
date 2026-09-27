@@ -14,8 +14,8 @@ extends SceneTree
 ##
 ##   tools/godot.sh --headless --script res://tests/capture_ai_cue_review.gd            # log only
 ##   tools/play.sh --resolution 640x480 --script res://tests/capture_ai_cue_review.gd -- <out_dir> [case]
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const CASES := ["ai-attack", "ai-cast"]
 var out_dir := ""
@@ -54,18 +54,18 @@ func run_case(label: String) -> void:
 	var presentation: Node = scene.get_node("BattlePresentation")
 	var loop: Dictionary = scene.play_loop.duplicate(true)
 	var attacker_id := "actor021_1" if label == "ai-attack" else "actor026_1"
-	var attacker: Dictionary = Loop._unit(loop, attacker_id)
-	var target: Dictionary = Loop._unit(loop, "leonard")
+	var attacker: Dictionary = BattlePlayLoop._unit(loop, attacker_id)
+	var target: Dictionary = BattlePlayLoop._unit(loop, "leonard")
 	target["coord"] = attacker["coord"] + (Vector2i(1, 0) if label == "ai-attack" else Vector2i(3, 0))
 	target["hp"] = 200
 	target["max_hp"] = 200
 	attacker["mp"] = int(attacker.get("max_mp", 0))
 	var receipt: Dictionary
 	if label == "ai-attack":
-		receipt = LoopCombat._resolve_exchange(loop, attacker_id, "leonard", func(_n): return 0)
+		receipt = BattleLoopCombat._resolve_exchange(loop, attacker_id, "leonard", func(_n): return 0)
 	else:
 		var spell := "magic:magicAIR:magicCode01"
-		receipt = LoopCombat._resolve_skill(loop, attacker_id, "leonard", spell, Loop.skill_fields(loop, spell), attacker["coord"], func(_n): return 0)
+		receipt = BattleLoopCombat._resolve_skill(loop, attacker_id, "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), attacker["coord"], func(_n): return 0)
 	print("AI_CUE ", label, " receipt ", not receipt.is_empty())
 	scene.center_camera_on_grid(Vector2i.ZERO)
 	scene.apply_loop(loop, "test")

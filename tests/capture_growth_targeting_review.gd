@@ -11,7 +11,7 @@ extends SceneTree
 ## HSL_RNG_SEED=1 tools/godot.sh --script res://tests/capture_growth_targeting_review.gd -- --out=/abs/dir
 ## (the seed fixes level 3's formation and rolls; unseeded runs can miss the setups)
 ## Writes PNGs of the game window only; exits 0 when every capture landed.
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 var OUT := "res://ignored/r5-l1-review/"
 var scene: Node
@@ -57,23 +57,23 @@ func run() -> void:
 
 func _give_turn(id: String) -> void:
 	var next: Dictionary = scene.play_loop.duplicate(true)
-	Loop._clear_extra_action(next)
-	next["turn_queue"] = Loop.CoreTurnQueue.rebuild(Loop._queue_actors(next))
+	BattlePlayLoop._clear_extra_action(next)
+	next["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(next))
 	for index in range(next["turn_queue"]["slots"].size()):
 		if next["turn_queue"]["slots"][index]["id"] == id: next["turn_queue"]["index"] = index; break
-	scene.apply_loop(Loop._return_to_player(next, id), "test")
+	scene.apply_loop(BattlePlayLoop._return_to_player(next, id), "test")
 	scene.resume_turn_presentation()
 	await create_timer(0.3).timeout
 
 
 func _growth_after_kill() -> void:
 	var loop: Dictionary = scene.play_loop
-	var tina: Dictionary = Loop._unit(loop, "tina")
-	var foe: Dictionary = Loop._unit(loop, "actor028_2")
-	tina["exp"] = Loop.ProgressionRules.exp_to_next(int(tina["level"])) - 1
+	var tina: Dictionary = BattlePlayLoop._unit(loop, "tina")
+	var foe: Dictionary = BattlePlayLoop._unit(loop, "actor028_2")
+	tina["exp"] = BattlePlayLoop.ProgressionRules.exp_to_next(int(tina["level"])) - 1
 	tina["hit_bonus_accum"] = 1000
 	foe["hp"] = 1
-	foe["coord"] = tina["coord"] + Vector2i.RIGHT if Loop.unit_id_at_coord(loop, tina["coord"] + Vector2i.RIGHT) == "" else foe["coord"]
+	foe["coord"] = tina["coord"] + Vector2i.RIGHT if BattlePlayLoop.unit_id_at_coord(loop, tina["coord"] + Vector2i.RIGHT) == "" else foe["coord"]
 	scene.apply_loop(loop, "test")
 	await _give_turn("tina")
 	scene.menus.choose_command("attack")
@@ -82,9 +82,9 @@ func _growth_after_kill() -> void:
 	for frame in range(1200):
 		var view = scene.get_node("BattlePresentation")
 		if view.dialogue_active(): view.advance_dialogue()
-		if Loop.loot_waiting(scene.play_loop):
+		if BattlePlayLoop.loot_waiting(scene.play_loop):
 			var settlement: Dictionary = scene.play_loop["settlement"]
-			scene.apply_loop(Loop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
+			scene.apply_loop(BattlePlayLoop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
 		if not float_shot and view.aftermath.stage == "experience" and view.aftermath.reward_label.text.contains("升級"):
 			await create_timer(0.25).timeout
 			await shot("01-tina-exp-level-up-float")
@@ -100,7 +100,7 @@ func _growth_after_kill() -> void:
 
 
 func _heal_over_full_hp() -> void:
-	var leonard: Dictionary = Loop._unit(scene.play_loop, "leonard")
+	var leonard: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
 	leonard["hp"] = int(leonard["max_hp"])
 	scene.apply_loop(scene.play_loop, "test")
 	await _give_turn("tina")
@@ -112,11 +112,11 @@ func _heal_over_full_hp() -> void:
 
 
 func _poison_arrow_cross() -> void:
-	Loop._unit(scene.play_loop, "hu")["stamina"] = 20
+	BattlePlayLoop._unit(scene.play_loop, "hu")["stamina"] = 20
 	scene.apply_loop(scene.play_loop, "test")
 	await _give_turn("hu")
 	await _choose("special", "special:magicMIND:magicCode03")
-	var hu: Dictionary = Loop.unit(scene.play_loop, "hu")
+	var hu: Dictionary = BattlePlayLoop.unit(scene.play_loop, "hu")
 	await _hover(hu["coord"] + Vector2i(2, 0))
 	check(scene.overlays.footprint_cells.size() == 5, "毒魔箭 draws the five-cell cross")
 	await shot("04-poison-arrow-cross")
@@ -127,7 +127,7 @@ func _poison_arrow_cross() -> void:
 ## reads the selected skill; nothing is cast).
 func _footprint_shape(id: String, channel: String, skill_id: String, offset: Vector2i, label: String) -> void:
 	var saved: Dictionary = scene.play_loop.duplicate(true)
-	Loop._unit(scene.play_loop, id)["stamina"] = 99
+	BattlePlayLoop._unit(scene.play_loop, id)["stamina"] = 99
 	scene.apply_loop(scene.play_loop, "test")
 	await _give_turn(id)
 	scene.menus.choose_command(channel)
@@ -138,7 +138,7 @@ func _footprint_shape(id: String, channel: String, skill_id: String, offset: Vec
 	scene.apply_loop(next, "test")
 	scene.mirror_interaction()
 	scene.overlays.refresh_attack_overlay()
-	var origin: Vector2i = Loop.unit(scene.play_loop, id)["coord"]
+	var origin: Vector2i = BattlePlayLoop.unit(scene.play_loop, id)["coord"]
 	await _hover(origin + offset)
 	check(not scene.overlays.footprint_cells.is_empty(), "%s draws a footprint" % skill_id)
 	await shot(label)
@@ -151,18 +151,18 @@ func _footprint_shape(id: String, channel: String, skill_id: String, offset: Vec
 
 func _final_blow_growth() -> void:
 	var loop: Dictionary = scene.play_loop
-	var tina: Dictionary = Loop._unit(loop, "tina")
-	tina["exp"] = Loop.ProgressionRules.exp_to_next(int(tina["level"])) - 1
+	var tina: Dictionary = BattlePlayLoop._unit(loop, "tina")
+	tina["exp"] = BattlePlayLoop.ProgressionRules.exp_to_next(int(tina["level"])) - 1
 	tina["hit_bonus_accum"] = 1000
 	var foe_id := ""
 	for unit in loop["units"]:
-		if unit["battle_actor_role"] != Loop.ROLE_ENEMY or not Loop.Presence.living(unit): continue
-		if foe_id == "" and Loop.unit_id_at_coord(loop, tina["coord"] + Vector2i.RIGHT) in ["", str(unit["id"])]:
+		if unit["battle_actor_role"] != BattlePlayLoop.ROLE_ENEMY or not BattlePlayLoop.Presence.living(unit): continue
+		if foe_id == "" and BattlePlayLoop.unit_id_at_coord(loop, tina["coord"] + Vector2i.RIGHT) in ["", str(unit["id"])]:
 			foe_id = str(unit["id"])
 			unit["hp"] = 1
 			unit["coord"] = tina["coord"] + Vector2i.RIGHT
 		else:
-			Loop._set_unit_defeated(loop, str(unit["id"]), true)
+			BattlePlayLoop._set_unit_defeated(loop, str(unit["id"]), true)
 	scene.apply_loop(loop, "test")
 	await _give_turn("tina")
 	scene.menus.choose_command("attack")
@@ -170,9 +170,9 @@ func _final_blow_growth() -> void:
 	var view = scene.get_node("BattlePresentation")
 	for frame in range(1800):
 		if view.dialogue_active(): view.advance_dialogue()
-		if Loop.loot_waiting(scene.play_loop):
+		if BattlePlayLoop.loot_waiting(scene.play_loop):
 			var settlement: Dictionary = scene.play_loop["settlement"]
-			scene.apply_loop(Loop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
+			scene.apply_loop(BattlePlayLoop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
 		if scene.growth_panel.visible or view.battle_finished: break
 		await process_frame
 	# Level 3 scans win／fail at the action's end (as the original's 0x407510), so the victory is
@@ -194,10 +194,10 @@ func _final_blow_growth() -> void:
 				coordinator.handle_input(click)
 		elif view.dialogue_active():
 			view.advance_dialogue()
-		elif Loop.loot_waiting(scene.play_loop):
+		elif BattlePlayLoop.loot_waiting(scene.play_loop):
 			# The victory reopens the deferred get-item window before the result; 稍後.
 			var pending: Dictionary = scene.play_loop["settlement"]
-			scene.apply_loop(Loop.finish_rewards(scene.play_loop, int(pending["sequence"]), int(pending["revision"]), false, true), "test")
+			scene.apply_loop(BattlePlayLoop.finish_rewards(scene.play_loop, int(pending["sequence"]), int(pending["revision"]), false, true), "test")
 		await process_frame
 	check(view.battle_finished and preload("res://game/sim/BattleOutcome.gd").won(scene.play_loop), "the victory result follows the closed window")
 	await create_timer(0.4).timeout

@@ -24,7 +24,7 @@ extends SceneTree
 ## and left the process idling until the gate timeout).
 
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 ## Seed the batch exports as HSL_RNG_SEED when the caller named none, so every stream a suite
 ## reaches through the headless seam (the process global stream GlobalRandomStream.session,
 ## a scene's damage stream) repeats run to run; printed as `RULE_SUITES_RNG_SEED`.
@@ -88,19 +88,19 @@ func _load_suites(names: Array[String]) -> Dictionary:
 
 
 func _run() -> void:
-	if not OS.get_environment(GlobalRandom.SEED_ENV).is_valid_int():
-		OS.set_environment(GlobalRandom.SEED_ENV, str(DEFAULT_RNG_SEED))
+	if not OS.get_environment(GlobalRandomStream.SEED_ENV).is_valid_int():
+		OS.set_environment(GlobalRandomStream.SEED_ENV, str(DEFAULT_RNG_SEED))
 		print("RULE_SUITES_RNG_SEED seed=%d source=harness_default" % DEFAULT_RNG_SEED)
 	else:
-		print("RULE_SUITES_RNG_SEED seed=%s source=environment" % OS.get_environment(GlobalRandom.SEED_ENV))
-	GlobalRandom.reset_session()
+		print("RULE_SUITES_RNG_SEED seed=%s source=environment" % OS.get_environment(GlobalRandomStream.SEED_ENV))
+	GlobalRandomStream.reset_session()
 	var names := _selected_suites()
 	var scripts := _load_suites(names)
 	if scripts.is_empty() and not names.is_empty():
 		return
 	var failed := 0
 	var total_checks := 0
-	TestSuite.LoopConfig.freeze_enabled = true
+	TestSuite.BattleLoopConfig.freeze_enabled = true
 	for name in names:
 		var script: GDScript = scripts[name]
 		var suite = script.new()

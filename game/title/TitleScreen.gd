@@ -15,7 +15,7 @@ extends Node2D
 ## item shape shows on the hovered item, or on the keyboard-selected one after an arrow key.
 ## Confirming an item lights it (the red Title024-026 shape with its white flare), holds
 ## CONFIRM_HOLD_SECONDS, then fades to black over FADE_TO_BLACK_SECONDS; the version string
-## V1.06 stays at the bottom-left corner (runtime-measured on the user recording,
+## V1.06 stays at the bottom-left corner (runtime-measured on the 2026-09-24 recording,
 ## docs/evidence_packets/runtime_observations/menus_ui/README.md). The hover lit rule is a remake
 ## reading (provisional) — see manifest.unresolved_semantics. The title plays the original track
 ## 03 (manifest.music: level 0's table track, played after the vendor logos —

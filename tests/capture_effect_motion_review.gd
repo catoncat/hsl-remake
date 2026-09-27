@@ -7,7 +7,7 @@ extends SceneTree
 ## afterimages). Written to ignored/r7-effect-motion/. Needs a rendered window.
 ##
 ##   tools/godot.sh --script res://tests/capture_effect_motion_review.gd
-const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
+const BattleCombatCutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/r7-effect-motion/"
 ## Script ticks after the Cast_Star lead (the comparison sheet's lower row).
@@ -36,7 +36,7 @@ func run() -> void:
 	ground.color = Color(0.18, 0.15, 0.16)
 	ground.size = Vector2(640, 480)
 	root.add_child(ground)
-	var cutin = Cutin.new()
+	var cutin = BattleCombatCutin.new()
 	root.add_child(cutin)
 	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	cutin.set_process(false)

@@ -1,7 +1,7 @@
 extends "res://tests/capture_large_actor_review.gd"
 ## Actual controls, unchanged native10%/25% chances and normal presentation clock.
 ## Probabilistic routes retry real legal turns; no RNG/action-result substitution.
-const WeaponCases = preload("res://tests/run_weapon_effect_tests.gd")
+const run_weapon_effect_tests = preload("res://tests/run_weapon_effect_tests.gd")
 const WEAPON_OUT := "res://ignored/weapon-effect-review/"
 var attempts := 0
 var effect_observations: Array = []
@@ -39,31 +39,31 @@ func setup_weapon() -> void:
 	scene.set_process(false);await create_timer(0.15).timeout
 	var stock:=BattleFixture.loop();var loop:=stock.duplicate(true);loop["reinforcement_templates"]=[]
 	chosen_role="001" if mode=="escape" else "039"
-	var actor:=Loop.unit(stock,"leonard") if chosen_role=="001" else LargeCases.source_large()
-	actor.merge({"id":"leonard","coord":Vector2i(13,17),"player_commandable":true,"battle_actor_role":Loop.ROLE_PLAYER},true)
+	var actor:=BattlePlayLoop.unit(stock,"leonard") if chosen_role=="001" else run_large_actor_tests.source_large()
+	actor.merge({"id":"leonard","coord":Vector2i(13,17),"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_PLAYER},true)
 	actor["growth_profile"]["allocation"]="manual";actor["growth_profile"]["source"]["hit_point"]+=5000;actor["growth_profile"]["source"]["speed"]+=180
-	actor.merge(Loop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
+	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 	actor["hp"]=actor["max_hp"];actor["hit_bonus_accum"]=1000;actor["inventory"]=[29,35,37,229,227,246,248,0]
-	var enemy:=LargeCases.source_large()
+	var enemy:=run_large_actor_tests.source_large()
 	enemy.merge({"coord":Vector2i(16,17),"no_attack":true,"inventory":[0,0,0,0,0,0,0,0]},true)
 	enemy["growth_profile"]["source"]["hit_point"]+=20000;enemy["growth_profile"]["source"]["defense"]+=300
-	enemy.merge(Loop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true)
+	enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true)
 	enemy["hp"]=enemy["max_hp"];enemy["hit_bonus_accum"]=1000;enemy["live_speed"]=50
-	var observer:=Loop.unit(stock,"enemy023_1")
-	observer.merge({"id":"observer_end","coord":Vector2i(20,21),"player_commandable":true,"battle_actor_role":Loop.ROLE_PLAYER,"live_speed":100},true)
+	var observer:=BattlePlayLoop.unit(stock,"enemy023_1")
+	observer.merge({"id":"observer_end","coord":Vector2i(20,21),"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_PLAYER,"live_speed":100},true)
 	loop["units"]=[actor,observer,enemy]
 	if mode in ["poison_series","cancel_queue"]:
 		enemy["no_attack"]=false;enemy["combat_profile"]["attack_back"]=100
 		if mode=="poison_series":
-			WeaponCases.set_gear(enemy,loop["equipment_items"],"weapon",37)
+			run_weapon_effect_tests.set_gear(enemy,loop["equipment_items"],"weapon",37)
 			TestSuite.own(loop, "skill_book")["actors"]["039"]["double_attack"]=true
 		else:
-			WeaponCases.set_gear(enemy,loop["equipment_items"],"accessory1",224)
-			WeaponCases.set_gear(enemy,loop["equipment_items"],"accessory2",227)
+			run_weapon_effect_tests.set_gear(enemy,loop["equipment_items"],"accessory1",224)
+			run_weapon_effect_tests.set_gear(enemy,loop["equipment_items"],"accessory2",227)
 			afflict(enemy,"poison",3,7);afflict(enemy,"no_magic",3)
 		enemy["combat_profile"]["attack_back"]=100 # Source refresh above precedes the explicit counter fixture.
 	if mode=="protected_poison":
-		WeaponCases.set_gear(enemy,loop["equipment_items"],"accessory1",229)
+		run_weapon_effect_tests.set_gear(enemy,loop["equipment_items"],"accessory1",229)
 		afflict(enemy,"poison",3,7);afflict(enemy,"paralysis",2);afflict(enemy,"no_magic",3)
 	if mode=="guard_cure":
 		afflict(actor,"poison",3,24);afflict(actor,"no_magic",3)
@@ -73,50 +73,50 @@ func setup_weapon() -> void:
 		loop["units"].append(later);TestSuite.own(loop, "skill_book")["actors"]["039"]["double_attack"]=true
 	if mode in ["phase_cancel","ai_silence","ai_wait"]:afflict(actor,"no_magic",3)
 	if mode=="phase_cancel":
-		LargeCases.spell_kit(loop);actor=Loop._unit(loop,"leonard")
+		run_large_actor_tests.spell_kit(loop);actor=BattlePlayLoop._unit(loop,"leonard")
 		actor["mp"]=actor["max_mp"];TestSuite.own(loop, "skill_book")["actors"]["039"]["double_attack"]=true
 	if mode in ["ai_poison","ai_fallback","ai_silence","ai_wait"]:
-		actor["battle_actor_role"]=Loop.ROLE_FRIENDLY;actor["player_commandable"]=false;actor["growth_profile"]["allocation"]="fixed_template"
-		WeaponCases.set_gear(actor,loop["equipment_items"],"weapon",35)
-		WeaponCases.set_gear(actor,loop["equipment_items"],"accessory2",227)
+		actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY;actor["player_commandable"]=false;actor["growth_profile"]["allocation"]="fixed_template"
+		run_weapon_effect_tests.set_gear(actor,loop["equipment_items"],"weapon",35)
+		run_weapon_effect_tests.set_gear(actor,loop["equipment_items"],"accessory2",227)
 		TestSuite.own(loop, "skill_book")["actors"]["039"]["double_attack"]=true
 		TestSuite.own(loop, "ai_profiles")["actors"]["039"]["profile"].merge({"find_range":80,"ai_att_magic":100,"ai_check_dying":0,"ai_check_hp":0,"ai_help_otherhp":0,"ai_help_status":0},true)
 		if mode in ["ai_fallback","ai_silence","ai_wait"]:
-			LargeCases.spell_kit(loop)
-			actor=Loop._unit(loop,"leonard");actor["mp"]=8
-			TestSuite.own(loop, "skill_book")["actors"]["039"]["supported_initial_ids"]=[PositionCases.WIND]
+			run_large_actor_tests.spell_kit(loop)
+			actor=BattlePlayLoop._unit(loop,"leonard");actor["mp"]=8
+			TestSuite.own(loop, "skill_book")["actors"]["039"]["supported_initial_ids"]=[run_position_equipment_tests.WIND]
 			TestSuite.own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"]="100"
 			if mode=="ai_wait":actor["mp"]=0;actor["no_attack"]=true
 		var starter:=observer.duplicate(true);starter.merge({"id":"observer","coord":Vector2i(6,18),"live_speed":300},true);loop["units"].append(starter)
 	if mode=="ai_cure":
 		# The first-battle messenger otherwise removes source026 on round6. This
 		# probability arena retains its authored healer; formal departures are intact.
-		var healer:=Loop.unit(stock,"enemy026_1")
-		healer.merge({"id":"healer","coord":Vector2i(19,17),"battle_actor_role":Loop.ROLE_ENEMY,"player_commandable":false,"no_attack":true,"live_speed":150},true)
+		var healer:=BattlePlayLoop.unit(stock,"enemy026_1")
+		healer.merge({"id":"healer","coord":Vector2i(19,17),"battle_actor_role":BattlePlayLoop.ROLE_ENEMY,"player_commandable":false,"no_attack":true,"live_speed":150},true)
 		healer["growth_profile"]["source"]["magic_point"]+=100
-		healer.merge(Loop.ProgressionRules.refresh_growth_stats(healer,loop["equipment_items"]),true);healer["mp"]=healer["max_mp"];healer["live_speed"]=150
-		TestSuite.own(loop, "skill_book")["actors"]["026"]["supported_initial_ids"]=[PositionCases.CURE]
-		TestSuite.own(loop, "skill_book")["skills"][PositionCases.CURE]["fields"]["use_ratio"]="100"
+		healer.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(healer,loop["equipment_items"]),true);healer["mp"]=healer["max_mp"];healer["live_speed"]=150
+		TestSuite.own(loop, "skill_book")["actors"]["026"]["supported_initial_ids"]=[run_position_equipment_tests.CURE]
+		TestSuite.own(loop, "skill_book")["skills"][run_position_equipment_tests.CURE]["fields"]["use_ratio"]="100"
 		TestSuite.own(loop, "ai_profiles")["actors"]["026"]["profile"].merge({"ai_help_status":100,"ai_help_otherhp":0,"ai_check_dying":0,"ai_check_hp":0,"ai_att_magic":100},true)
 		loop["units"].append(healer)
 	if mode in ["victory","defeat","escape"]:
-		actor=Loop._unit(loop,"leonard");enemy=Loop._unit(loop,"enemy039_1")
+		actor=BattlePlayLoop._unit(loop,"leonard");enemy=BattlePlayLoop._unit(loop,"enemy039_1")
 		var view=scene.get_node("BattlePresentation");view._shown_story_events.assign(loop["event_log"])
 		if mode=="victory":enemy["hp"]=1
 		elif mode=="defeat":
 			actor["hp"]=1;enemy["no_attack"]=false;enemy["hit_bonus_accum"]=1000
-			WeaponCases.set_gear(enemy,loop["equipment_items"],"weapon",37)
+			run_weapon_effect_tests.set_gear(enemy,loop["equipment_items"],"weapon",37)
 			enemy["combat_profile"]["attack_back"]=100;enemy["combat_profile"]["live_attack_damage"]=10000
 		else:actor["coord"]=Vector2i(13,10);enemy["coord"]=Vector2i(16,20);actor["inventory"]=[144,229,227,0,0,0,0,0]
 	for a in loop["units"]:
 		a["grid_coord"]=a["coord"];a["ai_home_coord"]=a["coord"]
-		check(Loop.TraversalRules.placement_error(a,loop["units"],loop["tiles"],loop["map_size"])=="","source terrain accepts actual footprint: "+a["id"])
-	loop["turn_queue"]=Loop.CoreTurnQueue.rebuild(loop["units"])
+		check(BattlePlayLoop.TraversalRules.placement_error(a,loop["units"],loop["tiles"],loop["map_size"])=="","source terrain accepts actual footprint: "+a["id"])
+	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 	var first:="observer" if mode in ["ai_poison","ai_fallback","ai_silence","ai_wait"] else "leonard"
-	check(Loop.CoreTurnQueue.current(loop["turn_queue"])["id"]==first,"source-derived fixture queue owns first input")
-	scene.apply_loop(Loop._return_to_player(loop,first), "test");scene.settlement_controller.checkpoint_path=WEAPON_OUT+mode+".save"
+	check(BattlePlayLoop.CoreTurnQueue.current(loop["turn_queue"])["id"]==first,"source-derived fixture queue owns first input")
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,first), "test");scene.settlement_controller.checkpoint_path=WEAPON_OUT+mode+".save"
 	for node in scene.actors_root.get_children():scene.actors_root.remove_child(node);node.queue_free()
-	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(Loop.unit(loop,first)["coord"])
+	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(BattlePlayLoop.unit(loop,first)["coord"])
 	var view=scene.get_node("BattlePresentation");view.turn_end_cue.finish(scene.play_loop)
 	view.experience_presented.connect(func(e):experience_events.append(e.duplicate(true)))
 	view.cutin.impact.connect(func(s,_a,_d,c):
@@ -138,8 +138,8 @@ func ordinary_tail_matches(strike:Dictionary)->bool:
 
 
 func attack_enemy(id:String="enemy039_1")->void:
-	var target:=Loop.unit(scene.play_loop,id)
-	var cell:Variant=Loop.Footprint.contact(target,Loop.attack_cells(scene.play_loop))
+	var target:=BattlePlayLoop.unit(scene.play_loop,id)
+	var cell:Variant=BattlePlayLoop.Footprint.contact(target,BattlePlayLoop.attack_cells(scene.play_loop))
 	check(cell is Vector2i,"current weapon can target a living body edge")
 	if cell is Vector2i:await attack_at(cell)
 
@@ -154,13 +154,13 @@ func play_weapon()->void:
 		await open_equipment_real();await click(item_button(29))
 		check(not scene.item_panel.confirm_button.disabled,"published trial permits source039 to select the supplied cancellation weapon")
 		await shot("manual-cancel-weapon");await click(scene.item_panel.confirm_button);await settle("large039_friend")
-		check(Loop.unit(scene.play_loop,"large039_friend")["weapon_code"]==29,"manual scene commits a real inventory exchange without test-state injection")
+		check(BattlePlayLoop.unit(scene.play_loop,"large039_friend")["weapon_code"]==29,"manual scene commits a real inventory exchange without test-state injection")
 	elif mode in ["poison_series","cancel_queue","ai_cure"]:
 		if mode=="poison_series":await move_to(Vector2i(13,16))
 		var success:=false
 		for index in range(48):
 			attempts=index+1
-			if mode=="ai_cure":check(not Loop.unit(scene.play_loop,"healer").is_empty(),"authored healer remains available before the next probability trial")
+			if mode=="ai_cure":check(not BattlePlayLoop.unit(scene.play_loop,"healer").is_empty(),"authored healer remains available before the next probability trial")
 			await attack_enemy();await settle("observer_end")
 			var effects:=tail(receipt);effect_observations.append(effects.duplicate(true))
 			if mode=="poison_series":
@@ -170,29 +170,29 @@ func play_weapon()->void:
 			else:
 				success=effects.get("poison",{}).get("applied",false)
 				if success:
-					check(scene.play_loop["last_ai_actions"].any(func(a):return a.get("skill_id")==PositionCases.CURE),"AI detects new weapon poison and casts the real ally cure")
-					check(not Loop.StatusEffectRules.poisoned(Loop.unit(scene.play_loop,"enemy039_1")),"ally support clears newly applied weapon poison before victim's own turn")
+					check(scene.play_loop["last_ai_actions"].any(func(a):return a.get("skill_id")==run_position_equipment_tests.CURE),"AI detects new weapon poison and casts the real ally cure")
+					check(not BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(scene.play_loop,"enemy039_1")),"ally support clears newly applied weapon poison before victim's own turn")
 			if success:break
 			await wait_to("leonard")
 		check(success,"native chance produced an observed effect within48 actual legal attacks")
 		await save_restore()
 		if mode=="cancel_queue":
-			var target_before:=Loop.unit(scene.play_loop,"enemy039_1");var old_sequence:int=scene.play_loop["action_end_sequence"]
+			var target_before:=BattlePlayLoop.unit(scene.play_loop,"enemy039_1");var old_sequence:int=scene.play_loop["action_end_sequence"]
 			check(not receipt["counter"].is_empty(),"cancelled future turn leaves the observed current counter intact")
 			await wait_to("leonard")
-			check(Loop.unit(scene.play_loop,"enemy039_1")==target_before and scene.play_loop["action_end_sequence"]==old_sequence+1,"cancelled victim has no action, poison/recovery tail or extra-action grant")
+			check(BattlePlayLoop.unit(scene.play_loop,"enemy039_1")==target_before and scene.play_loop["action_end_sequence"]==old_sequence+1,"cancelled victim has no action, poison/recovery tail or extra-action grant")
 			check(scene.play_loop["turn_queue"]["slots"].all(func(s):return s["enabled"]),"next real round rebuild restores future eligibility")
 	elif mode=="protected_poison":
-		var before:Dictionary=Loop.unit(scene.play_loop,"enemy039_1")["status_counters"].duplicate(true)
+		var before:Dictionary=BattlePlayLoop.unit(scene.play_loop,"enemy039_1")["status_counters"].duplicate(true)
 		await attack_enemy();await settle("observer_end")
 		check(tail(receipt)["poison"]["immune"] and not tail(receipt)["poison"]["applied"] and tail(receipt)["draws"].is_empty(),"real poison weapon respects universal protection before chance draw")
-		check(Loop.unit(scene.play_loop,"enemy039_1")["status_counters"]==before,"protective equipment preserves old poison/paralysis/silence")
+		check(BattlePlayLoop.unit(scene.play_loop,"enemy039_1")["status_counters"]==before,"protective equipment preserves old poison/paralysis/silence")
 	elif mode=="guard_cure":
-		var before:Dictionary=Loop.unit(scene.play_loop,"leonard")["status_counters"].duplicate(true)
+		var before:Dictionary=BattlePlayLoop.unit(scene.play_loop,"leonard")["status_counters"].duplicate(true)
 		await change_item(229,"accessory1")
-		check(Loop.unit(scene.play_loop,"leonard")["status_counters"]==before,"actual equip does not clear existing poison or silence")
+		check(BattlePlayLoop.unit(scene.play_loop,"leonard")["status_counters"]==before,"actual equip does not clear existing poison or silence")
 		await save_restore();await use_at(246,"leonard");await settle("observer_end")
-		check(not Loop.StatusEffectRules.poisoned(Loop.unit(scene.play_loop,"leonard")),"antidote removes compatible poison while universal protection remains equipped")
+		check(not BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(scene.play_loop,"leonard")),"antidote removes compatible poison while universal protection remains equipped")
 	elif mode=="growth_swap":
 		await change_item(227,"accessory2");await attack_enemy();await settle("leonard")
 		check(receipt["followups"].is_empty() and observed.has("growth"),"lethal first blow consumes one tail, releases body, completes growth and returns second action")
@@ -205,9 +205,9 @@ func play_weapon()->void:
 		await click(scene.action_menu.get_node("AttackCommand"));await escape();await settle("leonard")
 		check(scene.play_loop["pending_move"] and scene.play_loop["last_attack"]==before["last_attack"] and scene.play_loop["turn_queue"]==before["turn_queue"],"target cancellation preserves pending movement without weapon effects or lost queue slots")
 		await save_restore();await escape();await create_timer(0.4).timeout;await escape();await settle("leonard")
-		check(Loop.unit(scene.play_loop,"leonard")["coord"]==Loop.unit(before,"leonard")["coord"] and not scene.play_loop["moved_this_action"],"cancelling the accepted walk restores the entire footprint and action phase")
+		check(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"]==BattlePlayLoop.unit(before,"leonard")["coord"] and not scene.play_loop["moved_this_action"],"cancelling the accepted walk restores the entire footprint and action phase")
 		await click(scene.action_menu.get_node("MagicCommand"))
-		check(scene.magic_panel.choices[PositionCases.WIND].disabled,"returning to stationary phase does not clear silence")
+		check(scene.magic_panel.choices[run_position_equipment_tests.WIND].disabled,"returning to stationary phase does not clear silence")
 		await escape();await settle("leonard")
 		check(scene.play_loop["units"]==before["units"] and scene.play_loop["action_end_sequence"]==before["action_end_sequence"],"cancel and reselect neither spend resources nor tick conditions")
 		await attack_enemy();await settle("leonard")
@@ -225,15 +225,15 @@ func play_weapon()->void:
 			var actions:Array=scene.play_loop["last_ai_actions"].duplicate(true);pair_receipts.append_array(actions)
 			check(actions.size()==2,"AI redecides exactly two independent actions")
 			if mode=="ai_fallback":
-				check(actions[0].get("skill_id")==PositionCases.WIND and not actions[1].has("skill_id") and int(Loop.unit(scene.play_loop,"leonard")["mp"])==0,"MP exhaustion chooses a fresh physical action with current poison weapon")
+				check(actions[0].get("skill_id")==run_position_equipment_tests.WIND and not actions[1].has("skill_id") and int(BattlePlayLoop.unit(scene.play_loop,"leonard")["mp"])==0,"MP exhaustion chooses a fresh physical action with current poison weapon")
 				check(ordinary_tail_matches(actions[1]),"fallback physical series respects the actual final-hit effect gate")
 				success=true
 			elif mode in ["ai_silence","ai_wait"]:
 				check(actions.all(func(a):return not a.has("skill_id")),"silence cannot be bypassed by the newly supported weapon")
-				check(int(Loop.unit(scene.play_loop,"leonard")["mp"])==(0 if mode=="ai_wait" else 8),"physical/wait fallback leaves unavailable spell resources unchanged")
+				check(int(BattlePlayLoop.unit(scene.play_loop,"leonard")["mp"])==(0 if mode=="ai_wait" else 8),"physical/wait fallback leaves unavailable spell resources unchanged")
 				if mode=="ai_wait":check(actions.all(func(a):return a["kind"]=="wait" and tail(a).is_empty()),"no effective action waits without rolling weapon effects")
 				else:check(actions.all(ordinary_tail_matches),"silenced AI uses the actual final-hit gate for each independent action")
-				check(int(Loop.unit(scene.play_loop,"leonard")["status_counters"]["no_magic"])==2,"two AI decisions consume only one final status tail")
+				check(int(BattlePlayLoop.unit(scene.play_loop,"leonard")["status_counters"]["no_magic"])==2,"two AI decisions consume only one final status tail")
 				success=true
 			else:success=actions.any(func(a):return tail(a).get("poison",{}).get("applied",false))
 			if success:break
@@ -248,7 +248,7 @@ func play_weapon()->void:
 	var final:Dictionary=scene.play_loop.duplicate(true)
 	routes.append({"mode":mode,"attempts":attempts,"initial_units":body_state(initial_loop),"final_units":body_state(final),"initial_queue":initial_loop["turn_queue"],"final_queue":final["turn_queue"],"receipts":pair_receipts,"effect_observations":effect_observations,"impacts":cues,"beats":resource_beats,"observed":observed,"saves_checked":saves_checked,"experience":experience_events,"sounds":sound_paths.keys(),"outcome":final["battle_outcome"],"action_end_sequence":final["action_end_sequence"]})
 	if terminal:
-		check(Loop.finish_exhausted_action(final)==final and Loop.step_ai_turn(final)==final,"terminal cannot continue queued effects or resource actions")
+		check(BattlePlayLoop.finish_exhausted_action(final)==final and BattlePlayLoop.step_ai_turn(final)==final,"terminal cannot continue queued effects or resource actions")
 		reload_current_scene();await create_timer(0.35).timeout;scene=current_scene
 		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["action_end_sequence"]==0 and scene.play_loop["turn_queue"]["slots"].all(func(s):return s["enabled"]),"actual restart restores default eligibility and removes old weapon effects")
 		routes.back()["restarted"]=true

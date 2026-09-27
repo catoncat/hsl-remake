@@ -4,9 +4,9 @@ const CombatSequenceRules = preload("res://game/sim/CombatSequenceRules.gd")
 ## Jobs contain receipt snapshots; no HP, EXP, inventory or turn is committed here.
 ## provenance:
 ##   layout: resource-derived content/imported/hsl/shared/actor_hit_poses/manifest.json
-##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   layout: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
-##   layout: runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##     (recording 337.95 KILL 3, 338.37 EXP, 338.97 $, 339.59 LEVEL UP)
 ##   strings: resource-derived content/generated/hsl/combat/aftermath.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_field_coverage.md
@@ -18,14 +18,14 @@ const CombatSequenceRules = preload("res://game/sim/CombatSequenceRules.gd")
 ##     reload speaks the same line)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
-##   timing: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
 ##   timing: provisional
 ##     (draw mode 0x2c000000 read as additive, alpha = level／16; one $ float per action with its recipient — the
 ##     original keeps a second total 0x4c2978 for the counter)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: resource-derived content/imported/hsl/shared/actor_audio.json
-##   audio: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   audio: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
 signal experience_presented(growth: Dictionary)
 ## Emitted when a LEVEL UP float appears (0x4084e0 kind 6 plays sfxLevelUp 0x191 there).
@@ -56,7 +56,7 @@ var death_blend := CanvasItemMaterial.new()
 ## shape, one frame (static-derived; content/imported/hsl/shared/actor_hit_poses).
 const HIT_POSES_PATH := "res://content/imported/hsl/shared/actor_hit_poses/manifest.json"
 var hit_poses: Dictionary = {}
-## Reward floats live the defProcShowNumber 46 ticks (BattleRewardFloat draws the level fade);
+## Reward floats live the defProcShowNumber 46 ticks (BattleRewardFloater draws the level fade);
 ## the next reward phase starts when a float releases its waiter at tick 32, the earlier float
 ## fading on beside it.
 const REWARD_SECONDS := Timing.SHOW_NUMBER_SECONDS
@@ -64,7 +64,7 @@ const REWARD_RELEASE_SECONDS := OriginalTick.TICK_SECONDS * Timing.SHOW_NUMBER_R
 ## Spawn points above the object (0x442720 pushes y − 0x30; the dead branch y − 0x18).
 const REWARD_LIFT := 48.0
 const KILL_LIFT := 24.0
-const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
 var source: Dictionary
 var dialogue: Control
@@ -97,7 +97,7 @@ func _ready() -> void:
 
 
 func _new_float() -> Node2D:
-	var node: Node2D = BattleRewardFloat.new()
+	var node: Node2D = BattleRewardFloater.new()
 	node.name = "MapExperience"
 	ui.add_child(node)
 	return node
@@ -347,7 +347,7 @@ func _begin_disposal() -> void:
 	elapsed = 0.0
 	var job: Dictionary = jobs[cursor]
 	if int(job.get("kill_count", 0)) > 1:
-		var kill: Node2D = BattleRewardFloat.new()
+		var kill: Node2D = BattleRewardFloater.new()
 		kill.name = "MapKill"
 		ui.add_child(kill)
 		kill.present("kill", int(job["kill_count"]))

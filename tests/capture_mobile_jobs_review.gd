@@ -1,8 +1,8 @@
 extends "res://tests/capture_tactical_items_review.gd"
 ## Setup is explicit. Every subsequent move/use/equip/strike/save is real input.
-const Mobile = preload("res://tests/run_mobile_jobs_tests.gd")
-const Campaign = preload("res://game/battle/runtime/CampaignProgress.gd")
-const Permanent = preload("res://game/sim/PermanentCapabilityRules.gd")
+const run_mobile_jobs_tests = preload("res://tests/run_mobile_jobs_tests.gd")
+const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const PermanentCapabilityRules = preload("res://game/sim/PermanentCapabilityRules.gd")
 const MOBILE_OUT := "res://ignored/mobile-jobs-review/"
 var owner_id := "thief"
 var serial := 0
@@ -17,7 +17,7 @@ func run() -> void:
 	create_timer(1800).timeout.connect(func():check(false,"bounded mobile review timeout"))
 	var names:Array=["manual","single","double","counter","miss","low_mp","zero_mp","late_kill","growth","wing_growth","wing_move","support","mixed","ai_drain","ai_wing","paralysis","victory","defeat","escape","carry"]
 	if not OS.get_cmdline_user_args().is_empty(): names=Array(OS.get_cmdline_user_args())
-	Campaign.pending={}; Campaign.last_entry={}
+	CampaignProgress.pending={}; CampaignProgress.last_entry={}
 	for name in names:
 		mode=name; await setup_mobile(); await play_mobile(); await close_scene(); write_receipt("progress.json")
 		if not failures.is_empty(): break
@@ -26,16 +26,16 @@ func run() -> void:
 
 func setup_mobile() -> void:
 	impacts=[]; events=[]; sounds={}; observed={}; saves=0; receipts=[]; receipt_sequences={}; item_receipts=[]; item_seen={}; serial=0
-	Campaign.pending={}; Campaign.last_entry={}
+	CampaignProgress.pending={}; CampaignProgress.last_entry={}
 	scene=load("res://game/battle/development/MobileJobsTrial.tscn").instantiate()
 	root.add_child(scene); current_scene=scene; scene.settlement_controller.checkpoint_path=MOBILE_OUT+mode+".save"
 	owner_id="wing" if mode in ["manual","wing_growth","wing_move","counter","ai_wing","paralysis"] else "thief"
 	if mode!="manual":
 		scene.set_process(false)
-		var loop:=Mobile.fixture("006" if owner_id=="wing" else "004",false,mode in ["counter","defeat"])
-		var actor:=Loop._unit(loop,owner_id); var foe:=Loop._unit(loop,"enemy026_1"); var friend:=Loop._unit(loop,"tina")
+		var loop:=run_mobile_jobs_tests.fixture("006" if owner_id=="wing" else "004",false,mode in ["counter","defeat"])
+		var actor:=BattlePlayLoop._unit(loop,owner_id); var foe:=BattlePlayLoop._unit(loop,"enemy026_1"); var friend:=BattlePlayLoop._unit(loop,"tina")
 		actor["equipment"]=actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
-		if owner_id=="thief": Mobile.Gear.set_gear(actor,loop["equipment_items"],"weapon",102)
+		if owner_id=="thief": run_mobile_jobs_tests.run_weapon_effect_tests.set_gear(actor,loop["equipment_items"],"weapon",102)
 		actor["inventory"]=[108,227,232,253,244,247,262,0] if owner_id=="thief" else [227,232,253,244,247,262,0,0]
 		foe["mp"]=77; friend["coord"]=Vector2i(14,15)
 		TestSuite.own(loop, "ai_profiles")["actors"]["026"]["profile"].merge({"ai_att_magic":0,"ai_att_special":0,"ai_check_dying":0,"ai_check_hp":0,"ai_help_otherhp":0,"ai_help_status":0,"ai_help_attack":0},true)
@@ -43,7 +43,7 @@ func setup_mobile() -> void:
 			TestSuite.own(loop, "skill_book")["actors"][actor["actor_id"]]["double_attack"]=true
 			if mode=="counter":
 				TestSuite.own(loop, "skill_book")["actors"]["026"]["double_attack"]=true
-				TestSuite.own(loop, "equipment_items")[str(int(foe["weapon_code"]))]["weapon_effect_flags"]=Loop.WeaponEffects.MANA
+				TestSuite.own(loop, "equipment_items")[str(int(foe["weapon_code"]))]["weapon_effect_flags"]=BattlePlayLoop.WeaponEffects.MANA
 				foe["growth_profile"]["source"]["attack_power"]=160
 				actor["growth_profile"]["source"]["attack_damagex2"]=100
 		if mode=="late_kill":
@@ -66,33 +66,33 @@ func setup_mobile() -> void:
 		if mode in ["wing_move","wing_growth","support"]: actor["mp"]=8;friend["hp"]=12
 		if mode=="support": friend["coord"]=Vector2i(15,15);actor["hp"]=100;foe["coord"]=Vector2i(18,16)
 		if mode=="mixed":
-			for key in ["poison","no_magic"]: actor.merge(Loop.StatusEffectRules.apply(actor,key,3,5 if key=="poison" else 0)["changes"],true)
-			StatCases.buff(loop,owner_id,"defense_up",3,30)
+			for key in ["poison","no_magic"]: actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,key,3,5 if key=="poison" else 0)["changes"],true)
+			run_support_magic_tests.buff(loop,owner_id,"defense_up",3,30)
 		if mode=="ai_drain":
 			foe["mp"]=8;foe["no_attack"]=false
-			TestSuite.own(loop, "skill_book")["actors"]["026"]["supported_initial_ids"]=[Mobile.WIND]
+			TestSuite.own(loop, "skill_book")["actors"]["026"]["supported_initial_ids"]=[run_mobile_jobs_tests.WIND]
 			TestSuite.own(loop, "ai_profiles")["actors"]["026"]["profile"]["ai_att_magic"]=100
 			TestSuite.own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"]="100"
 		if mode=="ai_wing":
-			actor["player_commandable"]=false;actor["battle_actor_role"]=Loop.ROLE_FRIENDLY
-			Mobile.Gear.set_gear(actor,loop["equipment_items"],"accessory2",227)
+			actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
+			run_mobile_jobs_tests.run_weapon_effect_tests.set_gear(actor,loop["equipment_items"],"accessory2",227)
 			actor["mp"]=8;actor["inventory"]=[0,0,0,0,0,0,0,0]
 			friend["growth_profile"]["source"]["speed"]=500
 			var ai:Dictionary=TestSuite.own(loop, "ai_profiles")["actors"]["006"]
 			ai["missing_required"]=[];ai["profile"].merge({"find_type":3,"find_range":12,"ai_call_range":4,"ai_fixed":0,"ai_lock":0,"ai_att_magic":100,"ai_att_special":0,"ai_check_hp":0,"ai_check_dying":0,"ai_help_otherhp":0,"ai_help_status":0,"ai_help_attack":0},true)
 			TestSuite.own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"]="100"
 		if mode=="paralysis":
-			Mobile.Gear.set_gear(actor,loop["equipment_items"],"accessory2",227)
-			actor.merge(Loop.StatusEffectRules.apply(actor,"paralysis",2)["changes"],true);actor["status_counters"]["paralysis"]=1
-			actor.merge(Loop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
+			run_mobile_jobs_tests.run_weapon_effect_tests.set_gear(actor,loop["equipment_items"],"accessory2",227)
+			actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"paralysis",2)["changes"],true);actor["status_counters"]["paralysis"]=1
+			actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
 		if mode=="defeat": actor["hp"]=1;foe["growth_profile"]["source"]["attack_power"]=5000
 		if mode in ["escape","carry"]: actor["coord"]=Vector2i(13,10);friend["coord"]=Vector2i(13,11);foe["coord"]=Vector2i(16,12)
 		for unit in loop["units"]:
-			unit.merge(Loop.ProgressionRules.refresh_growth_stats(unit,loop["equipment_items"]),true)
+			unit.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(unit,loop["equipment_items"]),true)
 			unit["grid_coord"]=unit["coord"];unit["ai_home_coord"]=unit["coord"]
-			check(Loop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"])=="","legal source-map setup")
-		loop["turn_queue"]=Loop.CoreTurnQueue.rebuild(loop["units"])
-		scene.apply_loop(Loop._return_to_player(loop,"tina" if mode=="ai_wing" else owner_id), "test")
+			check(BattlePlayLoop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"])=="","legal source-map setup")
+		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+		scene.apply_loop(BattlePlayLoop._return_to_player(loop,"tina" if mode=="ai_wing" else owner_id), "test")
 		for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 		scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(actor["coord"]);scene.set_process(true)
 	initial_state=scene.play_loop.duplicate(true)
@@ -120,30 +120,30 @@ func change_gear(code:int,slot:String)->void:
 func move_to(coord:Vector2i)->void:
 	var current:=str(scene.selected_unit_id)
 	await click(scene.action_menu.get_node("MoveCommand"));await hover(scene.grid_cell_center_to_logical_position(coord));await shot("move-preview")
-	check(Loop.movement_cells(scene.play_loop).has(coord),"shared source path permits destination")
+	check(BattlePlayLoop.movement_cells(scene.play_loop).has(coord),"shared source path permits destination")
 	await point(scene.grid_cell_center_to_logical_position(coord));await settle(current)
 
 func play_mobile()->void:
 	await settle("tina" if mode in ["ai_wing","paralysis"] else owner_id)
 	if mode=="manual":
-		await status_page("wing");check(Loop.magic_options(scene.play_loop,"wing").size()==1,"public006 exposes only its declared Wind")
-		var choices:Array=Loop.movement_cells(scene.play_loop).filter(func(c):return c!=Loop.unit(scene.play_loop,"wing")["coord"] and Loop.SkillTargetRules.cells(c,Loop.skill_fields(scene.play_loop,Mobile.WIND),scene.play_loop["skill_target_data"],scene.play_loop["map_size"]).has(Loop.unit(scene.play_loop,"enemy026_1")["coord"]))
+		await status_page("wing");check(BattlePlayLoop.magic_options(scene.play_loop,"wing").size()==1,"public006 exposes only its declared Wind")
+		var choices:Array=BattlePlayLoop.movement_cells(scene.play_loop).filter(func(c):return c!=BattlePlayLoop.unit(scene.play_loop,"wing")["coord"] and BattlePlayLoop.SkillTargetRules.cells(c,BattlePlayLoop.skill_fields(scene.play_loop,run_mobile_jobs_tests.WIND),scene.play_loop["skill_target_data"],scene.play_loop["map_size"]).has(BattlePlayLoop.unit(scene.play_loop,"enemy026_1")["coord"]))
 		choices.sort_custom(func(a,b):return a.distance_squared_to(Vector2i(12,16))<b.distance_squared_to(Vector2i(12,16)))
 		check(not choices.is_empty(),"public source flight reaches a legal Wind position")
-		await move_to(choices[0]);check(not Loop.command_available(scene.play_loop,"magic"),"flight alone cannot cast after movement")
-		await change_gear(232,"accessory1");await cast_stat(Mobile.WIND,"enemy026_1");await settle("thief")
+		await move_to(choices[0]);check(not BattlePlayLoop.command_available(scene.play_loop,"magic"),"flight alone cannot cast after movement")
+		await change_gear(232,"accessory1");await cast_stat(run_mobile_jobs_tests.WIND,"enemy026_1");await settle("thief")
 		await status_page("thief");await change_gear(108,"weapon")
-		check(Loop.unit(scene.play_loop,"thief")["weapon_code"]==108,"public004 actually equipped its source-class weapon")
+		check(BattlePlayLoop.unit(scene.play_loop,"thief")["weapon_code"]==108,"public004 actually equipped its source-class weapon")
 	elif mode=="paralysis":
 		check(observed.has("skip") and not scene.play_loop["extra_action"]["pending"],"paralysis skipped once without a repeat grant")
 		await click(scene.action_menu.get_node("WaitCommand"));await settle(owner_id)
-		await click(scene.action_menu.get_node("MagicCommand"));check(scene.magic_panel.choices[Mobile.WIND].disabled,"still-silenced006 keeps its declared spell disabled")
+		await click(scene.action_menu.get_node("MagicCommand"));check(scene.magic_panel.choices[run_mobile_jobs_tests.WIND].disabled,"still-silenced006 keeps its declared spell disabled")
 		await shot("silence");await escape();await settle(owner_id)
-		await use_item_real(247,owner_id);await settle(owner_id);await cast_stat(Mobile.WIND,"enemy026_1");await settle("tina")
+		await use_item_real(247,owner_id);await settle(owner_id);await cast_stat(run_mobile_jobs_tests.WIND,"enemy026_1");await settle("tina")
 	elif mode=="ai_wing":
 		await click(scene.action_menu.get_node("WaitCommand"));await settle("tina")
 		var actions:Array=scene.play_loop["last_ai_actions"].filter(func(a):return a.get("actor_id")=="wing")
-		check(actions.size()==2 and actions[0].get("skill_id")==Mobile.WIND and not actions[1].has("skill_id"),"authored006 AI casts owned Wind then independently falls back at MP0")
+		check(actions.size()==2 and actions[0].get("skill_id")==run_mobile_jobs_tests.WIND and not actions[1].has("skill_id"),"authored006 AI casts owned Wind then independently falls back at MP0")
 	else:
 		await change_gear(227,"accessory2")
 		if owner_id=="thief":await change_gear(108,"weapon")
@@ -160,7 +160,7 @@ func play_mobile()->void:
 					await click(scene.action_menu.get_node("WaitCommand"));await settle("tina")
 					await click(scene.action_menu.get_node("WaitCommand"));await settle(owner_id)
 					await attack("enemy026_1");await settle(owner_id);attack_receipt=receipts.back()
-			var strikes:Array=Loop.CombatSequence.strikes(attack_receipt)
+			var strikes:Array=BattlePlayLoop.CombatSequence.strikes(attack_receipt)
 			for strike in strikes:
 				if strike.has("weapon_effects") and strike["weapon_effects"].has("mana"):
 					var mana:Dictionary=strike["weapon_effects"]["mana"]
@@ -168,7 +168,7 @@ func play_mobile()->void:
 			if mode=="miss":check(not attack_receipt["hit"] and not attack_receipt.has("weapon_effects"),"miss does not execute a mana tail")
 			if mode=="double":check(strikes.size()==2 and not strikes[0].has("weapon_effects") and strikes[1]["weapon_effects"].has("mana"),"two real hits give one tail on the second")
 			if mode=="counter":check(strikes.size()==4 and not strikes[2].has("weapon_effects") and int(strikes[3]["weapon_effects"]["mana"]["loss"])>0,"separate two-hit counter uses its own positive last-tail")
-			if mode in ["low_mp","zero_mp"]:check(Loop.unit(scene.play_loop,"enemy026_1")["mp"]==0,"actual low/empty target MP clamps at zero")
+			if mode in ["low_mp","zero_mp"]:check(BattlePlayLoop.unit(scene.play_loop,"enemy026_1")["mp"]==0,"actual low/empty target MP clamps at zero")
 			if mode=="late_kill":check(strikes.size()==2 and int(strikes[0]["defender_hp_after"])>0 and int(strikes[1]["defender_hp_after"])==0,"second-hit death releases target once")
 			if mode in ["growth","wing_growth"]:
 				check(observed.has("growth"),"source profession kill reaches actual EXP and allocation")
@@ -176,22 +176,22 @@ func play_mobile()->void:
 				if owner_id=="thief":await change_gear(102,"weapon")
 				else:await change_gear(232,"accessory1")
 				await status_page(owner_id);await save_restore()
-				check(Permanent.active(Loop.unit(scene.play_loop,owner_id)),"growth and gear retain acquired source")
-				if owner_id=="wing":await move_for_spell("enemy026_2");await cast_stat(Mobile.WIND,"enemy026_2");await settle(owner_id)
+				check(PermanentCapabilityRules.active(BattlePlayLoop.unit(scene.play_loop,owner_id)),"growth and gear retain acquired source")
+				if owner_id=="wing":await move_for_spell("enemy026_2");await cast_stat(run_mobile_jobs_tests.WIND,"enemy026_2");await settle(owner_id)
 			elif mode=="ai_drain":
 				await click(scene.action_menu.get_node("WaitCommand"));await settle("tina")
 				await click(scene.action_menu.get_node("WaitCommand"));await settle(owner_id)
-				check(Loop.unit(scene.play_loop,"enemy026_1")["mp"]==0 and scene.play_loop["last_ai_actions"].all(func(a):return not a.has("skill_id")),"drained source026 builds a fresh affordable non-magic action")
+				check(BattlePlayLoop.unit(scene.play_loop,"enemy026_1")["mp"]==0 and scene.play_loop["last_ai_actions"].all(func(a):return not a.has("skill_id")),"drained source026 builds a fresh affordable non-magic action")
 			elif mode not in ["victory","defeat"]:
 				await save_restore()
 				if owner_id=="thief":
 					await change_gear(102,"weapon");await click(scene.action_menu.get_node("WaitCommand"));await settle("tina")
 		elif mode=="wing_move":
 			await move_to(Vector2i(13,16));await escape();await create_timer(0.3).timeout;await escape();await settle(owner_id)
-			check(not scene.play_loop["moved_this_action"] and Loop.command_available(scene.play_loop,"magic"),"cancel restores stationary Wind eligibility")
-			await change_gear(232,"accessory1");await move_to(Vector2i(13,16));await cast_stat(Mobile.WIND,"enemy026_1");await settle(owner_id)
+			check(not scene.play_loop["moved_this_action"] and BattlePlayLoop.command_available(scene.play_loop,"magic"),"cancel restores stationary Wind eligibility")
+			await change_gear(232,"accessory1");await move_to(Vector2i(13,16));await cast_stat(run_mobile_jobs_tests.WIND,"enemy026_1");await settle(owner_id)
 			await save_restore();await change_gear(0,"accessory1");await move_to(Vector2i(14,16))
-			check(not Loop.command_available(scene.play_loop,"magic"),"second move immediately respects unequipped permission")
+			check(not BattlePlayLoop.command_available(scene.play_loop,"magic"),"second move immediately respects unequipped permission")
 			await use_item_real(244,owner_id);await settle("tina")
 		elif mode=="support":
 			await move_to(Vector2i(15,16));await use_item_real(262,"tina");await settle(owner_id)
@@ -199,7 +199,7 @@ func play_mobile()->void:
 			check(impacts.any(func(p):return p["strike"].get("healing",0)>0),"source002 supports new-class ally after moved item use")
 		elif mode=="mixed":
 			await attack("enemy026_1");await settle("tina")
-			check(Loop.StatusEffectRules.poisoned(Loop.unit(scene.play_loop,owner_id)) and Loop.StatusEffectRules.magic_blocked(Loop.unit(scene.play_loop,owner_id)),"mana hit preserves independent poison/silence and permanent layer")
+			check(BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(scene.play_loop,owner_id)) and BattlePlayLoop.StatusEffectRules.magic_blocked(BattlePlayLoop.unit(scene.play_loop,owner_id)),"mana hit preserves independent poison/silence and permanent layer")
 		else:
 			await move_to(Vector2i(14,10));await click(scene.action_menu.get_node("WaitCommand"))
 			if mode=="escape":await settle("",true)
@@ -209,9 +209,9 @@ func play_mobile()->void:
 	var row:Dictionary={"mode":mode,"initial_units":initial_state["units"],"initial_book":initial_state["skill_book"],"initial_ai":initial_state["ai_profiles"],"final_units":final["units"],"outcome":final["battle_outcome"],"receipts":receipts.duplicate(true),"items":item_receipts.duplicate(true),"impacts":impacts.duplicate(true),"events":events.duplicate(true),"observed":observed.duplicate(true),"sounds":sounds.keys(),"saves":saves,"restarted":false}
 	if mode=="carry":row.merge({"carry_expected":carry_expected,"carried_terminal":carry_terminal,"restarted":true})
 	if mode in ["victory","defeat","escape"]:
-		check(Loop.step_ai_turn(final)==final and Loop.finish_exhausted_action(final)==final,"terminal cannot trigger another MP tail")
+		check(BattlePlayLoop.step_ai_turn(final)==final and BattlePlayLoop.finish_exhausted_action(final)==final,"terminal cannot trigger another MP tail")
 		reload_current_scene();await create_timer(0.4).timeout;scene=current_scene
-		check(not BattleOutcome.decided(scene.play_loop) and Loop.unit(scene.play_loop,"thief")["weapon_code"]==102 and Loop.unit(scene.play_loop,"wing")["weapon_code"]==43,"real retry returns source templates without weapon residue")
+		check(not BattleOutcome.decided(scene.play_loop) and BattlePlayLoop.unit(scene.play_loop,"thief")["weapon_code"]==102 and BattlePlayLoop.unit(scene.play_loop,"wing")["weapon_code"]==43,"real retry returns source templates without weapon residue")
 		row["restarted"]=true
 	routes.append(row)
 
@@ -222,12 +222,12 @@ func carry_route()->void:
 		if view.battle_finished:break
 		await create_timer(0.02).timeout
 	check(scene.play_loop["battle_outcome"]==BattleOutcome.VICTORY_ESCAPE,"actual escape ends first profession trial")
-	carry_expected=Campaign.CarryRules.capture(scene.play_loop)
+	carry_expected=CampaignProgress.CarryRules.capture(scene.play_loop)
 	# This public trial is outside the chapter chain. The route supplies only a
 	# destination/path and isolated storage; production handoff/carry does the work.
-	var handoff:Dictionary={"schema":Campaign.SCHEMA,"scenario_path":Mobile.PATH,"carry":carry_expected,"from_scenario_id":scene.play_loop["scenario_path"]}
-	check(Campaign.save_progress(handoff,MOBILE_OUT+"campaign.json"),"new professions serialize to isolated campaign file")
-	var saved:=Campaign.load_progress(MOBILE_OUT+"campaign.json")
+	var handoff:Dictionary={"schema":CampaignProgress.SCHEMA,"scenario_path":run_mobile_jobs_tests.PATH,"carry":carry_expected,"from_scenario_id":scene.play_loop["scenario_path"]}
+	check(CampaignProgress.save_progress(handoff,MOBILE_OUT+"campaign.json"),"new professions serialize to isolated campaign file")
+	var saved:=CampaignProgress.load_progress(MOBILE_OUT+"campaign.json")
 	scene.campaign_progress._show_resume_prompt(saved,"下一場職業演練")
 	await shot("campaign-resume");await click(scene.campaign_progress.resume_button)
 	var old:Node=scene
@@ -238,18 +238,18 @@ func carry_route()->void:
 	scene.settlement_controller.checkpoint_path=MOBILE_OUT+"carried.save"
 	check(scene.play_loop["campaign_carry_receipt"]["errors"].is_empty(),"source role carry accepted")
 	for id in carry_expected["units"]:
-		var actor:=Loop.unit(scene.play_loop,id)
+		var actor:=BattlePlayLoop.unit(scene.play_loop,id)
 		check(actor["permanent_gains"]==carry_expected["units"][id]["permanent_gains"] and actor["weapon_code"]==carry_expected["units"][id]["weapon_code"],"new source template retains exact equipment/acquired source")
 		check(scene.play_loop["item_use_sequence"]==0 and scene.play_loop.get("last_combat",{}).is_empty(),"new battle does not replay item or mana strike")
 	await settle("wing");await click(scene.action_menu.get_node("WaitCommand"));await settle("thief");await status_page("thief");await save_restore()
-	var carried_thief:=Loop.unit(scene.play_loop,"thief").duplicate(true)
+	var carried_thief:=BattlePlayLoop.unit(scene.play_loop,"thief").duplicate(true)
 	await run_carried_terminal()
 	reload_current_scene()
 	await create_timer(0.5).timeout;scene=current_scene
 	scene.settlement_controller.checkpoint_path=MOBILE_OUT+"carried-retry.save"
-	check(Loop.unit(scene.play_loop,"thief")["permanent_gains"]==carried_thief["permanent_gains"] and Loop.unit(scene.play_loop,"thief")["weapon_code"]==108,"actual next-battle retry retains incoming acquisitions and mana equipment once")
+	check(BattlePlayLoop.unit(scene.play_loop,"thief")["permanent_gains"]==carried_thief["permanent_gains"] and BattlePlayLoop.unit(scene.play_loop,"thief")["weapon_code"]==108,"actual next-battle retry retains incoming acquisitions and mana equipment once")
 	await settle("wing")
-	Campaign.pending={};Campaign.last_entry={}
+	CampaignProgress.pending={};CampaignProgress.last_entry={}
 
 func run_carried_terminal()->void:
 	for step in range(12000):
@@ -278,9 +278,9 @@ func run_carried_terminal()->void:
 	check(false,"bounded carried default battle did not reach an outcome")
 
 func move_for_spell(target_id:String)->void:
-	var actor:=Loop.unit(scene.play_loop,str(scene.selected_unit_id))
-	var target:=Loop.unit(scene.play_loop,target_id)
-	var choices:Array=Loop.movement_cells(scene.play_loop).filter(func(c):return c!=actor["coord"] and Loop.SkillTargetRules.cells(c,Loop.skill_fields(scene.play_loop,Mobile.WIND),scene.play_loop["skill_target_data"],scene.play_loop["map_size"]).has(target["coord"]))
+	var actor:=BattlePlayLoop.unit(scene.play_loop,str(scene.selected_unit_id))
+	var target:=BattlePlayLoop.unit(scene.play_loop,target_id)
+	var choices:Array=BattlePlayLoop.movement_cells(scene.play_loop).filter(func(c):return c!=actor["coord"] and BattlePlayLoop.SkillTargetRules.cells(c,BattlePlayLoop.skill_fields(scene.play_loop,run_mobile_jobs_tests.WIND),scene.play_loop["skill_target_data"],scene.play_loop["map_size"]).has(target["coord"]))
 	choices.sort_custom(func(a,b):return a.distance_squared_to(actor["coord"])<b.distance_squared_to(actor["coord"]))
 	check(not choices.is_empty(),"actual movement envelope contains a source spell position")
 	await move_to(choices[0])

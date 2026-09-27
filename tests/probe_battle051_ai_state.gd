@@ -12,8 +12,8 @@ extends SceneTree
 ## "dead": [id], "targets": {id: target_id}}; ids drop the "actor" prefix ("021_3").
 ## Each case runs once per seed (default 1..8) and prints the destination/target tally.
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 
 const SCENARIO := "res://content/battles/battle_051.json"
@@ -24,7 +24,7 @@ func _initialize() -> void:
 	var cases: Array = JSON.parse_string(FileAccess.get_file_as_string(str(args[0])))
 	var seeds := int(args[1]) if args.size() > 1 else 8
 	var scenario := BattleScenario.load_file(SCENARIO)
-	var base := Loop.initialize_roster_growth(Loop.create([], "", scenario, 1))
+	var base := BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.create([], "", scenario, 1))
 	for case in cases:
 		var tally := {}
 		for seed in range(1, seeds + 1):
@@ -32,7 +32,7 @@ func _initialize() -> void:
 			var rng := RandomNumberGenerator.new()
 			rng.seed = seed
 			var actor_id := _id(str(case["actor"]))
-			var step: Dictionary = LoopAI._ai_take_turn(loop, actor_id, rng)
+			var step: Dictionary = BattleLoopAI._ai_take_turn(loop, actor_id, rng)
 			var action: Dictionary = step.get("action", {})
 			var key := "%s->%s %s %s" % [str(action.get("from", "")), str(action.get("to", action.get("from", ""))), str(action.get("kind", "")), str(action.get("target_id", action.get("toward", ""))).trim_prefix("actor")]
 			if not bool(step.get("loop", {}).get("scenario_ok", true)): key = "error " + str(step["loop"].get("scenario_error", ""))
@@ -46,7 +46,7 @@ func _id(short: String) -> String:
 
 
 func _inject(base: Dictionary, case: Dictionary) -> Dictionary:
-	var loop := Loop.copy(base)
+	var loop := BattlePlayLoop.copy(base)
 	var coords: Dictionary = case.get("units", {})
 	var hps: Dictionary = case.get("hp", {})
 	var dead: Array = case.get("dead", [])

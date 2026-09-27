@@ -684,7 +684,7 @@ static func _portrait_key(face_member: String) -> String:
 
 
 ## The two refusals the original shop code shows are its own RESOURCE.TXT lines
-## (606 not enough money at 0x415611, 607 the shop does not buy this at 0x4153c2;
+## (606 not enough gold at 0x415611, 607 the shop does not buy this at 0x4153c2;
 ## docs/evidence_packets/static_reverse/original_shop_transaction.md); the rest
 ## are remake receipts for flows the original hand cursor never reaches.
 func _reason_text(reason: String) -> String:

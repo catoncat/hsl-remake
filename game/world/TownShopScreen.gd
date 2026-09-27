@@ -215,7 +215,7 @@ func show_carry(next_carry: Dictionary, next_message: String, next_color: Color 
 
 
 ## Mode 0 over the host's sandbox `loop` (PartyEquipmentScreen); `next_carry` only feeds the
-## money box; `next_message` is the host's failure line (no sandbox). Opens on page 4.
+## gold box; `next_message` is the host's failure line (no sandbox). Opens on page 4.
 func open_arrange(next_carry: Dictionary, loop: Dictionary, next_message: String = "") -> void:
 	mode = MODE_ARRANGE
 	page = PAGE_STATUS
@@ -387,9 +387,9 @@ func _rebuild() -> void:
 			_: _build_bag()
 		if page != PAGE_STORAGE:
 			_build_equipment()
-	BattleUISkin.board(self, "WINDOW40", BattleLootPanel.MONEY_AT).name = "MoneyBoard"
-	var amount := BattleUISkin.text(self, BattleLootPanel.MONEY_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
-	amount.name = "Money"
+	BattleUISkin.board(self, "WINDOW40", BattleLootPanel.GOLD_AT).name = "GoldBoard"
+	var amount := BattleUISkin.text(self, BattleLootPanel.GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
+	amount.name = "Gold"
 	amount.text = str(int((carry.get("loop", {}) as Dictionary).get("gold", 0)))
 	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	for spec in (BUTTONS if mode == MODE_SHOP else ARRANGE_BUTTONS):

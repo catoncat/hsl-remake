@@ -56,7 +56,7 @@ const Interaction = preload("res://game/sim/Interaction.gd")
 const SLIDER_STEP := 0.1
 const SCROLL_SECONDS := 0.25
 const HINT_SECONDS := 1.6
-## Battle scroll items that ask 確定／取消 first. The user recording shows the prompt for
+## Battle scroll items that ask 確定／取消 first. The 2026-09-24 recording shows the prompt for
 ## 儲存戰場記錄 (581.0 s) and 回主選單 (592.5 s); the others share it (provisional). The
 ## question text is the remake's.
 const CONFIRM_ACTIONS := {

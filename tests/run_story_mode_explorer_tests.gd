@@ -26,7 +26,7 @@ extends SceneTree
 ## shared with run_chapter_autoplay_tests.gd, which fights the battles instead.
 
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const ForceWin = preload("res://tests/support/BattleForceWin.gd")
+const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const StoryExplorer = preload("res://tests/support/StoryExplorer.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
@@ -48,11 +48,11 @@ func _play_formal_battle(explorer: StoryExplorer, scene: Node) -> String:
 	var note := func(condition: bool, message: String) -> void:
 		if not condition:
 			explorer.note("%s: %s" % [label, message])
-	var event_completion := ForceWin.arms_own_handoff(scene)
-	if not ForceWin.skips_opening(scene):
+	var event_completion := BattleForceWin.arms_own_handoff(scene)
+	if not BattleForceWin.skips_opening(scene):
 		# An event-only battle (73) opens its choice from the battle entry, no first-control phase.
-		await ForceWin.play_opening(self, scene, label, note)
-	var won := await ForceWin.force_win(self, scene, label, note)
+		await BattleForceWin.play_opening(self, scene, label, note)
+	var won := await BattleForceWin.force_win(self, scene, label, note)
 	if not won:
 		explorer.note("battle: no victory result (outcome %s)" % BattleOutcome.of(scene.play_loop))
 		return StoryExplorer.OUTCOME_STUCK

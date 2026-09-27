@@ -1,7 +1,7 @@
 extends "res://tests/capture_extra_action_review.gd"
 ## Source art/WRD, real controls and normal clocks; explicit role/resource fixtures.
-const JobCases = preload("res://tests/run_job_stats_tests.gd")
-const ResourceCases = preload("res://tests/run_resource_recovery_tests.gd")
+const run_job_stats_tests = preload("res://tests/run_job_stats_tests.gd")
+const run_resource_recovery_tests = preload("res://tests/run_resource_recovery_tests.gd")
 const REVIEW_OUT := "res://ignored/role-resources-review/"
 var resource_beats: Array = []
 var seen_tail_events := {}
@@ -43,11 +43,11 @@ func setup_role() -> void:
 	await create_timer(0.15).timeout
 	scene.get_node("BattleMusic").stop()
 	chosen_role = "024" if mode == "heavy_growth" else "001" if mode in ["sword_double","victory","defeat","escape","detour"] else "026"
-	var loop := JobCases.fixture(chosen_role)
+	var loop := run_job_stats_tests.fixture(chosen_role)
 	loop["tiles"]=scene.play_loop["tiles"];loop["map_size"]=scene.play_loop["map_size"]
-	var player := Loop._unit(loop,"leonard")
-	var enemy := Loop._unit(loop,"enemy021_1")
-	var ally := Loop._unit(loop,"enemy023_1")
+	var player := BattlePlayLoop._unit(loop,"leonard")
+	var enemy := BattlePlayLoop._unit(loop,"enemy021_1")
+	var ally := BattlePlayLoop._unit(loop,"enemy023_1")
 	player["inventory"]=[218,223,224,138 if chosen_role == "024" else 193,227,12 if chosen_role == "001" else 94,246,241]
 	player["hp"]=mini(10,int(player["max_hp"]));player["hit_bonus_accum"]=1000
 	enemy["inventory"]=[0,0,0,0,0,0,0,0];enemy["combat_profile"]["attack_back"]=0
@@ -62,27 +62,27 @@ func setup_role() -> void:
 		enemy["hp"]=9000;enemy["max_hp"]=9000;enemy["combat_profile"]["attack_back"]=100
 	if mode in ["poison_recovery","second_remove_restore"]: player["mp"]=0
 	if mode == "poison_recovery":
-		player.merge(Loop.StatusEffectRules.apply(player,"poison",3,7)["changes"],true)
-		player.merge(Loop.StatusEffectRules.apply(player,"no_magic",2)["changes"],true)
+		player.merge(BattlePlayLoop.StatusEffectRules.apply(player,"poison",3,7)["changes"],true)
+		player.merge(BattlePlayLoop.StatusEffectRules.apply(player,"no_magic",2)["changes"],true)
 	if mode == "support_recovery":
-		TestSuite.own(loop, "skill_book")["actors"][chosen_role]["supported_initial_ids"]=[ExtraCases.HEAL,ExtraCases.CURE]
+		TestSuite.own(loop, "skill_book")["actors"][chosen_role]["supported_initial_ids"]=[run_extra_attack_tests.HEAL,run_extra_attack_tests.CURE]
 		ally["coord"]=Vector2i(11,8);ally["hp"]=4;enemy["coord"]=Vector2i(17,18)
-		player.merge(Loop.StatusEffectRules.apply(player,"poison",3,7)["changes"],true)
+		player.merge(BattlePlayLoop.StatusEffectRules.apply(player,"poison",3,7)["changes"],true)
 	if mode == "detour": player["coord"]=Vector2i(7,10);enemy["coord"]=Vector2i(17,18)
 	if mode.begins_with("ai_"):
 		player["player_commandable"]=false;player["growth_profile"]["allocation"]="fixed_template"
-		player["battle_actor_role"]=Loop.ROLE_FRIENDLY
+		player["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
 		player["growth_profile"]["source"]["magic_point"]+=100
 		player["equipment"]=player["equipment"].filter(func(e):return not str(e["slot"]).begins_with("accessory"))
 		for entry in [["accessory1",218],["accessory2",224]]:
 			player["equipment"].append({"slot":entry[0],"item_code":entry[1],"name":loop["equipment_items"][str(entry[1])]["name"]})
-		player.merge(Loop.ProgressionRules.refresh_growth_stats(player,loop["equipment_items"]),true)
+		player.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(player,loop["equipment_items"]),true)
 		player["mp"]=4 if mode=="ai_half_cast" else 0
 		player["hp"]=4 if mode=="ai_item_restore" else player["max_hp"]
 		player["inventory"]=[241,0,0,0,0,0,0,0] if mode=="ai_item_restore" else [0,0,0,0,0,0,0,0]
 		player["live_speed"]=110;player["no_attack"]=mode=="ai_mp_return"
-		var starter := Loop.unit(BattleFixture.loop(),"enemy024_1")
-		starter.merge({"id":"resource-initial","coord":Vector2i(6,14),"live_speed":130,"player_commandable":true,"battle_actor_role":Loop.ROLE_FRIENDLY},true)
+		var starter := BattlePlayLoop.unit(BattleFixture.loop(),"enemy024_1")
+		starter.merge({"id":"resource-initial","coord":Vector2i(6,14),"live_speed":130,"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_FRIENDLY},true)
 		loop["units"].append(starter)
 		enemy["no_attack"]=true
 		TestSuite.own(loop, "ai_profiles")["actors"]["026"]["profile"].merge({"find_range":20,"ai_att_magic":100,"ai_check_dying":0,"ai_help_selfhp":100 if mode=="ai_item_restore" else 0,"ai_check_hp":100,"ai_help_otherhp":0,"ai_help_status":0},true)
@@ -92,7 +92,7 @@ func setup_role() -> void:
 		if mode=="defeat": player["hp"]=1;enemy["combat_profile"].merge({"live_attack_damage":200,"attack_back":100},true)
 		else:
 			scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
-			player=Loop._unit(loop,"leonard");enemy=Loop._unit(loop,"enemy021_1")
+			player=BattlePlayLoop._unit(loop,"leonard");enemy=BattlePlayLoop._unit(loop,"enemy021_1")
 			if mode=="victory": player["exp"]=99;enemy["hp"]=1
 			else:
 				enemy["coord"]=Vector2i(17,18);landing=loop["escape_zone"][0]
@@ -100,17 +100,17 @@ func setup_role() -> void:
 				for y in range(loop["map_size"].y):
 					for x in range(loop["map_size"].x):
 						var point:=Vector2i(x,y)
-						if loop["tiles"].get(point,{}).get("blocks_movement",false) or loop["escape_zone"].has(point) or Loop.unit_id_at_coord(loop,point) not in ["","leonard"]: continue
+						if loop["tiles"].get(point,{}).get("blocks_movement",false) or loop["escape_zone"].has(point) or BattlePlayLoop.unit_id_at_coord(loop,point) not in ["","leonard"]: continue
 						player["coord"]=point
-						var path:=Loop.movement_path(loop,"leonard",landing)
+						var path:=BattlePlayLoop.movement_path(loop,"leonard",landing)
 						if path.size()>=2 and path.size()<=5:found=true;break
 					if found:break
 				check(found,"actual source map has a finite escape approach")
 	for a in loop["units"]:
 		a["grid_coord"]=a["coord"];a["ai_home_coord"]=a["coord"]
 		check(not loop["tiles"].get(a["coord"],{}).get("blocks_movement",false),"fixture stands on actual source ground")
-	loop["turn_queue"]=Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop,"resource-initial" if mode.begins_with("ai_") else "leonard"), "test")
+	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"resource-initial" if mode.begins_with("ai_") else "leonard"), "test")
 	scene.settlement_controller.checkpoint_path=REVIEW_OUT+mode+".save"
 	for a in scene.actors_root.get_children():scene.actors_root.remove_child(a);a.queue_free()
 	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(player["coord"])
@@ -138,7 +138,7 @@ func play_role() -> void:
 				pair_receipts.append(next.duplicate(true))
 				if next.has("skill_id"):break
 			check(pair_receipts.back().has("skill_id"),"subsequent real AI turn uses restored MP for a fresh cast")
-		elif mode=="ai_half_cast":check(pair_receipts[0].get("skill_id")==ExtraCases.WIND,"four MP afforded the actual half-cost source wind cast")
+		elif mode=="ai_half_cast":check(pair_receipts[0].get("skill_id")==run_extra_attack_tests.WIND,"four MP afforded the actual half-cost source wind cast")
 		else:check(pair_receipts[0]["kind"] in ["use_item","move_then_item"] and observed.has("item"),"AI item feedback precedes its resource-tail feedback")
 	else:
 		await click(scene.action_menu.get_node("StatusCommand"));await shot("initial-stats");await escape()
@@ -155,22 +155,22 @@ func play_role() -> void:
 		if mode in ["mage_growth","heavy_growth","sword_double"]:
 			await move_to(Vector2i(10,8));await attack_target();pair_receipts.append(receipt.duplicate(true));await settle("leonard")
 			check(scene.play_loop["action_end_sequence"]==0,"first action cannot run the final recovery tail")
-			if mode!="sword_double":check(observed.has("growth") and Loop.unit(scene.play_loop,"leonard")["level"]==2,"source job growth completed before independent second action")
+			if mode!="sword_double":check(observed.has("growth") and BattlePlayLoop.unit(scene.play_loop,"leonard")["level"]==2,"source job growth completed before independent second action")
 			await save_restore()
 			await move_to(Vector2i(11,9) if mode=="sword_double" else Vector2i(10,9))
-			if mode=="mage_growth":await cast_real(ExtraCases.WIND,"enemy021_2")
+			if mode=="mage_growth":await cast_real(run_extra_attack_tests.WIND,"enemy021_2")
 			else:
 				await click(scene.action_menu.get_node("AttackCommand"))
-				var target_point:Vector2i=Loop.unit(scene.play_loop,"enemy021_1" if mode=="sword_double" else "enemy021_2")["coord"]
-				check(Loop.attack_cells(scene.play_loop).has(target_point),"second action ends at a legal source weapon attack position")
+				var target_point:Vector2i=BattlePlayLoop.unit(scene.play_loop,"enemy021_1" if mode=="sword_double" else "enemy021_2")["coord"]
+				check(BattlePlayLoop.attack_cells(scene.play_loop).has(target_point),"second action ends at a legal source weapon attack position")
 				await point(scene.grid_cell_center_to_logical_position(target_point))
 				pair_receipts.append(scene.play_loop["last_attack"].duplicate(true))
-		elif mode=="support_recovery":await move_to(Vector2i(10,8));await cast_real(ExtraCases.HEAL,"enemy023_1")
+		elif mode=="support_recovery":await move_to(Vector2i(10,8));await cast_real(run_extra_attack_tests.HEAL,"enemy023_1")
 		elif mode=="detour":
 			var found:=false
-			for cell in Loop.movement_cells(scene.play_loop):
-				var path:=Loop.movement_path(scene.play_loop,"leonard",cell)
-				if path.size()>Loop._manhattan(path[0],cell)+1 and Rect2(24,24,592,414).has_point(scene.grid_cell_center_to_logical_position(cell)):
+			for cell in BattlePlayLoop.movement_cells(scene.play_loop):
+				var path:=BattlePlayLoop.movement_path(scene.play_loop,"leonard",cell)
+				if path.size()>BattlePlayLoop._manhattan(path[0],cell)+1 and Rect2(24,24,592,414).has_point(scene.grid_cell_center_to_logical_position(cell)):
 					landing=cell;found=true;break
 			check(found,"source obstacles require a real affordable detour")
 			if not found:return
@@ -188,20 +188,20 @@ func play_role() -> void:
 				await click(scene.action_menu.get_node("WaitCommand"))
 		else:await click(scene.action_menu.get_node("WaitCommand"))
 		await settle("enemy023_1",terminal)
-		if mode=="second_remove_restore":check(Loop.unit(scene.play_loop,"leonard")["mp"]==0 and resource_beats.is_empty(),"removal after restore suppresses final MP gain without a third action")
+		if mode=="second_remove_restore":check(BattlePlayLoop.unit(scene.play_loop,"leonard")["mp"]==0 and resource_beats.is_empty(),"removal after restore suppresses final MP gain without a third action")
 		elif not terminal:check(not resource_beats.is_empty(),"the completed player action presents its actual source recovery")
 		if mode=="poison_recovery":check(resource_beats.map(func(e):return e["kind"])==["poison","auto_hp","auto_mp"],"real frames present poison then HP then MP without early successor controls")
-		if mode=="sword_double":check(pair_receipts.size()==2 and pair_receipts.all(func(r):return Loop.CombatSequence.strikes(r).size()==3),"each independent action keeps both source sword strikes and its one counter before final recovery")
+		if mode=="sword_double":check(pair_receipts.size()==2 and pair_receipts.all(func(r):return BattlePlayLoop.CombatSequence.strikes(r).size()==3),"each independent action keeps both source sword strikes and its one counter before final recovery")
 	await save_restore()
 	var final:Dictionary=scene.play_loop.duplicate(true)
-	routes.append({"mode":mode,"job":baseline_role["growth_profile"],"before":compact(baseline_role),"after":compact(Loop.unit(final,"leonard")),
-		"combat_profile":Loop.unit(final,"leonard")["combat_profile"],"equipment":Loop.unit(final,"leonard")["equipment"],
+	routes.append({"mode":mode,"job":baseline_role["growth_profile"],"before":compact(baseline_role),"after":compact(BattlePlayLoop.unit(final,"leonard")),
+		"combat_profile":BattlePlayLoop.unit(final,"leonard")["combat_profile"],"equipment":BattlePlayLoop.unit(final,"leonard")["equipment"],
 		"beats":resource_beats,"receipts":pair_receipts,"last_action_end":final["last_action_end"],"extra_action":final["extra_action"],
 		"observed":observed,"sounds":sound_paths.keys(),"cues":cues,"experience":experience_events,"outcome":final["battle_outcome"]})
 	if terminal:
 		check(final["action_end_sequence"]==0 and resource_beats.is_empty(),"victory/defeat/escape freezes unspent final recovery")
 		reload_current_scene();await create_timer(0.3).timeout;scene=current_scene
-		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["action_end_sequence"]==0 and Loop.unit(scene.play_loop,"leonard")["max_hp"]==30,"actual restart restores source protagonist and fresh resource state")
+		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["action_end_sequence"]==0 and BattlePlayLoop.unit(scene.play_loop,"leonard")["max_hp"]==30,"actual restart restores source protagonist and fresh resource state")
 		routes.back()["restarted"]=true
 
 

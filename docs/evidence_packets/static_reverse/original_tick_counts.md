@@ -17,7 +17,7 @@ lane R26-tick-timing（2026-09-23）。[原版 tick 率](../runtime_observations
 
 调用侧的 hold：HP／MP 回复（[original_resource_recovery](original_resource_recovery.md)）HP 数字 hold 0、MP 数字 hold 40。因此回合尾部 HP 数字 0–46 tick、MP 数字 40–86 tick。
 
-重制：`CombatPresentationTiming.SHOW_NUMBER_TICKS = 46`、`SHOW_NUMBER_RELEASE_TICKS = 32`、`DAMAGE_NUMBER_BASE_TICKS = 34`＋`DAMAGE_NUMBER_DIGIT_TICKS = 10`／位（lane DIGITS 由 44 更正为 kind 0 实际寿命）、`SHOW_NUMBER_RISE_PX_PER_TICK = 0.5`；`BattleTurnEndCue` 以 40 tick 间隔换事件、末事件停留 46 tick；`BattlePresentation`／`MagicImpactPresentation` 的浮字按 kind 取寿命。kind 0 的弹跳绘制已由 lane R7-POSE 读出（逐位揭示、2×／1.5×／4× 闪光、不上浮，寿命 10×位数＋34，[地图姿势与飘字包 §3](../runtime_observations/map_pose_floaters/README.md#3-红色伤害数字0x408580-kind-0)），地图、特写与法术的伤害数字由 `DamageNumberFloat` 画，回复／MP／MISS 由 `ResultNumberFloat` 按 kind 2／3／5 画（lane DIGITS）。
+重制：`CombatPresentationTiming.SHOW_NUMBER_TICKS = 46`、`SHOW_NUMBER_RELEASE_TICKS = 32`、`DAMAGE_NUMBER_BASE_TICKS = 34`＋`DAMAGE_NUMBER_DIGIT_TICKS = 10`／位（lane DIGITS 由 44 更正为 kind 0 实际寿命）、`SHOW_NUMBER_RISE_PX_PER_TICK = 0.5`；`BattleTurnEndCue` 以 40 tick 间隔换事件、末事件停留 46 tick；`BattlePresentation`／`MagicImpactPresentation` 的浮字按 kind 取寿命。kind 0 的弹跳绘制已由 lane R7-POSE 读出（逐位揭示、2×／1.5×／4× 闪光、不上浮，寿命 10×位数＋34，[地图姿势与飘字包 §3](../runtime_observations/map_pose_floaters/README.md#3-红色伤害数字0x408580-kind-0)），地图、特写与法术的伤害数字由 `DamageNumberFloater` 画，回复／MP／MISS 由 `ResultNumberFloater` 按 kind 2／3／5 画（lane DIGITS）。
 
 ## 2. `actShowSectionName`（opcode 12）：章节标题的进出与停留
 

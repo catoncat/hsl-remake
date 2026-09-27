@@ -14,8 +14,8 @@ extends RefCounted
 ## create() (a test may rewrite the same terrain file between calls).
 
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 
 const PATH := "res://content/battles/first_battle.json"
 const SCHEMA := "hsl_development_battle.v1"
@@ -35,12 +35,12 @@ static func scenario() -> Dictionary:
 ## same way the PlayLoop's own signature does.
 static func loop(units: Array = [], terrain_path: String = "", reward_seed: int = 1) -> Dictionary:
 	if not units.is_empty() or terrain_path != "":
-		return Loop.create(units, terrain_path, scenario(), reward_seed)
+		return BattlePlayLoop.create(units, terrain_path, scenario(), reward_seed)
 	if not _loops.has(reward_seed):
-		_loops[reward_seed] = Loop.create([], "", scenario(), reward_seed)
+		_loops[reward_seed] = BattlePlayLoop.create([], "", scenario(), reward_seed)
 	var fresh: Dictionary = (_loops[reward_seed] as Dictionary).duplicate(true)
 	# create() registers its configuration blocks with the run_all.gd freeze; the copy's own
 	# blocks are the ones the suite can write, so they are registered in its place.
-	if LoopConfig.freeze_enabled:
-		LoopConfig.freeze(fresh)
+	if BattleLoopConfig.freeze_enabled:
+		BattleLoopConfig.freeze(fresh)
 	return fresh

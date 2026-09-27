@@ -5,7 +5,7 @@
  "run_animal_program_tests.gd": 1.386,
  "run_camera_panel_motion_tests.gd": 0.289,
  "run_campaign_actor_tests.gd": 1.065,
- "run_closeup_floaters_tests.gd": 0.156,
+ "run_cutin_floaters_tests.gd": 0.156,
  "run_departure_tests.gd": 2.153,
  "run_entry_growth_tests.gd": 20.604,
  "run_event_cadence_tests.gd": 0.659,

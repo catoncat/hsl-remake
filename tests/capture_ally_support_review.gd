@@ -1,7 +1,7 @@
 extends "res://tests/capture_support_magic_review.gd"
 ## Actual Wait -> AI move -> owned support spell -> EXP -> player handoff.
 ## Uses inherited input events/cleanup; no result assignment or clock acceleration.
-const Ally = preload("res://tests/run_ai_support_tests.gd")
+const run_ai_support_tests = preload("res://tests/run_ai_support_tests.gd")
 const DEST := "res://ignored/ally-support-review/"
 var observations: Dictionary = {}
 var exp_events: Array = []
@@ -42,7 +42,7 @@ func prepare_case() -> void:
 	exp_events = []
 	cues = {"release":0,"impact":0}
 	sounds = {}
-	supported_skill = {"greater_move":Ally.GREATER,"life_move":Ally.LIFE,"cure_move":Ally.CURE}.get(mode,Ally.HEAL)
+	supported_skill = {"greater_move":run_ai_support_tests.GREATER,"life_move":run_ai_support_tests.LIFE,"cure_move":run_ai_support_tests.CURE}.get(mode,run_ai_support_tests.HEAL)
 	scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
 	root.add_child(scene)
@@ -51,27 +51,27 @@ func prepare_case() -> void:
 	scene.set_process(false)
 	await create_timer(0.2).timeout
 	scene.get_node("BattleMusic").stop()
-	var loop := Ally.fixture(supported_skill)
+	var loop := run_ai_support_tests.fixture(supported_skill)
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
-	var owner := Loop._unit(loop,"leonard")
+	var owner := BattlePlayLoop._unit(loop,"leonard")
 	owner["exp"] = 99
-	var patient := Loop._unit(loop,"enemy023_1")
-	var other := Loop._unit(loop,"enemy021_2")
+	var patient := BattlePlayLoop._unit(loop,"enemy023_1")
+	var other := BattlePlayLoop._unit(loop,"enemy021_2")
 	other["live_speed"] = 80
 	other["player_commandable"] = true
-	other["battle_actor_role"] = Loop.ROLE_PLAYER
+	other["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
 	if mode == "cure_move":
-		for unit in [patient,other]: unit.merge(Loop.StatusEffectRules.apply(unit,"poison",2,10)["changes"],true)
-		patient.merge(Loop.StatusEffectRules.apply(patient,"no_magic",2)["changes"],true)
+		for unit in [patient,other]: unit.merge(BattlePlayLoop.StatusEffectRules.apply(unit,"poison",2,10)["changes"],true)
+		patient.merge(BattlePlayLoop.StatusEffectRules.apply(patient,"no_magic",2)["changes"],true)
 	if mode == "next_patient":
 		patient["coord"] = Vector2i(16,8)
 		other["coord"] = Vector2i(10,11)
 	if mode == "enemy_heal":
-		owner["battle_actor_role"] = Loop.ROLE_ENEMY
-		Loop._unit(loop,"enemy021_1").merge({"hp":4,"coord":Vector2i(13,8)},true)
+		owner["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
+		BattlePlayLoop._unit(loop,"enemy021_1").merge({"hp":4,"coord":Vector2i(13,8)},true)
 	if mode == "no_mp": owner["mp"] = 0
-	if mode == "silence": owner.merge(Loop.StatusEffectRules.apply(owner,"no_magic",2)["changes"],true)
+	if mode == "silence": owner.merge(BattlePlayLoop.StatusEffectRules.apply(owner,"no_magic",2)["changes"],true)
 	if mode.begins_with("item_"):
 		patient["coord"] = Vector2i(12,8)
 		owner["inventory"][0] = 241
@@ -84,12 +84,12 @@ func prepare_case() -> void:
 		patient["mp"] = 100
 		patient["max_mp"] = 100
 		patient["exp"] = 99
-		TestSuite.own(loop, "skill_book")["actors"][patient["actor_id"]]["supported_initial_ids"] = [Ally.HEAL]
-	var initial := Loop.unit(scene.play_loop,"enemy024_1")
-	initial.merge({"id":"review-initial","coord":Vector2i(7,8),"hp":100,"max_hp":100,"player_commandable":true,"battle_actor_role":Loop.ROLE_PLAYER,"live_speed":110,"inventory":[0,0,0,0,0,0,0,0]},true)
+		TestSuite.own(loop, "skill_book")["actors"][patient["actor_id"]]["supported_initial_ids"] = [run_ai_support_tests.HEAL]
+	var initial := BattlePlayLoop.unit(scene.play_loop,"enemy024_1")
+	initial.merge({"id":"review-initial","coord":Vector2i(7,8),"hp":100,"max_hp":100,"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_PLAYER,"live_speed":110,"inventory":[0,0,0,0,0,0,0,0]},true)
 	loop["units"].append(initial)
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop,"review-initial"), "test")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"review-initial"), "test")
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()
 	for unit in loop["units"]: unit["grid_coord"] = unit["coord"]
@@ -110,15 +110,15 @@ func play_case() -> void:
 	await click(scene.action_menu.get_node("WaitCommand"))
 	await wait_for("enemy023_1")
 	var action: Dictionary = scene.play_loop.get("last_ai_action",{}).duplicate(true)
-	var owner := Loop.unit(scene.play_loop,"leonard")
+	var owner := BattlePlayLoop.unit(scene.play_loop,"leonard")
 	if mode in ["no_mp","silence"]:
 		check(not action.has("skill_id") and exp_events.is_empty() and cues["impact"] == 0, "unavailable magic cannot fabricate a support transaction or EXP")
-		check(owner["mp"] == Loop.unit(before,"leonard")["mp"] and owner["exp"] == 99, "support rejection preserves resources and prior EXP")
+		check(owner["mp"] == BattlePlayLoop.unit(before,"leonard")["mp"] and owner["exp"] == 99, "support rejection preserves resources and prior EXP")
 	elif mode.begins_with("item_"):
 		check(action.get("kind") == "move_then_item" and action.get("target_id") == target_id, "actual Wait produces moving assistance with the carried medicine")
 		check(observations.has("moving") and observations.has("item") and cues["impact"] == 0 and exp_events.is_empty(), "item feedback follows arrival and uses its own transaction")
-		check(owner["inventory"][0] == 0 and owner["mp"] == Loop.unit(before,"leonard")["mp"] and owner["exp"] == 99, "one medicine consumed with no phantom MP or EXP")
-		check(Loop.unit(scene.play_loop,target_id)["hp"] == 44, "actual item feedback agrees with the healed patient")
+		check(owner["inventory"][0] == 0 and owner["mp"] == BattlePlayLoop.unit(before,"leonard")["mp"] and owner["exp"] == 99, "one medicine consumed with no phantom MP or EXP")
+		check(BattlePlayLoop.unit(scene.play_loop,target_id)["hp"] == 44, "actual item feedback agrees with the healed patient")
 		check(sounds.has(scene.ui_sounds["use_item"]["res_path"]), "use-item sound mixer playback advances once after arrival")
 	else:
 		check(action.get("skill_id") == supported_skill and action.get("kind") == "move_then_attack", "Wait commits exactly the intended moved support spell")
@@ -126,12 +126,12 @@ func play_case() -> void:
 		check(action.get("ai_skill_decision",{}).get("attempts",[{}]).back().get("primary_target_id") == target_id, "original scan selects the expected reachable patient")
 		check(observations.has("moving") and observations.has("casting") and observations.has("impact") and observations.has("experience"), "normal clock exposes movement, cast, impact and final EXP")
 		check(cues == {"release":1,"impact":1} and exp_events.size() == 1 and exp_events[0] == action.get("experience"), "one release, one impact and one final support award")
-		check(action["resource_payment"]["after"] == 100 - int(Loop.skill_fields(before,supported_skill)["expend"]), "exactly one source MP fee")
+		check(action["resource_payment"]["after"] == 100 - int(BattlePlayLoop.skill_fields(before,supported_skill)["expend"]), "exactly one source MP fee")
 		check(not sounds.is_empty(), "source audio mixer playback advances during the actual cast")
 		if mode == "cure_move":
-			check(action["affected_targets"].size() == 2 and Loop.unit(scene.play_loop,"enemy023_1")["status_counters"] == {"poison":0,"paralysis":0,"no_magic":2}, "moving area cure clears both friends but leaves silence and recipient turn intact")
+			check(action["affected_targets"].size() == 2 and BattlePlayLoop.unit(scene.play_loop,"enemy023_1")["status_counters"] == {"poison":0,"paralysis":0,"no_magic":2}, "moving area cure clears both friends but leaves silence and recipient turn intact")
 		else:
-			check(Loop.unit(scene.play_loop,target_id)["hp"] > Loop.unit(before,target_id)["hp"], "the selected ally's actual health improves")
+			check(BattlePlayLoop.unit(scene.play_loop,target_id)["hp"] > BattlePlayLoop.unit(before,target_id)["hp"], "the selected ally's actual health improves")
 		check(scene.play_loop["last_combat"]["sequence"] == action["sequence"], "playback never repeats the committed action")
 	check(scene.play_loop["turn_queue"]["index"] == 2 and scene.play_loop["last_ai_actions"].size() == 1, "initial Wait plus one AI action reaches the precise next player")
 	await shot("handoff")
@@ -139,19 +139,19 @@ func play_case() -> void:
 	var second_receipt := {}
 	if mode == "heal_move":
 		await click(scene.action_menu.get_node("MagicCommand"))
-		await click(scene.magic_panel.choices[Ally.HEAL])
-		await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,"enemy021_2")["coord"]))
+		await click(scene.magic_panel.choices[run_ai_support_tests.HEAL])
+		await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"enemy021_2")["coord"]))
 		second_receipt = scene.play_loop["last_attack"].duplicate(true)
 		await wait_for("enemy021_2")
-		var patient := Loop.unit(scene.play_loop,"enemy023_1")
+		var patient := BattlePlayLoop.unit(scene.play_loop,"enemy023_1")
 		check(second_receipt.get("attacker_id") == "enemy023_1" and second_receipt.has("experience") and exp_events.size() == 2, "next participant's real cast earns a separate final EXP award")
 		check(patient["level"] > 1 and patient["pending_stat_points"] > 0, "second healer retains its own unspent growth")
-		owner = Loop.unit(scene.play_loop,"leonard")
+		owner = BattlePlayLoop.unit(scene.play_loop,"leonard")
 		check(first_award == {"level":owner["level"],"exp":owner["exp"],"pending_points":owner["pending_stat_points"]}, "later support neither reallocates nor repeats the prior healer's EXP")
 		await shot("second-handoff")
 	var inspected := "enemy021_2" if mode == "heal_move" else target_id
 	if inspected == scene.selected_unit_id: await click(scene.action_menu.get_node("StatusCommand"))
-	else: await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,inspected)["coord"]))
+	else: await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,inspected)["coord"]))
 	check(scene.status_panel.visible, "support recipient can be inspected through normal controls")
 	await shot("status")
 	routes.append({"mode":mode,"action":action,"owner":compact(owner),"growth":first_award,"second_receipt":second_receipt,

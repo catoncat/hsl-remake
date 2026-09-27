@@ -214,8 +214,8 @@ static func line_starts(label: Label, text: String) -> PackedInt32Array:
 ## that would take the row past `row_bytes` source bytes starts the next row (a Big5 character
 ## is two bytes, ASCII one; the imported text's "\n" is the source's "#" hard break). The
 ## original has no kinsoku and keeps no word whole; the remake moves a break that would cut a
-## protected name to the name's start (a remake improvement kept after the user's playtest
-## report — the original cuts names). The rows joined by "\n" are the body plus line breaks.
+## protected name to the name's start (a remake improvement kept after playtest
+## feedback — the original cuts names). The rows joined by "\n" are the body plus line breaks.
 static func message_rows(text: String, row_bytes: int = MESSAGE_ROW_BYTES) -> PackedStringArray:
 	var rows := PackedStringArray()
 	var start := 0

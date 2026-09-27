@@ -1,8 +1,7 @@
 extends "res://tests/capture_support_magic_review.gd"
 ## Real input and rendered source002. Changes below the setup boundary are only
 ## clicks/keys; authored initial state is captured explicitly in the receipt.
-const Priest = preload("res://tests/run_support_magic_tests.gd")
-const SAVE = preload("res://game/battle/runtime/BattleCheckpoint.gd")
+const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const DEST := "res://ignored/priest-review/"
 var initial_state := {}
@@ -36,30 +35,30 @@ func setup_priest()->void:
 	scene.settlement_controller.checkpoint_path=DEST+mode+".save"
 	if mode!="manual":
 		scene.set_process(false)
-		var loop:=Priest.priest_fixture()
-		var actor:=Loop._unit(loop,"tina");var ally:=Loop._unit(loop,"companion");var enemy:=Loop._unit(loop,"enemy021_1")
+		var loop:=run_support_magic_tests.priest_fixture()
+		var actor:=BattlePlayLoop._unit(loop,"tina");var ally:=BattlePlayLoop._unit(loop,"companion");var enemy:=BattlePlayLoop._unit(loop,"enemy021_1")
 		actor["growth_profile"]["source"]["hit_point"]+=300
-		actor.merge(Loop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true);actor["hp"]=actor["max_hp"]
+		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true);actor["hp"]=actor["max_hp"]
 		ally["growth_profile"]["source"]["hit_point"]+=400
-		ally.merge(Loop.ProgressionRules.refresh_growth_stats(ally,loop["equipment_items"]),true);ally["hp"]=8
+		ally.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(ally,loop["equipment_items"]),true);ally["hp"]=8
 		enemy["growth_profile"]["source"]["hit_point"]+=600
 		enemy["growth_profile"]["source"]["defense"]+=70
-		enemy.merge(Loop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hp"]=enemy["max_hp"];enemy["no_attack"]=true
+		enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hp"]=enemy["max_hp"];enemy["no_attack"]=true
 		actor["hit_bonus_accum"]=1000
 		if mode in ["healing_growth","melee_series","victory"]:actor["exp"]=99
 		if mode=="mana_extra":actor["mp"]=0
-		if mode=="phase_mobility":actor.merge(Loop.StatusEffectRules.apply(actor,"poison",3,1)["changes"],true)
+		if mode=="phase_mobility":actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"poison",3,1)["changes"],true)
 		if mode=="melee_series":
 			enemy["no_attack"]=false;enemy["hit_bonus_accum"]=1000;enemy["combat_profile"]["attack_back"]=100
 			TestSuite.own(loop, "skill_book")["actors"]["002"]["double_attack"]=true;TestSuite.own(loop, "skill_book")["actors"]["021"]["double_attack"]=true
 			enemy["coord"]=Vector2i(11,16)
 		if mode.begins_with("ai_"):
-			actor["player_commandable"]=false;actor["battle_actor_role"]=Loop.ROLE_FRIENDLY
+			actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
 			ally["live_speed"]=300;actor["live_speed"]=200
 			actor["equipment"].append({"slot":"accessory2","item_code":227})
 			actor["inventory"]=[241,244,0,0,0,0,0,0]
 			if mode=="ai_heal":actor["mp"]=6;actor["inventory"]=[244,0,0,0,0,0,0,0]
-			else:actor.merge(Loop.StatusEffectRules.apply(actor,"no_magic" if mode=="ai_silence" else "paralysis",2)["changes"],true)
+			else:actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic" if mode=="ai_silence" else "paralysis",2)["changes"],true)
 		if mode=="victory":enemy["hp"]=1;enemy["coord"]=Vector2i(11,16)
 		if mode=="defeat":
 			actor["hp"]=1;enemy["coord"]=Vector2i(11,16);enemy["no_attack"]=false;enemy["hit_bonus_accum"]=1000
@@ -68,8 +67,8 @@ func setup_priest()->void:
 		for unit in loop["units"]:
 			unit["grid_coord"]=unit["coord"];unit["ai_home_coord"]=unit["coord"]
 			unit["live_speed"]={"tina":200,"companion":300 if mode.begins_with("ai_") else 100,"enemy021_1":50}[unit["id"]]
-		loop["turn_queue"]=Loop.CoreTurnQueue.rebuild(loop["units"])
-		loop=Loop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina")
+		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+		loop=BattlePlayLoop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina")
 		scene.apply_loop(loop, "test")
 		for unit in loop["units"]:
 			var art=scene.actor_node_for_unit(unit["id"])
@@ -132,7 +131,7 @@ func settle(id:String,terminal:bool=false)->void:
 func play_priest()->void:
 	await settle("companion" if mode.begins_with("ai_") else "tina")
 	if mode=="manual":
-		check(Loop.unit(scene.play_loop,"tina")["actor_id"]=="002","unmodified published scene selects source002")
+		check(BattlePlayLoop.unit(scene.play_loop,"tina")["actor_id"]=="002","unmodified published scene selects source002")
 		await shot("entry");await cast_heal("companion");await settle("tina")
 		check(impacts.any(func(r):return r["strike"].get("healing",0)>0),"published priest uses actual initial healing spell")
 	elif mode in ["healing_growth","mana_extra","phase_mobility","melee_series"]:
@@ -142,11 +141,11 @@ func play_priest()->void:
 			check(observed.has("growth") and scene.play_loop["extra_action"]["pending"],"support EXP and priest allocation finish before second action")
 			await save_restore();await change_gear(87,"weapon");await attack("enemy021_1");await settle("companion")
 		elif mode=="mana_extra":
-			await click(scene.action_menu.get_node("MagicCommand"));check(scene.magic_panel.choices[Priest.HEAL].disabled,"empty MP disables actual source heal")
+			await click(scene.action_menu.get_node("MagicCommand"));check(scene.magic_panel.choices[run_support_magic_tests.HEAL].disabled,"empty MP disables actual source heal")
 			await escape();await settle("tina");await use_item_real(244,"tina");await settle("tina")
-			check(scene.play_loop["extra_action"]["pending"] and Loop.unit(scene.play_loop,"tina")["mp"]==19,"actual mana potion restores once before independent second action")
+			check(scene.play_loop["extra_action"]["pending"] and BattlePlayLoop.unit(scene.play_loop,"tina")["mp"]==19,"actual mana potion restores once before independent second action")
 			await save_restore();await cast_heal("companion");await settle("companion")
-			check(Loop.unit(scene.play_loop,"tina")["mp"]==13,"next actual heal uses newly restored MP")
+			check(BattlePlayLoop.unit(scene.play_loop,"tina")["mp"]==13,"next actual heal uses newly restored MP")
 		elif mode=="phase_mobility":
 			await change_gear(232,"accessory1")
 			var before:Dictionary=scene.play_loop.duplicate(true)
@@ -155,9 +154,9 @@ func play_priest()->void:
 			check(scene.play_loop["units"]==before["units"] and not scene.play_loop["moved_this_action"],"cancel restores only accepted movement and phase")
 			await move_to(Vector2i(11,16));await cast_heal("companion");await settle("tina");await save_restore()
 			await change_gear(0,"accessory1");await move_to(Vector2i(10,16))
-			check(not Loop.command_available(scene.play_loop,"magic"),"current equipment removal revokes moved casting in second action")
+			check(not BattlePlayLoop.command_available(scene.play_loop,"magic"),"current equipment removal revokes moved casting in second action")
 			await click(scene.action_menu.get_node("WaitCommand"));await settle("companion")
-			check(scene.play_loop["action_end_sequence"]==1 and int(Loop.unit(scene.play_loop,"tina")["status_counters"]["poison"])&0xffff==2,"poison ticks only after the accepted final action")
+			check(scene.play_loop["action_end_sequence"]==1 and int(BattlePlayLoop.unit(scene.play_loop,"tina")["status_counters"]["poison"])&0xffff==2,"poison ticks only after the accepted final action")
 		else:
 			await attack("enemy021_1");await settle("tina");await save_restore()
 			await attack("enemy021_1");await settle("companion")
@@ -168,7 +167,7 @@ func play_priest()->void:
 		var actions:Array=scene.play_loop["last_ai_actions"].filter(func(a):return a.get("actor_id")=="tina")
 		check(not actions.is_empty(),"source priest AI entered through the live queue")
 		if mode=="ai_heal":
-			check(actions.size()==2 and actions[0].get("skill_id")==Priest.HEAL and not actions[1].has("skill_id"),"AI pays one heal then freshly falls back after MP exhaustion")
+			check(actions.size()==2 and actions[0].get("skill_id")==run_support_magic_tests.HEAL and not actions[1].has("skill_id"),"AI pays one heal then freshly falls back after MP exhaustion")
 		elif mode=="ai_silence":check(actions.all(func(a):return not a.has("skill_id")) and events.any(func(e):return e.get("item_code")=="241"),"silenced priest can use actual medicine while spells remain blocked")
 		else:check(actions.size()==1 and actions[0]["kind"]=="paralysis_skip" and observed.has("skip"),"paralysis skips one priest turn without an extra-action replay")
 	else:
@@ -183,7 +182,7 @@ func play_priest()->void:
 		"events":events.duplicate(true),"observed":observed.duplicate(true),"sounds":sounds.keys(),"saves":saves,"restarted":false}
 	if mode in ["victory","defeat","escape"]:
 		var frozen:Dictionary=scene.play_loop.duplicate(true)
-		check(Loop.step_ai_turn(frozen)==frozen and Loop.finish_exhausted_action(frozen)==frozen,"terminal cannot execute more actions or resources")
+		check(BattlePlayLoop.step_ai_turn(frozen)==frozen and BattlePlayLoop.finish_exhausted_action(frozen)==frozen,"terminal cannot execute more actions or resources")
 		reload_current_scene();await create_timer(0.4).timeout;scene=current_scene
 		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["player_unit_id"]=="tina" and scene.play_loop["action_end_sequence"]<3,"real restart retains configured priest without old outcome or extra action")
 		row["restarted"]=true
@@ -210,16 +209,16 @@ func button_text(text:String)->Control:
 
 func move_to(coord:Vector2i)->void:
 	await click(scene.action_menu.get_node("MoveCommand"));await hover(scene.grid_cell_center_to_logical_position(coord));await shot("move-preview")
-	check(Loop.movement_cells(scene.play_loop).has(coord),"actual source terrain permits selected movement")
+	check(BattlePlayLoop.movement_cells(scene.play_loop).has(coord),"actual source terrain permits selected movement")
 	await point(scene.grid_cell_center_to_logical_position(coord));await settle("tina")
 
 func cast_heal(target:String)->void:
-	await click(scene.action_menu.get_node("MagicCommand"));await click(scene.magic_panel.choices[Priest.HEAL])
-	await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,target)["coord"]))
-	check(scene.play_loop["last_attack"].get("skill_id")==Priest.HEAL,"real target selection accepts source healing")
+	await click(scene.action_menu.get_node("MagicCommand"));await click(scene.magic_panel.choices[run_support_magic_tests.HEAL])
+	await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,target)["coord"]))
+	check(scene.play_loop["last_attack"].get("skill_id")==run_support_magic_tests.HEAL,"real target selection accepts source healing")
 
 func attack(target:String)->void:
-	await click(scene.action_menu.get_node("AttackCommand"));var coord:Vector2i=Loop.unit(scene.play_loop,target)["coord"]
+	await click(scene.action_menu.get_node("AttackCommand"));var coord:Vector2i=BattlePlayLoop.unit(scene.play_loop,target)["coord"]
 	await hover(scene.grid_cell_center_to_logical_position(coord));await shot("attack-target")
 	await point(scene.grid_cell_center_to_logical_position(coord))
 	check(scene.play_loop["last_attack"].get("defender_id")==target,"real ordinary attack accepts target")
@@ -234,7 +233,7 @@ func key(code:int)->void:
 
 func save_restore()->void:
 	var before:Dictionary=scene.play_loop.duplicate(true);await key(KEY_F5)
-	var saved:=SAVE.read(scene.settlement_controller.checkpoint_path, before)
+	var saved:=BattleCheckpoint.read(scene.settlement_controller.checkpoint_path, before)
 	check(saved["ok"] and saved["snapshot"]["loop"]==before,"F5 writes complete non-Leonard state")
 	await key(KEY_F9);check(scene.play_loop==before,"F9 restores state without replay or identity substitution")
 	saves+=1;await shot("restored-"+str(saves))

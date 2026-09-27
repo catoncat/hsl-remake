@@ -19,11 +19,11 @@ extends RefCounted
 ## gear the town sells; potions still stop at the bag's free slots (InventoryRules.insert).
 ## Nothing here is product behaviour or evidence about the original economy.
 
-const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const PartyEquipment = preload("res://game/sim/PartyEquipmentRules.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
-const Inventory = preload("res://game/sim/InventoryRules.gd")
-const ItemUse = preload("res://game/sim/ItemUseRules.gd")
+const InventoryRules = preload("res://game/sim/InventoryRules.gd")
+const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 
 ## Slots bought for, in priority order (weapon first, then body armor, head, foot).
@@ -56,12 +56,12 @@ static func shop(town: Node, campaign: Dictionary) -> Dictionary:
 	if (carry.get("units", {}) as Dictionary).is_empty():
 		receipt["reason"] = "no_member_records"
 		return receipt
-	var template := PartyEquipment.template_scenario_path(campaign, str(carry.get("from_scenario_id", "")))
+	var template := PartyEquipmentRules.template_scenario_path(campaign, str(carry.get("from_scenario_id", "")))
 	if template == "":
 		receipt["reason"] = "no_template_scenario:%s" % str(carry.get("from_scenario_id", ""))
 		return receipt
 	var scenario := BattleScenario.load_file(template)
-	var box := PartyEquipment.sandbox(PlayLoop.create([], "", scenario), carry)
+	var box := PartyEquipmentRules.sandbox(BattlePlayLoop.create([], "", scenario), carry)
 	if not bool(box["ok"]):
 		receipt["reason"] = "sandbox:%s" % str(box["error"])
 		return receipt
@@ -76,7 +76,7 @@ static func shop(town: Node, campaign: Dictionary) -> Dictionary:
 	var loop: Dictionary = box["loop"]
 	var trace := OS.get_environment("HSL_AUTOPLAY_SHOP_TRACE") != ""
 	if trace:
-		print("AUTOPLAY_SHOP goods=%s gold=%d members=%s" % [str(goods), _gold(town), str(PartyEquipment.members(loop).map(func(unit): return str(unit["id"])))])
+		print("AUTOPLAY_SHOP goods=%s gold=%d members=%s" % [str(goods), _gold(town), str(PartyEquipmentRules.members(loop).map(func(unit): return str(unit["id"])))])
 	var potion := _cheapest_healing(loop, goods, catalog)
 	if potion > 0:
 		for unit_id in restock_order(loop, town.carry.get("units", {})):
@@ -91,14 +91,14 @@ static func shop(town: Node, campaign: Dictionary) -> Dictionary:
 					break
 				held += 1
 				receipt["purchases"].append({"unit": unit_id, "item": potion, "name": str((catalog.get(str(potion), {}) as Dictionary).get("name", "")), "cost": int(bought.get("cost", 0)), "slot": "potion", "equipped": false, "sold": 0})
-		var restocked := PartyEquipment.sandbox(PlayLoop.create([], "", scenario), town.carry)
+		var restocked := PartyEquipmentRules.sandbox(BattlePlayLoop.create([], "", scenario), town.carry)
 		if bool(restocked["ok"]):
 			loop = restocked["loop"]
 	var reserve := 0 if unlimited else _restock_reserve(loop, town, catalog)
-	for member in PartyEquipment.members(loop):
+	for member in PartyEquipmentRules.members(loop):
 		var unit_id := str(member["id"])
 		for slot in GEAR_SLOTS:
-			var unit := PlayLoop.unit(loop, unit_id)
+			var unit := BattlePlayLoop.unit(loop, unit_id)
 			var best := _best_gear(loop, unit, slot, goods, catalog, _gold(town) - reserve)
 			if trace:
 				print("AUTOPLAY_SHOP %s %s worn=%d job=%s best=%s" % [unit_id, slot, EquipmentRules.equipped_code(unit.get("equipment", []), slot), str(unit.get("growth_profile", {}).get("job_code", "")), JSON.stringify(best)])
@@ -116,7 +116,7 @@ static func shop(town: Node, campaign: Dictionary) -> Dictionary:
 			elif int(worn["old_code"]) > 0:
 				row["sold"] = _sell(town, unit_id, int(worn["old_code"]))
 			receipt["purchases"].append(row)
-			var refreshed := PartyEquipment.sandbox(PlayLoop.create([], "", scenario), town.carry)
+			var refreshed := PartyEquipmentRules.sandbox(BattlePlayLoop.create([], "", scenario), town.carry)
 			if bool(refreshed["ok"]):
 				loop = refreshed["loop"]
 	if unlimited:
@@ -132,7 +132,7 @@ static func restock_order(loop: Dictionary, records: Dictionary) -> Array:
 	var out: Array = []
 	if records.has(hero):
 		out.append(hero)
-	for member in PartyEquipment.members(loop):
+	for member in PartyEquipmentRules.members(loop):
 		var unit_id := str(member["id"])
 		if records.has(unit_id) and not out.has(unit_id):
 			out.append(unit_id)
@@ -171,13 +171,13 @@ static func _best_gear(loop: Dictionary, unit: Dictionary, slot: String, goods: 
 		var value := _gear_value(item, slot)
 		if value <= worn or (not best.is_empty() and value <= float(best["value"])):
 			continue
-		var trial: Dictionary = PlayLoop.copy(loop)
+		var trial: Dictionary = BattlePlayLoop.copy(loop)
 		var trial_unit := _live_unit(trial, str(unit["id"]))
-		var inserted := Inventory.insert(trial_unit.get("inventory", []), int(code))
+		var inserted := InventoryRules.insert(trial_unit.get("inventory", []), int(code))
 		if not bool(inserted.get("ok", false)):
 			continue
 		trial_unit["inventory"] = inserted["inventory"]
-		if not bool(PartyEquipment.preview(trial, str(unit["id"]), slot, int(inserted["slot"]), int(code))["ok"]):
+		if not bool(PartyEquipmentRules.preview(trial, str(unit["id"]), slot, int(inserted["slot"]), int(code))["ok"]):
 			continue
 		best = {"code": int(code), "name": str(item.get("name", "")), "value": value}
 	return best
@@ -204,20 +204,20 @@ static func _gear_value(item: Dictionary, slot: String) -> float:
 ## Wears `code` (just bought, in the member's bag) in `slot` through PartyEquipmentRules and
 ## writes the projected carry back to the town. {ok, reason, old_code}.
 static func _equip(town: Node, scenario: Dictionary, unit_id: String, slot: String, code: int) -> Dictionary:
-	var box := PartyEquipment.sandbox(PlayLoop.create([], "", scenario), town.carry)
+	var box := PartyEquipmentRules.sandbox(BattlePlayLoop.create([], "", scenario), town.carry)
 	if not bool(box["ok"]):
 		return {"ok": false, "reason": "sandbox:%s" % str(box["error"]), "old_code": 0}
-	var unit := PlayLoop.unit(box["loop"], unit_id)
-	var index := Inventory.find_item(unit.get("inventory", []), code)
+	var unit := BattlePlayLoop.unit(box["loop"], unit_id)
+	var index := InventoryRules.find_item(unit.get("inventory", []), code)
 	if index < 0:
 		return {"ok": false, "reason": "not_in_bag", "old_code": 0}
 	var old_code := EquipmentRules.equipped_code(unit.get("equipment", []), slot)
-	var changed := PartyEquipment.change(box["loop"], unit_id, slot, index, code)
+	var changed := PartyEquipmentRules.change(box["loop"], unit_id, slot, index, code)
 	if not bool(changed["ok"]):
 		return {"ok": false, "reason": str(changed["error"]), "old_code": 0}
 	var next_carry: Dictionary = town.carry.duplicate(true)
 	var record: Dictionary = next_carry["units"][unit_id]
-	var worn := PlayLoop.unit(changed["loop"], unit_id)
+	var worn := BattlePlayLoop.unit(changed["loop"], unit_id)
 	for key in EQUIPMENT_KEYS:
 		if worn.has(key):
 			record[key] = worn[key].duplicate(true) if typeof(worn[key]) in [TYPE_ARRAY, TYPE_DICTIONARY] else worn[key]
@@ -230,7 +230,7 @@ static func _equip(town: Node, scenario: Dictionary, unit_id: String, slot: Stri
 ## paid, 0 when the shop refused (important item) or the piece is not in the bag.
 static func _sell(town: Node, unit_id: String, code: int) -> int:
 	var inventory: Array = ((town.carry.get("units", {}) as Dictionary).get(unit_id, {}) as Dictionary).get("inventory", [])
-	var index := Inventory.find_item(inventory, code)
+	var index := InventoryRules.find_item(inventory, code)
 	if index < 0:
 		return 0
 	var sold: Dictionary = town.shop_sell(unit_id, index)
@@ -258,7 +258,7 @@ static func _cheapest_healing(loop: Dictionary, goods: Array, catalog: Dictionar
 	var best_cost := 0
 	for code in goods:
 		var slots: Array = [int(code), 0, 0, 0, 0, 0, 0, 0]
-		var healing := ItemUse.first_healing_slot(slots, consumables)
+		var healing := ItemUseRules.first_healing_slot(slots, consumables)
 		if not bool(healing.get("ok", false)) or int(healing.get("index", -1)) != 0:
 			continue
 		var cost := int((catalog.get(str(int(code)), {}) as Dictionary).get("cost", 0))

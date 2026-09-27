@@ -1,8 +1,8 @@
 extends "res://tests/capture_ordinary_special_review.gd"
 ## Equipment, map selection and restoration through actual controls and clocks.
-const MobilityCases = preload("res://tests/run_position_equipment_tests.gd")
-const Mobility = preload("res://game/sim/MobilityRules.gd")
-const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const run_position_equipment_tests = preload("res://tests/run_position_equipment_tests.gd")
+const MobilityRules = preload("res://game/sim/MobilityRules.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const OUTPUT := "res://ignored/equipment-mobility-review/"
 var changes: Array = []
 var landing := Vector2i.ZERO
@@ -42,15 +42,15 @@ func setup_mobility() -> void:
 	scene.set_process(false)
 	await create_timer(0.15).timeout
 	scene.get_node("BattleMusic").stop()
-	var loop := MobilityCases.mobility_fixture()
+	var loop := run_position_equipment_tests.mobility_fixture()
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
-	var player := Loop._unit(loop,"leonard")
-	var enemy := Loop._unit(loop,"enemy021_1")
-	var ally := Loop._unit(loop,"enemy023_1")
+	var player := BattlePlayLoop._unit(loop,"leonard")
+	var enemy := BattlePlayLoop._unit(loop,"enemy021_1")
+	var ally := BattlePlayLoop._unit(loop,"enemy023_1")
 	player["coord"] = Vector2i(8,8); enemy["coord"] = Vector2i(9,8); ally["coord"] = Vector2i(17,19)
 	player["live_speed"] = 120; ally["live_speed"] = 100; enemy["live_speed"] = 90
-	original_foot = Loop.EquipmentRules.equipped_code(player["equipment"],"foot")
+	original_foot = BattlePlayLoop.EquipmentRules.equipped_code(player["equipment"],"foot")
 	enemy["combat_profile"]["dex"] = 1
 	if mode in ["equip_growth","victory"]: player["exp"] = 99; enemy["hp"] = 1
 	if mode in ["pending_restore","escape"]: enemy["coord"] = Vector2i(2,17)
@@ -61,7 +61,7 @@ func setup_mobility() -> void:
 		TestSuite.own(loop, "ai_profiles")["actors"]["021"]["profile"].merge({"find_range":10,"ai_check_dying":0,"ai_help_selfhp":0,"ai_help_otherhp":0,"ai_help_status":0,"ai_att_magic":0},true)
 		check(position_extended_encounter(loop,"enemy021_1","leonard"),"real WRD offers a target reachable for attack only with the extra mobility")
 		if mode == "ai_boots": enemy["equipment"].append({"slot":"foot","item_code":193,"name":"舞空之靴"})
-		enemy["move_point"] = Mobility.prepare(enemy,loop["equipment_items"])["value"]
+		enemy["move_point"] = MobilityRules.prepare(enemy,loop["equipment_items"])["value"]
 	if mode == "victory": check(position_extended_encounter(loop,"leonard","enemy021_1"),"source terrain supports the gear-enabled player approach")
 	if mode == "defeat":
 		player["hp"] = 1; enemy["live_speed"] = 110; enemy["combat_profile"]["live_attack_damage"] = 200
@@ -69,28 +69,28 @@ func setup_mobility() -> void:
 		loop["turn"] = 6
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
 		if mode == "escape":
-			player = Loop._unit(loop,"leonard")
+			player = BattlePlayLoop._unit(loop,"leonard")
 			landing = loop["escape_zone"][0]
 			var placed := false
 			for y in range(loop["map_size"].y):
 				for x in range(loop["map_size"].x):
 					var cell := Vector2i(x,y)
-					if bool(loop["tiles"].get(cell,{}).get("blocks_movement",false)) or Loop.unit_id_at_coord(loop,cell) not in ["","leonard"]: continue
+					if bool(loop["tiles"].get(cell,{}).get("blocks_movement",false)) or BattlePlayLoop.unit_id_at_coord(loop,cell) not in ["","leonard"]: continue
 					player["coord"] = cell; player["move_point"] = 5
-					var before := Loop.movement_path(loop,"leonard",landing)
+					var before := BattlePlayLoop.movement_path(loop,"leonard",landing)
 					player["move_point"] = 6
-					if before.is_empty() and not Loop.movement_path(loop,"leonard",landing).is_empty(): placed = true; break
+					if before.is_empty() and not BattlePlayLoop.movement_path(loop,"leonard",landing).is_empty(): placed = true; break
 				if placed: break
 			player["move_point"] = 5
 			check(placed,"the actual escape zone has a legal source-cost6 approach")
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop,"leonard"), "test")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"leonard"), "test")
 	scene.settlement_controller.checkpoint_path = OUTPUT+mode+".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()
 	for unit in scene.play_loop["units"]: unit["grid_coord"] = unit["coord"]
 	scene.resume_turn_presentation()
-	scene.center_camera_on_grid(Loop.unit(scene.play_loop,"leonard")["coord"])
+	scene.center_camera_on_grid(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"])
 	var view = scene.get_node("BattlePresentation")
 	view.experience_presented.connect(func(growth):experience_events.append(growth.duplicate(true)))
 	view.cutin.released.connect(func(s,_a,_d,c):cues.append(["release",s["attacker_id"],c]))
@@ -100,16 +100,16 @@ func setup_mobility() -> void:
 
 
 func position_extended_encounter(loop: Dictionary, actor_id: String, foe_id: String) -> bool:
-	var actor := Loop._unit(loop,actor_id)
-	var foe := Loop._unit(loop,foe_id)
+	var actor := BattlePlayLoop._unit(loop,actor_id)
+	var foe := BattlePlayLoop._unit(loop,foe_id)
 	for y in range(maxi(1,actor["coord"].y-6),mini(loop["map_size"].y,actor["coord"].y+7)):
 		for x in range(maxi(1,actor["coord"].x-6),mini(loop["map_size"].x,actor["coord"].x+7)):
 			var cell := Vector2i(x,y)
-			if bool(loop["tiles"].get(cell,{}).get("blocks_movement",false)) or Loop.unit_id_at_coord(loop,cell) not in ["",foe_id]: continue
+			if bool(loop["tiles"].get(cell,{}).get("blocks_movement",false)) or BattlePlayLoop.unit_id_at_coord(loop,cell) not in ["",foe_id]: continue
 			foe["coord"] = cell; actor["move_point"] = 5
-			var before := LoopAI._ai_physical_choice(loop,actor,foe,Loop._movement_envelope(loop,actor_id))
+			var before := BattleLoopAI._ai_physical_choice(loop,actor,foe,BattlePlayLoop._movement_envelope(loop,actor_id))
 			actor["move_point"] = 6
-			var after := LoopAI._ai_physical_choice(loop,actor,foe,Loop._movement_envelope(loop,actor_id))
+			var after := BattleLoopAI._ai_physical_choice(loop,actor,foe,BattlePlayLoop._movement_envelope(loop,actor_id))
 			actor["move_point"] = 5
 			if before.is_empty() and not after.is_empty():
 				landing = after["to"]
@@ -127,7 +127,7 @@ func wear(code: int, slot: String, expected: int, cancel_first: bool = false) ->
 	var before: Dictionary = scene.play_loop.duplicate(true)
 	var preview := ""
 	for label in scene.item_panel.page_root.find_children("*","Label",true,false): preview += label.text + "\n"
-	check(preview.contains("移動力  %d → %d" % [Loop.unit(before,"leonard")["move_point"],expected]) and not scene.item_panel.confirm_button.disabled,"actual equipment preview quotes the same final source mobility")
+	check(preview.contains("移動力  %d → %d" % [BattlePlayLoop.unit(before,"leonard")["move_point"],expected]) and not scene.item_panel.confirm_button.disabled,"actual equipment preview quotes the same final source mobility")
 	await shot("equip-"+str(code)+"-"+slot)
 	if cancel_first:
 		await click(find_button(scene.item_panel.page_root,"取消"))
@@ -136,9 +136,9 @@ func wear(code: int, slot: String, expected: int, cancel_first: bool = false) ->
 		if slot.begins_with("accessory"): await click(find_button(scene.item_panel.page_root,"飾品 "+slot.right(1)))
 	await click(scene.item_panel.confirm_button)
 	await create_timer(0.3).timeout
-	var actor := Loop.unit(scene.play_loop,"leonard")
+	var actor := BattlePlayLoop.unit(scene.play_loop,"leonard")
 	check(actor["move_point"] == expected and actor["base_move_point"] == 5 and scene.play_loop["turn_queue"] == before["turn_queue"],"real confirmation changes current mobility once without changing queue/base")
-	changes.append({"item":code,"slot":slot,"before":Loop.unit(before,"leonard")["move_point"],"after":actor["move_point"],"pending":scene.pending_move_revert})
+	changes.append({"item":code,"slot":slot,"before":BattlePlayLoop.unit(before,"leonard")["move_point"],"after":actor["move_point"],"pending":scene.pending_move_revert})
 
 
 func status_mobility(expected: int) -> void:
@@ -155,19 +155,19 @@ func move_to(cell: Vector2i) -> void:
 	check(scene.move_overlay_cells.has(cell),"actual move overlay includes the new legal destination")
 	await hover(scene.grid_cell_center_to_logical_position(cell))
 	await shot("range")
-	var path := Loop.movement_path(scene.play_loop,"leonard",cell)
+	var path := BattlePlayLoop.movement_path(scene.play_loop,"leonard",cell)
 	await point(scene.grid_cell_center_to_logical_position(cell))
 	check(not path.is_empty(),"selected destination has one source-cost route")
 	for _attempt in range(300):
 		if scene.has_actor_motion(): observed["movement"] = true; check(not scene.action_menu.visible,"movement keeps controls closed")
 		if not scene.has_actor_motion() and scene.action_menu.visible and not scene.action_menu.is_expanding(): break
 		await create_timer(0.02).timeout
-	check(Loop.unit(scene.play_loop,"leonard")["coord"] == cell and scene.pending_move_revert,"normal-clock source walk reaches its pending destination")
+	check(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"] == cell and scene.pending_move_revert,"normal-clock source walk reaches its pending destination")
 	observed["last_path"] = path
 
 
 func play_mobility() -> void:
-	var before_cells := Loop.movement_cells(scene.play_loop)
+	var before_cells := BattlePlayLoop.movement_cells(scene.play_loop)
 	if mode in ["ai_without","ai_boots"]:
 		await click(scene.action_menu.get_node("WaitCommand"))
 		await finish_battle(false)
@@ -184,26 +184,26 @@ func play_mobility() -> void:
 			await status_mobility(9)
 			await attack_target()
 			await finish_battle(false)
-			check(Loop.unit(scene.play_loop,"leonard")["level"] == 2 and Loop.unit(scene.play_loop,"leonard")["move_point"] == 9 and observed.has("growth"),"actual kill, finalEXP and five-point growth retain all four movement bonuses")
+			check(BattlePlayLoop.unit(scene.play_loop,"leonard")["level"] == 2 and BattlePlayLoop.unit(scene.play_loop,"leonard")["move_point"] == 9 and observed.has("growth"),"actual kill, finalEXP and five-point growth retain all four movement bonuses")
 		elif mode == "pending_restore":
 			var selected := false
-			for cell in Loop.movement_cells(scene.play_loop):
+			for cell in BattlePlayLoop.movement_cells(scene.play_loop):
 				var logical: Vector2 = scene.grid_cell_center_to_logical_position(cell)
 				if not before_cells.has(cell) and Rect2(28,28,584,398).has_point(logical): landing = cell; selected = true; break
 			check(selected,"real visible terrain exposes a newly reachable source-cost6 cell")
 			if not selected: return
-			var origin: Vector2i = Loop.unit(scene.play_loop,"leonard")["coord"]
+			var origin: Vector2i = BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"]
 			await move_to(landing)
 			await wear(original_foot,"foot",5,true)
-			check(Loop.unit(scene.play_loop,"leonard")["coord"] == landing and scene.pending_move_revert,"changing boots after a move cannot teleport or spend another action")
+			check(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"] == landing and scene.pending_move_revert,"changing boots after a move cannot teleport or spend another action")
 			await save_restore()
 			await status_mobility(5)
-			var equipment: Array = Loop.unit(scene.play_loop,"leonard")["equipment"]
+			var equipment: Array = BattlePlayLoop.unit(scene.play_loop,"leonard")["equipment"]
 			await escape()
-			check(scene.interaction_state == "move_select" and Loop.unit(scene.play_loop,"leonard")["coord"] == origin and not scene.move_overlay_cells.has(landing),"real cancel restores origin and removes the no-longer-affordable destination")
+			check(scene.interaction_state == "move_select" and BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"] == origin and not scene.move_overlay_cells.has(landing),"real cancel restores origin and removes the no-longer-affordable destination")
 			await shot("cancel-shrink")
 			await point(scene.grid_cell_center_to_logical_position(landing))
-			check(Loop.unit(scene.play_loop,"leonard")["coord"] == origin and Loop.unit(scene.play_loop,"leonard")["equipment"] == equipment,"clicking stale destination does not move or restore old gear")
+			check(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"] == origin and BattlePlayLoop.unit(scene.play_loop,"leonard")["equipment"] == equipment,"clicking stale destination does not move or restore old gear")
 			await escape()
 			await wear(193,"foot",6)
 			await move_to(landing)
@@ -224,7 +224,7 @@ func play_mobility() -> void:
 			await finish_battle(true)
 	var terminal := mode in ["victory","defeat","escape"]
 	if terminal: await save_restore()
-	var owner := Loop.unit(scene.play_loop,"leonard")
+	var owner := BattlePlayLoop.unit(scene.play_loop,"leonard")
 	routes.append({"mode":mode,"changes":changes,"observed":observed,"receipt":receipt,"cues":cues,"experience":experience_events,
 		"base_move_point":owner["base_move_point"],"move_point":owner["move_point"],"level":owner["level"],"exp":owner["exp"],"equipment":owner["equipment"],"outcome":scene.play_loop["battle_outcome"],"next_actor":scene.selected_unit_id,"sounds":sound_paths.keys()})
 	if terminal:
@@ -233,14 +233,14 @@ func play_mobility() -> void:
 			if is_instance_valid(current_scene): break
 			await process_frame
 		scene = current_scene
-		var ready: bool = is_instance_valid(scene) and not BattleOutcome.decided(scene.play_loop) and Loop.unit(scene.play_loop,"leonard")["move_point"] == 5
+		var ready: bool = is_instance_valid(scene) and not BattleOutcome.decided(scene.play_loop) and BattlePlayLoop.unit(scene.play_loop,"leonard")["move_point"] == 5
 		check(ready,"actual retry restores default gear/base/current mobility")
 		routes.back()["restarted"] = ready
 
 
 func attack_target() -> void:
 	await click(scene.action_menu.get_node("AttackCommand"))
-	await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,"enemy021_1")["coord"]))
+	await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"enemy021_1")["coord"]))
 	receipt = scene.play_loop["last_attack"].duplicate(true)
 	check(not receipt.is_empty(),"actual attack accepts the equipped movement endpoint")
 
@@ -275,13 +275,13 @@ func finish_battle(terminal: bool) -> void:
 			else: await click(loot.finish_button)
 		if scene.growth_panel.visible:
 			observed["growth"] = true
-			var before: int = Loop.unit(scene.play_loop,"leonard")["move_point"]
+			var before: int = BattlePlayLoop.unit(scene.play_loop,"leonard")["move_point"]
 			for attribute in ["str","str","dex","mind","con"]: await click(scene.growth_panel.choices[attribute]["plus"])
 			await shot("growth")
 			check(scene.growth_panel.derived_values["move"].text == str(before) and scene.growth_panel.remaining_label.text == "0","the original-layout 移動力 row keeps the equipped movement while 殘餘點數 reads 0")
 			await shot("growth-mobility")
 			await click(scene.growth_panel.confirm_button)
-			check(Loop.unit(scene.play_loop,"leonard")["move_point"] == before,"real growth confirmation preserves current equipped movement")
+			check(BattlePlayLoop.unit(scene.play_loop,"leonard")["move_point"] == before,"real growth confirmation preserves current equipped movement")
 		if terminal and view.battle_finished:
 			var expected := BattleOutcome.VICTORY_ENEMIES_CLEARED if mode == "victory" else BattleOutcome.DEFEAT_FALLEN if mode == "defeat" else BattleOutcome.VICTORY_ESCAPE
 			check(scene.play_loop["battle_outcome"] == expected,"the new equipment chain reaches the intended outcome")

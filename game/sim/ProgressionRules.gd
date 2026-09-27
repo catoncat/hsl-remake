@@ -262,7 +262,7 @@ static func exp_to_next(level: int) -> int:
 	return mini(2000, (maxi(1, level) + 1) * 50)
 
 
-static func can_class_change(unit: Dictionary, rule: Dictionary, inventory: Array, flags: Dictionary) -> bool:
+static func can_job_up(unit: Dictionary, rule: Dictionary, inventory: Array, flags: Dictionary) -> bool:
 	if str(unit.get("class_id", "")) != str(rule.get("from_class", "")):
 		return false
 	if int(unit.get("level", 1)) < int(rule.get("min_level", 1)):

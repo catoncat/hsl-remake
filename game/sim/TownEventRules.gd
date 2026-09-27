@@ -698,10 +698,10 @@ static func _te_check_job_up(run: Dictionary, ctx: Dictionary, frame: Dictionary
 
 static func _te_set_next_play_level_event(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
 	var towndef: Dictionary = run["towndef"]
-	var level := _symbol_int(towndef, _arg(args, 0), _int_arg(args, 0))
+	var level_no := _symbol_int(towndef, _arg(args, 0), _int_arg(args, 0))
 	var event := _symbol_int(towndef, _arg(args, 1), _int_arg(args, 1))
-	run["next_level_event"] = [level, event]
-	(run["effects"] as Array).append({"kind": "next_level", "level": level, "event": event})
+	run["next_level_event"] = [level_no, event]
+	(run["effects"] as Array).append({"kind": "next_level", "level": level_no, "event": event})
 	_record(run, int(frame["event"]), pc, name, args, "stop")
 	return "stop"
 

@@ -1,7 +1,7 @@
 extends SceneTree
 ## Normal runtime control events: receive damage, earn ST, equip, and use Qi Blade.
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Rules = preload("res://game/sim/StaminaRules.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const StaminaRules = preload("res://game/sim/StaminaRules.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/stamina-review/"
 var scene: Node
@@ -51,16 +51,16 @@ func route(with_equipment: bool) -> void:
 	scene.set_process(false)
 	scene.get_node("BattleMusic").stop()
 	var loop: Dictionary = scene.play_loop
-	var player := Loop._unit(loop, "leonard")
-	var enemy := Loop._unit(loop, "enemy024_1")
-	var ally := Loop._unit(loop, "enemy021_1")
+	var player := BattlePlayLoop._unit(loop, "leonard")
+	var enemy := BattlePlayLoop._unit(loop, "enemy024_1")
+	var ally := BattlePlayLoop._unit(loop, "enemy021_1")
 	loop["units"] = [player, enemy, ally]
 	loop["reinforcement_templates"] = []
 	player["live_speed"] = 110
 	player["stamina"] = 8 if with_equipment else 14
 	if with_equipment: player["inventory"] = [225, 169, 0, 0, 0, 0, 0, 0]
 	enemy["live_speed"] = 2
-	enemy["battle_actor_role"] = Loop.ROLE_ENEMY
+	enemy["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
 	enemy["level"] = player["level"]
 	enemy["hp"] = 500
 	enemy["max_hp"] = 500
@@ -69,14 +69,14 @@ func route(with_equipment: bool) -> void:
 	enemy["combat_profile"]["attack_back"] = 0
 	ally["live_speed"] = 3
 	ally["player_commandable"] = true
-	ally["battle_actor_role"] = Loop.ROLE_PLAYER
+	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
 	ally["coord"] = Vector2i(2, 2)
 	var placed := false
-	for point in Loop.movement_cells(loop, "leonard"):
+	for point in BattlePlayLoop.movement_cells(loop, "leonard"):
 		var delta: Vector2i = point - player["coord"]
 		if absi(delta.x) + absi(delta.y) != 2 or (delta.x != 0 and delta.y != 0): continue
 		enemy["coord"] = point
-		if Loop.attack_cells(loop, enemy["id"]).has(player["coord"]) and not Loop.attack_cells(loop, "leonard").has(point):
+		if BattlePlayLoop.attack_cells(loop, enemy["id"]).has(player["coord"]) and not BattlePlayLoop.attack_cells(loop, "leonard").has(point):
 			placed = true
 			break
 	check(placed, "archer can attack from a legal cell outside physical counter range")
@@ -84,8 +84,8 @@ func route(with_equipment: bool) -> void:
 	for unit in loop["units"]:
 		unit["grid_coord"] = unit["coord"]
 		unit["ai_call_target_id"] = ""
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop, "leonard"), "test")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop, "leonard"), "test")
 	for child in scene.actors_root.get_children():
 		scene.actors_root.remove_child(child)
 		child.queue_free()
@@ -96,7 +96,7 @@ func route(with_equipment: bool) -> void:
 	scene._process(0.0)
 	scene.set_process(true)
 	await create_timer(0.35).timeout
-	check(not scene.action_menu.get_node("SpecialCommand").disabled and not Loop.can_use_special(scene.play_loop, "leonard"), "below20 still opens the skill page but cannot pay the earned ability")
+	check(not scene.action_menu.get_node("SpecialCommand").disabled and not BattlePlayLoop.can_use_special(scene.play_loop, "leonard"), "below20 still opens the skill page but cannot pay the earned ability")
 	await shot("before")
 	var record := {"mode": mode, "initial_st": player["stamina"], "initial_positions": [player["coord"], enemy["coord"]]}
 	if with_equipment:
@@ -111,7 +111,7 @@ func route(with_equipment: bool) -> void:
 		await click(item_button(225))
 		await click(find_button(scene.item_panel.page_root, "飾品 1"))
 		await click(scene.item_panel.confirm_button)
-		check(Rules.effects(Loop.unit(scene.play_loop, "leonard"), scene.play_loop["equipment_items"])["flags"] == Rules.DOUBLE, "actual confirm equips the source ring")
+		check(StaminaRules.effects(BattlePlayLoop.unit(scene.play_loop, "leonard"), scene.play_loop["equipment_items"])["flags"] == StaminaRules.DOUBLE, "actual confirm equips the source ring")
 		await open_equipment()
 		await click(item_button(169))
 		check(panel_text().contains("加倍 → 停止"), "mask preview explains override of doubling")
@@ -119,7 +119,7 @@ func route(with_equipment: bool) -> void:
 		await click(scene.item_panel.confirm_button)
 		await enemy_cycle()
 		if not failures.is_empty(): return
-		check(Loop.unit(scene.play_loop, "leonard")["stamina"] == 8 and not Loop.can_use_special(scene.play_loop, "leonard"), "real masked damage does not fill stamina or enable the skill")
+		check(BattlePlayLoop.unit(scene.play_loop, "leonard")["stamina"] == 8 and not BattlePlayLoop.can_use_special(scene.play_loop, "leonard"), "real masked damage does not fill stamina or enable the skill")
 		record["blocked_attack"] = scene.play_loop["last_ai_action"].duplicate(true)
 		await shot("blocked")
 		await open_equipment()
@@ -132,7 +132,7 @@ func route(with_equipment: bool) -> void:
 	if not earned.has("stamina_gain"):
 		print("STAMINA_REVIEW_ACTION ", JSON.stringify(earned))
 		print("STAMINA_REVIEW_ACTORS ", JSON.stringify(scene.play_loop["units"].map(func(unit): return {"id": unit["id"], "hp": unit["hp"], "stamina": unit["stamina"], "level": unit["level"], "coord": unit["coord"]})))
-	check(Loop.unit(scene.play_loop, "leonard")["stamina"] == 20 and Loop.can_use_special(scene.play_loop, "leonard"), "actual damage crosses the exact skill threshold")
+	check(BattlePlayLoop.unit(scene.play_loop, "leonard")["stamina"] == 20 and BattlePlayLoop.can_use_special(scene.play_loop, "leonard"), "actual damage crosses the exact skill threshold")
 	check(earned.has("stamina_gain"), "real ordinary hit emits its stamina receipt")
 	if not earned.has("stamina_gain"): return
 	check(earned["stamina_gain"]["defender"]["delta"] == (12 if with_equipment else 6), "same ordinary receiving role uses source gain or equipment double")
@@ -152,8 +152,8 @@ func route(with_equipment: bool) -> void:
 	await create_timer(0.3).timeout
 	await click(scene.action_menu.get_node("SpecialCommand"))
 	if scene.play_loop["interaction"] == "special_select": await click(scene.magic_panel.choices["special:magicOTHER:magicCode01"])
-	await click_point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop, "enemy024_1")["coord"]))
-	check(Loop.unit(scene.play_loop, "leonard")["stamina"] == 0, "actual target confirmation pays20 once")
+	await click_point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop, "enemy024_1")["coord"]))
+	check(BattlePlayLoop.unit(scene.play_loop, "leonard")["stamina"] == 0, "actual target confirmation pays20 once")
 	var presented := false
 	for _tick in range(450):
 		await create_timer(0.04).timeout
@@ -163,9 +163,9 @@ func route(with_equipment: bool) -> void:
 			await shot("special")
 		if scene.selected_unit_id == "enemy021_1" and scene.interaction_state == "action_menu" and not cutin.busy() and not scene.ai_playback_active: break
 	check(presented and scene.selected_unit_id == "enemy021_1" and scene.action_menu.is_visible_in_tree(), "special effect completes into next player's actual menu")
-	check(Loop.unit(scene.play_loop, "leonard")["stamina"] == 0 and scene.play_loop["turn_queue"]["index"] == 1, "no skill refund and exactly one handoff")
+	check(BattlePlayLoop.unit(scene.play_loop, "leonard")["stamina"] == 0 and scene.play_loop["turn_queue"]["index"] == 1, "no skill refund and exactly one handoff")
 	record["special"] = scene.play_loop["last_combat"].duplicate(true)
-	record["final_st"] = Loop.unit(scene.play_loop, "leonard")["stamina"]
+	record["final_st"] = BattlePlayLoop.unit(scene.play_loop, "leonard")["stamina"]
 	record["next_actor"] = scene.selected_unit_id
 	await shot("handoff")
 	routes.append(record)

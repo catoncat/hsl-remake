@@ -13,7 +13,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
-const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
+const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
 ## s_action lead, 1.5 s visible on the cut-in's scaled clock; the source lead is unread in ticks.
 const INTRO_VISIBLE_SECONDS := 1.5
 ## Scaled-clock values follow Timing.PLAYBACK_SPEED (instance state: a static var in a
@@ -115,7 +115,7 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 	host._show_shot(shot, true)
 	var hurt: bool = impact_shown and (part["hit"] or part["silent_after_defeat"])
 	var actor_id: String = host.art_key(defender)
-	host._set_frame(host.defender_sprite, actor_id, int(host.manifest["actors"][actor_id]["hurt_frame"]) if hurt else 0, CloseupLayout.side_swapped(defender))
+	host._set_frame(host.defender_sprite, actor_id, int(host.manifest["actors"][actor_id]["hurt_frame"]) if hurt else 0, CutinLayout.side_swapped(defender))
 	if local_time >= WIND_DELAY_TICKS * scaled_tick_seconds:
 		if int(clip.get("moon_wind_target", -1)) != target_index:
 			clip["moon_wind_target"] = target_index

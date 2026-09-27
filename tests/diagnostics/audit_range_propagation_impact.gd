@@ -21,11 +21,11 @@ extends SceneTree
 ## Each count is changed/total, plus unique (map, name) combos and battles touched. Prints
 ## one WRANGE_IMPACT line; the per-battle lists go to the output JSON.
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
-const Prop = preload("res://game/sim/RangePropagationRules.gd")
-const Resolution = preload("res://game/sim/SkillResolutionRules.gd")
-const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
+const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
+const SkillResolutionRules = preload("res://game/sim/SkillResolutionRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const KEYS := ["weapon_initial", "weapon_initial_walls", "weapon_any_cell", "cast_initial", "cast_any_cell", "area_any_cell"]
 
 var OldTargets: GDScript
@@ -59,58 +59,58 @@ func _initialize() -> void:
 	files.sort()
 	for name in files:
 		var scenario := BattleScenario.load_file("res://content/battles/" + name)
-		var loop := Loop.create([], "", scenario, 1)
+		var loop := BattlePlayLoop.create([], "", scenario, 1)
 		if not bool(loop.get("scenario_ok", false)) or loop.get("tiles", {}).is_empty():
 			push_error("audit: %s did not load" % name)
 			quit(1)
 			return
 		totals["battles"] += 1
 		var map_size: Vector2i = loop["map_size"]
-		var walls := Prop.cell_words(TerrainEdits.tiles(loop), [])
+		var walls := RangePropagationRules.cell_words(TerrainEditRules.tiles(loop), [])
 		var map_key := "%s|%s" % [str(BattleScenario.resource_path(scenario, "terrain")), str(scenario.get("scenario_rules", {}).get("terrain_overrides", ""))]
 		maps[map_key] = true
-		var words := Prop.loop_words(loop)
+		var words := RangePropagationRules.loop_words(loop)
 		var data: Dictionary = loop["skill_target_data"]
 		var found := {}
 		for key in KEYS: found[key] = {}
 		var ranges := {}
 		var areas := {}
 		for unit in loop["units"]:
-			if not Loop.Presence.living(unit): continue
-			var pattern := Loop.weapon_pattern(loop, unit)
+			if not BattlePlayLoop.Presence.living(unit): continue
+			var pattern := BattlePlayLoop.weapon_pattern(loop, unit)
 			if pattern.get("ok", false) and not pattern["offsets"].is_empty():
 				var weapon := str(pattern["name"])
 				var rows: Array = loop["attack_patterns"][weapon]["data"]
 				var old := _sorted(OldGrid.attack_pattern_cells(unit["coord"], pattern["offsets"], map_size))
-				var changed: bool = old != Loop.weapon_cells(loop, unit, pattern)
+				var changed: bool = old != BattlePlayLoop.weapon_cells(loop, unit, pattern)
 				totals["units"] += 1
 				if changed: totals["units_changed"] += 1
 				_mark(found, "weapon_initial", weapon, changed)
-				_mark(found, "weapon_initial_walls", weapon, old != Prop.cells(Prop.weapon_coverage(rows, unit["coord"], walls, map_size, 2, true), unit["coord"]))
+				_mark(found, "weapon_initial_walls", weapon, old != RangePropagationRules.cells(RangePropagationRules.weapon_coverage(rows, unit["coord"], walls, map_size, 2, true), unit["coord"]))
 				var cache_key := "%s|w|%s" % [map_key, weapon]
 				if not cache.has(cache_key): cache[cache_key] = _any_cell(rows, walls, map_size, 2)
 				_mark(found, "weapon_any_cell", weapon, cache[cache_key])
 			for id in loop["skill_book"]["skills"]:
-				if Resolution.ownership_error(unit, id, loop["skill_book"]) != "": continue
-				var fields := Loop.skill_fields(loop, id)
-				if Loop.SkillTargetRules.definition_error(fields, data) != "": continue
+				if SkillResolutionRules.ownership_error(unit, id, loop["skill_book"]) != "": continue
+				var fields := BattlePlayLoop.skill_fields(loop, id)
+				if BattlePlayLoop.SkillTargetRules.definition_error(fields, data) != "": continue
 				var old_cells := _sorted(OldTargets.cells(unit["coord"], fields, data, map_size))
-				var new_cells := _sorted(Loop.SkillTargetRules.cells(unit["coord"], fields, data, map_size, {"words": words, "cast_mode": Prop.PLAYER_CAST_MODE}))
+				var new_cells := _sorted(BattlePlayLoop.SkillTargetRules.cells(unit["coord"], fields, data, map_size, {"words": words, "cast_mode": RangePropagationRules.PLAYER_CAST_MODE}))
 				_mark(found, "cast_initial", str(id), old_cells != new_cells)
 				ranges[str(fields["range"])] = true
-				areas["%s|%d" % [str(fields["effect_range"]), 3 if Loop.SkillTargetRules.is_support(fields, data) else 2]] = true
+				areas["%s|%d" % [str(fields["effect_range"]), 3 if BattlePlayLoop.SkillTargetRules.is_support(fields, data) else 2]] = true
 		for range_name in ranges:
 			var pattern: Dictionary = data["ranges"][range_name]
-			if Loop.SkillTargetRules.is_line(pattern): continue
+			if BattlePlayLoop.SkillTargetRules.is_line(pattern): continue
 			var cache_key := "%s|c|%s" % [map_key, range_name]
-			if not cache.has(cache_key): cache[cache_key] = _any_cell(pattern["data"], walls, map_size, Prop.PLAYER_CAST_MODE)
+			if not cache.has(cache_key): cache[cache_key] = _any_cell(pattern["data"], walls, map_size, RangePropagationRules.PLAYER_CAST_MODE)
 			_mark(found, "cast_any_cell", range_name, cache[cache_key])
 		for area in areas:
 			var parts: PackedStringArray = str(area).split("|")
 			var pattern: Dictionary = data["ranges"][parts[0]]
 			var cache_key := "%s|a|%s" % [map_key, area]
 			if not cache.has(cache_key):
-				cache[cache_key] = _any_line(int(pattern["size"]), walls, map_size, int(parts[1])) if Loop.SkillTargetRules.is_line(pattern) else _any_area(pattern["data"], walls, map_size, int(parts[1]))
+				cache[cache_key] = _any_line(int(pattern["size"]), walls, map_size, int(parts[1])) if BattlePlayLoop.SkillTargetRules.is_line(pattern) else _any_area(pattern["data"], walls, map_size, int(parts[1]))
 			_mark(found, "area_any_cell", area, cache[cache_key])
 		var entry := {"battle": name, "map": map_key}
 		for key in KEYS:
@@ -165,7 +165,7 @@ func _flat(rows: Array, anchor: Vector2i, map_size: Vector2i, keep_anchor: bool)
 	for y in range(rows.size()):
 		for x in range(rows.size()):
 			var cell := anchor + Vector2i(x - half, y - half)
-			if int(rows[y][x]) > 0 and Prop._inside(cell, map_size) and (keep_anchor or cell != anchor): result[cell] = true
+			if int(rows[y][x]) > 0 and RangePropagationRules._inside(cell, map_size) and (keep_anchor or cell != anchor): result[cell] = true
 	return result
 
 
@@ -176,7 +176,7 @@ func _any_cell(rows: Array, walls: Dictionary, map_size: Vector2i, mode: int) ->
 			var anchor := Vector2i(x, y)
 			if walls.has(anchor): continue
 			var new := {}
-			for cell in Prop.weapon_coverage(rows, anchor, walls, map_size, mode, mode != Prop.PLAYER_CAST_MODE):
+			for cell in RangePropagationRules.weapon_coverage(rows, anchor, walls, map_size, mode, mode != RangePropagationRules.PLAYER_CAST_MODE):
 				if cell != anchor: new[cell] = true
 			if new != _flat(rows, anchor, map_size, false): return true
 	return false
@@ -189,7 +189,7 @@ func _any_area(rows: Array, walls: Dictionary, map_size: Vector2i, mode: int) ->
 			var center := Vector2i(x, y)
 			if walls.has(center): continue
 			var new := {}
-			for cell in Prop.area_coverage(rows, center, walls, map_size, mode): new[cell] = true
+			for cell in RangePropagationRules.area_coverage(rows, center, walls, map_size, mode): new[cell] = true
 			if new != _flat(rows, center, map_size, true): return true
 	return false
 
@@ -204,9 +204,9 @@ func _any_line(size: int, walls: Dictionary, map_size: Vector2i, mode: int) -> b
 				var old := {}
 				for index in range(size):
 					var cell: Vector2i = target + step * index
-					if not Prop._inside(cell, map_size): break
+					if not RangePropagationRules._inside(cell, map_size): break
 					old[cell] = true
 				var new := {}
-				for cell in Prop.line_coverage(size, target - step, target, walls, map_size, mode): new[cell] = true
+				for cell in RangePropagationRules.line_coverage(size, target - step, target, walls, map_size, mode): new[cell] = true
 				if old != new: return true
 	return false

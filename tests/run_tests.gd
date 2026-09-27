@@ -16,7 +16,6 @@ const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
 
 
 func _init() -> void:
@@ -43,7 +42,7 @@ func run() -> void:
 	_test_live_weapon_ranges()
 	_test_live_counter_exchange()
 	_test_experience_and_level_up()
-	_test_class_change_rule_check()
+	_test_job_up_rule_check()
 	_test_battle_actor_roles_gate_player_control_and_targets()
 	_test_project_uses_640x480_viewport()
 
@@ -851,7 +850,7 @@ func _test_experience_and_level_up() -> void:
 	_assert_eq(ProgressionRules.exp_to_next(50), 2000, "native threshold stays capped")
 
 
-func _test_class_change_rule_check() -> void:
+func _test_job_up_rule_check() -> void:
 	var unit := {
 		"class_id": "swordsman",
 		"level": 12,
@@ -865,8 +864,8 @@ func _test_class_change_rule_check() -> void:
 		"required_items": ["class_token_alpha"],
 		"required_flags": {"chapter_one_survived": true},
 	}
-	_assert_true(ProgressionRules.can_class_change(unit, rule, ["class_token_alpha"], {"chapter_one_survived": true}), "matching unit should qualify for class change")
-	_assert_true(not ProgressionRules.can_class_change(unit, rule, [], {"chapter_one_survived": true}), "missing item should block class change")
+	_assert_true(ProgressionRules.can_job_up(unit, rule, ["class_token_alpha"], {"chapter_one_survived": true}), "matching unit should qualify for class change")
+	_assert_true(not ProgressionRules.can_job_up(unit, rule, [], {"chapter_one_survived": true}), "missing item should block class change")
 
 
 func _test_battle_actor_roles_gate_player_control_and_targets() -> void:

@@ -12,7 +12,7 @@ extends Node2D
 ##     (the draws come from a presentation RNG seeded by the exchange and the recipient, not the original global
 ##     0x458c10 stream)
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 ## 0x408b20 case 3 → 0x415c10(x, y − 0x30 + 0x30, 0x95, 0x40, 0x18, 0, 6, 0x24, 0).
 const STAR_COUNT := 36
 const RANGE_X := 64
@@ -56,7 +56,7 @@ func begin(seed: int) -> void:
 	for sprite in sprites:
 		sprite.queue_free()
 	sprites.clear()
-	var assets: Dictionary = BattleRewardFloat.manifest()["assets"]
+	var assets: Dictionary = BattleRewardFloater.manifest()["assets"]
 	for star in stars:
 		var record: Dictionary = assets["level_up_star_%d" % int(star["frame"])]
 		var sprite := Sprite2D.new()

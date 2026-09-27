@@ -5,7 +5,7 @@ needs no Wine.
 defProcShowNumber (0x408580) draws kind 1 (EXP) as NUM511 then NUM400..409 digits, kind 4 ($)
 as NUM512 then NUM500..509, kind 6 as NUM514 alone; defProcShowContinueKillNumber (0x4083e0,
 object 395 whose shape is KILL_000.SHP with 11 frames) draws KILL_000 then KILL_001..010 for
-the digits 0..9 (static-derived, docs/evidence_packets/runtime_observations/closeup_floaters/
+the digits 0..9 (static-derived, docs/evidence_packets/runtime_observations/cutin_floaters/
 README.md). Kind 0 (red damage) draws NUM100..109 with NUM510 as the zoomed flash of the newest
 digit (0x40863e..0x40888e: frame base + digit, base + 0x32); kind 2 (heal) draws NUM200..209 and kind 3
 (MP) NUM300..309 with no prefix glyph (0x4088b0／0x408929: frame base 10／0x14, prefix units 0); kind 5

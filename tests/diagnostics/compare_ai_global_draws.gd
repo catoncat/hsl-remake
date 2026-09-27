@@ -34,12 +34,12 @@ extends SceneTree
 ## Output: AIDRAW_ACTION／AIDRAW_SEQ per action, AIDRAW_SITE per original site (draw totals
 ## over the 11 reseated actions), one AIDRAW_COMPARE summary line.
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 
 const ORACLE := "res://docs/evidence_packets/static_reverse/original_enemy_turn.json"
 const BOARDS := "res://docs/evidence_packets/runtime_observations/battle_051_ai_moves/recorded_round_boards.json"
@@ -67,10 +67,10 @@ class Recorder:
 	var log: Array = []
 
 	func _init(words: Array) -> void:
-		state = {GlobalRandom.LOOP_KEY: words.duplicate()}
+		state = {GlobalRandomStream.LOOP_KEY: words.duplicate()}
 
 	func draw(n: int) -> int:
-		var value := GlobalRandom.loop_draw(state, n)
+		var value := GlobalRandomStream.loop_draw(state, n)
 		log.append({"n": RAW if n < 0 else n, "value": value, "site": _site(get_stack())})
 		return value
 
@@ -98,16 +98,16 @@ func _initialize() -> void:
 		quit(1)
 		return
 	var base: Dictionary = start["loop"]
-	base[GlobalRandom.LOOP_KEY] = GlobalRandom.from_words(turn["rng"]["global"])
-	base[DamageRandom.LOOP_KEY] = DamageRandom.from_words(turn["rng"]["damage"])
+	base[GlobalRandomStream.LOOP_KEY] = GlobalRandomStream.from_words(turn["rng"]["global"])
+	base[DamageRandomStream.LOOP_KEY] = DamageRandomStream.from_words(turn["rng"]["damage"])
 	var actions: Array = turn["actions"]
 	var metas: Array = turn["meta"]["actions"]
 	var chained := _chained(base, actions)
 	var matched := 0
 	var decisions := 0
 	var classes := {}
-	var words := GlobalRandom.from_words(turn["rng"]["global"])
-	var damage := DamageRandom.from_words(turn["rng"]["damage"])
+	var words := GlobalRandomStream.from_words(turn["rng"]["global"])
+	var damage := DamageRandomStream.from_words(turn["rng"]["damage"])
 	for k in range(actions.size()):
 		var expected: Dictionary = actions[k]
 		var row := _reseated(base, expected, words, damage, actions.slice(0, k), metas.slice(0, k), int(metas[k]["round"]))
@@ -144,14 +144,14 @@ func _initialize() -> void:
 func _board(state: Dictionary) -> Dictionary:
 	var scenario := BattleScenario.load_file(SCENARIO)
 	if not bool(scenario.get("ok", false)): return {"error": "scenario_load"}
-	var loop := Loop.create([], "", scenario, 1)
+	var loop := BattlePlayLoop.create([], "", scenario, 1)
 	if not bool(state.get("growth", true)) and not state.has("speed"):
 		for unit in loop["units"]:
 			if unit.get("growth_profile", {}).get("allocation") == "manual": continue
 			var insertion: Dictionary = unit.get("script_insert", {}).duplicate(true)
 			insertion["adjust_level"] = [0, 0]
 			unit["script_insert"] = insertion
-	if bool(state.get("growth", true)) or not state.has("speed"): loop = Loop.initialize_roster_growth(loop)
+	if bool(state.get("growth", true)) or not state.has("speed"): loop = BattlePlayLoop.initialize_roster_growth(loop)
 	var speeds: Dictionary = state.get("speed", {})
 	var coords: Dictionary = state.get("units", {})
 	for unit in loop["units"]:
@@ -159,27 +159,27 @@ func _board(state: Dictionary) -> Dictionary:
 		for key in [short, str(unit["id"])]:
 			if speeds.has(key): unit["live_speed"] = int(speeds[key])
 			if coords.has(key): unit["coord"] = Vector2i(int(coords[key][0]), int(coords[key][1]))
-	loop["turn_queue"] = CoreTurnQueue.rebuild(Loop._queue_actors(loop))
+	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
 	if state.has("resume_after"):
 		var slots: Array = loop["turn_queue"]["slots"]
 		for i in slots.size():
 			if str(slots[i]["id"]) == str(state["resume_after"]): loop["turn_queue"]["index"] = i + 1
 	if not bool(loop.get("scenario_ok", false)): return {"error": "scenario:%s" % str(loop.get("scenario_error", ""))}
-	loop = Loop._resolve_outcome(loop)
-	return {"loop": Loop.begin_battle(loop)}
+	loop = BattlePlayLoop._resolve_outcome(loop)
+	return {"loop": BattlePlayLoop.begin_battle(loop)}
 
 
 ## The remake plays on alone from the oracle's words: how many whole actions agree.
 func _chained(base: Dictionary, actions: Array) -> Dictionary:
-	var loop := Loop.copy(base)
-	var recorder := Recorder.new(loop[GlobalRandom.LOOP_KEY])
+	var loop := BattlePlayLoop.copy(base)
+	var recorder := Recorder.new(loop[GlobalRandomStream.LOOP_KEY])
 	var source := Callable(recorder, "draw")
 	var prefix := 0
 	for k in range(actions.size()):
 		var expected: Dictionary = actions[k]
 		if str(loop.get("interaction", "")) != "ai_resolving": return {"prefix": prefix, "divergence": "k=%d_remake_stopped_at_%s" % [k, str(loop.get("interaction", ""))]}
 		var mark := recorder.log.size()
-		loop = Loop.step_ai_turn(loop, source)
+		loop = BattlePlayLoop.step_ai_turn(loop, source)
 		var act: Dictionary = loop.get("last_ai_action", {})
 		if str(act.get("actor_id", "")) != str(expected["actor"]):
 			return {"prefix": prefix, "divergence": "k=%d_actor_remake=%s_oracle=%s" % [k, str(act.get("actor_id", "")), expected["actor"]]}
@@ -193,30 +193,30 @@ func _chained(base: Dictionary, actions: Array) -> Dictionary:
 
 ## Action k with the remake put where the original was before it.
 func _reseated(base: Dictionary, expected: Dictionary, words: Array, damage: Array, earlier: Array, metas: Array, round_number: int) -> Dictionary:
-	var loop := Loop.copy(base)
+	var loop := BattlePlayLoop.copy(base)
 	var injection: Array = []
 	for j in range(earlier.size()):
-		var mover := Loop._unit(loop, str(earlier[j]["actor"]))
+		var mover := BattlePlayLoop._unit(loop, str(earlier[j]["actor"]))
 		if not mover.is_empty(): mover["coord"] = Vector2i(int(earlier[j]["to"][0]), int(earlier[j]["to"][1]))
 		var hp: Dictionary = metas[j].get("hp", {})
 		for id in hp:
-			var hurt := Loop._unit(loop, str(id))
+			var hurt := BattlePlayLoop._unit(loop, str(id))
 			if not hurt.is_empty(): hurt["hp"] = int(hurt["hp"]) + int(hp[id])
 	loop["turn"] = int(base.get("turn", 1)) + round_number - 1
 	loop["turn_queue"]["round"] = int(base["turn_queue"].get("round", 1)) + round_number - 1
-	loop[GlobalRandom.LOOP_KEY] = words.duplicate()
-	loop[DamageRandom.LOOP_KEY] = damage.duplicate()
+	loop[GlobalRandomStream.LOOP_KEY] = words.duplicate()
+	loop[DamageRandomStream.LOOP_KEY] = damage.duplicate()
 	var actor_id := str(expected["actor"])
-	var actor := Loop._unit(loop, actor_id)
+	var actor := BattlePlayLoop._unit(loop, actor_id)
 	if actor.is_empty(): return {"tokens": [], "log": [], "injection": ["missing_actor"], "decision": "-"}
 	var origin := Vector2i(int(expected["from"][0]), int(expected["from"][1]))
 	if actor["coord"] != origin:
 		injection.append("origin_board%s_oracle%s" % [str(actor["coord"]).replace(" ", ""), str(origin).replace(" ", "")])
 		actor["coord"] = origin
 	var recorder := Recorder.new(words)
-	var step: Dictionary = LoopAI._ai_take_turn(loop, actor_id, Callable(recorder, "draw"))
+	var step: Dictionary = BattleLoopAI._ai_take_turn(loop, actor_id, Callable(recorder, "draw"))
 	var after: Dictionary = step.get("loop", loop)
-	if after.get(GlobalRandom.LOOP_KEY) != loop[GlobalRandom.LOOP_KEY]: injection.append("draws_outside_source")
+	if after.get(GlobalRandomStream.LOOP_KEY) != loop[GlobalRandomStream.LOOP_KEY]: injection.append("draws_outside_source")
 	return {"tokens": _remake_tokens(recorder.log), "log": recorder.log, "injection": injection, "decision": _act_decision(step.get("action", {}))}
 
 
@@ -306,7 +306,7 @@ func _act_decision(act: Dictionary) -> String:
 
 func _step(state: Array, draw: Dictionary) -> Array:
 	var bound: int = RAW if draw["n"] == null else int(draw["n"])
-	return (GlobalRandom.raw(state) if bound < 0 else GlobalRandom.rand(state, bound))["state"]
+	return (GlobalRandomStream.raw(state) if bound < 0 else GlobalRandomStream.rand(state, bound))["state"]
 
 
 ## Runs of the same token collapsed to `site/bound×count`.

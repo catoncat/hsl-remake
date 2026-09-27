@@ -55,8 +55,8 @@ const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ShowNumberStyle = preload("res://game/battle/runtime/ShowNumberStyle.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
-const DamageNumberFloat = preload("res://game/battle/scene/DamageNumberFloat.gd")
-const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
+const DamageNumberFloater = preload("res://game/battle/scene/DamageNumberFloater.gd")
+const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
 const MapHitState = preload("res://game/battle/scene/MapHitState.gd")
 const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 ## Where the original spawns a unit's numbers from its object (x, y), the cell centre: the magic
@@ -72,7 +72,7 @@ var audio_manifest: Dictionary = {}
 var shared_audio_manifest: Dictionary = {}
 var _shown_combat_sequence := 0
 var _shown_item_sequence := 0
-## The item use's HP／MP numbers (ResultNumberFloat, self-clocked), freed once deleted.
+## The item use's HP／MP numbers (ResultNumberFloater, self-clocked), freed once deleted.
 var item_use: Node2D
 var status_feedback: CanvasLayer
 var dialogue_manifest: Dictionary = {}
@@ -93,8 +93,8 @@ var info_public := false
 var _info_screen := ""
 ## OPT-INFO=公開: the strike words over the close-up (BattleCombatCutin untouched), freed when
 ## the clip that raised them leaves the cut-in queue.
-var _closeup_words: Label
-var _closeup_words_clip: Dictionary = {}
+var _cutin_words: Label
+var _cutin_words_clip: Dictionary = {}
 ## OPT-GUIDE (docs/OPTIONS.md) for the escape phase, read when the scene is built and again when
 ## the 重製選項 page closes with a change (remake_options_changed): 提示 keeps a gold cell on
 ## every escape-zone cell while the phase lasts (the remake mark ESCAPEMARK 644178ea removed);
@@ -304,7 +304,7 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 	if had_escape_rects or not escape_rects.is_empty():
 		queue_redraw()
 	_sync_cast_pose()
-	_sync_closeup_words()
+	_sync_cutin_words()
 	if playable and combat_ready and not cutin.busy() and not magic_impact.busy() and not has_pending_combat(loop):
 		aftermath.advance(delta, get_parent())
 		if not aftermath.busy() and not BattlePlayLoop.loot_waiting(loop) and not turn_end_cue.busy(loop) and not item_feedback_busy() and not terminal_growth:
@@ -618,20 +618,20 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 	var hit := bool(strike["hit"])
 	var damage: int = cutin.strike_actual_damage(strike)
 	# defProcShowNumber in the original glyphs at the defender's (x, y − 0x34), as the magic
-	# channel spawns them (0x40aba0): kind 0 red digits (DamageNumberFloat) or kind 5 MISS
+	# channel spawns them (0x40aba0): kind 0 red digits (DamageNumberFloater) or kind 5 MISS
 	# (NUM513); the label keeps only what has no glyph — no 暴擊／擊倒／反擊 words (UI6).
 	var number_point: Vector2 = map_config.grid_to_world(defender["coord"]) + cell * 0.5 + MAGIC_NUMBER_OFFSET
 	var digits: Node2D = null
 	var miss: Node2D = null
 	if hit and damage > 0 and not cutin.shows_miss(strike):
-		digits = DamageNumberFloat.new()
+		digits = DamageNumberFloater.new()
 		digits.name = "DamageDigits"
 		effect.add_child(digits)
 		digits.present(damage)
 		digits.position = number_point
 		text.text = ""
 	elif cutin.shows_miss(strike):
-		miss = ResultNumberFloat.new()
+		miss = ResultNumberFloater.new()
 		miss.name = "MissGlyph"
 		miss.position = number_point
 		effect.add_child(miss)
@@ -643,7 +643,7 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 	if words != "":
 		text.text = words if text.text == "" else text.text + " · " + words
 		text.modulate = ShowNumberStyle.CAPTION
-		_show_closeup_words(words, strike)
+		_show_cutin_words(words, strike)
 	effect.add_child(text)
 	if hit and not strike.has("skill_name") and not strike.has("magic_key"):
 		var cue_key: String = cutin.cue_manifest["weapon_hit_sounds"][str(int(attacker["weapon_code"]))]
@@ -661,13 +661,13 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 	var life: float = Timing.SHOW_NUMBER_SECONDS
 	if digits != null:
 		# Kind 0 does not rise; the label (empty unless 公開) follows the digits and fades with their
-		# level, and the effect goes when the number is deleted (DamageNumberFloat's own tick clock).
+		# level, and the effect goes when the number is deleted (DamageNumberFloater's own tick clock).
 		text.position = digits.position + Vector2(-half, -56)
 		digits.followers.append(text)
 		digits.finished.connect(effect.queue_free)
 		return
 	if miss != null:
-		# Kind 5 rises and fades on its own tick clock (ResultNumberFloat); the effect goes with it.
+		# Kind 5 rises and fades on its own tick clock (ResultNumberFloater); the effect goes with it.
 		if words != "":
 			# 公開: the words stand over MISS and rise with it (½ px per tick).
 			text.position = miss.position + Vector2(-half, -56)
@@ -696,32 +696,32 @@ static func strike_words(strike: Dictionary, counter: bool, miss: bool) -> Strin
 
 
 ## OPT-INFO=公開: while the close-up is on screen at the impact, its words stand above the shot's
-## number point on the layer over the cut-in until that clip leaves the queue (_sync_closeup_words).
-func _show_closeup_words(words: String, strike: Dictionary) -> void:
+## number point on the layer over the cut-in until that clip leaves the queue (_sync_cutin_words).
+func _show_cutin_words(words: String, strike: Dictionary) -> void:
 	if not cutin.busy() or not cutin.scenery.visible:
 		return
-	if _closeup_words != null:
-		_closeup_words.queue_free()
+	if _cutin_words != null:
+		_cutin_words.queue_free()
 	var point: Vector2 = cutin.SCRIPT_NUMBER_POINT if strike.has("skill_name") else cutin.ORDINARY_NUMBER_POINT
-	_closeup_words = Label.new()
-	_closeup_words.name = "CloseupWords"
-	_closeup_words.text = words
-	_closeup_words.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_closeup_words.add_theme_font_size_override("font_size", 20)
-	_closeup_words.add_theme_constant_override("outline_size", 4)
-	_closeup_words.add_theme_color_override("font_outline_color", Color.BLACK)
-	_closeup_words.add_theme_color_override("font_color", ShowNumberStyle.CAPTION)
-	status_feedback.add_child(_closeup_words)
-	_closeup_words.size = _closeup_words.get_combined_minimum_size()
-	_closeup_words.position = point + Vector2(-_closeup_words.size.x / 2, -56 - _closeup_words.size.y / 2)
-	_closeup_words_clip = cutin.clips[0]
+	_cutin_words = Label.new()
+	_cutin_words.name = "CutinWords"
+	_cutin_words.text = words
+	_cutin_words.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cutin_words.add_theme_font_size_override("font_size", 20)
+	_cutin_words.add_theme_constant_override("outline_size", 4)
+	_cutin_words.add_theme_color_override("font_outline_color", Color.BLACK)
+	_cutin_words.add_theme_color_override("font_color", ShowNumberStyle.CAPTION)
+	status_feedback.add_child(_cutin_words)
+	_cutin_words.size = _cutin_words.get_combined_minimum_size()
+	_cutin_words.position = point + Vector2(-_cutin_words.size.x / 2, -56 - _cutin_words.size.y / 2)
+	_cutin_words_clip = cutin.clips[0]
 
 
-func _sync_closeup_words() -> void:
-	if _closeup_words != null and (not cutin.busy() or not is_same(cutin.clips[0], _closeup_words_clip)):
-		_closeup_words.queue_free()
-		_closeup_words = null
-		_closeup_words_clip = {}
+func _sync_cutin_words() -> void:
+	if _cutin_words != null and (not cutin.busy() or not is_same(cutin.clips[0], _cutin_words_clip)):
+		_cutin_words.queue_free()
+		_cutin_words = null
+		_cutin_words_clip = {}
 
 
 ## `unit` is the PlayLoop unit (its job-up target row, when it has one, binds the sound:
@@ -783,7 +783,7 @@ func _present_status_effects(strike: Dictionary, public: bool = false) -> void:
 			if actor.unit_id != str(result["defender_id"]): continue
 			# The numbers are the magic channel's (0x40aba0): the original glyphs at the target's
 			# (x, y − 0x34) — red damage, else green heal with the blue MP 40 ticks behind it at the
-			# same point, else blue MP (ResultNumberFloat.spawns). The words the original has no
+			# same point, else blue MP (ResultNumberFloater.spawns). The words the original has no
 			# glyph for (status／cure／buff captions) are white Labels stacked above them.
 			var point: Vector2 = get_parent().world_to_logical_position(actor.position)
 			var amounts := {"damage": 0, "heal": 0, "mp": 0}
@@ -797,7 +797,7 @@ func _present_status_effects(strike: Dictionary, public: bool = false) -> void:
 			for effect in result.get("status_effects", []):
 				if effect["applied"]: parts.append({"text": StatusCatalog.name_of(effect["status"]), "kind": "caption"})
 				elif effect["reason"] != "target_defeated": parts.append({"text": "免疫" if effect["reason"] == "immune" else "未生效", "kind": "caption"})
-			for number in ResultNumberFloat.spawn_all(status_feedback, ResultNumberFloat.spawns(amounts["damage"], amounts["heal"], amounts["mp"], false), point + MAGIC_NUMBER_OFFSET):
+			for number in ResultNumberFloater.spawn_all(status_feedback, ResultNumberFloater.spawns(amounts["damage"], amounts["heal"], amounts["mp"], false), point + MAGIC_NUMBER_OFFSET):
 				number.finished.connect(number.queue_free)
 				occupied.append(number.bounds().grow(5))
 			for part in parts:

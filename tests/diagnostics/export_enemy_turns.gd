@@ -48,14 +48,14 @@ extends SceneTree
 ## lines are Godot/tool chatter. `rng` holds each stream's live value when the round
 ## starts (`ai_seed`／`ai_state` for the AI source, every `*_rng` loop stream).
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
-const TargetRules = preload("res://game/sim/SkillTargetRules.gd")
-const Footprint = preload("res://game/sim/FootprintRules.gd")
+const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
+const FootprintRules = preload("res://game/sim/FootprintRules.gd")
 
 const FORMAT := "enemy_turn_v1"
 const MAX_STEPS := 2000
@@ -170,8 +170,8 @@ func _prepare(opts: Dictionary) -> Dictionary:
 	if not bool(scenario.get("ok", false)):
 		prep["error"] = "scenario_load:%s" % str(scenario.get("error", scenario.get("reason", "")))
 		return prep
-	var loop := Loop.create([], "", scenario, int(opts.get("reward-seed", opts["seed"])))
-	if opts.has("global-seed"): loop[GlobalRandom.LOOP_KEY] = GlobalRandom.seeded(int(opts["global-seed"]))
+	var loop := BattlePlayLoop.create([], "", scenario, int(opts.get("reward-seed", opts["seed"])))
+	if opts.has("global-seed"): loop[GlobalRandomStream.LOOP_KEY] = GlobalRandomStream.seeded(int(opts["global-seed"]))
 	var state: Variant = {}
 	if opts.has("state"):
 		state = JSON.parse_string(FileAccess.get_file_as_string(str(opts["state"])))
@@ -194,7 +194,7 @@ func _prepare(opts: Dictionary) -> Dictionary:
 			var insertion: Dictionary = unit.get("script_insert", {}).duplicate(true)
 			insertion["adjust_level"] = [0, 0]
 			unit["script_insert"] = insertion
-	if bool(state.get("growth", true)) or not state.has("speed"): loop = Loop.initialize_roster_growth(loop)
+	if bool(state.get("growth", true)) or not state.has("speed"): loop = BattlePlayLoop.initialize_roster_growth(loop)
 	if not state.is_empty(): loop = _inject(loop, state)
 	if opts.has("select-event"): loop = WinfailScenarioRules.select_event_status(loop, int(opts["select-event"]))
 	if not bool(loop.get("scenario_ok", false)):
@@ -207,8 +207,8 @@ func _prepare(opts: Dictionary) -> Dictionary:
 		# Mid-round, a unit already down acted (or fell) earlier in the round.
 		for unit in loop["units"]:
 			if bool(unit.get("defeated", false)) or int(unit.get("hp", 1)) <= 0: prep["acted"].append(str(unit["id"]))
-	loop = Loop._resolve_outcome(loop)
-	prep["loop"] = Loop.begin_battle(loop)
+	loop = BattlePlayLoop._resolve_outcome(loop)
+	prep["loop"] = BattlePlayLoop.begin_battle(loop)
 	return prep
 
 
@@ -218,7 +218,7 @@ func _prepare(opts: Dictionary) -> Dictionary:
 func _play(prep: Dictionary, opts: Dictionary, record: bool, expect: Array = []) -> Dictionary:
 	var result := {"turns": [], "error": str(prep["error"]), "matched": 0, "mismatch": ""}
 	if not str(prep["error"]).is_empty(): return result
-	var loop: Dictionary = Loop.copy(prep["loop"])
+	var loop: Dictionary = BattlePlayLoop.copy(prep["loop"])
 	var recorder := DrawRecorder.new()
 	var ai_seed := int(opts.get("ai-seed", opts["seed"]))
 	recorder.rng.seed = ai_seed
@@ -249,7 +249,7 @@ func _play(prep: Dictionary, opts: Dictionary, record: bool, expect: Array = [])
 		if interaction == "ai_resolving":
 			var before := loop
 			var mark := recorder.log.size()
-			loop = Loop.step_ai_turn(loop, source)
+			loop = BattlePlayLoop.step_ai_turn(loop, source)
 			if loop.get("last_ai_actions", []).size() == before.get("last_ai_actions", []).size(): continue
 			var entry := _action_entry(before, loop, recorder.log.slice(mark))
 			by_turn[round_number]["actions"].append(entry)
@@ -289,7 +289,7 @@ func _decision_summary(loop: Dictionary, entry: Dictionary) -> Dictionary:
 
 
 func _inject(base: Dictionary, state: Dictionary) -> Dictionary:
-	var loop := Loop.copy(base)
+	var loop := BattlePlayLoop.copy(base)
 	var speeds: Dictionary = state.get("speed", {})
 	var coords: Dictionary = state.get("units", {})
 	var hps: Dictionary = state.get("hp", {})
@@ -305,7 +305,7 @@ func _inject(base: Dictionary, state: Dictionary) -> Dictionary:
 				unit["hp"] = 0
 				unit["defeated"] = true
 			if targets.has(key): unit["ai_target_id"] = _id(str(targets[key]))
-	loop["turn_queue"] = CoreTurnQueue.rebuild(Loop._queue_actors(loop))
+	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
 	if state.has("turn"):
 		# The loop counts rounds from 1, the queue from 0; keep them paired so the wrap
 		# still advances the counter.
@@ -333,7 +333,7 @@ func _streams(loop: Dictionary, ai_seed: int, rng: RandomNumberGenerator) -> Dic
 func _action_entry(before: Dictionary, after: Dictionary, draws: Array) -> Dictionary:
 	var action: Dictionary = after.get("last_ai_action", {})
 	var actor_id := str(action.get("actor_id", ""))
-	var start: Vector2i = action.get("from", Loop._unit(before, actor_id).get("coord", Vector2i(-1, -1)))
+	var start: Vector2i = action.get("from", BattlePlayLoop._unit(before, actor_id).get("coord", Vector2i(-1, -1)))
 	var to: Vector2i = action.get("to", start)
 	var kind := str(action.get("kind", ""))
 	var skill_id := str(action.get("skill_id", ""))
@@ -353,7 +353,7 @@ func _action_entry(before: Dictionary, after: Dictionary, draws: Array) -> Dicti
 	elif kind in ["wait", "move"]:
 		verb = "wait"
 		# The unit's held pursuit target (ai_target_id; the original's object +0x88), null if none.
-		var held := str(Loop._unit(after, actor_id).get("ai_target_id", ""))
+		var held := str(BattlePlayLoop._unit(after, actor_id).get("ai_target_id", ""))
 		if held != "": target = held
 	var ai_draws: Array = []
 	for draw in draws:
@@ -372,11 +372,11 @@ static func _area_first(after: Dictionary, action: Dictionary, skill_id: String)
 	if receipts.size() < 2 or not action.get("cast_center") is Vector2i: return str(action.get("target_id", ""))
 	var ids := {}
 	for receipt in receipts: ids[str(receipt.get("defender_id", ""))] = true
-	var footprint: Array = TargetRules.cast_footprint(action["to"], action["cast_center"], Loop.skill_fields(after, skill_id), after["skill_target_data"], after["map_size"])
+	var footprint: Array = SkillTargetRules.cast_footprint(action["to"], action["cast_center"], BattlePlayLoop.skill_fields(after, skill_id), after["skill_target_data"], after["map_size"])
 	footprint.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return a.y < b.y or (a.y == b.y and a.x < b.x))
 	for cell in footprint:
 		for unit in after["units"]:
-			if unit is Dictionary and ids.has(str(unit.get("id", ""))) and unit.get("coord") is Vector2i and Footprint.contains(unit, cell): return str(unit["id"])
+			if unit is Dictionary and ids.has(str(unit.get("id", ""))) and unit.get("coord") is Vector2i and FootprintRules.contains(unit, cell): return str(unit["id"])
 	return str(action.get("target_id", ""))
 
 
@@ -405,13 +405,13 @@ func _strip_draws(turns: Array) -> Array:
 func _settle_rewards(loop: Dictionary) -> Dictionary:
 	var next := loop
 	var guard := 0
-	while Loop.loot_waiting(next) and guard < 8:
+	while BattlePlayLoop.loot_waiting(next) and guard < 8:
 		guard += 1
 		var settlement: Dictionary = next.get("settlement", {})
-		next = Loop.finish_rewards(next, int(settlement.get("sequence", 0)), int(settlement.get("revision", 0)), true)
+		next = BattlePlayLoop.finish_rewards(next, int(settlement.get("sequence", 0)), int(settlement.get("revision", 0)), true)
 	for unit in next["units"]:
 		if int(unit.get("pending_stat_points", 0)) > 0 and bool(unit.get("player_commandable", false)):
-			next = Loop.allocate_growth(next, str(unit["id"]), {"con": int(unit["pending_stat_points"])})
+			next = BattlePlayLoop.allocate_growth(next, str(unit["id"]), {"con": int(unit["pending_stat_points"])})
 	return next
 
 
@@ -426,30 +426,30 @@ func _player_turn(loop: Dictionary, commands: Array, source: Variant) -> Diction
 		if verb == "move" and parts.size() > 1:
 			var xy := parts[1].split("/")
 			var cell := Vector2i(int(xy[0]), int(xy[1]))
-			next = Loop.choose_command(next, "move")
-			var moved := Loop.move_unit_to(next, cell)
-			next = moved if Loop._unit(moved, unit_id)["coord"] == cell else Loop.cancel_interaction(next)
+			next = BattlePlayLoop.choose_command(next, "move")
+			var moved := BattlePlayLoop.move_unit_to(next, cell)
+			next = moved if BattlePlayLoop._unit(moved, unit_id)["coord"] == cell else BattlePlayLoop.cancel_interaction(next)
 		elif verb in ["attack", "special"] and parts.size() > 1:
 			var xy := parts[1].split("/")
 			if verb == "special":
-				next = Loop.choose_command(next, "special")
-				var options := Loop.special_options(next, unit_id)
+				next = BattlePlayLoop.choose_command(next, "special")
+				var options := BattlePlayLoop.special_options(next, unit_id)
 				if options.is_empty():
-					next = Loop.cancel_interaction(next)
+					next = BattlePlayLoop.cancel_interaction(next)
 					break
-				next = Loop.choose_special(next, str(options[0]["id"] if options[0] is Dictionary else options[0]))
+				next = BattlePlayLoop.choose_special(next, str(options[0]["id"] if options[0] is Dictionary else options[0]))
 			else:
-				next = Loop.choose_command(next, "attack")
-			var hit := Loop.attack_coord(next, Vector2i(int(xy[0]), int(xy[1])), source)
+				next = BattlePlayLoop.choose_command(next, "attack")
+			var hit := BattlePlayLoop.attack_coord(next, Vector2i(int(xy[0]), int(xy[1])), source)
 			if str(hit.get("interaction", "")) in ["attack_select", "special_select"]:
-				next = Loop.cancel_interaction(hit)
+				next = BattlePlayLoop.cancel_interaction(hit)
 				break
 			next = _settle_rewards(hit)
-			if Loop.action_exhausted(next): next = Loop.finish_exhausted_action(next)
+			if BattlePlayLoop.action_exhausted(next): next = BattlePlayLoop.finish_exhausted_action(next)
 			return next
 		elif verb == "wait":
 			break
-	return Loop.begin_wait_resolution(next)
+	return BattlePlayLoop.begin_wait_resolution(next)
 
 
 func _load_lines(path: String) -> Array:

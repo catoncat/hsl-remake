@@ -1,13 +1,13 @@
 extends SceneTree
 ## Shared presentation contracts; never claim native timing from these tests.
-const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
+const BattleCombatCutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 ## One original tick (16 ms): the script player counts one tick per 1/62.5 s of real time.
 const TICK: float = preload("res://game/common/OriginalTick.gd").TICK_SECONDS
-const Menu = preload("res://game/battle/scene/BattleCommandMenu.gd")
-const UISkin = preload("res://game/common/BattleUISkin.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattleCommandMenu = preload("res://game/battle/scene/BattleCommandMenu.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
@@ -50,10 +50,10 @@ func dialogue_contracts() -> void:
 	check(dialogue.body_label.text == text, "all original punctuation survives; the rows only add line breaks")
 	dialogue.show_message("next", "拉爾斯帝國兵", "報告。", "021")
 	check(dialogue.top_row == 0 and dialogue.portrait.texture.resource_path.ends_with("portraits/021.png"), "new speaker resets pagination and portrait together")
-	var rows := UISkin.message_rows("一二三四五六七八九十一二三四五六七八九十")
+	var rows := BattleUISkin.message_rows("一二三四五六七八九十一二三四五六七八九十")
 	check(rows == PackedStringArray(["一二三四五六七八九十一二三四五六七八九", "十"]), "a row holds 19 full-width characters (38 bytes)")
-	check(UISkin.message_rows("abcdefghijklmnopqrstuvwxyzabcdefghijkl一") == PackedStringArray(["abcdefghijklmnopqrstuvwxyzabcdefghijkl", "一"]), "a row holds 38 half-width characters; a full-width one past them starts the next row")
-	check(UISkin.message_rows("甲\n乙") == PackedStringArray(["甲", "乙"]), "the source's hard break (# → \\n) ends a row")
+	check(BattleUISkin.message_rows("abcdefghijklmnopqrstuvwxyzabcdefghijkl一") == PackedStringArray(["abcdefghijklmnopqrstuvwxyzabcdefghijkl", "一"]), "a row holds 38 half-width characters; a full-width one past them starts the next row")
+	check(BattleUISkin.message_rows("甲\n乙") == PackedStringArray(["甲", "乙"]), "the source's hard break (# → \\n) ends a row")
 	var messages: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/imported/hsl/chapter01/message_text_evidence.json"))["messages"]
 	# Message 369 on the 2026-09-24 original recording (398.6–400.6 s): 19-glyph rows with 「！」
 	# opening row 2, then a four-row scroll to body rows 4–7.
@@ -216,14 +216,14 @@ func run() -> void:
 	check(oracle["frame_cases"].size() == 8 and oracle["opening_cases"].size() == 6, "native oracle must retain every bounded case")
 	for sample in oracle["frame_cases"]:
 		for update in range(sample["frame_by_update"].size()):
-			check(Menu.PresentationRules.frame_at(int(sample["frames"]), update, sample["mode"] == "loop") == int(sample["frame_by_update"][update]), "frame update differs from native %s/%d at call %d" % [sample["mode"], sample["frames"], update])
+			check(BattleCommandMenu.PresentationRules.frame_at(int(sample["frames"]), update, sample["mode"] == "loop") == int(sample["frame_by_update"][update]), "frame update differs from native %s/%d at call %d" % [sample["mode"], sample["frames"], update])
 	for sample in oracle["opening_cases"]:
 		var target := Vector2i(sample["target"][0], sample["target"][1])
 		for i in range(1, sample["positions"].size()):
 			var previous := Vector2i(sample["positions"][i - 1][0], sample["positions"][i - 1][1])
 			var expected := Vector2i(sample["positions"][i][0], sample["positions"][i][1])
-			check(Menu.PresentationRules.opening_step(previous, target) == expected, "opening interpolation differs from original helper")
-	var menu := Menu.new()
+			check(BattleCommandMenu.PresentationRules.opening_step(previous, target) == expected, "opening interpolation differs from original helper")
+	var menu := BattleCommandMenu.new()
 	root.add_child(menu)
 	menu.set_process(false)
 	menu.rebuild([{"command": "move", "enabled": true}, {"command": "attack", "enabled": true}, {"command": "special", "enabled": true}, {"command": "item", "enabled": true}, {"command": "status", "enabled": true}, {"command": "wait", "enabled": true}])
@@ -248,9 +248,9 @@ func run() -> void:
 	check(menu.get_node("MoveCommand").texture_normal == first, "hover exit resets idle pose")
 	check(menu.position == anchor, "animation cannot move the menu hit-test anchor")
 	check(menu.get_node("SpecialCommand").position.x > 0 and menu.get_node("ItemCommand").position.x < 0, "special upper-right and item lower-left follow the original reference")
-	check(Menu.PresentationRules.centers(2) == [Vector2(0, -72), Vector2(0, 72)], "two remaining commands have a complete opposite layout, not holes")
-	check(Menu.PresentationRules.frame_at(3, 21, false) == 1, "three-frame menus reverse instead of wrapping from the last pose")
-	check(Menu.PresentationRules.frame_at(5, 35, true) == 0, "status uses its source loop flag rather than ping-pong")
+	check(BattleCommandMenu.PresentationRules.centers(2) == [Vector2(0, -72), Vector2(0, 72)], "two remaining commands have a complete opposite layout, not holes")
+	check(BattleCommandMenu.PresentationRules.frame_at(3, 21, false) == 1, "three-frame menus reverse instead of wrapping from the last pose")
+	check(BattleCommandMenu.PresentationRules.frame_at(5, 35, true) == 0, "status uses its source loop flag rather than ping-pong")
 	menu.hide()
 	menu.show()
 	check(menu.is_expanding() and menu.hover_elapsed == 0.0, "reopening resets only visual expansion and hover")
@@ -258,7 +258,7 @@ func run() -> void:
 	await process_frame
 	# Exercise each display frame rather than seeking directly to one selected pose.
 	for fps in [30, 60]:
-		var cutin := Cutin.new()
+		var cutin := BattleCombatCutin.new()
 		root.add_child(cutin)
 		cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 		cutin.set_process(false)
@@ -317,7 +317,7 @@ func run() -> void:
 		await process_frame
 	# A magic receipt plays its effCode script through the script player (the skill_id names
 	# the row); the Cast_Star lead rings the caster first, the script then plays at the target.
-	var magic := Cutin.new()
+	var magic := BattleCombatCutin.new()
 	root.add_child(magic)
 	magic.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	magic.set_process(false)
@@ -484,7 +484,7 @@ func install_dead_message_contracts() -> void:
 ## script's last cue, at least one object drawn, the map presenter's shot (no backdrop, no
 ## actors, the 480-high stage, the spell's name as caption), completion at complete_tick.
 func skill_effect_contracts() -> void:
-	var cutin = Cutin.new()
+	var cutin = BattleCombatCutin.new()
 	root.add_child(cutin)
 	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	cutin.set_process(false)
@@ -520,7 +520,7 @@ func skill_effect_contracts() -> void:
 				var tick: int = frames - lead_ticks + (int(cutin.skill_effects.EMPTY_ATTACK_LEAD_TICKS) if bool(timeline["empty_attack"]) else 0)  # the script's own clock, one tick per 16 ms step
 				if frames < lead_ticks and (cutin.scenery.visible or cutin.vitals.visible or cutin.stage.size != Vector2(640, 480) or not cutin.attacker_sprite.visible or not cutin.attacker_sprite.texture.resource_path.ends_with("001/special-0.png") or cutin.result.visible): lead_shot = false
 				if tick < int(timeline["result_tick"]) and cutin.result.visible: untitled_before_result = false
-				if tick > int(timeline["result_tick"]) and cutin.result.visible and cutin.result.position.y == 264 and cutin.result_text() == ("9" if hit else Cutin.MISS_TEXT): result_shown = true
+				if tick > int(timeline["result_tick"]) and cutin.result.visible and cutin.result.position.y == 264 and cutin.result_text() == ("9" if hit else BattleCombatCutin.MISS_TEXT): result_shown = true
 				if cutin.skill_effects.sprites.any(func(sprite): return sprite.visible): objects_seen = true
 			var expected_frames: int = int(timeline["complete_tick"]) + lead_ticks - (int(cutin.skill_effects.EMPTY_ATTACK_LEAD_TICKS) if bool(timeline["empty_attack"]) else 0)
 			check(lead_ticks == 139 and lead_shot, "%s hit=%s opens with 001's 139-tick cast lead: banner P001_201 over the map shot, no backdrop or vitals (%s)" % [skill_id, str(hit), str(lead_shot)])
@@ -594,19 +594,19 @@ func skill_effect_contracts() -> void:
 	# never "0". Original: 0x4084e0 kind 2／3 → green／blue NUM digits, no sign glyph and no HP／MP
 	# suffix (UI6); the typed parts carry the kind both the map and the cut-in line colour by.
 	var heal := {"skill_id": "special:magicWATER:magicCode02", "skill_name": "萬息集氣法", "special_key": "special_support", "attacker_id": "leonard", "defender_id": "enemy021_1", "hit": true, "damage": 0, "actual_damage": 0, "healing": 27, "restored_mp": 0, "support_effects": [], "defender_hp_before": 13, "defender_hp_after": 40, "attacker_before": {}, "defender_before": {}}
-	check(Cutin.strike_feedback(heal) == "27", "a special heal receipt reads as its healed amount alone (%s)" % Cutin.strike_feedback(heal))
-	check(Cutin.feedback_parts(heal) == [{"text": "27", "kind": "heal"}], "the heal part carries the green NUM2xx kind and no HP suffix")
+	check(BattleCombatCutin.strike_feedback(heal) == "27", "a special heal receipt reads as its healed amount alone (%s)" % BattleCombatCutin.strike_feedback(heal))
+	check(BattleCombatCutin.feedback_parts(heal) == [{"text": "27", "kind": "heal"}], "the heal part carries the green NUM2xx kind and no HP suffix")
 	var mixed := heal.duplicate(true)
 	mixed.merge({"skill_id": "special:magicWATER:magicCode04", "skill_name": "萬息臨界法", "restored_mp": 12}, true)
-	check(Cutin.strike_feedback(mixed) == "27 · 12", "HP and MP recovery both show, numbers only (%s)" % Cutin.strike_feedback(mixed))
-	check(Cutin.feedback_parts(mixed).map(func(part): return part["kind"]) == ["heal", "mp"], "HP then MP, as the original stacks the blue MP number above the green HP number")
+	check(BattleCombatCutin.strike_feedback(mixed) == "27 · 12", "HP and MP recovery both show, numbers only (%s)" % BattleCombatCutin.strike_feedback(mixed))
+	check(BattleCombatCutin.feedback_parts(mixed).map(func(part): return part["kind"]) == ["heal", "mp"], "HP then MP, as the original stacks the blue MP number above the green HP number")
 	var cure := heal.duplicate(true)
 	cure.merge({"skill_id": "special:magicWATER:magicCode03", "skill_name": "萬息秘孔術", "healing": 0, "defender_hp_after": 13, "support_effects": [{"status": "poison", "removed": true}, {"status": "no_magic", "removed": false}]}, true)
-	check(Cutin.strike_feedback(cure) == "解毒 · 無禁魔", "a cure receipt names the removed and absent statuses (%s)" % Cutin.strike_feedback(cure))
+	check(BattleCombatCutin.strike_feedback(cure) == "解毒 · 無禁魔", "a cure receipt names the removed and absent statuses (%s)" % BattleCombatCutin.strike_feedback(cure))
 	var idle := heal.duplicate(true)
 	idle.merge({"hit": false, "healing": 0, "defender_hp_after": 13}, true)
-	check(Cutin.strike_feedback(idle) == "未回復" and Cutin.support_feedback_parts(idle) == ["未回復"], "a support receipt that restored nothing reads 未回復, not MISS or 0")
-	check(Cutin.feedback_parts({"actual_damage": 12, "status_effects": []}) == [{"text": "12", "kind": "damage"}], "a damage result is one unsigned red part; a non-support result adds no 未回復")
+	check(BattleCombatCutin.strike_feedback(idle) == "未回復" and BattleCombatCutin.support_feedback_parts(idle) == ["未回復"], "a support receipt that restored nothing reads 未回復, not MISS or 0")
+	check(BattleCombatCutin.feedback_parts({"actual_damage": 12, "status_effects": []}) == [{"text": "12", "kind": "damage"}], "a damage result is one unsigned red part; a non-support result adds no 未回復")
 	cutin.play(heal, caster, target, false)
 	var heal_result := ""
 	while cutin.busy():
@@ -617,14 +617,14 @@ func skill_effect_contracts() -> void:
 	# number for a zero HP／MP change, so the line names each buff (power · turns) as the map does.
 	var focus := {"skill_id": "special:magicMIND:magicCode01", "skill_name": "精神統一", "special_key": "special_stat", "attacker_id": "leonard", "defender_id": "leonard", "hit": true, "damage": 0, "actual_damage": 0, "defender_hp_before": 13, "defender_hp_after": 13, "attacker_before": {}, "defender_before": {},
 		"stat_effects": [{"kind": "defense_up", "before_word": 0, "after_word": (12 << 16) | 3, "before_power": 0, "after_power": 12, "duration": 3}, {"kind": "attack_up", "before_word": 0, "after_word": (9 << 16) | 4, "before_power": 0, "after_power": 9, "duration": 4}]}
-	check(Cutin.strike_feedback(focus) == "防禦 +12 · 3回 · 攻擊 +9 · 4回", "a special buff receipt names its buffs in native order, not 0 (%s)" % Cutin.strike_feedback(focus))
-	check(Cutin.feedback_parts(focus).map(func(part): return part["kind"]) == ["caption", "caption"], "buff parts are uncoloured captions (no defProcShowNumber digit set)")
+	check(BattleCombatCutin.strike_feedback(focus) == "防禦 +12 · 3回 · 攻擊 +9 · 4回", "a special buff receipt names its buffs in native order, not 0 (%s)" % BattleCombatCutin.strike_feedback(focus))
+	check(BattleCombatCutin.feedback_parts(focus).map(func(part): return part["kind"]) == ["caption", "caption"], "buff parts are uncoloured captions (no defProcShowNumber digit set)")
 	var dispel := focus.duplicate(true)
 	dispel["stat_effects"] = [{"kind": "attack_up", "before_word": (9 << 16) | 4, "after_word": 0, "before_power": 9, "after_power": 0, "duration": 0}]
-	check(Cutin.strike_feedback(dispel) == "攻擊增益解除", "a cleared buff word reads as its dispel (%s)" % Cutin.strike_feedback(dispel))
+	check(BattleCombatCutin.strike_feedback(dispel) == "攻擊增益解除", "a cleared buff word reads as its dispel (%s)" % BattleCombatCutin.strike_feedback(dispel))
 	var untaken := focus.duplicate(true)
 	untaken.merge({"hit": false, "stat_effects": []}, true)
-	check(Cutin.strike_feedback(untaken) == "MISS", "a stat receipt where nothing took reads as the miss (0x404643 kind 5, NUM513 MISS), not 0 or empty")
+	check(BattleCombatCutin.strike_feedback(untaken) == "MISS", "a stat receipt where nothing took reads as the miss (0x404643 kind 5, NUM513 MISS), not 0 or empty")
 	cutin.play(focus, caster, caster, false)
 	var focus_result := ""
 	while cutin.busy():
@@ -659,11 +659,11 @@ func utility_special_contracts() -> void:
 		receipt.merge(row[3], true)
 		receipts[row[0]] = receipt
 	for key in ["steal_item", "steal_item_high", "steal_gold", "reactivate", "cancel"]:
-		check(Cutin.strike_feedback(receipts[key]) == "" and not Cutin.shows_miss(receipts[key]), "%s (%s): a landed utility effect with no HP change shows no result, not 0 (%s)" % [receipts[key]["skill_name"], key, Cutin.strike_feedback(receipts[key])])
+		check(BattleCombatCutin.strike_feedback(receipts[key]) == "" and not BattleCombatCutin.shows_miss(receipts[key]), "%s (%s): a landed utility effect with no HP change shows no result, not 0 (%s)" % [receipts[key]["skill_name"], key, BattleCombatCutin.strike_feedback(receipts[key])])
 	for key in ["slots_refused", "gold_under_two", "rolled_miss"]:
-		check(Cutin.strike_feedback(receipts[key]) == "MISS" and Cutin.shows_miss(receipts[key]), "%s (%s): a utility cast whose EXP return is 0 reads as the miss (kind 5, MISS), not 0 (%s)" % [receipts[key]["skill_name"], key, Cutin.strike_feedback(receipts[key])])
-	check(Cutin.strike_feedback(receipts["drain"]) == "14" and Cutin.strike_feedback(receipts["mug"]) == "9", "吸血劍／竊殺 keep their red HP number (%s, %s)" % [Cutin.strike_feedback(receipts["drain"]), Cutin.strike_feedback(receipts["mug"])])
-	var cutin = Cutin.new()
+		check(BattleCombatCutin.strike_feedback(receipts[key]) == "MISS" and BattleCombatCutin.shows_miss(receipts[key]), "%s (%s): a utility cast whose EXP return is 0 reads as the miss (kind 5, MISS), not 0 (%s)" % [receipts[key]["skill_name"], key, BattleCombatCutin.strike_feedback(receipts[key])])
+	check(BattleCombatCutin.strike_feedback(receipts["drain"]) == "14" and BattleCombatCutin.strike_feedback(receipts["mug"]) == "9", "吸血劍／竊殺 keep their red HP number (%s, %s)" % [BattleCombatCutin.strike_feedback(receipts["drain"]), BattleCombatCutin.strike_feedback(receipts["mug"])])
+	var cutin = BattleCombatCutin.new()
 	root.add_child(cutin)
 	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	cutin.set_process(false)
@@ -676,7 +676,7 @@ func utility_special_contracts() -> void:
 			if cutin.busy() and cutin.result.visible and cutin.result.position.y == 264:
 				line = cutin.result_text()
 				reached = true
-		var expected: String = Cutin.MISS_TEXT if key == "slots_refused" else ""
+		var expected: String = BattleCombatCutin.MISS_TEXT if key == "slots_refused" else ""
 		check(reached and line == expected, "the scripted %s cut-in (%s) reads «%s» at aniShowHitResult — the result alone, no skill-name head (UI6) (%s)" % [receipts[key]["skill_name"], key, expected, line])
 	cutin.free()
 	var aftermath = preload("res://game/battle/scene/BattleAftermath.gd").new()
@@ -795,7 +795,7 @@ func identity_mask_contracts() -> void:
 	panel.free()
 	# Cut-in strip: the shot of a defender the player has not fought (a friendly AI's weapon
 	# hit) masks the same way; the attacker's own strip is a player unit, in the clear.
-	var cutin = Cutin.new()
+	var cutin = BattleCombatCutin.new()
 	root.add_child(cutin)
 	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	cutin.set_process(false)
@@ -857,7 +857,7 @@ func install_word_contracts() -> void:
 ## whose ANIMAL block declares none (056) yields [] so the cut-in shows the standing caster
 ## instead of erroring.
 func cutin_key_contracts() -> void:
-	var cutin = Cutin.new()
+	var cutin = BattleCombatCutin.new()
 	root.add_child(cutin)
 	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	var actors: Dictionary = cutin.manifest["actors"]
@@ -945,23 +945,23 @@ func inventory_contracts() -> void:
 	await process_frame
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
-	var player: Dictionary = Loop._unit(scene.play_loop, "leonard")
-	var ally: Dictionary = Loop._unit(scene.play_loop, "enemy023_1")
-	var foe: Dictionary = Loop._unit(scene.play_loop, "enemy021_1")
+	var player: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var ally: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+	var foe: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 	ally["coord"] = player["coord"] + Vector2i.RIGHT
 	foe["coord"] = player["coord"] + Vector2i.LEFT
 	player["hp"] = 10
 	scene.apply_loop(scene.play_loop, "test")
 	var before: Dictionary = scene.play_loop.duplicate(true)
-	var session: Dictionary = Loop.begin_give(before)
-	var received: Dictionary = Loop.confirm_give(session, ally["id"], 0, 241, -1, 0, session["item_revision"])
-	var given: Dictionary = Loop.finish_give(received, received["item_revision"])
-	check(Loop.unit(given, "leonard")["inventory"].count(241) == 2, "give decrements the owner exactly once")
-	check(Loop.unit(given, ally["id"])["inventory"].count(241) == 1, "give adds the same item to the selected ally")
-	check(Loop.confirm_give(given, ally["id"], 0, 241, -1, 0, session["item_revision"]) == given, "give cannot replay after the action handoff")
-	check(Loop.confirm_give(session, foe["id"], 0, 241, -1, 0, session["item_revision"]) == session, "enemy transfer must be inert")
-	check(Loop.confirm_give(session, "leonard", 0, 241, -1, 0, session["item_revision"]) == session, "self transfer cannot spend an action")
-	check(Loop.discard_item(before, "missing") == before, "unknown inventory entry must not create or delete items")
+	var session: Dictionary = BattlePlayLoop.begin_give(before)
+	var received: Dictionary = BattlePlayLoop.confirm_give(session, ally["id"], 0, 241, -1, 0, session["item_revision"])
+	var given: Dictionary = BattlePlayLoop.finish_give(received, received["item_revision"])
+	check(BattlePlayLoop.unit(given, "leonard")["inventory"].count(241) == 2, "give decrements the owner exactly once")
+	check(BattlePlayLoop.unit(given, ally["id"])["inventory"].count(241) == 1, "give adds the same item to the selected ally")
+	check(BattlePlayLoop.confirm_give(given, ally["id"], 0, 241, -1, 0, session["item_revision"]) == given, "give cannot replay after the action handoff")
+	check(BattlePlayLoop.confirm_give(session, foe["id"], 0, 241, -1, 0, session["item_revision"]) == session, "enemy transfer must be inert")
+	check(BattlePlayLoop.confirm_give(session, "leonard", 0, 241, -1, 0, session["item_revision"]) == session, "self transfer cannot spend an action")
+	check(BattlePlayLoop.discard_item(before, "missing") == before, "unknown inventory entry must not create or delete items")
 	check(scene.play_loop == before, "inventory rules must not mutate their input")
 	scene.menus.choose_command("item")
 	scene.item_panel.menu._process(0.25)
@@ -983,7 +983,7 @@ func inventory_contracts() -> void:
 	check(scene.play_loop == before, "cancelled discard callback cannot consume an item")
 	scene.item_panel.rows.get_child(0).pressed.emit()
 	scene.item_panel.confirm_button.pressed.emit()
-	check(not scene.item_panel.visible and Loop.unit(scene.play_loop, "leonard")["inventory"].count(241) == 2, "confirmed discard updates the real inventory and closes")
+	check(not scene.item_panel.visible and BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].count(241) == 2, "confirmed discard updates the real inventory and closes")
 	check(scene.play_loop["turn_queue"] == before["turn_queue"] and not scene.ai_playback_active, "discard confirmation keeps player control")
 	var after: Dictionary = scene.play_loop.duplicate(true)
 	scene.menus.discard_inventory_item("241")
@@ -1006,8 +1006,8 @@ func cast_overlay_contracts() -> void:
 	scene.set_process(false)
 	var view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
-	var player: Dictionary = Loop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = Loop._unit(scene.play_loop, "enemy021_1")
+	var player: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var enemy: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	enemy["hp"] = 100
 	enemy["max_hp"] = 100
@@ -1041,14 +1041,14 @@ func cast_overlay_contracts() -> void:
 	view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
 	var loop: Dictionary = scene.play_loop.duplicate(true)
-	var caster: Dictionary = Loop._unit(loop, "enemy026_1")
+	var caster: Dictionary = BattlePlayLoop._unit(loop, "enemy026_1")
 	caster["mp"] = caster["max_mp"]
-	var leonard: Dictionary = Loop._unit(loop, "leonard")
+	var leonard: Dictionary = BattlePlayLoop._unit(loop, "leonard")
 	leonard["coord"] = caster["coord"] + Vector2i.RIGHT
 	leonard["hp"] = 200
 	leonard["max_hp"] = 200
 	var spell := "magic:magicAIR:magicCode01"
-	var receipt: Dictionary = LoopCombat._resolve_skill(loop, caster["id"], "leonard", spell, Loop.skill_fields(loop, spell), caster["coord"], func(_n): return 0)
+	var receipt: Dictionary = BattleLoopCombat._resolve_skill(loop, caster["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), caster["coord"], func(_n): return 0)
 	check(receipt.has("skill_id") and not bool(caster.get("player_commandable", false)), "fixture settles a real AI cast receipt")
 	# The lead-in's camera stage (0x43bf30 to the actor) is empty when the view already frames it.
 	scene.center_camera_on_grid(caster["coord"])
@@ -1069,15 +1069,15 @@ func cast_overlay_contracts() -> void:
 ## the skill name at the screen-centred y=276 (0x43e110), and neither the cut-in nor the map
 ## effect repeats it before the result.
 func lead_in_contracts() -> void:
-	const Cue = preload("res://game/battle/scene/BattleAttackCue.gd")
+	const BattleAttackCue = preload("res://game/battle/scene/BattleAttackCue.gd")
 	# Glide tick counts of the original machine code, emulated off-line from the EXE tables
 	# (cell deltas × 32 px → calls of 0x45e882 up to and including the arrival tick).
 	var glide_ticks := {Vector2i(1, 0): 15, Vector2i(0, -1): 15, Vector2i(2, 0): 20, Vector2i(3, 0): 24, Vector2i(1, 1): 23, Vector2i(2, 1): 31, Vector2i(-3, -2): 22, Vector2i(5, 3): 39, Vector2i(4, -7): 35, Vector2i(12, 0): 42, Vector2i.ZERO: 1}
 	for cells in glide_ticks:
-		var path: Array[Vector2i] = Cue.glide_path(Vector2i.ZERO, cells * 32)
+		var path: Array[Vector2i] = BattleAttackCue.glide_path(Vector2i.ZERO, cells * 32)
 		check(path.size() == glide_ticks[cells] and path.back() == cells * 32, "0x45e882 glide over %s cells takes %d ticks and ends on the target (%d)" % [str(cells), glide_ticks[cells], path.size()])
-	check(Cue.glide_path(Vector2i.ZERO, Vector2i(32, 0)) == [Vector2i(4, 0), Vector2i(7, 0), Vector2i(10, 0), Vector2i(12, 0), Vector2i(14, 0), Vector2i(16, 0), Vector2i(18, 0), Vector2i(20, 0), Vector2i(22, 0), Vector2i(24, 0), Vector2i(26, 0), Vector2i(28, 0), Vector2i(30, 0), Vector2i(32, 0), Vector2i(32, 0)], "one-cell glide: step distance>>3 clamped to 2..16, snap within 1 px")
-	check(Cue.glide_path(Vector2i.ZERO, Vector2i(-96, -64)).slice(0, 4) == [Vector2i(-12, -8), Vector2i(-22, -15), Vector2i(-32, -22), Vector2i(-40, -28)], "diagonal glide follows the 256-step direction table with arithmetic-shift truncation")
+	check(BattleAttackCue.glide_path(Vector2i.ZERO, Vector2i(32, 0)) == [Vector2i(4, 0), Vector2i(7, 0), Vector2i(10, 0), Vector2i(12, 0), Vector2i(14, 0), Vector2i(16, 0), Vector2i(18, 0), Vector2i(20, 0), Vector2i(22, 0), Vector2i(24, 0), Vector2i(26, 0), Vector2i(28, 0), Vector2i(30, 0), Vector2i(32, 0), Vector2i(32, 0)], "one-cell glide: step distance>>3 clamped to 2..16, snap within 1 px")
+	check(BattleAttackCue.glide_path(Vector2i.ZERO, Vector2i(-96, -64)).slice(0, 4) == [Vector2i(-12, -8), Vector2i(-22, -15), Vector2i(-32, -22), Vector2i(-40, -28)], "diagonal glide follows the 256-step direction table with arithmetic-shift truncation")
 	# Player normal attack: confirm → cut-in, no lead-in.
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
@@ -1087,8 +1087,8 @@ func lead_in_contracts() -> void:
 	scene.set_process(false)
 	var view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
-	var player: Dictionary = Loop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = Loop._unit(scene.play_loop, "enemy021_1")
+	var player: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var enemy: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	enemy["hp"] = 100
 	enemy["max_hp"] = 100
@@ -1122,12 +1122,12 @@ func lead_in_contracts() -> void:
 	view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
 	var loop: Dictionary = scene.play_loop.duplicate(true)
-	var attacker: Dictionary = Loop._unit(loop, "enemy021_1")
-	var leonard: Dictionary = Loop._unit(loop, "leonard")
+	var attacker: Dictionary = BattlePlayLoop._unit(loop, "enemy021_1")
+	var leonard: Dictionary = BattlePlayLoop._unit(loop, "leonard")
 	leonard["coord"] = attacker["coord"] + Vector2i.RIGHT
 	leonard["hp"] = 200
 	leonard["max_hp"] = 200
-	var receipt: Dictionary = LoopCombat._resolve_exchange(loop, attacker["id"], "leonard", func(_n): return 0)
+	var receipt: Dictionary = BattleLoopCombat._resolve_exchange(loop, attacker["id"], "leonard", func(_n): return 0)
 	check(not receipt.is_empty() and not receipt.has("skill_id"), "fixture settles a real AI attack receipt")
 	# The lead-in's camera stage (0x43bf30 to the actor) is empty when the view already frames it.
 	scene.center_camera_on_grid(attacker["coord"])
@@ -1173,14 +1173,14 @@ func lead_in_contracts() -> void:
 	view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
 	loop = scene.play_loop.duplicate(true)
-	var caster: Dictionary = Loop._unit(loop, "enemy026_1")
+	var caster: Dictionary = BattlePlayLoop._unit(loop, "enemy026_1")
 	caster["mp"] = caster["max_mp"]
-	leonard = Loop._unit(loop, "leonard")
+	leonard = BattlePlayLoop._unit(loop, "leonard")
 	leonard["coord"] = caster["coord"] + Vector2i(2, 0)
 	leonard["hp"] = 200
 	leonard["max_hp"] = 200
 	var spell := "magic:magicAIR:magicCode01"
-	receipt = LoopCombat._resolve_skill(loop, caster["id"], "leonard", spell, Loop.skill_fields(loop, spell), caster["coord"], func(_n): return 0)
+	receipt = BattleLoopCombat._resolve_skill(loop, caster["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), caster["coord"], func(_n): return 0)
 	check(receipt.has("skill_id"), "fixture settles a real AI cast receipt two cells away")
 	# The lead-in's camera stage (0x43bf30 to the actor) is empty when the view already frames it.
 	scene.center_camera_on_grid(caster["coord"])
@@ -1216,14 +1216,14 @@ func lead_in_contracts() -> void:
 ## Expected framings come from a second BattleCameraController (center_on_grid／center_on_point), so
 ## the assertions follow the shared focus point rather than a fixed screen position.
 func ai_cue_camera_area_contracts() -> void:
-	const Cue = preload("res://game/battle/scene/BattleAttackCue.gd")
-	const CameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+	const BattleAttackCue = preload("res://game/battle/scene/BattleAttackCue.gd")
+	const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
 	var half := Vector2(320, 240)
 	var world := Vector2(1600, 960)
-	check(Cue.edge_follow_request(Vector2(100, 100), Vector2(4, -3), half, world) == Vector2(4, -3), "a cursor short of the far bands carries the view on both axes, in either direction")
-	check(Cue.edge_follow_request(Vector2(1280, 100), Vector2(4, 2), half, world) == Vector2(0, 2), "x at map width − half view: no horizontal request")
-	check(Cue.edge_follow_request(Vector2(100, 720), Vector2(-4, 5), half, world) == Vector2(-4, 0), "y at map height − half view: no vertical request")
-	check(Cue.edge_follow_request(Vector2(-16, -16), Vector2(-4, -4), half, world) == Vector2.ZERO, "a negative coordinate requests only beyond the near half view (0x4413d7／0x44140e)")
+	check(BattleAttackCue.edge_follow_request(Vector2(100, 100), Vector2(4, -3), half, world) == Vector2(4, -3), "a cursor short of the far bands carries the view on both axes, in either direction")
+	check(BattleAttackCue.edge_follow_request(Vector2(1280, 100), Vector2(4, 2), half, world) == Vector2(0, 2), "x at map width − half view: no horizontal request")
+	check(BattleAttackCue.edge_follow_request(Vector2(100, 720), Vector2(-4, 5), half, world) == Vector2(-4, 0), "y at map height − half view: no vertical request")
+	check(BattleAttackCue.edge_follow_request(Vector2(-16, -16), Vector2(-4, -4), half, world) == Vector2.ZERO, "a negative coordinate requests only beyond the near half view (0x4413d7／0x44140e)")
 	for kind in ["cast", "attack"]:
 		var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 		scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
@@ -1235,10 +1235,10 @@ func ai_cue_camera_area_contracts() -> void:
 		view.cutin.set_process(false)
 		var controller = scene.camera_controller
 		var reference_camera := Camera2D.new()
-		var reference = CameraController.create(reference_camera, scene.map_config, controller.logical_viewport_size)
+		var reference = BattleCameraController.create(reference_camera, scene.map_config, controller.logical_viewport_size)
 		var loop: Dictionary = scene.play_loop.duplicate(true)
-		var actor: Dictionary = Loop._unit(loop, "enemy026_1" if kind == "cast" else "enemy021_1")
-		var leonard: Dictionary = Loop._unit(loop, "leonard")
+		var actor: Dictionary = BattlePlayLoop._unit(loop, "enemy026_1" if kind == "cast" else "enemy021_1")
+		var leonard: Dictionary = BattlePlayLoop._unit(loop, "leonard")
 		if kind == "attack":
 			# Mid-map, so the one-cell glide right stays short of the far half-view bands.
 			var map_size: Vector2i = loop[LoopKeys.MAP_SIZE]
@@ -1253,16 +1253,16 @@ func ai_cue_camera_area_contracts() -> void:
 		var spell := "magic:magicAIR:magicCode01"
 		if kind == "cast":
 			actor["mp"] = actor["max_mp"]
-			receipt = LoopCombat._resolve_skill(loop, actor["id"], "leonard", spell, Loop.skill_fields(loop, spell), actor["coord"], func(_n): return 0)
+			receipt = BattleLoopCombat._resolve_skill(loop, actor["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), actor["coord"], func(_n): return 0)
 		else:
-			receipt = LoopCombat._resolve_exchange(loop, actor["id"], "leonard", func(_n): return 0)
+			receipt = BattleLoopCombat._resolve_exchange(loop, actor["id"], "leonard", func(_n): return 0)
 		check(not receipt.is_empty() and receipt.has("skill_id") == (kind == "cast"), "%s: fixture settles a real AI receipt" % kind)
 		# Start with the view on the far corner: the lead-in first brings it to the actor.
 		scene.center_camera_on_grid(Vector2i.ZERO)
 		var start: Vector2 = scene.camera.position
 		reference.center_on_grid(actor["coord"])
 		var landing: Vector2 = reference_camera.position
-		var camera_ticks: int = CameraController.scroll_ticks(start, landing, CameraController.BATTLE_SCROLL_STEP) - 1
+		var camera_ticks: int = BattleCameraController.scroll_ticks(start, landing, BattleCameraController.BATTLE_SCROLL_STEP) - 1
 		scene.apply_loop(loop, "test")
 		scene._process(0)
 		var cue = view.attack_cue
@@ -1271,11 +1271,11 @@ func ai_cue_camera_area_contracts() -> void:
 		check(is_equal_approx(cue.duration, (camera_ticks + cue.range_ticks + cue.glide.size() + cue.target_ticks) * TICK), "%s: the camera stage lengthens the lead-in" % kind)
 		scene._process((camera_ticks + 0.5) * TICK)
 		check(cue.stage() == "range" and cue.range_visible() and cue.cursor_visible() and cue.cursor_position() == cue.source and cue.area_rects().is_empty(), "%s: the range stage draws the range and the cursor on the actor, no area" % kind)
-		check(CameraController.scroll_landed(Vector2i(scene.camera.position.round()), Vector2i(landing.round()), CameraController.SCROLL_TOLERANCE), "%s: the view has reached the actor's framing (%s vs %s)" % [kind, scene.camera.position, landing])
+		check(BattleCameraController.scroll_landed(Vector2i(scene.camera.position.round()), Vector2i(landing.round()), BattleCameraController.SCROLL_TOLERANCE), "%s: the view has reached the actor's framing (%s vs %s)" % [kind, scene.camera.position, landing])
 		check(cue.caption_layer.visible == (kind == "cast"), "%s: only a cast captions its range stage" % kind)
 		scene._process(cue.range_ticks * TICK)
-		var range_cells: Array = Loop.strike_range_cells(loop, receipt)
-		var fields: Dictionary = Loop.skill_fields(loop, spell)
+		var range_cells: Array = BattlePlayLoop.strike_range_cells(loop, receipt)
+		var fields: Dictionary = BattlePlayLoop.skill_fields(loop, spell)
 		var area_outside_range := false
 		var followed := true
 		var areas_match := true
@@ -1289,7 +1289,7 @@ func ai_cue_camera_area_contracts() -> void:
 				followed = followed and scene.camera.position == reference_camera.position
 				var cell: Vector2i = scene.map_config.world_to_grid(cursor)
 				var expected: Array = []
-				for area_cell in Loop.SkillTargetRules.effect_cells(cell, fields, loop[LoopKeys.SKILL_TARGET_DATA], loop[LoopKeys.MAP_SIZE], actor["coord"]):
+				for area_cell in BattlePlayLoop.SkillTargetRules.effect_cells(cell, fields, loop[LoopKeys.SKILL_TARGET_DATA], loop[LoopKeys.MAP_SIZE], actor["coord"]):
 					expected.append(Rect2(scene.map_config.grid_to_world(area_cell), scene.grid_cell_size()))
 				areas_match = areas_match and cue.area_rects() == expected and not expected.is_empty()
 				area_outside_range = area_outside_range or (not range_cells.has(cell) and not cue.area_rects().is_empty())
@@ -1327,15 +1327,15 @@ func exhausted_action_contract() -> void:
 	await process_frame
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
-	var player: Dictionary = Loop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = Loop._unit(scene.play_loop, "enemy021_1")
+	var player: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var enemy: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	enemy["hp"] = 100
 	enemy["max_hp"] = 100
 	scene.play_loop["moved_this_action"] = true
 	scene.apply_loop(scene.play_loop, "test")
 	scene.menus.choose_command("attack")
-	scene.apply_loop(Loop.attack_target(scene.play_loop, enemy["id"], func(_n): return 0), "test")
+	scene.apply_loop(BattlePlayLoop.attack_target(scene.play_loop, enemy["id"], func(_n): return 0), "test")
 	scene.finish_attack_attempt()
 	var queue: Dictionary = scene.play_loop["turn_queue"].duplicate(true)
 	var view = scene.get_node("BattlePresentation")
@@ -1356,7 +1356,7 @@ func exhausted_action_contract() -> void:
 		check(scene.play_loop["turn_queue"] == queue, "NPC counter EXP cannot release the next menu early")
 		scene._process(view.aftermath.REWARD_SECONDS)
 	check(scene.ai_playback_active and not scene.action_menu.visible, "move then hit continues to the next actor, without a stray two-button menu")
-	check(scene.play_loop["turn_queue"] != queue and not Loop.action_exhausted(scene.play_loop), "handoff commits existing action flags once")
+	check(scene.play_loop["turn_queue"] != queue and not BattlePlayLoop.action_exhausted(scene.play_loop), "handoff commits existing action flags once")
 	check(not view.status_label.visible, "normal battle must not retain the debug objective transcript")
 	scene.queue_free()
 	await process_frame

@@ -102,7 +102,7 @@
       "save_effect": "none",
       "changeable": "anytime",
       "read_points": [
-        "game/battle/scene/BattleCombatCutin.gd:play（每次交锋第一段入队时读一次）→ pace（CombatPresentationTiming.PACE_CLOSEUP：原版 1、快 2、極快 16）乘在本节点每帧 delta 上；極快 时切入层 visible=false，片段照序跑完，impact／released 信号、地图伤害数字与经验照常",
+        "game/battle/scene/BattleCombatCutin.gd:play（每次交锋第一段入队时读一次）→ pace（CombatPresentationTiming.PACE_CUTIN：原版 1、快 2、極快 16）乘在本节点每帧 delta 上；極快 时切入层 visible=false，片段照序跑完，impact／released 信号、地图伤害数字与经验照常",
         "game/battle/scene/BattleAttackCue.gd:begin（每次地图起手范围演出读一次）→ pace（PACE_MAP：原版 1、快／極快 2）",
         "game/battle/scene/MagicImpactPresentation.gd:begin（每次法术受者血条与数字读一次）→ pace（PACE_MAP）",
         "game/battle/runtime/BattleOpeningCoordinator.gd:handle_input（对白外每次确认读一次）→ 原版值不快进，剧情走位与镜头照原速；快／極快 时 fast_forward_motion 落位"

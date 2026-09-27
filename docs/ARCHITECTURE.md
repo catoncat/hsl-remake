@@ -215,6 +215,40 @@ tools/                  generators/checkers/capture tools
 
 仓库外/ignored 的 raw copy、capture、decompilation 和 cache 不能成为产品代码默认依赖。
 
+<a id="terms"></a>
+
+## 术语
+
+一个概念在代码里只用一个词。下表是写新代码、改名时的唯一写法；preload 常量一律用被引文件名（`const BattlePlayLoop = preload(".../BattlePlayLoop.gd")`），不另起别名。
+
+| 概念（原版界面字样） | 标识符 | 说明 |
+| --- | --- | --- |
+| 气力（氣力） | `stamina`，界面缩写 ST | |
+| 切入（战斗特写画面） | `cutin` | `BattleCombatCutin`、`CutinLayout`；不用 closeup |
+| 飘字（伤害、结果、奖励数字） | `floater`，类名 `*Floater` | `DamageNumberFloater`／`ResultNumberFloater`／`BattleRewardFloater`；不用 `*Float`（与 GDScript 的 `float` 类型撞名）。`ShowNumberStyle` 对应原版 showNumber，保持 |
+| 技能 | `skill` = `magic`（魔法）＋ `special`（絕技） | `skill_id` 前缀即 `magic:`／`special:` |
+| 单位 | `unit` | 规则里的单位记录（PlayLoop `units` 的一行） |
+| 角色节点、原版角色模板 | `actor` | 只指画面节点（`ActorRuntime`）和模板（`actor_id`）；部分旧规则函数的参数仍叫 actor，读作 unit |
+| 队员（大地图、城镇） | `member` | 只在 world 侧用 |
+| 关卡号 | `level_no` | 代码里的变量／参数；JSON 字段 `level`、`next_level_event` 等保持原名 |
+| 角色等级 | `level` | 原版字段名 |
+| 援军 | `reinforcement` | `ReinforcementGrowthRules`；`spawn` 只指创建节点；既有数据键与收据字段里的 birth（如 `opening_birth`）保持原名 |
+| 结算奖励（经验、金钱） | `reward` | |
+| 获得物品 | `loot` | `drop` 只留给落雷（`drop_lightning`） |
+| 金钱 | `gold` | 原版 token `teCheckMoney` 及其处理函数保持原名 |
+| 胜负条件 | `winfail`；判定结果 `outcome` | |
+| 转职 | `job_up` | |
+
+几组容易混的词：
+
+- **opening／cutscene／story**：`opening` 是战前开场（关卡 STORY 脚本在第一次操作前播放的部分）；`cutscene` 是战斗中由 winfail 脚本触发的演出；`story` 指原版 STORY 脚本本身，以及没有战斗、只播剧情的关卡（story mode）。
+- **dialogue／message**：`dialogue` 是对白窗口（画面控件）；`message` 是 RESOURCE 里的一个文本条目。
+- **round／turn**：`round` 是全体轮一次（原版 wait_round 计的就是它）；`turn` 是一个单位行动一次（行动队列 turn_queue 的一项）。
+- **cell／coord／tile／position**：`cell` 是任意一格；`coord` 是单位记录里的锚点格字段；`tile` 是地图图块（图像）；像素位置叫 `position`。
+- **tick／receipt**：`tick` 是原版逻辑帧（`OriginalTick`，16 ms）；`receipt` 是规则结算后不可变的结果记录，画面只读它、不回写。
+
+原版表与脚本里的字段名（`k_action`、`m_shape`、`find_type`、`ai_help_otherhp` 等）保持原样、不翻译：生成器、证据文档和原版对照都按原名查找。
+
 ## Provenance headers
 
 每个 `game/**/*.gd` 模块的文件头（`extends`／`class_name`／首段 `##` 说明之后、第一个 `signal`／`var`／`enum`／`func` 之前，preload 常量可在前）带一个来源块，由 `python3 tools/hsl.py check provenance` 强制、`generate provenance` 汇总成 [PROVENANCE](PROVENANCE.md)：

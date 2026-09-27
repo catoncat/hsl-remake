@@ -1,9 +1,9 @@
 extends SceneTree
 ## Bounded real Control/map input fixture. Never sends desktop mouse or keys.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Status = preload("res://game/sim/StatusEffectRules.gd")
-const Cases = preload("res://tests/run_status_application_tests.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+const run_status_application_tests = preload("res://tests/run_status_application_tests.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/status-application-review/"
 var scene: Node
@@ -30,24 +30,24 @@ func run() -> void:
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
 	scene.get_node("BattleMusic").stop()
-	scene.apply_loop(Cases.fixture(), "test")
+	scene.apply_loop(run_status_application_tests.fixture(), "test")
 	# Source-owned 025 spell; deterministic success is explicitly fixture-only.
-	TestSuite.own(scene.play_loop, "skill_book")["skills"][Cases.POISON]["fields"]["status_hit_ratio"] = "100"
-	Loop._unit(scene.play_loop, "enemy021_2")["coord"] = Vector2i(13, 13)
-	var mage := Loop._unit(scene.play_loop, "enemy026_1")
+	TestSuite.own(scene.play_loop, "skill_book")["skills"][run_status_application_tests.POISON]["fields"]["status_hit_ratio"] = "100"
+	BattlePlayLoop._unit(scene.play_loop, "enemy021_2")["coord"] = Vector2i(13, 13)
+	var mage := BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
 	mage["coord"] = Vector2i(10, 8)
 	mage["live_speed"] = 98
 	mage["hp"] = 1000
 	mage["max_hp"] = 1000
 	mage["status_flags"] = 2
 	mage["status_counters"]["no_magic"] = 1
-	var ally := Loop._unit(scene.play_loop, "enemy023_1")
-	ally["battle_actor_role"] = Loop.ROLE_PLAYER
+	var ally := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
 	ally["player_commandable"] = true
 	ally["live_speed"] = 97
 	for unit in scene.play_loop["units"]:
 		unit["combat_profile"]["attack_back"] = 0
-	scene.play_loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(scene.play_loop["units"])
+	scene.play_loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(scene.play_loop["units"])
 	scene.apply_loop(scene.play_loop, "test")
 	scene.interaction_state = scene.play_loop["interaction"]
 	scene.menus.rebuild_action_menu_buttons()
@@ -61,13 +61,13 @@ func run() -> void:
 	check(scene.interaction_state == "action_menu" and scene.play_loop["interaction"] == "action_menu", "actual Cancel restores map and rules phase")
 	await create_timer(0.3).timeout
 	await click(scene.action_menu.get_node("MagicCommand"))
-	await click(scene.magic_panel.choices[Cases.POISON])
+	await click(scene.magic_panel.choices[run_status_application_tests.POISON])
 	check(scene.interaction_state == "attack_select" and not scene.magic_panel.visible, "actual spell click enables map targeting")
 	await shot("poison-range")
 	await point(scene.grid_cell_center_to_logical_position(Vector2i(9, 8)))
 	check(scene.play_loop["last_attack"].get("magic_key") == "poison", "actual map click submits the selected spell")
-	check(Status.poisoned(Loop.unit(scene.play_loop, "enemy021_1")) and Status.poisoned(Loop.unit(scene.play_loop, "enemy026_1")), "one cast applies poison to both footprint opponents")
-	check(Loop.unit(scene.play_loop, "emperor025")["mp"] == 90, "area cast charges MP exactly once")
+	check(StatusEffectRules.poisoned(BattlePlayLoop.unit(scene.play_loop, "enemy021_1")) and StatusEffectRules.poisoned(BattlePlayLoop.unit(scene.play_loop, "enemy026_1")), "one cast applies poison to both footprint opponents")
+	check(BattlePlayLoop.unit(scene.play_loop, "emperor025")["mp"] == 90, "area cast charges MP exactly once")
 	var settled_cast: Dictionary = scene.play_loop["last_attack"].duplicate(true)
 	scene.set_process(true)
 	await create_timer(0.85).timeout
@@ -78,11 +78,11 @@ func run() -> void:
 	check(scene.status_panel.visible, "actual enemy inspection opens live status")
 	await shot("poison-and-silence")
 	await escape()
-	var before_ai := Loop.unit(scene.play_loop, "enemy026_1")
+	var before_ai := BattlePlayLoop.unit(scene.play_loop, "enemy026_1")
 	await create_timer(0.3).timeout
 	await click(scene.action_menu.get_node("WaitCommand"))
 	await until_actor("enemy023_1")
-	var after_ai := Loop.unit(scene.play_loop, "enemy026_1")
+	var after_ai := BattlePlayLoop.unit(scene.play_loop, "enemy026_1")
 	var power := int(before_ai["status_counters"]["poison"]) >> 16
 	check(after_ai["mp"] == before_ai["mp"] and after_ai["hp"] == before_ai["hp"] - power, "silenced AI keeps MP and takes one owner-action poison step")
 	check(after_ai["status_counters"]["no_magic"] == 0 and int(after_ai["status_counters"]["poison"]) == int(before_ai["status_counters"]["poison"]) - 1, "AI expires silence and decrements poison once without corrupting potency")

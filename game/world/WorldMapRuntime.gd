@@ -309,8 +309,8 @@ func _resolve_arrival(point_id: int, basis: Dictionary = {}) -> Dictionary:
 ## (script reading: the second value is the level to load, the first the big-map
 ## point it belongs to); unregistered levels stay on the map with a card. True when
 ## the scene hands off to the level.
-func _enter_level_event(point: int, level: int) -> bool:
-	if level == Rules.BIG_MAP_LEVEL:
+func _enter_level_event(point: int, level_no: int) -> bool:
+	if level_no == Rules.BIG_MAP_LEVEL:
 		# (town_*, gameBigMapLevel) from a town event: stay on the map, standing at that point.
 		state = Rules.visit(state, world_map, point)
 		var modes: Dictionary = state.get("point_modes", {})
@@ -325,7 +325,7 @@ func _enter_level_event(point: int, level: int) -> bool:
 	var progress: Node = runtime.get_node_or_null("CampaignProgress")
 	var path := ""
 	if progress != null:
-		path = progress.next_scenario_path(progress.campaign, {"next_level_event": [point, level]})
+		path = progress.next_scenario_path(progress.campaign, {"next_level_event": [point, level_no]})
 	if path != "" and progress != null:
 		var carry: Dictionary = runtime.campaign_handoff.get("carry", {}) if typeof(runtime.campaign_handoff.get("carry")) == TYPE_DICTIONARY else {}
 		var blocked := _blocked_party_members(path, carry)
@@ -333,11 +333,11 @@ func _enter_level_event(point: int, level: int) -> bool:
 			# A random encounter that cannot field a carried member yet (no reviewed template /
 			# shared portrait): explicit stop on the map, never a silently smaller party.
 			var names: Array = blocked.map(func(member): return str(member.get("unit_id", member.get("actor_id", ""))))
-			_show_card("encounter_party_unfielded", "level %d · %s" % [level, Rules.point_label(world_map, point)], "此遭遇戰尚無 %s 的來源資料　　空格／點擊：返回地圖" % "／".join(names), null)
+			_show_card("encounter_party_unfielded", "level %d · %s" % [level_no, Rules.point_label(world_map, point)], "此遭遇戰尚無 %s 的來源資料　　空格／點擊：返回地圖" % "／".join(names), null)
 			return false
 		progress.start_world_handoff(path, carry, state)
 		return true
-	_show_card("level_not_remade", "level %d · %s" % [level, Rules.point_label(world_map, point)], "此地的關卡尚未重製　　空格／點擊：返回地圖", null)
+	_show_card("level_not_remade", "level %d · %s" % [level_no, Rules.point_label(world_map, point)], "此地的關卡尚未重製　　空格／點擊：返回地圖", null)
 	return false
 
 

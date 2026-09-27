@@ -3,7 +3,7 @@ extends CanvasLayer
 ## Source number types/order are retained; the original spawns each turn-end number at the unit's
 ## (x, y − 48) in its glyphs — poison and the blood-transfer HP loss red kind 0, HP gain green
 ## kind 2, MP blue kind 3 — the next one 40 ticks behind (its +0xa8 hold). The remake starts one
-## event per 40-tick beat; each number keeps its own tick clock (ResultNumberFloat), so the
+## event per 40-tick beat; each number keeps its own tick clock (ResultNumberFloater), so the
 ## previous one finishes fading while the next appears, and the last lives its full life.
 ## provenance:
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
@@ -17,7 +17,7 @@ const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ShowNumberStyle = preload("res://game/battle/runtime/ShowNumberStyle.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
+const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 const EVENT_INTERVAL_TICKS := 40
@@ -32,7 +32,7 @@ var cursor := -1
 var elapsed := 0.0
 ## The captions the original has no glyph for (麻痺解除, 增益結束); hidden on a number beat.
 var label: Label
-## One ResultNumberFloat per event of the receipt being shown (null for a caption event).
+## One ResultNumberFloater per event of the receipt being shown (null for a caption event).
 var numbers: Array = []
 var _displaying := false
 ## OPT-INFO=公開 for the receipt being shown (read once as it spawns): a number beat also
@@ -150,7 +150,7 @@ func _spawn(events: Array) -> void:
 		if kind == "":
 			numbers.append(null)
 			continue
-		var number: Node2D = ResultNumberFloat.new()
+		var number: Node2D = ResultNumberFloater.new()
 		number.clocked = false
 		add_child(number)
 		number.present(kind, absi(int(event["amount"])))

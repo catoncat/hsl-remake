@@ -18,21 +18,21 @@ extends RefCounted
 ## (evaluate). This is an exploration driver for the autoplay sweep, not a product AI and not
 ## evidence about original balance; the default greedy policy in Autoplay.gd is untouched.
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Combat = preload("res://game/sim/CoreCombatRules.gd")
-const ItemUse = preload("res://game/sim/ItemUseRules.gd")
-const SkillResolution = preload("res://game/sim/SkillResolutionRules.gd")
-const SkillTargets = preload("res://game/sim/SkillTargetRules.gd")
-const SkillPlanning = preload("res://game/sim/AISkillPlanning.gd")
-const SpecialDamage = preload("res://game/sim/SpecialDamageRules.gd")
-const MagicRolls = preload("res://game/sim/NativeMagicRollRules.gd")
-const PoisonArrow = preload("res://game/sim/PoisonArrowRules.gd")
-const Support = preload("res://game/sim/SupportMagicRules.gd")
-const Repeated = preload("res://game/sim/RepeatedSpecialRules.gd")
-const Position = preload("res://game/sim/PositionCapabilityRules.gd")
-const Progression = preload("res://game/sim/ProgressionRules.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
+const SkillResolutionRules = preload("res://game/sim/SkillResolutionRules.gd")
+const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
+const AISkillPlanning = preload("res://game/sim/AISkillPlanning.gd")
+const SpecialDamageRules = preload("res://game/sim/SpecialDamageRules.gd")
+const NativeMagicRollRules = preload("res://game/sim/NativeMagicRollRules.gd")
+const PoisonArrowRules = preload("res://game/sim/PoisonArrowRules.gd")
+const SupportMagicRules = preload("res://game/sim/SupportMagicRules.gd")
+const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
+const PositionCapabilityRules = preload("res://game/sim/PositionCapabilityRules.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
-const Status = preload("res://game/sim/StatusEffectRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 const MODE_GREEDY := "greedy"
@@ -55,7 +55,7 @@ const HEAL_RATIO := 0.6
 ## (BattleVitals), not the power, so the commander prices a tick from the weapon-poison power
 ## domain (StatusEffectRules.WEAPON_POWER_DOMAIN): the midpoint as the expected tick, the top
 ## as the worst — never the unit's hidden counter.
-const POISON_POWER: Array = Status.WEAPON_POWER_DOMAIN["poison"]
+const POISON_POWER: Array = StatusEffectRules.WEAPON_POWER_DOMAIN["poison"]
 ## Attack-cell assignment (_strike_assignment): options (cells) searched per unit.
 const ASSIGNMENT_OPTIONS := 8
 ## At most this many focus-fire candidates (weakest strikable foes first).
@@ -270,7 +270,7 @@ static func simulate_round(loop: Dictionary, plan: Dictionary) -> Dictionary:
 	var saved_cache := _envelope_cache
 	_envelope_cache = {}
 	var rng: Variant = _typical_draws()
-	var sim: Dictionary = Loop.copy(loop)
+	var sim: Dictionary = BattlePlayLoop.copy(loop)
 	var round_number := int(sim.get("turn", 1))
 	var steps := 0
 	var complete := false
@@ -283,10 +283,10 @@ static func simulate_round(loop: Dictionary, plan: Dictionary) -> Dictionary:
 			complete = true
 			break
 		var next: Dictionary
-		if Loop.loot_waiting(sim):
+		if BattlePlayLoop.loot_waiting(sim):
 			# The driver's own "later" on the collection panel.
 			var settlement: Dictionary = sim["settlement"]
-			next = Loop.finish_rewards(sim, int(settlement["sequence"]), int(settlement["revision"]), false, true)
+			next = BattlePlayLoop.finish_rewards(sim, int(settlement["sequence"]), int(settlement["revision"]), false, true)
 			if next == sim:
 				break
 			sim = next
@@ -295,12 +295,12 @@ static func simulate_round(loop: Dictionary, plan: Dictionary) -> Dictionary:
 		match str(sim.get("interaction", "")):
 			"action_menu":
 				var id := str(sim.get("selected_unit_id", ""))
-				var allocation := growth_allocation(Loop.unit(sim, id))
+				var allocation := growth_allocation(BattlePlayLoop.unit(sim, id))
 				if not allocation.is_empty():
-					sim = Loop.allocate_growth(sim, id, allocation)
+					sim = BattlePlayLoop.allocate_growth(sim, id, allocation)
 					_envelope_cache.clear()
-				if Loop.action_exhausted(sim):
-					next = Loop.finish_exhausted_action(sim)
+				if BattlePlayLoop.action_exhausted(sim):
+					next = BattlePlayLoop.finish_exhausted_action(sim)
 				else:
 					next = _ground(sim, id, plan, rng)["loop"]
 			"ai_resolving":
@@ -346,10 +346,10 @@ static var _ai_step_memo_open := false
 
 static func _step_ai_turn(sim: Dictionary, rng: Variant) -> Dictionary:
 	if not _ai_step_memo_open:
-		return Loop.step_ai_turn(sim, rng)
+		return BattlePlayLoop.step_ai_turn(sim, rng)
 	var state := {}
 	for key in sim:
-		if not Loop.LoopConfig.CONFIG_SHARED.has(key):
+		if not BattlePlayLoop.LoopConfig.CONFIG_SHARED.has(key):
 			state[key] = sim[key]
 	var bytes := var_to_bytes(state)
 	var digest := hash(bytes)
@@ -361,7 +361,7 @@ static func _step_ai_turn(sim: Dictionary, rng: Variant) -> Dictionary:
 			if stateful:
 				(rng as RandomNumberGenerator).state = entry["rng_after"]
 			return entry["next"]
-	var next := Loop.step_ai_turn(sim, rng)
+	var next := BattlePlayLoop.step_ai_turn(sim, rng)
 	if not _ai_step_memo.has(digest):
 		_ai_step_memo[digest] = []
 	_ai_step_memo[digest].append({"bytes": bytes, "rng_before": rng_before, "loop": sim, "next": next, "rng_after": (rng as RandomNumberGenerator).state if stateful else 0})
@@ -383,7 +383,7 @@ static func _typical_draws() -> Callable:
 static func _same_configuration(left: Dictionary, right: Dictionary) -> bool:
 	if left.size() != right.size():
 		return false
-	for key in Loop.LoopConfig.CONFIG_SHARED:
+	for key in BattlePlayLoop.LoopConfig.CONFIG_SHARED:
 		if left.has(key) != right.has(key) or (left.has(key) and not is_same(left[key], right[key])):
 			return false
 	return true
@@ -420,15 +420,15 @@ static func stats(brain: Dictionary) -> Dictionary:
 static func take_player_action(brain: Dictionary, loop: Dictionary, rng: RandomNumberGenerator) -> Dictionary:
 	_envelope_cache.clear()
 	var id := str(loop.get("selected_unit_id", ""))
-	var allocation := growth_allocation(Loop.unit(loop, id))
+	var allocation := growth_allocation(BattlePlayLoop.unit(loop, id))
 	if not allocation.is_empty():
-		var grown := Loop.allocate_growth(loop, id, allocation)
-		if int(Loop.unit(grown, id).get("pending_stat_points", 0)) < int(Loop.unit(loop, id).get("pending_stat_points", 0)):
+		var grown := BattlePlayLoop.allocate_growth(loop, id, allocation)
+		if int(BattlePlayLoop.unit(grown, id).get("pending_stat_points", 0)) < int(BattlePlayLoop.unit(loop, id).get("pending_stat_points", 0)):
 			loop = grown
 			_envelope_cache.clear()
 			brain["allocations"] = int(brain.get("allocations", 0)) + 1
-	if Loop.action_exhausted(loop):
-		return {"loop": Loop.finish_exhausted_action(loop), "action": "offense_finished"}
+	if BattlePlayLoop.action_exhausted(loop):
+		return {"loop": BattlePlayLoop.finish_exhausted_action(loop), "action": "offense_finished"}
 	loop = claim_supplies(loop)
 	var round_number := int(loop.get("turn", 1))
 	var is_hero := id == str(loop.get("player_unit_id", ""))
@@ -460,7 +460,7 @@ static func take_player_action(brain: Dictionary, loop: Dictionary, rng: RandomN
 			print("AUTOPLAY_BRAIN round=%d actor=%s hero_hp=%d/%d pick=%s" % [round_number, id, int(hero.get("hp", 0)), int(hero.get("max_hp", 0)), str(brain["plan"]["id"])])
 			var roster: Array = []
 			for unit in loop.get("units", []):
-				if Loop.Presence.living(unit):
+				if BattlePlayLoop.Presence.living(unit):
 					roster.append("%s:%s:%d/%d@%d,%d" % [str(unit["id"]), str(unit.get("battle_actor_role", "")).left(1), int(unit.get("hp", 0)), int(unit.get("max_hp", 0)), unit["coord"].x, unit["coord"].y])
 			print("  units " + " ".join(roster))
 			for candidate in options:
@@ -484,15 +484,15 @@ static func take_player_action(brain: Dictionary, loop: Dictionary, rng: RandomN
 static func claim_supplies(loop: Dictionary) -> Dictionary:
 	if _supplies(loop, loop.get("settlement", {}).get("pending", [])).is_empty():
 		return loop
-	var next := loop if Loop.loot_waiting(loop) else Loop.reopen_rewards(loop)
-	if not Loop.loot_waiting(next):
+	var next := loop if BattlePlayLoop.loot_waiting(loop) else BattlePlayLoop.reopen_rewards(loop)
+	if not BattlePlayLoop.loot_waiting(next):
 		return loop
 	var claimed := 0
 	for entry in _supplies(next, next["settlement"]["pending"]):
 		var best := ""
 		var best_count := 0
-		for id in Loop.loot_recipients(next):
-			var inventory: Array = Loop.unit(next, str(id)).get("inventory", [])
+		for id in BattlePlayLoop.loot_recipients(next):
+			var inventory: Array = BattlePlayLoop.unit(next, str(id)).get("inventory", [])
 			if not inventory.has(0):
 				continue
 			var count := _supply_count(next, inventory)
@@ -501,12 +501,12 @@ static func claim_supplies(loop: Dictionary) -> Dictionary:
 				best_count = count
 		if best == "":
 			break
-		var taken := Loop.claim_reward(next, int(next["settlement"]["sequence"]), int(next["settlement"]["revision"]), str(entry["id"]), best)
-		if not Loop.same_state(taken, next):
+		var taken := BattlePlayLoop.claim_reward(next, int(next["settlement"]["sequence"]), int(next["settlement"]["revision"]), str(entry["id"]), best)
+		if not BattlePlayLoop.same_state(taken, next):
 			next = taken
 			claimed += 1
-	var closed := Loop.finish_rewards(next, int(next["settlement"]["sequence"]), int(next["settlement"]["revision"]), false, true)
-	if claimed == 0 or Loop.same_state(closed, next):
+	var closed := BattlePlayLoop.finish_rewards(next, int(next["settlement"]["sequence"]), int(next["settlement"]["revision"]), false, true)
+	if claimed == 0 or BattlePlayLoop.same_state(closed, next):
 		return loop
 	return closed
 
@@ -540,7 +540,7 @@ static func growth_allocation(unit: Dictionary) -> Dictionary:
 			order.append(key)
 	var allocation := {}
 	# One con share per level the pending points stand for (a partial level counts as one).
-	var levels := (points + Progression.POINTS_PER_LEVEL - 1) / Progression.POINTS_PER_LEVEL
+	var levels := (points + ProgressionRules.POINTS_PER_LEVEL - 1) / ProgressionRules.POINTS_PER_LEVEL
 	var con_share := mini(points, mini(GROWTH_CON_PER_LEVEL * levels, maxi(0, int(caps.get("con", 0)) - int(profile.get("con", 0)))))
 	if con_share > 0:
 		allocation["con"] = con_share
@@ -552,7 +552,7 @@ static func growth_allocation(unit: Dictionary) -> Dictionary:
 		if spend > 0:
 			allocation[key] = int(allocation.get(key, 0)) + spend
 			points -= spend
-	return allocation if not allocation.is_empty() and Progression.can_allocate(unit, allocation) else {}
+	return allocation if not allocation.is_empty() and ProgressionRules.can_allocate(unit, allocation) else {}
 
 
 ## Deterministic selection: highest score, first listed on ties.
@@ -596,7 +596,7 @@ static func candidates(loop: Dictionary, board: Dictionary, idle_rounds: int = 0
 		out.append(_score(_formation_candidate(loop, board)))
 	if lookahead:
 		for guard_id in _apart_guards(loop, board):
-			var escort := _escort_candidate(loop, board, Loop.unit(loop, str(guard_id)))
+			var escort := _escort_candidate(loop, board, BattlePlayLoop.unit(loop, str(guard_id)))
 			if not escort.is_empty():
 				out.append(_score(escort))
 	var heal := _heal_candidate(loop, board)
@@ -619,7 +619,7 @@ static func candidates(loop: Dictionary, board: Dictionary, idle_rounds: int = 0
 	for intent in _skill_picks(loop, board):
 		out.append(_score(_skill_candidate(loop, board, intent)))
 	for foe_id in board["objectives"]:
-		var target := Loop.unit(loop, str(foe_id))
+		var target := BattlePlayLoop.unit(loop, str(foe_id))
 		out.append(_score(_objective_candidate(loop, board, target)))
 	for foe in _focus_targets(loop, board):
 		if out.size() >= MAX_CANDIDATES:
@@ -700,24 +700,24 @@ static func _cost_penalty(resource: String, cost: int) -> float:
 ## queried cell lies within that bound (S13: a level-44 decision flooded all 73 foes on each
 ## of its 22 boards; the party's cells are near a handful of them).
 static func _board(loop: Dictionary) -> Dictionary:
-	var hero := Loop.unit(loop, str(loop.get("player_unit_id", "")))
-	if not Loop.Presence.living(hero):
+	var hero := BattlePlayLoop.unit(loop, str(loop.get("player_unit_id", "")))
+	if not BattlePlayLoop.Presence.living(hero):
 		hero = {}
 	var commandables: Array = []
 	var enemies: Array = []
 	for unit in loop.get("units", []):
-		if not Loop.Presence.living(unit):
+		if not BattlePlayLoop.Presence.living(unit):
 			continue
 		var role := str(unit.get("battle_actor_role", ""))
-		if role == Loop.ROLE_ENEMY:
+		if role == BattlePlayLoop.ROLE_ENEMY:
 			enemies.append(unit)
-		elif role == Loop.ROLE_PLAYER and bool(unit.get("player_commandable", false)):
+		elif role == BattlePlayLoop.ROLE_PLAYER and bool(unit.get("player_commandable", false)):
 			commandables.append(unit)
 	var threat_foes: Array = []
 	for foe in enemies:
 		if bool(foe.get("no_attack", false)):
 			continue
-		var pattern := Loop.weapon_pattern(loop, foe)
+		var pattern := BattlePlayLoop.weapon_pattern(loop, foe)
 		if not bool(pattern.get("ok", false)):
 			continue
 		threat_foes.append({"id": str(foe["id"]), "coord": foe["coord"], "offsets": pattern["offsets"], "reach": _threat_reach(foe, pattern["offsets"])})
@@ -725,8 +725,8 @@ static func _board(loop: Dictionary) -> Dictionary:
 	# as level 17's escort): their exposure and death are priced like the hero's.
 	var guarded: Array = []
 	for id in must_survive_ids(loop):
-		var unit := Loop.unit(loop, str(id))
-		if Loop.Presence.living(unit) and str(id) != str(hero.get("id", "")) and str(unit.get("battle_actor_role", "")) in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]:
+		var unit := BattlePlayLoop.unit(loop, str(id))
+		if BattlePlayLoop.Presence.living(unit) and str(id) != str(hero.get("id", "")) and str(unit.get("battle_actor_role", "")) in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]:
 			guarded.append(str(id))
 	return {"hero": hero, "commandables": commandables, "enemies": enemies, "threat": {}, "threat_foes": threat_foes, "guarded": guarded, "objectives": objective_target_ids(loop), "actor_id": str(loop.get("selected_unit_id", ""))}
 
@@ -762,7 +762,7 @@ static func _threat_at(loop: Dictionary, board: Dictionary, point: Vector2i) -> 
 			origins.append(coord)
 			var touched := {}
 			for origin in origins:
-				for cell in Loop.TacticalGridRules.attack_pattern_cells(origin, entry["offsets"], loop["map_size"]):
+				for cell in BattlePlayLoop.TacticalGridRules.attack_pattern_cells(origin, entry["offsets"], loop["map_size"]):
 					touched[cell] = true
 			entry["touched"] = touched
 		if (entry["touched"] as Dictionary).has(point):
@@ -792,8 +792,8 @@ static func must_survive_ids(loop: Dictionary) -> Array:
 ## clear-the-field status (actCheckEnemyTotalNumber) names nobody. Nothing is a roster.
 static func objective_target_ids(loop: Dictionary) -> Array:
 	return _last_of_tokens(loop, "win", loop.get("win_statuses", [])).filter(func(id):
-		var unit := Loop.unit(loop, str(id))
-		return Loop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == Loop.ROLE_ENEMY)
+		var unit := BattlePlayLoop.unit(loop, str(id))
+		return BattlePlayLoop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == BattlePlayLoop.ROLE_ENEMY)
 
 
 ## Units whose fall alone fires one of the `armed` statuses of `section` ("win" / "fail").
@@ -848,7 +848,7 @@ static func _guarded_cell(loop: Dictionary, board: Dictionary, unit: Dictionary,
 ## Foes that threaten `unit` standing at `origin`: distinct ids over its footprint cells.
 static func _threatening(loop: Dictionary, board: Dictionary, unit: Dictionary, origin: Vector2i) -> Array:
 	var ids := {}
-	for point in Loop.Footprint.cells(unit, origin):
+	for point in BattlePlayLoop.Footprint.cells(unit, origin):
 		for id in _threat_at(loop, board, point):
 			ids[id] = true
 	return ids.keys()
@@ -858,7 +858,7 @@ static func _threatening(loop: Dictionary, board: Dictionary, unit: Dictionary, 
 static func _expected_incoming(loop: Dictionary, unit: Dictionary, foe_ids: Array) -> float:
 	var total := 0.0
 	for id in foe_ids:
-		var foe := Loop.unit(loop, str(id))
+		var foe := BattlePlayLoop.unit(loop, str(id))
 		if foe.is_empty():
 			continue
 		total += _expected_strike(foe, unit)
@@ -866,7 +866,7 @@ static func _expected_incoming(loop: Dictionary, unit: Dictionary, foe_ids: Arra
 
 
 static func _expected_strike(attacker: Dictionary, defender: Dictionary) -> float:
-	var preview := Combat.preview_attack(attacker, defender, null)
+	var preview := CoreCombatRules.preview_attack(attacker, defender, null)
 	return float(preview["damage"]) * float(preview["hit_rate"]) / 100.0
 
 
@@ -883,15 +883,15 @@ static func _worst_incoming(loop: Dictionary, unit: Dictionary, foe_ids: Array, 
 	var total := 0
 	var critical_extra := 0
 	for id in foe_ids:
-		var foe := Loop.unit(loop, str(id))
+		var foe := BattlePlayLoop.unit(loop, str(id))
 		if foe.is_empty():
 			continue
-		var damage := int(Combat.preview_attack(foe, unit, null)["damage"])
+		var damage := int(CoreCombatRules.preview_attack(foe, unit, null)["damage"])
 		total += damage
-		var chance := int(Combat.combat_profile_from_unit(foe).get("attack_damagex2", 0))
+		var chance := int(CoreCombatRules.combat_profile_from_unit(foe).get("attack_damagex2", 0))
 		if critical and chance > 0:
 			# The rules' own critical formula forced to fire (chance 100 against the midpoint roll).
-			critical_extra = maxi(critical_extra, int(Combat.critical_impact(damage, true, 100, null)["damage"]) - damage)
+			critical_extra = maxi(critical_extra, int(CoreCombatRules.critical_impact(damage, true, 100, null)["damage"]) - damage)
 	return total + critical_extra
 
 
@@ -933,7 +933,7 @@ static func _hero_numbers(loop: Dictionary, board: Dictionary, hero_cell: Varian
 	var guarded_can_die := false
 	var guarded_expected_death := false
 	for id in board["guarded"]:
-		var unit := Loop.unit(loop, str(id))
+		var unit := BattlePlayLoop.unit(loop, str(id))
 		if unit.is_empty():
 			continue
 		var cell: Vector2i = unit["coord"]
@@ -981,7 +981,7 @@ static func _pending_ids(loop: Dictionary) -> Array:
 ## the plan cures it (`cured_ids`) or it has already acted this round (not in `pending`).
 static func _poison_tick(unit: Dictionary, pending: Array, cured_ids: Array, worst: bool) -> int:
 	var id := str(unit.get("id", ""))
-	if (int(unit.get("status_flags", 0)) & Status.POISON) == 0 or cured_ids.has(id) or not pending.has(id):
+	if (int(unit.get("status_flags", 0)) & StatusEffectRules.POISON) == 0 or cured_ids.has(id) or not pending.has(id):
 		return 0
 	return _poison_tick_hp(unit, worst)
 
@@ -998,17 +998,17 @@ static func _counter_numbers(loop: Dictionary, hero: Dictionary, hero_cell: Vect
 	var none := {"expected": 0.0, "worst": 0}
 	if foe_id == "" or kills:
 		return none
-	var foe := Loop.unit(loop, foe_id)
-	if not Loop.Presence.living(foe) or bool(foe.get("no_attack", false)):
+	var foe := BattlePlayLoop.unit(loop, foe_id)
+	if not BattlePlayLoop.Presence.living(foe) or bool(foe.get("no_attack", false)):
 		return none
-	var pattern := Loop.weapon_pattern(loop, foe)
+	var pattern := BattlePlayLoop.weapon_pattern(loop, foe)
 	if not bool(pattern.get("ok", false)):
 		return none
-	var reach: Array = Loop.TacticalGridRules.attack_pattern_cells(foe["coord"], pattern["offsets"], loop["map_size"])
-	if not Loop.Footprint.overlaps(hero, reach, hero_cell):
+	var reach: Array = BattlePlayLoop.TacticalGridRules.attack_pattern_cells(foe["coord"], pattern["offsets"], loop["map_size"])
+	if not BattlePlayLoop.Footprint.overlaps(hero, reach, hero_cell):
 		return none
-	var chance := clampi(int(Combat.combat_profile_from_unit(foe).get("attack_back", 0)), 0, 100)
-	var preview := Combat.preview_attack(foe, hero, null)
+	var chance := clampi(int(CoreCombatRules.combat_profile_from_unit(foe).get("attack_back", 0)), 0, 100)
+	var preview := CoreCombatRules.preview_attack(foe, hero, null)
 	var worst := maxi(1, int(preview["damage"]) * 80 / 100)
 	return {"expected": float(worst) * float(preview["hit_rate"]) / 100.0 * float(chance) / 100.0, "worst": worst if chance > 0 else 0}
 
@@ -1078,7 +1078,7 @@ static func _rescue_candidate(loop: Dictionary, board: Dictionary) -> Dictionary
 	var pursuer := {}
 	var hardest := -1.0
 	for foe_id in _threatening(loop, board, hero, hero["coord"]):
-		var foe := Loop.unit(loop, str(foe_id))
+		var foe := BattlePlayLoop.unit(loop, str(foe_id))
 		var strike := _expected_strike(foe, hero)
 		if strike > hardest or (strike == hardest and int(foe["hp"]) < int(pursuer["hp"])):
 			pursuer = foe
@@ -1166,7 +1166,7 @@ static func _heal_candidate(loop: Dictionary, board: Dictionary, protected_only:
 	if drink_cell is Vector2i:
 		plan["cell"] = drink_cell
 	var hero: Dictionary = board["hero"]
-	var target := Loop.unit(loop, str(plan["target_id"]))
+	var target := BattlePlayLoop.unit(loop, str(plan["target_id"]))
 	var hero_cell: Variant = null
 	var hero_step := {}
 	if not hero.is_empty() and str(plan["healer_id"]) == str(hero["id"]):
@@ -1195,13 +1195,13 @@ static func _heal_candidate(loop: Dictionary, board: Dictionary, protected_only:
 	var numbers_loop := loop
 	var numbers_board := board
 	if str(plan["target_id"]) == str(hero.get("id", "")) or board["guarded"].has(str(plan["target_id"])):
-		numbers_loop = Loop.copy(loop)
+		numbers_loop = BattlePlayLoop.copy(loop)
 		for unit in numbers_loop["units"]:
 			if str(unit["id"]) == str(plan["target_id"]):
 				unit["hp"] = mini(int(unit["max_hp"]), int(unit["hp"]) + int(plan["heal_hp"]))
 		numbers_board = board.duplicate()
 		if not hero.is_empty():
-			numbers_board["hero"] = Loop.unit(numbers_loop, str(hero["id"]))
+			numbers_board["hero"] = BattlePlayLoop.unit(numbers_loop, str(hero["id"]))
 	var out := _candidate("heal:%s" % str(plan["target_id"]), "heal", "%s uses a healing item on %s (hp %d/%d); others act greedily." % [str(plan["healer_id"]), str(plan["target_id"]), int(target["hp"]), int(target["max_hp"])], damage, kills, _hero_numbers(numbers_loop, numbers_board, hero_cell, str(hero_step.get("foe_id", "")), int(hero_step.get("kills", 0)) > 0, actor_step.get("cell"), actor_step, cells, kill_ids), cells, kill_ids)
 	out["heal_hp"] = int(plan["heal_hp"])
 	out["heal_target_hp_ratio"] = snappedf(float(target["hp"]) / maxf(1.0, float(target["max_hp"])), 0.01)
@@ -1245,7 +1245,7 @@ static func _cure_candidate(loop: Dictionary, board: Dictionary) -> Dictionary:
 	if plan.is_empty():
 		return {}
 	var hero: Dictionary = board["hero"]
-	var target := Loop.unit(loop, str(plan["target_id"]))
+	var target := BattlePlayLoop.unit(loop, str(plan["target_id"]))
 	var hero_cell: Variant = null
 	var hero_step := {}
 	if not hero.is_empty() and str(plan["healer_id"]) == str(hero["id"]):
@@ -1292,18 +1292,18 @@ static func _cure_intent(loop: Dictionary, board: Dictionary) -> Dictionary:
 	for unit in board["commandables"]:
 		if not unit.get("inventory") is Array or not pending.has(str(unit["id"])):
 			continue
-		var curing := ItemUse.first_status_slot(unit["inventory"], loop["consumables"], Status.POISON)
+		var curing := ItemUseRules.first_status_slot(unit["inventory"], loop["consumables"], StatusEffectRules.POISON)
 		if not bool(curing.get("ok", false)) or int(curing["index"]) < 0:
 			continue
 		var slot := int(curing["index"])
 		var code := str(int(unit["inventory"][slot]))
 		var definition: Dictionary = loop["consumables"][code]
 		for target in loop["units"]:
-			if not Loop.Presence.living(target) or str(target.get("battle_actor_role", "")) not in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]:
+			if not BattlePlayLoop.Presence.living(target) or str(target.get("battle_actor_role", "")) not in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]:
 				continue
-			if (int(target.get("status_flags", 0)) & Status.POISON) == 0:
+			if (int(target.get("status_flags", 0)) & StatusEffectRules.POISON) == 0:
 				continue
-			var effect := ItemUse.prepare(target, definition)
+			var effect := ItemUseRules.prepare(target, definition)
 			if not bool(effect.get("ok", false)) or not bool(effect.get("cured_poison", false)):
 				continue
 			var cell: Variant = _adjacent_cell(loop, board, unit, target)
@@ -1395,23 +1395,23 @@ static func _pursuers_reaching(loop: Dictionary, board: Dictionary, unit: Dictio
 	moved["grid_coord"] = cell
 	var units: Array = []
 	for other in loop.get("units", []):
-		if not Loop.Presence.living(other):
+		if not BattlePlayLoop.Presence.living(other):
 			continue
 		units.append(moved if str(other["id"]) == str(unit["id"]) else other)
-	var body: Array = Loop.Footprint.cells(moved)
+	var body: Array = BattlePlayLoop.Footprint.cells(moved)
 	var out: Array = []
 	for foe in board["enemies"]:
 		if bool(foe.get("no_attack", false)):
 			continue
-		var pattern := Loop.weapon_pattern(loop, foe)
+		var pattern := BattlePlayLoop.weapon_pattern(loop, foe)
 		if not bool(pattern.get("ok", false)):
 			continue
-		var envelope: Dictionary = Loop.TacticalGridRules.movement_reachability_envelope(foe, units, Loop.TerrainEdits.tiles(loop), loop["map_size"])
+		var envelope: Dictionary = BattlePlayLoop.TacticalGridRules.movement_reachability_envelope(foe, units, BattlePlayLoop.TerrainEdits.tiles(loop), loop["map_size"])
 		var origins: Array = envelope.get("reachable_coords", []).duplicate()
 		origins.append(foe["coord"])
 		var touched := false
 		for origin in origins:
-			for point in Loop.TacticalGridRules.attack_pattern_cells(origin, pattern["offsets"], loop["map_size"]):
+			for point in BattlePlayLoop.TacticalGridRules.attack_pattern_cells(origin, pattern["offsets"], loop["map_size"]):
 				if body.has(point):
 					touched = true
 					break
@@ -1452,7 +1452,7 @@ static func _walk_field(loop: Dictionary, unit: Dictionary, targets: Array) -> D
 		var probe: Dictionary = unit.duplicate(true)
 		probe["coord"] = target
 		probe["grid_coord"] = target
-		var envelope: Dictionary = Loop.TacticalGridRules.movement_reachability_envelope(probe, [probe], Loop.TerrainEdits.tiles(loop), loop["map_size"], ESCAPE_UNREACHABLE - 1)
+		var envelope: Dictionary = BattlePlayLoop.TacticalGridRules.movement_reachability_envelope(probe, [probe], BattlePlayLoop.TerrainEdits.tiles(loop), loop["map_size"], ESCAPE_UNREACHABLE - 1)
 		if not bool(envelope.get("ok", false)):
 			continue
 		field[target] = 0
@@ -1484,7 +1484,7 @@ static func _focus_targets(loop: Dictionary, board: Dictionary) -> Array:
 		if int(a["hp"]) != int(b["hp"]):
 			return int(a["hp"]) < int(b["hp"])
 		if not hero.is_empty():
-			return Loop.Footprint.distance(hero, a) < Loop.Footprint.distance(hero, b)
+			return BattlePlayLoop.Footprint.distance(hero, a) < BattlePlayLoop.Footprint.distance(hero, b)
 		return str(a["id"]) < str(b["id"]))
 	return strikable.slice(0, FOCUS_CANDIDATES)
 
@@ -1766,7 +1766,7 @@ static func _skill_candidate(loop: Dictionary, board: Dictionary, intent: Dictio
 			hero_step = step
 		if str(unit["id"]) == str(board["actor_id"]):
 			actor_step = step
-	var target := Loop.unit(loop, str(intent["target_id"]))
+	var target := BattlePlayLoop.unit(loop, str(intent["target_id"]))
 	var summary := "%s casts %s (%s %d) at %s (hp %d/%d) from (%d,%d): %d target(s), forecast damage %.1f, healing %d; others act greedily." % [caster_id, str(intent["skill_name"]), str(intent["resource"]), int(intent["cost"]), str(intent["target_id"]), int(target.get("hp", 0)), int(target.get("max_hp", 0)), intent["cell"].x, intent["cell"].y, int(intent["targets_hit"]), float(intent["expected_damage"]), int(intent["heal_hp"])]
 	var out := _candidate("%s:%s@%s" % [str(intent["channel"]), str(intent["skill_id"]), str(intent["target_id"])], str(intent["channel"]), summary, damage, kills, _hero_numbers(loop, board, hero_cell, str(hero_step.get("foe_id", "")), int(hero_step.get("kills", 0)) > 0, actor_step.get("cell"), actor_step, cells, kill_ids), cells, kill_ids)
 	for key in ["caster_id", "skill_id", "target_id", "targets_hit", "heal_hp", "resource", "cost", "resource_after"]:
@@ -1820,8 +1820,8 @@ static func _hero_first(board: Dictionary) -> Array:
 		if a_hero != b_hero:
 			return a_hero
 		if not hero.is_empty():
-			var da := Loop.Footprint.distance(hero, a)
-			var db := Loop.Footprint.distance(hero, b)
+			var da := BattlePlayLoop.Footprint.distance(hero, a)
+			var db := BattlePlayLoop.Footprint.distance(hero, b)
 			if da != db:
 				return da < db
 		return str(a["id"]) < str(b["id"]))
@@ -1859,8 +1859,8 @@ static func _hold_cell(loop: Dictionary, board: Dictionary, unit: Dictionary, an
 static func _bait_units(board: Dictionary) -> Array:
 	var units: Array = board["commandables"].duplicate()
 	units.sort_custom(func(a, b):
-		var ta := int(a.get("hp", 0)) + int(Combat.combat_profile_from_unit(a).get("live_defense", 0))
-		var tb := int(b.get("hp", 0)) + int(Combat.combat_profile_from_unit(b).get("live_defense", 0))
+		var ta := int(a.get("hp", 0)) + int(CoreCombatRules.combat_profile_from_unit(a).get("live_defense", 0))
+		var tb := int(b.get("hp", 0)) + int(CoreCombatRules.combat_profile_from_unit(b).get("live_defense", 0))
 		if ta != tb:
 			return ta > tb
 		return str(a["id"]) < str(b["id"]))
@@ -1880,7 +1880,7 @@ static func _bait_candidate(loop: Dictionary, board: Dictionary, bait: Dictionar
 		var ids := _threatening(loop, board, bait, cell)
 		if ids.size() != 1:
 			continue
-		var foe := Loop.unit(loop, str(ids[0]))
+		var foe := BattlePlayLoop.unit(loop, str(ids[0]))
 		var key := [0 if _worst_incoming(loop, bait, ids) < int(bait.get("hp", 0)) else 1, int(foe.get("hp", 0)), _path_cost(loop, bait, cell)]
 		if bait_cell == null or key < best_key:
 			bait_cell = cell
@@ -1888,14 +1888,14 @@ static func _bait_candidate(loop: Dictionary, board: Dictionary, bait: Dictionar
 			foe_id = str(ids[0])
 	if bait_cell == null:
 		return {}
-	var foe := Loop.unit(loop, foe_id)
+	var foe := BattlePlayLoop.unit(loop, foe_id)
 	var strike_from: Array = []
-	var pattern := Loop.weapon_pattern(loop, foe)
+	var pattern := BattlePlayLoop.weapon_pattern(loop, foe)
 	if bool(pattern.get("ok", false)):
 		var origins: Array = _movement_cells(loop, foe_id).duplicate()
 		origins.append(foe["coord"])
 		for origin in origins:
-			if Loop.Footprint.overlaps(bait, Loop.TacticalGridRules.attack_pattern_cells(origin, pattern["offsets"], loop["map_size"]), bait_cell):
+			if BattlePlayLoop.Footprint.overlaps(bait, BattlePlayLoop.TacticalGridRules.attack_pattern_cells(origin, pattern["offsets"], loop["map_size"]), bait_cell):
 				strike_from.append(origin)
 	var damage := 0.0
 	var kills := 0
@@ -2018,7 +2018,7 @@ static func _formation_cell(loop: Dictionary, board: Dictionary, unit: Dictionar
 static func _apart_guards(loop: Dictionary, board: Dictionary) -> Array:
 	var out: Array = []
 	for id in board["guarded"]:
-		var unit := Loop.unit(loop, str(id))
+		var unit := BattlePlayLoop.unit(loop, str(id))
 		if _escorted(unit) and _party_gap(loop, unit, unit["coord"]) > ISOLATION_DISTANCE:
 			out.append(str(id))
 	return out
@@ -2026,7 +2026,7 @@ static func _apart_guards(loop: Dictionary, board: Dictionary) -> Array:
 
 ## True for a living commandable player unit (a friendly AI escort does not move on the plan's word).
 static func _escorted(unit: Dictionary) -> bool:
-	return Loop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == Loop.ROLE_PLAYER and bool(unit.get("player_commandable", false))
+	return BattlePlayLoop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == BattlePlayLoop.ROLE_PLAYER and bool(unit.get("player_commandable", false))
 
 
 ## The nearest other living party-side unit (player or friendly AI) to `unit` standing on `cell`
@@ -2035,11 +2035,11 @@ static func _nearest_partner(loop: Dictionary, unit: Dictionary, cell: Vector2i)
 	var best := {}
 	var best_distance := -1
 	for other in loop.get("units", []):
-		if str(other.get("id", "")) == str(unit.get("id", "")) or not Loop.Presence.living(other):
+		if str(other.get("id", "")) == str(unit.get("id", "")) or not BattlePlayLoop.Presence.living(other):
 			continue
-		if str(other.get("battle_actor_role", "")) not in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]:
+		if str(other.get("battle_actor_role", "")) not in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]:
 			continue
-		var distance := Loop.Footprint.distance(unit, other, cell)
+		var distance := BattlePlayLoop.Footprint.distance(unit, other, cell)
 		if best_distance < 0 or distance < best_distance:
 			best = other
 			best_distance = distance
@@ -2049,7 +2049,7 @@ static func _nearest_partner(loop: Dictionary, unit: Dictionary, cell: Vector2i)
 ## Distance from `unit` standing on `cell` to the nearest other living party-side unit; 0 when none.
 static func _party_gap(loop: Dictionary, unit: Dictionary, cell: Vector2i) -> int:
 	var partner := _nearest_partner(loop, unit, cell)
-	return 0 if partner.is_empty() else Loop.Footprint.distance(unit, partner, cell)
+	return 0 if partner.is_empty() else BattlePlayLoop.Footprint.distance(unit, partner, cell)
 
 
 ## escort:<guard>: the must-survive unit `guard`, apart from the party (_apart_guards), walks
@@ -2269,11 +2269,11 @@ static func _isolated(loop: Dictionary, unit: Dictionary) -> bool:
 ## _isolated with `unit` standing on `cell` (the others where they stand).
 static func _isolated_at(loop: Dictionary, unit: Dictionary, cell: Vector2i) -> bool:
 	for other in loop.get("units", []):
-		if str(other.get("id", "")) == str(unit.get("id", "")) or not Loop.Presence.living(other):
+		if str(other.get("id", "")) == str(unit.get("id", "")) or not BattlePlayLoop.Presence.living(other):
 			continue
-		if str(other.get("battle_actor_role", "")) not in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]:
+		if str(other.get("battle_actor_role", "")) not in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]:
 			continue
-		if Loop.Footprint.distance(unit, other, cell) <= ISOLATION_DISTANCE:
+		if BattlePlayLoop.Footprint.distance(unit, other, cell) <= ISOLATION_DISTANCE:
 			return false
 	return true
 
@@ -2298,7 +2298,7 @@ static func role_weights(loop: Dictionary, board: Dictionary) -> Dictionary:
 			weight = 1.0
 		var healer := false
 		if unit.get("inventory") is Array:
-			var healing := ItemUse.first_healing_slot(unit["inventory"], loop["consumables"])
+			var healing := ItemUseRules.first_healing_slot(unit["inventory"], loop["consumables"])
 			healer = bool(healing.get("ok", false)) and int(healing.get("index", -1)) >= 0
 		var caster := false
 		for row in _skill_options(loop, unit):
@@ -2312,14 +2312,14 @@ static func role_weights(loop: Dictionary, board: Dictionary) -> Dictionary:
 			weight = maxf(weight, ROLE_CASTER)
 		weights[id] = weight
 		if not weakest.is_empty() and not bool(unit.get("no_attack", false)):
-			var damage := int(Combat.preview_attack(unit, weakest, null)["damage"])
+			var damage := int(CoreCombatRules.preview_attack(unit, weakest, null)["damage"])
 			if damage > top_damage:
 				top_damage = damage
 				top_id = id
 	if top_id != "":
 		weights[top_id] = maxf(float(weights[top_id]), ROLE_KEY)
 	for unit in loop.get("units", []):
-		if Loop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == Loop.ROLE_FRIENDLY:
+		if BattlePlayLoop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == BattlePlayLoop.ROLE_FRIENDLY:
 			weights[str(unit["id"])] = 1.0 if board["guarded"].has(str(unit["id"])) else ROLE_FRIENDLY
 	return weights
 
@@ -2353,12 +2353,12 @@ static func evaluate(before: Dictionary, after: Dictionary, board: Dictionary, c
 	for unit in before.get("units", []):
 		var id := str(unit.get("id", ""))
 		var role := str(unit.get("battle_actor_role", ""))
-		var later := Loop.unit(after, id)
-		if role == Loop.ROLE_ENEMY:
-			if not Loop.Presence.living(unit):
+		var later := BattlePlayLoop.unit(after, id)
+		if role == BattlePlayLoop.ROLE_ENEMY:
+			if not BattlePlayLoop.Presence.living(unit):
 				continue
-			var lost := float(int(unit["hp"]) - (int(later["hp"]) if Loop.Presence.living(later) else 0)) / maxf(1.0, float(unit["max_hp"]))
-			if not Loop.Presence.living(later):
+			var lost := float(int(unit["hp"]) - (int(later["hp"]) if BattlePlayLoop.Presence.living(later) else 0)) / maxf(1.0, float(unit["max_hp"]))
+			if not BattlePlayLoop.Presence.living(later):
 				out["enemy"] += VALUE_ENEMY_KILL + VALUE_ENEMY_HP * lost
 				out["threat_removed"] += _threat_removed(before, unit, board, weights)
 			else:
@@ -2366,10 +2366,10 @@ static func evaluate(before: Dictionary, after: Dictionary, board: Dictionary, c
 			if board.get("objectives", []).has(id):
 				out["objective"] += VALUE_OBJECTIVE_HP * lost
 			continue
-		if not weights.has(id) or not Loop.Presence.living(unit):
+		if not weights.has(id) or not BattlePlayLoop.Presence.living(unit):
 			continue
 		var weight := float(weights[id])
-		if not Loop.Presence.living(later):
+		if not BattlePlayLoop.Presence.living(later):
 			out["deaths"] -= weight * VALUE_UNIT_DEATH
 			if id == hero_id or board["guarded"].has(id):
 				out["deaths"] -= VALUE_GUARDED_DEATH
@@ -2378,9 +2378,9 @@ static func evaluate(before: Dictionary, after: Dictionary, board: Dictionary, c
 		out["hp_lost"] -= weight * VALUE_HP_LOST * maxf(0.0, float(int(unit["hp"]) - int(later["hp"]))) / max_hp
 		if float(later["hp"]) / max_hp <= LOW_HP_RATIO:
 			out["low_hp"] -= weight * VALUE_LOW_HP
-		var tick := _poison_tick_hp(later, false) if (int(later.get("status_flags", 0)) & Status.POISON) != 0 else 0
+		var tick := _poison_tick_hp(later, false) if (int(later.get("status_flags", 0)) & StatusEffectRules.POISON) != 0 else 0
 		out["poison"] -= weight * VALUE_HP_LOST * float(tick) / max_hp
-		if role == Loop.ROLE_PLAYER:
+		if role == BattlePlayLoop.ROLE_PLAYER:
 			var threat_ids := _threatening(after, after_board, later, later["coord"])
 			var threats := threat_ids.size()
 			if threats > 0:
@@ -2400,9 +2400,9 @@ static func evaluate(before: Dictionary, after: Dictionary, board: Dictionary, c
 				out["escape"] += VALUE_ESCAPE_STEP * float(_escape_distance(before, unit, unit["coord"]) - _escape_distance(before, unit, later["coord"]))
 	_envelope_cache = saved_cache
 	for id in board.get("objectives", []):
-		var target := Loop.unit(after, str(id))
-		if Loop.Presence.living(target):
-			out["march"] += VALUE_OBJECTIVE_STEP * (_objective_distance(before, Loop.unit(before, str(id))) - _objective_distance(after, target))
+		var target := BattlePlayLoop.unit(after, str(id))
+		if BattlePlayLoop.Presence.living(target):
+			out["march"] += VALUE_OBJECTIVE_STEP * (_objective_distance(before, BattlePlayLoop.unit(before, str(id))) - _objective_distance(after, target))
 	if bool(candidate.get("hero_expected_death", false)):
 		out["worst_case"] = -VALUE_HERO_EXPECTED_DEATH
 	elif bool(candidate.get("hero_can_die", false)) or hero_reach_can_die:
@@ -2437,13 +2437,13 @@ static func _reach_can_die(before: Dictionary, after: Dictionary, later: Diction
 ## `before`: the threat map's own Manhattan pre-filter (_threat_reach), without the flood.
 static func _reach_bound_ids(before: Dictionary, after: Dictionary, unit: Dictionary, cell: Vector2i) -> Array:
 	var out: Array = []
-	var points: Array = Loop.Footprint.cells(unit, cell)
+	var points: Array = BattlePlayLoop.Footprint.cells(unit, cell)
 	for foe in before.get("units", []):
-		if str(foe.get("battle_actor_role", "")) != Loop.ROLE_ENEMY or not Loop.Presence.living(foe) or bool(foe.get("no_attack", false)):
+		if str(foe.get("battle_actor_role", "")) != BattlePlayLoop.ROLE_ENEMY or not BattlePlayLoop.Presence.living(foe) or bool(foe.get("no_attack", false)):
 			continue
-		if not Loop.Presence.living(Loop.unit(after, str(foe["id"]))):
+		if not BattlePlayLoop.Presence.living(BattlePlayLoop.unit(after, str(foe["id"]))):
 			continue
-		var pattern := Loop.weapon_pattern(before, foe)
+		var pattern := BattlePlayLoop.weapon_pattern(before, foe)
 		if not bool(pattern.get("ok", false)):
 			continue
 		var reach := _threat_reach(foe, pattern["offsets"])
@@ -2460,8 +2460,8 @@ static func _reach_bound_ids(before: Dictionary, after: Dictionary, unit: Dictio
 static func _level_progress(before: Dictionary, later: Dictionary) -> float:
 	var level_before := int(before.get("level", 1))
 	var level_after := int(later.get("level", 1))
-	var share_before := float(int(before.get("exp", 0))) / float(maxi(1, Progression.exp_to_next(level_before)))
-	var share_after := float(int(later.get("exp", 0))) / float(maxi(1, Progression.exp_to_next(level_after)))
+	var share_before := float(int(before.get("exp", 0))) / float(maxi(1, ProgressionRules.exp_to_next(level_before)))
+	var share_after := float(int(later.get("exp", 0))) / float(maxi(1, ProgressionRules.exp_to_next(level_after)))
 	return maxf(0.0, float(level_after - level_before) + share_after - share_before)
 
 
@@ -2483,8 +2483,8 @@ static func _supplies_spent(before: Dictionary, after: Dictionary, board: Dictio
 	var held_after := 0
 	for unit in board["commandables"]:
 		var id := str(unit["id"])
-		var bag_before: Variant = Loop.unit(before, id).get("inventory", [])
-		var bag_after: Variant = Loop.unit(after, id).get("inventory", [])
+		var bag_before: Variant = BattlePlayLoop.unit(before, id).get("inventory", [])
+		var bag_after: Variant = BattlePlayLoop.unit(after, id).get("inventory", [])
 		held_before += _supply_count(before, bag_before) if bag_before is Array else 0
 		held_after += _supply_count(after, bag_after) if bag_after is Array else 0
 	var spent_count := maxi(0, held_before - held_after)
@@ -2518,8 +2518,8 @@ static func _threat_removed(before: Dictionary, foe: Dictionary, board: Dictiona
 		return 0.0
 	var best := 0.0
 	for unit in board["commandables"]:
-		var victim := Loop.unit(before, str(unit["id"]))
-		if not Loop.Presence.living(victim):
+		var victim := BattlePlayLoop.unit(before, str(unit["id"]))
+		if not BattlePlayLoop.Presence.living(victim):
 			continue
 		var share := _expected_strike(foe, victim) / maxf(1.0, float(victim["max_hp"]))
 		best = maxf(best, share * float(weights.get(str(victim["id"]), ROLE_OTHER)))
@@ -2532,7 +2532,7 @@ static func _objective_distance(loop: Dictionary, target: Dictionary) -> float:
 	var total := 0.0
 	var count := 0
 	for unit in loop.get("units", []):
-		if Loop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == Loop.ROLE_PLAYER and bool(unit.get("player_commandable", false)):
+		if BattlePlayLoop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == BattlePlayLoop.ROLE_PLAYER and bool(unit.get("player_commandable", false)):
 			var distance := _march_distance(loop, unit, unit["coord"], target)
 			if distance < ESCAPE_UNREACHABLE:
 				total += float(distance)
@@ -2546,8 +2546,8 @@ static func _objective_distance(loop: Dictionary, target: Dictionary) -> float:
 ## special_options, quote ok) whose damage policy the forecaster covers: [{unit, option, descriptor}].
 static func _skill_options(loop: Dictionary, unit: Dictionary) -> Array:
 	var out: Array = []
-	var options: Array = Loop.magic_options(loop, str(unit["id"]))
-	options.append_array(Loop.special_options(loop, str(unit["id"])))
+	var options: Array = BattlePlayLoop.magic_options(loop, str(unit["id"]))
+	options.append_array(BattlePlayLoop.special_options(loop, str(unit["id"])))
 	for option in options:
 		if not bool(option["quote"].get("ok", false)):
 			continue
@@ -2598,18 +2598,18 @@ static func _cast_intents(loop: Dictionary, board: Dictionary, unit: Dictionary,
 	var quote: Dictionary = option["quote"]
 	var out: Array = []
 	for cell in _reachable(loop, unit):
-		if Position.cast_error(unit, loop["skill_book"], loop["equipment_items"], channel, cell != unit["coord"]) != "":
+		if PositionCapabilityRules.cast_error(unit, loop["skill_book"], loop["equipment_items"], channel, cell != unit["coord"]) != "":
 			continue
-		var cast_cells: Array = SkillTargets.cells(cell, fields, targeting, loop["map_size"])
+		var cast_cells: Array = SkillTargetRules.cells(cell, fields, targeting, loop["map_size"])
 		if cast_cells.is_empty():
 			continue
-		for center in SkillTargets.candidate_centers(unit, loop["units"], fields, targeting, loop["map_size"], cell):
+		for center in SkillTargetRules.candidate_centers(unit, loop["units"], fields, targeting, loop["map_size"], cell):
 			if not cast_cells.has(center):
 				continue
-			var target := SkillPlanning.target_for_center(unit, loop["units"], fields, targeting, loop["map_size"], cell, center)
+			var target := AISkillPlanning.target_for_center(unit, loop["units"], fields, targeting, loop["map_size"], cell, center)
 			if target.is_empty():
 				continue
-			var ready := SkillResolution.prepare_cast(unit, target, loop["units"], skill_id, fields, loop["skill_book"], targeting, loop["equipment_items"], cell, loop["map_size"], center)
+			var ready := SkillResolutionRules.prepare_cast(unit, target, loop["units"], skill_id, fields, loop["skill_book"], targeting, loop["equipment_items"], cell, loop["map_size"], center)
 			if not bool(ready.get("ok", false)):
 				continue
 			var forecast := _forecast_cast(loop, unit, ready, descriptor)
@@ -2634,27 +2634,27 @@ static func _forecast_cast(loop: Dictionary, caster: Dictionary, ready: Dictiona
 	var heal := 0
 	var hit := 0
 	var by_target := {}
-	var pulses := Repeated.PULSES if str(descriptor["damage_policy"]) == "native_special_sequence" else 1
+	var pulses := RepeatedSpecialRules.PULSES if str(descriptor["damage_policy"]) == "native_special_sequence" else 1
 	for index in range(ready["targets"].size()):
 		var target: Dictionary = ready["targets"][index]
 		var prepared: Dictionary = ready["prepared"][index]
 		if prepared.has("support"):
 			if float(target["hp"]) / maxf(1.0, float(target["max_hp"])) > HEAL_RATIO:
 				continue
-			var resolved := Support.resolve(prepared["support"], target, int(caster["hit_bonus_accum"]), _forecast_draws(), loop["equipment_items"])
+			var resolved := SupportMagicRules.resolve(prepared["support"], target, int(caster["hit_bonus_accum"]), _forecast_draws(), loop["equipment_items"])
 			if int(resolved["healing"]) > 0:
 				heal += int(resolved["healing"])
 				hit += 1
 			continue
 		var roll := {}
 		if prepared.has("special"):
-			roll = SpecialDamage.roll(prepared["special"]["input"], _forecast_draws())
+			roll = SpecialDamageRules.roll(prepared["special"]["input"], _forecast_draws())
 		elif prepared.has("arrow"):
-			roll = PoisonArrow.roll(prepared["arrow"]["input"], _forecast_draws())
+			roll = PoisonArrowRules.roll(prepared["arrow"]["input"], _forecast_draws())
 		elif prepared.has("status") and (int(prepared["status"]["function_mask"]) & 1) != 0:
 			var input: Dictionary = prepared["status"]["roll_input"].duplicate(true)
 			input["proc"] = 0
-			roll = PoisonArrow.roll(input, _forecast_draws()) if str(descriptor["channel"]) == "special" else MagicRolls.roll(input, _forecast_draws())
+			roll = PoisonArrowRules.roll(input, _forecast_draws()) if str(descriptor["channel"]) == "special" else NativeMagicRollRules.roll(input, _forecast_draws())
 		if roll.is_empty():
 			continue
 		var rate := clampi(int(roll["hit_rate"]), 0, 100)
@@ -2727,7 +2727,7 @@ static var _tactics: bool = false
 static func _movement_envelope(loop: Dictionary, unit_id: String) -> Dictionary:
 	var key := "envelope:" + unit_id
 	if not _envelope_cache.has(key):
-		_envelope_cache[key] = Loop._movement_envelope(loop, unit_id)
+		_envelope_cache[key] = BattlePlayLoop._movement_envelope(loop, unit_id)
 	return _envelope_cache[key]
 
 
@@ -2745,7 +2745,7 @@ static func _movement_path_size(loop: Dictionary, unit_id: String, cell: Vector2
 static func _strike_cells(loop: Dictionary, unit: Dictionary, foe: Dictionary) -> Array:
 	if bool(unit.get("no_attack", false)):
 		return []
-	var pattern := Loop.weapon_pattern(loop, unit)
+	var pattern := BattlePlayLoop.weapon_pattern(loop, unit)
 	if not bool(pattern.get("ok", false)):
 		return []
 	var reachable := {}
@@ -2753,7 +2753,7 @@ static func _strike_cells(loop: Dictionary, unit: Dictionary, foe: Dictionary) -
 		reachable[cell] = true
 	var out: Array = []
 	var seen := {}
-	for point in Loop.Footprint.cells(foe):
+	for point in BattlePlayLoop.Footprint.cells(foe):
 		for offset in pattern["offsets"]:
 			var cell: Vector2i = point - Vector2i(int(offset[0]), int(offset[1]))
 			if reachable.has(cell) and not seen.has(cell):
@@ -2770,7 +2770,7 @@ static func _focus_cell(loop: Dictionary, board: Dictionary, unit: Dictionary, f
 	var best_key: Array = []
 	var retaliation: Array = _retaliation_cells(loop, foe) if _tactics else []
 	for cell in _strike_cells(loop, unit, foe):
-		var key := [_threatening(loop, board, unit, cell).size(), 1 if _tactics and Loop.Footprint.overlaps(unit, retaliation, cell) else 0, _path_cost(loop, unit, cell)]
+		var key := [_threatening(loop, board, unit, cell).size(), 1 if _tactics and BattlePlayLoop.Footprint.overlaps(unit, retaliation, cell) else 0, _path_cost(loop, unit, cell)]
 		if best == null or key < best_key:
 			best = cell
 			best_key = key
@@ -2781,10 +2781,10 @@ static func _focus_cell(loop: Dictionary, board: Dictionary, unit: Dictionary, f
 static func _retaliation_cells(loop: Dictionary, foe: Dictionary) -> Array:
 	if bool(foe.get("no_attack", false)):
 		return []
-	var pattern := Loop.weapon_pattern(loop, foe)
+	var pattern := BattlePlayLoop.weapon_pattern(loop, foe)
 	if not bool(pattern.get("ok", false)):
 		return []
-	return Loop.TacticalGridRules.attack_pattern_cells(foe["coord"], pattern["offsets"], loop["map_size"])
+	return BattlePlayLoop.TacticalGridRules.attack_pattern_cells(foe["coord"], pattern["offsets"], loop["map_size"])
 
 
 static func _path_cost(loop: Dictionary, unit: Dictionary, cell: Vector2i) -> int:
@@ -2811,15 +2811,15 @@ static func _safest_cell(loop: Dictionary, board: Dictionary, unit: Dictionary) 
 static func _best_strike_from(loop: Dictionary, unit: Dictionary, cell: Vector2i) -> Dictionary:
 	if bool(unit.get("no_attack", false)):
 		return {}
-	var pattern := Loop.weapon_pattern(loop, unit)
+	var pattern := BattlePlayLoop.weapon_pattern(loop, unit)
 	if not bool(pattern.get("ok", false)):
 		return {}
-	var cells: Array = Loop.TacticalGridRules.attack_pattern_cells(cell, pattern["offsets"], loop["map_size"])
+	var cells: Array = BattlePlayLoop.TacticalGridRules.attack_pattern_cells(cell, pattern["offsets"], loop["map_size"])
 	var best := {}
 	for foe in _living_foes(loop, unit):
-		if Loop.Footprint.contact(foe, cells) == null:
+		if BattlePlayLoop.Footprint.contact(foe, cells) == null:
 			continue
-		var distance := Loop.Footprint.distance(unit, foe, cell)
+		var distance := BattlePlayLoop.Footprint.distance(unit, foe, cell)
 		if best.is_empty() or int(foe["hp"]) < int(best["hp"]) or (int(foe["hp"]) == int(best["hp"]) and distance < int(best["distance"])):
 			var expected := _expected_strike(unit, foe)
 			best = {"foe_id": str(foe["id"]), "hp": int(foe["hp"]), "distance": distance, "expected_damage": expected, "kills": 1 if expected >= float(foe["hp"]) else 0}
@@ -2882,7 +2882,7 @@ static func _approach_cell(loop: Dictionary, board: Dictionary, unit: Dictionary
 	var best: Vector2i = unit["coord"]
 	var best_key: Array = []
 	for cell in _reachable(loop, unit):
-		var distance := Loop.Footprint.distance(unit, goal, cell) if not goal.is_empty() else _nearest_foe_distance(unit, cell, foes)
+		var distance := BattlePlayLoop.Footprint.distance(unit, goal, cell) if not goal.is_empty() else _nearest_foe_distance(unit, cell, foes)
 		var key := [distance, _threatening(loop, board, unit, cell).size() if careful else 0, 0 if cell == unit["coord"] else 1]
 		if best_key.is_empty() or key < best_key:
 			best = cell
@@ -2893,7 +2893,7 @@ static func _approach_cell(loop: Dictionary, board: Dictionary, unit: Dictionary
 static func _nearest_foe_distance(unit: Dictionary, origin: Vector2i, foes: Array) -> int:
 	var best := -1
 	for foe in foes:
-		var distance := Loop.Footprint.distance(unit, foe, origin)
+		var distance := BattlePlayLoop.Footprint.distance(unit, foe, origin)
 		if best < 0 or distance < best:
 			best = distance
 	return best if best >= 0 else 0
@@ -2919,21 +2919,21 @@ static func _heal_intent(loop: Dictionary, board: Dictionary, protected_only: bo
 	for unit in board["commandables"]:
 		if not unit.get("inventory") is Array or not pending.has(str(unit["id"])):
 			continue
-		var healing := ItemUse.first_healing_slot(unit["inventory"], loop["consumables"])
+		var healing := ItemUseRules.first_healing_slot(unit["inventory"], loop["consumables"])
 		if not bool(healing.get("ok", false)) or int(healing["index"]) < 0:
 			continue
 		var slot := int(healing["index"])
 		var code := str(int(unit["inventory"][slot]))
 		var definition: Dictionary = loop["consumables"][code]
 		for target in loop["units"]:
-			if not Loop.Presence.living(target) or str(target.get("battle_actor_role", "")) not in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]:
+			if not BattlePlayLoop.Presence.living(target) or str(target.get("battle_actor_role", "")) not in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]:
 				continue
 			if protected_only and not protected.has(str(target["id"])):
 				continue
 			var ratio := float(target["hp"]) / maxf(1.0, float(target["max_hp"]))
 			if ratio > HEAL_RATIO and not _in_kill_range(loop, board, target, pending):
 				continue
-			var effect := ItemUse.prepare(target, definition)
+			var effect := ItemUseRules.prepare(target, definition)
 			if not bool(effect.get("ok", false)) or int(effect.get("restored_hp", 0)) <= 0:
 				continue
 			var cell: Variant = _adjacent_cell(loop, board, unit, target)
@@ -2963,7 +2963,7 @@ static func _adjacent_cell(loop: Dictionary, board: Dictionary, unit: Dictionary
 	var best: Variant = null
 	var best_key: Array = []
 	for cell in _reachable(loop, unit):
-		if str(unit["id"]) != str(target["id"]) and Loop.Footprint.distance(unit, target, cell) > 1:
+		if str(unit["id"]) != str(target["id"]) and BattlePlayLoop.Footprint.distance(unit, target, cell) > 1:
 			continue
 		var key := [_threatening(loop, board, unit, cell).size(), _path_cost(loop, unit, cell)]
 		if best == null or key < best_key:
@@ -2973,12 +2973,12 @@ static func _adjacent_cell(loop: Dictionary, board: Dictionary, unit: Dictionary
 
 
 static func _living_foes(loop: Dictionary, actor: Dictionary) -> Array:
-	var player_side := str(actor.get("battle_actor_role", "")) in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]
+	var player_side := str(actor.get("battle_actor_role", "")) in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]
 	var out: Array = []
 	for unit in loop.get("units", []):
-		if not Loop.Presence.living(unit) or str(unit.get("id", "")) == str(actor.get("id", "")):
+		if not BattlePlayLoop.Presence.living(unit) or str(unit.get("id", "")) == str(actor.get("id", "")):
 			continue
-		var unit_player_side := str(unit.get("battle_actor_role", "")) in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]
+		var unit_player_side := str(unit.get("battle_actor_role", "")) in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]
 		if unit_player_side != player_side:
 			out.append(unit)
 	return out
@@ -2989,14 +2989,14 @@ static func _living_foes(loop: Dictionary, actor: Dictionary) -> Array:
 ## Grounds the round's plan for the selected unit through the public command entry points.
 static func _ground(loop: Dictionary, id: String, plan: Dictionary, rng: Variant) -> Dictionary:
 	var board := _board(loop)
-	var unit := Loop.unit(loop, id)
+	var unit := BattlePlayLoop.unit(loop, id)
 	var is_hero := id == str(board["hero"].get("id", ""))
 	match str(plan.get("kind", "advance")):
 		"rescue":
 			if is_hero:
 				return _move_then_strike(loop, id, _safest_cell(loop, board, unit), "", rng)
-			var pursuer := Loop.unit(loop, str(plan["target_id"]))
-			if Loop.Presence.living(pursuer):
+			var pursuer := BattlePlayLoop.unit(loop, str(plan["target_id"]))
+			if BattlePlayLoop.Presence.living(pursuer):
 				var strike_cell: Variant = _focus_cell(loop, board, unit, pursuer)
 				if strike_cell is Vector2i and not _exposed(loop, board, unit, strike_cell, str(pursuer["id"])):
 					var stand_at := _guarded_cell(loop, board, unit, strike_cell)
@@ -3004,8 +3004,8 @@ static func _ground(loop: Dictionary, id: String, plan: Dictionary, rng: Variant
 				var closing := _greedy_intent(loop, board, unit, true, pursuer)
 				return _move_then_strike(loop, id, _guarded_cell(loop, board, unit, closing["cell"]), "", rng)
 		"focus":
-			var foe := Loop.unit(loop, str(plan["target_id"]))
-			if Loop.Presence.living(foe):
+			var foe := BattlePlayLoop.unit(loop, str(plan["target_id"]))
+			if BattlePlayLoop.Presence.living(foe):
 				var cell: Variant = _focus_cell(loop, board, unit, foe)
 				if cell is Vector2i and _tactics and _exposed(loop, board, unit, cell, str(foe["id"])):
 					cell = null
@@ -3015,8 +3015,8 @@ static func _ground(loop: Dictionary, id: String, plan: Dictionary, rng: Variant
 				var approach := _greedy_intent(loop, board, unit, true, foe)
 				return _move_then_strike(loop, id, _guarded_cell(loop, board, unit, approach["cell"]), "", rng)
 		"objective":
-			var target := Loop.unit(loop, str(plan["target_id"]))
-			if Loop.Presence.living(target):
+			var target := BattlePlayLoop.unit(loop, str(plan["target_id"]))
+			if BattlePlayLoop.Presence.living(target):
 				var blow := _objective_step(loop, board, unit, target, _strike_assignment(loop, board, target))
 				if not (blow["cast"] as Dictionary).is_empty():
 					var cast := _cast(loop, id, {"skill_id": str(blow["cast"]["skill_id"]), "target_id": str(target["id"]), "cell": blow["cell"]}, board, rng)
@@ -3024,7 +3024,7 @@ static func _ground(loop: Dictionary, id: String, plan: Dictionary, rng: Variant
 						return cast
 				return _move_then_strike(loop, id, blow["cell"], str(blow["foe_id"]), rng)
 		"escort":
-			var guard := Loop.unit(loop, str(plan["target_id"]))
+			var guard := BattlePlayLoop.unit(loop, str(plan["target_id"]))
 			if _escorted(guard):
 				var goal: Variant = _planned_cell(plan, str(guard["id"])) if _pending_ids(loop).has(str(guard["id"])) else null
 				var walk := _escort_step(loop, board, unit, guard, goal)
@@ -3063,14 +3063,14 @@ static func _ground(loop: Dictionary, id: String, plan: Dictionary, rng: Variant
 static func _move_then_strike(loop: Dictionary, id: String, cell: Vector2i, foe_id: String, rng: Variant) -> Dictionary:
 	var next := loop
 	var moved := false
-	var unit := Loop.unit(next, id)
-	if cell != unit["coord"] and Loop.command_available(next, "move"):
-		var moving := Loop.move_unit_to(Loop.choose_command(next, "move"), cell)
+	var unit := BattlePlayLoop.unit(next, id)
+	if cell != unit["coord"] and BattlePlayLoop.command_available(next, "move"):
+		var moving := BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(next, "move"), cell)
 		if bool(moving.get("moved_this_action", false)):
 			next = moving
 			moved = true
 		else:
-			next = Loop.cancel_interaction(moving)
+			next = BattlePlayLoop.cancel_interaction(moving)
 	return _strike_or_wait(next, id, foe_id, rng, moved)
 
 
@@ -3078,55 +3078,55 @@ static func _move_then_strike(loop: Dictionary, id: String, cell: Vector2i, foe_
 static func _move_then_wait(loop: Dictionary, id: String, cell: Vector2i) -> Dictionary:
 	var next := loop
 	var moved := false
-	var unit := Loop.unit(next, id)
-	if cell != unit["coord"] and Loop.command_available(next, "move"):
-		var moving := Loop.move_unit_to(Loop.choose_command(next, "move"), cell)
+	var unit := BattlePlayLoop.unit(next, id)
+	if cell != unit["coord"] and BattlePlayLoop.command_available(next, "move"):
+		var moving := BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(next, "move"), cell)
 		if bool(moving.get("moved_this_action", false)):
 			next = moving
 			moved = true
 		else:
-			next = Loop.cancel_interaction(moving)
+			next = BattlePlayLoop.cancel_interaction(moving)
 	if BattleOutcome.decided(next):
 		return {"loop": next, "action": "move"}
-	var waited := Loop.choose_command(next, "wait")
-	if Loop.same_state(waited, next):
+	var waited := BattlePlayLoop.choose_command(next, "wait")
+	if BattlePlayLoop.same_state(waited, next):
 		return {"loop": next, "action": ""}
 	return {"loop": waited, "action": "move" if moved else "wait"}
 
 
 static func _strike_or_wait(loop: Dictionary, id: String, foe_id: String, rng: Variant, moved: bool) -> Dictionary:
-	if Loop.command_available(loop, "attack"):
+	if BattlePlayLoop.command_available(loop, "attack"):
 		var struck := _try_attack(loop, id, foe_id, rng)
 		if not struck.is_empty():
 			return {"loop": struck, "action": "move_then_attack" if moved else "attack"}
-	var waited := Loop.choose_command(loop, "wait")
-	if Loop.same_state(waited, loop):
+	var waited := BattlePlayLoop.choose_command(loop, "wait")
+	if BattlePlayLoop.same_state(waited, loop):
 		return {"loop": loop, "action": ""}
 	return {"loop": waited, "action": "move" if moved else "wait"}
 
 
 ## Strikes `foe_id` when it is in range, else the weakest foe in range; {} when none.
 static func _try_attack(loop: Dictionary, id: String, foe_id: String, _rng: Variant) -> Dictionary:
-	var unit := Loop.unit(loop, id)
-	var cells: Array = Loop.attack_cells(loop, id)
+	var unit := BattlePlayLoop.unit(loop, id)
+	var cells: Array = BattlePlayLoop.attack_cells(loop, id)
 	var target := ""
 	if foe_id != "":
-		var foe := Loop.unit(loop, foe_id)
-		if Loop.Presence.living(foe) and Loop.Footprint.contact(foe, cells) != null:
+		var foe := BattlePlayLoop.unit(loop, foe_id)
+		if BattlePlayLoop.Presence.living(foe) and BattlePlayLoop.Footprint.contact(foe, cells) != null:
 			target = foe_id
 	if target == "":
 		target = str(_best_strike_in_place(loop, unit).get("foe_id", ""))
 	if target == "":
 		return {}
 	# Settlement draws from the loop's damage stream (DamageRandomStream), as the product does.
-	var struck := Loop.attack_target(Loop.choose_command(loop, "attack"), target)
+	var struck := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop, "attack"), target)
 	if BattleOutcome.decided(struck):
 		return struck
 	if not bool(struck.get("attacked_this_action", false)):
 		return {}
-	if Loop.loot_waiting(struck):
+	if BattlePlayLoop.loot_waiting(struck):
 		return struck
-	return Loop.finish_exhausted_action(struck)
+	return BattlePlayLoop.finish_exhausted_action(struck)
 
 
 ## Moves the caster to its cast cell and casts the planned skill at the planned target through
@@ -3134,10 +3134,10 @@ static func _try_attack(loop: Dictionary, id: String, foe_id: String, _rng: Vari
 ## the plan no longer applies before anything was committed. Once the caster has moved, a cast
 ## the loop refuses falls back to a weapon strike or wait from the new cell.
 static func _cast(loop: Dictionary, id: String, plan: Dictionary, board: Dictionary, rng: Variant) -> Dictionary:
-	var unit := Loop.unit(loop, id)
+	var unit := BattlePlayLoop.unit(loop, id)
 	var skill_id := str(plan["skill_id"])
 	var target_id := str(plan["target_id"])
-	if not Loop.Presence.living(Loop.unit(loop, target_id)):
+	if not BattlePlayLoop.Presence.living(BattlePlayLoop.unit(loop, target_id)):
 		return {}
 	var intent := _planned_cast(loop, board, unit, skill_id, target_id, plan.get("cell"))
 	if intent.is_empty():
@@ -3146,39 +3146,39 @@ static func _cast(loop: Dictionary, id: String, plan: Dictionary, board: Diction
 	var next := loop
 	var moved := false
 	if intent["cell"] != unit["coord"]:
-		if not Loop.command_available(next, "move"):
+		if not BattlePlayLoop.command_available(next, "move"):
 			return {}
-		var moving := Loop.move_unit_to(Loop.choose_command(next, "move"), intent["cell"])
+		var moving := BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(next, "move"), intent["cell"])
 		if not bool(moving.get("moved_this_action", false)):
 			return {}
 		next = moving
 		moved = true
 	var action := ("move_then_%s" % channel) if moved else channel
-	if not Loop.command_available(next, channel):
+	if not BattlePlayLoop.command_available(next, channel):
 		return _strike_or_wait(next, id, "", rng, moved) if moved else {}
-	var selecting := Loop.choose_command(next, channel)
+	var selecting := BattlePlayLoop.choose_command(next, channel)
 	if channel == "magic":
-		selecting = Loop.choose_magic(selecting, skill_id)
+		selecting = BattlePlayLoop.choose_magic(selecting, skill_id)
 	elif str(selecting.get("interaction", "")) == "special_select":
-		selecting = Loop.choose_special(selecting, skill_id)
+		selecting = BattlePlayLoop.choose_special(selecting, skill_id)
 	if str(selecting.get("interaction", "")) != "attack_select" or str(selecting.get("selected_skill_id", "")) != skill_id:
-		return _strike_or_wait(Loop.cancel_interaction(selecting), id, "", rng, moved) if moved else {}
+		return _strike_or_wait(BattlePlayLoop.cancel_interaction(selecting), id, "", rng, moved) if moved else {}
 	# Settlement draws from the loop's damage stream (DamageRandomStream), as the product does.
-	var cast := Loop.attack_target(selecting, target_id, null, intent["cast_center"])
+	var cast := BattlePlayLoop.attack_target(selecting, target_id, null, intent["cast_center"])
 	if BattleOutcome.decided(cast):
 		return {"loop": cast, "action": action}
 	if not bool(cast.get("attacked_this_action", false)):
-		return _strike_or_wait(Loop.cancel_interaction(cast), id, "", rng, moved) if moved else {}
-	if Loop.loot_waiting(cast):
+		return _strike_or_wait(BattlePlayLoop.cancel_interaction(cast), id, "", rng, moved) if moved else {}
+	if BattlePlayLoop.loot_waiting(cast):
 		return {"loop": cast, "action": action}
-	return {"loop": Loop.finish_exhausted_action(cast), "action": action}
+	return {"loop": BattlePlayLoop.finish_exhausted_action(cast), "action": action}
 
 
 ## Moves the healer next to the target and uses the item; {} when the plan no longer applies.
 static func _heal(loop: Dictionary, id: String, plan: Dictionary, board: Dictionary) -> Dictionary:
-	var unit := Loop.unit(loop, id)
-	var target := Loop.unit(loop, str(plan["target_id"]))
-	if not Loop.Presence.living(target):
+	var unit := BattlePlayLoop.unit(loop, id)
+	var target := BattlePlayLoop.unit(loop, str(plan["target_id"]))
+	if not BattlePlayLoop.Presence.living(target):
 		return {}
 	var cell: Variant = _adjacent_cell(loop, board, unit, target)
 	var drink_cell: Variant = plan.get("heal_cell")
@@ -3189,16 +3189,16 @@ static func _heal(loop: Dictionary, id: String, plan: Dictionary, board: Diction
 	var next := loop
 	var moved := false
 	if cell != unit["coord"]:
-		if not Loop.command_available(next, "move"):
+		if not BattlePlayLoop.command_available(next, "move"):
 			return {}
-		var moving := Loop.move_unit_to(Loop.choose_command(next, "move"), cell)
+		var moving := BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(next, "move"), cell)
 		if not bool(moving.get("moved_this_action", false)):
 			return {}
 		next = moving
 		moved = true
-	if not Loop.command_available(next, "item"):
+	if not BattlePlayLoop.command_available(next, "item"):
 		return {}
-	var used := Loop.use_item(next, str(plan["item_code"]), str(plan["target_id"]))
-	if Loop.same_state(used, next) or int((used.get("last_item_use", {}) as Dictionary).get("sequence", 0)) == int((next.get("last_item_use", {}) as Dictionary).get("sequence", 0)):
+	var used := BattlePlayLoop.use_item(next, str(plan["item_code"]), str(plan["target_id"]))
+	if BattlePlayLoop.same_state(used, next) or int((used.get("last_item_use", {}) as Dictionary).get("sequence", 0)) == int((next.get("last_item_use", {}) as Dictionary).get("sequence", 0)):
 		return {}
 	return {"loop": used, "action": "move_then_item" if moved else "use_item"}

@@ -16,19 +16,19 @@ extends SceneTree
 ##   tools/godot.sh --headless --script res://tests/measure_loop_copy.gd            # levels 44 and 45
 ##   tools/godot.sh --headless --script res://tests/measure_loop_copy.gd -- 44 38   # chosen levels
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
-const AI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
-const Brain = preload("res://tests/support/AutoplayBrain.gd")
+const AutoplayBrain = preload("res://tests/support/AutoplayBrain.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 const DEFAULT_LEVELS := ["44", "45"]
 const COPY_REPEATS := 20
 const TOP_UNIT_KEYS := 8
 ## `_prepare_ai_turn`'s phases in its own order; timed one by one on a shared `work` dict.
-static var PREPARE_PHASES := {"preflight": AI._ai_preflight_actor, "target_rows": AI._ai_target_rows, "approach_routes": AI._ai_approach_routes, "call_state": AI._ai_call_state, "action_candidates": AI._ai_action_candidates}
+static var PREPARE_PHASES := {"preflight": BattleLoopAI._ai_preflight_actor, "target_rows": BattleLoopAI._ai_target_rows, "approach_routes": BattleLoopAI._ai_approach_routes, "call_state": BattleLoopAI._ai_call_state, "action_candidates": BattleLoopAI._ai_action_candidates}
 
 
 func _initialize() -> void:
@@ -42,7 +42,7 @@ func _initialize() -> void:
 
 func _measure(level: String) -> void:
 	var path := "res://content/battles/battle_%03d.json" % int(level)
-	var loop := Loop.begin_battle(Loop.initialize_roster_growth(Loop.create([], "", BattleScenario.load_file(path))))
+	var loop := BattlePlayLoop.begin_battle(BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.create([], "", BattleScenario.load_file(path))))
 	if not bool(loop.get("scenario_ok", false)):
 		print("LOOP_COPY_MEASURE level=%s error=%s" % [level, str(loop.get("scenario_error", ""))])
 		return
@@ -52,12 +52,12 @@ func _measure(level: String) -> void:
 	for key in loop:
 		var bytes := var_to_bytes(loop[key]).size()
 		sizes.append([bytes, str(key)])
-		if Loop.CONFIG_SHARED.has(key):
+		if BattlePlayLoop.CONFIG_SHARED.has(key):
 			config += bytes
 	sizes.sort_custom(func(a, b): return a[0] > b[0])
 	var top: Array = []
 	for row in sizes.slice(0, 10):
-		top.append("%s=%d%s" % [row[1], row[0], "*" if Loop.CONFIG_SHARED.has(row[1]) else ""])
+		top.append("%s=%d%s" % [row[1], row[0], "*" if BattlePlayLoop.CONFIG_SHARED.has(row[1]) else ""])
 	var units: Array = loop["units"]
 	print("LOOP_COPY_MEASURE level=%s units=%d keys=%d total_bytes=%d config_bytes=%d state_bytes=%d" % [level, units.size(), loop.size(), total, config, total - config])
 	print("LOOP_COPY_MEASURE level=%s top_keys(*=shared)=%s" % [level, " ".join(top)])
@@ -69,13 +69,13 @@ func _measure(level: String) -> void:
 	var deep_usec := (Time.get_ticks_usec() - started) / COPY_REPEATS
 	started = Time.get_ticks_usec()
 	for _index in range(COPY_REPEATS):
-		var _shared := Loop.copy(loop)
+		var _shared := BattlePlayLoop.copy(loop)
 	var copy_usec := (Time.get_ticks_usec() - started) / COPY_REPEATS
 	print("LOOP_COPY_MEASURE level=%s duplicate_true_usec=%d copy_usec=%d" % [level, deep_usec, copy_usec])
 	var prepare := _time_ai_prepare(loop)
-	LoopConfig.copy_count = 0
+	BattleLoopConfig.copy_count = 0
 	var round_result := _play_one_round(loop)
-	var copies: int = LoopConfig.copy_count
+	var copies: int = BattleLoopConfig.copy_count
 	var copy_msec := copies * copy_usec / 1000
 	var round_msec := int(round_result["msec"])
 	print("LOOP_COPY_MEASURE level=%s round_steps=%d round_msec=%d copies=%d copy_msec=%d copy_share=%.1f%% interaction=%s" % [level, int(round_result["steps"]), round_msec, copies, copy_msec, 100.0 * copy_msec / maxf(round_msec, 1.0), str(round_result["interaction"])])
@@ -104,14 +104,14 @@ static func _unit_key_sizes(units: Array) -> Array:
 ## sums their wall time per phase (the preflight is read-only; the copy keeps `loop`
 ## pristine for the round that follows).
 static func _time_ai_prepare(loop: Dictionary) -> Dictionary:
-	var probe := Loop.copy(loop)
+	var probe := BattlePlayLoop.copy(loop)
 	var phases := {}
 	for name in PREPARE_PHASES:
 		phases[name] = 0
 	var units := 0
 	var started := Time.get_ticks_usec()
 	for unit in probe["units"]:
-		if bool(unit.get("player_commandable", false)) or not Loop.Presence.living(unit):
+		if bool(unit.get("player_commandable", false)) or not BattlePlayLoop.Presence.living(unit):
 			continue
 		var work := {}
 		var failed := false
@@ -136,17 +136,17 @@ static func _time_lookahead_decision(loop: Dictionary) -> Dictionary:
 	var steps := 0
 	while str(current.get("interaction", "")) == "ai_resolving" and steps < Autoplay.STEP_LIMIT_PER_ROUND:
 		steps += 1
-		var stepped := Loop.step_ai_turn(current, rng)
+		var stepped := BattlePlayLoop.step_ai_turn(current, rng)
 		if stepped == current:
 			break
 		current = stepped
 	if str(current.get("interaction", "")) != "action_menu":
 		return {"actor": "", "copies": 0, "simulations": 0, "msec": 0}
-	var brain := Brain.create(Brain.MODE_LOOKAHEAD)
-	LoopConfig.copy_count = 0
+	var brain := AutoplayBrain.create(AutoplayBrain.MODE_LOOKAHEAD)
+	BattleLoopConfig.copy_count = 0
 	var started := Time.get_ticks_usec()
-	Brain.take_player_action(brain, current, rng)
-	return {"actor": str(current.get("selected_unit_id", "")), "copies": LoopConfig.copy_count, "simulations": int(brain["simulations"]), "msec": (Time.get_ticks_usec() - started) / 1000}
+	AutoplayBrain.take_player_action(brain, current, rng)
+	return {"actor": str(current.get("selected_unit_id", "")), "copies": BattleLoopConfig.copy_count, "simulations": int(brain["simulations"]), "msec": (Time.get_ticks_usec() - started) / 1000}
 
 
 ## Runs rule steps until the round counter advances (or the battle decides / stalls).
@@ -159,9 +159,9 @@ static func _play_one_round(loop: Dictionary) -> Dictionary:
 	var current := loop
 	while int(current.get("turn", 1)) == first_round and not BattleOutcome.decided(current) and steps < Autoplay.STEP_LIMIT_PER_ROUND:
 		steps += 1
-		if Loop.loot_waiting(current):
+		if BattlePlayLoop.loot_waiting(current):
 			var settlement: Dictionary = current["settlement"]
-			current = Loop.finish_rewards(current, int(settlement["sequence"]), int(settlement["revision"]), false, true)
+			current = BattlePlayLoop.finish_rewards(current, int(settlement["sequence"]), int(settlement["revision"]), false, true)
 			continue
 		match str(current.get("interaction", "")):
 			"action_menu":
@@ -170,7 +170,7 @@ static func _play_one_round(loop: Dictionary) -> Dictionary:
 					break
 				current = step["loop"]
 			"ai_resolving":
-				var stepped := Loop.step_ai_turn(current, rng)
+				var stepped := BattlePlayLoop.step_ai_turn(current, rng)
 				if stepped == current:
 					break
 				current = stepped

@@ -1,7 +1,7 @@
 extends "res://tests/capture_support_magic_review.gd"
 ## Reuses actual mouse/scroll/keyboard and bounded audio cleanup from the support
 ## capture, not its fixture or assertions. All new battle setup is declared here.
-const XP = preload("res://tests/run_magic_experience_tests.gd")
+const run_magic_experience_tests = preload("res://tests/run_magic_experience_tests.gd")
 const DEST := "res://ignored/magic-experience-review/"
 var phases := {}
 var experience_events: Array = []
@@ -48,33 +48,33 @@ func prepare_case() -> void:
 	scene.set_process(false)
 	await create_timer(0.15).timeout
 	scene.get_node("BattleMusic").stop()
-	var loop := XP.fixture()
+	var loop := run_magic_experience_tests.fixture()
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
-	var owner := Loop._unit(loop, "leonard")
+	var owner := BattlePlayLoop._unit(loop, "leonard")
 	owner["exp"] = 0 if mode in ["wind", "empty_mp", "silence"] else 99
 	owner["kill_chain_word"] = 1 if mode == "fire_kill" else 0
-	for id in [XP.WIND, XP.FIRE]: Loop.skill_fields(loop, id)["hit_ratio"] = "100"
+	for id in [run_magic_experience_tests.WIND, run_magic_experience_tests.FIRE]: BattlePlayLoop.skill_fields(loop, id)["hit_ratio"] = "100"
 	for unit in loop["units"]: unit["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
 	if mode in ["fire_kill", "final_kill"]:
-		Loop._unit(loop, "enemy021_1")["hp"] = 1
-		Loop._unit(loop, "enemy021_1")["inventory"][0] = 281
+		BattlePlayLoop._unit(loop, "enemy021_1")["hp"] = 1
+		BattlePlayLoop._unit(loop, "enemy021_1")["inventory"][0] = 281
 	if mode == "mixed_area":
-		Loop.skill_fields(loop, XP.FIRE)["effect_range"] = "range1Cell"
-		Loop._unit(loop, "enemy021_2")["hp"] = 1
+		BattlePlayLoop.skill_fields(loop, run_magic_experience_tests.FIRE)["effect_range"] = "range1Cell"
+		BattlePlayLoop._unit(loop, "enemy021_2")["hp"] = 1
 	if mode == "cure_xp":
-		for unit in [owner, Loop._unit(loop, "enemy023_1")]: unit.merge(Loop.StatusEffectRules.apply(unit, "poison", 2, 10)["changes"], true)
-		var target := Loop._unit(loop, "enemy023_1")
-		target.merge(Loop.StatusEffectRules.apply(target, "no_magic", 2)["changes"], true)
+		for unit in [owner, BattlePlayLoop._unit(loop, "enemy023_1")]: unit.merge(BattlePlayLoop.StatusEffectRules.apply(unit, "poison", 2, 10)["changes"], true)
+		var target := BattlePlayLoop._unit(loop, "enemy023_1")
+		target.merge(BattlePlayLoop.StatusEffectRules.apply(target, "no_magic", 2)["changes"], true)
 	if mode == "empty_mp": owner["mp"] = 0
-	if mode == "silence": owner.merge(Loop.StatusEffectRules.apply(owner, "no_magic", 2)["changes"], true)
+	if mode == "silence": owner.merge(BattlePlayLoop.StatusEffectRules.apply(owner, "no_magic", 2)["changes"], true)
 	if mode == "final_kill":
 		loop["units"] = loop["units"].filter(func(unit): return unit["id"] in ["leonard", "enemy021_1"])
 		loop["turn"] = 6
 		var view = scene.get_node("BattlePresentation")
 		view._shown_story_events.assign(loop["event_log"])
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop, "leonard"), "test")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop, "leonard"), "test")
 	scene.settlement_controller.checkpoint_path = DEST + mode + ".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()
@@ -87,7 +87,7 @@ func prepare_case() -> void:
 
 
 func play_case() -> void:
-	var id: String = XP.WIND if mode == "wind" else XP.HEAL if mode == "heal_xp" else XP.CURE if mode == "cure_xp" else XP.FIRE
+	var id: String = run_magic_experience_tests.WIND if mode == "wind" else run_magic_experience_tests.HEAL if mode == "heal_xp" else run_magic_experience_tests.CURE if mode == "cure_xp" else run_magic_experience_tests.FIRE
 	var target := "enemy023_1" if mode in ["heal_xp", "cure_xp"] else "enemy021_1"
 	var before: Dictionary = scene.play_loop.duplicate(true)
 	await click(scene.action_menu.get_node("MagicCommand"))
@@ -104,7 +104,7 @@ func play_case() -> void:
 		check(scene.selected_unit_id == "enemy023_1" and experience_events.is_empty(), "normal Wait remains usable with no fabricated EXP")
 	else:
 		await click(scene.magic_panel.choices[id])
-		await hover(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop, target)["coord"]))
+		await hover(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop, target)["coord"]))
 		check(scene.interaction_state == "attack_select" and scene.get_node("BattlePresentation").target_vitals.visible, "actual map preview uses the selected native skill")
 		await shot("preview")
 		await escape()
@@ -112,7 +112,7 @@ func play_case() -> void:
 		await create_timer(0.25).timeout
 		await click(scene.action_menu.get_node("MagicCommand"))
 		await click(scene.magic_panel.choices[id])
-		await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop, target)["coord"]))
+		await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop, target)["coord"]))
 		expected_receipt = scene.play_loop["last_attack"].duplicate(true)
 		check(expected_receipt.get("skill_id") == id and expected_receipt.has("experience"), "actual click commits one native effect and final EXP award")
 		if not expected_receipt.has("experience"): return
@@ -120,15 +120,15 @@ func play_case() -> void:
 		check(experience_events.size() == 1 and experience_events[0] == expected_receipt["experience"], "final earned EXP is presented once after the complete cast")
 		check(scene.play_loop["last_combat"]["sequence"] == expected_receipt["sequence"], "presentation never replays the cast")
 		if mode == "mixed_area":
-			check(expected_receipt["affected_targets"].size() == 2 and Loop.unit(scene.play_loop, "enemy021_1")["hp"] > 0 and Loop.unit(scene.play_loop, "enemy021_2")["hp"] == 0, "mixed multi-target survivor/kill settle together")
+			check(expected_receipt["affected_targets"].size() == 2 and BattlePlayLoop.unit(scene.play_loop, "enemy021_1")["hp"] > 0 and BattlePlayLoop.unit(scene.play_loop, "enemy021_2")["hp"] == 0, "mixed multi-target survivor/kill settle together")
 		if mode == "cure_xp":
-			check(expected_receipt["affected_targets"].size() == 2 and Loop.unit(scene.play_loop, target)["status_counters"] == {"poison": 0, "paralysis": 0, "no_magic": 2}, "two real cure contributions preserve recipient silence")
-		var earned := Loop.unit(scene.play_loop, "leonard")
+			check(expected_receipt["affected_targets"].size() == 2 and BattlePlayLoop.unit(scene.play_loop, target)["status_counters"] == {"poison": 0, "paralysis": 0, "no_magic": 2}, "two real cure contributions preserve recipient silence")
+		var earned := BattlePlayLoop.unit(scene.play_loop, "leonard")
 		var saved: Dictionary = scene.play_loop.duplicate(true)
 		await key(KEY_F5)
 		check(FileAccess.file_exists(scene.settlement_controller.checkpoint_path), "actual F5 saves awarded EXP and growth")
 		await key(KEY_F9)
-		check(scene.play_loop == saved and Loop.unit(scene.play_loop, "leonard")["exp"] == earned["exp"], "actual F9 does not re-award contribution, kill count, MP or loot")
+		check(scene.play_loop == saved and BattlePlayLoop.unit(scene.play_loop, "leonard")["exp"] == earned["exp"], "actual F9 does not re-award contribution, kill count, MP or loot")
 		if mode == "final_kill":
 			check(scene.get_node("BattlePresentation").battle_finished and earned["pending_stat_points"] > 0, "final kill retains earned growth even at victory")
 			await shot("restored-result")
@@ -136,9 +136,9 @@ func play_case() -> void:
 			await point(scene.grid_cell_center_to_logical_position(earned["coord"]))
 			check(scene.status_panel.visible and scene.status_panel.vitals.values["exp"].text.begins_with(str(earned["exp"]) + " /"), "normal post-cast inspection reports the final EXP")
 			await shot("status")
-	routes.append({"mode": mode, "receipt": expected_receipt, "actor": compact(Loop.unit(scene.play_loop, "leonard")),
-		"exp": Loop.unit(scene.play_loop, "leonard")["exp"], "level": Loop.unit(scene.play_loop, "leonard")["level"],
-		"pending_points": Loop.unit(scene.play_loop, "leonard")["pending_stat_points"], "phases": phases,
+	routes.append({"mode": mode, "receipt": expected_receipt, "actor": compact(BattlePlayLoop.unit(scene.play_loop, "leonard")),
+		"exp": BattlePlayLoop.unit(scene.play_loop, "leonard")["exp"], "level": BattlePlayLoop.unit(scene.play_loop, "leonard")["level"],
+		"pending_points": BattlePlayLoop.unit(scene.play_loop, "leonard")["pending_stat_points"], "phases": phases,
 		"outcome": scene.play_loop["battle_outcome"], "next_actor": scene.selected_unit_id, "experience_events": experience_events})
 
 
@@ -179,7 +179,7 @@ func await_settlement() -> void:
 			if mode == "fire_kill":
 				for attribute in ["str", "str", "dex", "mind", "con"]: await click(scene.growth_panel.choices[attribute]["plus"])
 				await click(scene.growth_panel.confirm_button)
-				check(Loop.unit(scene.play_loop, "leonard")["pending_stat_points"] == 0, "actual five-point growth confirmation consumes the native award's budget once")
+				check(BattlePlayLoop.unit(scene.play_loop, "leonard")["pending_stat_points"] == 0, "actual five-point growth confirmation consumes the native award's budget once")
 			else: scene.growth_panel.hide() # harness skip seam
 		if mode == "final_kill" and view.battle_finished:
 			check(phases.has("experience") and phases.has("loot"), "final EXP and loot both precede the victory result")

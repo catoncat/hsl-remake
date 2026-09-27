@@ -22,13 +22,13 @@ extends SceneTree
 ## A participant whose level／max HP／combat words still differ from the original's live record
 ## takes the original's, each listed in `overrides` as [remake, original].
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Combat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
-const InitialRoster = preload("res://game/sim/InitialRosterGrowthRules.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const InitialRosterGrowthRules = preload("res://game/sim/InitialRosterGrowthRules.gd")
 
 const SCHEMA := "hsl_exchange_replay.v1"
 ## Frames that only forward a draw; the logged site is the first frame outside them.
@@ -44,7 +44,7 @@ class DamageRecorder:
 	var log: Array = []
 
 	func draw(bound: int) -> int:
-		var value := DamageRandom.loop_draw(loop, bound)
+		var value := DamageRandomStream.loop_draw(loop, bound)
 		var site := "?"
 		for frame in get_stack():
 			if str(frame["function"]) in FORWARDERS: continue
@@ -72,10 +72,10 @@ func _initialize() -> void:
 		printerr("EXCHANGE_REPLAY scenario_load %s" % str(scenario.get("error", scenario.get("reason", ""))))
 		quit(1)
 		return
-	var base := Loop.create([], "", scenario, 1)
+	var base := BattlePlayLoop.create([], "", scenario, 1)
 	for index in range(base["units"].size()):
 		if base["units"][index]["growth_profile"]["allocation"] != "manual": continue
-		var born := InitialRoster.prepare_player(base["units"][index], base["equipment_items"])
+		var born := InitialRosterGrowthRules.prepare_player(base["units"][index], base["equipment_items"])
 		if not bool(born["ok"]):
 			printerr("EXCHANGE_REPLAY player_birth %s %s" % [str(base["units"][index]["id"]), str(born["reason"])])
 			quit(1)
@@ -101,7 +101,7 @@ func _initialize() -> void:
 
 
 func _replay(base: Dictionary, exchange: Dictionary) -> Dictionary:
-	var loop := Loop.copy(base)
+	var loop := BattlePlayLoop.copy(base)
 	var start: Dictionary = exchange["start"]
 	var board: Dictionary = start.get("board", {})
 	var units: Dictionary = start["units"]
@@ -124,7 +124,7 @@ func _replay(base: Dictionary, exchange: Dictionary) -> Dictionary:
 			unit["kill_chain_word"] = int(live["kill_chain"])
 	var overrides := {}
 	for id in [str(exchange["striker"]), str(exchange["defender"])]:
-		var unit := Loop._unit(loop, id)
+		var unit := BattlePlayLoop._unit(loop, id)
 		if unit.is_empty(): return {"error": "no_remake_unit:%s" % id}
 		# A participant that still differs from the original's live record at this start takes
 		# the original's level and live combat words, listed under `overrides`; the exchange
@@ -139,25 +139,25 @@ func _replay(base: Dictionary, exchange: Dictionary) -> Dictionary:
 			overrides[id][field] = [mine[field], int(live[field])]
 			if field in ["level", "max_hp"]: unit[field] = int(live[field])
 			else: unit["combat_profile"][PROFILE_FIELDS[field]] = int(live[field])
-	loop["turn_queue"] = CoreTurnQueue.rebuild(Loop._queue_actors(loop))
-	loop = Loop._resolve_outcome(loop)
-	loop = Loop.begin_battle(loop)
+	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
+	loop = BattlePlayLoop._resolve_outcome(loop)
+	loop = BattlePlayLoop.begin_battle(loop)
 	var profiles := {}
 	for id in [str(exchange["striker"]), str(exchange["defender"])]:
-		var unit := Loop._unit(loop, id)
+		var unit := BattlePlayLoop._unit(loop, id)
 		var profile := CoreCombatRules.combat_profile_from_unit(unit)
 		profiles[id] = {"hp": int(unit["hp"]), "max_hp": int(unit["max_hp"]), "level": int(unit["level"]), "exp": int(unit["exp"]),
 			"attack": profile["live_attack_damage"], "defense": profile["live_defense"], "hit": profile["live_hit_ratio"],
 			"str": profile["str"], "dex": profile["dex"], "avoid": profile["avoid_hit_ratio"], "counter": profile["attack_back"],
 			"crit": profile["attack_damagex2"], "status": int(unit.get("status_flags", 0)), "cell": [unit["coord"].x, unit["coord"].y],
 			"player": bool(unit.get("player_commandable", false))}
-	loop[DamageRandom.LOOP_KEY] = [int(start["damage"][0]), int(start["damage"][1])]
+	loop[DamageRandomStream.LOOP_KEY] = [int(start["damage"][0]), int(start["damage"][1])]
 	var recorder := DamageRecorder.new()
 	recorder.loop = loop
-	var receipt := Combat._resolve_exchange(loop, str(exchange["striker"]), str(exchange["defender"]), Callable(recorder, "draw"))
-	var end := {"damage": loop[DamageRandom.LOOP_KEY], "units": {}}
+	var receipt := BattleLoopCombat._resolve_exchange(loop, str(exchange["striker"]), str(exchange["defender"]), Callable(recorder, "draw"))
+	var end := {"damage": loop[DamageRandomStream.LOOP_KEY], "units": {}}
 	for id in [str(exchange["striker"]), str(exchange["defender"])]:
-		var unit := Loop._unit(loop, id)
+		var unit := BattlePlayLoop._unit(loop, id)
 		end["units"][id] = {"hp": int(unit["hp"]), "exp": int(unit["exp"]), "level": int(unit["level"]),
 			"hit_bonus": int(unit.get("hit_bonus_accum", 0)), "kill_chain": int(unit.get("kill_chain_word", 0))}
 	var row := {"receipt": receipt, "draws": recorder.log, "profiles": profiles, "overrides": overrides, "end": end}

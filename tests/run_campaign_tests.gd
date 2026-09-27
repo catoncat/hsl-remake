@@ -6,13 +6,13 @@ extends SceneTree
 
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
+const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
-const TownRules = preload("res://game/sim/TownEventRules.gd")
+const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
@@ -109,17 +109,17 @@ func _test_pure_carry() -> void:
 	first["next_level_event"] = [52, 52] # the fixture carries no script; WINFAIL051's hand-off is asserted on battle_051 in run_tests
 	_assert_eq(CampaignProgress.next_scenario_path(campaign, first), "res://content/battles/battle_052.json", "next scenario resolves from next_level_event")
 
-	var carry := CarryRules.capture(first, campaign["carry_policy"])
+	var carry := CampaignCarryRules.capture(first, campaign["carry_policy"])
 	_assert_eq(carry["schema"], "hsl_campaign_carry.v1", "carry schema")
 	_assert_true(carry["units"].has("leonard") and not carry["units"].has("enemy021_1"), "only controlled units are carried")
 	_assert_eq(int(carry["units"]["leonard"]["level"]), 3, "carried level")
 	_assert_eq(int(carry["units"]["leonard"]["attributes"]["str"]), int(leonard["combat_profile"]["str"]), "carried str attribute")
 	_assert_eq(int(carry["loop"]["gold"]), 120, "carried gold")
 
-	var second := PlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_052.json"), 7)
+	var second := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_052.json"), 7)
 	_assert_true(bool(second.get("scenario_ok", false)), "second battle loop should be valid")
 	var boss_hp := int(_unit(second, "emperor025")["hp"])
-	var applied := PlayLoop.apply_campaign_carry(second, carry)
+	var applied := BattlePlayLoop.apply_campaign_carry(second, carry)
 	var carried := _unit(applied, "leonard")
 	_assert_eq(int(carried["level"]), 3, "level applied")
 	_assert_eq(int(carried["exp"]), 40, "exp applied")
@@ -140,14 +140,14 @@ func _test_pure_carry() -> void:
 		queue_ids.append(str(slot.get("id", "")))
 	_assert_true(queue_ids.has("leonard") and queue_ids.size() == 18, "queue rebuilt with the whole roster (18 incl. the two 069)")
 
-	var untouched := PlayLoop.apply_campaign_carry(second, {})
+	var untouched := BattlePlayLoop.apply_campaign_carry(second, {})
 	_assert_eq(untouched.get("campaign_carry_receipt", {}), {}, "empty carry is a no-op")
-	var started := PlayLoop.begin_battle(second)
-	var late := PlayLoop.apply_campaign_carry(started, carry)
+	var started := BattlePlayLoop.begin_battle(second)
+	var late := BattlePlayLoop.apply_campaign_carry(started, carry)
 	_assert_eq(int(_unit(late, "leonard")["level"]), int(_unit(second, "leonard")["level"]), "carry after begin_battle is refused")
 	var mismatch := carry.duplicate(true)
 	mismatch["units"]["leonard"]["actor_id"] = "999"
-	var refused := PlayLoop.apply_campaign_carry(second, mismatch)
+	var refused := BattlePlayLoop.apply_campaign_carry(second, mismatch)
 	_assert_eq(refused["campaign_carry_receipt"]["skipped_unit_ids"], ["leonard"], "actor mismatch is skipped explicitly")
 
 
@@ -165,22 +165,22 @@ func _test_town_job_up_carry() -> void:
 	leonard["combat_profile"]["mind"] = 30
 	leonard["combat_profile"]["con"] = 44
 	first["battle_outcome"] = BattleOutcome.VICTORY_ESCAPE
-	var carry := CarryRules.capture(first, campaign["carry_policy"])
+	var carry := CampaignCarryRules.capture(first, campaign["carry_policy"])
 	var speakers := {"SID_雷歐納德": {"players_row": 1, "name_text": "雷歐納德"}}
 	var before := WorldPartyRules.party_from_carry(carry, speakers)
 	_assert_eq(before["member_records"]["SID_雷歐納德"]["attributes"], {"str": 40, "dex": 38, "mind": 30, "con": 44}, "town party view exposes the member attributes")
-	var towndef := TownRules.load_towndef("res://content/imported/hsl/global/world_map/towndef.json")
-	var state := {"schema": "hsl_world_state.v1", "towns": TownRules.initial_town_state(towndef, TownRules.load_initial_trees("res://content/world/town_initial_trees.json"))}
-	var run := TownRules.begin_event(state, before, towndef, 16, 61)
+	var towndef := TownEventRules.load_towndef("res://content/imported/hsl/global/world_map/towndef.json")
+	var state := {"schema": "hsl_world_state.v1", "towns": TownEventRules.initial_town_state(towndef, TownEventRules.load_initial_trees("res://content/world/town_initial_trees.json"))}
+	var run := TownEventRules.begin_event(state, before, towndef, 16, 61)
 	_assert_eq((run["effects"][1] as Dictionary).get("kind"), "job_up", "神殿 event 61 upgrades 雷歐納德")
 	var applied := WorldPartyRules.apply_party(carry, before, run["party"])
 	_assert_eq((applied["receipt"]["job_ups"] as Array).size(), 1, "apply_party writes one job-up back")
 	var next_carry: Dictionary = applied["carry"]
 	_assert_eq(str(next_carry["units"]["leonard"]["job_up_target_actor_id"]), "010", "carry member stands on 010")
 	_assert_eq(str(next_carry["units"]["leonard"]["actor_id"]), "001", "actor id stays the resource key")
-	var second := PlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_052.json"), 7)
+	var second := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_052.json"), 7)
 	var base := _unit(second, "leonard")
-	var fielded := PlayLoop.apply_campaign_carry(second, next_carry)
+	var fielded := BattlePlayLoop.apply_campaign_carry(second, next_carry)
 	var unit := _unit(fielded, "leonard")
 	_assert_eq(fielded["campaign_carry_receipt"]["errors"], [], "job-up carry applies without errors")
 	_assert_eq(fielded["campaign_carry_receipt"].get("job_up_replayed_unit_ids", []), ["leonard"], "receipt names the replayed unit")
@@ -196,13 +196,13 @@ func _test_town_job_up_carry() -> void:
 	same_level["level"] = 12
 	for key in ["str", "dex", "mind", "con"]:
 		same_level["combat_profile"][key] = unit["combat_profile"][key]
-	var reference := PlayLoop.ProgressionRules.refresh_growth_stats(same_level, second["equipment_items"])
+	var reference := BattlePlayLoop.ProgressionRules.refresh_growth_stats(same_level, second["equipment_items"])
 	_assert_true(int(unit["max_hp"]) > int(reference["max_hp"]) and int(unit["combat_profile"]["live_magic_attack"]) >= int(reference["combat_profile"]["live_magic_attack"]) + 30, "劍豪 refresh: +50 HP layer and the +30 magic branch bonus over a same-level 劍士")
 	_assert_eq(int(unit["hp"]), int(unit["max_hp"]), "vitals restored on the refreshed maximum")
-	var roundtrip := CarryRules.capture(fielded, campaign["carry_policy"])
+	var roundtrip := CampaignCarryRules.capture(fielded, campaign["carry_policy"])
 	_assert_eq(roundtrip["units"]["leonard"]["job_up_history"], next_carry["units"]["leonard"]["job_up_history"], "the history survives the next capture")
-	var third := PlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_052.json"), 7)
-	var again := PlayLoop.apply_campaign_carry(third, roundtrip)
+	var third := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_052.json"), 7)
+	var again := BattlePlayLoop.apply_campaign_carry(third, roundtrip)
 	_assert_eq(int(_unit(again, "leonard")["growth_profile"]["source"]["hit_point"]), int(unit["growth_profile"]["source"]["hit_point"]), "replay is idempotent across battles (no double accumulation)")
 
 
@@ -219,20 +219,20 @@ func _test_battle_job_up_carry() -> void:
 	var campaign := CampaignProgress.load_campaign()
 	var panels: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/imported/hsl/shared/panels/manifest.json"))["actors"]
 	# A carry holding every slot: an encounter launched without a hand-off fields all nine.
-	var encounter := PlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_540.json"), 7)
+	var encounter := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_540.json"), 7)
 	var recruit := _unit(encounter, "gulu")
 	recruit["level"] = 4
 	recruit["kill_count"] = 3
 	recruit["pending_stat_points"] = 5
 	encounter["battle_outcome"] = BattleOutcome.VICTORY_ENEMIES_CLEARED
-	var carry := CarryRules.capture(encounter, campaign["carry_policy"])
+	var carry := CampaignCarryRules.capture(encounter, campaign["carry_policy"])
 	_assert_eq(str(carry["units"]["gulu"]["actor_id"]), "008", "the carry holds 咕嚕 008")
 	var scenario37 := BattleScenario.load_file("res://content/battles/battle_037.json")
 	var conditional := Conditional.apply(scenario37, carry)
 	_assert_eq([str(conditional["receipt"]["mode"]), conditional["receipt"]["installed"], conditional["receipt"]["skipped"]], ["install_if_carried", ["gulu"], []], "level 37 fields the carried 咕嚕 through its EVEF 有才產生 slot")
-	var without := Conditional.apply(scenario37, CarryRules.capture(BattleFixture.loop([], "", 7), campaign["carry_policy"]))
+	var without := Conditional.apply(scenario37, CampaignCarryRules.capture(BattleFixture.loop([], "", 7), campaign["carry_policy"]))
 	_assert_eq(without["receipt"]["skipped"], ["gulu"], "a party without 咕嚕 enters level 37 without the slot")
-	var level37 := PlayLoop.apply_campaign_carry(PlayLoop.create([], "", conditional["scenario"], 7), carry)
+	var level37 := BattlePlayLoop.apply_campaign_carry(BattlePlayLoop.create([], "", conditional["scenario"], 7), carry)
 	_assert_eq(level37["campaign_carry_receipt"]["errors"], [], "the carry applies to level 37 without errors")
 	var gulu := _unit(level37, "gulu")
 	_assert_eq([str(gulu["actor_id"]), gulu["coord"], int(gulu["level"]), int(gulu["growth_profile"]["job_code"])], ["008", Vector2i(12, 35), 4, 96], "咕嚕 stands on his STORY037 endpoint (EVEF 384,1312 walked -192) with the carried level")
@@ -252,12 +252,12 @@ func _test_battle_job_up_carry() -> void:
 	_assert_eq(int(gulu["hp"]), 7, "the transformed member keeps his current HP (%d/%d): the exchange, the re-install constructor and the refresh write no vitals" % [int(gulu["hp"]), int(gulu["max_hp"])])
 	_assert_eq(ActorSpriteKey.row_key(gulu, panels), "017", "the panel title follows the 017 row (邪獸)")
 	level37["battle_outcome"] = BattleOutcome.VICTORY_BOSS
-	var carry37 := CarryRules.capture(level37, campaign["carry_policy"])
+	var carry37 := CampaignCarryRules.capture(level37, campaign["carry_policy"])
 	_assert_eq([str(carry37["units"]["gulu"]["actor_id"]), str(carry37["units"]["gulu"]["job_up_target_actor_id"]), (carry37["units"]["gulu"]["job_up_history"] as Array).size()], ["008", "017", 1], "the carry records the battle job-up as actor 008 standing on 017 with one history step")
 	var scenario38 := BattleScenario.load_file("res://content/battles/battle_038.json")
 	var conditional38 := Conditional.apply(scenario38, carry37)
 	_assert_true((conditional38["receipt"]["installed"] as Array).has("gulu") and (conditional38["receipt"]["skipped"] as Array).is_empty(), "level 38 fields the transformed 咕嚕 (matched by actor id 008): %s" % str(conditional38["receipt"]))
-	var level38 := PlayLoop.apply_campaign_carry(PlayLoop.create([], "", conditional38["scenario"], 7), carry37)
+	var level38 := BattlePlayLoop.apply_campaign_carry(BattlePlayLoop.create([], "", conditional38["scenario"], 7), carry37)
 	_assert_eq(level38["campaign_carry_receipt"]["errors"], [], "the carry applies to level 38 without errors")
 	_assert_eq(level38["campaign_carry_receipt"].get("job_up_replayed_unit_ids", []), ["gulu"], "level 38 replays the battle job-up history")
 	var carried := _unit(level38, "gulu")
@@ -454,7 +454,7 @@ func _test_runtime_handoff() -> void:
 ## to pass the gate.
 func _test_separate_party_loot_gate() -> void:
 	CampaignProgress.reset_campaign()
-	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/battle_053.json", "carry": {"schema": CarryRules.SCHEMA, "units": {}, "loop": {}}, "from_scenario_id": "battle_002_level52"}
+	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/battle_053.json", "carry": {"schema": CampaignCarryRules.SCHEMA, "units": {}, "loop": {}}, "from_scenario_id": "battle_002_level52"}
 	var scene = RuntimeScene.instantiate()
 	scene.startup_mode = "dev_first_control"
 	root.add_child(scene)
@@ -469,10 +469,10 @@ func _test_separate_party_loot_gate() -> void:
 	target["hp"] = 1
 	target["inventory"] = [281, 246, 0, 0, 0, 0, 0, 0] # 281 is a guaranteed important drop
 	scene.apply_loop(scene.play_loop, "test")
-	var struck: Dictionary = PlayLoop.attack_target(PlayLoop.choose_command(scene.play_loop, "attack"), "enemy023_1", func(_n): return 0)
-	_assert_true(PlayLoop.loot_waiting(struck) and not struck["settlement"]["pending"].is_empty(), "the kill leaves items in the pool")
+	var struck: Dictionary = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(scene.play_loop, "attack"), "enemy023_1", func(_n): return 0)
+	_assert_true(BattlePlayLoop.loot_waiting(struck) and not struck["settlement"]["pending"].is_empty(), "the kill leaves items in the pool")
 	# 稍後 in the get-item window, then the escape victory: the pool is still pending at the result page.
-	var deferred: Dictionary = PlayLoop.finish_rewards(struck, struck["settlement"]["sequence"], struck["settlement"]["revision"], false, true)
+	var deferred: Dictionary = BattlePlayLoop.finish_rewards(struck, struck["settlement"]["sequence"], struck["settlement"]["revision"], false, true)
 	deferred["battle_outcome"] = BattleOutcome.VICTORY_ESCAPE
 	var view = scene.get_node("BattlePresentation")
 	view._shown_combat_sequence = int(deferred["last_combat"]["sequence"])
@@ -494,7 +494,7 @@ func _test_separate_party_loot_gate() -> void:
 	_assert_true(progress.hold_for_loot(), "the battle end holds for the separate party's pool")
 	_assert_eq(controller.notice.text, progress.SEPARATE_LOOT_PROMPT, "the notice line says what to do with the pool")
 	await process_frame
-	_assert_true(controller.panel.visible and PlayLoop.loot_waiting(scene.play_loop), "the battle end reopens the get-item window")
+	_assert_true(controller.panel.visible and BattlePlayLoop.loot_waiting(scene.play_loop), "the battle end reopens the get-item window")
 	_assert_true(not view.battle_finished, "the finished state leaves while the window is open")
 	# Take the important item into 緼娜's bag, 放棄 whatever else dropped.
 	controller.panel.rows[0].pressed.emit()

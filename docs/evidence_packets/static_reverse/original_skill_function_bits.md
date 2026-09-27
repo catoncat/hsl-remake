@@ -202,7 +202,7 @@ AI 对象过程 `0x43ede0` 的进攻段（`pD` 线性反汇编 `0x43f79b..0x43f9
 | 5 MISS | NUM513 | 红 (255,97,98) 描边＋白 (255,255,255) | `MISS` = (255,97,98)（文字仍为重制的「闪避」） |
 | 1 EXP／4 $ | NUM400／500 | 紫 (222,178,255)／黄 | `BattleAftermath` 既有紫／黄不改 |
 
-切入结果行是一个 Label（技能名＋分项＋击倒／連擊 说明），不按分项上色；HP／MP 后缀与净化标签、中毒／禁魔 等状态说明为重制文字。地图 case 0 伤害数字的弹跳与原字形已由 `DamageNumberFloat` 复刻（[地图姿势与飘字包 §3](../runtime_observations/map_pose_floaters/README.md#3-红色伤害数字0x408580-kind-0)）；切入结果行与风火水地图数字的原字形已由 lane DIGITS 落地（见文末 DIGITS 段）；**仍未核对**：`0x4c6f74` 由哪些结算路径写入（Heal 分支直接显示而非经脚本）；均为反编译阅读，未原执行。
+切入结果行是一个 Label（技能名＋分项＋击倒／連擊 说明），不按分项上色；HP／MP 后缀与净化标签、中毒／禁魔 等状态说明为重制文字。地图 case 0 伤害数字的弹跳与原字形已由 `DamageNumberFloater` 复刻（[地图姿势与飘字包 §3](../runtime_observations/map_pose_floaters/README.md#3-红色伤害数字0x408580-kind-0)）；切入结果行与风火水地图数字的原字形已由 lane DIGITS 落地（见文末 DIGITS 段）；**仍未核对**：`0x4c6f74` 由哪些结算路径写入（Heal 分支直接显示而非经脚本）；均为反编译阅读，未原执行。
 
 ### 功能绝技的结果显示（2026-09-25 lane P7-utility-special-text，static-derived；r2 阅读 hsl01.exe，未原执行）
 
@@ -225,7 +225,7 @@ AI 对象过程 `0x43ede0` 的进攻段（`pD` 线性反汇编 `0x43f79b..0x43f9
 
 UI6（2026-09-25，用户定照原版只显示数字）：切入结果行不再带技能名（`with_feedback` 删去，改 `BattleCombatCutin.show_result`），落空读「MISS」（NUM513 的字），数字不带 HP／MP 后缀，字色按 `result_color`（伤害红／回复绿／MP 蓝／MISS）；上表「重制后」列的「金之手」「天鳴覺醒」等今为空行，「金之手 · 閃避」今为「MISS」。增益与净化说明、「未回復」仍是重制文字（无原字形）。
 
-DIGITS（2026-09-26，照原版字形）：数字不再是字体 Label，统一走 `game/battle/scene/ResultNumberFloat.gd`（`0x4084e0` 的 kind 0／2／3／5：红 NUM100..109 逐位揭示不上浮、绿 NUM200..209、蓝 NUM300..309、MISS＝NUM513；kind 2／3／5 层级 16 停 16 tick 后每 2 tick 减 1、第 46 tick 删除，每 2 tick 上 1 px；hold 期间不画，至少 1 tick；首位 x − 7×(位数−1)、间距 14，无符号）。出现点：普通一击特写 (320,200)、命中后 40 tick（`0x40424c`→`0x404290`，只在命中且有伤害时，落空不出 MISS）；脚本一击 `aniShowHitResult` (320,180)，回复与 MP 同点、MP hold 40；地图一击与法术（`0x40aba0`）目标 (x, y−0x34)；道具 (x, y−0x30)；回合末 (x, y−48)。`result_color` 已删；结果行 Label 只剩无原字形的说明（增益、净化、未回復、武器效果）。
+DIGITS（2026-09-26，照原版字形）：数字不再是字体 Label，统一走 `game/battle/scene/ResultNumberFloater.gd`（`0x4084e0` 的 kind 0／2／3／5：红 NUM100..109 逐位揭示不上浮、绿 NUM200..209、蓝 NUM300..309、MISS＝NUM513；kind 2／3／5 层级 16 停 16 tick 后每 2 tick 减 1、第 46 tick 删除，每 2 tick 上 1 px；hold 期间不画，至少 1 tick；首位 x − 7×(位数−1)、间距 14，无符号）。出现点：普通一击特写 (320,200)、命中后 40 tick（`0x40424c`→`0x404290`，只在命中且有伤害时，落空不出 MISS）；脚本一击 `aniShowHitResult` (320,180)，回复与 MP 同点、MP hold 40；地图一击与法术（`0x40aba0`）目标 (x, y−0x34)；道具 (x, y−0x30)；回合末 (x, y−48)。`result_color` 已删；结果行 Label 只剩无原字形的说明（增益、净化、未回復、武器效果）。
 
 ## 已登记函数
 

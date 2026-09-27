@@ -1,7 +1,6 @@
 extends "res://tests/capture_mobile_jobs_review.gd"
 ## Source opening plus authored encounters; after setup, controls drive all play.
-const WaitFixture = preload("res://tests/ScriptWaitFixture.gd")
-const WaitSave = preload("res://game/battle/runtime/BattleCheckpoint.gd")
+const ScriptWaitFixture = preload("res://tests/ScriptWaitFixture.gd")
 const WAIT_OUT := "res://ignored/script-wait-review/"
 var sample := {}
 var script_seen := {}
@@ -35,7 +34,7 @@ func run() -> void:
 func setup_wait() -> void:
 	impacts=[]; events=[]; sounds={}; observed={}; saves=0; receipts=[]; receipt_sequences={}; item_receipts=[]; item_seen={}; serial=0
 	script_seen={}; ai_seen={}; ai_actions=[]; guard_captions=[]
-	Campaign.pending={}; Campaign.last_entry={}
+	CampaignProgress.pending={}; CampaignProgress.last_entry={}
 	if mode == "opening":
 		scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 		scene.scenario_path = "res://content/battles/battle_052.json"
@@ -44,7 +43,7 @@ func setup_wait() -> void:
 		scene.settlement_controller.checkpoint_path=WAIT_OUT+mode+".save"
 		owner_id="leonard"
 	else:
-		sample=WaitFixture.build(mode); owner_id=sample["owner_id"]
+		sample=ScriptWaitFixture.build(mode); owner_id=sample["owner_id"]
 		scene=load("res://game/battle/development/MobileJobsTrial.tscn").instantiate(); root.add_child(scene); current_scene=scene
 		scene.set_process(false)
 		scene.settlement_controller.checkpoint_path=WAIT_OUT+mode+".save"
@@ -52,7 +51,7 @@ func setup_wait() -> void:
 		scene.apply_loop(sample["loop"].duplicate(true), "test")
 		for art in scene.actors_root.get_children(): scene.actors_root.remove_child(art); art.queue_free()
 		scene.unit_grid_coords.clear(); scene.resume_turn_presentation()
-		scene.center_camera_on_grid(Loop.unit(scene.play_loop,owner_id)["coord"])
+		scene.center_camera_on_grid(BattlePlayLoop.unit(scene.play_loop,owner_id)["coord"])
 		scene.set_process(true)
 	initial_state=scene.play_loop.duplicate(true)
 	await settle(owner_id)
@@ -60,7 +59,7 @@ func setup_wait() -> void:
 func settle(id: String, terminal: bool=false) -> void:
 	for attempt in range(5000):
 		check(scene.play_loop["scenario_ok"], "valid wait scenario: " + str(scene.play_loop.get("scenario_error")))
-		check(Loop.ScriptWait.state_error(scene.play_loop)=="", "wait assignment/cursor remains coherent throughout presentation")
+		check(BattlePlayLoop.ScriptWait.state_error(scene.play_loop)=="", "wait assignment/cursor remains coherent throughout presentation")
 		var view=scene.get_node("BattlePresentation")
 		var coordinator=scene.opening_coordinator
 		for audio in scene.find_children("*","AudioStreamPlayer",true,false):
@@ -132,24 +131,24 @@ func play_wait() -> void:
 	if mode=="opening":
 		check(scene.play_loop["script_wait_source"]["initial"].size()==4, "actual STORY052 opening installs four source wait assignments")
 		for row in scene.play_loop["script_wait_source"]["initial"]:
-			check(Loop.unit(initial_state,row["unit_id"])["ai_wait_remaining"]==2,"fresh opening starts with the source wait2 assignment")
+			check(BattlePlayLoop.unit(initial_state,row["unit_id"])["ai_wait_remaining"]==2,"fresh opening starts with the source wait2 assignment")
 			var turns:=ai_actions.filter(func(a):return a.get("actor_id")==row["unit_id"] and a.get("wait_reason")=="wait_round")
-			check(turns.size()==1 and Loop.unit(scene.play_loop,row["unit_id"])["ai_wait_remaining"]==1,"guard takes its scheduled first action before Leonard control; F9 preserves remaining one")
-	elif mode in WaitFixture.FAR_MODES:
+			check(turns.size()==1 and BattlePlayLoop.unit(scene.play_loop,row["unit_id"])["ai_wait_remaining"]==1,"guard takes its scheduled first action before Leonard control; F9 preserves remaining one")
+	elif mode in ScriptWaitFixture.FAR_MODES:
 		await cycle()
-		var guard:=Loop.unit(scene.play_loop,"enemy026_1")
+		var guard:=BattlePlayLoop.unit(scene.play_loop,"enemy026_1")
 		if mode in ["guard","double_guard"]:
 			check(guard["ai_wait_remaining"]==(1 if mode=="guard" else 0), "actual guard action decrements once per independent evaluation")
 			check(guard_captions.any(func(t):return t.contains("守候")), "waiting is visible before control is returned")
-		elif mode=="paralyzed": check(guard["ai_wait_remaining"]==2 and not Loop.StatusEffectRules.paralyzed(guard),"paralyzed guard uses only entry/status tail before future AI evaluation")
+		elif mode=="paralyzed": check(guard["ai_wait_remaining"]==2 and not BattlePlayLoop.StatusEffectRules.paralyzed(guard),"paralyzed guard uses only entry/status tail before future AI evaluation")
 		else: check(guard["ai_wait_remaining"]==0,"damage or silence wakes source waiting logic before fresh action choice")
 		await save_restore()
 		await cycle()
-		check(Loop.unit(scene.play_loop,"enemy026_1")["ai_wait_remaining"]==0,"later cycle progresses from saved remaining count")
+		check(BattlePlayLoop.unit(scene.play_loop,"enemy026_1")["ai_wait_remaining"]==0,"later cycle progresses from saved remaining count")
 	elif mode == "ai_chain":
 		await cycle()
-		check(Loop.unit(scene.play_loop,"enemy026_1")["ai_wait_remaining"]==0 and Loop.unit(scene.play_loop,"enemy026_1")["mp"]==0,"woken AI pays current MP once and exhausts its real resource")
-		var spells:=ai_actions.filter(func(a):return a.get("actor_id")=="enemy026_1" and a.get("skill_id")==WaitFixture.Mobile.WIND)
+		check(BattlePlayLoop.unit(scene.play_loop,"enemy026_1")["ai_wait_remaining"]==0 and BattlePlayLoop.unit(scene.play_loop,"enemy026_1")["mp"]==0,"woken AI pays current MP once and exhausts its real resource")
+		var spells:=ai_actions.filter(func(a):return a.get("actor_id")=="enemy026_1" and a.get("skill_id")==ScriptWaitFixture.run_mobile_jobs_tests.WIND)
 		var ordinary:=ai_actions.filter(func(a):return a.get("actor_id")=="enemy026_1" and a.get("kind") in ["attack","move_then_attack"] and a.get("formula_source")=="core_logic")
 		check(not spells.is_empty() and not ordinary.is_empty(),"second AI action replaces its exhausted spell intent with a real ordinary attack")
 	elif mode in ["escape","carry"]:
@@ -157,7 +156,7 @@ func play_wait() -> void:
 	elif mode in ["mage","support"]:
 		await change_gear(232,"accessory1")
 		await move_to(Vector2i(13,16))
-		await cast_stat(WaitFixture.Mobile.WIND if mode=="mage" else WaitFixture.Depart.HEAL,sample["target_id"])
+		await cast_stat(ScriptWaitFixture.run_mobile_jobs_tests.WIND if mode=="mage" else ScriptWaitFixture.ScriptDepartureFixture.HEAL,sample["target_id"])
 		await settle("")
 		check(not scene.play_loop["last_attack"].is_empty() and scene.play_loop["script_wait_cursor"]==2, "moved spell/support payment and event assignments settle together once")
 	else:
@@ -173,24 +172,24 @@ func play_wait() -> void:
 			check(scene.play_loop["departure_sequence"]==2,"two current template instances depart without reusing a stale binding")
 			for id in ["enemy026_1","enemy026_2"]: check(scene.actor_node_for_unit(id)==null or not scene.actor_node_for_unit(id).visible,"departed wait target cannot remain a visible ghost")
 		if mode in ["kill","victory"]:
-			var grown:=Loop.unit(scene.play_loop,owner_id)
+			var grown:=BattlePlayLoop.unit(scene.play_loop,owner_id)
 			check(grown["level"]>1 and str(observed.get("experience_text","")).contains("升級"),"actual lethal action awards EXP and shows its level increase before control or result")
 			check(observed.get("growth",false) if mode=="kill" else grown["pending_stat_points"]==5,"ongoing battle allocates growth; terminal preserves its five pending points for carry")
 	await save_restore()
 	var row:Dictionary={"mode":mode,"initial":initial_state["units"],"final":scene.play_loop["units"].duplicate(true),"wait_source":scene.play_loop["script_wait_source"].duplicate(true),"wait_cursor":scene.play_loop["script_wait_cursor"],"wait_receipt":scene.play_loop["last_script_wait"].duplicate(true),"requests":scene.play_loop.get("winfail_runtime",{}).get("wait_requests",[]).duplicate(true),"script_cursor":scene.script_cutscene_consumed,"ai_actions":ai_actions.duplicate(true),"guard_captions":guard_captions.duplicate(),"combat":receipts.duplicate(true),"events":events.duplicate(true),"observed":observed.duplicate(true),"sounds":sounds.keys(),"saves":saves,"outcome":scene.play_loop["battle_outcome"],"restarted":false}
 	if mode=="carry":
-		var carry:=Loop.CampaignCarryRules.capture(scene.play_loop)
+		var carry:=BattlePlayLoop.CampaignCarryRules.capture(scene.play_loop)
 		await close_scene()
-		Campaign.pending={"scenario_path":Mobile.PATH,"carry":carry}
+		CampaignProgress.pending={"scenario_path":run_mobile_jobs_tests.PATH,"carry":carry}
 		scene=load("res://game/battle/development/MobileJobsTrial.tscn").instantiate()
 		root.add_child(scene); current_scene=scene; scene.settlement_controller.checkpoint_path=WAIT_OUT+"carry-destination.save"
 		await settle("")
-		check(Campaign.pending.is_empty() and scene.play_loop["script_wait_cursor"]==0 and scene.script_cutscene_consumed==0,"cross-battle handoff consumes once and starts new script cursors")
+		check(CampaignProgress.pending.is_empty() and scene.play_loop["script_wait_cursor"]==0 and scene.script_cutscene_consumed==0,"cross-battle handoff consumes once and starts new script cursors")
 		check(scene.play_loop["campaign_carry_receipt"]["errors"].is_empty() and scene.play_loop["script_wait_source"]["initial"].is_empty(),"new declared roster receives party progression and its own default waiting policy")
 		await save_restore(); row["carry_destination"]=scene.play_loop["script_wait_source"].duplicate(true)
 	elif mode in ["victory","defeat","escape"]:
 		var frozen:Dictionary=scene.play_loop.duplicate(true)
-		check(Loop.step_ai_turn(frozen)==frozen and Loop.finish_exhausted_action(frozen)==frozen,"terminal rejects all later action/tick callbacks")
+		check(BattlePlayLoop.step_ai_turn(frozen)==frozen and BattlePlayLoop.finish_exhausted_action(frozen)==frozen,"terminal rejects all later action/tick callbacks")
 		reload_current_scene(); await create_timer(0.4).timeout; scene=current_scene
 		check(scene.play_loop["scenario_ok"] and scene.play_loop["script_wait_cursor"]==0 and not BattleOutcome.decided(scene.play_loop),"actual restart resets this encounter's assignment history")
 		row["restarted"]=true
@@ -198,7 +197,7 @@ func play_wait() -> void:
 
 func attack(target: String) -> void:
 	await click(scene.action_menu.get_node("AttackCommand"))
-	var coord:Variant=Loop.Footprint.contact(Loop.unit(scene.play_loop,target),Loop.attack_cells(scene.play_loop))
+	var coord:Variant=BattlePlayLoop.Footprint.contact(BattlePlayLoop.unit(scene.play_loop,target),BattlePlayLoop.attack_cells(scene.play_loop))
 	check(coord is Vector2i,"current target has a legal body contact")
 	await hover(scene.grid_cell_center_to_logical_position(coord)); await shot("attack-target")
 	await point(scene.grid_cell_center_to_logical_position(coord))
@@ -209,7 +208,7 @@ func save_restore() -> void:
 	await key(KEY_F5)
 	check(FileAccess.file_exists(scene.settlement_controller.checkpoint_path),"actual save file exists")
 	var encoded:=FileAccess.get_file_as_bytes(scene.settlement_controller.checkpoint_path)
-	var decoded:=WaitSave.decode(encoded, before)
+	var decoded:=BattleCheckpoint.decode(encoded, before)
 	check(decoded["ok"] and decoded["snapshot"]["loop"]==before,"saved assignment cursor and countdown exactly match the quiet battle")
 	await key(KEY_F9)
 	check(scene.play_loop==before,"actual F9 does not replay a wait, item, EXP or state tail")

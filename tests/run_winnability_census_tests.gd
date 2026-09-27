@@ -35,13 +35,13 @@ extends "res://tests/support/TestSuite.gd"
 ##    STORY actions name resolves to a unit of the cast (fielded, script template, or an
 ##    opening-only actor the STORY deletes) except KNOWN_UNBUILT.
 
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
-const Grid = preload("res://game/sim/TacticalGridRules.gd")
-const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
@@ -86,7 +86,7 @@ func run() -> void:
 			continue
 		battles += 1
 		var scenario := BattleScenario.load_file(str(entry.get("scenario", "")))
-		var loop := Loop.create([], "", scenario, 1)
+		var loop := BattlePlayLoop.create([], "", scenario, 1)
 		_assert_true(bool(loop.get("scenario_ok", false)), "battle %s creates a PlayLoop (%s)" % [key, str(loop.get("scenario_error", ""))])
 		if not bool(loop.get("scenario_ok", false)):
 			continue
@@ -179,7 +179,7 @@ func census(loop: Dictionary, scenario: Dictionary, arrivals: Variant = null) ->
 ## The loop with every creatable script actor added (template id `template:<symbol>`), its
 ## registered-player tokens bound: what the conditions can ever name.
 func cast_battle(loop: Dictionary) -> Dictionary:
-	var cast: Dictionary = Loop.copy(loop)
+	var cast: Dictionary = BattlePlayLoop.copy(loop)
 	cast["units"] = (loop["units"] as Array).duplicate(true)
 	var bindings: Dictionary = cast["winfail_runtime"]["actor_bindings"]
 	var templates: Dictionary = (loop.get("script_actor_source", {}) as Dictionary).get("templates", {})
@@ -346,7 +346,7 @@ func armed_by(status: Dictionary, armed: Array = [], fireable: Dictionary = {}) 
 ## can walk into the zone on the map with every mid-battle ClearWall open, ignoring units.
 func arrival_floods(cast: Dictionary, rules: Dictionary) -> Dictionary:
 	var result := {}
-	var board: Dictionary = Loop.copy(cast)
+	var board: Dictionary = BattlePlayLoop.copy(cast)
 	board["terrain_edits"] = []
 	var cell_size := WinfailConditions.cell_size(cast)
 	for status in WinfailCompiler.all_statuses(rules):
@@ -354,8 +354,8 @@ func arrival_floods(cast: Dictionary, rules: Dictionary) -> Dictionary:
 			var args: Array = action["args"]
 			var edit: Dictionary = rules.get("story_object_terrain", {}).get(WinfailConditions._arg(args, 0), {})
 			if str(action["name"]) == "actInsertStoryObject" and edit.has("clear_flags") and args.size() >= 3:
-				TerrainEdits.record(board, WinfailConditions._arg(args, 0), [Vector2i(floori(float(args[1]) / cell_size), floori(float(args[2]) / cell_size))], "winnability census")
-	var tiles := TerrainEdits.tiles(board)
+				TerrainEditRules.record(board, WinfailConditions._arg(args, 0), [Vector2i(floori(float(args[1]) / cell_size), floori(float(args[2]) / cell_size))], "winnability census")
+	var tiles := TerrainEditRules.tiles(board)
 	var size: Vector2i = cast["map_size"]
 	var reach_cache := {}
 	for status in WinfailCompiler.all_statuses(rules):
@@ -384,7 +384,7 @@ func arrival_floods(cast: Dictionary, rules: Dictionary) -> Dictionary:
 				var id := str(unit["id"])
 				if not reach_cache.has(id):
 					var mover: Dictionary = unit.duplicate(true)
-					var envelope := Grid.movement_reachability_envelope(mover, [], tiles, size, size.x * size.y * 16)
+					var envelope := TacticalGridRules.movement_reachability_envelope(mover, [], tiles, size, size.x * size.y * 16)
 					var reach := {mover["coord"]: true}
 					for coord in envelope.get("reachable_coords", []):
 						reach[coord] = true
@@ -440,7 +440,7 @@ func _ablations(campaign: Dictionary) -> void:
 	var scenario_29: Dictionary = boards["29"][1]
 	_assert_eq(WinfailConditions.units_for_token(loop_29, "1000", 1), ["actor023_1"], "STORY029 actChangePlayerID binds 1000 to 梅爾 (SID_ENEMY023 serial 1)")
 	_assert_eq(WinfailConditions.units_for_token(loop_29, "1001", 1), ["actor023_2"], "STORY029 actChangePlayerID binds 1001 to 凱文 (SID_ENEMY023 serial 2)")
-	var unbound: Dictionary = Loop.copy(loop_29)
+	var unbound: Dictionary = BattlePlayLoop.copy(loop_29)
 	unbound["winfail_runtime"] = (loop_29["winfail_runtime"] as Dictionary).duplicate(true)
 	unbound["winfail_runtime"]["actor_bindings"].erase("1000/1")
 	unbound["winfail_runtime"]["actor_bindings"].erase("1001/1")
@@ -468,7 +468,7 @@ func _missing_actor_ablations() -> void:
 	var loop_80: Dictionary = boards["80"][0]
 	var wall := ["1", "SID_ENEMY068"]
 	_assert_true(not WinfailConditions.condition_holds(loop_80, "actCheckEnemy", wall, "round"), "level 80's wall event waits while the 怨念體 stands")
-	var fallen: Dictionary = Loop.copy(loop_80)
+	var fallen: Dictionary = BattlePlayLoop.copy(loop_80)
 	fallen["units"] = (loop_80["units"] as Array).duplicate(true)
 	WinfailConditions.unit(fallen, "actor068_1")["defeated"] = true
 	_assert_true(WinfailConditions.condition_holds(fallen, "actCheckEnemy", wall, "round"), "level 80's wall event holds once the 怨念體 falls")
@@ -486,32 +486,32 @@ func _missing_actor_ablations() -> void:
 func _level37_gem_chain(first: Dictionary) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
-	var loop: Dictionary = Loop._resolve_outcome(Loop.BattleScenarioRuleAdapter.run_event_hooks(Loop.copy(first)))
+	var loop: Dictionary = BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(BattlePlayLoop.copy(first)))
 	var caster := ""
 	var skill := ""
 	for step in range(200):
 		var id := str(CoreTurnQueue.current(loop["turn_queue"]).get("id", ""))
-		if not bool(Loop._unit(loop, id).get("player_commandable", false)):
-			loop = Loop.step_ai_turn(loop, rng)
+		if not bool(BattlePlayLoop._unit(loop, id).get("player_commandable", false)):
+			loop = BattlePlayLoop.step_ai_turn(loop, rng)
 			continue
-		var ready := Loop.select_player_unit(loop, id)
-		for option in Loop.magic_options(ready, id):
-			if option["quote"]["ok"] and not Loop.SkillTargetRules.is_support(option["fields"], ready["skill_target_data"]):
+		var ready := BattlePlayLoop.select_player_unit(loop, id)
+		for option in BattlePlayLoop.magic_options(ready, id):
+			if option["quote"]["ok"] and not BattlePlayLoop.SkillTargetRules.is_support(option["fields"], ready["skill_target_data"]):
 				caster = id
 				skill = str(option["id"])
 				break
 		if caster != "":
 			loop = ready
 			break
-		loop = Loop.commit_wait(ready, rng)
+		loop = BattlePlayLoop.commit_wait(ready, rng)
 	_assert_true(caster != "", "level 37 fields a caster with an offensive spell")
 	if caster == "":
 		return
 	var adjacent := _gem_beside(loop, caster, "guard067_5")
-	var struck := Loop.attack_target(Loop.choose_command(adjacent, "attack"), "guard067_5", rng)
+	var struck := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(adjacent, "attack"), "guard067_5", rng)
 	_assert_eq(str(struck.get("last_attack_reject", {}).get("reason", "")), "not_enemy", "an ordinary attack cannot select a pmMagicAttack gem")
 	var early := _cast_on_gem(loop, caster, skill, "guard067_5", rng)
-	var after := Loop._unit(early, "guard067_5")
+	var after := BattlePlayLoop._unit(early, "guard067_5")
 	_assert_true(int(after["hp"]) == 1 and not bool(after.get("defeated", false)), "the undead gem revives at 1 HP after a lethal spell")
 	_assert_eq(int(after.get("player_mode", 0)), 0x30000, "a struck gem goes dark (pmPlayerEnemy)")
 	var fired: Array = early["winfail_runtime"]["fired"]
@@ -519,20 +519,20 @@ func _level37_gem_chain(first: Dictionary) -> void:
 	_assert_eq(int(fired[0].get("chain_stop_index", -1)), 3, "event 5 stops at its actCheckEventNotExist gate while pillars 1–4 are armed")
 	_assert_true(not (early["event_statuses"] as Array).has(6) and _alive_of(early, ["052"]).is_empty() and _alive_of(early, ["066", "067"]).size() == 10, "gem 5 struck first leaves the guardians standing and Enemy052 absent")
 	# Pillars 1–4 already struck: their events have left the slot table.
-	var primed: Dictionary = Loop.copy(loop)
+	var primed: Dictionary = BattlePlayLoop.copy(loop)
 	primed["event_statuses"] = (loop["event_statuses"] as Array).filter(func(code): return not [1, 2, 3, 4].has(int(code)))
 	var last := _cast_on_gem(primed, caster, skill, "guard067_5", rng)
 	_assert_eq(last["winfail_runtime"]["fired"].map(func(entry): return entry["key"]), ["event_5", "event_6"], "gem 5 struck last fires WINFAIL037 events 5 and 6")
 	_assert_true(_alive_of(last, ["066", "067"]).is_empty() and _alive_of(last, ["052"]).size() == 1 and (last["event_statuses"] as Array).has(47), "event 6 removes the ten guardians, fields Enemy052 and arms event 47")
 	# Gem 4 struck last (1, 2, 3 and 5 already struck): the pillars reset.
-	var wrong: Dictionary = Loop.copy(loop)
+	var wrong: Dictionary = BattlePlayLoop.copy(loop)
 	wrong["event_statuses"] = (loop["event_statuses"] as Array).filter(func(code): return not [1, 2, 3, 5].has(int(code)))
 	var reset := _cast_on_gem(wrong, caster, skill, "guard067_4", rng)
 	_assert_eq(reset["winfail_runtime"]["fired"].map(func(entry): return entry["key"]), ["event_4", "event_7"], "another gem struck last fires its event and the event-7 reset")
 	var rearmed := true
 	for code in [8, 9, 10, 11, 12]:
 		rearmed = rearmed and (reset["event_statuses"] as Array).has(code)
-	_assert_true(rearmed and not (reset["event_statuses"] as Array).has(6) and int(Loop._unit(reset, "guard067_4").get("player_mode", 0)) == 0x870000, "event 7 relights the gems (pmMagicAttack) and arms events 8–12")
+	_assert_true(rearmed and not (reset["event_statuses"] as Array).has(6) and int(BattlePlayLoop._unit(reset, "guard067_4").get("player_mode", 0)) == 0x870000, "event 7 relights the gems (pmMagicAttack) and arms events 8–12")
 
 
 ## WINFAIL080 events 0／1 (the two treasures) end at `actCheckEventNotExist 1,<other>` while the
@@ -545,15 +545,15 @@ func _level80_treasure_order(first: Dictionary) -> void:
 		if bool(unit.get("player_commandable", false)):
 			runner = str(unit["id"])
 			break
-	var north := _arrive(Loop.copy(first), runner, Vector2i(19, 4))
+	var north := _arrive(BattlePlayLoop.copy(first), runner, Vector2i(19, 4))
 	var north_fired: Array = north["winfail_runtime"]["fired"]
 	_assert_eq(north_fired.map(func(entry): return entry["key"]), ["event_0"], "level 80: the northern treasure fires event 0")
 	_assert_true(int(north_fired[0].get("chain_stop_index", -1)) == 11 and not (north["win_statuses"] as Array).has(0) and not BattleOutcome.decided(north), "level 80: the first treasure stops at its gate (event 1 armed) — no win while the 怨念體 guards the second")
-	var south_only: Dictionary = Loop.copy(first)
+	var south_only: Dictionary = BattlePlayLoop.copy(first)
 	WinfailConditions.unit(south_only, "actor068_1")["defeated"] = true
 	south_only = _arrive(south_only, runner, Vector2i(19, 13))
 	_assert_true(south_only["winfail_runtime"]["fired"].map(func(entry): return entry["key"]).has("event_1") and not (south_only["win_statuses"] as Array).has(0) and not BattleOutcome.decided(south_only), "level 80: the southern treasure alone does not arm win 0 either")
-	var both: Dictionary = Loop.copy(north)
+	var both: Dictionary = BattlePlayLoop.copy(north)
 	WinfailConditions.unit(both, "actor068_1")["defeated"] = true
 	both = _arrive(both, runner, Vector2i(19, 13))
 	var both_fired: Array = both["winfail_runtime"]["fired"].map(func(entry): return entry["key"])
@@ -565,24 +565,24 @@ func _arrive(loop: Dictionary, unit_id: String, cell: Vector2i) -> Dictionary:
 	var unit := WinfailConditions.unit(loop, unit_id)
 	unit["coord"] = cell
 	unit["grid_coord"] = cell
-	return Loop._resolve_outcome(Loop.BattleScenarioRuleAdapter.run_event_hooks(loop))
+	return BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop))
 
 
 ## `loop` with gem `gem_id` moved beside the caster (a copy).
 func _gem_beside(loop: Dictionary, caster: String, gem_id: String) -> Dictionary:
-	var next: Dictionary = Loop.copy(loop)
-	var gem := Loop._unit(next, gem_id)
+	var next: Dictionary = BattlePlayLoop.copy(loop)
+	var gem := BattlePlayLoop._unit(next, gem_id)
 	for delta in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-		if Loop.unit_id_at_coord(next, Loop._unit(next, caster)["coord"] + delta) == "":
-			gem["coord"] = Loop._unit(next, caster)["coord"] + delta
+		if BattlePlayLoop.unit_id_at_coord(next, BattlePlayLoop._unit(next, caster)["coord"] + delta) == "":
+			gem["coord"] = BattlePlayLoop._unit(next, caster)["coord"] + delta
 			break
 	return next
 
 
 func _cast_on_gem(loop: Dictionary, caster: String, skill: String, gem_id: String, rng: RandomNumberGenerator) -> Dictionary:
 	var ready := _gem_beside(loop, caster, gem_id)
-	var cast := Loop.attack_target(Loop.choose_magic(Loop.choose_command(ready, "magic"), skill), gem_id, rng, Loop._unit(ready, gem_id)["coord"])
-	return Loop.finish_exhausted_action(cast)
+	var cast := BattlePlayLoop.attack_target(BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(ready, "magic"), skill), gem_id, rng, BattlePlayLoop._unit(ready, gem_id)["coord"])
+	return BattlePlayLoop.finish_exhausted_action(cast)
 
 
 func _alive_of(loop: Dictionary, actor_ids: Array) -> Array:
@@ -590,7 +590,7 @@ func _alive_of(loop: Dictionary, actor_ids: Array) -> Array:
 
 
 func _without_actors(loop: Dictionary, actor_ids: Array) -> Dictionary:
-	var stripped: Dictionary = Loop.copy(loop)
+	var stripped: Dictionary = BattlePlayLoop.copy(loop)
 	stripped["units"] = (loop["units"] as Array).filter(func(unit): return not actor_ids.has(str(unit["actor_id"])))
 	stripped["winfail_runtime"] = (loop["winfail_runtime"] as Dictionary).duplicate(true)
 	var bindings: Dictionary = stripped["winfail_runtime"]["actor_bindings"]

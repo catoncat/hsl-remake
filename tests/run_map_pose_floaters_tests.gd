@@ -11,7 +11,7 @@ extends "res://tests/support/TestSuite.gd"
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
-const DamageNumberFloat = preload("res://game/battle/scene/DamageNumberFloat.gd")
+const DamageNumberFloater = preload("res://game/battle/scene/DamageNumberFloater.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const WALK_MANIFEST := "res://content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json"
 const POSE_MANIFEST := "res://content/imported/hsl/shared/actor_magic_poses/manifest.json"
@@ -159,29 +159,29 @@ func _test_star_shower() -> void:
 
 
 func _test_damage_digit_states() -> void:
-	_assert_eq(DamageNumberFloat.state_at(0, 2)["visible"], 0, "the hold tick draws nothing")
-	var tick1 := DamageNumberFloat.state_at(1, 2)
+	_assert_eq(DamageNumberFloater.state_at(0, 2)["visible"], 0, "the hold tick draws nothing")
+	var tick1 := DamageNumberFloater.state_at(1, 2)
 	_assert_eq([tick1["visible"], tick1["newest"], tick1["previous"], tick1["flash"], tick1["flash_level"]], [1, 1, 0, 1, 16], "tick 1: only the first (leftmost) digit, at 2×, with the NUM510 flash at level 16")
-	_assert_eq([DamageNumberFloat.state_at(6, 2)["flash_level"], DamageNumberFloat.state_at(7, 2)["flash"]], [11, 0], "the flash burns 6 ticks, 16 → 11")
-	var tick10 := DamageNumberFloat.state_at(10, 2)
+	_assert_eq([DamageNumberFloater.state_at(6, 2)["flash_level"], DamageNumberFloater.state_at(7, 2)["flash"]], [11, 0], "the flash burns 6 ticks, 16 → 11")
+	var tick10 := DamageNumberFloater.state_at(10, 2)
 	_assert_eq([tick10["visible"], tick10["newest"], tick10["previous"], tick10["flash"]], [2, 2, 1, 2], "tick 10: the second digit joins at 2×, the first at 1.5×, the flash moves to it")
-	_assert_eq(DamageNumberFloat.state_at(11, 2)["previous"], 0, "the 1.5× step lasts to the next half-step")
-	var tick20 := DamageNumberFloat.state_at(20, 2)
+	_assert_eq(DamageNumberFloater.state_at(11, 2)["previous"], 0, "the 1.5× step lasts to the next half-step")
+	var tick20 := DamageNumberFloater.state_at(20, 2)
 	_assert_eq([tick20["visible"], tick20["newest"], tick20["previous"]], [2, 0, 2], "tick 20: past the last digit only the 1.5× step remains")
-	var tick21 := DamageNumberFloat.state_at(21, 2)
+	var tick21 := DamageNumberFloater.state_at(21, 2)
 	_assert_eq([tick21["visible"], tick21["newest"], tick21["previous"], tick21["level"]], [2, 0, 0, 16], "then the whole number stands at 1×")
-	_assert_eq([DamageNumberFloat.state_at(38, 2)["level"], DamageNumberFloat.state_at(39, 2)["level"], DamageNumberFloat.state_at(53, 2)["level"]], [16, 15, 1], "18 settle ticks, then the level drops a tick")
-	_assert_true(not DamageNumberFloat.state_at(54, 2)["alive"], "deleted at level 0")
-	_assert_eq([DamageNumberFloat.life_ticks(1), DamageNumberFloat.life_ticks(2), DamageNumberFloat.life_ticks(3)], [44, 54, 64], "life 10 × digits + 34 (original_tick_counts §1)")
-	_assert_true(DamageNumberFloat.state_at(43, 1)["alive"] and not DamageNumberFloat.state_at(44, 1)["alive"], "a one-digit number lives 44 ticks")
+	_assert_eq([DamageNumberFloater.state_at(38, 2)["level"], DamageNumberFloater.state_at(39, 2)["level"], DamageNumberFloater.state_at(53, 2)["level"]], [16, 15, 1], "18 settle ticks, then the level drops a tick")
+	_assert_true(not DamageNumberFloater.state_at(54, 2)["alive"], "deleted at level 0")
+	_assert_eq([DamageNumberFloater.life_ticks(1), DamageNumberFloater.life_ticks(2), DamageNumberFloater.life_ticks(3)], [44, 54, 64], "life 10 × digits + 34 (original_tick_counts §1)")
+	_assert_true(DamageNumberFloater.state_at(43, 1)["alive"] and not DamageNumberFloater.state_at(44, 1)["alive"], "a one-digit number lives 44 ticks")
 	var three := []
 	for tick in [1, 10, 20, 30]:
-		three.append(DamageNumberFloat.state_at(tick, 3)["visible"])
+		three.append(DamageNumberFloater.state_at(tick, 3)["visible"])
 	_assert_eq(three, [1, 2, 3, 3], "digits appear one by one, left to right, every 10 ticks")
 
 
 func _test_damage_digit_node() -> void:
-	var number: Node2D = DamageNumberFloat.new()
+	var number: Node2D = DamageNumberFloater.new()
 	root.add_child(number)
 	number.position = Vector2(200, 150)
 	number.present(57)

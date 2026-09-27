@@ -63,7 +63,7 @@ func tick() -> bool:
 	var view = runtime.get_node("BattlePresentation")
 	autoload_checkpoint()
 	resume_button.visible = runtime.interaction_state == Interaction.OPENING_TIMELINE and FileAccess.file_exists(checkpoint_path)
-	runtime.status_panel.money_label.text = str(int(runtime.play_loop[LoopKeys.GOLD]))
+	runtime.status_panel.gold_label.text = str(int(runtime.play_loop[LoopKeys.GOLD]))
 	runtime.status_panel.rewards_button.disabled = runtime.play_loop[LoopKeys.SETTLEMENT].get("pending", []).is_empty()
 	if not BattlePlayLoop.loot_waiting(runtime.play_loop):
 		if panel.visible: panel.close()

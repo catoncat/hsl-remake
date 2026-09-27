@@ -11,7 +11,7 @@ extends SceneTree
 ##
 ##   tools/godot.sh --headless --script res://tests/capture_cast_overlay_review.gd          # log only
 ##   tools/play.sh --screen 0 --script res://tests/capture_cast_overlay_review.gd -- <out_dir>
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const CASES := [
 	{"label": "ch1-tina-heal-water", "scenario": "res://content/battles/battle_010.json", "caster": "tina", "command": "magic", "skill_name": "治癒之水", "target": "leonard"},
@@ -50,16 +50,16 @@ func run_case(spec: Dictionary) -> void:
 	scene.get_node("BattleMusic").stop()
 	await settle(scene)
 	var caster_id: String = spec["caster"]
-	var caster: Dictionary = Loop._unit(scene.play_loop, caster_id)
+	var caster: Dictionary = BattlePlayLoop._unit(scene.play_loop, caster_id)
 	caster["mp"] = int(caster["max_mp"])
 	caster["stamina"] = 60
 	# Fixture: the target (an enemy, or the named ally for a support spell) stands next to the
 	# caster, sturdy enough to survive.
 	var enemy_id: String = spec["target"]
 	for unit in scene.play_loop[LoopKeys.UNITS]:
-		if enemy_id == "" and not bool(unit.get("defeated", false)) and Loop._are_enemies(caster, unit) and Loop.Footprint.radius(unit) == 0:
+		if enemy_id == "" and not bool(unit.get("defeated", false)) and BattlePlayLoop._are_enemies(caster, unit) and BattlePlayLoop.Footprint.radius(unit) == 0:
 			enemy_id = str(unit["id"])
-	var enemy: Dictionary = Loop._unit(scene.play_loop, enemy_id)
+	var enemy: Dictionary = BattlePlayLoop._unit(scene.play_loop, enemy_id)
 	enemy["coord"] = caster["coord"] + Vector2i(1, 0)
 	enemy["max_hp"] = 400
 	enemy["hp"] = 400 if spec["target"] == "" else 200
@@ -76,7 +76,7 @@ func run_case(spec: Dictionary) -> void:
 	scene.select_actor(caster_id)
 	await settle(scene)
 	var skill_id := ""
-	var options: Array = Loop.magic_options(scene.play_loop, caster_id) if spec["command"] == "magic" else Loop.special_options(scene.play_loop, caster_id)
+	var options: Array = BattlePlayLoop.magic_options(scene.play_loop, caster_id) if spec["command"] == "magic" else BattlePlayLoop.special_options(scene.play_loop, caster_id)
 	for option in options:
 		if str(option.get("name", "")) == spec["skill_name"]:
 			skill_id = str(option["id"])

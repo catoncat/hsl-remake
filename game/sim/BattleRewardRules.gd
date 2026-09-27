@@ -1,5 +1,5 @@
 extends RefCounted
-## Pure reward proposals. PlayLoop owns money, inventories, RNG and claim revisions.
+## Pure reward proposals. PlayLoop owns gold, inventories, RNG and claim revisions.
 ## Native carry/drop comparisons: battle_reward_inputs.md. Carry and drops draw from the
 ## original global stream (GlobalRandomStream, not saved); eligibility is a remake policy.
 ## provenance:
@@ -298,7 +298,7 @@ static func generate(receipt: Dictionary, units: Array, data: Dictionary, state:
 			else:
 				carried.append(_kill_row("unit_id", attacker, id, amount, multiplier))
 			continue
-		# Shared party money; controlled actors earn it on hostile kills, including
+		# Shared party gold; controlled actors earn it on hostile kills, including
 		# counters. Story departures do not grant player loot.
 		if target.get("battle_actor_role") != "enemy_ai": continue
 		gold += amount * multiplier

@@ -12,11 +12,11 @@ extends SceneTree
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const MapRules = preload("res://game/world/WorldMapRules.gd")
-const PartyRules = preload("res://game/world/WorldPartyRules.gd")
-const TownRules = preload("res://game/sim/TownEventRules.gd")
-const UISkin = preload("res://game/common/BattleUISkin.gd")
-const ShopScreen = preload("res://game/world/TownShopScreen.gd")
+const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
+const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
+const TownEventRules = preload("res://game/sim/TownEventRules.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const TownShopScreen = preload("res://game/world/TownShopScreen.gd")
 
 const SCENE_PATH := "res://content/world/world_map_scene.json"
 const WORLD_MAP_PATH := "res://content/imported/hsl/global/world_map/world_map.json"
@@ -70,9 +70,9 @@ func _carry(gold: int, inventory: Array) -> Dictionary:
 
 
 func _fresh_state(start_point: int) -> Dictionary:
-	var world_map := MapRules.load_world_map(WORLD_MAP_PATH)
-	var towns := TownRules.initial_town_state(TownRules.load_towndef(TOWNDEF_PATH), TownRules.load_initial_trees(TREES_PATH))
-	var state := MapRules.initial_state(world_map, start_point, towns)
+	var world_map := WorldMapRules.load_world_map(WORLD_MAP_PATH)
+	var towns := TownEventRules.initial_town_state(TownEventRules.load_towndef(TOWNDEF_PATH), TownEventRules.load_initial_trees(TREES_PATH))
+	var state := WorldMapRules.initial_state(world_map, start_point, towns)
 	# Fixed tavern secret-man die (strict < ratio 8): keeps the tavern menus deterministic.
 	state["secret_roll"] = 100
 	return state
@@ -167,7 +167,7 @@ func _check_shop_composition(scene: Node, town: Node, screen: Control) -> void:
 	_assert_true(map_bar != null and map_bar.visible, "the big map's status bar stays under the shop window")
 	var vitals: Control = screen.get_node_or_null("Vitals")
 	_assert_true(vitals != null and vitals.visible and vitals.position == Vector2(0, 14) and str(screen.vitals_error) == "", "the member's WINDOW10 strip shows at (0,14) (vitals error: %s)" % str(screen.vitals_error))
-	var boards := {"BagBoard": [Vector2(12, 168), Vector2(224, 264)], "GoodsBoard": [Vector2(252, 168), Vector2(375, 220)], "MoneyBoard": [Vector2(20, 442), Vector2(208, 32)]}
+	var boards := {"BagBoard": [Vector2(12, 168), Vector2(224, 264)], "GoodsBoard": [Vector2(252, 168), Vector2(375, 220)], "GoldBoard": [Vector2(20, 442), Vector2(208, 32)]}
 	for key in boards:
 		var node: TextureRect = screen.get_node_or_null(key)
 		_assert_true(node != null and node.position == boards[key][0] and node.texture.get_size() == boards[key][1], "%s at %s" % [key, boards[key][0]])
@@ -217,12 +217,12 @@ func _run() -> void:
 
 func _run_party_rules() -> void:
 	var carry := _carry(275, [1, 0, 0, 0, 0, 0, 0, 0])
-	var party := PartyRules.party_from_carry(carry, SPEAKERS)
+	var party := WorldPartyRules.party_from_carry(carry, SPEAKERS)
 	_assert_eq(int(party["gold"]), 275, "party gold comes from loop gold")
 	_assert_eq(party["items"], [{"id": 1, "count": 1}], "party items count inventory codes")
 	_assert_eq(party["members"], ["SID_雷歐納德"], "members resolve to SID tokens by PLAYERS row")
-	_assert_eq(PartyRules.party_from_carry({"gold": 5}, SPEAKERS)["gold"], 0, "an invalid carry yields an empty party")
-	var members := PartyRules.members(carry, SPEAKERS)
+	_assert_eq(WorldPartyRules.party_from_carry({"gold": 5}, SPEAKERS)["gold"], 0, "an invalid carry yields an empty party")
+	var members := WorldPartyRules.members(carry, SPEAKERS)
 	_assert_eq(members.size(), 1, "one member summary")
 	_assert_eq(str(members[0]["name"]), "雷歐納德", "member name from the speaker table")
 	_assert_eq(int(members[0]["free_slots"]), 7, "free slots counted")
@@ -230,29 +230,29 @@ func _run_party_rules() -> void:
 	var after := party.duplicate(true)
 	after["gold"] = 2275
 	after["items"] = [{"id": 12, "count": 2}]
-	var applied := PartyRules.apply_party(carry, party, after)
+	var applied := WorldPartyRules.apply_party(carry, party, after)
 	_assert_eq(int(applied["carry"]["loop"]["gold"]), 2275, "apply_party writes gold")
 	_assert_eq(applied["carry"]["units"]["leonard"]["inventory"], [12, 12, 0, 0, 0, 0, 0, 0], "apply_party removes lost codes and inserts gains at the first holes")
 	_assert_eq((applied["receipt"]["placed"] as Array).size(), 2, "two placements receipted")
 	_assert_eq((applied["receipt"]["removed"] as Array).size(), 1, "one removal receipted")
 	var full := _carry(0, [1, 1, 1, 1, 1, 1, 1, 1])
-	var dropped := PartyRules.apply_party(full, PartyRules.party_from_carry(full, SPEAKERS), {"gold": 0, "items": [{"id": 1, "count": 8}, {"id": 5, "count": 1}]})
+	var dropped := WorldPartyRules.apply_party(full, WorldPartyRules.party_from_carry(full, SPEAKERS), {"gold": 0, "items": [{"id": 1, "count": 8}, {"id": 5, "count": 1}]})
 	_assert_eq(dropped["receipt"]["dropped"], [{"item_id": 5}], "a gain with no room is receipted as dropped, never silently lost")
-	var bought := PartyRules.buy(carry, "leonard", 81, 180)
+	var bought := WorldPartyRules.buy(carry, "leonard", 81, 180)
 	_assert_true(bool(bought["ok"]), "buy succeeds with enough gold and room")
 	_assert_eq(int(bought["gold"]), 95, "buy deducts the price")
 	_assert_eq(bought["carry"]["units"]["leonard"]["inventory"], [1, 81, 0, 0, 0, 0, 0, 0], "buy inserts at the first empty slot")
-	_assert_eq(str(PartyRules.buy(carry, "leonard", 101, 500)["reason"]), "insufficient_gold", "buy refuses when gold is short")
-	_assert_eq(str(PartyRules.buy(full, "leonard", 1, 0)["reason"]), "inventory_full", "buy refuses a full inventory")
-	_assert_eq(str(PartyRules.buy(carry, "nobody", 1, 0)["reason"]), "unknown_member", "buy refuses an unknown member")
-	_assert_eq(PartyRules.sell_price(201), 100, "sell price is cost * 50 / 100 (0x414ab0), half rounded down")
-	_assert_eq(PartyRules.sell_price(-3), 0, "negative table costs are clamped, never paid out")
-	var sold := PartyRules.sell(bought["carry"], "leonard", 1, 81, 90, {"81": {"important": false}})
+	_assert_eq(str(WorldPartyRules.buy(carry, "leonard", 101, 500)["reason"]), "insufficient_gold", "buy refuses when gold is short")
+	_assert_eq(str(WorldPartyRules.buy(full, "leonard", 1, 0)["reason"]), "inventory_full", "buy refuses a full inventory")
+	_assert_eq(str(WorldPartyRules.buy(carry, "nobody", 1, 0)["reason"]), "unknown_member", "buy refuses an unknown member")
+	_assert_eq(WorldPartyRules.sell_price(201), 100, "sell price is cost * 50 / 100 (0x414ab0), half rounded down")
+	_assert_eq(WorldPartyRules.sell_price(-3), 0, "negative table costs are clamped, never paid out")
+	var sold := WorldPartyRules.sell(bought["carry"], "leonard", 1, 81, 90, {"81": {"important": false}})
 	_assert_true(bool(sold["ok"]), "sell succeeds for the slot's code")
 	_assert_eq(int(sold["gold"]), 185, "sell adds the price")
 	_assert_eq(sold["carry"]["units"]["leonard"]["inventory"], [1, 0, 0, 0, 0, 0, 0, 0], "sell removes the slot and shifts left")
-	_assert_eq(str(PartyRules.sell(carry, "leonard", 0, 1, 100, {"1": {"important": true}})["reason"]), "important_item", "important items cannot be sold")
-	_assert_eq(str(PartyRules.sell(carry, "leonard", 3, 1, 100, {})["reason"]), "inventory_selection_changed", "selling a slot holding another code is refused")
+	_assert_eq(str(WorldPartyRules.sell(carry, "leonard", 0, 1, 100, {"1": {"important": true}})["reason"]), "important_item", "important items cannot be sold")
+	_assert_eq(str(WorldPartyRules.sell(carry, "leonard", 3, 1, 100, {})["reason"]), "inventory_selection_changed", "selling a slot holding another code is refused")
 
 
 func _run_shop() -> void:
@@ -305,7 +305,7 @@ func _run_shop() -> void:
 	_assert_eq(int((CampaignProgress.load_progress().get("carry", {}) as Dictionary).get("loop", {}).get("gold", -1)), 75, "the saved progress persists the new gold")
 	_assert_true(str(town.shop_message).contains("買下"), "purchase receipt recorded")
 	_assert_true(not screen.message_visible(), "a purchase raises no message board (original: only refusals do)")
-	_assert_eq(str((screen.get_node("Money") as Label).text), "75", "the `$:` box follows the purchase")
+	_assert_eq(str((screen.get_node("Gold") as Label).text), "75", "the `$:` box follows the purchase")
 	_assert_true((screen.get_node("Bag_1") as Button).get_child_count() > 0, "the bought 長劍 shows in bag slot 2")
 	(screen.goods_rows[2] as Button).pressed.emit()
 	_assert_eq(str(town.records[town.records.size() - 1]["result"]["reason"]), "insufficient_gold", "匕首 (210) is refused at 75 gold")
@@ -313,7 +313,7 @@ func _run_shop() -> void:
 	var board: TextureRect = screen.get_node_or_null("MessageBoard")
 	var line: Label = screen.get_node_or_null("MessageText")
 	_assert_true(board != null and board.position == Vector2(75, 320) and board.texture.get_size() == Vector2(489, 145), "the refusal shows on BOARD02 at (75,320) (frame 12)")
-	_assert_true(line != null and line.text == town.shop_message and line.get_theme_color("font_color") == UISkin.TEXT_RED, "message 606 prints red (@2)")
+	_assert_true(line != null and line.text == town.shop_message and line.get_theme_color("font_color") == BattleUISkin.TEXT_RED, "message 606 prints red (@2)")
 	(screen.get_node("Bag_0") as Button).pressed.emit()
 	_assert_true(not screen.holding(), "clicks under the message board do nothing")
 	(screen.get_node("MessageBlocker") as Button).pressed.emit()
@@ -467,7 +467,7 @@ func _run_ambush_victory_tavern_chain() -> void:
 	var story: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/battles/story_901.json"))
 	var actions: Array = ((story.get("opening", {}) as Dictionary).get("skip_battle", {}) as Dictionary).get("world_actions", [])
 	_assert_eq(actions.size(), 7, "story_901 carries WINFAIL901's seven win-section writes")
-	var applied := TownRules.apply_script_town_actions(state, actions, TownRules.load_towndef(TOWNDEF_PATH))
+	var applied := TownEventRules.apply_script_town_actions(state, actions, TownEventRules.load_towndef(TOWNDEF_PATH))
 	_assert_true(not applied.has("error"), "the ambush victory writes apply to a fresh 席達鎮 state")
 	state = applied["state"]
 	var scene = await _boot(_carry(300, [0, 0, 0, 0, 0, 0, 0, 0]), state)
@@ -510,10 +510,10 @@ func _run_ambush_victory_tavern_chain() -> void:
 	_confirm_through(town, 60)
 	_assert_eq(str(town.mode), "sub_menu", "back on the tavern menu after 女客人二")
 	var world: Dictionary = town.run["state"]
-	var world_map := MapRules.load_world_map(WORLD_MAP_PATH)
-	_assert_true(not MapRules.point_hidden(world, world_map, 11), "event 30 reveals 薛維斯港 (point 11)")
-	_assert_true(not MapRules.track_hidden(world, world_map, 10), "event 30 reveals track 10")
-	_assert_eq(MapRules.point_event(world, world_map, 9), 900, "event 30 arms 曼多力亞 with event 900")
+	var world_map := WorldMapRules.load_world_map(WORLD_MAP_PATH)
+	_assert_true(not WorldMapRules.point_hidden(world, world_map, 11), "event 30 reveals 薛維斯港 (point 11)")
+	_assert_true(not WorldMapRules.track_hidden(world, world_map, 10), "event 30 reveals track 10")
+	_assert_eq(WorldMapRules.point_event(world, world_map, 9), 900, "event 30 arms 曼多力亞 with event 900")
 	var port: Dictionary = (world.get("towns", {}) as Dictionary).get("11", {})
 	_assert_eq((port.get("tree", {}) as Dictionary).get("0", []), [33, 34, 35, 36, 41], "薛維斯港's menu tree is filled: shops, tavern and 港口")
 	_assert_eq(int(port.get("exec_event", 0)), 32, "第一次到薛維斯港 (32) is armed")
@@ -527,13 +527,13 @@ func _run_ambush_victory_tavern_chain() -> void:
 ## 曼多力亞 with teBMSetShowTrackPoint: when the town closes the route reveals from
 ## there while the party still stands in 席達鎮, and 薛維斯港 appears at its end.
 func _run_town_reveals_map() -> void:
-	var world_map := MapRules.load_world_map(WORLD_MAP_PATH)
-	var towns := TownRules.initial_town_state(TownRules.load_towndef(TOWNDEF_PATH), TownRules.load_initial_trees(TREES_PATH))
+	var world_map := WorldMapRules.load_world_map(WORLD_MAP_PATH)
+	var towns := TownEventRules.initial_town_state(TownEventRules.load_towndef(TOWNDEF_PATH), TownEventRules.load_initial_trees(TREES_PATH))
 	var config: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(SCENE_PATH))
-	var state := MapRules.initial_state(world_map, 6, towns, config.get("new_game", {}))
+	var state := WorldMapRules.initial_state(world_map, 6, towns, config.get("new_game", {}))
 	state["secret_roll"] = 100
 	(state["towns"]["6"] as Dictionary)["exec_event"] = 30
-	_assert_true(MapRules.point_hidden(state, world_map, 11) and MapRules.track_hidden(state, world_map, 10), "薛維斯港 and track 10 start Hidden in a new game")
+	_assert_true(WorldMapRules.point_hidden(state, world_map, 11) and WorldMapRules.track_hidden(state, world_map, 10), "薛維斯港 and track 10 start Hidden in a new game")
 	var scene = await _boot(_carry(100, [0, 0, 0, 0, 0, 0, 0, 0]), state)
 	var map = scene.world_map_runtime
 	await _settle_reveals(map)
@@ -547,19 +547,19 @@ func _run_town_reveals_map() -> void:
 	_assert_eq(str(town.mode), "menu", "event 30 ends on the town menu")
 	_assert_eq(int((map.state["towns"]["11"] as Dictionary).get("exec_event", 0)), 32, "teSetTownExecEvent armed 薛維斯港's event 32 in the map's world state")
 	_assert_eq(map.state.get("show_track_points", []), [9], "teBMSetShowTrackPoint queued 曼多力亞 for the map")
-	_assert_true(map.summary().get("revealing_track_count", 0) == 0 and not MapRules.track_shown(map.state, world_map, 10), "nothing reveals while the town screen is open")
+	_assert_true(map.summary().get("revealing_track_count", 0) == 0 and not WorldMapRules.track_shown(map.state, world_map, 10), "nothing reveals while the town screen is open")
 	town.leave()
 	await process_frame
 	_assert_true(map.town_runtime == null, "left 席達鎮")
-	_assert_true(not MapRules.point_hidden(map.state, world_map, 11) and not MapRules.track_hidden(map.state, world_map, 10), "the town event cleared the Hidden bits of 薛維斯港 and track 10")
+	_assert_true(not WorldMapRules.point_hidden(map.state, world_map, 11) and not WorldMapRules.track_hidden(map.state, world_map, 10), "the town event cleared the Hidden bits of 薛維斯港 and track 10")
 	# The walker (0x427420) takes the request after the routes underfoot: the camera glides to
 	# 曼多力亞, track 10 reveals there, the camera glides back; clicks are dropped meanwhile.
 	_assert_true(bool(map.summary().get("reveal_busy", false)) and str(map.summary().get("show_phase", "")) in ["to_point", "revealing"], "closing the town starts the show-track sequence for 曼多力亞 (phase %s)" % str(map.summary().get("show_phase", "")))
-	_assert_eq(MapRules.marker_kind(map.state, world_map, 9), MapRules.MARKER_KIND_GENERAL, "曼多力亞 now carries event 900 as a General point")
+	_assert_eq(WorldMapRules.marker_kind(map.state, world_map, 9), WorldMapRules.MARKER_KIND_GENERAL, "曼多力亞 now carries event 900 as a General point")
 	await _settle_reveals(map)
 	_assert_eq(map.state.get("show_track_points", []), [], "the sequence consumed the teBMSetShowTrackPoint request")
-	_assert_true(MapRules.point_shown(map.state, world_map, 11) and map.point_nodes.has(11), "薛維斯港 is shown once the route finishes revealing")
-	_assert_eq(int(MapRules.track_mode(map.state, world_map, 10)), MapRules.MODE_SHOWN, "track 10 settles to the shown phase")
+	_assert_true(WorldMapRules.point_shown(map.state, world_map, 11) and map.point_nodes.has(11), "薛維斯港 is shown once the route finishes revealing")
+	_assert_eq(int(WorldMapRules.track_mode(map.state, world_map, 10)), WorldMapRules.MODE_SHOWN, "track 10 settles to the shown phase")
 	await _teardown(scene)
 
 

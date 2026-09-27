@@ -1,9 +1,9 @@
 extends SceneTree
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const Save = preload("res://game/battle/runtime/BattleCheckpoint.gd")
-const Gol = preload("res://tests/run_gol_road_tests.gd")
-const Campaign = preload("res://game/battle/runtime/CampaignProgress.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
+const run_gol_road_tests = preload("res://tests/run_gol_road_tests.gd")
+const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 var failures: Array[String] = []
@@ -18,16 +18,16 @@ func _initialize() -> void:
 
 static func initial(level: int = 2) -> Dictionary:
 	var path := "res://content/battles/ohm_village_battle.json" if level == 1 else "res://content/battles/gol_road_battle.json"
-	return Loop.initialize_roster_growth(Loop.create([], "", Loop.BattleScenario.load_file(path)))
+	return BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file(path)))
 
 
 static func placed(level: int = 2, id: String = "hu", box: int = 1) -> Dictionary:
 	var loop := initial(level)
-	var actor := Loop._unit(loop, id)
+	var actor := BattlePlayLoop._unit(loop, id)
 	var coord: Vector2i = loop["treasure_source"]["chests"][box]["coord"]
 	actor["coord"] = coord
 	actor["ai_home_coord"] = coord
-	return Gol.owned_turn(loop, id)
+	return run_gol_road_tests.owned_turn(loop, id)
 
 
 static func meta(loop: Dictionary) -> Dictionary:
@@ -37,11 +37,11 @@ static func meta(loop: Dictionary) -> Dictionary:
 
 
 static func defer_loot(loop: Dictionary) -> Dictionary:
-	return Loop.finish_rewards(loop, loop["settlement"]["sequence"], loop["settlement"]["revision"], false, true)
+	return BattlePlayLoop.finish_rewards(loop, loop["settlement"]["sequence"], loop["settlement"]["revision"], false, true)
 
 
 static func claim_first(loop: Dictionary, id: String, slot: int = -1, expected: int = 0) -> Dictionary:
-	return Loop.claim_reward(loop, loop["settlement"]["sequence"], loop["settlement"]["revision"], loop["settlement"]["pending"][0]["id"], id, slot, expected)
+	return BattlePlayLoop.claim_reward(loop, loop["settlement"]["sequence"], loop["settlement"]["revision"], loop["settlement"]["pending"][0]["id"], id, slot, expected)
 
 
 func run() -> void:
@@ -63,108 +63,108 @@ func run() -> void:
 func movement_and_pickup() -> void:
 	var loop := placed()
 	var chest: Dictionary = loop["treasure_source"]["chests"][1]
-	var actor := Loop._unit(loop, "hu")
+	var actor := BattlePlayLoop._unit(loop, "hu")
 	actor["coord"] = chest["coord"] + Vector2i(0, 1)
 	actor["ai_home_coord"] = actor["coord"]
-	loop = Gol.owned_turn(loop, "hu")
+	loop = run_gol_road_tests.owned_turn(loop, "hu")
 	var before := loop.duplicate(true)
-	var moved := Loop.move_unit_to(Loop.choose_command(loop, "move"), chest["coord"])
-	check(moved["pending_move"] and Loop.unit(moved, "hu")["coord"] == chest["coord"], "normal legal movement can stop on a chest without inventing a blocking actor")
+	var moved := BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop, "move"), chest["coord"])
+	check(moved["pending_move"] and BattlePlayLoop.unit(moved, "hu")["coord"] == chest["coord"], "normal legal movement can stop on a chest without inventing a blocking actor")
 	check(moved["treasures"] == before["treasures"] and moved["settlement"].is_empty(), "reversible movement and preview do not award a chest")
-	var cancelled := Loop.cancel_pending_move(moved)
-	check(Loop.unit(cancelled, "hu")["coord"] == actor["coord"] and cancelled["treasures"] == before["treasures"], "cancelled movement restores origin with no reward, RNG or opened flag")
-	var saved_move := Save.encode(moved, meta(moved))
+	var cancelled := BattlePlayLoop.cancel_pending_move(moved)
+	check(BattlePlayLoop.unit(cancelled, "hu")["coord"] == actor["coord"] and cancelled["treasures"] == before["treasures"], "cancelled movement restores origin with no reward, RNG or opened flag")
+	var saved_move := BattleCheckpoint.encode(moved, meta(moved))
 	check(saved_move["ok"], "pre-pickup provisional movement is checkpointable")
-	var found := Loop.begin_wait_resolution(moved)
-	check(found["scenario_ok"] and Loop.loot_waiting(found), "actual Wait commits the source chest and opens the shared pending-item transaction")
+	var found := BattlePlayLoop.begin_wait_resolution(moved)
+	check(found["scenario_ok"] and BattlePlayLoop.loot_waiting(found), "actual Wait commits the source chest and opens the shared pending-item transaction")
 	check(found.get("last_combat", {}).is_empty() and found["settlement"]["combat_sequence"] == 0, "opening a chest never fabricates an attack or death receipt")
 	check(found["settlement"]["pending"].map(func(item): return item["code"]) == [2, 241], "the actual Gol EVEF contents are queued once in source order")
 	check(found["turn_queue"] == moved["turn_queue"] and found["extra_action"] == moved["extra_action"] and found["action_end_sequence"] == moved["action_end_sequence"], "collection holds the completed action before next action/status/resource tail")
 	for key in ["gold", TestSuite.STREAM_KEYS["reward"], TestSuite.STREAM_KEYS["global"], TestSuite.STREAM_KEYS["damage"]]:
 		check(found[key] == moved[key], "treasure does not invent gold or consume a random stream: " + key)
-	check(Loop.unit(found, "hu")["inventory"] == actor["inventory"], "discovery queues items rather than silently filling or replacing the actor bag")
-	check(Loop.step_ai_turn(found) == found and Loop.begin_wait_resolution(found) == found, "duplicate action/AI calls cannot bypass pending treasure or grant it again")
+	check(BattlePlayLoop.unit(found, "hu")["inventory"] == actor["inventory"], "discovery queues items rather than silently filling or replacing the actor bag")
+	check(BattlePlayLoop.step_ai_turn(found) == found and BattlePlayLoop.begin_wait_resolution(found) == found, "duplicate action/AI calls cannot bypass pending treasure or grant it again")
 	var unseen := meta(found); unseen["treasure_presented_sequence"] = 0
-	check(not Save.encode(found, unseen)["ok"], "save cannot claim the unplayed discovery cue has finished")
-	var saved := Save.encode(found, meta(found))
+	check(not BattleCheckpoint.encode(found, unseen)["ok"], "save cannot claim the unplayed discovery cue has finished")
+	var saved := BattleCheckpoint.encode(found, meta(found))
 	check(saved["ok"], "post-cue treasure/held-action boundary can be saved: " + str(saved.get("reason", "")))
 	if saved["ok"]:
-		var restored := Save.decode(saved["bytes"], found)
+		var restored := BattleCheckpoint.decode(saved["bytes"], found)
 		check(restored["ok"] and restored["snapshot"]["loop"] == found, "F9 preserves exact chest state, loot and the pending owner continuation")
 		var claimed := claim_first(restored["snapshot"]["loop"], "hu")
-		check(Loop.unit(claimed, "hu")["inventory"].count(2) == actor["inventory"].count(2) + 1, "first real confirmation transfers exactly one source weapon")
-		check(Loop.claim_reward(claimed, found["settlement"]["sequence"], 0, found["settlement"]["pending"][0]["id"], "hu") == claimed, "old pre-claim revision cannot transfer twice")
-		var resumed := Loop.step_ai_turn(defer_loot(claimed))
-		check(resumed["treasures"]["receipts"].size() == 1 and not Loop.Treasure.awaiting_handoff(resumed), "finishing the modal resumes the existing action once without rediscovery")
+		check(BattlePlayLoop.unit(claimed, "hu")["inventory"].count(2) == actor["inventory"].count(2) + 1, "first real confirmation transfers exactly one source weapon")
+		check(BattlePlayLoop.claim_reward(claimed, found["settlement"]["sequence"], 0, found["settlement"]["pending"][0]["id"], "hu") == claimed, "old pre-claim revision cannot transfer twice")
+		var resumed := BattlePlayLoop.step_ai_turn(defer_loot(claimed))
+		check(resumed["treasures"]["receipts"].size() == 1 and not BattlePlayLoop.Treasure.awaiting_handoff(resumed), "finishing the modal resumes the existing action once without rediscovery")
 		check(resumed["action_end_sequence"] == found["action_end_sequence"] + 1, "the held action receives exactly one final tail")
 
 
 func full_bag_extra_action_and_combat() -> void:
 	var loop := placed(1, "leonard", 0)
-	var actor := Loop._unit(loop, "leonard")
+	var actor := BattlePlayLoop._unit(loop, "leonard")
 	actor["inventory"] = [241, 241, 241, 241, 241, 241, 241, 241]
 	actor["equipment"] = actor["equipment"].filter(func(row): return row["slot"] != "accessory2")
 	actor["equipment"].append({"slot": "accessory2", "item_code": 227})
 	actor["permanent_gains"]["attack_power"] = 3
-	actor.merge(Loop.ProgressionRules.refresh_growth_stats(actor, loop["equipment_items"]), true)
-	actor.merge(Loop.StatusEffectRules.apply(actor, "no_magic", 2)["changes"], true)
+	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor, loop["equipment_items"]), true)
+	actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, "no_magic", 2)["changes"], true)
 	var before := loop.duplicate(true)
-	var found := Loop.begin_wait_resolution(loop)
-	check(found["scenario_ok"] and Loop.loot_waiting(found), "silence and a full bag do not prevent physical treasure discovery")
+	var found := BattlePlayLoop.begin_wait_resolution(loop)
+	check(found["scenario_ok"] and BattlePlayLoop.loot_waiting(found), "silence and a full bag do not prevent physical treasure discovery")
 	check(claim_first(found, "leonard") == found, "full-bag auto-insert rejects without consuming an item or changing the transaction")
 	var swapped := claim_first(found, "leonard", 0, 241)
-	check(Loop.unit(swapped, "leonard")["inventory"].has(202) and swapped["settlement"]["pending"][0]["code"] == 241, "confirmed exchange retains the displaced medicine in the same pending pool")
-	check(Loop.unit(swapped, "leonard")["permanent_gains"] == actor["permanent_gains"] and Loop.unit(swapped, "leonard")["equipment"] == actor["equipment"], "picking up equipment neither equips it nor reapplies permanent or worn modifiers")
-	var second := Loop.step_ai_turn(defer_loot(swapped))
+	check(BattlePlayLoop.unit(swapped, "leonard")["inventory"].has(202) and swapped["settlement"]["pending"][0]["code"] == 241, "confirmed exchange retains the displaced medicine in the same pending pool")
+	check(BattlePlayLoop.unit(swapped, "leonard")["permanent_gains"] == actor["permanent_gains"] and BattlePlayLoop.unit(swapped, "leonard")["equipment"] == actor["equipment"], "picking up equipment neither equips it nor reapplies permanent or worn modifiers")
+	var second := BattlePlayLoop.step_ai_turn(defer_loot(swapped))
 	check(second["selected_unit_id"] == "leonard" and second["extra_action"]["pending"] and not second["moved_this_action"], "White Wings grants its genuine independent second action only after collection is closed")
-	check(second["action_end_sequence"] == before["action_end_sequence"] and Loop.unit(second, "leonard")["status_counters"] == actor["status_counters"], "first-action chest collection does not tick silence or apply a second resource tail")
-	var victim := Loop._unit(second, "enemy028_1")
+	check(second["action_end_sequence"] == before["action_end_sequence"] and BattlePlayLoop.unit(second, "leonard")["status_counters"] == actor["status_counters"], "first-action chest collection does not tick silence or apply a second resource tail")
+	var victim := BattlePlayLoop._unit(second, "enemy028_1")
 	if victim.is_empty():
 		victim = second["units"].filter(func(unit): return unit["actor_id"] == "028")[0]
 	victim["hp"] = 1
 	victim["inventory"] = [281, 0, 0, 0, 0, 0, 0, 0] # Important guaranteed-drop fixture, not formal default loot.
-	var hitter := Loop._unit(second, "leonard")
+	var hitter := BattlePlayLoop._unit(second, "leonard")
 	hitter["hit_bonus_accum"] = 1000
-	for offset in Loop.weapon_pattern(second, hitter)["offsets"]:
+	for offset in BattlePlayLoop.weapon_pattern(second, hitter)["offsets"]:
 		victim["coord"] = hitter["coord"] + Vector2i(int(offset[0]), int(offset[1]))
-		if Loop.TraversalRules.placement_error(victim, second["units"], second["tiles"], second["map_size"]) == "": break
+		if BattlePlayLoop.TraversalRules.placement_error(victim, second["units"], second["tiles"], second["map_size"]) == "": break
 	victim["ai_home_coord"] = victim["coord"]
-	var attacked := Loop.attack_target(Loop.choose_command(second, "attack"), victim["id"], func(_bound): return 0)
-	check(attacked["last_combat"].get("defender_id") == victim["id"] and Loop.unit(attacked, victim["id"])["defeated"], "a real lethal attack still resolves after the earlier chest transaction")
+	var attacked := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(second, "attack"), victim["id"], func(_bound): return 0)
+	check(attacked["last_combat"].get("defender_id") == victim["id"] and BattlePlayLoop.unit(attacked, victim["id"])["defeated"], "a real lethal attack still resolves after the earlier chest transaction")
 	check(attacked["settlement"]["sequence"] > swapped["settlement"]["sequence"] and attacked["settlement"]["combat_sequence"] == attacked["last_combat"]["sequence"], "reward transaction sequence advances independently from the first actual combat sequence")
 	check(attacked["settlement"]["pending"].any(func(item): return item["code"] == 281) and attacked["settlement"]["pending"].any(func(item): return item["id"] == found["settlement"]["pending"][0]["id"]), "subsequent kill loot and deferred exchanged chest items both survive")
-	check(Loop.claim_reward(attacked, swapped["settlement"]["sequence"], swapped["settlement"]["revision"], found["settlement"]["pending"][0]["id"], "leonard") == attacked, "old chest confirmations cannot claim from the next combat transaction")
-	var finish := Loop.finish_exhausted_action(defer_loot(attacked))
+	check(BattlePlayLoop.claim_reward(attacked, swapped["settlement"]["sequence"], swapped["settlement"]["revision"], found["settlement"]["pending"][0]["id"], "leonard") == attacked, "old chest confirmations cannot claim from the next combat transaction")
+	var finish := BattlePlayLoop.finish_exhausted_action(defer_loot(attacked))
 	check(finish["treasures"]["receipts"].size() == 1 and finish["action_end_sequence"] == before["action_end_sequence"] + 1 and not finish["extra_action"]["pending"], "second completed action does not open the box again, grant a third action or duplicate the final tail")
-	check(Loop.Treasure.settlement_error(finish) == "", "mixed chest/kill settlement retains explicit provenance")
+	check(BattlePlayLoop.Treasure.settlement_error(finish) == "", "mixed chest/kill settlement retains explicit provenance")
 
 
 func eligibility_and_terminals() -> void:
 	var loop := placed()
 	var paralyzed := loop.duplicate(true)
-	var owner := Loop._unit(paralyzed, "hu")
-	owner.merge(Loop.StatusEffectRules.apply(owner, "paralysis", 2)["changes"], true)
+	var owner := BattlePlayLoop._unit(paralyzed, "hu")
+	owner.merge(BattlePlayLoop.StatusEffectRules.apply(owner, "paralysis", 2)["changes"], true)
 	paralyzed["interaction"] = "ai_resolving"; paralyzed["selected_unit_id"] = ""
-	var skipped := Loop.step_ai_turn(paralyzed)
+	var skipped := BattlePlayLoop.step_ai_turn(paralyzed)
 	check(skipped["treasures"]["opened_ids"].is_empty() and skipped["action_end_sequence"] == paralyzed["action_end_sequence"] + 1, "paralysis skip gets its established single tail but no treasure action")
 	var npc := loop.duplicate(true)
-	var actor := Loop._unit(npc, "hu")
-	actor["player_commandable"] = false; actor["battle_actor_role"] = Loop.ROLE_FRIENDLY
+	var actor := BattlePlayLoop._unit(npc, "hu")
+	actor["player_commandable"] = false; actor["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY
 	npc["interaction"] = "ai_resolving"; npc["selected_unit_id"] = ""
-	var unclaimed := Loop._advance_current_actor(npc)
+	var unclaimed := BattlePlayLoop._advance_current_actor(npc)
 	check(unclaimed["treasures"]["opened_ids"].is_empty(), "AI control does not take party treasures through the player-only completion adapter")
 	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED, BattleOutcome.DEFEAT_FALLEN, BattleOutcome.VICTORY_ESCAPE]:
 		var terminal := loop.duplicate(true)
 		terminal["battle_outcome"] = outcome; terminal["interaction"] = "battle_result"
-		check(Loop.begin_wait_resolution(terminal) == terminal and Loop.step_ai_turn(terminal) == terminal and Loop.finish_exhausted_action(terminal) == terminal, "existing terminal states never start post-freeze chest transactions: " + BattleOutcome.describe(outcome))
+		check(BattlePlayLoop.begin_wait_resolution(terminal) == terminal and BattlePlayLoop.step_ai_turn(terminal) == terminal and BattlePlayLoop.finish_exhausted_action(terminal) == terminal, "existing terminal states never start post-freeze chest transactions: " + BattleOutcome.describe(outcome))
 	check(initial()["treasures"]["opened_ids"].is_empty(), "fresh restart initializes the source chest state, not old awards")
-	var missing := Loop.BattleScenario.load_file("res://content/battles/gol_road_battle.json")
+	var missing := BattlePlayLoop.BattleScenario.load_file("res://content/battles/gol_road_battle.json")
 	missing["resources"]["treasures"] = "res://absent_treasure.json"
-	check(not Loop.create([], "", missing)["scenario_ok"], "missing required contents fail explicitly rather than inventing a reward")
+	check(not BattlePlayLoop.create([], "", missing)["scenario_ok"], "missing required contents fail explicitly rather than inventing a reward")
 
 
 func carry_and_validation() -> void:
-	var found := Loop.begin_wait_resolution(placed())
+	var found := BattlePlayLoop.begin_wait_resolution(placed())
 	for kind in ["opened", "contents", "rng", "owner", "sequence"]:
 		var bad := found.duplicate(true)
 		match kind:
@@ -173,31 +173,31 @@ func carry_and_validation() -> void:
 			"rng": bad["treasures"]["receipts"][0]["rng_consumed"] = 1
 			"owner": bad["treasures"]["handoff"]["actor_id"] = "leonard"
 			"sequence": bad["settlement"]["combat_sequence"] = 99
-		check(not Save.encode(bad, meta(bad))["ok"], "restore rejects a contradictory chest transaction: " + kind)
+		check(not BattleCheckpoint.encode(bad, meta(bad))["ok"], "restore rejects a contradictory chest transaction: " + kind)
 	for index in [-1, found["turn_queue"]["slots"].size(), 0.5]:
 		var bad := found.duplicate(true)
 		bad["turn_queue"]["index"] = index
 		bad["treasures"]["handoff"]["queue_index"] = index
-		check(not Save.encode(bad, meta(bad))["ok"], "held chest queue rejects invalid indices before array access")
+		check(not BattleCheckpoint.encode(bad, meta(bad))["ok"], "held chest queue rejects invalid indices before array access")
 	for cursor in [0.5, "0"]:
 		var bad := found.duplicate(true)
 		bad["settlement"]["combat_sequence"] = cursor
-		check(not Save.encode(bad, meta(bad))["ok"], "chest provenance rejects fractional and string combat cursors rather than truncating them")
+		check(not BattleCheckpoint.encode(bad, meta(bad))["ok"], "chest provenance rejects fractional and string combat cursors rather than truncating them")
 	var deferred := defer_loot(found)
-	var carry: Dictionary = JSON.parse_string(JSON.stringify(Loop.CampaignCarryRules.capture(deferred)))
+	var carry: Dictionary = JSON.parse_string(JSON.stringify(BattlePlayLoop.CampaignCarryRules.capture(deferred)))
 	check(carry.has("pending_rewards") and carry["pending_rewards"]["items"].size() == 2, "deferred items are included in real campaign JSON rather than lost at a scene boundary")
-	var next := Loop.create([], "", Loop.BattleScenario.load_file("res://content/battles/gol_road_battle.json"))
-	next = Loop.initialize_roster_growth(Loop.apply_campaign_carry(next, carry))
-	check(next["scenario_ok"] and next["settlement"].get("source_kind") == "campaign" and Loop.loot_waiting(next), "next battle restores the old pending pool without pretending it was a fresh kill")
-	check(Loop.unit(next,"hu")["inventory"].all(func(code):return typeof(code)==TYPE_INT), "JSON-carried slots are validated and normalized before menus or AI use them")
+	var next := BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file("res://content/battles/gol_road_battle.json"))
+	next = BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.apply_campaign_carry(next, carry))
+	check(next["scenario_ok"] and next["settlement"].get("source_kind") == "campaign" and BattlePlayLoop.loot_waiting(next), "next battle restores the old pending pool without pretending it was a fresh kill")
+	check(BattlePlayLoop.unit(next,"hu")["inventory"].all(func(code):return typeof(code)==TYPE_INT), "JSON-carried slots are validated and normalized before menus or AI use them")
 	check(next["treasures"]["opened_ids"].is_empty() and next["settlement"]["pending"].all(func(item): return str(item["id"]).begins_with("carry:")), "new visit chest identities stay separate from old unclaimed rewards")
-	next = Loop.begin_battle(next)
-	check(Save.encode(next, meta(next))["ok"], "carried pending items have a valid independent checkpoint provenance")
-	check(not Loop.CampaignCarryRules.initialization_only(carry).has("pending_rewards"), "separate-party transitions preserve isolation and never give another party its pending items")
+	next = BattlePlayLoop.begin_battle(next)
+	check(BattleCheckpoint.encode(next, meta(next))["ok"], "carried pending items have a valid independent checkpoint provenance")
+	check(not BattlePlayLoop.CampaignCarryRules.initialization_only(carry).has("pending_rewards"), "separate-party transitions preserve isolation and never give another party its pending items")
 	var invalid := carry.duplicate(true)
 	invalid["pending_rewards"]["items"][0]["code"] = 999999
-	var fresh := Loop.create([], "", Loop.BattleScenario.load_file("res://content/battles/gol_road_battle.json"))
-	var failed := Loop.CampaignCarryRules.apply(fresh, invalid)
+	var fresh := BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file("res://content/battles/gol_road_battle.json"))
+	var failed := BattlePlayLoop.CampaignCarryRules.apply(fresh, invalid)
 	check(failed["units"] == fresh["units"] and failed["settlement"].is_empty() and failed["campaign_carry_receipt"]["errors"].has("invalid_carry_pending_rewards"), "invalid carried item rejects before actor/inventory or stream changes")
 
 
@@ -207,7 +207,7 @@ func presentation_and_restore() -> void:
 	root.add_child(runtime)
 	await create_timer(0.15).timeout
 	runtime.set_process(false)
-	runtime.apply_loop(Loop.begin_wait_resolution(placed()), "test")
+	runtime.apply_loop(BattlePlayLoop.begin_wait_resolution(placed()), "test")
 	runtime.interaction_state = runtime.play_loop["interaction"]
 	var treasure: Node = runtime.treasure_view
 	var chest: Dictionary = runtime.play_loop["treasure_source"]["chests"][1]
@@ -243,11 +243,11 @@ func presentation_and_restore() -> void:
 	presentation._dialogue_messages.clear(); presentation._update_dialogue_page()
 	# A complete source victory with deferred treasure must remain reachable in
 	# the product UI, not only through a direct prepare_handoff unit test.
-	var won := Loop.step_ai_turn(defer_loot(before))
-	won = Loop._resolve_outcome(Gol.Rules.run_event_hooks(Gol.ready_event(won)))
+	var won := BattlePlayLoop.step_ai_turn(defer_loot(before))
+	won = BattlePlayLoop._resolve_outcome(run_gol_road_tests.WinfailScenarioRules.run_event_hooks(run_gol_road_tests.ready_event(won)))
 	var guards: Array = won["units"].filter(func(a):return a["actor_id"]=="023")
-	for index in range(1,guards.size()): Loop._set_unit_defeated(won,guards[index]["id"],true)
-	won = Loop._resolve_outcome(won)
+	for index in range(1,guards.size()): BattlePlayLoop._set_unit_defeated(won,guards[index]["id"],true)
+	won = BattlePlayLoop._resolve_outcome(won)
 	runtime.apply_loop(won, "test"); runtime.interaction_state = won["interaction"]
 	runtime.script_cutscene_consumed = won["winfail_runtime"]["fired"].size()
 	presentation.battle_finished = true; treasure.restore(won["treasures"]["receipts"].size())
@@ -260,28 +260,28 @@ func presentation_and_restore() -> void:
 	check(progress.deferred_rewards_ready() and not progress.hold_for_loot(),"quiet deferred victory continues with its pool without holding the battle end: quiet=%s" % controller.quiet())
 	var handoff: Dictionary = progress.prepare_handoff()
 	check(handoff["carry"].get("pending_rewards",{}).get("items",[]).size()==won["settlement"]["pending"].size(),"real campaign adapter carries every deferred source item")
-	Campaign.pending={}
+	CampaignProgress.pending={}
 	controller.open_rewards(); progress._process(0.0)
 	progress.start_next_battle()
-	check(Campaign.pending.is_empty(),"open pickup interaction cannot be bypassed by a stale continue action")
+	check(CampaignProgress.pending.is_empty(),"open pickup interaction cannot be bypassed by a stale continue action")
 	runtime.apply_loop(defer_loot(runtime.play_loop), "test");controller.tick();progress._process(0.0)
 	progress.start_next_battle()
-	check(Campaign.pending.get("scenario_path","").ends_with("story_055.json") and Campaign.pending["carry"]["pending_rewards"]==handoff["carry"]["pending_rewards"],"validated defer enables the actual next-battle action without losing the pool")
-	Campaign.pending={}
+	check(CampaignProgress.pending.get("scenario_path","").ends_with("story_055.json") and CampaignProgress.pending["carry"]["pending_rewards"]==handoff["carry"]["pending_rewards"],"validated defer enables the actual next-battle action without losing the pool")
+	CampaignProgress.pending={}
 	progress.campaign["battles"]["2"]["party"]="separate"
 	progress._process(0.0); progress.start_next_battle()
-	check(Campaign.pending.is_empty(),"separate party cannot silently pass its own unclaimed items into another party")
+	check(CampaignProgress.pending.is_empty(),"separate party cannot silently pass its own unclaimed items into another party")
 	# A carried reward pool can precede an NPC's first slot. The development
 	# fast-forward must yield to loot, not repeatedly ask a correctly blocked AI.
-	var waiting:=Loop.begin_wait_resolution(placed())
-	var carried: Dictionary=JSON.parse_string(JSON.stringify(Loop.CampaignCarryRules.capture(defer_loot(waiting))))
-	var fresh:=Loop.initialize_roster_growth(Loop.apply_campaign_carry(Loop.create([],"",Loop.BattleScenario.load_file("res://content/battles/gol_road_battle.json")),carried))
+	var waiting:=BattlePlayLoop.begin_wait_resolution(placed())
+	var carried: Dictionary=JSON.parse_string(JSON.stringify(BattlePlayLoop.CampaignCarryRules.capture(defer_loot(waiting))))
+	var fresh:=BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.apply_campaign_carry(BattlePlayLoop.create([],"",BattlePlayLoop.BattleScenario.load_file("res://content/battles/gol_road_battle.json")),carried))
 	for index in range(fresh["turn_queue"]["slots"].size()):
-		if not Loop.unit(fresh,fresh["turn_queue"]["slots"][index]["id"])["player_commandable"]:
+		if not BattlePlayLoop.unit(fresh,fresh["turn_queue"]["slots"][index]["id"])["player_commandable"]:
 			fresh["turn_queue"]["index"]=index; break
 	runtime.apply_loop(fresh, "test")
 	runtime.enter_first_control_state("dev_first_control_harness")
-	check(Loop.loot_waiting(runtime.play_loop) and runtime.play_loop["settlement"]==fresh["settlement"] and runtime.play_loop["turn_queue"]==fresh["turn_queue"],"dev entry yields at carried loot before the first NPC instead of looping or spending its action")
+	check(BattlePlayLoop.loot_waiting(runtime.play_loop) and runtime.play_loop["settlement"]==fresh["settlement"] and runtime.play_loop["turn_queue"]==fresh["turn_queue"],"dev entry yields at carried loot before the first NPC instead of looping or spending its action")
 	controller.tick()
 	check(controller.panel.visible,"carried loot remains a real visible control at the development entry boundary")
 	for player in runtime.find_children("*", "AudioStreamPlayer", true, false): player.stop(); player.stream = null

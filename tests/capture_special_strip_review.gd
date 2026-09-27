@@ -9,7 +9,7 @@ extends SceneTree
 ## imported strip shows the standing frame instead of the lead. Needs a rendered window.
 ##
 ##   tools/godot.sh --script res://tests/capture_special_strip_review.gd [-- label row ...]
-const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
+const BattleCombatCutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/j1-special-strips/"
 const ROWS := ["004", "006", "007", "009", "053", "054", "055", "057", "006>015", "009>018"]
@@ -35,7 +35,7 @@ func run() -> void:
 	var label: String = args.pop_front() if not args.is_empty() else "review"
 	var rows: Array = ROWS if args.is_empty() else args
 	DirAccess.make_dir_recursive_absolute(OUT)
-	var cutin = Cutin.new()
+	var cutin = BattleCombatCutin.new()
 	root.add_child(cutin)
 	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	cutin.set_process(false)

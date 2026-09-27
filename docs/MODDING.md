@@ -149,6 +149,7 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 - **引擎代码不写章节路径**：`game/` 里一出现 `chapter01` 这样的目录名，`python3 tools/hsl.py check engine:chapter_paths` 就失败；逐关素材路径要通过场景 JSON 的 `resources` 传进来。
 - **新加 `game/**/*.gd` 文件**：文件头要写 `## provenance:` 块，然后跑 `python3 tools/hsl.py generate provenance`，否则门禁失败（格式见 [ARCHITECTURE](ARCHITECTURE.md#provenance-headers)）。
 - **只跑相关检查**：`python3 tools/hsl.py affected --since <基线提交>` 列出改动命中的任务，加 `--check` 直接跑；`tools/lane_verify.sh affected <基线提交>` 还会带上命中的 Python 测试和 Godot 套件；也可以只跑一关，例如 `python3 tools/hsl.py check '*:200'`；只改了文档就跑 `python3 tools/hsl.py check docs`。改自己的游戏时用 `python3 tools/hsl.py check --profile=modder` 跑全部"我改的数据能生成、能读"的检查；它跳过原版等价层（parity：探针包、出场顺序、配乐、繁体文案）和我们的证据流程层（maintainer：来源头、差异清单等），并打印一行 `SOURCE_CHECKS_SKIP profile=modder parity=N maintainer=N`——通过不代表仍和原版等价。
+- **命名**：代码里一个概念只用一个词（切入 `cutin`、飘字 `*Floater`、金钱 `gold`、关卡号 `level_no`……），preload 常量用被引文件名，原版字段名不翻译；对照表见 [ARCHITECTURE「术语」](ARCHITECTURE.md#terms)。
 - **SKIP 不是 PASS**：原版不在场时，读原版的检查一律显式跳过；看到 `SKIP original-absent` 说明这部分根本没验证。
 
 ## 现在做不到的（需要先改代码或工具）

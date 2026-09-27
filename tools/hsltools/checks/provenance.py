@@ -25,7 +25,7 @@ what the remake itself decided:
   tag         resource-derived / static-derived / runtime-measured / user-confirmed /
               user-hypothesis / provisional / negative-evidence (AGENTS.md tiers), plus
               runtime-reference (recreated by eye from original frames, no measurement) and
-              remake-invented (the remake's own choice; the user allows it, it must be visible)
+              remake-invented (the remake's own choice; allowed, but it must be visible)
   path        repository-relative, must exist; required for resource-derived, static-derived,
               runtime-measured and runtime-reference (the derivation must be locatable);
               optional otherwise. `#anchor` is free text (a section or line), not validated.

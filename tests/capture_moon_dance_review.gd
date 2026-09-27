@@ -1,8 +1,8 @@
 extends "res://tests/capture_priest_review.gd"
 ## Normal-clock input routes. All authored state changes stop at setup_moon.
-const MoonCases = preload("res://tests/run_moon_dance_tests.gd")
-const MoonRules = preload("res://game/sim/RepeatedSpecialRules.gd")
-const LargeCases = preload("res://tests/run_large_actor_tests.gd")
+const run_moon_dance_tests = preload("res://tests/run_moon_dance_tests.gd")
+const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
+const run_large_actor_tests = preload("res://tests/run_large_actor_tests.gd")
 const MOON_OUT := "res://ignored/moon-dance-review/"
 var receipts: Array = []
 var receipt_sequences := {}
@@ -30,15 +30,15 @@ func setup_moon() -> void:
 	scene.settlement_controller.checkpoint_path=MOON_OUT+mode+".save"
 	if mode!="manual":
 		scene.set_process(false)
-		var loop:=MoonCases.fixture()
+		var loop:=run_moon_dance_tests.fixture()
 		# Keep the real original051 ground/art, not the flat headless fixture.
 		loop["tiles"]=scene.play_loop["tiles"];loop["map_size"]=scene.play_loop["map_size"]
-		var actor:=Loop._unit(loop,"tina");var ally:=Loop._unit(loop,"companion");var enemy:=Loop._unit(loop,"enemy021_1")
+		var actor:=BattlePlayLoop._unit(loop,"tina");var ally:=BattlePlayLoop._unit(loop,"companion");var enemy:=BattlePlayLoop._unit(loop,"enemy021_1")
 		actor["growth_profile"]["source"]["hit_point"]+=300
-		actor.merge(Loop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true);actor["hp"]=actor["max_hp"]
+		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true);actor["hp"]=actor["max_hp"]
 		actor["inventory"]=[227,228,232,233,244,241,248,0]
 		enemy["growth_profile"]["source"]["hit_point"]+=600
-		enemy.merge(Loop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hp"]=enemy["max_hp"];enemy["no_attack"]=true
+		enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hp"]=enemy["max_hp"];enemy["no_attack"]=true
 		if mode in ["multi_kill","victory"]:
 			actor["exp"]=99;enemy["hp"]=1
 			for index in range(2):
@@ -48,11 +48,11 @@ func setup_moon() -> void:
 				loop["units"].append(foe)
 		if mode=="misses":
 			enemy["no_attack"]=false
-			TestSuite.own(loop, "skill_book")["skills"][MoonRules.ID]["fields"]["hit_ratio"]="0"
+			TestSuite.own(loop, "skill_book")["skills"][RepeatedSpecialRules.ID]["fields"]["hit_ratio"]="0"
 		if mode=="phase_extra":
 			actor["stamina"]=40;actor["mp"]=0
-			actor.merge(Loop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
-			actor.merge(Loop.StatusEffectRules.apply(actor,"poison",3,1)["changes"],true)
+			actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
+			actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"poison",3,1)["changes"],true)
 		if mode=="aid_after_moon":ally["hp"]=1
 		if mode=="ordinary_then_moon":
 			actor["hit_bonus_accum"]=1000
@@ -60,23 +60,23 @@ func setup_moon() -> void:
 			TestSuite.own(loop, "skill_book")["actors"]["021"]["double_attack"]=true
 			enemy["no_attack"]=false;enemy["hit_bonus_accum"]=1000;enemy["combat_profile"]["attack_back"]=100
 		if mode=="large_target":
-			var giant:=LargeCases.source_large()
+			var giant:=run_large_actor_tests.source_large()
 			giant["id"]="enemy021_1";giant["coord"]=Vector2i(12,16);giant["hp"]=giant["max_hp"];giant["no_attack"]=true
 			loop["units"][loop["units"].find(enemy)]=giant;enemy=giant
 		if mode.begins_with("ai_"):
-			actor["player_commandable"]=false;actor["battle_actor_role"]=Loop.ROLE_FRIENDLY
+			actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
 			actor["equipment"].append({"slot":"accessory2","item_code":227});actor["stamina"]=40
 			actor["inventory"]=[0,0,0,0,0,0,0,0];ally["hp"]=ally["max_hp"]
 			TestSuite.own(loop, "ai_profiles")["actors"]["002"]["profile"].merge({"ai_check_dying":0,"ai_help_otherhp":0,"ai_help_status":0,"ai_att_special":100},true)
-			TestSuite.own(loop, "skill_book")["skills"][MoonRules.ID]["fields"]["use_ratio"]="100" # Declared route probability override; numeric RNG remains original.
+			TestSuite.own(loop, "skill_book")["skills"][RepeatedSpecialRules.ID]["fields"]["use_ratio"]="100" # Declared route probability override; numeric RNG remains original.
 			enemy["coord"]=Vector2i(14,16)
 			if mode=="ai_multi":
 				var foe:=enemy.duplicate(true);foe["id"]="moon_ai_foe";foe["coord"]=Vector2i(14,17);foe["hp"]=1
 				loop["units"].append(foe)
 			elif mode=="ai_empty":
 				actor["no_attack"]=true;actor["mp"]=0;actor["stamina"]=19
-				actor.merge(Loop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
-			else:actor.merge(Loop.StatusEffectRules.apply(actor,"paralysis",2)["changes"],true)
+				actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
+			else:actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"paralysis",2)["changes"],true)
 		if mode=="defeat":
 			actor["hp"]=1;enemy["no_attack"]=false;enemy["hit_bonus_accum"]=1000
 			enemy["combat_profile"].merge({"attack_back":100,"live_attack_damage":1000},true)
@@ -86,8 +86,8 @@ func setup_moon() -> void:
 			unit["grid_coord"]=unit["coord"];unit["ai_home_coord"]=unit["coord"]
 			unit["live_speed"]=200 if unit["id"]=="tina" else (300 if mode.begins_with("ai_") else 100) if unit["id"]=="companion" else 50
 			check(not loop["tiles"].get(unit["coord"],{}).get("blocks_movement",false),"authored fixture remains on original ground")
-		loop["turn_queue"]=Loop.CoreTurnQueue.rebuild(loop["units"])
-		scene.apply_loop(Loop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
+		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+		scene.apply_loop(BattlePlayLoop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
 		for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 		scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(actor["coord"]);scene.set_process(true)
 	initial_state=scene.play_loop.duplicate(true)
@@ -145,7 +145,7 @@ func settle(id:String,terminal:bool=false) -> void:
 				"aftermath":[view.aftermath.stage,view.aftermath.cursor,view.aftermath.jobs.size()],"navigation":view.navigation_cue.busy(),
 				"item":view.item_feedback_busy(),"extra":view.extra_action_cue.busy(scene.play_loop),"tail":view.turn_end_cue.busy(scene.play_loop),
 				"dialogue":view.dialogue_active(),"panels":[scene.status_panel.visible,scene.item_panel.visible,scene.magic_panel.visible,scene.growth_panel.visible],
-				"loot":Loop.loot_waiting(scene.play_loop),"settlement":scene.settlement_controller.panel.visible,"story":false}
+				"loot":BattlePlayLoop.loot_waiting(scene.play_loop),"settlement":scene.settlement_controller.panel.visible,"story":false}
 			await shot("waiting");write_receipt("waiting.json")
 		check(scene.play_loop["scenario_ok"],"live Moon scenario remains valid: "+str(scene.play_loop.get("scenario_error","")))
 		await create_timer(0.02).timeout
@@ -154,11 +154,11 @@ func settle(id:String,terminal:bool=false) -> void:
 
 func cast_moon() -> void:
 	await click(scene.action_menu.get_node("SpecialCommand"))
-	if scene.play_loop["interaction"]=="special_select":await click(scene.magic_panel.choices[MoonRules.ID])
-	var center:Vector2i=Loop.unit(scene.play_loop,"tina")["coord"]
+	if scene.play_loop["interaction"]=="special_select":await click(scene.magic_panel.choices[RepeatedSpecialRules.ID])
+	var center:Vector2i=BattlePlayLoop.unit(scene.play_loop,"tina")["coord"]
 	await hover(scene.grid_cell_center_to_logical_position(center));await shot("self-center")
 	await point(scene.grid_cell_center_to_logical_position(center))
-	check(scene.play_loop["last_attack"].get("skill_id")==MoonRules.ID,"actual self-center click commits source Moon Dance")
+	check(scene.play_loop["last_attack"].get("skill_id")==RepeatedSpecialRules.ID,"actual self-center click commits source Moon Dance")
 
 
 func move_to(coord:Vector2i) -> void:
@@ -169,7 +169,7 @@ func play_moon() -> void:
 	await settle("companion" if mode.begins_with("ai_") else "tina")
 	if mode=="manual":
 		await cast_moon();await settle("tina")
-		check(impacts.any(func(e):return e["strike"].get("skill_id")==MoonRules.ID),"published training scene performs its actual source special")
+		check(impacts.any(func(e):return e["strike"].get("skill_id")==RepeatedSpecialRules.ID),"published training scene performs its actual source special")
 	elif mode=="multi_kill":
 		await change_gear(228,"accessory1");await cast_moon();await settle("companion")
 		check(impacts.size()==15 and scene.play_loop["rewarded_unit_ids"].size()==2,"three unique targets receive five callbacks, two deaths reward once")
@@ -186,7 +186,7 @@ func play_moon() -> void:
 			check(scene.play_loop["units"]==before["units"] and not scene.play_loop["moved_this_action"],"special cancellation restores phase without refunding another action")
 			await move_to(Vector2i(11,17));await cast_moon();await settle("tina");await save_restore()
 			await change_gear(0,"accessory2");await cast_moon();await settle("companion")
-			check(Loop.unit(scene.play_loop,"tina")["stamina"]==0 and scene.play_loop["action_end_sequence"]==1,"two independent payments and one poison/status tail after second-action removal")
+			check(BattlePlayLoop.unit(scene.play_loop,"tina")["stamina"]==0 and scene.play_loop["action_end_sequence"]==1,"two independent payments and one poison/status tail after second-action removal")
 		elif mode=="ordinary_then_moon":
 			await attack("enemy021_1");await settle("tina");await save_restore();await cast_moon();await settle("companion")
 			check(impacts.size()==9 and impacts.filter(func(e):return e["counter"]).size()==2,"ordinary/counter double series precede five special pulses without multiplying them")
@@ -201,8 +201,8 @@ func play_moon() -> void:
 		await click(scene.action_menu.get_node("WaitCommand"));await settle("companion")
 		var actions:Array=scene.play_loop["last_ai_actions"].filter(func(a):return a.get("actor_id")=="tina")
 		if mode=="ai_multi":
-			check(actions.size()==2 and actions[0].get("skill_id")==MoonRules.ID and actions[1].get("skill_id")==MoonRules.ID,"AI freshly selects and pays both independent area actions")
-			check(impacts.filter(func(e):return e["strike"].get("skill_id")==MoonRules.ID).size()==15,"AI second action removes the first cast's dead target from coverage")
+			check(actions.size()==2 and actions[0].get("skill_id")==RepeatedSpecialRules.ID and actions[1].get("skill_id")==RepeatedSpecialRules.ID,"AI freshly selects and pays both independent area actions")
+			check(impacts.filter(func(e):return e["strike"].get("skill_id")==RepeatedSpecialRules.ID).size()==15,"AI second action removes the first cast's dead target from coverage")
 		elif mode=="ai_empty":check(actions.size()==2 and actions.all(func(a):return not a.has("skill_id")) and impacts.is_empty(),"no attack, no MP, low stamina and silence yield legal waits")
 		else:check(actions.size()==1 and actions[0]["kind"]=="paralysis_skip" and observed.has("skip"),"paralysis blocks the special and skips only one turn")
 	elif mode=="victory":await cast_moon();await settle("",true)
@@ -212,12 +212,12 @@ func play_moon() -> void:
 		await move_to(Vector2i(14,10));await click(scene.action_menu.get_node("WaitCommand"));await settle("",true)
 	await save_restore()
 	var row:={"mode":mode,"initial_units":initial_state["units"],"initial_skills":initial_state["skill_book"]["actors"]["002"],
-		"initial_moon_fields":initial_state["skill_book"]["skills"][MoonRules.ID]["fields"],"initial_ai_profile":initial_state["ai_profiles"]["actors"]["002"],
+		"initial_moon_fields":initial_state["skill_book"]["skills"][RepeatedSpecialRules.ID]["fields"],"initial_ai_profile":initial_state["ai_profiles"]["actors"]["002"],
 		"final_units":scene.play_loop["units"],"outcome":scene.play_loop["battle_outcome"],"impacts":impacts.duplicate(true),"receipts":receipts.duplicate(true),
 		"events":events.duplicate(true),"observed":observed.duplicate(true),"sounds":sounds.keys(),"saves":saves,"restarted":false}
 	if mode in ["victory","defeat","escape"]:
 		var frozen:Dictionary=scene.play_loop.duplicate(true)
-		check(Loop.step_ai_turn(frozen)==frozen and Loop.finish_exhausted_action(frozen)==frozen,"terminal cannot run further receiver callbacks")
+		check(BattlePlayLoop.step_ai_turn(frozen)==frozen and BattlePlayLoop.finish_exhausted_action(frozen)==frozen,"terminal cannot run further receiver callbacks")
 		reload_current_scene();await create_timer(0.4).timeout;scene=current_scene
 		check(not BattleOutcome.decided(scene.play_loop) and scene.play_loop["player_unit_id"]=="tina" and not scene.play_loop["extra_action"]["pending"],"real restart uses published training defaults without old phases or resources")
 		row["restarted"]=true

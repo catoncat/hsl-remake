@@ -14,7 +14,7 @@ const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
-const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
+const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
 const BattlePoisonGasPresentation = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
 const TOKEN := "actInsertStoryObjectWait"
@@ -174,7 +174,7 @@ class Burst extends Node2D:
 		if tick >= STRIKE_TICK and not struck:
 			struck = true
 			for hit in hits:
-				var number: Node2D = ResultNumberFloat.new()
+				var number: Node2D = ResultNumberFloater.new()
 				number.position = Vector2(hit["cell"]) * 32.0 + Vector2(16, 16) + NUMBER_OFFSET - position
 				number.z_index = StoryEffectObjects.EFFECT_Z + 2
 				number.z_as_relative = false

@@ -15,7 +15,7 @@ const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const MapRules = preload("res://game/world/WorldMapRules.gd")
+const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 
@@ -156,8 +156,8 @@ func _run_battle_record_without_save() -> void:
 func _run_battle_record_resume() -> void:
 	## A saved campaign position at 戈爾山道 (story_002) resumes through the title.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 1), world_map, 2)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 1), world_map, 2)
 	var saved := {
 		"scenario_path": "res://content/battles/story_002.json",
 		"carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "gold": 275},

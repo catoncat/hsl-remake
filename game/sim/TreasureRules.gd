@@ -13,10 +13,10 @@ const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 
-static func initialize(data: Dictionary, level: int, catalog: Dictionary, size: Vector2i) -> Dictionary:
-	if data.get("schema") != "hsl_battle_treasures.v1" or not data.get("levels", {}).get(str(level)) is Dictionary:
+static func initialize(data: Dictionary, level_no: int, catalog: Dictionary, size: Vector2i) -> Dictionary:
+	if data.get("schema") != "hsl_battle_treasures.v1" or not data.get("levels", {}).get(str(level_no)) is Dictionary:
 		return {"ok": false, "reason": "missing_treasure_source"}
-	var source: Dictionary = data["levels"][str(level)].duplicate(true)
+	var source: Dictionary = data["levels"][str(level_no)].duplicate(true)
 	source["policy"] = POLICY
 	if not source.get("chests") is Array: return {"ok": false, "reason": "invalid_treasure_source"}
 	for chest in source["chests"]:

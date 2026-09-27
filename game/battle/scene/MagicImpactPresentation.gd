@@ -3,7 +3,7 @@ extends Node2D
 ## beat; then the original number at the target's (x, y − 0x34) (0x40aba0): a hit's red kind-0
 ## number (NUM100..109 revealed digit by digit, 10 ticks per digit + 34, no rise), a miss's
 ## NUM513 MISS (level 16 for 16 ticks, then fading to tick 46, rising 1 px every other tick),
-## both through ResultNumberFloat. Bar collision avoidance is remake presentation.
+## both through ResultNumberFloater. Bar collision avoidance is remake presentation.
 ## provenance:
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V08
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
@@ -15,7 +15,7 @@ extends Node2D
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
-const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
+const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
 ## 0x40aba0／0x40ac24: the magic channel spawns its number at (target x, target y − 0x34).
 const NUMBER_OFFSET := Vector2(0, -0x34)
 ## Remake beat: the short HP／MP bar shown before the number (deliberately kept).
@@ -56,7 +56,7 @@ func begin(strike: Dictionary, runtime: Node) -> void:
 		_bar(panel, int(unit.get("mp", 0)), int(unit.get("max_mp", 0)), 15, Color(0.1, 0.5, 0.85))
 		var damage := int(hit.get("actual_damage", hit["damage"]))
 		# 0x40aba0: the red kind-0 number of a hit, MISS (kind 5) of a miss; hold 0.
-		var amount: Node2D = ResultNumberFloat.new()
+		var amount: Node2D = ResultNumberFloater.new()
 		amount.name = "DamageDigits" if bool(hit["hit"]) else "MissGlyph"
 		amount.clocked = false
 		amount.position = point + NUMBER_OFFSET

@@ -9,8 +9,8 @@ extends SceneTree
 ##
 ##   tools/godot.sh --script res://tests/capture_growth_panel_review.gd
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
-const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const PanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const OUT := "res://ignored/r7-growth-review/"
 var failures: Array[String] = []
 
@@ -37,13 +37,13 @@ func run() -> void:
 		tile.color = Color(0.55, 0.5, 0.42) if (index + index / 10) % 2 == 0 else Color(0.35, 0.42, 0.3)
 		stage.add_child(tile)
 	var loop := BattleFixture.loop()
-	var unit: Dictionary = PlayLoop._unit(loop, "leonard").duplicate(true)
+	var unit: Dictionary = BattlePlayLoop._unit(loop, "leonard").duplicate(true)
 	unit["exp"] = 99
-	unit.merge(PlayLoop.ProgressionRules.resolve_experience(unit, 1, loop["equipment_items"]), true)
+	unit.merge(BattlePlayLoop.ProgressionRules.resolve_experience(unit, 1, loop["equipment_items"]), true)
 	var panel = preload("res://game/battle/scene/BattleGrowthPanel.gd").new()
 	stage.add_child(panel)
 	await process_frame
-	var motion = PanelMotion.attach(panel)
+	var motion = BattlePanelMotion.attach(panel)
 	motion.set_process(false)
 	panel.show_unit(unit)
 	await shot("growth-01-opening")

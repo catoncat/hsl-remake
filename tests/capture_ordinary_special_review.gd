@@ -1,6 +1,6 @@
 extends "res://tests/capture_support_magic_review.gd"
 ## Actual controls and normal presentation clocks for the native physical/Qi chain.
-const CombatCases = preload("res://tests/run_ordinary_special_tests.gd")
+const run_ordinary_special_tests = preload("res://tests/run_ordinary_special_tests.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const DEST := "res://ignored/ordinary-special-review/"
 var observed := {}
@@ -50,12 +50,12 @@ func prepare_case() -> void:
 	scene.set_process(false)
 	await create_timer(0.15).timeout
 	scene.get_node("BattleMusic").stop()
-	var loop := CombatCases.fixture()
+	var loop := run_ordinary_special_tests.fixture()
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
 	for unit in loop["units"]: unit["hp"] = 500; unit["max_hp"] = 500
-	var owner := Loop._unit(loop,"leonard")
-	var target := Loop._unit(loop,"enemy021_1")
+	var owner := BattlePlayLoop._unit(loop,"leonard")
+	var target := BattlePlayLoop._unit(loop,"enemy021_1")
 	if mode in ["ordinary","critical_kill"]: owner["combat_profile"]["attack_damagex2"] = 100
 	if mode == "counter": target["combat_profile"].merge({"attack_damagex2":100,"attack_back":100},true)
 	if mode.ends_with("equipment"): owner["inventory"] = [6,7,216,0,0,0,0,0]
@@ -64,16 +64,16 @@ func prepare_case() -> void:
 		owner["exp"] = 99
 		owner["kill_chain_word"] = 1
 	if mode.begins_with("special") or mode == "final_kill":
-		Loop.skill_fields(loop,"special:magicOTHER:magicCode01")["hit_ratio"] = "100"
+		BattlePlayLoop.skill_fields(loop,"special:magicOTHER:magicCode01")["hit_ratio"] = "100"
 		target["combat_profile"]["live_defense"] = 10000
-	if mode == "special_silenced": owner.merge(Loop.StatusEffectRules.apply(owner,"no_magic",2)["changes"],true)
+	if mode == "special_silenced": owner.merge(BattlePlayLoop.StatusEffectRules.apply(owner,"no_magic",2)["changes"],true)
 	if mode == "insufficient": owner["stamina"] = 19
 	if mode == "final_kill":
 		loop["units"] = loop["units"].filter(func(unit):return unit["id"] in ["leonard","enemy021_1"])
 		loop["turn"] = 6
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop,"leonard"), "test")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"leonard"), "test")
 	scene.settlement_controller.checkpoint_path = DEST + mode + ".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()
@@ -94,7 +94,7 @@ func play_case() -> void:
 		if mode == "critical_equipment":
 			await equip(7,false)
 			await equip(216,false)
-		var owner := Loop.unit(scene.play_loop,"leonard")
+		var owner := BattlePlayLoop.unit(scene.play_loop,"leonard")
 		check(owner["combat_profile"]["weapon_magic_attack_type"] == (2 if mode == "elemental_equipment" else -1), "actual replacement sets/clears weapon element")
 		check(owner["combat_profile"]["attack_damagex2"] == (14 if mode == "elemental_equipment" else 40), "actual equipped working critical rate includes source and all modifiers")
 	var before: Dictionary = scene.play_loop.duplicate(true)
@@ -102,7 +102,7 @@ func play_case() -> void:
 	var control: Control = scene.action_menu.get_node("SpecialCommand" if special else "AttackCommand")
 	if mode == "insufficient":
 		# 19ST still opens the skill page (the original opens it with the gauge empty); the row it cannot pay is disabled.
-		check(not control.disabled and not Loop.can_use_special(scene.play_loop,"leonard"),"19ST opens the actual skill page but cannot pay it")
+		check(not control.disabled and not BattlePlayLoop.can_use_special(scene.play_loop,"leonard"),"19ST opens the actual skill page but cannot pay it")
 		await click(control)
 		check(scene.magic_panel.visible and scene.magic_panel.choices["special:magicOTHER:magicCode01"].disabled,"19ST keeps the page row disabled")
 		await click(scene.magic_panel.choices["special:magicOTHER:magicCode01"])
@@ -115,7 +115,7 @@ func play_case() -> void:
 	else:
 		await click(control)
 		if scene.play_loop["interaction"] == "special_select": await click(scene.magic_panel.choices["special:magicOTHER:magicCode01"])
-		await hover(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,"enemy021_1")["coord"]))
+		await hover(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"enemy021_1")["coord"]))
 		check(scene.interaction_state == "attack_select" and scene.get_node("BattlePresentation").target_vitals.visible,"real map targeting exposes live target information")
 		await shot("target")
 		await escape()
@@ -123,7 +123,7 @@ func play_case() -> void:
 		await create_timer(0.3).timeout
 		await click(scene.action_menu.get_node("SpecialCommand" if special else "AttackCommand"))
 		if scene.play_loop["interaction"] == "special_select": await click(scene.magic_panel.choices["special:magicOTHER:magicCode01"])
-		await point(scene.grid_cell_center_to_logical_position(Loop.unit(scene.play_loop,"enemy021_1")["coord"]))
+		await point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"enemy021_1")["coord"]))
 		receipt = scene.play_loop["last_attack"].duplicate(true)
 		check(receipt.get("attacker_id") == "leonard" and receipt.has("actual_damage"),"real target click produces one native transaction")
 		if not receipt.has("actual_damage"): return
@@ -136,7 +136,7 @@ func play_case() -> void:
 		check(not sound_paths.is_empty(),"actual source audio playback advances during this route")
 		if mode == "critical_kill": check(receipt["critical"] and receipt["actual_damage"] == 1 and observed.has("growth"),"critical overkill displays1HP and leads through earned growth")
 		if mode == "counter": check(receipt["counter"]["critical"] and observed.has("counter-impact"),"real normal-clock counter shows its own critical impact")
-		if special: check(Loop.unit(scene.play_loop,"leonard")["stamina"] == 0 and receipt["actual_damage"] > 0,"special pays20 once and ignores physical defense, including under silence")
+		if special: check(BattlePlayLoop.unit(scene.play_loop,"leonard")["stamina"] == 0 and receipt["actual_damage"] > 0,"special pays20 once and ignores physical defense, including under silence")
 		if mode == "elemental_equipment": check(receipt["damage_detail"]["variance_bonus"] > 0,"newly equipped source wind bonus enters the actual physical strike")
 		if mode == "critical_equipment": check(receipt["critical_rate"] == 40,"actual strike uses the refreshed40 percent rate")
 		if mode == "final_kill":
@@ -155,7 +155,7 @@ func play_case() -> void:
 			await await_control("leonard")
 			check(scene.play_loop["last_combat"]["sequence"] == initial_sequence + 1 and scene.play_loop["turn_queue"]["round"] == initial_round + 1,"actual successor Wait and one enemy action reach the next round")
 			await shot("next-round")
-	var owner := Loop.unit(scene.play_loop,"leonard")
+	var owner := BattlePlayLoop.unit(scene.play_loop,"leonard")
 	routes.append({"mode":mode,"receipt":receipt,"actor":compact(owner),"exp":owner["exp"],"level":owner["level"],"observed":observed,"sounds":sound_paths.keys(),"cues":cues,"outcome":scene.play_loop["battle_outcome"],"next_actor":scene.selected_unit_id})
 
 

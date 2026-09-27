@@ -4,7 +4,7 @@ extends SceneTree
 ## walk frames, then one ordinary cut-in shot of each drawn from their own cutin/ frames.
 ## Output: ignored/authored-art-review/*.png + manifest.json (visual review input, not parity proof).
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const OUT := "res://ignored/authored-art-review/"
 const SCENARIO_PATH := "res://content/battles/battle_200.json"
 var failures: Array[String] = []
@@ -36,13 +36,13 @@ func run() -> void:
 	root.add_child(runtime)
 	current_scene = runtime
 	await create_timer(1.0).timeout
-	runtime.center_camera_on_grid(Loop.unit(runtime.play_loop, "reia")["coord"])
+	runtime.center_camera_on_grid(BattlePlayLoop.unit(runtime.play_loop, "reia")["coord"])
 	await create_timer(0.6).timeout
 	await _shot("map_reia_toran_walk_frames", {"units": ["reia", "toran"], "walk_frame": str(runtime.actor_node_for_unit("reia").get_node("Sprite2D").texture.resource_path)})
 	var cutin = runtime.get_node("BattlePresentation").cutin
 	for pair in [["reia", "wolf_1"], ["toran", "wolf_2"]]:
-		var attacker := Loop.unit(runtime.play_loop, pair[0])
-		var defender := Loop.unit(runtime.play_loop, pair[1])
+		var attacker := BattlePlayLoop.unit(runtime.play_loop, pair[0])
+		var defender := BattlePlayLoop.unit(runtime.play_loop, pair[1])
 		cutin.play({"hit": true, "damage": 5, "defender_hp_before": int(defender["hp"]), "defender_hp_after": int(defender["hp"]) - 5}, attacker, defender, false)
 		var schedule: Dictionary = cutin.Timing.ordinary(cutin.manifest["actors"][str(attacker["actor_id"])], cutin.clips[0]["strike"])
 		await create_timer(float(schedule["opening"]) / cutin.Timing.PLAYBACK_SPEED + 0.45).timeout

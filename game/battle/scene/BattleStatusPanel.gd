@@ -4,7 +4,7 @@ extends Control
 ## (BattleVitals.mask); the equipment list stays readable as in the original's text block.
 ## The original opens the page from the action ring's 狀態 (0x444285, 0x43b4e0 mode 0) and
 ## from a click on a unit the player does not command (0x443cfa, mode 1) — the latter only
-## when the unit is known (opens_for). Mode 1 builds no `$:` money box (0x43af60 skipped).
+## when the unit is known (opens_for). Mode 1 builds no `$:` gold box (0x43af60 skipped).
 ## The left column opens on 屬性 (WINDOW21): 0x43ac10 sets root +0x94 = 4 and only a page
 ## button changes it (0x43a640 case 3); the item list is the 道具 page and the bag windows.
 ## provenance:
@@ -41,9 +41,9 @@ var vitals: Control
 var equipment_view: Control
 var stat_values: Dictionary = {}
 var rewards_button: Button
-var money_label: Label
+var gold_label: Label
 var permanent_summary: Label
-var money_board: TextureRect
+var gold_board: TextureRect
 ## save／load／pending loot／back: OPT-GUIDE=提示 only.
 var hint_buttons: Array[Button] = []
 
@@ -54,12 +54,12 @@ var hint_buttons: Array[Button] = []
 ## (BattleGrowthPanel, docs/evidence_packets/static_reverse/original_growth_window.md §2–3).
 const BattleGrowthPanel = preload("res://game/battle/scene/BattleGrowthPanel.gd")
 const STAT_KEYS := ["str", "dex", "mind", "con", "attack", "defense", "magic", "speed", "move"]
-## `$:` money box: WINDOW40 at the bottom right of the page (06_status_and_stats_screen
+## `$:` gold box: WINDOW40 at the bottom right of the page (06_status_and_stats_screen
 ## frame_006 template match (415,439) in the 638 px recording → 416 in 640), amount drawn
 ## as the 獲得物品 window's: nine cells right-aligned from (x+8, y+8), right edge x+188.
-const MONEY_AT := Vector2(416, 439)
+const GOLD_AT := Vector2(416, 439)
 ## Remake-only buttons (save／load／pending loot／growth／back) share the free strip left of
-## the money box; the original page has none, so they show only under OPT-GUIDE=提示 (the
+## the gold box; the original page has none, so they show only under OPT-GUIDE=提示 (the
 ## growth button follows the OPT-GROWTH postpone path: it shows while points are pending).
 const BUTTON_Y := 443
 const BUTTON_HEIGHT := 30
@@ -93,9 +93,9 @@ func _ready() -> void:
 	# Keep the optional summary above the equipment description background.
 	move_child(permanent_summary, get_child_count()-1)
 	equipment_labels = equipment_view.labels
-	money_board = UISkin.board(self, "WINDOW40", MONEY_AT)
-	money_label = UISkin.text(self, MONEY_AT + Vector2(80, 4), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(108, 24))
-	money_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	gold_board = UISkin.board(self, "WINDOW40", GOLD_AT)
+	gold_label = UISkin.text(self, GOLD_AT + Vector2(80, 4), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(108, 24))
+	gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	var save := _button("保存 F5", 72)
 	save.pressed.connect(func(): save_requested.emit())
 	var load_button := _button("讀取 F9", 72)
@@ -148,15 +148,15 @@ static func opens_for(known: bool) -> bool:
 ## `known`: BattlePlayLoop.unit_known; OPT-INFO=公開 (read once as the page opens) reads every
 ## unit as known, so an enemy's numbers show before anyone has attacked it, and brings back
 ## the permanent-gain row and tooltips. `own_page`: the action ring's 狀態 (mode 0) with its
-## `$:` box; false for the page a click on another unit opens (mode 1, no money box).
+## `$:` box; false for the page a click on another unit opens (mode 1, no gold box).
 ## OPT-GUIDE=提示 (read once as the page opens) shows the save／load／loot／back buttons.
 func show_unit(unit: Dictionary, known: bool = true, own_page: bool = true) -> void:
 	var public := not GameOptions.is_original("OPT-INFO")
 	known = known or public
 	for control in hint_buttons:
 		control.visible = not GameOptions.is_original("OPT-GUIDE")
-	money_board.visible = own_page
-	money_label.visible = own_page
+	gold_board.visible = own_page
+	gold_label.visible = own_page
 	inspected_unit_id = str(unit["id"])
 	var profile := CoreCombatRules.combat_profile_from_unit(unit)
 	var masked: bool = BattleVitals.mask(unit, known)["identity"]

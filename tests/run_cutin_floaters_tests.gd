@@ -1,33 +1,33 @@
 extends "res://tests/support/TestSuite.gd"
 
 ## Close-up layout and aftermath floats (lane R6-P3,
-## docs/evidence_packets/runtime_observations/closeup_floaters/README.md).
+## docs/evidence_packets/runtime_observations/cutin_floaters/README.md).
 ## Close-up: the defender object 0x4038a0 starts on the shot line and shifts by its row's hit
 ## move flag (aniKRight −50, aniKLeft +30), then a hit knocks it back 14+13+…+1 = 105 px and a
 ## miss slides it 150 px (0x45e91e) the same way; the census checks that every cut-in path
-## places its actors through CloseupLayout and that every combat manifest row declares a flag.
+## places its actors through CutinLayout and that every combat manifest row declares a flag.
 ## Floats: the original glyph layout of KILL／EXP／$／LEVEL UP, the defProcShowNumber level
 ## fade, the aftermath queue order KILL (with the disposal) → EXP → $ → LEVEL UP, and a census
 ## that no other game file draws a reward float or plays the level-up sound. Vitals: the resist
 ## row's element gems and "07%"／"MAX" values.
 
-const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
-const RewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
-const Aftermath = preload("res://game/battle/scene/BattleAftermath.gd")
-const Vitals = preload("res://game/battle/scene/BattleVitals.gd")
+const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
+const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
+const BattleAftermath = preload("res://game/battle/scene/BattleAftermath.gd")
+const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const CHAPTER_MANIFEST := "res://content/imported/hsl/chapter01/combat_animation/manifest.json"
 const AUTHORED_ROOT := "res://content/generated/hsl/authored"
-## Files that stand close-up actors; each must place them through CloseupLayout.
+## Files that stand close-up actors; each must place them through CutinLayout.
 const CUTIN_FILES := ["res://game/battle/scene/BattleCombatCutin.gd", "res://game/battle/scene/SkillEffectScriptPlayer.gd",
 	"res://game/battle/scene/MoonDancePresentation.gd", "res://game/battle/scene/PoisonArrowPresentation.gd"]
 
 
 func _init() -> void:
-	tag = "CLOSEUP_FLOATERS_TESTS"
+	tag = "CUTIN_FLOATERS_TESTS"
 
 
 func run() -> void:
@@ -46,25 +46,25 @@ func _test_defender_anchor_and_reaction() -> void:
 	var right := {"source_k_action": "aniKRight"}
 	var left := {"source_k_action": "aniKLeft"}
 	var stop := {"source_k_action": "aniKStop"}
-	_assert_eq(CloseupLayout.attacker_anchor(), Vector2(320, 330), "the attacker stands at (0x140, 0x14a) — the recording's (320,330)")
-	_assert_eq(CloseupLayout.defender_anchor(left).y, 330.0, "the victim shares the shot line y 0x14a")
-	_assert_eq(CloseupLayout.defender_anchor(right).x, 270.0, "aniKRight victims start 50 px left of the shot line (0x404560)")
-	_assert_eq(CloseupLayout.defender_anchor(left).x, 350.0, "aniKLeft victims start 30 px right — the recording's 拉爾斯帝國兵 at x 350")
-	_assert_eq(CloseupLayout.defender_anchor(stop).x, 320.0, "aniKStop stays on the line")
+	_assert_eq(CutinLayout.attacker_anchor(), Vector2(320, 330), "the attacker stands at (0x140, 0x14a) — the recording's (320,330)")
+	_assert_eq(CutinLayout.defender_anchor(left).y, 330.0, "the victim shares the shot line y 0x14a")
+	_assert_eq(CutinLayout.defender_anchor(right).x, 270.0, "aniKRight victims start 50 px left of the shot line (0x404560)")
+	_assert_eq(CutinLayout.defender_anchor(left).x, 350.0, "aniKLeft victims start 30 px right — the recording's 拉爾斯帝國兵 at x 350")
+	_assert_eq(CutinLayout.defender_anchor(stop).x, 320.0, "aniKStop stays on the line")
 	var steps: Array[float] = []
 	for tick in range(16):
-		steps.append(CloseupLayout.knockback_x(left, tick))
+		steps.append(CutinLayout.knockback_x(left, tick))
 	_assert_eq(steps.slice(0, 3), [-14.0, -27.0, -39.0], "the knock-back starts at 14 px a tick and slows by 1")
 	_assert_eq(steps[13], -105.0, "14 ticks carry it 105 px — the recording's 350 → 245")
 	_assert_eq(steps[15], -105.0, "then it stops")
-	_assert_eq(CloseupLayout.knockback_x(right, 20), 105.0, "aniKRight is knocked to the right")
-	_assert_eq(CloseupLayout.knockback_x(stop, 20), 0.0, "aniKStop is not moved")
+	_assert_eq(CutinLayout.knockback_x(right, 20), 105.0, "aniKRight is knocked to the right")
+	_assert_eq(CutinLayout.knockback_x(stop, 20), 0.0, "aniKStop is not moved")
 	var dodge: Array[float] = []
 	for tick in range(16):
-		dodge.append(CloseupLayout.dodge_x(right, tick))
+		dodge.append(CutinLayout.dodge_x(right, tick))
 	_assert_eq(dodge.slice(0, 4), [36.0, 64.0, 85.0, 101.0], "the dodge steps min(36, remaining／4)")
 	_assert_true(dodge[13] < 150.0 and dodge[14] == 150.0 and dodge[15] == 150.0, "14 moving ticks and the arrival land 150 px away (%s)" % str(dodge))
-	_assert_eq(CloseupLayout.reaction_x(left, false, 30), -150.0, "a miss slides; a hit knocks back")
+	_assert_eq(CutinLayout.reaction_x(left, false, 30), -150.0, "a miss slides; a hit knocks back")
 
 
 func _test_every_row_declares_a_hit_move_flag() -> void:
@@ -77,7 +77,7 @@ func _test_every_row_declares_a_hit_move_flag() -> void:
 		var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
 		for key in manifest["actors"]:
 			rows += 1
-			_assert_true(CloseupLayout.K_ACTION_SHIFT.has(str(manifest["actors"][key].get("source_k_action", ""))), "%s row %s declares a known hit move flag" % [path, key])
+			_assert_true(CutinLayout.K_ACTION_SHIFT.has(str(manifest["actors"][key].get("source_k_action", ""))), "%s row %s declares a known hit move flag" % [path, key])
 	_assert_true(rows > 55, "the census reads every combat manifest row (%d)" % rows)
 
 
@@ -94,7 +94,7 @@ func _test_cutin_paths_use_the_layout() -> void:
 
 
 func _test_float_glyph_layout() -> void:
-	var node: Node2D = RewardFloat.new()
+	var node: Node2D = BattleRewardFloater.new()
 	root.add_child(node)
 	node.present("experience", 26)
 	_assert_eq(node.text, "EXP 26", "the EXP float names its value")
@@ -115,8 +115,8 @@ func _test_float_glyph_layout() -> void:
 
 
 func _test_float_level_and_rise() -> void:
-	_assert_eq([RewardFloat.level(0), RewardFloat.level(15), RewardFloat.level(16), RewardFloat.level(18), RewardFloat.level(44), RewardFloat.level(46)], [16.0, 16.0, 15.0, 14.0, 1.0, 0.0], "level 16 held 16 ticks, then −1 every 2 ticks to 0 at 46")
-	var node: Node2D = RewardFloat.new()
+	_assert_eq([BattleRewardFloater.level(0), BattleRewardFloater.level(15), BattleRewardFloater.level(16), BattleRewardFloater.level(18), BattleRewardFloater.level(44), BattleRewardFloater.level(46)], [16.0, 16.0, 15.0, 14.0, 1.0, 0.0], "level 16 held 16 ticks, then −1 every 2 ticks to 0 at 46")
+	var node: Node2D = BattleRewardFloater.new()
 	node.kind = "experience"
 	_assert_eq(node.rise(21), 10.0, "½ px a tick")
 	node.kind = "kill"
@@ -125,7 +125,7 @@ func _test_float_level_and_rise() -> void:
 
 
 func _test_aftermath_order() -> void:
-	var aftermath: Node = Aftermath.new()
+	var aftermath: Node = BattleAftermath.new()
 	root.add_child(aftermath)
 	var units := [
 		{"id": "hero", "actor_id": "001", "coord": Vector2i(2, 2), "dead_message": {"messages": []}},
@@ -183,7 +183,7 @@ class FocusStubRuntime extends Node:
 func _test_reward_camera_focus() -> void:
 	var runtime := FocusStubRuntime.new()
 	root.add_child(runtime)
-	var aftermath: Node = Aftermath.new()
+	var aftermath: Node = BattleAftermath.new()
 	root.add_child(aftermath)
 	var hero_cell := Vector2i(30, 30)
 	var foe_cell := Vector2i(12, 34)
@@ -228,14 +228,14 @@ func _test_reward_floats_have_one_owner() -> void:
 			if line.strip_edges().begins_with("#"): continue
 			if drawing.search(line) != null: owners[path] = true
 	_assert_true(scanned > 100, "the census reads the game scripts (%d)" % scanned)
-	_assert_eq(owners.keys().filter(func(path): return not path in ["res://game/battle/scene/BattleRewardFloat.gd", "res://game/battle/scene/BattleSceneRuntime.gd"]), [], "only BattleRewardFloat draws KILL／EXP／$／LEVEL UP art; the level-up sound has one entry (play_growth_sound on level_up_presented)")
+	_assert_eq(owners.keys().filter(func(path): return not path in ["res://game/battle/scene/BattleRewardFloater.gd", "res://game/battle/scene/BattleSceneRuntime.gd"]), [], "only BattleRewardFloater draws KILL／EXP／$／LEVEL UP art; the level-up sound has one entry (play_growth_sound on level_up_presented)")
 	var runtime := FileAccess.get_file_as_string("res://game/battle/scene/BattleSceneRuntime.gd")
 	_assert_true(runtime.contains("level_up_presented.connect(play_growth_sound)") and not runtime.contains("experience_presented.connect(play_growth_sound)"), "the level-up sound follows the LEVEL UP float, not EXP")
 
 
 func _test_resist_row() -> void:
-	_assert_eq([Vitals.resist_text(7), Vitals.resist_text(0), Vitals.resist_text(79), Vitals.resist_text(80), Vitals.resist_text(95)], ["07%", "00%", "79%", "MAX", "MAX"], "0x434d10 prints two digits and %, MAX from 80")
-	var vitals: Control = Vitals.new()
+	_assert_eq([BattleVitals.resist_text(7), BattleVitals.resist_text(0), BattleVitals.resist_text(79), BattleVitals.resist_text(80), BattleVitals.resist_text(95)], ["07%", "00%", "79%", "MAX", "MAX"], "0x434d10 prints two digits and %, MAX from 80")
+	var vitals: Control = BattleVitals.new()
 	root.add_child(vitals)
 	_assert_eq(vitals.resist_gems.size(), 5, "five element gems")
 	for index in range(5):

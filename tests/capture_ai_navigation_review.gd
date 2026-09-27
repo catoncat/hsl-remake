@@ -1,6 +1,6 @@
 extends "res://tests/capture_support_magic_review.gd"
 ## Actual controls and normal presentation clocks over explicit navigation cases.
-const Navigation = preload("res://tests/run_ai_navigation_tests.gd")
+const run_ai_navigation_tests = preload("res://tests/run_ai_navigation_tests.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const DEST := "res://ignored/ai-navigation-review/"
 var owner_id := ""
@@ -51,7 +51,7 @@ func prepare_case() -> void:
 	await create_timer(0.2).timeout
 	scene.get_node("BattleMusic").stop()
 	var kind := "empty_center" if mode == "player_center" else "cast" if mode == "moving_cast" else mode
-	var loop := Navigation.fixture(kind)
+	var loop := run_ai_navigation_tests.fixture(kind)
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
 	var actor: Dictionary = loop["units"][0]
@@ -67,7 +67,7 @@ func prepare_case() -> void:
 		successor["coord"] = Vector2i(14,14)
 		if mode == "wait":
 			target["coord"] = Vector2i(18,14)
-			successor["battle_actor_role"] = Loop.ROLE_ENEMY
+			successor["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
 		elif mode == "unreachable":
 			actor["coord"] = Vector2i(7,9)
 			target["coord"] = Vector2i(6,6)
@@ -88,7 +88,7 @@ func prepare_case() -> void:
 			actor["hit_bonus_accum"] = 1000
 			target["coord"] = Vector2i(9,8)
 			target["hp"] = 1
-	var initial := Loop.unit(scene.play_loop,"enemy024_1")
+	var initial := BattlePlayLoop.unit(scene.play_loop,"enemy024_1")
 	initial.merge({"id":"navigation-initial","coord":Vector2i(6,9),"hp":400,"max_hp":400,"player_commandable":true,"live_speed":110,"inventory":[0,0,0,0,0,0,0,0]},true)
 	initial["battle_actor_role"] = actor["battle_actor_role"]
 	loop["units"].append(initial)
@@ -96,8 +96,8 @@ func prepare_case() -> void:
 		unit["grid_coord"] = unit["coord"]
 		unit["ai_home_coord"] = unit["coord"]
 		check(not loop["tiles"].get(unit["coord"],{}).get("blocks_movement",false), "fixture participant stands on actual walkable WRD")
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(Loop._return_to_player(loop,"navigation-initial"), "test")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"navigation-initial"), "test")
 	for child in scene.actors_root.get_children(): scene.actors_root.remove_child(child); child.queue_free()
 	scene.unit_grid_coords.clear()
 	scene.resume_turn_presentation()
@@ -119,7 +119,7 @@ func play_case() -> void:
 	if mode == "player_center":
 		await quiet_actor(owner_id)
 		await click(scene.action_menu.get_node("MagicCommand"))
-		await click(scene.magic_panel.choices[Navigation.POISON])
+		await click(scene.magic_panel.choices[run_ai_navigation_tests.POISON])
 		var center: Vector2 = scene.grid_cell_center_to_logical_position(Vector2i(10,9))
 		await hover(center)
 		var view = scene.get_node("BattlePresentation")
@@ -130,7 +130,7 @@ func play_case() -> void:
 		check(scene.play_loop["units"] == selected["units"] and scene.play_loop["turn_queue"] == selected["turn_queue"], "actual cancel preserves all target HP/status, MP and queue")
 		await create_timer(0.25).timeout
 		await click(scene.action_menu.get_node("MagicCommand"))
-		await click(scene.magic_panel.choices[Navigation.POISON])
+		await click(scene.magic_panel.choices[run_ai_navigation_tests.POISON])
 		await point(center)
 		await quiet_actor("enemy023_1")
 		var receipt: Dictionary = scene.play_loop["last_combat"]
@@ -139,7 +139,7 @@ func play_case() -> void:
 	elif mode == "target_death":
 		await quiet_actor("leonard")
 		remember_action()
-		check(actions[0].get("defender_id") == "enemy023_1" and actions[0]["defender_hp_after"] == 0 and Loop.unit(scene.play_loop,owner_id)["ai_target_id"] == "", "real lethal strike clears the held target after death presentation")
+		check(actions[0].get("defender_id") == "enemy023_1" and actions[0]["defender_hp_after"] == 0 and BattlePlayLoop.unit(scene.play_loop,owner_id)["ai_target_id"] == "", "real lethal strike clears the held target after death presentation")
 		await click(scene.action_menu.get_node("WaitCommand"))
 		await quiet_actor("navigation-initial")
 		await click(scene.action_menu.get_node("WaitCommand"))
@@ -156,19 +156,19 @@ func play_case() -> void:
 				await next_observed_turn()
 			check(actions.size() >= 3 and actions[1]["ai_decision"]["target_selection"]["retained"] and actions.back()["kind"] == "move_then_attack", "actual later rounds retain the target, pay clearance costs, finish the wall detour and attack")
 			for action in actions:
-				var costs := Loop.TacticalGridRules.path_costs(action["path"], before["units"], before["tiles"], owner_id)
+				var costs := BattlePlayLoop.TacticalGridRules.path_costs(action["path"], before["units"], before["tiles"], owner_id)
 				check(not costs.is_empty() and int(costs.back()) <= 2, "each actual detour respects two movement points including occupied-neighbor clearance")
-		if mode == "wait": check(actions[0]["kind"] == "wait" and Loop.unit(scene.play_loop,owner_id)["ai_wait_remaining"] == 2 and observations.has("wait"), "real Wait input produces a visible AI wait and exactly one decrement")
+		if mode == "wait": check(actions[0]["kind"] == "wait" and BattlePlayLoop.unit(scene.play_loop,owner_id)["ai_wait_remaining"] == 2 and observations.has("wait"), "real Wait input produces a visible AI wait and exactly one decrement")
 		if mode == "unreachable": check(actions[0].get("toward") == "enemy023_1", "actual AI rejects the sealed-off nearer target and follows a route to the reachable actor")
 		if mode == "no_action": check(actions[0]["kind"] == "wait" and observations.has("wait") and cues["impact"] == 0, "no legal category shows an honest wait, then returns control")
-		if mode in ["empty_mp", "silenced"]: check(not actions[0].has("skill_id") and Loop.unit(scene.play_loop,owner_id)["mp"] == Loop.unit(before,owner_id)["mp"], "missing resource/status uses a legal movement fallback without paying magic")
+		if mode in ["empty_mp", "silenced"]: check(not actions[0].has("skill_id") and BattlePlayLoop.unit(scene.play_loop,owner_id)["mp"] == BattlePlayLoop.unit(before,owner_id)["mp"], "missing resource/status uses a legal movement fallback without paying magic")
 		if mode in ["empty_center", "cure_center"]: check(actions[0].get("cast_center") == Vector2i(10,9) and actions[0].get("affected_targets",[]).size() == 4 and observations.has("impact"), "actual AI selects empty ground and presents all four outcomes")
 		if mode == "moving_cast":
 			for _round in range(3):
 				if actions.back().has("magic_key"): break
 				await next_observed_turn()
 			var last: Dictionary = actions.back()
-			var costs := Loop.TacticalGridRules.path_costs(last["path"], before["units"], before["tiles"], owner_id)
+			var costs := BattlePlayLoop.TacticalGridRules.path_costs(last["path"], before["units"], before["tiles"], owner_id)
 			check(last["kind"] == "move_then_attack" and last.has("magic_key") and costs.size() > 1 and int(costs.back()) <= 4 and observations.has("path") and observations.has("impact"), "affordable pursuit followed by a moving source cast completes with one MP payment")
 			check(actions[0]["kind"] == "move" and actions[0]["cost"] == 4 and not actions[0].has("resource_payment"), "the first long approach pays only movement; the later cast owns the sole MP debit")
 	var view = scene.get_node("BattlePresentation")
@@ -180,7 +180,7 @@ func play_case() -> void:
 	elif actions.any(func(action): return action.has("skill_id")):
 		check(cues == {"release":1,"impact":1} and not sounds.is_empty(), "one supported status/heal clip release/impact with actual mixer playback")
 	await shot("handoff")
-	routes.append({"mode":mode,"actions":actions,"observations":observations,"cues":cues,"sounds":sounds.keys(),"owner_after":compact(Loop.unit(scene.play_loop,owner_id)),"next_actor":scene.selected_unit_id,"round":scene.play_loop["turn_queue"]["round"]})
+	routes.append({"mode":mode,"actions":actions,"observations":observations,"cues":cues,"sounds":sounds.keys(),"owner_after":compact(BattlePlayLoop.unit(scene.play_loop,owner_id)),"next_actor":scene.selected_unit_id,"round":scene.play_loop["turn_queue"]["round"]})
 
 
 func defeat_case() -> void:

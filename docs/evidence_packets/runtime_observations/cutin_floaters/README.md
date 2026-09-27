@@ -1,6 +1,6 @@
 # 战斗特写站位、击杀／升级飘字与抗性宝石：原版三路测量
 
-> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（特写演员锚点、底栏 WINDOW10 外框、左上红框立绘外框、KILL／EXP／$／LEVEL UP 精灵匹配的出现时刻与轨迹、抗性宝石位置）与音轨起音; static-derived: 0x401c20／0x4038a0 特写站位与击退、0x442720 结算阶段、0x4084e0／0x408580 数字浮字、0x408390／0x4083e0 KILL 浮字、0x434d10 抗性文字; resource-derived: hsl.pak KILL_000..010、NUM4xx／5xx／511／512／514、MAGICON1..5、ANIMAL.TXT k_action · status: live · functions: 0x401c20, 0x4038a0, 0x404560, 0x408390, 0x4083e0, 0x4084e0, 0x408580, 0x408b20, 0x42f4fc, 0x434d10, 0x43f0aa, 0x442720, 0x4435c5, 0x45e91e · tools: hsl_video_events.py, run_closeup_floaters_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-24
+> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（特写演员锚点、底栏 WINDOW10 外框、左上红框立绘外框、KILL／EXP／$／LEVEL UP 精灵匹配的出现时刻与轨迹、抗性宝石位置）与音轨起音; static-derived: 0x401c20／0x4038a0 特写站位与击退、0x442720 结算阶段、0x4084e0／0x408580 数字浮字、0x408390／0x4083e0 KILL 浮字、0x434d10 抗性文字; resource-derived: hsl.pak KILL_000..010、NUM4xx／5xx／511／512／514、MAGICON1..5、ANIMAL.TXT k_action · status: live · functions: 0x401c20, 0x4038a0, 0x404560, 0x408390, 0x4083e0, 0x4084e0, 0x408580, 0x408b20, 0x42f4fc, 0x434d10, 0x43f0aa, 0x442720, 0x4435c5, 0x45e91e · tools: hsl_video_events.py, run_combat_aftermath_tests.gd, run_cutin_floaters_tests.gd · updated: 2026-09-24
 
 lane R6-P3（2026-09-24）。回答任务书四项「原版怎样」：特写人物与底栏、特殊技切入立绘、击杀／升级飘字、加点面板（身份栏）气力条下的「小剑与倍率」。每项给像素／声音／资源／静态至少一路量值，再写重制前后。原版录屏 `录屏2026-09-24 中午12.03.22.mov`（用户录屏，私有档案）（游戏区 `crop=1280:960:112:140` 缩到 640×480，可变帧率约 57 fps，一律用 PTS 秒）；本机原作 tick ≈ 19.4 ms、设计 16 ms（[tick 率](../original_tick_rate/README.md)）。精灵匹配用新的 `hsl_video_events.py sprite`（给 hsl.pak 解出的 RGBA 图，逐帧求最小掩膜 RGB 差的位置与分数，分数 ≤ 40 记为可见）。重制前的像素来自 lane R6-V2 的补录（`remake_supp_take1/3.mp4`），原始帧与中间 JSON 在 lane worktree 的 `ignored/r6p3/`，不入库。
 
@@ -25,9 +25,9 @@ lane R6-P3（2026-09-24）。回答任务书四项「原版怎样」：特写人
 
 **重制前**：`BattleCombatCutin._show_shot` 攻守都放 (320,320)；受击只有 6 px（命中）／24 px（落空）的 provisional 线性位移；脚本绝技守方 (320,320)、落空时 32 px 正弦摆动。
 
-**重制后**：共享 `game/battle/runtime/CloseupLayout.gd`：攻方 `attacker_anchor()` x 320；守方 `defender_anchor(row)` 按 k_action 偏 −50／+30；命中后 `knockback_x`、落空后 `dodge_x` 按 tick 位移。普攻（`_show_shot`＋受击段）、脚本绝技（`SkillEffectScriptPlayer` 守方段，从 aniProcessHitMiss 的 impact tick 起）、借用 氣刃斬 与专属演出（经 `_show_shot`）共用它。`run_closeup_floaters_tests` 普查这四个文件不再写死特写站位、守方一律经 `defender_anchor`，并核对全部 manifest 行都有已知 k_action。
+**重制后**：共享 `game/battle/runtime/CutinLayout.gd`：攻方 `attacker_anchor()` x 320；守方 `defender_anchor(row)` 按 k_action 偏 −50／+30；命中后 `knockback_x`、落空后 `dodge_x` 按 tick 位移。普攻（`_show_shot`＋受击段）、脚本绝技（`SkillEffectScriptPlayer` 守方段，从 aniProcessHitMiss 的 impact tick 起）、借用 氣刃斬 与专属演出（经 `_show_shot`）共用它。`run_cutin_floaters_tests` 普查这四个文件不再写死特写站位、守方一律经 `defender_anchor`，并核对全部 manifest 行都有已知 k_action。
 
-**中线 y（lane R7-CUE，2026-09-25 已改）**：原版中线 y 是 330（`0x14a`，像素同），重制原为 320；负责人预先批准后 `CloseupLayout.SHOT_ANCHOR` 改为 (320,330)，门禁断言随之改为 (320,330)（`run_battle_scene_runtime_tests` 反击锚点、`run_presentation_contract_tests` 056 无条带施法者）。攻击白闪 `aniInsertAttackFlash` 的对象由 `0x40222e..0x402245` 置于攻方对象 (x, y) ＋ 位移（static-derived），重制白闪同步改为 `attacker_anchor()` ＋ 位移（雷歐納德 (−90,−120) → (230,210)）。脚部在身份栏之下，可见差别是人物整体低 10 px。
+**中线 y（lane R7-CUE，2026-09-25 已改）**：原版中线 y 是 330（`0x14a`，像素同），重制原为 320；负责人预先批准后 `CutinLayout.SHOT_ANCHOR` 改为 (320,330)，门禁断言随之改为 (320,330)（`run_battle_scene_runtime_tests` 反击锚点、`run_presentation_contract_tests` 056 无条带施法者）。攻击白闪 `aniInsertAttackFlash` 的对象由 `0x40222e..0x402245` 置于攻方对象 (x, y) ＋ 位移（static-derived），重制白闪同步改为 `attacker_anchor()` ＋ 位移（雷歐納德 (−90,−120) → (230,210)）。脚部在身份栏之下，可见差别是人物整体低 10 px。
 
 ## 2. 特殊技切入的左上红框立绘：重制已有，位置一致
 
@@ -65,10 +65,10 @@ lane R6-P3（2026-09-24）。回答任务书四项「原版怎样」：特写人
 
 **重制后**：
 
-- 新 `BattleRewardFloat`：按上表排版画原版美术字（KILL_000＋数字、NUM511＋NUM4xx、NUM512＋NUM5xx、NUM514），层级淡出与上浮按 0x408580；KILL 40 tick 定住。
+- 新 `BattleRewardFloater`：按上表排版画原版美术字（KILL_000＋数字、NUM511＋NUM4xx、NUM512＋NUM5xx、NUM514），层级淡出与上浮按 0x408580；KILL 40 tick 定住。
 - 结算前镜头滑到受益者（`0x442720` 阶段 0 的 `0x43bf30`，受益者落在画面 (320,192)，到位才出 EXP）由 lane R7-CAMX 补上，见[镜头包 §1](../camera_panel_motion/README.md)。
 - `BattleAftermath` 队列：阵亡（遗言 → 拉伸消散，**同时**在阵亡者头上 24 px 出 KILL，杀手连杀 > 1 时）→ 每位受益者依次 EXP →（归其所有的）$ → LEVEL UP；每格在 32 tick 放行时进入下一格，上一格继续淡完 46 tick；LEVEL UP 格在獲得物品待领时停住（`holding_for_loot`，结算窗照开），领完才出 LEVEL UP；`level_up_presented` 触发升级音（不再随 EXP）；之后才开加点窗。
-- 普查（`run_closeup_floaters_tests`）：游戏代码里只有 `BattleRewardFloat` 画这些美术字，升级音只有 `play_growth_sound`←`level_up_presented` 一个入口；所有交锋回执（普攻、法术、绝技、反击）都经 `BattleAftermath.prepare`。
+- 普查（`run_cutin_floaters_tests`）：游戏代码里只有 `BattleRewardFloater` 画这些美术字，升级音只有 `play_growth_sound`←`level_up_presented` 一个入口；所有交锋回执（普攻、法术、绝技、反击）都经 `BattleAftermath.prepare`。
 
 LevelUp_Star 星光（`0x415c10` 撒 AIR06_03、effProcFlyUpShape）与 `0x4071e0` 的角色 use_magic 姿势已由 lane R7-POSE 复原，见[地图姿势与飘字包 §1–§2](../map_pose_floaters/README.md)；反击方的第二份金钱累加器 `0x4c2978` 重制合在一份 $ 里（provisional）。
 

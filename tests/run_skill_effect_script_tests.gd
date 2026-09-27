@@ -3,10 +3,10 @@ extends "res://tests/support/TestSuite.gd"
 ## timelines, without a scene. Green here proves the interpreter's contract over the tracked
 ## scripts and manifest, not the original clock or geometry (both provisional; see
 ## skill_effects/manifest.json policy).
-const Player = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
-const PoisonArrow = preload("res://game/sim/PoisonArrowRules.gd")
-const MoonDance = preload("res://game/sim/RepeatedSpecialRules.gd")
-const Motion = preload("res://game/battle/scene/EffectObjectMotion.gd")
+const SkillEffectScriptPlayer = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
+const PoisonArrowRules = preload("res://game/sim/PoisonArrowRules.gd")
+const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
+const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 var manifest: Dictionary
 var scope: Dictionary
 var motion: Dictionary
@@ -17,9 +17,9 @@ func _init() -> void:
 
 
 func run() -> void:
-	manifest = JSON.parse_string(FileAccess.get_file_as_string(Player.MANIFEST_PATH))
-	scope = JSON.parse_string(FileAccess.get_file_as_string(Player.SCRIPTS_PATH))
-	motion = JSON.parse_string(FileAccess.get_file_as_string(Motion.PATH))
+	manifest = JSON.parse_string(FileAccess.get_file_as_string(SkillEffectScriptPlayer.MANIFEST_PATH))
+	scope = JSON.parse_string(FileAccess.get_file_as_string(SkillEffectScriptPlayer.SCRIPTS_PATH))
+	motion = JSON.parse_string(FileAccess.get_file_as_string(EffectObjectMotion.PATH))
 	manifest_contracts()
 	parse_contracts()
 	every_row_compiles()
@@ -38,8 +38,8 @@ func run() -> void:
 ## The importer's declarations and the player's spelling agree; every SPECIAL and MAGIC row
 ## has one presentation and the two dedicated rows are the ids the cut-in routes to modules.
 func manifest_contracts() -> void:
-	check(manifest["implemented_opcodes"] == Player.IMPLEMENTED_OPCODES, "manifest implemented_opcodes and the player's list are the same spelling and order")
-	check(Player.IMPLEMENTED_OPCODES.size() == 28 and scope["opcode_counts"].keys().all(func(op): return Player.IMPLEMENTED_OPCODES.has(op)), "every opcode the 99 rows use is implemented (24 ani* + 4 eff*)")
+	check(manifest["implemented_opcodes"] == SkillEffectScriptPlayer.IMPLEMENTED_OPCODES, "manifest implemented_opcodes and the player's list are the same spelling and order")
+	check(SkillEffectScriptPlayer.IMPLEMENTED_OPCODES.size() == 28 and scope["opcode_counts"].keys().all(func(op): return SkillEffectScriptPlayer.IMPLEMENTED_OPCODES.has(op)), "every opcode the 99 rows use is implemented (24 ani* + 4 eff*)")
 	check(scope["effect_verbs"] == ["effWait", "effInsertObject", "effInsertRandomObject", "effPlaySound"] and scope["magic_opcode_counts"].keys().all(func(op): return scope["effect_verbs"].has(op)), "the 39 magic scripts use only the four effects.h verbs: %s" % str(scope["magic_opcode_counts"]))
 	check(scope["totals"]["effect_blocks"] == 169 and scope["totals"]["rows_special"] == 60 and scope["totals"]["rows_magic"] == 39, "EFFECTS.TXT: 169 [effect] blocks = 130 specCode (60 special rows) + 39 effCode (39 magic rows)")
 	check(manifest["rows"].keys() == scope["rows"].keys(), "manifest declares a presentation for exactly the scope's rows")
@@ -53,8 +53,8 @@ func manifest_contracts() -> void:
 		else:
 			check(row["effect_code"] == scope["rows"][skill_id]["effect_code"] and row["effect_proc"] == scope["rows"][skill_id]["effect_proc"] and row["presentation"] == "script", "magic row mirrors the scope's effCode／effect_proc and plays its script: " + skill_id)
 	check(counts == {"script": 97, "dedicated_module": 2, "borrowed_qi_blade": 0}, "97 rows (58 special + 39 magic) play their script, 2 keep their dedicated module, none borrows 氣刃斬: %s" % str(counts))
-	check(manifest["rows"][PoisonArrow.ID]["presentation"] == "dedicated_module" and str(manifest["rows"][PoisonArrow.ID]["module"]) == "PoisonArrowPresentation.gd", "毒魔箭 keeps PoisonArrowPresentation")
-	check(manifest["rows"][MoonDance.ID]["presentation"] == "dedicated_module" and str(manifest["rows"][MoonDance.ID]["module"]) == "MoonDancePresentation.gd", "月花圓舞 keeps MoonDancePresentation")
+	check(manifest["rows"][PoisonArrowRules.ID]["presentation"] == "dedicated_module" and str(manifest["rows"][PoisonArrowRules.ID]["module"]) == "PoisonArrowPresentation.gd", "毒魔箭 keeps PoisonArrowPresentation")
+	check(manifest["rows"][RepeatedSpecialRules.ID]["presentation"] == "dedicated_module" and str(manifest["rows"][RepeatedSpecialRules.ID]["module"]) == "MoonDancePresentation.gd", "月花圓舞 keeps MoonDancePresentation")
 	check(manifest["unresolved_objects"] == ["obj_Special51_05"] and not manifest["objects"].has("obj_Special51_05"), "the OBJ-ALL.H-less object is declared unresolved, not invented")
 	# The imported members are the scope objects' shapes plus every member a native effect
 	# track draws (the sparks and bullets the effProc* programs spawn); a name hsl.pak lacks is
@@ -98,18 +98,18 @@ func _tracked_drawers(member: String) -> Array:
 ## parse() yields one instruction per ani*／eff* token, in source order, with the tokens up to
 ## the next verb as its arguments — so the instruction count equals the row's opcode occurrences.
 func parse_contracts() -> void:
-	var parsed := Player.parse(["aniDelay,20,aniInsertObject,obj_Special01_02,700,160", "aniDelay,10,aniProcessHitMiss"])
+	var parsed := SkillEffectScriptPlayer.parse(["aniDelay,20,aniInsertObject,obj_Special01_02,700,160", "aniDelay,10,aniProcessHitMiss"])
 	check(parsed.size() == 4 and parsed[1]["op"] == "aniInsertObject" and parsed[1]["args"] == ["obj_Special01_02", "700", "160"] and parsed[3]["args"] == [], "instructions split at each ani* token and keep argument order")
-	var effect := Player.parse(["effInsertObject,obj_Effect_AirBlade1,0,0,effWait,10", "effPlaySound,WAV\\WIND0001.WAV"])
+	var effect := SkillEffectScriptPlayer.parse(["effInsertObject,obj_Effect_AirBlade1,0,0,effWait,10", "effPlaySound,WAV\\WIND0001.WAV"])
 	check(effect.size() == 3 and effect[0]["args"] == ["obj_Effect_AirBlade1", "0", "0"] and effect[1] == {"op": "effWait", "args": ["10"]} and effect[2]["args"] == ["WAV\\WIND0001.WAV"], "eff* verbs open instructions the same way")
-	check(Player.number("-0x00000800") == -2048 and Player.number("0x00c60000") == 12976128 and Player.number("-100") == -100 and is_equal_approx(Player.fixed16("0x00018000"), 1.5), "hex, negative hex and decimal arguments parse")
+	check(SkillEffectScriptPlayer.number("-0x00000800") == -2048 and SkillEffectScriptPlayer.number("0x00c60000") == 12976128 and SkillEffectScriptPlayer.number("-100") == -100 and is_equal_approx(SkillEffectScriptPlayer.fixed16("0x00018000"), 1.5), "hex, negative hex and decimal arguments parse")
 	var total := 0
 	for skill_id in scope["rows"]:
 		var row: Dictionary = scope["rows"][skill_id]
 		var expected := 0
 		var got := 0
 		for code in row["actions"]:
-			got += Player.parse(row["actions"][code]).size()
+			got += SkillEffectScriptPlayer.parse(row["actions"][code]).size()
 			for line in row["actions"][code]:
 				for token in str(line).split(","):
 					if str(token).strip_edges().begins_with("ani") or str(token).strip_edges().begins_with("eff"):
@@ -126,7 +126,7 @@ func parse_contracts() -> void:
 ## every drawn object／sound／backdrop imported, only obj_Special51_05 skipped, deterministic
 ## under one seed, and the instruction count preserved.
 func every_row_compiles() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var skipped_rows: Array[String] = []
 	for skill_id in manifest["rows"]:
@@ -146,9 +146,9 @@ func every_row_compiles() -> void:
 			check(release > 0 and release <= impact and impact <= result and result < complete, "release ≤ impact ≤ result < complete: %s %s" % [skill_id, str([release, impact, result, complete])])
 			check(not timeline["hit_ticks"].is_empty(), "every defense script marks its hit: " + skill_id)
 			check(not timeline["result_ticks"].is_empty() or result == impact, "a script without aniShowHitResult shows the result on the hit mark: " + skill_id)
-			check(complete >= result + Player.RESULT_HOLD_TICKS, "the result stays readable: " + skill_id)
+			check(complete >= result + SkillEffectScriptPlayer.RESULT_HOLD_TICKS, "the result stays readable: " + skill_id)
 			var row: Dictionary = scope["rows"][skill_id]
-			check(int(timeline["instructions"]) == Player.parse(row["actions"][row["attack_code"]]).size() + Player.parse(row["actions"][row["defense_code"]]).size(), "instruction count kept: " + skill_id)
+			check(int(timeline["instructions"]) == SkillEffectScriptPlayer.parse(row["actions"][row["attack_code"]]).size() + SkillEffectScriptPlayer.parse(row["actions"][row["defense_code"]]).size(), "instruction count kept: " + skill_id)
 			var hit_only_seen := false
 			for event in timeline["events"]:
 				check(int(event["tick"]) >= 0 and int(event.get("expire", event["tick"])) <= complete, "event inside the clip: " + skill_id)
@@ -181,7 +181,7 @@ func every_row_compiles() -> void:
 ## mark never after completion, deterministic under one seed, eff_proc_Global／damage read
 ## from the row, and hit／miss identical (effCode scripts carry no hit-only verbs).
 func every_magic_row_compiles() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var compiled := 0
 	var global_rows: Array[String] = []
@@ -193,7 +193,7 @@ func every_magic_row_compiles() -> void:
 		var timeline: Dictionary = player.compile_row(skill_id, true, 7)
 		check(timeline["kind"] == "effect" and timeline["unimplemented"].is_empty() and timeline["skipped_objects"].is_empty(), "magic row compiles every verb and object: " + skill_id)
 		check(str(timeline) == str(player.compile_row(skill_id, true, 7)) and str(timeline) == str(player.compile_row(skill_id, false, 7)), "same seed, same timeline; hit and miss draw the same effect: " + skill_id)
-		check(int(timeline["instructions"]) == Player.parse(row["actions"][row["effect_code"]]).size() and int(timeline["instructions"]) > 0, "instruction count kept: " + skill_id)
+		check(int(timeline["instructions"]) == SkillEffectScriptPlayer.parse(row["actions"][row["effect_code"]]).size() and int(timeline["instructions"]) > 0, "instruction count kept: " + skill_id)
 		check(int(timeline["impact_tick"]) >= 0 and int(timeline["impact_tick"]) <= int(timeline["complete_tick"]) and int(timeline["complete_tick"]) > 0, "impact ≤ complete: %s %s" % [skill_id, str([timeline["impact_tick"], timeline["complete_tick"]])])
 		var objects := 0
 		for event in timeline["events"]:
@@ -208,8 +208,8 @@ func every_magic_row_compiles() -> void:
 			else:
 				# The 13 objects stopped at an unreviewed callee keep the provisional static hold.
 				check(motion["unrestored"].has(event["object"]), "an untracked effect object is listed unrestored: " + str(event["object"]))
-				check(event["motion"] == "static" and event.has("fade_tick") and int(event["fade_tick"]) >= int(event["tick"]) + Player.EFFECT_MIN_LIFETIME_TICKS and int(event["expire"]) == int(event["fade_tick"]) + Player.EFFECT_FADE_TICKS, "untracked effect objects stay put, hold at least the minimum lifetime and fade: " + skill_id)
-				check(int(event["fade_tick"]) - int(event["tick"]) <= maxi(int(event["lifetime"]), Player.EFFECT_MIN_LIFETIME_TICKS) and int(event["fade_tick"]) <= maxi(int(event["tick"]) + Player.EFFECT_MIN_LIFETIME_TICKS, int(timeline["complete_tick"]) - Player.EFFECT_FADE_TICKS), "an untracked object never holds past its own frames or the script's remaining waits: " + skill_id)
+				check(event["motion"] == "static" and event.has("fade_tick") and int(event["fade_tick"]) >= int(event["tick"]) + SkillEffectScriptPlayer.EFFECT_MIN_LIFETIME_TICKS and int(event["expire"]) == int(event["fade_tick"]) + SkillEffectScriptPlayer.EFFECT_FADE_TICKS, "untracked effect objects stay put, hold at least the minimum lifetime and fade: " + skill_id)
+				check(int(event["fade_tick"]) - int(event["tick"]) <= maxi(int(event["lifetime"]), SkillEffectScriptPlayer.EFFECT_MIN_LIFETIME_TICKS) and int(event["fade_tick"]) <= maxi(int(event["tick"]) + SkillEffectScriptPlayer.EFFECT_MIN_LIFETIME_TICKS, int(timeline["complete_tick"]) - SkillEffectScriptPlayer.EFFECT_FADE_TICKS), "an untracked object never holds past its own frames or the script's remaining waits: " + skill_id)
 			check(event["frames"].all(func(member): return manifest["frames"].has(member)) and manifest["objects"].has(event["object"]), "object frames imported: " + str(event["object"]))
 			check((event["scale"] as Vector2) == Vector2(manifest["objects"][event["object"]]["zoom"][0], manifest["objects"][event["object"]]["zoom"][1]), "object scale is its obj_ZoomX／Y: " + str(event["object"]))
 		check(objects > 0, "every magic script draws at least one object: " + skill_id)
@@ -225,7 +225,7 @@ func every_magic_row_compiles() -> void:
 ## ticks; in the target's shot the blade re-enters at tick 80, the hit mark at 90 is its
 ## arrival, sparks burst on a hit, the result shows at 150 and the clip completes at 190.
 func qi_blade_timeline() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var hit: Dictionary = player.compile_row("special:magicOTHER:magicCode01", true, 1)
 	check(hit["release_tick"] == 60 and hit["impact_tick"] == 90 and hit["result_tick"] == 150 and hit["complete_tick"] == 190, "氣刃斬 marks: %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
@@ -261,7 +261,7 @@ func qi_blade_timeline() -> void:
 ## ticks ahead of the cue; objmPlayHitSound only on a hit; an object whose frames cannot be
 ## drawn still sounds. 39 objects in 24 rows carry command sounds.
 func object_command_sounds() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var objects := 0
 	var carriers: Array[String] = []
@@ -313,7 +313,7 @@ func object_command_sounds() -> void:
 	for member in data["objects"]["obj_Special01_03"]["shape_members"]:
 		data["frames"].erase(member)
 	var row: Dictionary = scope["rows"]["special:magicOTHER:magicCode01"]
-	var bare: Dictionary = Player.compile(row["actions"][row["attack_code"]], row["actions"][row["defense_code"]], true, 1, data)
+	var bare: Dictionary = SkillEffectScriptPlayer.compile(row["actions"][row["attack_code"]], row["actions"][row["defense_code"]], true, 1, data)
 	check(bare["skipped_objects"] == ["obj_Special01_03"] and bare["events"].any(func(event): return event["kind"] == "sound" and event["member"] == "WAV\\BOMB0017.WAV"), "a burst without imported frames still plays its landing sound")
 	player.free()
 
@@ -322,7 +322,7 @@ func object_command_sounds() -> void:
 ## own events) reach the timeline of every magic row that inserts it, at the object's start plus
 ## the read delay, inside the clip. 13 objects in 8 spells.
 func effect_program_sounds() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var carriers := 0
 	for name in manifest["objects"]:
@@ -364,7 +364,7 @@ func effect_program_sounds() -> void:
 ## 天雷猛襲劍 (specCode03／04): the attack script runs 70 ticks; the defense script's
 ## sounds and lightning strikes land on their aniDelay cursors; hit sound and burst are hit-only.
 func thunder_sword_timeline() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var hit: Dictionary = player.compile_row("special:magicAIR:magicCode01", true, 3)
 	check(hit["release_tick"] == 70 and hit["impact_tick"] == 160 and hit["result_tick"] == 200 and hit["complete_tick"] == 240, "天雷猛襲劍 marks: %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
@@ -380,7 +380,7 @@ func thunder_sword_timeline() -> void:
 
 ## The geometry verbs and the page flags read their ANIMAL.H parameters.
 func geometry_and_flags() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var petals: Dictionary = player.compile_row("special:magicFIRE:magicCode01", true, 5)  # 妖華紅蓮舞
 	var radial: Array = petals["events"].filter(func(event): return event["kind"] == "object" and event["motion"] == "radial")
@@ -400,11 +400,11 @@ func geometry_and_flags() -> void:
 	var stars: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5)  # 星辰落牙破
 	check(stars["hit_ticks"].size() == 1 and stars["impact_tick"] == 30 + 20 + 40 + 10, "aniProcessHitMissMulti marks the impact like aniProcessHitMiss")
 	var meteors: Array = stars["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Special24_03")
-	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "fly" and int(event["arrive"]) == (stars["impact_tick"] if int(event["tick"]) < int(stars["impact_tick"]) else int(event["tick"]) + Player.FLIGHT_TICKS)), "meteors inserted above the stage fly to the target centre: onto the hit mark when it follows, else for FLIGHT_TICKS")
+	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "fly" and int(event["arrive"]) == (stars["impact_tick"] if int(event["tick"]) < int(stars["impact_tick"]) else int(event["tick"]) + SkillEffectScriptPlayer.FLIGHT_TICKS)), "meteors inserted above the stage fly to the target centre: onto the hit mark when it follows, else for FLIGHT_TICKS")
 	check(stars["result_ticks"].is_empty() and stars["result_tick"] == stars["impact_tick"] and stars["complete_tick"] == 100 + 160, "a script without aniShowHitResult shows the result on the hit mark and completes when its last delay ends")
-	var empty: Dictionary = Player.compile([], ["aniDelay,10,aniProcessHitMiss", "aniDelay,5,aniShowHitResult"], true, 1, manifest)
-	check(empty["release_tick"] == Player.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
-	var unknown: Dictionary = Player.compile([], ["aniSetZoom,0x10000", "aniDelay,4"], true, 1, manifest)
+	var empty: Dictionary = SkillEffectScriptPlayer.compile([], ["aniDelay,10,aniProcessHitMiss", "aniDelay,5,aniShowHitResult"], true, 1, manifest)
+	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
+	var unknown: Dictionary = SkillEffectScriptPlayer.compile([], ["aniSetZoom,0x10000", "aniDelay,4"], true, 1, manifest)
 	check(unknown["unimplemented"] == ["aniSetZoom"], "a verb outside the set is reported, not swallowed")
 	player.free()
 
@@ -414,7 +414,7 @@ func geometry_and_flags() -> void:
 ## its native track, so a clip completes when the script's waits and the last tree are done.
 ## 幻火's bombs carry the engZOOM 1.25 scale; 極 plays at the screen centre; 治癒之水 does not dim.
 func magic_timelines() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var wind: Dictionary = player.compile_row("magic:magicAIR:magicCode01", true, 1)
 	check(wind["instructions"] == 8 and wind["impact_tick"] == 64 and wind["complete_tick"] == _derived_complete(wind, 114) and not wind["global"] and wind["dim"], "風刃 marks: impact 64, complete = the later of its 114 waits and its trees' ends: %s" % str([wind["instructions"], wind["impact_tick"], wind["complete_tick"]]))
@@ -443,7 +443,7 @@ func magic_timelines() -> void:
 	check(seal["complete_tick"] == 162 and int(motion["objects"]["obj_Effect_MindBall"]["frames"]) == 162, "封魔滅殺 completes at 162, when MindBall's native tree ends (%s)" % str(seal["complete_tick"]))
 	var life: Dictionary = player.compile_row("magic:magicWATER:magicCode07", true, 1)
 	check(life["complete_tick"] == 190 and int(motion["objects"]["obj_Effect_Water_GStarBig"]["frames"]) == 190, "生命之水 completes at 190, when GStarBig's 186-star tree ends (%s)" % str(life["complete_tick"]))
-	var unknown: Dictionary = Player.compile_effect(["effSetZoom,2", "effWait,4"], 1, manifest, {"effect_proc": "eff_proc_Local", "damage_policy": "x"})
+	var unknown: Dictionary = SkillEffectScriptPlayer.compile_effect(["effSetZoom,2", "effWait,4"], 1, manifest, {"effect_proc": "eff_proc_Local", "damage_policy": "x"})
 	check(unknown["unimplemented"] == ["effSetZoom"] and unknown["complete_tick"] == 4, "an eff* verb outside the set is reported, not swallowed")
 	player.free()
 
@@ -461,13 +461,13 @@ func _derived_complete(timeline: Dictionary, waits: int) -> int:
 ## batch is in order and each gap is below the range, over many seeds.
 func effect_random_insertion() -> void:
 	for seed in range(40):
-		var wind: Dictionary = Player.compile_effect(["effInsertRandomObject,obj_Effect_AirWave1,0,0,10,36,16,6", "effWait,4"], seed, manifest, {"effect_proc": "eff_proc_Local", "damage_policy": "x"})
+		var wind: Dictionary = SkillEffectScriptPlayer.compile_effect(["effInsertRandomObject,obj_Effect_AirWave1,0,0,10,36,16,6", "effWait,4"], seed, manifest, {"effect_proc": "eff_proc_Local", "damage_policy": "x"})
 		var ticks: Array = wind["events"].filter(func(event): return event["kind"] == "object").map(func(event): return int(event["tick"]))
 		var ordered: bool = ticks.size() == 6 and ticks[0] == 0
 		for index in range(1, ticks.size()):
 			ordered = ordered and ticks[index] >= ticks[index - 1] and ticks[index] - ticks[index - 1] <= 15
 		check(ordered, "seed %d: the waves enter in order, the first at once, each ≤ 15 ticks after the previous: %s" % [seed, str(ticks)])
-	var still: Dictionary = Player.compile_effect(["effInsertRandomObject,obj_Effect_AirWave1,0,0,0,0,0,3"], 3, manifest, {"effect_proc": "eff_proc_Local", "damage_policy": "x"})
+	var still: Dictionary = SkillEffectScriptPlayer.compile_effect(["effInsertRandomObject,obj_Effect_AirWave1,0,0,0,0,0,3"], 3, manifest, {"effect_proc": "eff_proc_Local", "damage_policy": "x"})
 	check(still["events"].filter(func(event): return event["kind"] == "object").all(func(event): return int(event["tick"]) == 0 and event["position"] == Vector2.ZERO), "zero ranges read as rand(1) = 0 and a zero delay range adds nothing")
 
 
@@ -486,7 +486,7 @@ func native_motion_tracks() -> void:
 	# effProcFlyDrop (0x416095): 90 px above the origin, falling 1 px per tick (first drawn
 	# frame 1 at −88: the creation frame is skipped), swaying 16·sin at 6/256 turn per tick,
 	# four shapes of 7 ticks once, then engMIX levels 16 → 1.
-	var drop: Dictionary = Motion.track("obj_Effect_FlyDrop")
+	var drop: Dictionary = EffectObjectMotion.track("obj_Effect_FlyDrop")
 	var light: Dictionary = drop["instances"][0]
 	var heights: PackedInt32Array = light["y"]
 	check(drop["instances"].size() == 1 and int(light["start"]) == 1 and heights[0] == -88 and heights[heights.size() - 1] == -88 + heights.size() - 1, "FlyDrop falls 1 px per tick from 88 px above (%s)" % str([light["start"], heights[0]]))
@@ -495,37 +495,37 @@ func native_motion_tracks() -> void:
 		sway = sway and absi(value) <= 16
 	var modes: PackedInt32Array = light["mode"]
 	var levels: PackedInt32Array = light["level"]
-	check(sway and heights.size() == 42 and modes[0] == Motion.ENG_ADDCOLOR and modes[modes.size() - 1] == Motion.ENG_ADDCOLOR | Motion.ENG_MIX and levels[levels.size() - 1] == 1, "FlyDrop sways within ±16 px, draws additively, fades through the engMIX levels to 1 over its last 16 frames")
+	check(sway and heights.size() == 42 and modes[0] == EffectObjectMotion.ENG_ADDCOLOR and modes[modes.size() - 1] == EffectObjectMotion.ENG_ADDCOLOR | EffectObjectMotion.ENG_MIX and levels[levels.size() - 1] == 1, "FlyDrop sways within ±16 px, draws additively, fades through the engMIX levels to 1 over its last 16 frames")
 	# effProcFireAndBomb (0x41618a): rises 24 px, loops its six shapes at the template zoom
 	# 1.25, then shrinks 1/32 per tick to 0.25 and loops 24 more ticks; it throws three
 	# SprayUpDown sparks (object 163) that arc under gravity.
-	var bomb: Dictionary = Motion.track("obj_Effect_FireBomb")
+	var bomb: Dictionary = EffectObjectMotion.track("obj_Effect_FireBomb")
 	var core: Dictionary = bomb["instances"][0]
 	var zooms: PackedInt32Array = core["zoom_x"]
 	check((core["y"] as PackedInt32Array).size() == 76 and Array(core["y"]).all(func(value): return value == -24) and zooms[0] == 0x14000 and zooms[29] == 0xf800 and zooms[zooms.size() - 1] == 0x4000, "FireBomb rises 24 px, 1.25 zoom, then 1/32 per tick down to 0.25")
 	var sparks: Array = bomb["instances"].filter(func(instance): return int(instance["code"]) == 163)
 	check(sparks.size() == 3 and sparks.all(func(instance): return instance["y"][(instance["y"] as PackedInt32Array).size() - 1] > instance["y"][0]), "three SprayUpDown sparks, each ending lower than it started (gravity)")
-	var bomb2: Dictionary = Motion.track("obj_Effect_FireBomb2")
+	var bomb2: Dictionary = EffectObjectMotion.track("obj_Effect_FireBomb2")
 	check(bomb2["instances"].filter(func(instance): return int(instance["code"]) == 164).size() == 12, "FireBomb2 also throws 2 × 6 Spray sparks (object 164) 12 ticks in")
 
 
 ## Drawing: the player places a tracked object's tree at the insertion plus the track offset,
 ## with the track's blend, alpha and scale — not the untracked static hold.
 func native_motion_drawing() -> void:
-	var player := Player.new()
+	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var fire: Dictionary = player.compile_row("magic:magicFIRE:magicCode01", true, 1)
 	var clip := {"effect_timeline": fire}
 	var origin := Vector2(200, 300)
-	var light: Dictionary = Motion.track("obj_Effect_FlyDrop")["instances"][0]
+	var light: Dictionary = EffectObjectMotion.track("obj_Effect_FlyDrop")["instances"][0]
 	var start := int(light["start"])
 	# Frame 10 of FlyDrop (inserted at tick 0 at the origin): its native offset.
-	player.draw(clip, 10.0 / Player.TICKS_PER_SECOND, [origin])
+	player.draw(clip, 10.0 / SkillEffectScriptPlayer.TICKS_PER_SECOND, [origin])
 	var shown: Array = player.sprites.filter(func(sprite): return sprite.visible)
 	var expected := origin + Vector2(light["x"][10 - start], light["y"][10 - start])
 	check(shown.size() == 1 and shown[0].position == expected and shown[0].material.blend_mode == CanvasItemMaterial.BLEND_MODE_ADD and is_equal_approx(shown[0].modulate.a, 1.0), "幻火 at tick 10: one FlyDrop light at the native offset %s, additive (%s)" % [str(expected), str(shown.map(func(sprite): return sprite.position))])
 	# Frame 40: the light's engMIX tail — alpha = level / 16.
-	player.draw(clip, 40.0 / Player.TICKS_PER_SECOND, [origin])
+	player.draw(clip, 40.0 / SkillEffectScriptPlayer.TICKS_PER_SECOND, [origin])
 	shown = player.sprites.filter(func(sprite): return sprite.visible)
 	var level: int = light["level"][40 - start]
 	check(shown.size() == 1 and is_equal_approx(shown[0].modulate.a, float(level) / 16.0) and level < 16, "幻火 at tick 40: the light fades by its level %d / 16" % level)

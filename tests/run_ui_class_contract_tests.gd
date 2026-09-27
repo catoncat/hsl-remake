@@ -1,7 +1,7 @@
 extends "res://tests/support/TestSuite.gd"
 
 ## Whole-game UI class contracts from the 2026-09-23 playtest (lane P9): each check walks
-## every instance of one class of problem instead of the one screen the user reported.
+## every instance of one class of problem instead of the one screen a playtest reported.
 ##   shape_scale  — no original-art TextureRect is drawn stretched: every selectable state of
 ##                  both system scrolls, the confirm pair, the memoir headings, dialogue
 ##                  faces, identity-strip portraits and equipment icons.
@@ -9,10 +9,10 @@ extends "res://tests/support/TestSuite.gd"
 ##                  where its red glyphs cover the most of the panel's baked glyphs
 ##                  (manifest lit_glyph_registration), searched ±REGISTRATION_RADIUS px.
 ##   panel_alignment — every value printed beside a baked label (WINDOW10 strip, WINDOW21
-##                  attribute column, WINDOW30 equipment slots, WINDOW40 money) is centred
+##                  attribute column, WINDOW30 equipment slots, WINDOW40 gold) is centred
 ##                  on that label's glyph row and starts right of its colon; icons never
 ##                  cover a label glyph; the baked labels draw over the bars; the remake
-##                  buttons stay clear of the money box and of each other.
+##                  buttons stay clear of the gold box and of each other.
 ##   button_size    — a WINDOW50 button keeps the size its caller asked for at every height
 ##                  the game uses (24–43 px), so stacked menus (the town list) never touch.
 ##   word_breaks    — no wrapped line starts inside a protected name
@@ -29,8 +29,8 @@ extends "res://tests/support/TestSuite.gd"
 ##                  macOS Godot resolves "PingFang SC" to PingFang HK, which lacks 杀敌远… and
 ##                  drew them as missing-glyph boxes until the explicit SC fallback was added.
 
-const SystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
-const UISkin = preload("res://game/common/BattleUISkin.gd")
+const BattleSystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 
 
 func _init() -> void:
@@ -121,7 +121,7 @@ func assert_unstretched(node: Node, context: String) -> void:
 
 func shape_scale_contracts() -> void:
 	for variant in ["battle", "world"]:
-		var menu = SystemMenu.new()
+		var menu = BattleSystemMenu.new()
 		menu.variant = variant
 		root.add_child(menu)
 		await process_frame
@@ -150,7 +150,7 @@ func shape_scale_contracts() -> void:
 	var sizes := {}
 	for code in preload("res://game/sim/EquipmentCatalog.gd").items():
 		var details: Dictionary = preload("res://game/sim/EquipmentCatalog.gd").items()[code]
-		var shape := UISkin.texture(str(details["icon"]))
+		var shape := BattleUISkin.texture(str(details["icon"]))
 		if shape != null and details.get("slot", "") == "weapon":
 			sizes[int(shape.get_size().x * 1000 + shape.get_size().y)] = int(code)
 	var codes: Array = sizes.keys()
@@ -226,7 +226,7 @@ func panel_alignment_contracts() -> void:
 	root.add_child(panel)
 	await process_frame
 	panel.show_unit(unit, true)
-	panel.money_label.text = "230"
+	panel.gold_label.text = "230"
 	var vitals = panel.vitals
 	# WINDOW10 strip: the left labels (等級／經驗 share a row) and the right board labels.
 	var board: TextureRect = _board(vitals, "WINDOW10.SHP.png")
@@ -269,16 +269,16 @@ func panel_alignment_contracts() -> void:
 			var icon_rect := Rect2(icon.global_position, icon.size)
 			var label_right := w30.global_position.x + float(rows_for[floori(index / 2.0)][2])
 			check(icon_rect.position.x > label_right, "equipment %s icon at x %.0f covers its label (colon ends %.0f)" % [slot, icon_rect.position.x, label_right])
-	# WINDOW40 money box and the remake button strip.
-	var money_box: TextureRect = _board(panel, "WINDOW40.SHP.png")
-	check(money_box != null, "the status page draws the WINDOW40 $: box")
-	if money_box != null:
-		var box := Rect2(money_box.global_position, money_box.size)
-		var dollar := _label_rows(money_box.texture.get_image(), Rect2i(0, 0, 60, 32))
+	# WINDOW40 gold box and the remake button strip.
+	var gold_box: TextureRect = _board(panel, "WINDOW40.SHP.png")
+	check(gold_box != null, "the status page draws the WINDOW40 $: box")
+	if gold_box != null:
+		var box := Rect2(gold_box.global_position, gold_box.size)
+		var dollar := _label_rows(gold_box.texture.get_image(), Rect2i(0, 0, 60, 32))
 		check(dollar.size() == 1, "WINDOW40 has one baked $: row")
 		if dollar.size() == 1:
-			_check_beside(panel.money_label, money_box.global_position, dollar[0], "money")
-		check(box.encloses(Rect2(panel.money_label.global_position, panel.money_label.size)), "the amount stays inside the $: box")
+			_check_beside(panel.gold_label, gold_box.global_position, dollar[0], "money")
+		check(box.encloses(Rect2(panel.gold_label.global_position, panel.gold_label.size)), "the amount stays inside the $: box")
 		var buttons: Array = panel.get_children().filter(func(child): return child is Button)
 		for index in range(buttons.size()):
 			var rect := Rect2(buttons[index].global_position, buttons[index].size)
@@ -293,7 +293,7 @@ func panel_alignment_contracts() -> void:
 func _check_no_split(label: Label, source: String, context: String) -> void:
 	var shown := label.text
 	check(shown.replace("\n", "") == source.replace("\n", ""), "%s: shown text is the source plus line breaks" % context)
-	check(label.get_line_count() == UISkin.line_starts(label, shown).size(), "%s: the measured wrap has the label's own line count (%d vs %d)" % [context, UISkin.line_starts(label, shown).size(), label.get_line_count()])
+	check(label.get_line_count() == BattleUISkin.line_starts(label, shown).size(), "%s: the measured wrap has the label's own line count (%d vs %d)" % [context, BattleUISkin.line_starts(label, shown).size(), label.get_line_count()])
 	# Where each shown character came from in the source: an inserted line break (the dialogue
 	# rows are all inserted breaks) does not hide a name cut across it.
 	var source_at := PackedInt32Array()
@@ -302,9 +302,9 @@ func _check_no_split(label: Label, source: String, context: String) -> void:
 		source_at.append(next)
 		if next < source.length() and shown[index] == source[next]:
 			next += 1
-	for start in UISkin.line_starts(label, shown):
+	for start in BattleUISkin.line_starts(label, shown):
 		var in_source: int = source_at[start] if start < shown.length() else source.length()
-		if UISkin.split_word_start(shown, start) >= 0 or UISkin.split_word_start(source, in_source) >= 0:
+		if BattleUISkin.split_word_start(shown, start) >= 0 or BattleUISkin.split_word_start(source, in_source) >= 0:
 			check(false, "%s: a line starts inside a protected name at %d: …%s…" % [context, start, shown.substr(maxi(0, start - 4), 8)])
 			return
 	checked_wraps += 1
@@ -315,7 +315,7 @@ var checked_wraps := 0
 
 func word_break_contracts() -> void:
 	var table: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(preload("res://game/sim/ContentPaths.gd").PROTECTED_WORDS))
-	var words := UISkin.protected_words()
+	var words := BattleUISkin.protected_words()
 	check(words.size() == table["words"].size() and words.size() > 300, "protected word table loads (%d words)" % words.size())
 	var lines: Array[String] = []
 	var scripts := DirAccess.get_files_at("res://content/imported/hsl/story_corpus/scripts")
@@ -372,7 +372,7 @@ func button_size_contracts() -> void:
 	var holder := Control.new()
 	root.add_child(holder)
 	for height in BUTTON_HEIGHTS:
-		var button := UISkin.button(holder, "離開城鎮", Vector2.ZERO, Vector2(232, height))
+		var button := BattleUISkin.button(holder, "離開城鎮", Vector2.ZERO, Vector2(232, height))
 		await process_frame
 		check(button.size == Vector2(232, height), "a %d px button keeps its size, got %s" % [height, button.size])
 	# The town's root entries are text rows on the WINDOW70 board since R5-L5b (original frames

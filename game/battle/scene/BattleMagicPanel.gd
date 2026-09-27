@@ -1,7 +1,7 @@
 extends Control
 ## The skill page (特殊技 and 魔法) as the original draws it: its status window in root mode 3
 ## (special) or 2 (magic) — the WINDOW10 strip with portrait, bars and resists, the left
-## WINDOW20 column listing the skills, the `$:` WINDOW40 money box — and the 0x436d70
+## WINDOW20 column listing the skills, the `$:` WINDOW40 gold box — and the 0x436d70
 ## description box for the hovered row. A row the actor cannot pay is red and still shows
 ## its description when hovered; clicking it does nothing. There is no title, list board,
 ## cursor bar or 取消 button: right click／Esc cancel. Past nine rows the 0x446060 scroll bar
@@ -69,7 +69,7 @@ const HOVER_GREEN_BASE := 255
 const HOVER_PULSE_HALF := 16
 ## 0x43af60 docks the `$:` WINDOW40 (object 134) at (416,440); the amount right-aligned in
 ## the status page's cell.
-const MONEY_AT := Vector2(416, 440)
+const GOLD_AT := Vector2(416, 440)
 ## Description box of 0x436d70 at the status-page position; rows (x+8, y+12+16i), 360 px centred.
 const DESCRIPTION_AT := Vector2(252, 349)
 const DESCRIPTION_SIZE := Vector2(376, 88)
@@ -98,7 +98,7 @@ const SPECIAL_ONLY := [[0x8000, "回復魔法"], [0x10000, "可再次行動"], [
 var choices: Dictionary = {}
 var description_box: TextureRect
 var vitals: Control
-var money_label: Label
+var gold_label: Label
 var list: Control
 var scroll_pos := 0
 var scroll_bar: Control
@@ -127,9 +127,9 @@ func _ready() -> void:
 	_rows.add_theme_constant_override("separation", 0)
 	list.add_child(_rows)
 	_build_scroll_bar()
-	BattleUISkin.board(self, "WINDOW40", MONEY_AT)
-	money_label = BattleUISkin.text(self, MONEY_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
-	money_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	BattleUISkin.board(self, "WINDOW40", GOLD_AT)
+	gold_label = BattleUISkin.text(self, GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
+	gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	description_box = BattleUISkin.board(self, "WINDOW50", DESCRIPTION_AT)
 	description_box.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	description_box.size = DESCRIPTION_SIZE
@@ -253,7 +253,7 @@ static func list_order(option: Dictionary) -> int:
 	return LIST_TYPES.find(str(fields.get("type", ""))) * 32 + bit
 
 
-## `unit` fills the status strip (the actor); `gold` the money box.
+## `unit` fills the status strip (the actor); `gold` the gold box.
 func show_spells(options: Array, channel: String = "magic", unit: Dictionary = {}, gold: int = 0) -> void:
 	for child in _rows.get_children():
 		_rows.remove_child(child)
@@ -264,7 +264,7 @@ func show_spells(options: Array, channel: String = "magic", unit: Dictionary = {
 	_drag_grab = NO_DRAG
 	vitals.visible = not unit.is_empty()
 	if vitals.visible: vitals.show_unit(unit)
-	money_label.text = str(gold)
+	gold_label.text = str(gold)
 	var ordered := range(options.size())
 	ordered.sort_custom(func(a: int, b: int) -> bool:
 		var order_a := list_order(options[a])

@@ -218,12 +218,12 @@ static func level_key_for_scenario(campaign_data: Dictionary, scenario_path: Str
 ## Whether a level number is a big-map point (campaign.json world_map
 ## point_level_range, the bigmap.dat ids 1–45): such a level returns to the map
 ## at its own point when its script sets no next level.
-static func level_is_map_point(campaign_data: Dictionary, level: int) -> bool:
+static func level_is_map_point(campaign_data: Dictionary, level_no: int) -> bool:
 	var world_map: Variant = campaign_data.get("world_map", {})
 	if typeof(world_map) != TYPE_DICTIONARY:
 		return false
 	var range_value: Array = (world_map as Dictionary).get("point_level_range", [])
-	return range_value.size() == 2 and level >= int(range_value[0]) and level <= int(range_value[1])
+	return range_value.size() == 2 and level_no >= int(range_value[0]) and level_no <= int(range_value[1])
 
 
 ## Where a finished scene goes, from its next_level_event [level, event] — the

@@ -6,7 +6,7 @@ extends RefCounted
 ## provenance:
 ##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
-##   timing: remake-invented (OPT-PACE 快／極快 clock multipliers PACE_CLOSEUP／PACE_MAP; 原版 is × 1.0)
+##   timing: remake-invented (OPT-PACE 快／極快 clock multipliers PACE_CUTIN／PACE_MAP; 原版 is × 1.0)
 ##   timing: provisional
 ##     (CAST_LEAD_IN stands in for the m_action lead of a magic caster whose m_shape strip is not imported — the
 ##     imported ones and the 絶技 s_action lead are played by AnimalCastLead)
@@ -41,9 +41,9 @@ static func scaled(visible_seconds: float) -> float:
 ## frame delta, so 原版 = × 1.0 is the untouched original rate). 快 doubles the cut-in and the map
 ## cues; 極快 doubles the map cues and runs the close-up hidden at 16× — its impact／release
 ## signals and the map numbers come in the same order, the close-up is never on screen.
-const PACE_CLOSEUP := {"original": 1.0, "fast": 2.0, "fastest": 16.0}
+const PACE_CUTIN := {"original": 1.0, "fast": 2.0, "fastest": 16.0}
 const PACE_MAP := {"original": 1.0, "fast": 2.0, "fastest": 2.0}
-const PACE_HIDDEN_CLOSEUP := "fastest"
+const PACE_HIDDEN_CUTIN := "fastest"
 
 ## Receiver phases in ticks of visible time, read from the AnimalDefense object process
 ## (0x4038a0; the object 0x9b that 0x406eb0 inserts after the attacker's shot). Its own
@@ -167,7 +167,7 @@ static var CAST_LEAD_IN: float = scaled(CAST_LEAD_IN_VISIBLE_SECONDS)
 const SHOW_NUMBER_TICKS := 46
 const SHOW_NUMBER_RELEASE_TICKS := 32
 ## kind 0 lives 10 per digit ＋ 34 (one hold tick, 18 settle, 15 more ticks after the level first
-## drops): 44 ticks for one digit, 54 for two (DamageNumberFloat.life_ticks).
+## drops): 44 ticks for one digit, 54 for two (DamageNumberFloater.life_ticks).
 const DAMAGE_NUMBER_BASE_TICKS := 34
 const DAMAGE_NUMBER_DIGIT_TICKS := 10
 ## kind 0 after its bounce: 18 settle ticks (+0x90 = 0x10012), then +0x28 counts 16 → 0 one

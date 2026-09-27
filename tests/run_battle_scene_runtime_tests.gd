@@ -12,14 +12,14 @@ const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleScenarioRuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
-const Combat = preload("res://game/sim/loop/BattleLoopCombat.gd")
-const PositionCases = preload("res://tests/run_position_equipment_tests.gd")
-const MagicCases = preload("res://tests/run_support_magic_tests.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
-const Progression = preload("res://game/sim/ProgressionRules.gd")
-const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
-const LoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const run_position_equipment_tests = preload("res://tests/run_position_equipment_tests.gd")
+const run_support_magic_tests = preload("res://tests/run_support_magic_tests.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattleLoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
 
 var failures: Array[String] = []
 
@@ -1360,7 +1360,7 @@ func _test_departure_queue() -> void:
 				loop["turn_queue"]["index"] = index
 		var before: Dictionary = loop.duplicate(true)
 		var next: Dictionary = loop.duplicate(true)
-		_assert_true(LoopScript._commit_departures(next, ["enemy021_1"], "winfail", "event_3"), "the departure commits")
+		_assert_true(BattleLoopScript._commit_departures(next, ["enemy021_1"], "winfail", "event_3"), "the departure commits")
 		_assert_eq(loop, before, "departure should not mutate input battle")
 		_assert_true(loop_script.unit(next, "enemy021_1").get("departed", false) and not loop_script.unit_coords(next).has("enemy021_1"), "departure retains history but removes field presence")
 		var current: Dictionary = loop_script.CoreTurnQueue.current(next["turn_queue"])
@@ -1369,7 +1369,7 @@ func _test_departure_queue() -> void:
 		else:
 			_assert_eq(current["id"], "enemy021_2", "removing current actor must hand off to next slot")
 		var repeated: Dictionary = next.duplicate(true)
-		_assert_true(not LoopScript._commit_departures(repeated, ["enemy021_1"], "winfail", "event_3"), "repeated departure must be inert")
+		_assert_true(not BattleLoopScript._commit_departures(repeated, ["enemy021_1"], "winfail", "event_3"), "repeated departure must be inert")
 		_assert_eq(repeated, next, "an inert departure leaves the loop unchanged")
 
 
@@ -1829,17 +1829,17 @@ func _test_special_skill() -> void:
 ## and rand(0) can only give 0) — so the native samples below keep their expected values.
 func _pin_cast_stream(scene, loop: Dictionary, caster_id: String, pick: Callable, value: int) -> void:
 	var probe := loop.duplicate(true)
-	var chosen: Dictionary = LoopAI._try_skill_turn(probe, caster_id, [scene.BattlePlayLoop._unit(probe, "leonard")], pick)
+	var chosen: Dictionary = BattleLoopAI._try_skill_turn(probe, caster_id, [scene.BattlePlayLoop._unit(probe, "leonard")], pick)
 	var bounds: Array = []
 	var replay := loop.duplicate(true)
-	Combat._resolve_skill(replay, caster_id, "leonard", chosen["skill_id"], scene.BattlePlayLoop.skill_fields(replay, chosen["skill_id"]), chosen["to"], func(n):
+	BattleLoopCombat._resolve_skill(replay, caster_id, "leonard", chosen["skill_id"], scene.BattlePlayLoop.skill_fields(replay, chosen["skill_id"]), chosen["to"], func(n):
 		bounds.append(n)
 		return value, null)
 	for seed in range(1, 4000000):
-		var state := DamageRandom.seeded(seed)
+		var state := DamageRandomStream.seeded(seed)
 		var matched := true
 		for bound in bounds:
-			var drawn: Dictionary = DamageRandom.raw(state) if int(bound) < 0 else DamageRandom.rand(state, int(bound))
+			var drawn: Dictionary = DamageRandomStream.raw(state) if int(bound) < 0 else DamageRandomStream.rand(state, int(bound))
 			if int(drawn["value"]) != (value if int(bound) < 0 else clampi(value, 0, maxi(int(bound) - 1, 0))):
 				matched = false
 				break
@@ -1853,7 +1853,7 @@ func _pin_cast_stream(scene, loop: Dictionary, caster_id: String, pick: Callable
 func _test_mage_magic() -> void:
 	# Boot from the seeded global stream, not from where the earlier cases' openings and AI
 	# turns left the process stream: the opening levels (0x40e870) decide the stats pinned here.
-	GlobalRandom.reset_session()
+	GlobalRandomStream.reset_session()
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	root.add_child(scene)
 	await process_frame
@@ -1872,7 +1872,7 @@ func _test_mage_magic() -> void:
 	for key in birth["attributes"]: mage["combat_profile"][key] = birth["attributes"][key]
 	mage.erase("entry_growth")
 	mage.erase("entry_readjust")
-	mage.merge(Progression.refresh_growth_stats(mage, loop["equipment_items"]), true)
+	mage.merge(ProgressionRules.refresh_growth_stats(mage, loop["equipment_items"]), true)
 	mage["hp"] = mage["max_hp"]
 	mage["mp"] = mage["max_mp"]
 	mage["coord"] = Vector2i(10, 12)
@@ -1881,7 +1881,7 @@ func _test_mage_magic() -> void:
 	var wind_pick := func(n): return 1 if n == 32 else 0
 	var fire_pick := func(n): return 0 if n == 32 else 1
 	_pin_cast_stream(scene, loop, mage["id"], wind_pick, 0)
-	var strike: Dictionary = LoopAI._try_skill_turn(loop, mage["id"], [victim], wind_pick)
+	var strike: Dictionary = BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], wind_pick)
 	_assert_eq(strike.get("magic_key"), "wind", "mage must use source wind spell at range three")
 	_assert_true(scene.BattlePlayLoop.strike_range_cells(loop, strike).has(victim["coord"]), "ranged caster's chosen position keeps the selected target in the actual spell mask")
 	_assert_eq(mage["mp"], 22, "spell must spend source cost eight MP from template baseline")
@@ -1903,11 +1903,11 @@ func _test_mage_magic() -> void:
 	_assert_true(not cutin.busy(), "magic must release input after animation")
 	mage["mp"] = 0
 	var unchanged: Dictionary = loop.duplicate(true)
-	_assert_true(LoopAI._try_skill_turn(loop, mage["id"], [victim], func(_n): return 0).is_empty(), "empty MP must return to normal AI")
+	_assert_true(BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], func(_n): return 0).is_empty(), "empty MP must return to normal AI")
 	_assert_eq(loop, unchanged, "unaffordable spell must not move or damage")
 	mage["mp"] = 8
 	_pin_cast_stream(scene, loop, mage["id"], fire_pick, 1)
-	var fire: Dictionary = LoopAI._try_skill_turn(loop, mage["id"], [victim], fire_pick)
+	var fire: Dictionary = BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], fire_pick)
 	_assert_eq(fire.get("magic_key"), "fire", "mage must also use source fire spell")
 	_assert_eq(mage["mp"], 0, "last cast must consume remaining MP exactly")
 	victim["combat_profile"]["live_defense"] = 1000
@@ -1915,11 +1915,11 @@ func _test_mage_magic() -> void:
 	victim["hp"] = 100
 	mage["mp"] = 8
 	_pin_cast_stream(scene, loop, mage["id"], wind_pick, 0)
-	var warded: Dictionary = LoopAI._try_skill_turn(loop, mage["id"], [victim], wind_pick)
+	var warded: Dictionary = BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], wind_pick)
 	_assert_eq(warded["damage"], 3, "native wind resistance applies after caster scaling, independent of physical armor")
 	mage["mp"] = 8
 	_pin_cast_stream(scene, loop, mage["id"], fire_pick, 1)
-	var unwarded: Dictionary = LoopAI._try_skill_turn(loop, mage["id"], [victim], fire_pick)
+	var unwarded: Dictionary = BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], fire_pick)
 	_assert_eq(unwarded["damage"], 20, "native fire uses caster scaling and fire resistance, not wind resistance or armor")
 	await create_timer(1.5).timeout
 	scene.queue_free()
@@ -1985,7 +1985,7 @@ func _test_local_spell_layers() -> void:
 func _test_live_experience() -> void:
 	# Boot from the seeded global stream, not from where the earlier cases' openings and AI
 	# turns left the process stream: the opening levels (0x40e870) decide the stats pinned here.
-	GlobalRandom.reset_session()
+	GlobalRandomStream.reset_session()
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	root.add_child(scene)
 	await process_frame
@@ -2192,7 +2192,7 @@ func _test_ally_recovery_item() -> void:
 func _test_attack_target_preview() -> void:
 	# Boot from the seeded global stream, not from where the earlier cases' openings and AI
 	# turns left the process stream: the opening levels (0x40e870) decide the stats pinned here.
-	GlobalRandom.reset_session()
+	GlobalRandomStream.reset_session()
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	root.add_child(scene)
 	await process_frame
@@ -2398,7 +2398,7 @@ func _test_ai_reachable_strikes() -> void:
 	wounded["hp"] = 3
 	loop["units"] = [spear, enemy, wounded]
 	var before := loop.duplicate(true)
-	var result: Dictionary = LoopAI._ai_take_turn(loop, spear["id"], func(_n): return 0)
+	var result: Dictionary = BattleLoopAI._ai_take_turn(loop, spear["id"], func(_n): return 0)
 	_assert_eq(result["action"]["kind"], "attack", "spear should keep two-cell reach without walking adjacent")
 	_assert_eq(result["action"]["ai_decision"]["target_selection"]["index"], 1, "source AI_NEAREST still selects the earlier equal-distance ordinary target")
 	_assert_eq(result["action"]["target_id"], wounded["id"], "separate dying-foe priority may replace the ordinary target while preserving spear reach")
@@ -2412,7 +2412,7 @@ func _test_ai_reachable_strikes() -> void:
 	loop["units"] = [enemy, player, friendly]
 	for coord in [Vector2i(2, 3), Vector2i(1, 4), Vector2i(3, 4), Vector2i(2, 5)]:
 		TestSuite.own(loop, "tiles")[coord] = {"blocks_movement": true, "move_cost": 1}
-	result = LoopAI._ai_take_turn(loop, enemy["id"], func(_n): return 0)
+	result = BattleLoopAI._ai_take_turn(loop, enemy["id"], func(_n): return 0)
 	_assert_eq(result["action"]["kind"], "move_then_attack", "AI must take reachable strike instead of chasing enclosed nearest foe")
 	_assert_eq(result["action"]["target_id"], friendly["id"], "reachable farther target should beat inaccessible nearest target")
 	# Stations (4,2) and (3,3) are equally far from the target; 0x413390 collects them
@@ -2432,14 +2432,14 @@ func _test_stamina_builds_from_zero() -> void:
 	enemy["max_hp"] = 500
 	player["hp"] = 500
 	player["max_hp"] = 500
-	Combat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
 	_assert_eq(player["stamina"], 3, "a nonlethal light strike earns original attacker gain")
-	Combat._apply_strike(loop, "enemy021_1", "leonard", func(_n): return 0)
+	BattleLoopCombat._apply_strike(loop, "enemy021_1", "leonard", func(_n): return 0)
 	_assert_eq(player["stamina"], 9, "receiving a light strike earns twice the base gain")
-	Combat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
-	Combat._apply_strike(loop, "enemy021_1", "leonard", func(_n): return 0)
+	BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat._apply_strike(loop, "enemy021_1", "leonard", func(_n): return 0)
 	_assert_true(not Loop.can_use_special(loop, "leonard"), "18 earned ST remains below the original20 cost")
-	Combat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
 	_assert_true(Loop.can_use_special(loop, "leonard"), "earned charge should enable special")
 
 
@@ -2452,7 +2452,7 @@ func _test_undead_survives_lethal_strike() -> void:
 	enemy["hp"] = 1
 	enemy["undead"] = true
 	var kills_before := int(Loop._unit(loop, "leonard")["kill_count"])
-	var strike: Dictionary = Combat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	var strike: Dictionary = BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
 	_assert_true(int(strike.get("damage", 0)) > 0, "the fixture strike must hit a 1-HP target")
 	_assert_eq(int(Loop._unit(loop, "enemy021_1")["hp"]), 1, "an undead unit at HP <= 0 stands back up with 1 HP (0x43ee88 mov [rec+0xd8], 1)")
 	_assert_eq(bool(Loop._unit(loop, "enemy021_1")["defeated"]), false, "the undead unit is not defeated")
@@ -2461,7 +2461,7 @@ func _test_undead_survives_lethal_strike() -> void:
 	_assert_eq(int(Loop._unit(loop, "leonard")["kill_count"]), kills_before + 1, "the lethal result is settled as a kill before the revive (provisional order)")
 	enemy = Loop._unit(loop, "enemy021_1")
 	enemy["undead"] = false
-	Combat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
 	_assert_eq(bool(Loop._unit(loop, "enemy021_1")["defeated"]), true, "with the marker cleared the same hit defeats the unit")
 
 
@@ -2478,15 +2478,15 @@ func _ordinary_schedule(cutin: Node) -> Dictionary:
 
 ## Equipped movement (run_position_equipment_tests.gd mobility cases) as the real scene shows it.
 func _test_equipment_mobility_display() -> void:
-	var Loop = PositionCases.Loop
+	var Loop = run_position_equipment_tests.BattlePlayLoop
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
 	root.add_child(scene)
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
-	scene.apply_loop(PositionCases.mobility_fixture(), "test")
+	scene.apply_loop(run_position_equipment_tests.mobility_fixture(), "test")
 	scene.resume_turn_presentation()
-	scene.apply_loop(PositionCases.equip(scene.play_loop,"foot",193), "test")
+	scene.apply_loop(run_position_equipment_tests.equip(scene.play_loop,"foot",193), "test")
 	scene.status_panel.show_unit(Loop.unit(scene.play_loop,"leonard"))
 	_assert_true(scene.status_panel.stat_values["move"].text == "6","status displays the committed movement, not the initial source")
 	scene.status_panel.hide()
@@ -2518,7 +2518,7 @@ func _test_equipment_mobility_display() -> void:
 
 ## The stat-magic dev trial (run_support_magic_tests.gd stat cases) as the real scene plays it.
 func _test_stat_magic_trial_scene() -> void:
-	var Loop = MagicCases.Loop
+	var Loop = run_support_magic_tests.BattlePlayLoop
 	var scene=load("res://game/battle/development/StatMagicTrial.tscn").instantiate()
 	root.add_child(scene);await create_timer(0.2).timeout;scene.set_process(false)
 	_assert_true(scene.play_loop["scenario_ok"],"actual stat development scene boots: "+str(scene.play_loop.get("scenario_error","")))
@@ -2529,7 +2529,7 @@ func _test_stat_magic_trial_scene() -> void:
 	_assert_true(rows.values().all(func(id):return view.cutin.skill_effects.presentation(id)=="script"),"all three stat spells play their own source effect scripts")
 	view.cutin.set_process(false)
 	for key in rows:
-		view.cutin.play({"skill_id":rows[key],"attacker_id":"tina","defender_id":"tina","magic_key":key,"magic_name":key,"hit":true,"damage":0,"actual_damage":0,"defender_hp_after":30,"stat_effects":[]},Loop.unit(MagicCases.stat_fixture(),"tina"),Loop.unit(MagicCases.stat_fixture(),"tina"),false,Vector2(310,220),Vector2(200,220),[Vector2(310,220)])
+		view.cutin.play({"skill_id":rows[key],"attacker_id":"tina","defender_id":"tina","magic_key":key,"magic_name":key,"hit":true,"damage":0,"actual_damage":0,"defender_hp_after":30,"stat_effects":[]},Loop.unit(run_support_magic_tests.stat_fixture(),"tina"),Loop.unit(run_support_magic_tests.stat_fixture(),"tina"),false,Vector2(310,220),Vector2(200,220),[Vector2(310,220)])
 		var guard:=0
 		while view.cutin.busy() and not view.cutin.clips[0]["impact_emitted"] and guard<6000:
 			view.cutin._process(1.0/60.0);guard+=1
@@ -2546,7 +2546,7 @@ func _test_stat_magic_trial_scene() -> void:
 
 ## The priest dev trial (run_support_magic_tests.gd priest cases) as the real scene shows it.
 func _test_priest_trial_scene() -> void:
-	var Loop = MagicCases.Loop
+	var Loop = run_support_magic_tests.BattlePlayLoop
 	var scene=load("res://game/battle/development/PriestTrial.tscn").instantiate()
 	root.add_child(scene);await create_timer(0.2).timeout;scene.set_process(false)
 	_assert_true(scene.play_loop["scenario_ok"] and scene.first_battle_scenario["player_unit_id"]=="tina","actual scene boots without a Leonard actor: "+str(scene.play_loop.get("scenario_error","")))

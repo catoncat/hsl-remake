@@ -14,7 +14,7 @@ extends Node2D
 ##   timing: provisional
 ##     (the 0x2c000000 flash read as additive at alpha level／16, the level-blend modes as alpha level／16)
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 const DIGIT_PITCH := 14
 const DIGIT_STEP_TICKS := 10
 const FLASH_TICKS := 6
@@ -49,7 +49,7 @@ func present(amount: int) -> void:
 	glyphs.clear()
 	if flash != null:
 		flash.queue_free()
-	var assets: Dictionary = BattleRewardFloat.manifest()["assets"]
+	var assets: Dictionary = BattleRewardFloater.manifest()["assets"]
 	flash = _sprite(assets["damage_flash"])
 	flash.material = flash_blend
 	for index in range(digits.length()):

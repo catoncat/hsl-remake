@@ -21,14 +21,14 @@ const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const UnitSchema = preload("res://game/sim/UnitSchema.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
-const Brain = preload("res://tests/support/AutoplayBrain.gd")
-const ForceWin = preload("res://tests/support/BattleForceWin.gd")
+const AutoplayBrain = preload("res://tests/support/AutoplayBrain.gd")
+const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const JobStats = preload("res://game/sim/JobStatsRules.gd")
+const JobStatsRules = preload("res://game/sim/JobStatsRules.gd")
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
-const StatusEffects = preload("res://game/sim/StatusEffectRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const SkillEffectScriptPlayer = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
@@ -38,8 +38,8 @@ const SPECIAL_ID := "special:magicAIR:magicCode01"
 const AUTHORED_SPECIAL_ID := "special:magicFIRE:authoredDragonFlame"
 const AUTHORED_MAGIC_ID := "magic:magicFIRE:authoredDragonBreath"
 const AUTHORED_SKILLS_PATH := "res://content/authored/roles/skills.json"
-const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
-const UISkin = preload("res://game/common/BattleUISkin.gd")
+const BattleCombatCutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const COMBAT_MANIFEST := "res://content/generated/hsl/authored/battle200/combat_animation.json"
 ## content/authored/actors/<art>/: each authored look's folder (hsltools.assets.authored_art).
@@ -103,7 +103,7 @@ func _contract_cases() -> void:
 	check(str(seed.get("evidence_tier", "")) == UnitSchema.AUTHORED_TIER and sections == ["win", "fail", "event"], "the authored seed carries the three winfail sections as authored: " + str(sections))
 	var templates: Dictionary = scenario.get("script_actor_templates", {})
 	check(templates.has("obj_Level200_Wolf") and str(templates["obj_Level200_Wolf"]["actor"]["actor_id"]) == "036", "the winfail insert symbol resolves to the declared 036 template")
-	var loop := Loop.create([], "", scenario)
+	var loop := BattlePlayLoop.create([], "", scenario)
 	check(bool(loop["scenario_ok"]), "create() accepts the authored level: " + str(loop.get("scenario_error", "")))
 	_art_cases(scenario, loop)
 	check(loop["win_statuses"] == [0] and loop["fail_statuses"] == [0] and loop["event_statuses"] == [0], "the authored STORY arms win_0 / fail_0 / event_0: " + str([loop.get("win_statuses"), loop.get("fail_statuses"), loop.get("event_statuses")]))
@@ -119,20 +119,20 @@ func _authored_job_case(loop: Dictionary) -> void:
 	var row: Dictionary = authored["jobs"].get(str(AUTHORED_JOB), {})
 	check(str(row.get("symbol", "")) == "jobDragonLord" and str(row.get("evidence_tier", "")) == UnitSchema.AUTHORED_TIER, "job 101 is an authored row that names itself (no TYPE.H define): " + str(row.get("symbol")))
 	var authored_caps := {}
-	for key in JobStats.ATTRIBUTES:
+	for key in JobStatsRules.ATTRIBUTES:
 		authored_caps[key] = int(row.get("caps", {}).get(key, -1))
-	check(JobStats.has_job(AUTHORED_JOB) and JobStats.caps(AUTHORED_JOB) == authored_caps, "the runtime job table carries 101 with the authored caps: " + str(JobStats.caps(AUTHORED_JOB)))
-	var reia := Loop._unit(loop, "reia")
+	check(JobStatsRules.has_job(AUTHORED_JOB) and JobStatsRules.caps(AUTHORED_JOB) == authored_caps, "the runtime job table carries 101 with the authored caps: " + str(JobStatsRules.caps(AUTHORED_JOB)))
+	var reia := BattlePlayLoop._unit(loop, "reia")
 	if reia.is_empty() or row.is_empty():
 		return
 	var variables := {"level": int(reia["level"]), "hp_level": int(reia["level"])}
-	for key in JobStats.ATTRIBUTES:
+	for key in JobStatsRules.ATTRIBUTES:
 		variables[key] = int(reia["combat_profile"][key])
 	var source: Dictionary = reia["growth_profile"]["source"]
 	var delta: Dictionary = EquipmentRules.effect_delta(reia["equipment"], loop["equipment_items"])["delta"]
 	var expected_hp := _authored_terms(row["max_hp"], variables) + int(source["hit_point"]) + int(delta["max_hp"])
 	var expected_speed := _authored_terms(row["speed"], variables) + int(source["speed"]) + int(delta["speed"])
-	var expected_attack := _authored_terms(row["attack"], variables) + int(source["attack_power"]) + JobStats.level_attack_bonus(int(reia["level"])) + int(delta["attack"])
+	var expected_attack := _authored_terms(row["attack"], variables) + int(source["attack_power"]) + JobStatsRules.level_attack_bonus(int(reia["level"])) + int(delta["attack"])
 	check(int(reia["max_hp"]) == expected_hp and int(reia["live_speed"]) == expected_speed and int(reia["combat_profile"]["live_attack_damage"]) == expected_attack, "蕾雅's max HP / speed / attack are job 101's authored terms: %s" % str([reia["max_hp"], expected_hp, reia["live_speed"], expected_speed, reia["combat_profile"]["live_attack_damage"], expected_attack]))
 
 
@@ -179,19 +179,19 @@ func _art_cases(scenario: Dictionary, loop: Dictionary) -> void:
 		check(row.get("dispatch") == chapter_one["actors"][look["program_of"]]["dispatch"] and row.get("special_frames") == [], "%s: the dispatch is the program row's; no s_shape strip (standing caster)" % code)
 		check(audio["characters"].has(str(int(code))) and audio["characters"][str(int(code))] == source_audio["characters"].get(look["sounds_of"]), "%s sounds like row %s (art.json sounds_of): %s" % [code, look["sounds_of"], str(audio["characters"].get(str(int(code))))])
 		check(str(faces.get(code, {}).get("res_path", "")) == folder + "portrait.png" and str(faces[code].get("name", "")) == look["name"], "%s's face is %sportrait.png under %s" % [code, folder, look["name"]])
-		check(str(UISkin.data()["actors"].get(code, {}).get("title", "")) == look["title"], "%s's board title is %s (generated panel table)" % [code, look["title"]])
-	var toran := Loop.unit(loop, "toran")
+		check(str(BattleUISkin.data()["actors"].get(code, {}).get("title", "")) == look["title"], "%s's board title is %s (generated panel table)" % [code, look["title"]])
+	var toran := BattlePlayLoop.unit(loop, "toran")
 	check(str(toran.get("actor_id", "")) == "103" and str(toran.get("battle_actor_role", "")) == "friendly_ai" and UnitSchema.evidence_tier(toran, "vitals") == UnitSchema.AUTHORED_TIER, "托蘭 (103) stands in level 200 as an authored friendly AI unit")
 	for pair in [["reia", "wolf_1"], ["toran", "wolf_2"]]:
-		var cutin := Cutin.new()
+		var cutin := BattleCombatCutin.new()
 		root.add_child(cutin)
 		check(cutin.configure(COMBAT_MANIFEST), "a cut-in configures from the level table")
 		cutin.set_process(false)
-		var attacker := Loop.unit(loop, pair[0])
-		var defender := Loop.unit(loop, pair[1])
+		var attacker := BattlePlayLoop.unit(loop, pair[0])
+		var defender := BattlePlayLoop.unit(loop, pair[1])
 		cutin.play({"hit": true, "damage": 5, "defender_hp_before": int(defender["hp"]), "defender_hp_after": int(defender["hp"]) - 5}, attacker, defender, false)
-		var schedule := Cutin.Timing.ordinary(cutin.manifest["actors"][str(attacker["actor_id"])], cutin.clips[0]["strike"])
-		cutin._process(float(schedule["opening"]) / Cutin.Timing.PLAYBACK_SPEED + 0.05)
+		var schedule := BattleCombatCutin.Timing.ordinary(cutin.manifest["actors"][str(attacker["actor_id"])], cutin.clips[0]["strike"])
+		cutin._process(float(schedule["opening"]) / BattleCombatCutin.Timing.PLAYBACK_SPEED + 0.05)
 		var path := str(cutin.attacker_sprite.texture.resource_path) if cutin.attacker_sprite.texture != null else ""
 		check(cutin.attacker_sprite.visible and path.begins_with("res://content/authored/actors/%s/cutin/" % attacker["actor_id"]), "%s's cut-in draws its own frame after the opening: %s" % [pair[0], path])
 		cutin.queue_free()
@@ -275,7 +275,7 @@ func _opening_case(runtime: Node) -> void:
 		if str(coordinator.summary().get("current_event_kind", "")) == "dialogue_message_id":
 			if runtime.opening_overlay.visible and runtime.opening_overlay.body_text() != "":
 				lines[runtime.opening_overlay.speaker_label.text] = runtime.opening_overlay.body_text()
-			coordinator.handle_input(ForceWin.click())
+			coordinator.handle_input(BattleForceWin.click())
 		await process_frame
 	check(not coordinator.active, "the opening reaches first control")
 	check(lines.has("蕾雅：") and lines["蕾雅："] == "雷歐納德，交給我吧。這把槍還沒嘗過翼狼的血。", "蕾雅 speaks her authored line under her own name: " + str(lines))
@@ -285,7 +285,7 @@ func _opening_case(runtime: Node) -> void:
 	var reia_node = runtime.actor_node_for_unit("reia")
 	var reia_texture: Texture2D = reia_node.get_node("Sprite2D").texture if reia_node != null and reia_node.get_node_or_null("Sprite2D") != null else null
 	check(reia_texture != null and reia_texture.resource_path.begins_with("res://content/authored/actors/102/walk/"), "蕾雅 stands on the map in her own walk frame: " + (reia_texture.resource_path if reia_texture != null else "none"))
-	check(Loop.unit(runtime.play_loop, "leonard").get("coord") == Vector2i(7, 8), "雷歐納德 stands on the STORY actWalkWait endpoint (7,8) at first control: " + str(Loop.unit(runtime.play_loop, "leonard").get("coord")))
+	check(BattlePlayLoop.unit(runtime.play_loop, "leonard").get("coord") == Vector2i(7, 8), "雷歐納德 stands on the STORY actWalkWait endpoint (7,8) at first control: " + str(BattlePlayLoop.unit(runtime.play_loop, "leonard").get("coord")))
 	check(str(runtime.play_loop.get("interaction", "")) != "" and runtime.play_loop["units"].any(func(unit): return unit["player_commandable"]), "the loop is interactive with controlled units at first control")
 
 
@@ -297,17 +297,17 @@ func _opening_case(runtime: Node) -> void:
 ## through the script player like an original one.
 func _special_case(runtime: Node) -> void:
 	var loop: Dictionary = runtime.play_loop.duplicate(true)
-	var reia := Loop._unit(loop, "reia")
-	var wolf := Loop._unit(loop, "wolf_1")
+	var reia := BattlePlayLoop._unit(loop, "reia")
+	var wolf := BattlePlayLoop._unit(loop, "wolf_1")
 	check(str(reia.get("actor_id", "")) == "102" and int(reia.get("level", 0)) >= 3, "蕾雅 enters at least at her authored level 3 (entry growth applies as in any level): " + str(reia.get("level")))
 	reia["live_speed"] = 300
 	reia["stamina"] = 60
 	wolf["coord"] = reia["coord"] + Vector2i(2, 0)
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	loop = Loop.begin_battle(loop)
-	loop = Loop.select_player_unit(loop, "reia")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	loop = BattlePlayLoop.begin_battle(loop)
+	loop = BattlePlayLoop.select_player_unit(loop, "reia")
 	check(str(loop.get("selected_unit_id", "")) == "reia" and str(loop.get("interaction", "")) == "action_menu", "蕾雅 takes the first action of the rebuilt queue")
-	var options := Loop.special_options(loop, "reia")
+	var options := BattlePlayLoop.special_options(loop, "reia")
 	var ids: Array = options.map(func(option): return str(option["id"]))
 	check(ids == [SPECIAL_ID, AUTHORED_SPECIAL_ID] and options.all(func(option): return bool(option["quote"]["ok"])), "蕾雅's specials are the declared 天雷猛襲劍 and the authored 龍炎斬, both castable at 60 ST: " + str(ids))
 	var authored := _authored_skill_row(AUTHORED_SPECIAL_ID)
@@ -315,27 +315,27 @@ func _special_case(runtime: Node) -> void:
 	check(not authored.is_empty() and str(entry.get("name", "")) == str(authored.get("name_text", "")) and str(entry.get("evidence_tier", "")) == UnitSchema.AUTHORED_TIER and str(entry.get("damage_policy", "")) == "native_special_damage", "the skill book carries 龍炎斬 as an authored native-special-damage row: " + str(entry.get("name")))
 	var fields: Dictionary = entry.get("fields", {})
 	check(["range", "effect_range", "expend", "damage", "hit_ratio", "attackpow_ratio", "function"].all(func(key): return str(fields.get(key, "")) == str(authored.get(key, "?"))), "the book row's fields are the authored table's numbers: " + str(fields))
-	check(Loop.can_use_special(loop, "reia"), "the special command is available")
-	var candidates: Array = Brain._skill_options(loop, Loop._unit(loop, "reia")).map(func(entry): return str(entry["option"]["id"]))
+	check(BattlePlayLoop.can_use_special(loop, "reia"), "the special command is available")
+	var candidates: Array = AutoplayBrain._skill_options(loop, BattlePlayLoop._unit(loop, "reia")).map(func(entry): return str(entry["option"]["id"]))
 	check(candidates.has(AUTHORED_SPECIAL_ID), "the autoplay commander (HSL_AUTOPLAY_BRAIN) can legally pick 龍炎斬: " + str(candidates))
-	var started := Loop.choose_command(loop, "special")
+	var started := BattlePlayLoop.choose_command(loop, "special")
 	check(str(started.get("interaction", "")) == "special_select", "two specials open the special list: " + str(started.get("interaction")))
-	started = Loop.choose_special(started, AUTHORED_SPECIAL_ID)
+	started = BattlePlayLoop.choose_special(started, AUTHORED_SPECIAL_ID)
 	check(str(started.get("interaction", "")) == "attack_select" and str(started.get("selected_skill_id", "")) == AUTHORED_SPECIAL_ID, "choosing 龍炎斬 goes to target selection: " + str(started.get("interaction")))
-	var after := Loop.attack_target(started, "wolf_1", func(_n): return 0)
+	var after := BattlePlayLoop.attack_target(started, "wolf_1", func(_n): return 0)
 	var receipt: Dictionary = after.get("last_attack", {})
 	check(str(receipt.get("skill_id", "")) == AUTHORED_SPECIAL_ID and str(receipt.get("attacker_id", "")) == "reia" and bool(receipt.get("hit", false)), "龍炎斬 resolves as 蕾雅's attack and hits on zero draws: " + str(receipt.get("skill_id")))
 	# Native special roll on zero draws: low + (high-low)/2, plus con/8 + mind/4 + dex/3, scaled by
 	# attackpow_ratio, then the target's resistance of the row's element (magicFIRE = slot 3).
 	var limits: PackedStringArray = str(authored.get("damage", "0,0")).split(",")
-	var live := StatusEffects.weakened_attributes(reia)
+	var live := StatusEffectRules.weakened_attributes(reia)
 	var value := (int(limits[0]) + (int(limits[1]) - int(limits[0])) / 2 + int(live["con"]) / 8 + int(live["mind"]) / 4 + int(live["dex"]) / 3) * int(authored.get("attackpow_ratio", 0)) / 100
 	var resistance := int(wolf["combat_profile"]["resist_by_type"]["3"])
 	if resistance != 0:
 		value = (100 - mini(80, resistance)) * value / 100
 	var expected := mini(int(wolf["hp"]), value)
-	check(int(receipt.get("damage", -1)) == expected and int(Loop.unit(after, "wolf_1")["hp"]) == int(wolf["hp"]) - expected, "龍炎斬's damage is the native special roll over the authored numbers: %s (expected %d)" % [str(receipt.get("damage")), expected])
-	check(int(Loop.unit(after, "reia")["stamina"]) == 60 - int(authored.get("expend", 0)) * 20, "龍炎斬 pays its authored expend in ST: " + str(Loop.unit(after, "reia")["stamina"]))
+	check(int(receipt.get("damage", -1)) == expected and int(BattlePlayLoop.unit(after, "wolf_1")["hp"]) == int(wolf["hp"]) - expected, "龍炎斬's damage is the native special roll over the authored numbers: %s (expected %d)" % [str(receipt.get("damage")), expected])
+	check(int(BattlePlayLoop.unit(after, "reia")["stamina"]) == 60 - int(authored.get("expend", 0)) * 20, "龍炎斬 pays its authored expend in ST: " + str(BattlePlayLoop.unit(after, "reia")["stamina"]))
 	_presentation_case(AUTHORED_SPECIAL_ID, "special")
 
 
@@ -347,31 +347,31 @@ func _special_case(runtime: Node) -> void:
 ## grown into targeting.json by the generator) and the effCode script plays on the map.
 func _magic_case(runtime: Node) -> void:
 	var loop: Dictionary = runtime.play_loop.duplicate(true)
-	var reia := Loop._unit(loop, "reia")
-	var wolf := Loop._unit(loop, "wolf_1")
+	var reia := BattlePlayLoop._unit(loop, "reia")
+	var wolf := BattlePlayLoop._unit(loop, "wolf_1")
 	var authored := _authored_skill_row(AUTHORED_MAGIC_ID)
 	check(int(reia.get("max_mp", 0)) > 0 and bool(reia["growth_profile"]["source"].get("has_magic", false)), "declaring 龍息 gives 蕾雅 MP from job 101's formula: " + str(reia.get("max_mp")))
 	reia["live_speed"] = 300
 	wolf["coord"] = reia["coord"] + Vector2i(3, 0)
-	loop["turn_queue"] = Loop.CoreTurnQueue.rebuild(loop["units"])
-	loop = Loop.begin_battle(loop)
-	loop = Loop.select_player_unit(loop, "reia")
-	var options := Loop.magic_options(loop, "reia")
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	loop = BattlePlayLoop.begin_battle(loop)
+	loop = BattlePlayLoop.select_player_unit(loop, "reia")
+	var options := BattlePlayLoop.magic_options(loop, "reia")
 	check(options.size() == 1 and str(options[0]["id"]) == AUTHORED_MAGIC_ID and bool(options[0]["quote"]["ok"]) and str(options[0]["name"]) == str(authored.get("name_text", "")), "蕾雅's only magic is the authored 龍息 and she can pay for it: " + str(options.map(func(option): return [option["id"], option["quote"]])))
 	check(loop["skill_target_data"]["ranges"].has(str(authored.get("range", ""))), "the generated targeting table carries the range the authored row names: " + str(authored.get("range")))
-	var candidates: Array = Brain._skill_options(loop, Loop._unit(loop, "reia")).map(func(entry): return str(entry["option"]["id"]))
+	var candidates: Array = AutoplayBrain._skill_options(loop, BattlePlayLoop._unit(loop, "reia")).map(func(entry): return str(entry["option"]["id"]))
 	check(candidates.has(AUTHORED_MAGIC_ID), "the autoplay commander (HSL_AUTOPLAY_BRAIN) can legally pick 龍息: " + str(candidates))
-	var started := Loop.choose_command(loop, "magic")
-	started = Loop.choose_magic(started, AUTHORED_MAGIC_ID)
+	var started := BattlePlayLoop.choose_command(loop, "magic")
+	started = BattlePlayLoop.choose_magic(started, AUTHORED_MAGIC_ID)
 	check(str(started.get("interaction", "")) == "attack_select" and str(started.get("selected_skill_id", "")) == AUTHORED_MAGIC_ID, "choosing 龍息 goes to target selection: " + str(started.get("interaction")))
-	var mp_before := int(Loop.unit(started, "reia")["mp"])
-	var after := Loop.attack_target(started, "wolf_1", func(_n): return 0)
+	var mp_before := int(BattlePlayLoop.unit(started, "reia")["mp"])
+	var after := BattlePlayLoop.attack_target(started, "wolf_1", func(_n): return 0)
 	var receipt: Dictionary = after.get("last_attack", {})
 	var limits: PackedStringArray = str(authored.get("damage", "0,0")).split(",")
 	var roll: Dictionary = receipt.get("native_damage_roll", {})
 	check(str(receipt.get("skill_id", "")) == AUTHORED_MAGIC_ID and bool(receipt.get("hit", false)) and int(roll.get("sampled", -1)) == int(limits[0]) + (int(limits[1]) - int(limits[0])) / 2, "龍息 resolves on the native magic roll over the authored bounds: " + str(roll))
-	check(int(receipt.get("damage", 0)) > 0 and int(Loop.unit(after, "wolf_1")["hp"]) == int(wolf["hp"]) - int(receipt["damage"]), "龍息 damages the 翼狼 by the receipt's amount: " + str(receipt.get("damage")))
-	check(int(Loop.unit(after, "reia")["mp"]) == mp_before - int(authored.get("expend", 0)), "龍息 pays its authored MP: %d -> %d" % [mp_before, int(Loop.unit(after, "reia")["mp"])])
+	check(int(receipt.get("damage", 0)) > 0 and int(BattlePlayLoop.unit(after, "wolf_1")["hp"]) == int(wolf["hp"]) - int(receipt["damage"]), "龍息 damages the 翼狼 by the receipt's amount: " + str(receipt.get("damage")))
+	check(int(BattlePlayLoop.unit(after, "reia")["mp"]) == mp_before - int(authored.get("expend", 0)), "龍息 pays its authored MP: %d -> %d" % [mp_before, int(BattlePlayLoop.unit(after, "reia")["mp"])])
 	_presentation_case(AUTHORED_MAGIC_ID, "magic")
 
 

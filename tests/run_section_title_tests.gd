@@ -4,9 +4,9 @@ extends "res://tests/support/TestSuite.gd"
 ## stretched vertically, WORD name cross-faded) and that every registered scene's title card
 ## has its art and plays through this one path.
 
-const Cinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
-const Coordinator = preload("res://game/battle/runtime/BattleOpeningCoordinator.gd")
-const UISkin = preload("res://game/common/BattleUISkin.gd")
+const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
+const BattleOpeningCoordinator = preload("res://game/battle/runtime/BattleOpeningCoordinator.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const CAMPAIGN := "res://content/battles/campaign.json"
 const ZOOM_ONE := 0x10000
 
@@ -23,7 +23,7 @@ func run() -> void:
 
 
 func _state(tick: int, skip_hold_tick: int = 0) -> Dictionary:
-	return Cinematics.section_title_state_at(tick, skip_hold_tick)
+	return OpeningCinematics.section_title_state_at(tick, skip_hold_tick)
 
 
 func _expect(tick: int, sub: int, band: int, name_level: int, zoom: int, label: String, skip_hold_tick: int = 0) -> void:
@@ -48,7 +48,7 @@ func _sub_state_ticks() -> void:
 	_expect(111, 3, 16, 1, ZOOM_ONE, "name level 1 on the name ramp's first reload")
 	_expect(156, 3, 16, 16, ZOOM_ONE, "name level 16")
 	_expect(159, 4, 16, 16, ZOOM_ONE, "name ramp ends on tick 159: the hold begins (159 ticks in)")
-	_assert_eq(Coordinator.SECTION_TITLE_IN_TICKS, 159, "the coordinator's entry length is the state machine's")
+	_assert_eq(BattleOpeningCoordinator.SECTION_TITLE_IN_TICKS, 159, "the coordinator's entry length is the state machine's")
 	_expect(300, 4, 16, 16, ZOOM_ONE, "hold keeps both layers fully shown")
 	_assert_eq(int(_state(300)["hold"]), 320 - (300 - 159), "the hold counter drops one per tick")
 	_expect(478, 4, 16, 16, ZOOM_ONE, "hold tick 319")
@@ -61,35 +61,35 @@ func _sub_state_ticks() -> void:
 	_expect(555, 6, 8, 0, ZOOM_ONE + 25 * 0x2000, "exit mid-point of the band ramp: level 8, zoom 4.125")
 	_expect(578, 6, 0, 0, ZOOM_ONE + 48 * 0x2000, "band level 0")
 	_expect(581, 7, 0, 0, 0x76000, "band ramp ends at zoom 7.375, not 8.0")
-	_expect(582, Cinematics.TITLE_SUB_DONE, 0, 0, 0x76000, "sub-state 7 hands the VM on")
+	_expect(582, OpeningCinematics.TITLE_SUB_DONE, 0, 0, 0x76000, "sub-state 7 hands the VM on")
 	_assert_eq(int(_state(582)["tick"]), 582, "the card lasts 582 ticks unskipped")
 	_assert_eq(int(_state(9999)["tick"]), 582, "the machine stops after sub-state 7")
-	_assert_eq(Coordinator.SECTION_TITLE_IN_TICKS + Coordinator.SECTION_TITLE_HOLD_TICKS + Coordinator.SECTION_TITLE_OUT_TICKS, 582, "the coordinator waits the same 582 ticks")
-	_assert_eq(Coordinator.SECTION_TITLE_OUT_TICKS, 582 - 479, "the coordinator's exit length is the state machine's")
+	_assert_eq(BattleOpeningCoordinator.SECTION_TITLE_IN_TICKS + BattleOpeningCoordinator.SECTION_TITLE_HOLD_TICKS + BattleOpeningCoordinator.SECTION_TITLE_OUT_TICKS, 582, "the coordinator waits the same 582 ticks")
+	_assert_eq(BattleOpeningCoordinator.SECTION_TITLE_OUT_TICKS, 582 - 479, "the coordinator's exit length is the state machine's")
 
 
 ## Only sub-state 4 reads the key／click; the tick that sees it ends the hold.
 func _skip_ticks() -> void:
-	var early := Cinematics.section_title_new_state()
+	var early := OpeningCinematics.section_title_new_state()
 	for tick in 159:
-		Cinematics.section_title_step(early, true)
+		OpeningCinematics.section_title_step(early, true)
 	_assert_eq([int(early["sub"]), int(early["tick"])], [4, 159], "input on every entry tick does not shorten the entry")
 	_expect(160, 5, 16, 16, ZOOM_ONE, "a key on the first hold tick ends the hold at once", 1)
 	_assert_eq(int(_state(9999, 1)["tick"]), 263, "first-hold-tick skip: 159 + 1 + 103 = 263 ticks")
 	_assert_eq(int(_state(9999, 100)["tick"]), 159 + 100 + 103, "a key on hold tick 100 leaves the 103-tick exit")
 	_expect(160 + 25, 5, 16, 8, ZOOM_ONE, "skipped exit: name level 8 on the 25th exit tick", 1)
 	var late := _state(479)
-	Cinematics.section_title_step(late, true)
+	OpeningCinematics.section_title_step(late, true)
 	_assert_eq([int(late["sub"]), int(late["name_level"])], [5, 16], "input after the hold is ignored by the exit ramp")
 
 
 func _view_layers() -> void:
 	var name_texture: Texture2D = load("res://content/imported/hsl/chapter01/battle051/section_title.png")
-	var band_record: Dictionary = UISkin.data()["assets"][Cinematics.TITLE_BAND_ASSET]
+	var band_record: Dictionary = BattleUISkin.data()["assets"][OpeningCinematics.TITLE_BAND_ASSET]
 	_assert_eq(band_record["source_member"], "SHAPE\\LEVELSEC.SHP", "the band is the shape 0x451818 loads")
 	_assert_eq(band_record["draw_origin"], [320.0, 104.0], "LEVELSEC origin is its centre")
 	var band_origin := Vector2(float(band_record["draw_origin"][0]), float(band_record["draw_origin"][1]))
-	var view := Cinematics.build_section_title_view(name_texture, UISkin.texture(Cinematics.TITLE_BAND_ASSET), band_origin)
+	var view := OpeningCinematics.build_section_title_view(name_texture, BattleUISkin.texture(OpeningCinematics.TITLE_BAND_ASSET), band_origin)
 	var band: TextureRect = view.get_node("SectionTitleBand")
 	var title_name: TextureRect = view.get_node("SectionTitleName")
 	_assert_eq(band.texture.get_size(), Vector2(640, 208), "band art 640×208")
@@ -112,7 +112,7 @@ func _view_layers() -> void:
 		[582, false, 0.0, 7.375, false, 0.0],
 	]
 	for row in expectations:
-		Cinematics.apply_section_title_state(view, _state(int(row[0])))
+		OpeningCinematics.apply_section_title_state(view, _state(int(row[0])))
 		var got := [band.visible, band.modulate.a, band.scale, title_name.visible, title_name.modulate.a]
 		var want := [row[1], row[2], Vector2(1.0, row[3]), row[4], row[5]]
 		_assert_true(got[0] == want[0] and is_equal_approx(got[1], want[1]) and got[2].is_equal_approx(want[2]) and got[3] == want[3] and is_equal_approx(got[4], want[4]),

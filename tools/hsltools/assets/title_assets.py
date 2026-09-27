@@ -88,13 +88,13 @@ REFERENCE_LAYOUT = {
     'system_panel': {'top_left': [190, 67], 'match_diff': 10.6, 'reference_frame': SYSTEM_REFERENCE_FRAME,
                      'note': 'Title041 (257x345) fully open in the in-battle recording: centred on the 640x480 frame; frames 001/002 and 004/005 show it scrolling in from and out to the bottom edge'},
     'confirm_buttons': {'top_left': [256, 217], 'evidence_tier': 'runtime-measured',
-                        'note': 'Title061 (128x47, 確定|取消) over the centre of the open system scroll with no question text: template match on the user recording 2026-09-24 at 582.0 s (儲存戰場記錄, mean diff 17.1) and 592.5 s (回主選單, 9.5), docs/evidence_packets/runtime_observations/menus_ui/README.md'},
+                        'note': 'Title061 (128x47, 確定|取消) over the centre of the open system scroll with no question text: template match on the 2026-09-24 recording at 582.0 s (儲存戰場記錄, mean diff 17.1) and 592.5 s (回主選單, 9.5), docs/evidence_packets/runtime_observations/menus_ui/README.md'},
     'world_panel': {'top_left': [190, 67], 'evidence_tier': 'provisional',
                     'note': 'Title051 (257x345, the between-battle variant: 整理裝備／儲存回憶錄／讀取回憶錄／讀取戰場記錄／設定選項／回主選單) is not shown in any recording; the remake reuses the in-battle scroll position'},
     'memoir_list': {'top_left': [87, 44], 'evidence_tier': 'provisional',
                     'note': 'Title031 (466x392, 回憶錄 with eight slot bands) is not shown in any recording; centred on the 640x480 frame'},
     'options_panel': {'top_left': [142, 90], 'evidence_tier': 'runtime-measured',
-                      'note': 'Title039 (355x299, 設定選項: 場景效果 off/on, 預備動作 off/on, 音效音量 min/max, 音樂音量 min/max) centred on the 640x480 frame: template match on the user recording 2026-09-24 at 588.0 s (mean diff 21.4), docs/evidence_packets/runtime_observations/menus_ui/README.md'},
+                      'note': 'Title039 (355x299, 設定選項: 場景效果 off/on, 預備動作 off/on, 音效音量 min/max, 音樂音量 min/max) centred on the 640x480 frame: template match on the 2026-09-24 recording at 588.0 s (mean diff 21.4), docs/evidence_packets/runtime_observations/menus_ui/README.md'},
 }
 
 # 設定選項 rows inside Title039 (resource-derived geometry: the four label glyph rows at
@@ -335,7 +335,7 @@ def build(pak: Path) -> dict:
         'game_clear': GAME_CLEAR,
         'game_clear_epilogue': epilogue_block(_sha(raw_sound), _sha(sound)),
         'unresolved_semantics': [
-            'the title handler (menu input, ornament animation, when the red lit item shapes appear, fade timing) is not located in the EXE: the remake shows the lit shape on the hovered item, or on the keyboard-selected item after an arrow key (provisional); on the user recording 2026-09-24 the hovered item only sparkles and the red lit shape appears on the click (13.52 s), holds 0.75 s and the screen fades to black in 0.55 s (runtime-measured, docs/evidence_packets/runtime_observations/menus_ui/README.md) — the remake keeps its hover lighting and adopts the hold and fade',
+            'the title handler (menu input, ornament animation, when the red lit item shapes appear, fade timing) is not located in the EXE: the remake shows the lit shape on the hovered item, or on the keyboard-selected item after an arrow key (provisional); on the 2026-09-24 recording the hovered item only sparkles and the red lit shape appears on the click (13.52 s), holds 0.75 s and the screen fades to black in 0.55 s (runtime-measured, docs/evidence_packets/runtime_observations/menus_ui/README.md) — the remake keeps its hover lighting and adopts the hold and fade',
             'the gem (Title027) and book (Title028) stay beside item 1 whatever is selected and only bob vertically, about 5 px on a 1.65 s sine with no fixed phase relation between the two (runtime-measured on the original at 4-5 fps, docs/evidence_packets/runtime_observations/original_title_ornaments/README.md; period and amplitude are fits, provisional)',
             'the title music is located: level 0 plays table track 03 after the vendor logos (static-derived, original_music.md §3.1; manifest.music) and every level exit stops it at once; the remake has no vendor-logo stage, so 03 starts with the title and stops on the scene change or the intro movie',
             'item semantics are the remake reading of the labels: 開始新故事 = new campaign, 戰場記錄 = continue the saved campaign position, 離開遊戲 = quit',
@@ -343,7 +343,7 @@ def build(pak: Path) -> dict:
             'the in-battle system menu (Title041-047) opens on Esc during the player action phase and scrolls in from the bottom edge (remake timing); its handler and the exact scroll speed are not located in the EXE (provisional); 讀取回憶錄 is read as "resume the saved campaign position" and 設定選項 is not remade yet',
             'the between-battle scroll (Title051-057) and the 回憶錄 list (Title031-033) are not shown in any recording: their positions, the eight-slot memoir model (user://memoir_N.json) and the slot labels are remake readings (provisional); 整理裝備 and the world variant of 讀取戰場記錄 are not remade yet',
             'the GameClear sequence (level 998: OverBG01/02, Over001/002, workteam) is not shown in any recording: the phase order follows obj-998.obs and the defProcClearBOSS states, and the music is located — 07 from the first frame, 04 when the players start, 02 with the credits (static-derived, original_music.md §3.5; manifest.game_clear.music); text positions, scroll speeds, phase lengths and skipping are remake readings (provisional); the per-slot player showcase is a remake layout and the runtime credit strings are not remade',
-            'the 設定選項 panel (Title039) sits at (142,90) on the user recording 2026-09-24 (588.0 s, runtime-measured); the gem knob, the row semantics (場景效果 = story effect objects such as rain/lightning/fire; 音效／音樂音量 = SFX/music buses) and the key bindings are remake readings (provisional); 預備動作 is the original cast-lead switch (READYACTION 2026-09-27: GameSettings.ready_action, 0x477c14 bit 1)',
+            'the 設定選項 panel (Title039) sits at (142,90) on the 2026-09-24 recording (588.0 s, runtime-measured); the gem knob, the row semantics (場景效果 = story effect objects such as rain/lightning/fire; 音效／音樂音量 = SFX/music buses) and the key bindings are remake readings (provisional); 預備動作 is the original cast-lead switch (READYACTION 2026-09-27: GameSettings.ready_action, 0x477c14 bit 1)',
         ],
     }
     (OUT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

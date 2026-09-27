@@ -9,10 +9,10 @@ extends SceneTree
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const MapRules = preload("res://game/world/WorldMapRules.gd")
-const TownRules = preload("res://game/sim/TownEventRules.gd")
-const WorldActions = preload("res://game/world/WorldScriptActions.gd")
-const EndingDispatch = preload("res://game/sim/EndingDispatchRules.gd")
+const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
+const TownEventRules = preload("res://game/sim/TownEventRules.gd")
+const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
+const EndingDispatchRules = preload("res://game/sim/EndingDispatchRules.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 
 var failures: Array[String] = []
@@ -178,7 +178,7 @@ func _run_level_58() -> void:
 ## the same shared up-title frames the battles use; members without one keep their row.
 func _run_carried_job_up_forms() -> void:
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
 	var carry := {"schema": "hsl_campaign_carry.v1", "loop": {"gold": 275}, "units": {
 		"leonard": {"actor_id": "001", "job_up_target_actor_id": "010", "job_up_history": [{"from_actor_id": "001", "to_actor_id": "010", "flag": 0x80000000}]},
 		"tina": {"actor_id": "002"},
@@ -365,8 +365,8 @@ func _run_level_2_preview() -> void:
 	## 琥 following them, the exchange, then first control — where the preview stops
 	## with the not-remade card and returns to the big map standing at 戈爾山道.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 1), world_map, 2)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 1), world_map, 2)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_002.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -443,7 +443,7 @@ func _run_level_2_preview() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "the hand-off targets campaign.json's world_map scene")
 	_assert_eq(int((CampaignProgress.pending.get("world", {}) as Dictionary).get("current_point", 0)), 2, "the party still stands at 戈爾山道 (point 2)")
 	_assert_eq((CampaignProgress.pending.get("world", {}) as Dictionary).get("visited_points", []), [1, 2], "the carried world state keeps its visited points")
-	_assert_eq(MapRules.point_event(CampaignProgress.pending.get("world", {}), world_map, 2), 2, "the plain return applies none of the skipped battle's win-section writes")
+	_assert_eq(WorldMapRules.point_event(CampaignProgress.pending.get("world", {}), world_map, 2), 2, "the plain return applies none of the skipped battle's win-section writes")
 	_assert_eq(int(((CampaignProgress.pending.get("carry", {}) as Dictionary).get("loop", {}) as Dictionary).get("gold", 0)), 275, "the carry passes through the preview unchanged")
 	scene.queue_free()
 	await process_frame
@@ -458,8 +458,8 @@ func _run_level_2_preview_skip_battle() -> void:
 	## applied, STORY055 chains to 營地・清晨 (2,56), and STORY056 returns to the big
 	## map standing at 戈爾山道 — the post-battle camp talks without the battle body.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 1), world_map, 2)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 1), world_map, 2)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_002.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -519,10 +519,10 @@ func _run_level_2_preview_skip_battle() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/battles/story_055.json", "the hand-off targets story_055 (WINFAIL002 win: 2,55)")
 	var next_world: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(next_world.get("current_point", 0)), 2, "the party still stands at 戈爾山道 (point 2)")
-	_assert_eq(MapRules.point_event(next_world, world_map, 2), 501, "actBMSetPointEvent 2,501,bmpmVisit is applied: point 2 now opens event 501")
-	_assert_true((MapRules.point_flags(next_world, world_map, 2) as Array).has("bmpmVisit"), "point 2 carries the Visit bit")
+	_assert_eq(WorldMapRules.point_event(next_world, world_map, 2), 501, "actBMSetPointEvent 2,501,bmpmVisit is applied: point 2 now opens event 501")
+	_assert_true((WorldMapRules.point_flags(next_world, world_map, 2) as Array).has("bmpmVisit"), "point 2 carries the Visit bit")
 	_assert_eq(int(((next_world.get("encounter_ratios", {}) as Dictionary).get("2", -1))), 20, "actBMSetPointEncounterRatio 2,20 is applied")
-	_assert_true(MapRules.track_hidden(next_world, world_map, 3), "actBMSetTrackFlag 3,bmpmHidden hides track 3")
+	_assert_true(WorldMapRules.track_hidden(next_world, world_map, 3), "actBMSetTrackFlag 3,bmpmHidden hides track 3")
 	_assert_eq(int(((CampaignProgress.pending.get("carry", {}) as Dictionary).get("loop", {}) as Dictionary).get("gold", 0)), 275, "the carry passes through the skipped battle unchanged")
 	var skipped: Dictionary = {}
 	for record in coordinator.summary().get("story_records", []):
@@ -572,7 +572,7 @@ func _run_level_2_preview_skip_battle() -> void:
 	_assert_eq((camp_coordinator.summary().get("skipped_records", []) as Array).size(), 0, "no STORY055 token is silently skipped")
 	_assert_true(CampaignProgress.has_pending(), "the camp talk hands off through the campaign")
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/battles/story_056.json", "actSetNextPlayLevelEvent 2,56 chains to 營地・清晨")
-	_assert_eq(MapRules.point_event(CampaignProgress.pending.get("world", {}), world_map, 2), 501, "the win-section write survives the chain")
+	_assert_eq(WorldMapRules.point_event(CampaignProgress.pending.get("world", {}), world_map, 2), 501, "the win-section write survives the chain")
 	camp.queue_free()
 	await process_frame
 	await process_frame
@@ -610,8 +610,8 @@ func _run_level_2_preview_skip_battle() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 2,gameBigMapLevel returns to the big map")
 	var map_world: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(map_world.get("current_point", 0)), 2, "the party stands at 戈爾山道 (point 2) after the camp talks")
-	_assert_eq(MapRules.point_event(map_world, world_map, 2), 501, "point 2 keeps event 501 from the skipped victory")
-	_assert_true(MapRules.track_hidden(map_world, world_map, 3), "STORY056's actBMSetTrackFlag 3,bmpmHidden keeps track 3 hidden")
+	_assert_eq(WorldMapRules.point_event(map_world, world_map, 2), 501, "point 2 keeps event 501 from the skipped victory")
+	_assert_true(WorldMapRules.track_hidden(map_world, world_map, 3), "STORY056's actBMSetTrackFlag 3,bmpmHidden keeps track 3 hidden")
 	_assert_eq(int(((CampaignProgress.pending.get("carry", {}) as Dictionary).get("loop", {}) as Dictionary).get("gold", 0)), 275, "the carry passes through both camp scenes unchanged")
 	morning.queue_free()
 	await process_frame
@@ -624,8 +624,8 @@ func _run_level_3_preview() -> void:
 	## the west edge, two raiders come to meet them, then first control — where the
 	## preview stops with the not-remade card and returns to the big map at point 3.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.visit(MapRules.initial_state(world_map, 1), world_map, 2), world_map, 3)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.visit(WorldMapRules.initial_state(world_map, 1), world_map, 2), world_map, 3)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_003.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -717,8 +717,8 @@ func _run_level_8_story() -> void:
 	## walks on west, and the script marks point 8 visited, turns 廢都 (9) into a
 	## battle point and returns to the big map standing at point 8.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 7), world_map, 8)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 7), world_map, 8)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_008.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -763,8 +763,8 @@ func _run_level_8_story() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 8,gameBigMapLevel returns to the big map")
 	var next_world: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(next_world.get("current_point", 0)), 8, "the party stands at 菲納斯河畔 (point 8)")
-	_assert_true((MapRules.point_flags(next_world, world_map, 8) as Array).has("bmpmVisit"), "actBMSetPointEvent 8,8,bmpmVisit marks point 8 visited in the hand-off world state")
-	_assert_eq(MapRules.point_type(next_world, world_map, 9), "bmpmBattle", "actBMSetPointEvent 9,9,bmpmBattle turns 廢都 into a battle point")
+	_assert_true((WorldMapRules.point_flags(next_world, world_map, 8) as Array).has("bmpmVisit"), "actBMSetPointEvent 8,8,bmpmVisit marks point 8 visited in the hand-off world state")
+	_assert_eq(WorldMapRules.point_type(next_world, world_map, 9), "bmpmBattle", "actBMSetPointEvent 9,9,bmpmBattle turns 廢都 into a battle point")
 	_assert_eq(int(((next_world.get("encounter_ratios", {}) as Dictionary).get("8", -1))), 0, "actBMSetPointEncounterRatio 8,0 is applied")
 	_assert_eq(int(((CampaignProgress.pending.get("carry", {}) as Dictionary).get("loop", {}) as Dictionary).get("gold", 0)), 275, "the carry passes through the story scene unchanged")
 	scene.queue_free()
@@ -778,13 +778,13 @@ func _run_level_9_story() -> void:
 	## as the princess, the script turns point 9 back into a town and chains to level
 	## 65 — unregistered, so the scene ends on its card and returns to the big map.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.initial_state(world_map, 8)
-	var towndef: Dictionary = TownRules.load_towndef("res://content/imported/hsl/global/world_map/towndef.json")
-	var armed: Dictionary = TownRules.apply_script_town_actions(world, [{"name": "actBMSetPointEvent", "args": ["9", "9", "bmpmBattle"]}], towndef)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.initial_state(world_map, 8)
+	var towndef: Dictionary = TownEventRules.load_towndef("res://content/imported/hsl/global/world_map/towndef.json")
+	var armed: Dictionary = TownEventRules.apply_script_town_actions(world, [{"name": "actBMSetPointEvent", "args": ["9", "9", "bmpmBattle"]}], towndef)
 	world = armed.get("state", world)
-	_assert_eq(MapRules.point_type(world, world_map, 9), "bmpmBattle", "precondition: STORY008 has turned 廢都 into a battle point")
-	world = MapRules.visit(world, world_map, 9)
+	_assert_eq(WorldMapRules.point_type(world, world_map, 9), "bmpmBattle", "precondition: STORY008 has turned 廢都 into a battle point")
+	world = WorldMapRules.visit(world, world_map, 9)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_009.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -824,8 +824,8 @@ func _run_level_9_story() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/battles/story_065.json", "the next scene is the 廢都 interior")
 	var next_world: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(next_world.get("current_point", 0)), 9, "the carried world still stands at 廢都 (point 9)")
-	_assert_eq(MapRules.point_type(next_world, world_map, 9), "bmpmTown", "actBMSetPointEvent 9,0,bmpmTown turns 廢都 back into a town in the hand-off world state")
-	_assert_eq(MapRules.point_event(next_world, world_map, 9), 0, "the point event is cleared to 0")
+	_assert_eq(WorldMapRules.point_type(next_world, world_map, 9), "bmpmTown", "actBMSetPointEvent 9,0,bmpmTown turns 廢都 back into a town in the hand-off world state")
+	_assert_eq(WorldMapRules.point_event(next_world, world_map, 9), 0, "the point event is cleared to 0")
 	scene.queue_free()
 	await process_frame
 	await process_frame
@@ -837,8 +837,8 @@ func _run_level_65_story() -> void:
 	## has the last word; level 66 has no map shape yet, so the scene ends on its
 	## card and returns to the big map at 廢都.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 8), world_map, 9)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 8), world_map, 9)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_065.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "story_009_mandoria_ruins", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -899,8 +899,8 @@ func _run_level_5_preview() -> void:
 	## the middle of the plain and wing warriors / 038 close in from every edge; the
 	## battle is not remade, so the preview ends on its card and returns to the map.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(_seeded_world(world_map, 4), world_map, 5)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(_seeded_world(world_map, 4), world_map, 5)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_005.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -970,9 +970,9 @@ func _run_level_5_preview() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "the card exits to the world map")
 	var won_world: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(won_world.get("current_point", 0)), 5, "the party stands at 呼嘯平原 (point 5)")
-	_assert_eq(MapRules.point_event(won_world, world_map, 5), 507, "actBMSetPointEvent 5,507,bmpmVisit is applied as the skipped victory")
+	_assert_eq(WorldMapRules.point_event(won_world, world_map, 5), 507, "actBMSetPointEvent 5,507,bmpmVisit is applied as the skipped victory")
 	_assert_eq(int(((won_world.get("encounter_ratios", {}) as Dictionary).get("5", -1))), 100, "actBMSetPointEncounterRatio 5,100 is applied")
-	_assert_true(MapRules.track_hidden(won_world, world_map, 6) and MapRules.track_hidden(won_world, world_map, 15), "actBMSetTrackFlag 6／15,bmpmHidden hide both tracks")
+	_assert_true(WorldMapRules.track_hidden(won_world, world_map, 6) and WorldMapRules.track_hidden(won_world, world_map, 15), "actBMSetTrackFlag 6／15,bmpmHidden hide both tracks")
 	_assert_eq(int(((won_world.get("towns", {}) as Dictionary).get("6", {}) as Dictionary).get("exec_event", 0)), 19, "actSetTownExecEvent town_席達鎮,19 arms the town's next event")
 	scene.queue_free()
 	await process_frame
@@ -985,8 +985,8 @@ func _run_level_6_preview() -> void:
 	## (actInsertObject + the non-wait actWalkPrevInsertObject), the captain denounces
 	## 雷歐納德; the battle is not remade, so the preview ends on its card.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 5), world_map, 6)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 5), world_map, 6)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_006.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -1055,8 +1055,8 @@ func _run_level_7_preview() -> void:
 	## speak, 036 / 037 / 038 pour in from every edge, 雷歐納德 closes; the battle is
 	## not remade, so the preview ends on its card and returns to the map.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 6), world_map, 7)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 6), world_map, 7)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_007.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -1125,8 +1125,8 @@ func _run_level_10_preview() -> void:
 	## 樹03 with five 火01 flames, the 034 / 035 creatures close in. The battle is not
 	## remade, so the preview ends on its card and returns to the map at point 10.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 9), world_map, 10)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 9), world_map, 10)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_010.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -1211,7 +1211,7 @@ func _run_level_10_preview() -> void:
 	_assert_true(CampaignProgress.has_pending(), "confirming the card hands off to the big map")
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "WINFAIL010's win (10,gameBigMapLevel) returns to the big map")
 	_assert_eq(int((CampaignProgress.pending.get("world", {}) as Dictionary).get("current_point", 0)), 10, "the party stands at 帕尼西雅城 廢墟 (point 10)")
-	_assert_eq(MapRules.point_event(CampaignProgress.pending.get("world", {}), world_map, 10), 513, "actBMSetPointEvent 10,513,bmpmVisit is applied as the skipped victory")
+	_assert_eq(WorldMapRules.point_event(CampaignProgress.pending.get("world", {}), world_map, 10), 513, "actBMSetPointEvent 10,513,bmpmVisit is applied as the skipped victory")
 	scene.queue_free()
 	await process_frame
 	await process_frame
@@ -1224,8 +1224,8 @@ func _run_level_12_preview() -> void:
 	## Enemy101 船殼 hull pieces are registered actors (PLAYERS 101, no_showshape: not drawn, ACTORS100); 咕嚕 / 克羅蒂 are
 	## conditional installs and stay out. The battle is not remade: card, back to point 12.
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
-	var world: Dictionary = MapRules.visit(MapRules.initial_state(world_map, 11), world_map, 12)
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world: Dictionary = WorldMapRules.visit(WorldMapRules.initial_state(world_map, 11), world_map, 12)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_012.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
 	var scene = RuntimeScene.instantiate()
@@ -1286,7 +1286,7 @@ func _run_level_12_preview() -> void:
 	_assert_true(CampaignProgress.has_pending(), "confirming the card hands off to the big map")
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "WINFAIL012's win (12,gameBigMapLevel) returns to the big map")
 	_assert_eq(int((CampaignProgress.pending.get("world", {}) as Dictionary).get("current_point", 0)), 12, "the party stands at 巴瀚納海峽 (point 12)")
-	_assert_true(not MapRules.point_hidden(CampaignProgress.pending.get("world", {}), world_map, 13), "the skipped victory reveals point 13 (actBMClearPointFlag 13,bmpmHidden)")
+	_assert_true(not WorldMapRules.point_hidden(CampaignProgress.pending.get("world", {}), world_map, 13), "the skipped victory reveals point 13 (actBMClearPointFlag 13,bmpmHidden)")
 	scene.queue_free()
 	await process_frame
 	await process_frame
@@ -1391,9 +1391,9 @@ func _run_level_1_preview() -> void:
 ## A world state as the product seeds it (every town's initial tree, new-game point
 ## flags) after visiting world_point — town writes need the towns table.
 func _seeded_world(world_map: Dictionary, world_point: int) -> Dictionary:
-	var seeded: Dictionary = WorldActions.ensure_state({}, CampaignProgress.load_campaign())
-	var state: Dictionary = seeded.get("state", MapRules.initial_state(world_map, 1))
-	return MapRules.visit(state, world_map, world_point)
+	var seeded: Dictionary = WorldScriptActions.ensure_state({}, CampaignProgress.load_campaign())
+	var state: Dictionary = seeded.get("state", WorldMapRules.initial_state(world_map, 1))
+	return WorldMapRules.visit(state, world_map, world_point)
 
 
 ## Skipped tokens the scene does not explain: a preview leaves out its conditional
@@ -1435,7 +1435,7 @@ func _unexplained_skips(scene, coordinator) -> Array:
 ## texture path), world_map}. Callers assert the hand-off and free the scene.
 func _play_story_scene(path: String, world_point: int, frame_budget: int = 6000, expect_handoff: bool = true, world_patch: Dictionary = {}) -> Dictionary:
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
 	var world: Dictionary = _seeded_world(world_map, world_point)
 	for key in world_patch:
 		world[key] = world_patch[key]
@@ -1507,7 +1507,7 @@ func _run_camp_and_hall_chains() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 3,gameBigMapLevel returns to the big map")
 	var world61: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(world61.get("current_point", 0)), 3, "the party stands at 盜賊洞窟 (point 3)")
-	_assert_true(not MapRules.track_hidden(world61, camp61["world_map"], 3), "actBMClearTrackFlag 3,bmpmHidden reveals track 3")
+	_assert_true(not WorldMapRules.track_hidden(world61, camp61["world_map"], 3), "actBMClearTrackFlag 3,bmpmHidden reveals track 3")
 	_assert_eq(int(((world61.get("towns", {}) as Dictionary).get("1", {}) as Dictionary).get("exec_event", 0)), 10, "actSetTownExecEvent town_歐姆村,10 arms the village's next event")
 	(camp61["scene"] as Node).queue_free()
 	await process_frame
@@ -1540,7 +1540,7 @@ func _run_camp_and_hall_chains() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 6,gameBigMapLevel returns to the big map")
 	var world63: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(world63.get("current_point", 0)), 6, "the party stands at 席達鎮 (point 6) after the hall scene")
-	_assert_true(not MapRules.track_hidden(world63, hall63["world_map"], 6), "actBMClearTrackFlag 6,bmpmHidden reveals track 6")
+	_assert_true(not WorldMapRules.track_hidden(world63, hall63["world_map"], 6), "actBMClearTrackFlag 6,bmpmHidden reveals track 6")
 	(hall63["scene"] as Node).queue_free()
 	await process_frame
 	await process_frame
@@ -1561,7 +1561,7 @@ func _run_camp_and_hall_chains() -> void:
 ## the data lanes without a hand-written case; per-scene semantics stay above.
 func _run_registered_story_sweep() -> void:
 	var campaign := CampaignProgress.load_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
 	var swept: Array[String] = []
 	var expected: Array = campaign.get("battles", {}).keys().filter(func(key): return str(campaign["battles"][key].get("kind", "")) == "story")
 	for key in campaign.get("battles", {}):
@@ -1640,7 +1640,7 @@ func _run_level_901_preview() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "the victory returns to the big map")
 	var won: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(won.get("current_point", 0)), 8, "the party stands at 菲納斯河畔 (point 8)")
-	_assert_eq(MapRules.point_event(won, world_map, 8), 516, "actBMSetPointEvent 8,516,bmpmVisit: point 8 now opens encounter 516")
+	_assert_eq(WorldMapRules.point_event(won, world_map, 8), 516, "actBMSetPointEvent 8,516,bmpmVisit: point 8 now opens encounter 516")
 	_assert_eq(int(((won.get("encounter_ratios", {}) as Dictionary).get("8", -1))), 20, "actBMSetPointEncounterRatio 8,20 is applied")
 	var town: Dictionary = (won.get("towns", {}) as Dictionary).get("6", {})
 	_assert_eq(int(town.get("exec_event", 0)), 25, "actSetTownExecEvent town_席達鎮,25 arms the tavern keeper's line")
@@ -1656,7 +1656,7 @@ func _run_level_901_preview() -> void:
 ## the actSelectInsertEvent prompt; returns {scene, coordinator, world_map, messages}.
 func _boot_900_to_choice() -> Dictionary:
 	CampaignProgress.reset_campaign()
-	var world_map: Dictionary = MapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
+	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
 	var world: Dictionary = _seeded_world(world_map, 9)
 	CampaignProgress.pending = {"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_900.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "loop": {"gold": 275}}, "from_scenario_id": "world_map_scene", "world": world}
 	CampaignProgress.last_entry = {}
@@ -1737,17 +1737,17 @@ func _run_level_57_ending_routes() -> void:
 	## 1, 2, 3), then the first id whose over-flag condition holds — 1 → 76 with no flag,
 	## 2 → 77 with FreeEnemy, 3 → 78 with EnemyJobUp — else 76. The card shows that
 	## finale beside the plain return and hands the carry there with [level, level].
-	var plain := EndingDispatch.route({}, 0)
+	var plain := EndingDispatchRules.route({}, 0)
 	_assert_eq(int(plain.get("level", 0)), 76, "no score and no flag: gameoverID1 leads and 76 妖精王 follows")
 	_assert_eq(plain.get("order", []), [1, 2, 3], "equal scores keep the id order")
-	_assert_eq(int(EndingDispatch.route({"1": 3, "2": 5}, 1).get("level", 0)), 77, "the top score gameoverID2 with FreeEnemy set → 77 席德爾")
-	_assert_eq(int(EndingDispatch.route({"1": 3, "2": 5}, 0).get("level", 0)), 76, "gameoverID2 without FreeEnemy is skipped; gameoverID1 with no flag → 76")
-	var tie := EndingDispatch.route({"1": 4, "3": 4}, 2)
+	_assert_eq(int(EndingDispatchRules.route({"1": 3, "2": 5}, 1).get("level", 0)), 77, "the top score gameoverID2 with FreeEnemy set → 77 席德爾")
+	_assert_eq(int(EndingDispatchRules.route({"1": 3, "2": 5}, 0).get("level", 0)), 76, "gameoverID2 without FreeEnemy is skipped; gameoverID1 with no flag → 76")
+	var tie := EndingDispatchRules.route({"1": 4, "3": 4}, 2)
 	_assert_eq(tie.get("order", []), [1, 3, 2], "a strict-less bubble sort keeps 1 before the tied 3")
 	_assert_eq(int(tie.get("level", 0)), 78, "gameoverID1 is refused by the set flag, gameoverID3 with EnemyJobUp → 78 接觸")
-	_assert_eq(int(EndingDispatch.route({"1": 9}, 3).get("level", 0)), 77, "both flags set: 1 is refused, 2 accepts FreeEnemy")
-	_assert_eq(int(EndingDispatch.route({"2": 1}, 2).get("level", 0)), 78, "FreeEnemy missing and 1 refused by EnemyJobUp: the third id decides")
-	_assert_eq(EndingDispatch.next_level_event(EndingDispatch.route({"1": 3, "2": 5}, 1)), [77, 77], "the handler writes (level 0 → result, result)")
+	_assert_eq(int(EndingDispatchRules.route({"1": 9}, 3).get("level", 0)), 77, "both flags set: 1 is refused, 2 accepts FreeEnemy")
+	_assert_eq(int(EndingDispatchRules.route({"2": 1}, 2).get("level", 0)), 78, "FreeEnemy missing and 1 refused by EnemyJobUp: the third id decides")
+	_assert_eq(EndingDispatchRules.next_level_event(EndingDispatchRules.route({"1": 3, "2": 5}, 1)), [77, 77], "the handler writes (level 0 → result, result)")
 	var played := await _play_story_scene("res://content/battles/story_057.json", 45, 8000, false, {"over_score": {"1": 3, "2": 5}, "over_flag": 1})
 	var coordinator = played["coordinator"]
 	var scene = played["scene"]
@@ -1855,7 +1855,7 @@ func _run_level_900_choice_branches() -> void:
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 9,gameBigMapLevel returns to the big map")
 	var world: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(world.get("current_point", 0)), 9, "the party stands at 曼多力亞 (point 9)")
-	_assert_eq([MapRules.point_event(world, world_map, 9), MapRules.point_type(world, world_map, 9)], [0, "bmpmTown"], "actBMSetPointEvent 9,0,bmpmTown restores 曼多力亞 as a town")
+	_assert_eq([WorldMapRules.point_event(world, world_map, 9), WorldMapRules.point_type(world, world_map, 9)], [0, "bmpmTown"], "actBMSetPointEvent 9,0,bmpmTown restores 曼多力亞 as a town")
 	scene.queue_free()
 	await process_frame
 	await process_frame
@@ -1881,7 +1881,7 @@ func _run_level_900_choice_branches() -> void:
 	await process_frame
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "the victory row returns to the big map")
 	var won: Dictionary = CampaignProgress.pending.get("world", {})
-	_assert_eq([MapRules.point_event(won, world_map, 9), MapRules.point_type(won, world_map, 9)], [0, "bmpmTown"], "the victory write restores 曼多力亞 as a town")
+	_assert_eq([WorldMapRules.point_event(won, world_map, 9), WorldMapRules.point_type(won, world_map, 9)], [0, "bmpmTown"], "the victory write restores 曼多力亞 as a town")
 	scene.queue_free()
 	await process_frame
 	await process_frame

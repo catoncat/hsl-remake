@@ -40,18 +40,18 @@ extends SceneTree
 ## `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_chapter_autoplay_tests.gd`.
 
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const Runtime = preload("res://game/battle/scene/BattleSceneRuntime.gd")
+const BattleSceneRuntime = preload("res://game/battle/scene/BattleSceneRuntime.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
-const Brain = preload("res://tests/support/AutoplayBrain.gd")
+const AutoplayBrain = preload("res://tests/support/AutoplayBrain.gd")
 const StoryExplorer = preload("res://tests/support/StoryExplorer.gd")
-const Shopping = preload("res://tests/support/AutoplayShopping.gd")
-const PartyEquipment = preload("res://game/sim/PartyEquipmentRules.gd")
-const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
+const AutoplayShopping = preload("res://tests/support/AutoplayShopping.gd")
+const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
+const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 const RegenDiff = preload("res://tests/support/RegenDiff.gd")
 
 const CHAPTER_PATH := "res://content/generated/hsl/development/autoplay/chapter.json"
@@ -66,7 +66,7 @@ const DEFAULT_TRIES := 3
 ## Loop seed of a battle's first attempt; attempt n uses BASE_SEED + n.
 const BASE_SEED := 1
 const START_CAMPAIGN := "campaign"
-const DEFAULT_BRAIN := Brain.MODE_LOOKAHEAD
+const DEFAULT_BRAIN := AutoplayBrain.MODE_LOOKAHEAD
 const START_OHM_VILLAGE := "ohm_village"
 ## The battle the explorer's fresh-party start follows (歐姆村, campaign key 1): its roster is
 ## the party the walk carries, so its scenario seeds the carry's member records.
@@ -146,7 +146,7 @@ func _play_formal_battle(explorer: StoryExplorer, scene: Node) -> String:
 		if not (scaled["scaled"] as Array).is_empty():
 			scene.apply_loop(scaled["loop"], "test")
 			scaled_units.append_array(scaled["scaled"])
-		var brain := Brain.create(brain_mode)
+		var brain := AutoplayBrain.create(brain_mode)
 		if budget_seconds > 0 and not brain.is_empty():
 			brain["deadline_msec"] = started_msec + budget_seconds * 1000
 		result = await Autoplay.play_battle(self, scene, Autoplay.DEFAULT_ROUND_LIMIT, seed, brain)
@@ -171,14 +171,14 @@ func _play_formal_battle(explorer: StoryExplorer, scene: Node) -> String:
 	print("CHAPTER_AUTOPLAY_TRY level=%d try=%d seed=%d damage_stream=%s %s" % [level, attempts.size(), seed, damage_stream, Autoplay.format_line(str(level), result)])
 	var won := str(result["outcome"]) == Autoplay.OUTCOME_WIN
 	if not won and attempts.size() < tries_limit:
-		OS.set_environment(Runtime.LOOP_SEED_ENV, str(BASE_SEED + attempts.size()))
+		OS.set_environment(BattleSceneRuntime.LOOP_SEED_ENV, str(BASE_SEED + attempts.size()))
 		# The retry's global stream (AI, opening levels) restarts from the retry seed.
-		GlobalRandom.reset_session()
+		GlobalRandomStream.reset_session()
 		# ...and its carried damage stream is replaced before the re-boot (_reseed_retry_damage).
 		damage_reseed_armed[path] = attempts.size()
 		return StoryExplorer.OUTCOME_RETRY
-	OS.set_environment(Runtime.LOOP_SEED_ENV, str(BASE_SEED))
-	GlobalRandom.reset_session()
+	OS.set_environment(BattleSceneRuntime.LOOP_SEED_ENV, str(BASE_SEED))
+	GlobalRandomStream.reset_session()
 	attempts_by_scenario.erase(path)
 	var row := {"level": level, "scenario": path.get_file(), "outcome": str(result["outcome"]), "battle_outcome": result["battle_outcome"], "tries": attempts.size(), "party": party, "attempts": attempts}
 	battles.append(row)
@@ -215,12 +215,12 @@ func _reseed_retry_damage(_explorer: StoryExplorer, path: String) -> bool:
 	var retry := int(damage_reseed_armed.get(path, 0))
 	damage_reseed_armed.erase(path)
 	if retry == 0:
-		first_damage_words[path] = DamageRandom.from_words(carry.get(DamageRandom.LOOP_KEY) if carry is Dictionary else null)
+		first_damage_words[path] = DamageRandomStream.from_words(carry.get(DamageRandomStream.LOOP_KEY) if carry is Dictionary else null)
 		return false
 	var words: Array = first_damage_words.get(path, [])
 	if words.is_empty():
 		return false
-	carry[DamageRandom.LOOP_KEY] = DamageRandom.seeded(int(words[0]) ^ retry)
+	carry[DamageRandomStream.LOOP_KEY] = DamageRandomStream.seeded(int(words[0]) ^ retry)
 	damage_reseed_applied[path] = retry
 	return false
 
@@ -248,21 +248,21 @@ func _settle_blocked_loot(scene: Node, level: int) -> Dictionary:
 	var pending: Array = loop.get("settlement", {}).get("pending", [])
 	if pending.is_empty() or scene.campaign_progress.deferred_rewards_ready():
 		return {}
-	var reopened := Autoplay.Loop.reopen_rewards(loop)
-	if Autoplay.Loop.same_state(reopened, loop):
+	var reopened := Autoplay.BattlePlayLoop.reopen_rewards(loop)
+	if Autoplay.BattlePlayLoop.same_state(reopened, loop):
 		return {}
 	loop = reopened
 	var taken: Array = []
 	for item in (loop["settlement"]["pending"] as Array).duplicate(true):
-		for recipient in Autoplay.Loop.loot_recipients(loop):
-			var claimed := Autoplay.Loop.claim_reward(loop, int(loop["settlement"]["sequence"]), int(loop["settlement"]["revision"]), str(item["id"]), str(recipient))
-			if not Autoplay.Loop.same_state(claimed, loop):
+		for recipient in Autoplay.BattlePlayLoop.loot_recipients(loop):
+			var claimed := Autoplay.BattlePlayLoop.claim_reward(loop, int(loop["settlement"]["sequence"]), int(loop["settlement"]["revision"]), str(item["id"]), str(recipient))
+			if not Autoplay.BattlePlayLoop.same_state(claimed, loop):
 				loop = claimed
 				taken.append({"code": int(item["code"]), "recipient": str(recipient)})
 				break
 	var abandoned: Array = (loop["settlement"]["pending"] as Array).map(func(item): return int(item["code"]))
-	var finished := Autoplay.Loop.finish_rewards(loop, int(loop["settlement"]["sequence"]), int(loop["settlement"]["revision"]), true, false)
-	var closed := not Autoplay.Loop.same_state(finished, loop)
+	var finished := Autoplay.BattlePlayLoop.finish_rewards(loop, int(loop["settlement"]["sequence"]), int(loop["settlement"]["revision"]), true, false)
+	var closed := not Autoplay.BattlePlayLoop.same_state(finished, loop)
 	if closed:
 		loop = finished
 	scene.apply_loop(loop, "test")
@@ -281,13 +281,13 @@ func _seed_fresh_party_records() -> void:
 	var carry: Dictionary = pending["carry"]
 	var template := str((campaign["battles"].get(FRESH_PARTY_TEMPLATE_LEVEL, {}) as Dictionary).get("scenario", ""))
 	var scenario := BattleScenario.load_file(template)
-	var box := PartyEquipment.sandbox(Autoplay.Loop.create([], "", scenario), carry)
+	var box := PartyEquipmentRules.sandbox(Autoplay.BattlePlayLoop.create([], "", scenario), carry)
 	_assert_true(bool(box["ok"]), "the fresh-party template scenario %s boots a sandbox loop: %s" % [template.get_file(), str(box["error"])])
 	if not bool(box["ok"]):
 		return
 	var records := {}
-	for unit_id in CarryRules.capture(box["loop"])["units"]:
-		var unit := Autoplay.Loop.unit(box["loop"], str(unit_id))
+	for unit_id in CampaignCarryRules.capture(box["loop"])["units"]:
+		var unit := Autoplay.BattlePlayLoop.unit(box["loop"], str(unit_id))
 		records[str(unit_id)] = {"actor_id": str(unit.get("actor_id", "")), "attributes": {}, "inventory": unit.get("inventory", []).duplicate()}
 	carry["units"] = records
 	# The id the equipment sandbox looks up (PartyEquipmentRules.template_scenario_path).
@@ -297,7 +297,7 @@ func _seed_fresh_party_records() -> void:
 
 ## Shops in the town's open shop (StoryExplorer.shopper) and records the receipt.
 func _shop(town: Node, town_id: int) -> void:
-	var receipt := Shopping.shop(town, campaign)
+	var receipt := AutoplayShopping.shop(town, campaign)
 	var row := {"town": town_id, "ok": bool(receipt["ok"]), "reason": str(receipt["reason"]), "gold_mode": str(receipt["gold_mode"]), "gold_before": int(receipt["gold_before"]), "gold_after": int(receipt["gold_after"]), "purchases": receipt["purchases"], "skipped": receipt["skipped"]}
 	towns.append(row)
 	print("CHAPTER_AUTOPLAY_SHOP town=%d ok=%s reason=%s gold=%d->%d purchases=%s skipped=%s" % [town_id, str(row["ok"]), str(row["reason"]), int(row["gold_before"]), int(row["gold_after"]), JSON.stringify(row["purchases"]), JSON.stringify(row["skipped"])])
@@ -323,13 +323,13 @@ func _run() -> void:
 	CampaignProgress.resume_prompt_in_headless = false
 	if OS.get_environment("HSL_CHAPTER_TRIES").is_valid_int():
 		tries_limit = maxi(1, int(OS.get_environment("HSL_CHAPTER_TRIES")))
-	OS.set_environment(Runtime.LOOP_SEED_ENV, str(BASE_SEED))
-	GlobalRandom.reset_session()
+	OS.set_environment(BattleSceneRuntime.LOOP_SEED_ENV, str(BASE_SEED))
+	GlobalRandomStream.reset_session()
 	# The encounter dice and town events draw from the global RNG: seed it so the walk repeats.
 	seed(BASE_SEED)
 	if OS.get_environment("HSL_CHAPTER_START") == START_OHM_VILLAGE:
 		start = START_OHM_VILLAGE
-	if OS.get_environment("HSL_AUTOPLAY_BRAIN") in Brain.MODES:
+	if OS.get_environment("HSL_AUTOPLAY_BRAIN") in AutoplayBrain.MODES:
 		brain_mode = OS.get_environment("HSL_AUTOPLAY_BRAIN")
 	if OS.get_environment("HSL_CHAPTER_BUDGET_SECONDS").is_valid_int():
 		budget_seconds = maxi(0, int(OS.get_environment("HSL_CHAPTER_BUDGET_SECONDS")))
@@ -355,12 +355,12 @@ func _run() -> void:
 	print("CHAPTER_AUTOPLAY_WALK steps=%d scenes=%d towns=%d retries=%d last=%s" % [explorer.steps, explorer.scenes_played.size(), explorer.towns_explored.size(), explorer.retries, outcome])
 	print("CHAPTER_AUTOPLAY scenes: " + ", ".join(explorer.scenes_played))
 	_assert_true(explorer.game_clear_reached or not stuck_at.is_empty() or not budget_exhausted.is_empty(), "the walk ends at GameClear, at a lost battle or at the time budget, not by exhaustion (%s): %s" % [outcome, " | ".join(explorer.log_lines.slice(maxi(0, explorer.log_lines.size() - 30)))])
-	var payload := {"schema": SCHEMA, "brain": brain_mode, "policy": Brain.POLICIES[brain_mode], "tries_limit": tries_limit, "base_seed": BASE_SEED, "round_limit": Autoplay.DEFAULT_ROUND_LIMIT,
+	var payload := {"schema": SCHEMA, "brain": brain_mode, "policy": AutoplayBrain.POLICIES[brain_mode], "tries_limit": tries_limit, "base_seed": BASE_SEED, "round_limit": Autoplay.DEFAULT_ROUND_LIMIT,
 		"start": start, "start_note": "campaign: the campaign's start_level with no carry; ohm_village: the big map after 歐姆村 with a fresh party (the explorer's start); every later scene through the runtime's hand-offs (tests/support/StoryExplorer.gd)",
 		"evidence_tier": "current-godot",
 		"note": "The first chapter walked by the story explorer with every formal battle fought by the autoplay commander named in `brain` (tests/support/Autoplay.gd, tests/support/AutoplayBrain.gd) and the party's growth carried through the product hand-offs; a lost battle is replayed with the next loop seed up to tries_limit, and retry k of a hand-off that carries the damage stream boots with a fresh one (the attempt's damage_reseed k: seeded(first carried word ^ k)); a hand-off without one takes the stream from the loop seed. A run cut off by HSL_CHAPTER_BUDGET_SECONDS records the battle it did not start in budget_exhausted. The global RNG (encounter dice, town events) is seeded from base_seed, so one tree rewrites this file byte-identically. Not evidence about original balance.",
 		"game_clear": explorer.game_clear_reached, "walk_outcome": outcome, "stuck_at": stuck_at, "budget_seconds": budget_seconds, "budget_exhausted": budget_exhausted,
-		"knobs": {"gold": Shopping.gold_mode(), "stat_scale": Autoplay.stat_scale_from_environment()},
+		"knobs": {"gold": AutoplayShopping.gold_mode(), "stat_scale": Autoplay.stat_scale_from_environment()},
 		"battles_fought": battles.size(), "battles_won": wins, "retries": retries, "scenes": explorer.scenes_played, "towns": towns, "battles": battles}
 	var known := _known_dead_end_levels()
 	var unknown_dead_ends := dead_ends.filter(func(row): return not known.has(str(row["level"])))

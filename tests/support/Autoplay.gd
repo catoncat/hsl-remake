@@ -14,12 +14,12 @@ extends RefCounted
 ## replaces only the player-turn policy; with no brain the greedy policy below runs unchanged.
 
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
-const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const ForceWin = preload("res://tests/support/BattleForceWin.gd")
-const Brain = preload("res://tests/support/AutoplayBrain.gd")
-const Runtime = preload("res://game/battle/scene/BattleSceneRuntime.gd")
-const Progression = preload("res://game/sim/ProgressionRules.gd")
+const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
+const AutoplayBrain = preload("res://tests/support/AutoplayBrain.gd")
+const BattleSceneRuntime = preload("res://game/battle/scene/BattleSceneRuntime.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 ## Harness diagnostic (never product, never results.json): HSL_AUTOPLAY_STAT_SCALE=1.5
@@ -76,10 +76,10 @@ const REASON_EXCEPTION := "exception"
 ## it); returns the seed in force. Call before booting the scene, so a direct run of a suite
 ## seeds the damage, reward and global streams as a gate run does.
 static func ensure_loop_seed() -> int:
-	if not OS.get_environment(Runtime.LOOP_SEED_ENV).is_valid_int():
-		OS.set_environment(Runtime.LOOP_SEED_ENV, str(DEFAULT_LOOP_SEED))
+	if not OS.get_environment(BattleSceneRuntime.LOOP_SEED_ENV).is_valid_int():
+		OS.set_environment(BattleSceneRuntime.LOOP_SEED_ENV, str(DEFAULT_LOOP_SEED))
 		print("AUTOPLAY_RNG_SEED seed=%d source=harness_default" % DEFAULT_LOOP_SEED)
-	return int(OS.get_environment(Runtime.LOOP_SEED_ENV))
+	return int(OS.get_environment(BattleSceneRuntime.LOOP_SEED_ENV))
 
 
 static func stat_scale_from_environment() -> float:
@@ -95,19 +95,19 @@ static func stat_scale_from_environment() -> float:
 static func apply_stat_scale(loop: Dictionary, scale: float, already_scaled: Array = []) -> Dictionary:
 	if is_equal_approx(scale, 1.0) or not bool(loop.get("scenario_ok", false)):
 		return {"loop": loop, "scaled": []}
-	var next := Loop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
 	var scaled: Array = []
 	var units: Array = next["units"]
 	for index in range(units.size()):
 		var unit: Dictionary = units[index]
 		var id := str(unit.get("id", ""))
-		if str(unit.get("battle_actor_role", "")) != Loop.ROLE_PLAYER or already_scaled.has(id) or not unit.has("growth_profile"):
+		if str(unit.get("battle_actor_role", "")) != BattlePlayLoop.ROLE_PLAYER or already_scaled.has(id) or not unit.has("growth_profile"):
 			continue
 		var profile: Dictionary = unit["combat_profile"]
 		for key in SCALED_ATTRIBUTES:
 			if profile.has(key):
 				profile[key] = int(round(float(profile[key]) * scale))
-		var refreshed := Progression.refresh_growth_stats(unit, next["equipment_items"])
+		var refreshed := ProgressionRules.refresh_growth_stats(unit, next["equipment_items"])
 		refreshed["hp"] = int(refreshed["max_hp"])
 		units[index] = refreshed
 		scaled.append(id)
@@ -124,7 +124,7 @@ static func reach_first_control(tree: SceneTree, scene: Node, label: String, ass
 	var coordinator = scene.opening_coordinator
 	if coordinator != null:
 		coordinator.walk_pixels_per_second = 6400.0
-	var select_option := ForceWin.opening_select_option(scene)
+	var select_option := BattleForceWin.opening_select_option(scene)
 	for _frame in range(FRAME_LIMIT):
 		if CampaignProgress.has_pending():
 			return
@@ -134,8 +134,8 @@ static func reach_first_control(tree: SceneTree, scene: Node, label: String, ass
 			scene.party_equipment_screen.close()
 		elif not (coordinator.summary().get("select_options", []) as Array).is_empty():
 			coordinator.choose_select_option(select_option)
-		elif str(coordinator.summary().get("current_event_kind", "")) in ForceWin.CLICK_THROUGH_KINDS:
-			coordinator.handle_input(ForceWin.click())
+		elif str(coordinator.summary().get("current_event_kind", "")) in BattleForceWin.CLICK_THROUGH_KINDS:
+			coordinator.handle_input(BattleForceWin.click())
 		await tree.process_frame
 	assert_cb.call(coordinator == null or not coordinator.active, "%s: the opening reaches first control" % label)
 	for _frame in range(FRAME_LIMIT):
@@ -157,7 +157,7 @@ static func play_battle(tree: SceneTree, scene: Node, round_limit: int = DEFAULT
 	rng.seed = seed
 	var actions := {"attack": 0, "move_then_attack": 0, "move": 0, "wait": 0, "offense_finished": 0, "ai_steps": 0, "loot_deferred": 0, "scene_phases": 0}
 	if not brain.is_empty():
-		for action in Brain.ACTIONS:
+		for action in AutoplayBrain.ACTIONS:
 			if not actions.has(action):
 				actions[action] = 0
 	var result := {"outcome": OUTCOME_DEAD_END, "battle_outcome": {}, "rounds": 0, "seconds": 0.0, "reason": "", "unit": "", "round": 0, "detail": "", "actions": actions, "result_page": false}
@@ -201,24 +201,24 @@ static func play_battle(tree: SceneTree, scene: Node, round_limit: int = DEFAULT
 			break
 		steps_this_round += 1
 		if steps_this_round > STEP_LIMIT_PER_ROUND:
-			_dead_end(result, loop, REASON_STALLED, "interaction=%s current=%s" % [str(loop.get("interaction", "")), str(Loop.summary(loop).get("current_actor_id", ""))])
+			_dead_end(result, loop, REASON_STALLED, "interaction=%s current=%s" % [str(loop.get("interaction", "")), str(BattlePlayLoop.summary(loop).get("current_actor_id", ""))])
 			break
 		if _unconsumed_firing(scene, loop) or _event_handoff_fired(loop):
 			actions["scene_phases"] += 1
 			loop = await _play_scene_phase(tree, scene, loop, false)
 			continue
-		if Loop.loot_waiting(loop):
+		if BattlePlayLoop.loot_waiting(loop):
 			# The commander first takes the healing / curing items a player would bag (AutoplayBrain.claim_supplies).
 			if not brain.is_empty():
-				var supplied := Brain.claim_supplies(loop)
-				if not Loop.same_state(supplied, loop):
+				var supplied := AutoplayBrain.claim_supplies(loop)
+				if not BattlePlayLoop.same_state(supplied, loop):
 					actions["loot_deferred"] += 1
 					loop = supplied
 					continue
 			# The collection panel's "later": keep the pending items, close the settlement.
 			var settlement: Dictionary = loop["settlement"]
-			var deferred := Loop.finish_rewards(loop, int(settlement["sequence"]), int(settlement["revision"]), false, true)
-			if Loop.same_state(deferred, loop):
+			var deferred := BattlePlayLoop.finish_rewards(loop, int(settlement["sequence"]), int(settlement["revision"]), false, true)
+			if BattlePlayLoop.same_state(deferred, loop):
 				_dead_end(result, loop, REASON_STALLED, "loot settlement cannot be deferred")
 				break
 			actions["loot_deferred"] += 1
@@ -226,7 +226,7 @@ static func play_battle(tree: SceneTree, scene: Node, round_limit: int = DEFAULT
 			continue
 		match str(loop.get("interaction", "")):
 			"action_menu":
-				var step := Brain.take_player_action(brain, loop, rng) if not brain.is_empty() else _take_player_action(loop, rng)
+				var step := AutoplayBrain.take_player_action(brain, loop, rng) if not brain.is_empty() else _take_player_action(loop, rng)
 				if str(step["action"]) == "":
 					_dead_end(result, loop, REASON_NO_LEGAL_ACTION, "commands=%s" % str((loop.get("command_menu", {}) as Dictionary).get("commands", [])))
 					break
@@ -236,17 +236,17 @@ static func play_battle(tree: SceneTree, scene: Node, round_limit: int = DEFAULT
 				loop = step["loop"]
 			"ai_resolving":
 				# The product path: the AI draws from the loop's global stream (global_rng).
-				var stepped := Loop.step_ai_turn(loop)
+				var stepped := BattlePlayLoop.step_ai_turn(loop)
 				# Developer trace of every AI step (actor, kind, target, hero HP, last exchange).
 				if OS.get_environment("HSL_AUTOPLAY_DEBUG_AI") != "":
 					var act: Dictionary = stepped.get("last_ai_action", {})
-					var hero_dbg := Loop.unit(stepped, str(stepped.get("player_unit_id", "")))
+					var hero_dbg := BattlePlayLoop.unit(stepped, str(stepped.get("player_unit_id", "")))
 					var lc: Dictionary = stepped.get("last_combat", {})
 					print("AI_DBG turn=%d actor=%s kind=%s from=%s to=%s target=%s hero_hp=%d combat=%s->%s dmg=%s counter=%s" % [int(stepped.get("turn", 0)), str(act.get("actor_id", "")), str(act.get("kind", "")), str(act.get("from", "")), str(act.get("to", "")), str(act.get("target_id", act.get("defender_id", ""))), int(hero_dbg.get("hp", -1)), str(lc.get("attacker_id", "")), str(lc.get("defender_id", "")), str(lc.get("damage", lc.get("actual_damage", ""))), str((lc.get("counter", {}) as Dictionary).get("damage", ""))])
 				if OS.get_environment("HSL_AUTOPLAY_DEBUG_AI") != "":
 					print("STEP_DBG turn=%d actor=%s action=ai %s" % [int(loop.get("turn", 0)), str((stepped.get("last_ai_action", {}) as Dictionary).get("actor_id", "")), _step_diff(loop, stepped)])
-				if Loop.same_state(stepped, loop):
-					_dead_end(result, loop, REASON_STALLED, "step_ai_turn made no progress for %s" % str(Loop.summary(loop).get("current_actor_id", "")))
+				if BattlePlayLoop.same_state(stepped, loop):
+					_dead_end(result, loop, REASON_STALLED, "step_ai_turn made no progress for %s" % str(BattlePlayLoop.summary(loop).get("current_actor_id", "")))
 					break
 				actions["ai_steps"] += 1
 				loop = stepped
@@ -263,7 +263,7 @@ static func play_battle(tree: SceneTree, scene: Node, round_limit: int = DEFAULT
 	if not BattleOutcome.decided(loop) and CampaignProgress.has_pending():
 		result["battle_outcome"] = EVENT_HANDOFF_OUTCOME.duplicate()
 	result["rounds"] = int(loop.get("turn", 1))
-	result["fallen"] = loop.get("units", []).filter(func(unit): return str(unit.get("battle_actor_role", "")) == Loop.ROLE_PLAYER and not Loop.Presence.living(unit)).size()
+	result["fallen"] = loop.get("units", []).filter(func(unit): return str(unit.get("battle_actor_role", "")) == BattlePlayLoop.ROLE_PLAYER and not BattlePlayLoop.Presence.living(unit)).size()
 	# A decided battle still owes the player its closing presentation or campaign hand-off.
 	if str(result["outcome"]) != OUTCOME_DEAD_END:
 		loop = await _play_scene_phase(tree, scene, loop, true)
@@ -273,7 +273,7 @@ static func play_battle(tree: SceneTree, scene: Node, round_limit: int = DEFAULT
 		scene.set_process(true)
 	result["seconds"] = float(Time.get_ticks_msec() - started) / 1000.0
 	if not brain.is_empty():
-		result["brain"] = Brain.stats(brain)
+		result["brain"] = AutoplayBrain.stats(brain)
 	return result
 
 
@@ -282,7 +282,7 @@ static func play_battle(tree: SceneTree, scene: Node, round_limit: int = DEFAULT
 static func _step_diff(before: Dictionary, after: Dictionary) -> String:
 	var parts: Array = []
 	for unit in after.get("units", []):
-		var old := Loop.unit(before, str(unit["id"]))
+		var old := BattlePlayLoop.unit(before, str(unit["id"]))
 		var moved: bool = not old.is_empty() and old.get("coord") != unit.get("coord")
 		var hurt: bool = old.is_empty() or int(old.get("hp", 0)) != int(unit.get("hp", 0))
 		if not moved and not hurt:
@@ -327,7 +327,7 @@ static func _verdict(loop: Dictionary) -> String:
 static func _dead_end(result: Dictionary, loop: Dictionary, reason: String, detail: String) -> void:
 	result["outcome"] = OUTCOME_DEAD_END
 	result["reason"] = reason
-	result["unit"] = str(Loop.summary(loop).get("current_actor_id", ""))
+	result["unit"] = str(BattlePlayLoop.summary(loop).get("current_actor_id", ""))
 	result["round"] = int(loop.get("turn", 1))
 	result["detail"] = detail
 
@@ -336,13 +336,13 @@ static func _dead_end(result: Dictionary, loop: Dictionary, reason: String, deta
 static func _roster_detail(loop: Dictionary) -> String:
 	var rows: Array = []
 	for unit in loop.get("units", []):
-		if not Loop.Presence.living(unit):
+		if not BattlePlayLoop.Presence.living(unit):
 			continue
 		var coord: Vector2i = unit.get("coord", Vector2i.ZERO)
 		rows.append("%s %s@(%d,%d) hp=%d/%d mp=%d" % [str(unit.get("battle_actor_role", "")).trim_suffix("_ai").trim_suffix("_controlled"), str(unit["id"]), coord.x, coord.y, int(unit.get("hp", 0)), int(unit.get("max_hp", 0)), int(unit.get("move_point", 0))])
 	var fallen: Array = []
 	for unit in loop.get("units", []):
-		if Loop.Presence.living(unit) or str(unit.get("battle_actor_role", "")) != Loop.ROLE_PLAYER:
+		if BattlePlayLoop.Presence.living(unit) or str(unit.get("battle_actor_role", "")) != BattlePlayLoop.ROLE_PLAYER:
 			continue
 		fallen.append("%s hp=%d defeated=%s departed=%s" % [str(unit["id"]), int(unit.get("hp", 0)), str(unit.get("defeated", false)), str(unit.get("departed", false))])
 	var unresolved: Array = (loop.get("winfail_runtime", {}) as Dictionary).get("unresolved_tokens", []).map(func(record): return str((record as Dictionary).get("token", "")))
@@ -377,7 +377,7 @@ static func _play_scene_phase(tree: SceneTree, scene: Node, loop: Dictionary, to
 	scene.apply_loop(loop, "test")
 	scene.set_process(true)
 	var presentation = _presentation(scene)
-	var select_option := ForceWin.opening_select_option(scene)
+	var select_option := BattleForceWin.opening_select_option(scene)
 	var idle_frames := 0
 	for _frame in range(FRAME_LIMIT):
 		var coordinator = scene.opening_coordinator
@@ -387,13 +387,13 @@ static func _play_scene_phase(tree: SceneTree, scene: Node, loop: Dictionary, to
 			idle_frames = 0
 			if not (coordinator.summary().get("select_options", []) as Array).is_empty():
 				coordinator.choose_select_option(select_option)
-			elif str(coordinator.summary().get("current_event_kind", "")) in ForceWin.CLICK_THROUGH_KINDS:
-				coordinator.handle_input(ForceWin.click())
+			elif str(coordinator.summary().get("current_event_kind", "")) in BattleForceWin.CLICK_THROUGH_KINDS:
+				coordinator.handle_input(BattleForceWin.click())
 		elif presentation.dialogue_active():
 			presentation.advance_dialogue()
-		elif Loop.loot_waiting(scene.play_loop):
+		elif BattlePlayLoop.loot_waiting(scene.play_loop):
 			var settlement: Dictionary = scene.play_loop["settlement"]
-			scene.apply_loop(Loop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
+			scene.apply_loop(BattlePlayLoop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
 		elif CampaignProgress.has_pending() or presentation.battle_finished:
 			break
 		elif scene.growth_panel.visible:
@@ -415,46 +415,46 @@ static func _play_scene_phase(tree: SceneTree, scene: Node, loop: Dictionary, to
 ## action "" means no command made progress (the caller records no_legal_action).
 static func _take_player_action(loop: Dictionary, rng: RandomNumberGenerator) -> Dictionary:
 	var id := str(loop.get("selected_unit_id", ""))
-	if Loop.action_exhausted(loop):
+	if BattlePlayLoop.action_exhausted(loop):
 		# An offense whose completion waited on loot collection ends the action now.
-		return {"loop": Loop.finish_exhausted_action(loop), "action": "offense_finished"}
+		return {"loop": BattlePlayLoop.finish_exhausted_action(loop), "action": "offense_finished"}
 	var next := loop
 	var moved := false
-	if Loop.command_available(next, "attack"):
+	if BattlePlayLoop.command_available(next, "attack"):
 		var struck := _try_attack(next, id, rng)
 		if not struck.is_empty():
 			return {"loop": struck, "action": "attack"}
-	if Loop.command_available(next, "move"):
+	if BattlePlayLoop.command_available(next, "move"):
 		var destination: Variant = _destination(next, id)
 		if destination is Vector2i:
-			var moving := Loop.move_unit_to(Loop.choose_command(next, "move"), destination)
+			var moving := BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(next, "move"), destination)
 			if bool(moving.get("moved_this_action", false)):
 				next = moving
 				moved = true
-				if Loop.command_available(next, "attack"):
+				if BattlePlayLoop.command_available(next, "attack"):
 					var struck := _try_attack(next, id, rng)
 					if not struck.is_empty():
 						return {"loop": struck, "action": "move_then_attack"}
 			else:
-				next = Loop.cancel_interaction(moving)
-	var waited := Loop.choose_command(next, "wait")
-	if Loop.same_state(waited, next):
+				next = BattlePlayLoop.cancel_interaction(moving)
+	var waited := BattlePlayLoop.choose_command(next, "wait")
+	if BattlePlayLoop.same_state(waited, next):
 		return {"loop": next, "action": ""}
 	return {"loop": waited, "action": "move" if moved else "wait"}
 
 
 ## Strikes the weakest foe the selected unit can hit from where it stands; {} when none.
 static func _try_attack(loop: Dictionary, id: String, _rng: RandomNumberGenerator) -> Dictionary:
-	var actor := Loop.unit(loop, id)
-	var cells: Array = Loop.attack_cells(loop, id)
+	var actor := BattlePlayLoop.unit(loop, id)
+	var cells: Array = BattlePlayLoop.attack_cells(loop, id)
 	var target := ""
 	var best_hp := 0
 	var best_distance := 0
 	for foe in _living_foes(loop, actor):
-		if Loop.Footprint.contact(foe, cells) == null:
+		if BattlePlayLoop.Footprint.contact(foe, cells) == null:
 			continue
 		var hp := int(foe.get("hp", 0))
-		var distance := Loop.Footprint.distance(actor, foe)
+		var distance := BattlePlayLoop.Footprint.distance(actor, foe)
 		if target == "" or hp < best_hp or (hp == best_hp and distance < best_distance):
 			target = str(foe["id"])
 			best_hp = hp
@@ -462,16 +462,16 @@ static func _try_attack(loop: Dictionary, id: String, _rng: RandomNumberGenerato
 	if target == "":
 		return {}
 	# Settlement draws from the loop's damage stream (DamageRandomStream), as the product does.
-	var struck := Loop.attack_target(Loop.choose_command(loop, "attack"), target)
+	var struck := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop, "attack"), target)
 	if BattleOutcome.decided(struck):
 		return struck
 	if not bool(struck.get("attacked_this_action", false)):
 		return {}
-	if Loop.loot_waiting(struck):
+	if BattlePlayLoop.loot_waiting(struck):
 		# Drops or steals open the collection first; the caller defers them, then the
 		# next player pass ends the exhausted action.
 		return struck
-	return Loop.finish_exhausted_action(struck)
+	return BattlePlayLoop.finish_exhausted_action(struck)
 
 
 ## Movement destination: a reachable cell from which the weapon touches a foe (cheapest
@@ -480,9 +480,9 @@ static func _try_attack(loop: Dictionary, id: String, _rng: RandomNumberGenerato
 ## when the weapon's real reach from it (_weapon_cells_from — the cells _try_attack strikes
 ## through after the move) touches that foe, so a wall between never draws the unit there.
 static func _destination(loop: Dictionary, id: String) -> Variant:
-	var actor := Loop.unit(loop, id)
+	var actor := BattlePlayLoop.unit(loop, id)
 	var origin: Vector2i = actor["coord"]
-	var cells: Array = Loop.movement_cells(loop, id)
+	var cells: Array = BattlePlayLoop.movement_cells(loop, id)
 	if cells.is_empty():
 		return null
 	var foes := _living_foes(loop, actor)
@@ -491,23 +491,23 @@ static func _destination(loop: Dictionary, id: String) -> Variant:
 	var reachable := {}
 	for cell in cells:
 		reachable[cell] = true
-	var pattern := Loop.weapon_pattern(loop, actor)
+	var pattern := BattlePlayLoop.weapon_pattern(loop, actor)
 	if not bool(actor.get("no_attack", false)) and bool(pattern.get("ok", false)):
 		var strike_cell: Variant = null
 		var best_cost := 0
 		var best_hp := 0
 		var reach := {}
 		for foe in foes:
-			for point in Loop.Footprint.cells(foe):
+			for point in BattlePlayLoop.Footprint.cells(foe):
 				for offset in pattern["offsets"]:
 					var cell: Vector2i = point - Vector2i(int(offset[0]), int(offset[1]))
 					if cell == origin or not reachable.has(cell):
 						continue
 					if not reach.has(cell):
 						reach[cell] = _weapon_cells_from(loop, actor, pattern, cell)
-					if Loop.Footprint.contact(foe, reach[cell]) == null:
+					if BattlePlayLoop.Footprint.contact(foe, reach[cell]) == null:
 						continue
-					var cost := Loop.movement_path(loop, id, cell).size()
+					var cost := BattlePlayLoop.movement_path(loop, id, cell).size()
 					var hp := int(foe.get("hp", 0))
 					if strike_cell == null or cost < best_cost or (cost == best_cost and hp < best_hp):
 						strike_cell = cell
@@ -533,25 +533,25 @@ static func _weapon_cells_from(loop: Dictionary, actor: Dictionary, pattern: Dic
 	moved["coord"] = cell
 	var probe := loop.duplicate()
 	probe["units"] = loop["units"].map(func(unit): return moved if unit.get("id") == actor["id"] else unit)
-	return Loop.weapon_cells(probe, moved, pattern)
+	return BattlePlayLoop.weapon_cells(probe, moved, pattern)
 
 
 static func _nearest_foe_distance(actor: Dictionary, origin: Vector2i, foes: Array) -> int:
 	var best := -1
 	for foe in foes:
-		var distance := Loop.Footprint.distance(actor, foe, origin)
+		var distance := BattlePlayLoop.Footprint.distance(actor, foe, origin)
 		if best < 0 or distance < best:
 			best = distance
 	return best
 
 
 static func _living_foes(loop: Dictionary, actor: Dictionary) -> Array:
-	var player_side := str(actor.get("battle_actor_role", "")) in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]
+	var player_side := str(actor.get("battle_actor_role", "")) in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]
 	var out: Array = []
 	for unit in loop.get("units", []):
-		if not Loop.Presence.living(unit) or str(unit.get("id", "")) == str(actor.get("id", "")):
+		if not BattlePlayLoop.Presence.living(unit) or str(unit.get("id", "")) == str(actor.get("id", "")):
 			continue
-		var unit_player_side := str(unit.get("battle_actor_role", "")) in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY]
+		var unit_player_side := str(unit.get("battle_actor_role", "")) in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY]
 		if unit_player_side != player_side:
 			out.append(unit)
 	return out
@@ -559,11 +559,11 @@ static func _living_foes(loop: Dictionary, actor: Dictionary) -> Array:
 
 ## Living player-side units (controlled or friendly AI): while one stands, the field can still change.
 static func _living_players(loop: Dictionary) -> Array:
-	return loop.get("units", []).filter(func(unit): return Loop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) in [Loop.ROLE_PLAYER, Loop.ROLE_FRIENDLY])
+	return loop.get("units", []).filter(func(unit): return BattlePlayLoop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) in [BattlePlayLoop.ROLE_PLAYER, BattlePlayLoop.ROLE_FRIENDLY])
 
 
 static func _living_foes_of_players(loop: Dictionary) -> Array:
-	return loop.get("units", []).filter(func(unit): return Loop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == Loop.ROLE_ENEMY)
+	return loop.get("units", []).filter(func(unit): return BattlePlayLoop.Presence.living(unit) and str(unit.get("battle_actor_role", "")) == BattlePlayLoop.ROLE_ENEMY)
 
 
 static func _presentation(scene: Node) -> Node:
