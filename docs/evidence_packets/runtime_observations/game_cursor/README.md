@@ -1,6 +1,6 @@
 # 游戏光标：原版红宝石权杖（CURSOR01–10）画在游戏画面里、每个画面都有、每 6 tick 换一帧、热点在宝石
 
-> evidence: resource-derived: 155 个原版 OBS 的 object 2「游標」字段逐项相同（SHAPE\CURSOR01.SHP、obj_Shape_Number 10、obj_Shape_Delay 5、planeCursor、defProcCursor），CURSOR01–10.SHP 尺寸与 draw origin; static-derived: 0x430410 defProcCursor 每 tick 把对象放到鼠标坐标、0x45e5a6 按 delay+1 tick 换帧、窗口过程 WM_SETCURSOR → 0x458650 SetCursor(NULL) 藏起 Windows 指针（光标只由游戏画进画面）、`[0x4c1b00] & 0x1800000` 与持物 `[0x4c1ce4]`（0x430310 画物品图标）时权杖隐藏; runtime-measured: 2026-09-24 原版录屏标题／战斗／状态页／敌方回合／系统菜单均见同一权杖，CURSOR10 每 1.151 s 出现一次；2026-09-27 原版玩家第 1 場「棄卒」（LEVEL051）雷歐納德用回復藥选目标时指针处是回復藥图标、无权杖 · status: live · functions: 0x403089, 0x4038a0, 0x406fc2, 0x430310, 0x430410, 0x437020, 0x439997, 0x442a90, 0x444a5c, 0x444ab2, 0x444aba, 0x456cf0, 0x458650, 0x45e5a6 · tools: hsl_video_events.py, run_ui_class_contract_tests.gd · updated: 2026-09-27
+> evidence: resource-derived: 155 个原版 OBS 的 object 2「游標」字段逐项相同（SHAPE\CURSOR01.SHP、obj_Shape_Number 10、obj_Shape_Delay 5、planeCursor、defProcCursor），CURSOR01–10.SHP 尺寸与 draw origin; static-derived: 0x430410 defProcCursor 每 tick 把对象放到鼠标坐标、0x45e5a6 按 delay+1 tick 换帧、窗口过程 WM_SETCURSOR → 0x458650 SetCursor(NULL) 藏起 Windows 指针（光标只由游戏画进画面）、`[0x4c1b00] & 0x1800000` 与持物 `[0x4c1ce4]`（0x430310 画物品图标）时权杖隐藏; runtime-measured: 2026-09-24 原版录屏标题／战斗／状态页／敌方回合／系统菜单均见同一权杖，CURSOR10 每 1.151 s 出现一次；2026-09-27 原版玩家第 1 場「棄卒」（LEVEL051）雷歐納德用回復藥选目标时指针处是回復藥图标、无权杖 · status: live · functions: 0x403089, 0x4038a0, 0x406fc2, 0x430310, 0x430410, 0x437020, 0x439997, 0x442a90, 0x444a5c, 0x444ab2, 0x444aba, 0x456cf0, 0x458650, 0x45e5a6 · tools: hsl_video_events.py, run_ui_class_contract_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -85,4 +85,4 @@
 
 - 录屏没有大地图与城镇；那两处用同一对象的依据是 §1 的 OBS 普查。
 - 帧 1→10 的宝石明暗只由 SHP 像素给出，没有单独的闪光程序。
-- 给予流程原版同样经 `[0x4c1ce4]` 持物（`0x438c86`），重制给予先选对象、未接持物图标。
+- 给予流程原版同样经 `[0x4c1ce4]` 持物（`0x438c86`）；重制给予已照原版先在给出方持物窗点物入手，持物图标随指针、权杖不画（见 [original_give_exchange.md](../../static_reverse/original_give_exchange.md) §结论，lane GIVEPICK）。

@@ -1,10 +1,10 @@
 # 战内道具：解除禁魔、气力恢复与临时攻防
 
-> evidence: resource-derived; static-derived; negative-evidence: item+0xa0 位 0x80 无消耗品来源 · status: live · functions: 0x409e10, 0x409e40, 0x40a31f, 0x40c1b0, 0x40c230, 0x447fe2, 0x448840 · tools: hsltools/data/tactical_items.py, hsltools/probes/item_cure_route.py, hsltools/probes/item_magic.py, hsltools/probes/tactical_items.py, run_tactical_items_tests.gd · updated: 2026-09-27
+> evidence: resource-derived; static-derived; negative-evidence: item+0xa0 位 0x80 无消耗品来源 · status: live · functions: 0x409e10, 0x409e40, 0x40a31f, 0x40c1b0, 0x40c230, 0x447fe2, 0x448840 · tools: hsltools/data/tactical_items.py, hsltools/probes/item_cure_route.py, hsltools/probes/item_magic.py, hsltools/probes/tactical_items.py, run_tactical_items_tests.gd · updated: 2026-09-28
 
 本包沿确定性ITEM字段、字符串xref与已确认`0x409e40`道具函数推进，未调用Jev。源表是`resource-derived`；隔离原指令是`static-derived`，不是原版完整运行录像。机器证据为[道具应用／采样／扫描](original_tactical_items.json)、[AI自用或友援入口](original_item_cure_route.json)及[低强度道具与魔法合并／到期](original_item_magic.json)。
 
-## 四种源道具
+## 结论：四种源道具
 
 | 编号／名称 | 原字段与内存 | 效果 |
 | --- | --- | --- |
@@ -15,7 +15,7 @@
 
 四者均为原`itemTypeUse`／`jobAll`。注册并不修改001／002的默认八槽库存，也不追加默认技能。`TacticalItemsTrial.tscn`有明确的道具包与原StatMagicTrial演练技能，初始气力0；它是演练场景，不能据此声称某关卡天然赠送四道具。
 
-## 解衰弱（static-derived：有界原生执行）
+## 证据：解衰弱（static-derived：有界原生执行）
 
 | 编号／名称 | 原字段与内存 | 效果 |
 | --- | --- | --- |
@@ -61,7 +61,7 @@ R32 原生回执（`hsltools/probes/tactical_items.py`，`applications` 新增 2
 
 固定EXE SHA、源表SHA和字节锚点散列；离线checker拒绝覆盖范围、stop地址、原结果、派生结果或字节被修改。调用预算有界，审查外指令立即失败，没有stub原callee或把被截断函数记为正常返回。完整采样helper的有符号域不等于授权产品新增永久负值道具。
 
-## 当前共享事务与保存
+## 重制接线：当前共享事务与保存
 
 `ItemUseRules.prepare`只验证并生成预览，包括实际可恢复气力、将延长到几回、首次待抽样范围。它不消费随机数。`ItemResolutionRules`在所有对象、库存、来源和当前属性校验后，从共用的伤害随机流`damage_rng`抽样生成实际结果、库存移除和不可变收据，再交给唯一PlayLoop提交。自用时使用者和目标必须是同一份一致的before快照，避免恢复时拼接两份不一致历史。
 
@@ -73,12 +73,6 @@ R32 原生回执（`hsltools/probes/tactical_items.py`，`applications` 新增 2
 
 AI自救保留现有HP／濒死／解除的适配次序，在已拥有的驱毒法术不可用或未选中时使用首匹配解除道具；友援复用现有负面扫描与合法邻接落点。这个组合顺序仍有明确重制适配边界，24个原前段只证明源自用／友援入口，不证明整个dispatcher。AI第二行动根据已经解除的状态和剩余库存重新判断。没有依据本批证据臆造AI主动喝气力／强化药的全局策略；它们由玩家使用，AI仍完整感知其后的资源、攻防与可驱散目标。
 
-## 界面、演出与边界
-
-`BattleItemText`为描述、目标预览和实际反馈共用文字来源。首次显示范围，确认后显示真实强度；重复显示原强度和延长到的回数；破魔咒明确保留其他状态，气力按实际增量显示。沿用既有原道具图标／使用音和有限上浮提示，居中宽度随实际文本；播放及回合尾部提示完成后才开放后继菜单。没有伪造新法术音效或把道具强化写成“+0HP”。
-
-实际操作及过程边界见[战内道具验收](#复现)。当前原全局RNG、渲染时钟、完整AI类别选择、永久属性药、复活、武器MP打击和未支持职业仍分别未完成；后续必须为它们取独立证据，不能按本批相邻字段推断。
-
 ## 复现
 
 `python3 tools/hsl.py check tactical_items`
@@ -88,3 +82,9 @@ AI自救保留现有HP／濒死／解除的适配次序，在已拥有的驱毒�
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
 | [tactical_items](../runtime_observations/tactical_items/receipt.json) | manual、repeat、expiry、mixed、dispel、cure、stamina、melee、growth、movement、ai_self、ai_ally、paralysis、invalid、victory、defeat、escape | `run_tactical_items_tests.gd`；截图驱动已退役，回执为历史记录 |
+
+## 界面、演出与边界
+
+`BattleItemText`为描述、目标预览和实际反馈共用文字来源。首次显示范围，确认后显示真实强度；重复显示原强度和延长到的回数；破魔咒明确保留其他状态，气力按实际增量显示。沿用既有原道具图标／使用音和有限上浮提示，居中宽度随实际文本；播放及回合尾部提示完成后才开放后继菜单。没有伪造新法术音效或把道具强化写成“+0HP”。
+
+实际操作及过程边界见[战内道具验收](#复现)。当前原全局RNG、渲染时钟、完整AI类别选择、永久属性药、复活、武器MP打击和未支持职业仍分别未完成；后续必须为它们取独立证据，不能按本批相邻字段推断。

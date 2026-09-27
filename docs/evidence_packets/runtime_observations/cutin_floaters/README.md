@@ -1,13 +1,13 @@
 # 战斗特写站位、击杀／升级飘字与抗性宝石：原版三路测量
 
-> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（特写演员锚点、底栏 WINDOW10 外框、左上红框立绘外框、KILL／EXP／$／LEVEL UP 精灵匹配的出现时刻与轨迹、抗性宝石位置）与音轨起音; static-derived: 0x401c20／0x4038a0 特写站位与击退、0x442720 结算阶段、0x4084e0／0x408580 数字浮字、0x408390／0x4083e0 KILL 浮字、0x434d10 抗性文字; resource-derived: hsl.pak KILL_000..010、NUM4xx／5xx／511／512／514、MAGICON1..5、ANIMAL.TXT k_action · status: live · functions: 0x401c20, 0x4038a0, 0x404560, 0x408390, 0x4083e0, 0x4084e0, 0x408580, 0x408b20, 0x42f4fc, 0x434d10, 0x43f0aa, 0x442720, 0x4435c5, 0x45e91e · tools: hsl_video_events.py, run_combat_aftermath_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（特写演员锚点、底栏 WINDOW10 外框、左上红框立绘外框、KILL／EXP／$／LEVEL UP 精灵匹配的出现时刻与轨迹、抗性宝石位置）与音轨起音; static-derived: 0x401c20／0x4038a0 特写站位与击退、0x442720 结算阶段、0x4084e0／0x408580 数字浮字、0x408390／0x4083e0 KILL 浮字、0x434d10 抗性文字; resource-derived: hsl.pak KILL_000..010、NUM4xx／5xx／511／512／514、MAGICON1..5、ANIMAL.TXT k_action · status: live · functions: 0x401c20, 0x4038a0, 0x404560, 0x408390, 0x4083e0, 0x4084e0, 0x408580, 0x408b20, 0x42f4fc, 0x434d10, 0x43f0aa, 0x442720, 0x4435c5, 0x45e91e · tools: hsl_video_events.py, run_combat_aftermath_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版特写攻方在中线 (320,330)，守方按 ANIMAL `k_action` 偏移（aniKLeft +30、aniKRight −50）并在命中后 14 tick 被击退 105 px、落空退 150 px；底栏 WINDOW10 与特殊技左上红框立绘位置已与重制一致（runtime-measured＋static-derived）。
 - 原版结算每位受益者依次出 EXP → $ →（獲得物品窗）→ LEVEL UP＋升级音 → 加点窗，每个浮字在第 32 tick 放行下一个；KILL 美术字随阵亡在其头上出、40 tick 定住；身份栏抗性行是五颗元素宝石＋「07%」（runtime-measured＋static-derived＋resource-derived）。
 - 重制 `CutinLayout`（站位、击退、闪避）、`BattleRewardFloater`（美术字排版与淡出）、`BattleAftermath`（队列与放行）、`BattleVitals`（抗性宝石）按这些读法实现（static-derived）。
-- 差异：反击方第二份金钱累加器合在一份 $ 里（provisional）；抗性数字仍用系统字（原版 ASCFONT 小字未接入）；画宝石的原版调用点未找到，位置取像素（negative-evidence）。
+- 差异：反击方第二份金钱累加器合在一份 $ 里（provisional）；抗性数字已用原版 FONT.15＋ASCFONT.15 点阵小字（`0x411d70`，lane BITMAPFONT，差异清单 `bitmap-font`）；画宝石的原版调用点未找到，位置取像素（negative-evidence）。
 
 ## 证据
 
@@ -99,5 +99,5 @@ Godot Movie Maker 离线录像（60 fps），开发夹具：A 段雷歐納德普
 ## 边界
 
 - 反击方的第二份金钱累加器 `0x4c2978` 重制合在一份 $ 里（provisional）。
-- 抗性数字用系统字，原版 ASCFONT 小字未接入；宝石位置取像素（原版画宝石的调用点未找到）。
+- 抗性数字已用原版 FONT.15＋ASCFONT.15 点阵小字（lane BITMAPFONT）；宝石位置取像素（原版画宝石的调用点未找到）。
 - 升级音文件身份来自静态与资源表，录音互相关不足以单独认定。

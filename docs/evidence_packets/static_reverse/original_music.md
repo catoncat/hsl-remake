@@ -1,6 +1,6 @@
 # 原版配乐：播放引擎、关卡曲目表与各场景何时放哪首（static-derived）
 
-> evidence: static-derived; resource-derived: STORY／WINFAIL／TOWNDEF／STORYOVER 脚本与 obj-998.obs（hsl.pak）、music\NN.wav（Steam 經典版） · status: live · functions: 0x42b6b0, 0x42c1c0, 0x42c250, 0x42c340, 0x42c360, 0x42c380, 0x42d7c0, 0x42da60, 0x42def0, 0x452a80, 0x452a97, 0x452ab7, 0x4561d0, 0x459ec0, 0x45a0b0 · tools: hsl_steam_classic.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived: STORY／WINFAIL／TOWNDEF／STORYOVER 脚本与 obj-998.obs（hsl.pak）、music\NN.wav（Steam 經典版） · status: live · functions: 0x42b6b0, 0x42c1c0, 0x42c250, 0x42c340, 0x42c360, 0x42c380, 0x42d7c0, 0x42da60, 0x42def0, 0x452a80, 0x452a97, 0x452ab7, 0x4561d0, 0x459ec0, 0x45a0b0 · tools: hsl_steam_classic.py · updated: 2026-09-28
 
 核对：r2 静态反汇编 `$HSL_ORIGINAL_DIR/hsl01.exe`（SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`），脚本取自本机 hsl.pak（即 Steam 的 hsl-cn.pak）。曲目文件本身（18 首 `music\02.wav`–`19.wav`，22050 Hz 立体声 16-bit）见 [Steam 經典版](../resource_inventory/steam_classic_edition.md)。本包只记原版程序怎样使用这些曲目。
 
@@ -11,6 +11,10 @@
 - 换关必停：每次离开关卡都会停乐，新关卡放什么由它的剧本决定（§4）。剧本里没有放乐动作，这一关就是静音。
 - 标题 03，在厂商标志之后开始。大地图 06。进城 05，回到大地图时 06 从头放。读「戰場記錄」后放所读关卡的表内曲目；读「回憶錄」不经过这一步（§3.1）。
 - 战败画面没有音乐，只有 sfxGameOver 音效。影片一开播就停乐，播完也不恢复。通关尾声依次放 07 → 04 → 02（§3.5）。
+
+## 证据
+
+§1–§4 是逐条读法：播放引擎、曲目表与调用点为 static-derived（r2 反汇编），剧本放乐动作为 resource-derived（hsl.pak 脚本）。
 
 ## 1 播放引擎
 
@@ -197,7 +201,13 @@ obj-998.obs 的其余物件：5 MessageBox、10 GameClear BOSS（OVERBG01.SHP）
 - 只有 MUS、没有后续 LVL 的关卡（008、009、055–058、060–074、081、082、900），整关都放同一首剧情曲。
 - 501–578 每三关共用一个基准关卡的表内曲目。
 
-## 5 复核
+## 重制接线
+
+- `GameSettings` 按 §1 放原曲、整首循环，音乐音量默认满。
+- `BattleOpeningCoordinator`／`OpeningCinematics` 按剧本放乐动作换曲，`BattleSceneRuntime` 读「戰場記錄」时先停乐再放所读关卡的表内曲目（§3.1）。
+- `TitleScreen`、`WorldMapRuntime`、`TownRuntime`、`GameClearScreen` 分别放标题、大地图、城镇与通关尾声的曲目（§3.2、§3.5）。
+
+## 复现
 
 ```sh
 python3 tools/hsl_steam_classic.py music   # 18 首曲目的格式与时长
@@ -205,3 +215,7 @@ r2 -e scr.color=0 -q -c 'pd 60 @ 0x42c250; pd 12 @ 0x42c1c0; pd 8 @ 0x42c380; pd
 ```
 
 调用点清单用 r2 `axt @ 0x42c250`／`0x42c340`／`0x42c360`／`0x42c380` 列出。脚本里的放乐动作用 `hsltools.sources.pak` 读 hsl.pak，从 STORY*／WINFAIL*／TOWNDEF／STORYOVER 里取 actPlayMusic／actPlayLevelMusic／actPlayDefaultLevelMusic／actPlayMovie 所在行，再按 §1 解析曲号。
+
+## 边界
+
+- 本包只记原版程序怎样使用曲目；曲目文件格式与时长见 [Steam 經典版](../resource_inventory/steam_classic_edition.md)。

@@ -1,6 +1,6 @@
 # 席達鎮（level 6）：正式战斗、原版开局 27 名单位对照与自动对局检验
 
-> evidence: runtime-measured: 重制窗口化运行、原版 6 关开局全部单位读出（回憶錄 预设 level06_pre_battle 经酒馆事件进关）; resource-derived: STORY006／WINFAIL006／EVEF; static-derived: 安装不查地形（0x45e307／0x407cc0）; provisional: 敌人随机调级与携带品的逐项对照 · status: live · functions: 0x407cc0, 0x42bd50, 0x45e307 · tools: capture_battle_review.gd, hsl_original_probe_units.py, hsltools/levels/battle.py, play_original.sh, run_battle_sweep_tests.gd, run_script_wait_tests.gd, test_hsl_level_battle.py, test_hsl_opening_positions.py · updated: 2026-09-27
+> evidence: runtime-measured: 重制窗口化运行、原版 6 关开局全部单位读出（回憶錄 预设 level06_pre_battle 经酒馆事件进关）; resource-derived: STORY006／WINFAIL006／EVEF; static-derived: 安装不查地形（0x45e307／0x407cc0）; provisional: 敌人随机调级与携带品的逐项对照 · status: live · functions: 0x407cc0, 0x42bd50, 0x45e307 · tools: capture_battle_review.gd, hsl_original_probe_units.py, hsltools/levels/battle.py, play_original.sh, run_battle_sweep_tests.gd, run_script_wait_tests.gd, test_hsl_level_battle.py, test_hsl_opening_positions.py · updated: 2026-09-28
 
 ## 结论
 
@@ -75,7 +75,7 @@ EVEF 记录 → `0x45e307` 把 X／Y 原样写进对象 `+4／+8`；敌方初始
 ## 重制接线
 
 - `python3 tools/hsl.py generate level_battle:6`（`tools/hsltools/levels/battle.py`）从开场预览 `story_006.json`＋战斗 seed＋来源模板（`first_battle.json` 的 001／023／024、`content/generated/hsl/actors/002|003|004|061|062.json`）组装；村民 `pmNPCPlayer` → friendly_ai；士兵 enemy-process 物件 → enemy_ai。
-- 安装点落在不可站格时原样保留并记 `position_source.install_on_blocked_cell`；STORY 走位终点落在不可站格或与他人重格时仍用最近空格（provisional，见 [original_script_walk_path](../../static_reverse/original_script_walk_path.md)）。同类安装点全游戏共 88 名（以遭遇战为主）。
+- 安装点落在不可站格时原样保留并记 `position_source.install_on_blocked_cell`；STORY 走位终点照原版先经 `0x44fbd0` 修正、再走 `0x4111d0` 寻路链并在所站格提交停格（生成器 `script_walk_stop`，static-derived，见 [original_script_walk_path](../../static_reverse/original_script_walk_path.md) §结论）。同类安装点全游戏共 88 名（以遭遇战为主）。
 - 隊長等待经 `ScriptWaitRules.initial_source` 按符号计数落为等待 3 回合；增援用 `script_actor_templates`（obj_Story_Level6_Enemy23／24 → 023／024 模板）运行时创建；寶藏写入 `content/generated/hsl/treasures/battle_006.json`。
 - 四个受控槽组装时取模板基线，实际进入时由战役 carry 按 id 覆盖。
 

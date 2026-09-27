@@ -1,6 +1,6 @@
 # 原版大地图上的剧情演出盘点
 
-> evidence: resource-derived; negative-evidence: 无 STORY／WINFAIL 关卡以大地图为底图; provisional: 原版画面构图待 runtime 实录 · status: record-only · tools: hsltools/checks/source_map_binding.py, hsltools/data/big_map_flow.py · updated: 2026-09-27
+> evidence: resource-derived; negative-evidence: 无 STORY／WINFAIL 关卡以大地图为底图; runtime-measured: 城镇画面构图引自 original_world_town 实录 · status: record-only · tools: hsltools/checks/source_map_binding.py, hsltools/data/big_map_flow.py · updated: 2026-09-28
 
 本包只盘点**原版数据里**在大地图（level 49）上发生的对白／走位／演出，并逐条对照重制现在的处理。原版画面构图（城镇窗、对白板、状态栏）见[原版大地图与城镇画面实录](../runtime_observations/original_world_town/README.md)（runtime-measured）。
 
@@ -11,11 +11,13 @@
 2. **城镇菜单里的对白**：191 条 TOWNDEF 事件，其中 180 条有台词。
 3. **不带台词的演出**：脚本自动行走 7 处，行走者换成琥 2 处，路线揭示 11 处。
 
-重制**全部都有数据和解释器，且都能玩到**，因为触发它们的关卡都已注册。差别在两处：
-- **画面构图是重制自拟的**：全屏压暗的大地图上叠加 TownBG、右侧菜单和下方对白板。
+重制**全部都有数据和解释器，且都能玩到**，因为触发它们的关卡都已注册。现状两处：
+- **画面构图已照原版实录**：大地图不压暗，TownBG (158,148)、WINDOW70 菜单板 (60,60)、对白板上下两槽（runtime-measured，见[原版大地图与城镇画面实录](../runtime_observations/original_world_town/README.md) §重制接线）。
 - **行走者换人没有接**：`actSetBMWalkerPlayerID` 只做了记录，地图上一直画雷歐納德。
 
-## 依据（resource-derived）
+## 证据
+
+### 依据（resource-derived）
 
 - **没有别的关卡以大地图为底图**：各关 `OBJ-NNN.OBS` 中 `defProcIconBG` 地图管理员记录的 `obj_Shape_Name` 决定该关底图，[原地图绑定](../static_reverse/original_map_binding.md)已核对全部 154 个。153 个指向 `SHAPEnn\LEVELnn.SHP`，唯一例外 level 49 是 `SHAPE\ICONRECT.SHP` 控制器；没有任何一关指向 `SHAPE99\BIGMAP.SHP`。用 `tools/hsltools/sources/pak.py` 重扫全部 `obj-*.obs`，结果相同。无图剧情关（60–64、66–71 等）借用的是 LEVEL55／58 营地和王座厅，不是大地图。level 66（STORY065 之后五人对白）就是 LEVEL55 夜营，不在大地图上（`hsltools/levels/seed.py` 的 `MAP_ALIASES[66]`）。
 - **对白板和城镇窗属于大地图关**：`obj-049.OBS` 除点、路线外的 48 个对象里有下面这些。`TownBG` 不在这张对象表里，由城镇过程动态载入，这是推测，要看实录。
@@ -32,7 +34,7 @@
   按钮依次为：上一个、物品、魔法、特技、屬性、下一个、丟棄、倉庫、離開、使用、裝備、買賣。
 - **触发写入**：STORY／WINFAIL 的 act* 写入来自 [big_map_flow.json](../../../content/generated/hsl/static/hsl01/big_map_flow.json)，TOWNDEF te* 写入来自 [towndef.json](../../../content/imported/hsl/global/world_map/towndef.json)，二转城镇写入来自 [town_job_up_writes.json](../../../content/world/town_job_up_writes.json)，台词来自 `town_messages.json`。
 
-## 盘点表
+### 盘点表
 
 “重制处理”一栏的实现入口：
 - 入城、出城事件：`TownRuntime.open`／`leave`，由 `WorldScriptActions` 施加脚本写入；
@@ -89,13 +91,18 @@ TOWNDEF 共 191 条事件，180 条带 teShapeMessage 或 tePlayerMessage，合�
 | C8 | **行走者换人** | WINFAIL032 胜利、STORY071 | `actSetBMWalkerPlayerID SID_琥`：大地图小人改成琥（雷歐納德离队段落） | **缺失**：`TownEventRules.RECORDED_ONLY_TOKENS` 只记录，`WorldMapRuntime._spawn_marker` 固定画 001 |
 | C9 | 路线揭示 | STORY061（2）、STORY071（30）、WINFAIL034（34）；TOWNDEF 30、43、97、164、175、183、188、190 | `act／teBMSetShowTrackPoint`：以该点为端点的路线进入揭示动画 | 已有：进图和关城时消费；揭示时长为重制值（见 [world_map_scene](../static_reverse/original_world_town.md)） |
 
-## 不支持的结论
 
-- 本表证明**原版数据里有哪些**大地图演出、由谁触发；不证明原版的画面构图、对白板位置、是否先显示城镇窗再播入城对白、以及每句的等待方式（TOWNDEF 每句 if_wait 都是 0）。这些由 runtime 实录回答，实录没有覆盖的仍属未知。
+## 重制接线
+
+- 实现入口见盘点表上方「重制处理」一栏；城镇画面构图由 `game/world/TownRuntime.gd` 照原版实录（不压暗、TownBG (158,148)、WINDOW70 (60,60)、对白板上下两槽，[original_world_town](../runtime_observations/original_world_town/README.md)）。
+- **C8 行走者换人（未实现）**：把 `actSetBMWalkerPlayerID` 的 SID 写进 world state，比如 `walker_actor_id`；`_spawn_marker` 用它代替固定 001。`actor_id` 用 EXTRAS 的 SID→001..009 映射。改动约 20 行，属 `game/world` 的规则接线。什么时候换回雷歐納德，要查后续脚本有没有再次调用 `actSetBMWalkerPlayerID SID_雷歐納德`：盘点里只有两处都是 SID_琥，**换回的时机未知**，需要原版证据。
+
+## 复现
+
+`tools/hsltools/checks/source_map_binding.py` 核对各关地图管理员记录的底图；`tools/hsltools/data/big_map_flow.py` 生成 `big_map_flow.json`；对象表用 `tools/hsltools/sources/pak.py` 读 `obj-*.obs`。
+
+## 边界
+
+- 本表证明**原版数据里有哪些**大地图演出、由谁触发；不证明是否先显示城镇窗再播入城对白、以及每句的等待方式（TOWNDEF 每句 if_wait 都是 0）。画面构图与对白板位置由 [runtime 实录](../runtime_observations/original_world_town/README.md) 回答，实录没有覆盖的仍属未知。
 - `obj-049.OBS` 的对象清单只证明这些窗口属于大地图关，不证明它们同时出现，也不证明坐标。
 - “重制可达”只说明触发关卡已注册，不说明整条战役路线已自然走通。
-
-## 缺口的接线方案（未实现）
-
-- **C8 行走者换人**：把 `actSetBMWalkerPlayerID` 的 SID 写进 world state，比如 `walker_actor_id`；`_spawn_marker` 用它代替固定 001。`actor_id` 用 EXTRAS 的 SID→001..009 映射。改动约 20 行，属 `game/world` 的规则接线。什么时候换回雷歐納德，要查后续脚本有没有再次调用 `actSetBMWalkerPlayerID SID_雷歐納德`：盘点里只有两处都是 SID_琥，**换回的时机未知**，需要原版证据。
-- **构图**：按 runtime 实录重排 `TownRuntime` 的菜单、对白板和 TownBG 位置。

@@ -8,6 +8,8 @@
 
 重制的普通交锋已和原程序整段逐值对拍：敌人回合的 1111 次交锋里，每次抽取、命中／伤害／暴击／反击／经验以及交锋末状态都相同，见[整段交锋对拍](#整段交锋对拍)。对拍中查出一处差异并已改正：NPC 进程发起的交锋不回写命中加成（`0x442405`）。
 
+## 证据
+
 ## 原生执行对拍
 
 [机器包](original_damage_random.json)由`hsl generate damage_random`在unicorn里执行hsl01.exe的原指令生成：4组状态（含`0x7fffffff`／`0x80000000`等符号边界），每组连续1000次`0x458c10`，再连续1000次`0x458c80`（20种循环上限：0、1、`0xffff`、`0x10000`、`0x7fffffff`、负数、`-0x80000000`等），逐值记录返回和终态。每组另测`rand(0)`与两层包装：包装后的结果与直接跑生成器一致，全局字（哨兵值）保持不变。9处原字节（生成器、播种、包装、新游戏播种、存档读写）按字节钉住。独立Python模型逐值复算，离线`hsl check damage_random`不需要unicorn。
@@ -118,7 +120,7 @@ mode 由调用进程压入：
 - **阵亡记录的命中加成**：原版阵亡单位的记录保留`+0xb0`，重制`BattlePlayLoop._set_defeated`把它清零。本批共 2 行，是第 51 关种子 10／11 的 actor026_1：它先前施法落空，交锋开始时带着 9／10，这次被 actor023_2 普攻击杀。活着的单位不读这个值，对照端把它列作`dead_bonus`，不比较；复活路径是否读它未查。
 - **没覆盖到的分支**：技能在 NPC 进程是否回写`+0xb0`没有对拍；技能函数自己写回`+0xb0`，见[技能功能位](original_skill_function_bits.md)。另外两个静态分支本批局面没触发：守方`+0x18c` bit 4 时伤害减半（`0x40e2a0`），以及`0x409090(守方)`为 0 时不抽反击骰。
 
-## 产品接入与保存
+## 重制接线：产品接入与保存
 
 `DamageRandomStream`逐值实现上面的生成器和`rand(n)`，状态是两个u32字`[word0, word1]`（JSON中精确）。整场战斗只有这一份状态，放在PlayLoop的`damage_rng`键：
 
@@ -157,7 +159,7 @@ tools/godot.sh --headless --script res://tests/export_exchanges.gd -- --cases ig
 $U compare ignored/dmgcheck/L51_12.json ignored/dmgcheck/L51_12_remake.json ignored/dmgcheck/L53_250.json ignored/dmgcheck/L53_250_remake.json
 ```
 
-## 仍未支持
+## 边界：仍未支持
 
 原版时钟播种分支`0x457830`没有执行，只是字节钉住；重制的`t`是产品时钟或`HSL_RNG_SEED`，不会和某次原版开局的具体数值相同。全局流接入`GlobalRandomStream`（同一生成器，状态对应`0x4795d4`／`0x4795d8`，不入存档）：AI决策、出生调级、新援、开局随机槽、opcode 86／99的随机位置已改抽它；掉落（`0x44f5d3`）、出生随机携带（`0x407c86`）与opcode 121（`0x450fe6`／`0x451012`／`0x451075`）原版也抽全局流（实测／静态，见 [battle_reward_inputs.md](battle_reward_inputs.md)），opcode 107／108原版不抽随机数，见[差异清单](parity_gap_inventory.md)的`rng-streams`。
 

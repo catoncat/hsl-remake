@@ -1,6 +1,6 @@
 # 特效对象自带的声音：绝技对象的命令程序（objcomd.txt）与法术效果对象的程序音
 
-> evidence: resource-derived: objcomd.txt／OBJCOMD.H／global.obs／effects.txt／PROCESS.DEF from hsl.pak; static-derived: object-process handlers read from hsl01.exe; provisional: rows marked provisional · status: live · functions: 0x4038a0, 0x4051d0, 0x406d20, 0x406eb0, 0x409610, 0x409760, 0x409790, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x42c180 · tools: hsltools/assets/skill_effects.py, hsltools/data/first_skill.py, hsltools/data/special_effect_scripts.py, run_skill_effect_script_tests.gd · updated: 2026-09-27
+> evidence: resource-derived: objcomd.txt／OBJCOMD.H／global.obs／effects.txt／PROCESS.DEF from hsl.pak; static-derived: object-process handlers read from hsl01.exe; provisional: rows marked provisional · status: live · functions: 0x4038a0, 0x4051d0, 0x406d20, 0x406eb0, 0x409610, 0x409760, 0x409790, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x42c180 · tools: hsltools/assets/skill_effects.py, hsltools/data/first_skill.py, hsltools/data/special_effect_scripts.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -14,12 +14,12 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 ### 1. 根因：氣刃斬 命中那一声
 
-**氣刃斬 命中那一声不在 EFFECTS.TXT 脚本里，而在命中火花对象自己的命令程序里；重制从未读过这些程序。**
+**氣刃斬 命中那一声不在 EFFECTS.TXT 脚本里，而在命中火花对象自己的命令程序里；本包立项时重制没有读这些程序（命令程序的运动现已逐 tick 执行，见 [original_objcomd_programs.md](original_objcomd_programs.md) §结论）。**
 
 - `effects.txt` 的 specCode02（守方脚本）没有 `aniPlaySound`／`aniPlayHitSound`：`aniDelay,20 → aniInsertObject obj_Special01_02 → aniDelay,10 → aniProcessHitMiss → aniInsertHitRandomObject obj_Special01_03 ×6 ／ obj_Special01_04 ×24 → aniDelay,60 → aniShowHitResult`（resource-derived）。
 - `global.obs` 的 obj_Special01_03（obj_code 412）是 `obj_Process_Code = defProcObjectMove`、`obj_Data7 = 2 ; action code`（resource-derived）。
 - `hsl.pak` 的 `data\objcomd.txt`（`#include OBJCOMD.H`）第 2 号 `[command]`：`objmPlaySound,WAV\BOMB0017.WAV` 然后 `objmProcNextShapeDelete,-1,-1`（resource-derived）。**这就是那一声**：每个火花对象出现时自己播 BOMB0017。
-- 重制 `SkillEffectScriptPlayer` 只解释 EFFECTS.TXT 的 ani*／eff* 指令，特殊对象当静帧画（`defProcObjectMove motion is not restored`），所以对象程序里的声音一并丢失。
+- 本包立项时重制 `SkillEffectScriptPlayer` 只解释 EFFECTS.TXT 的 ani*／eff* 指令，特殊对象当静帧画，对象程序里的声音一并丢失；现状：对象运动按 `objcomd_motion.json` 原生轨迹回放（[original_objcomd_programs.md](original_objcomd_programs.md) §重制接线），声音按本包 `command_sounds` 排，未切到原生执行记下的声音时刻（同包 §边界）。
 
 ### 2. 原版读法（static-derived）
 

@@ -1,6 +1,6 @@
 # 成长：入场调级、自动属性分配与脚本增援
 
-> evidence: static-derived; runtime-measured: 第一战录屏 023_2 L3 41/41、模拟器 129 关玩家出生对拍 · status: live · functions: 0x407cc0, 0x40e7a0, 0x40e800, 0x40e870, 0x439f80, 0x43eed1, 0x43f3a5, 0x4438d4, 0x44ca5c, 0x450840, 0x452408, 0x45f5f7 · tools: hsl_native_level_probe.py, hsltools/data/entry_growth.py, hsltools/probes/auto_growth.py, run_entry_growth_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 第一战录屏 023_2 L3 41/41、模拟器 129 关玩家出生对拍 · status: live · functions: 0x407cc0, 0x40e7a0, 0x40e800, 0x40e870, 0x439f80, 0x43eed1, 0x43f3a5, 0x4438d4, 0x44ca5c, 0x450840, 0x452408, 0x45f5f7 · tools: hsl_native_level_probe.py, hsltools/data/entry_growth.py, hsltools/probes/auto_growth.py, run_entry_growth_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -83,7 +83,7 @@ low = max(1, center - min(D, 4));  high = max(low+1, center + D);  W = high - lo
 
 ## 边界
 
-- NPC 战斗经验自动升级的完整入口（奖励路径 caller `0x442729`／`0x4429af` 已定位）未接入。
+- NPC 战斗经验自动升级（奖励路径 caller `0x442729`／`0x4429af`）已由 `ProgressionRules.apply_level_ups` 的 automatic 分支经 `EntryGrowthRules` 接入，见 [original_growth_lifecycle.md](original_growth_lifecycle.md) §重制接线；该入口在奖励状态机里的逐 tick 先后未执行。
 - 同一阶段内抽样次序与开场前后其它全局抽取次数不是原版的（provisional）。
 - 原 HP/MP 源字段与 VM 参数均 16 位；重制只接受 0..1000 参数并拒绝 HP/MP 超 65535 的组合，不声称原版也有此限制。
 - 第 200 关在帧上限内没有玩家出生，未测。

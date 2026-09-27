@@ -1,10 +1,14 @@
 # 绝技通道的元素抗性（0x40a7b0 channel 1 / proc 0）
 
-> evidence: static-derived · status: live · functions: 0x409be0, 0x40a7b0, 0x40aa80 · tools: hsltools/probes/special_damage.py · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x409be0, 0x40a7b0, 0x40aa80 · tools: hsltools/probes/special_damage.py · updated: 2026-09-28
 
 Checked: 2026-09-20。接续 [普通交锋、武器附加与氣刃斬](original_ordinary_special.md)。该包只回答一个问题：非 magicOTHER 的绝技（SPECIAL type 0..4）是否乘目标元素抗性、是否读魔击力。机器证据仍是 [original_special_damage.json](original_special_damage.json)（探针 [hsltools/probes/special_damage.py](../../../tools/hsltools/probes/special_damage.py)，本次新增 8 组元素行，全部原指令正常返回）。
 
-## 静态读法（static-derived）
+## 结论
+
+- 非 magicOTHER 的绝技（SPECIAL type 0..4）乘目标元素抗性（`resist_by_type`，夹到 80），不读魔击力 `actor+0xd0`，不读物理防御；type 5／6（magicOTHER／magicOTHER2）不乘任何抗性（static-derived，原指令执行核对）。
+
+## 证据：静态读法（static-derived）
 
 原 EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。`0x40aa80`（技能 HP／状态应用）在 function bit 1（`magicFun_Attack`）下调用 `0x40a7b0(actor, target, record, &bonus, proc=0, channel)`，channel 1 = SPECIAL。`0x40a7b0` 内：
 
@@ -32,10 +36,6 @@ Checked: 2026-09-20。接续 [普通交锋、武器附加与氣刃斬](original_
 
 随机调用顺序与氣刃斬行一致（100／10／10／36／30），抗性乘法不消耗随机数。
 
-## 重制接入
-
-`SpecialDamageRules.prepare` 按 SPECIAL type 读目标 `resist_by_type[element]`（type 5 固定 0，不读槽位），缺失或超过 80 明确返回 `missing_skill_resistance`，不为缺数据留默认值；`roll` 在低值折算后按 `(100−min(80,r))×value/100` 缩减。`run_ordinary_special_tests` 逐行回放 28 组原随机值；元素行进入同一断言。
-
 ## 同一 switch 的 magicOTHER 魔法（滅／裁）
 
 channel 0（MAGIC）在 `proc & 1 == 0` 时走完全相同的 `switch(record+4)`：type 5 的 滅（`magic:magicOTHER:magicCode01`，30..40／96／19MP／range2CellCircle→range0Cell）与 裁（`magicCode02`，50..70／96／37MP／range3CellCircle→range1Cell）同样落到 default，**不读任何 resist_by_type 槽**；命中项仍加 `actor+0xd4`（魔法命中装备），伤害项仍是 `(clamp(level,1,80)+mind 折算+三角取值)×魔击力/100`。重制用 `OtherMagicRules.prepare` 产出与 `StatusApplicationRules.prepare` 同形的 roll_input（resistance 固定 0＝switch default，不是缺数据默认值），结算沿 `StatusApplicationRules.resolve`／`NativeMagicRollRules.roll`。这与 [普通交锋](original_ordinary_special.md) 里"武器附加类型 5 不乘元素抗性"是两个不同函数（`0x409be0` vs `0x40a7b0`）里各自的读法，此处独立核对。
@@ -57,13 +57,17 @@ Checked: 2026-09-20（static-derived）。SPECIAL.TXT 的敌方独立行（`; en
 
 结论：type 5（magicOTHER）与 type 6（magicOTHER2）同样落在 `ja` 分支，不读任何 `resist_by_type` 槽；其余项（hit_ratio＋补偿、三角取值＋level／con／mind／dex 项、attackpow_ratio）与本尊行相同，只是行内数值不同。重制 `SpecialDamageRules.ELEMENTS` 新增 `magicOTHER2 → "6"`，与 `"5"` 同列 `NO_RESIST_ELEMENTS`（resistance 固定 0 是 switch 上界读法，不是缺数据默认）。未做 type 6 的原指令探针：`ja` 的无符号比较对 6 与 5 走同一条路径，不需要额外执行证据。
 
+## 重制接线
+
+`SpecialDamageRules.prepare` 按 SPECIAL type 读目标 `resist_by_type[element]`（type 5 固定 0，不读槽位），缺失或超过 80 明确返回 `missing_skill_resistance`，不为缺数据留默认值；`roll` 在低值折算后按 `(100−min(80,r))×value/100` 缩减。`run_ordinary_special_tests` 逐行回放 28 组原随机值；元素行进入同一断言。
+
+## 复现
+
+`python3 tools/hsl.py check special_damage`；重制侧 `tools/godot.sh --headless --script tests/run_ordinary_special_tests.gd`。
+
 ## 边界
 
 - 探针使用合成正域角色数据，不断言原完整初始化、全局 RNG 身份或演出。
 - 抗性槽 `+0x104..+0x114` 的来源填充（装备／职业刷新）沿既有 profile 合同，本包不重推。
 - 滅／裁 与两条 Global 风魔法未做原指令探针（channel 0 的 type 5 分支只有指令读法；探针 `hsl_native_status_probe`／`original_status_rolls.json` 的 type 0..4 行是既有覆盖）。
 - `effCode35／36／18／19` 的原特效、`obj_Effect_OtherWord` 施法者演出与 eff_proc_Global 全屏演出均未恢复。
-
-## 复现
-
-`python3 tools/hsl.py check special_damage`；重制侧 `tools/godot.sh --headless --script tests/run_ordinary_special_tests.gd`。

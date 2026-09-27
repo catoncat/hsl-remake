@@ -1,12 +1,12 @@
 # ANIMAL 完整动作程序与分派计数
 
-> evidence: resource-derived; static-derived · status: live · tools: hsl_native_animal_probe.py, hsltools/assets/animal_programs.py, hsltools/assets/combat_animation.py, run_skill_effect_script_tests.gd, test_hsl_animal_programs.py · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: live · tools: hsl_native_animal_probe.py, hsltools/assets/animal_programs.py, hsltools/assets/combat_animation.py, run_skill_effect_script_tests.gd, test_hsl_animal_programs.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版：`data\ANIMAL.TXT` 的 66 个角色定义含 action 66／m_action 18／s_action 19 段、663 条有效指令（resource-derived）；过程表 slot 22 `0x401c20` 按 `0x4037b0` 分发表执行，Delay 装入与等待各占调用、SetShape 让出、InsertAttackFlash 同 call 继续取指，37 段施法引导全部是「位移→阴影底→移到中心→施法对象」同一形状（static-derived）。
 - 重制：`hsltools/assets/animal_programs.py` 完整解析并核对原包，`combat_animation.py` 把 action 编成 `dispatch`、s_action／m_action 编成 `cast_program` 写进 combat manifest；`game/battle/scene/AnimalCastLead.gd` 按 handler 读法逐 call 播放施法引导，雷歐納德 139 call、緹娜 002 130 call（static-derived）。
-- 差异：施法对象子状态 4 的过渡／外部释放、阴影底画法、第五帧受击绑定与切入背景布局是重制读法（provisional）；loader 的隐式结束符与 m/s 资源选择未读。
+- 差异：第五帧受击绑定与切入背景布局是重制读法（provisional）；施法对象子状态 4 的停留／外部释放与阴影底画法已按原版读出并接入，见 [original_cast_overlays.md](original_cast_overlays.md) §施法引导的合成；loader 的隐式结束符与 m/s 资源选择未读。
 
 ## 证据
 
@@ -110,9 +110,9 @@ D＝0、1、2、12、30 都执行过：后继指令首次可见的调用下标�
 - 子状态 1（`0x402afe`）：画；+0x7c−−，归零时重装 delay1、+0xa0−−；>0 则经 `0x401220` 留残影并 +0x9c++（下一张），≤0 → 子状态 2 并算肖像目标：y = base − h + oy + 480（下缘 480）；xdisp<0 时 x = base + 0x140（w > 440 居中，`0x402c19`）或 base − w + ox + 540（右缘 540），起点 base + 640 + ox；xdisp ≥ 0 时 x = base + ox + 100、起点 base − w + ox（`0x402c58`）。
 - 子状态 2（`0x402c87`）：画局部图与肖像，肖像 `0x45e80d(…,16,32)` 一步；到达 → 子状态 3，+0xa0 = 10、+0x28 = 16、`0x4c6f70 = 0x20002`。
 - 子状态 3（`0x402d79`）：画；`0x4c6fa8`−−，归零时重装 delay2、`0x4c6f5c`−−（≤0 → 子状态 4；≤1 → 重装值 +20）、+0x9e++（下一张肖像）。
-- 子状态 4（`0x402e47`）：+0x84 计到 16 期间以 mode 0 ／>16 以 0x20000000 画（过渡），==16 时 +0xa0(10) 倒数，再看 `0x4c1408`：−1 → phase 101 结束；非零 → 作为新程序指针进 phase 103；0 → 继续等。子状态 5–9（`0x403089..0x4031c7`）本包未读。預備動作 关闭时走的子状态 5–9 见 [menus_ui 預備動作](../runtime_observations/menus_ui/README.md#預備動作0x477c14-bit1)。
+- 子状态 4（`0x402e47`）：+0x84 计到 16 期间以 mode 0 ／>16 以 0x20000000 画（过渡），==16 时 +0xa0(10) 倒数，再看 `0x4c1408`：−1 → phase 101 结束；非零 → 作为新程序指针进 phase 103；0 → 继续等。子状态 5–9（`0x403089..0x4031c7`）本包未读，读法见 [original_cast_overlays.md](original_cast_overlays.md) §施法引导的合成 与 §无条带起手序列。預備動作 关闭时走的子状态 5–9 见 [menus_ui 預備動作](../runtime_observations/menus_ui/README.md#預備動作0x477c14-bit1)。
 
-**重制解释（`AnimalCastLead.compile`，每 call 一个状态）**：横幅（第 0 张，施法对象本身）从 (320,240)+位移 经 1＋8 call 阴影底、1 call 进 phase 13、逐 call `opening_step(…,16,32)` 到中心；1 call 装载；局部图自起始张滑入（每 call 先画后步）、每张停 delay1；肖像（第 1 张）滑入，第 1…S−1 张每张停 delay2、末张 +20；16 call 淡出＋10 call 停留后引导结束、EFFECTS 攻方脚本开始。雷歐納德（S=2，delay 6／6，条带 7 张）：9＋22＋1＋11＋30＋12＋26＋26 = **139 call**；局部图锚点 (217,92)、肖像锚点 (398,374)。
+**重制解释（`AnimalCastLead.compile`，每 call 一个状态）**：横幅（第 0 张，施法对象本身）从 (320,240)+位移 经 1＋8 call 阴影底、1 call 进 phase 13、逐 call `opening_step(…,16,32)` 到中心；1 call 装载；局部图自起始张滑入（每 call 先画后步）、每张停 delay1；肖像（第 1 张）滑入，第 1…S−1 张每张停 delay2、末张 +20；16 call（模式 0 不透明，不淡化）＋10 call 停留后引导结束（法术再接 31 call 淡化尾段，见 [original_cast_overlays.md](original_cast_overlays.md) §施法引导的合成）、EFFECTS 攻方脚本开始。雷歐納德（S=2，delay 6／6，条带 7 张）：9＋22＋1＋11＋30＋12＋26＋26 = **139 call**；局部图锚点 (217,92)、肖像锚点 (398,374)。
 
 **已接上的相关读法**：残影 `0x401220`（aniSetXYDisp 作为一次 call 的首条指令时 `0x402187` 留横幅残影、子状态 1 每张局部图到期且还有下一张时 `0x402b68` 留局部图残影；对象 179 层级 6，defProcShadowLeft `0x4010c0` 每 4 call 减一、24 call 消失）与 `0x446be0` 换边镜像（`0x401ddf` x 缩放 −1、`0x4021b8` x 位移取反；单位 `side_swapped` 由组装按 obj_Data9≠0 写入），见[效果对象运动包](original_effect_motion.md)。普攻的 phase 100 开场是 24 tick 缩放（`0x401060` 步进表）＋ 32 tick 叠层，`0x436490(+0xa0, 3, 0)` 是切入身份栏的文字生成（→ `0x434d10` mode 3），不是放声，见 [tick 计数包](original_tick_counts.md)；守方 AnimalDefense `0x4038a0` 中立 32 tick、命中停留 68 ＋ 10×位数 tick、落空 56 tick，之后是未读长度的屏幕过渡（`0x46098f`）——`CombatPresentationTiming` 的 TARGET_PAUSE／hurt_hold 已 static-derived，RECOVERY 仍 provisional；`k_action`（aniKStop／Right／Left）是受击位移方向旗，不是程序。
 
@@ -132,7 +132,7 @@ D＝0、1、2、12、30 都执行过：后继指令首次可见的调用下标�
 - Godot 只读 combat manifest；演出播放器只拥有表现状态，HP、目标、行动预算归 PlayLoop，只结算一次。
 - `hsl check field_coverage` 的 animal 表按通道取消费点：action → `combat_animation.ACTION_OPCODES`／`compile_action`；s_action 与 m_action → `AnimalCastLead.gd` 的 `CAST_OPCODES`。
 - provenance 写法：`static-derived docs/evidence_packets/static_reverse/animal_program_execution.md`。`AnimalCastLead.gd` layout：横幅中心 (320,240) `0x401ce1`／`0x402771`；局部图左上 x 100、肖像右缘 540 下缘 480、宽于 440 时居中（`0x4025c0`／`0x4025ff`／`0x402c0b`／`0x402c58`）；画外起点在一个宽度之外或 640。timing：aniShadowBG 1＋8 call（`0x402499`／`0x402752`）；aniMoveToCenter 与两个施法对象滑入每 call 一步 `0x45e80d(16,32)`（`0x402771`／`0x402ac9`／`0x402d27`）；局部图每张停 delay1 call（`0x402b41`）；肖像每张停 delay2 call、末张 +20（`0x402517`／`0x402e30`）；淡出计数 16（`0x402e49`）、停留 10（`0x402d3a`）。
-- provisional：子状态 4 的过渡／停留与外部释放 `0x4c1408`（参考录像 `13_leonard_special_skill_cutin` 的横幅→局部→双框→極速線顺序支持先后）；阴影底用地图透出＋压暗 0.35。
+- 子状态 4 的停留与外部释放 `0x4c1408`、阴影底（全黑屏形状 1..8／16 级交叉淡化）已由 [original_cast_overlays.md](original_cast_overlays.md) §施法引导的合成 读出（static-derived），`AnimalCastLead` 照此播放；参考录像 `13_leonard_special_skill_cutin` 的横幅→局部→双框→極速線顺序与之相符。
 
 ## 复现
 

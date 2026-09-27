@@ -1,6 +1,8 @@
 # First Battle Runtime Visual Evidence Index
 
-> evidence: runtime-measured · status: live · tools: hsltools/evidence/visual_index.py · updated: 2026-09-27
+> evidence: runtime-measured · status: live · tools: hsltools/evidence/visual_index.py · updated: 2026-09-28
+
+## 结论
 
 本文件索引第一战第一场景的**本机原版 runtime 视觉证据**。所有当前可用图片已经收敛到：
 
@@ -14,6 +16,10 @@ docs/evidence_packets/runtime_observations/first_battle_visuals/
 docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.json
 python3 tools/hsl.py check visual_evidence_index
 ```
+
+## 证据
+
+图片、恢复方式与逐项状态见下列三节与机器入口 JSON（runtime-measured）。
 
 ## 证据恢复说明
 
@@ -67,3 +73,15 @@ JSON 中每项都保留 `original_source_path` 和 `curation_provenance`。当�
 3. 文件名不是语义；以 JSON 中 `visual_state`、`status`、`use_for` 和 `not_for` 为准。
 4. `confirmed_negative_for_cancel_return` 只能阻止错误声明，不能作为取消成功证据。
 5. 旧 Godot、外部视频、未整理 candidate render 和 raw screenshot 不能单独升级成原版视觉事实。
+
+## 重制接线
+
+`game/battle/runtime/MapObjectPlacement.gd`、`game/battle/scene/BattleSceneInput.gd`、`game/common/BattleCameraController.gd` 的 provenance layout 引用本页；代码不读取图片，帧由人工对照使用。
+
+## 复现
+
+不可再生：原版侧录屏与导出帧是唯一记录。索引一致性：`python3 tools/hsl.py check visual_evidence_index`。
+
+## 边界
+
+- 只覆盖第一战第一场景；约束范围与不能证明的内容见「当前空间合同观测」。

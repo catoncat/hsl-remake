@@ -7,7 +7,7 @@
 - 原版：击杀后金钱浮字之后、升級判定之前，玩家击杀者且待领池非空时打开状态窗 mode 0xb；接收者固定为击杀者；左栏背包 8 格、右栏 WINDOW90 待领 5 行、下方 丟棄／倉庫／離開；手持一次一件，重要物品不能从池拾起；离开时剩余全部进队伍仓库，不丢物（static-derived；录像 16 段四帧 runtime-measured）。
 - 五钮原版语义（static-derived，`0x43a640` 按钮 Data6 与 `0x414c00` 列表点击）：重要物品行空手点不拾（`0x40e690`）；丟棄只丢手上一件、重要物与空手无效；倉庫把手上一件按重要／普通加入队伍仓库表（`0x44ef70`／`0x44f100`），空手无效；手持点有物背包格为交换、格物进手；空手点背包格拾起该物（`0x436e80`，录像 `frame_019`）；離開只在空手有效，池中剩余全部入仓库表（`0x42aad0`）。
 - 重制：`game/battle/scene/BattleLootPanel.gd` 与 `BattleSettlementController.gd` 同坐标、同资源绘制；拾取经 `claim_reward`，丟棄经 `discard_reward`，倉庫与離開经 `store_reward`（写入 `PartyStorageRules` 的队伍倉庫 `party_storage`），五钮语义与原版相同（static-derived）。
-- 差异：拿起的背包物点待领列表或别的背包格时回到原格（原版前者放入池、后者交换）；Esc／右键放回原格（原版放首空格）；字体为系统字（provisional）。
+- 差异：拿起的背包物点待领列表或别的背包格时回到原格（原版前者放入池、后者交换）；Esc／右键放回原格（原版放首空格）（provisional）；字号 24／15 已按原版 FONT.24／FONT.15 位图画，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库。
 
 ## 证据
 
@@ -69,7 +69,7 @@
 | 原 | 重制（`game/battle/scene/BattleLootPanel.gd`、`BattleSettlementController.gd`） |
 | --- | --- |
 | 接收者 = 击杀者／开箱者 | 按 `kills[0].attacker_id`／`owner_id`；从状态页重开时 = 所看成员；无成员下拉 |
-| 坐标、资源、字号级 | 同坐标同资源；字号 24／15 → 系统字 22／14（无 FONT.24 位图导入，provisional） |
+| 坐标、资源、字号级 | 同坐标同资源；字号 24／15 用原版 FONT.24／FONT.15 位图（默认字体，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库） |
 | 行 = 名字 + 数量 | 逐件实例按 code 归并显示；拾起取该 code 首个实例 |
 | 重要物品不能拾 | `BattleLootPanel` 行点击跳过 `important` 物（规则层 `claim_reward` 不设限，供非界面路线） |
 | 手持点有物格交换进手 | `claim_reward(slot,code)` 把格物换入池同一条目，控制器随即 `hold_entry` 把它放到手上 |

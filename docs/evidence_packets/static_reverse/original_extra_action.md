@@ -1,11 +1,11 @@
 # 额外行动：白光之翼与同一角色连续两次行动
 
-> evidence: static-derived · status: live · functions: 0x40e240, 0x40e2b0 · tools: hsltools/probes/extra_action.py, run_extra_attack_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x40e240, 0x40e2b0 · tools: hsltools/probes/extra_action.py, run_extra_attack_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版装备效果 bit8（源 ITEM227 白光之翼 `action_twice=1`）让同一角色在完成一次完整行动后立即重新进入自己的菜单／AI 决策；第一次重入跳过毒伤、状态递减与队列推进，第二次完成才走最终出口；已授予的第二次不因卸装消失，也不会叠出第三次（static-derived）。
-- 重制 `game/sim/ExtraActionRules.gd` 提出授予，`game/sim/loop/BattlePlayLoop.gd` 的 `extra_action`（owner_id、pending、sequence）是唯一状态，`game/battle/scene/BattleExtraActionCue.gd` 在前一段反馈结束后提示“再次行動”（static-derived；提示文字与 0.55 秒为 provisional）。
+- 重制 `game/sim/ExtraActionRules.gd` 提出授予，`game/sim/loop/BattlePlayLoop.gd` 的 `extra_action`（owner_id、pending、sequence）是唯一状态，原版没有“再次行動”提示也不停顿，重制原版值同样不提示；`game/battle/scene/BattleExtraActionCue.gd` 只在 OPT-GUIDE＝提示 时显示并停 0.55 秒（static-derived；提示为 remake-invented）。
 - 一致：5 组 getter 完整返回与 20 组玩家／AI 收尾前段均与重制合同相符；完整高位 dispatcher 资格与原全局 RNG 未读（static-derived）。
 
 ## 证据
@@ -42,7 +42,7 @@
 - `game/sim/loop/BattlePlayLoop.gd`：`extra_action` 在同一战斗字典；pending 只属当前存活行动者，死亡、剧情离场与三种终态清空；首次完成按现装备授予并重置本段移动／攻击资格，再次完成经 `game/sim/CoreTurnQueue.gd` 原出口。每段新 sequence；旧 `finish_exhausted_action` 在新段无效。
 - AI 两段各自重新规划（目标死亡、已治愈、MP 耗尽、禁魔走当前合法动作或 Wait），不重放第一段意图。
 - `game/battle/runtime/BattleCheckpoint.gd`：F5/F9 保留第二段、现装备与已确认位置，读取不调用授予入口（重制存档格式，不兼容原作存档）。
-- `game/battle/scene/BattleExtraActionCue.gd`：读 pending 与 sequence，前一段移动／交锋／遗言／EXP／领取／成长结束后显示，0.55 秒后开放菜单，避开 `BattleCommandMenu.layout_bounds()`；不加新音效（provisional：文字与时长）。
+- `game/battle/scene/BattleExtraActionCue.gd`：读 pending 与 sequence；原版值不显示、不停顿（原版无此提示）；OPT-GUIDE＝提示 时在前一段移动／交锋／遗言／EXP／领取／成长结束后显示，0.55 秒后开放菜单，避开 `BattleCommandMenu.layout_bounds()`；不加新音效（remake-invented：文字与时长）。
 
 ## 复现
 
@@ -58,5 +58,5 @@
 
 - 玩家／AI 高位完整 dispatcher 资格未执行，收尾只跑到共同 dispatcher 尾前。
 - 原全局 RNG、全部角色初始化与其他未实现异常／被动不在本包。
-- 原时钟与逐帧 UI 未读；“再次行動”提示是重制反馈。
+- 原时钟与逐帧 UI 未读；“再次行動”提示是重制反馈，只在 OPT-GUIDE＝提示 下出现。
 - 首战默认不授予白光之翼。

@@ -7,7 +7,7 @@
 - 原版在 EXP、金钱、LEVEL UP 浮字之后、行动交接与胜负扫描之前，为玩家对象打开状态窗 mode 10（全程序唯一调用点 `0x442a52`）；一次跨多级＝每级一个窗、每窗 5 点（受容量限制）；点数全部分完才出现 OK，右键／Esc 不能关闭；不可按的 ＋／－／OK 不画（static-derived；runtime-measured 录屏对照）。
 - 重制 `game/battle/scene/BattleGrowthPanel.gd` 按同一坐标、按钮可见性与逐级开窗实现，`BattleSceneMenus.offer_pending_growth` 在安静时刻开窗，点数在 EXP 结算时由 `ProgressionRules` 一次预占、OK 时 `allocate_growth` 提交（static-derived）。
 - 实机（§9）：窗在击杀者本次行动的余波里弹——阵亡台词关掉之后、EXP／金钱／LEVEL UP 浮字之后；窗开着时阶段字停在 7、回合计数不动，游戏停等；按 OK 后阶段 8 复查，随后才交接给下一方。重制 `offer_pending_growth` 的先后与停等与此一致。
-- 已知差异：重制属性为草稿预览、OK 一次提交（原版原地修改）；字体为系统字而非 FONT.24 位图；胜利一击先开窗的先后仍是静态读法（provisional）。参考录像无升級窗帧（negative-evidence）。
+- 已知差异：重制属性为草稿预览、OK 一次提交（原版原地修改）；胜利一击先开窗的先后仍是静态读法（provisional）；字体已按原版 FONT.24 位图画，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库。参考录像无升級窗帧（negative-evidence）。
 
 ## 证据
 
@@ -22,7 +22,7 @@
 | 0→2 | EXP 浮字 `0x4084e0(...,1)` | case 0 |
 | 2→4 | 金钱浮字 `0x4084e0(...,4)` | case 2 |
 | 4 | 掉落非空 → [獲得物品窗](original_getitem_window.md) | `0x4428b8`–`0x44290e` |
-| 6 | `exp ≥ next && 0x439f70(actor) != 0` → `0x4071e0(actor)`（`0x446c40(actor,+0xa2,7,3)` 角色演出，内容未读）→ `0x4084e0(...,6)` LEVEL UP 浮字 | `0x44294c`–`0x442971` |
+| 6 | `exp ≥ next && 0x439f70(actor) != 0` → `0x4071e0(actor)`（`0x446c40(actor,+0xa2,7,3)` 摆 use_magic 姿势，见 [original_cast_overlays.md](original_cast_overlays.md) §无条带起手序列）→ `0x4084e0(...,6)` LEVEL UP 浮字 | `0x44294c`–`0x442971` |
 | 8 | kind 3：`0x442a22` 阶段字减一，`0x436490(actor,10,0)` 生成文字，`0x43b4e0(actor,10,…)` 以等待指针 `0x4c42a0` 开 mode 10；NPC：循环 `0x439f80` 自动分配 | `0x4429c6`–`0x442a52` |
 
 - 多级：`0x43ac10` 把等待指针存进 root `+0x9c`；关窗时 root case 3 做 `*(+0x9c)+0x8c += 1`（阶段字 7→8），阶段 8 再查条件，够就再开一窗；不回阶段 6，窗间无 LEVEL UP 浮字；同一角色的窗连开完才交回。
@@ -128,7 +128,7 @@ mode 10：`0x43b4e0` case 10，`0x43bbca`–`0x43bd94`。对象由 `0x45e307(x,y
 | 原 | 重制 | 备注 |
 | --- | --- | --- |
 | root 头像 + WINDOW10 + 三条 | `game/battle/scene/BattleVitals.gd`（(0,14)） | |
-| WINDOW21 (12,174) 九行、x=92、行 28 | 同坐标，`shared/panels/WINDOW21.png` | 系统字 22px（provisional，替换点：FONT.24 位图） |
+| WINDOW21 (12,174) 九行、x=92、行 28 | 同坐标，`shared/panels/WINDOW21.png` | FONT.24 位图（默认字体，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库） |
 | ＋／－ (159/196, 181+28·row) | `TextureButton`，`_set_enabled` 不可按即隐藏 | §8 |
 | OK (168,395) 剩余 0 才出现 | 同 | |
 | WINDOW41 (20,442) | 同，数字右缘 220 | |
@@ -154,6 +154,6 @@ provenance 头写法：`layout: static-derived docs/evidence_packets/static_reve
 
 - 停等已实机核实（§9），但只测了一场一次：玩家第 2 场 · 惡夢的終曲（LEVEL052）、己方回合主动攻击、单级、无掉落。胜利一击、敌方回合反击升级、一次跨多级、同时有掉落的先后未实测；替换证据：原版一名成员差 1 级时打死最后一个敌人，看升級窗与胜利剧情的先后。
 - 失败的那一击同时升级时原版是否开窗未测；重制不开。
-- `0x4071e0` 角色演出内容未读。
+- `0x4071e0` 角色演出即施法者 use_magic 姿势（SHAPEDEF `use_magic`，每张 4 tick、末张停 40 tick，共 8n＋40 tick），读法见 [original_cast_overlays.md](original_cast_overlays.md) §无条带起手序列；升级时这一姿势重制是否播放不由本包证明。
 - `0x4c6390 & 0x200000` 的物理键为推断，重制未映射。
 - 坐标全部 static-derived，没有原帧像素比对。

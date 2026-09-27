@@ -14,9 +14,17 @@
 | GameOver 侧：`defProcGameOverBOSS = 58` → 0x42aea0、`defProcGameOverWord = 59` → 0x42afc0；`obj-999.obs` 只有 TITLE011 BOSS 与 TITLE012 Word 两个物件 | PROCESS.DEF、过程表、obj-999.obs | resource/static-derived |
 | 全 EXE 只有一处引用 STORYOVER 字串（0x42b7a0） | `/x 3c784700` 唯一命中 | static-derived |
 
-## 重制接入
+## 证据
+
+上表各行为 r2 线性反汇编与 PROCESS.DEF／obj-998.obs／obj-999.obs 对照（static-derived；resource-derived）。
+
+## 重制接线
 
 `tools/hsltools/assets/title_assets.py` 把 STORYOVER（tracked 语料 `content/imported/hsl/story_corpus/scripts/STORYOVER.json`）编成 `manifest.game_clear_epilogue.steps`（delay／message／sound／reveal），并解码 `WAV\WALKSOUND.WAV` → `content/imported/hsl/global/title/walksound.wav`；`game/title/GameClearScreen.gd` 按状态顺序把它放在 Over001 与 Over002 两段之间（状态 1／3／9，见 [原版配乐](original_music.md) §3.5），以黑场＋共享对白板播放。回执见 [story_scene_endgame_previews](../runtime_observations/story_scene_001_preview/README.md)。
+
+## 复现
+
+静态读无生成脚本，锚点按上表地址在 hsl01.exe 复核；尾声步骤由 `tools/hsltools/assets/title_assets.py` 重新生成。
 
 ## 边界
 

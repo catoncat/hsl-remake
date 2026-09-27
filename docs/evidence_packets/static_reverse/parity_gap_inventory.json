@@ -4,11 +4,11 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 93,
-    "sources": 523,
+    "sources": 495,
     "sources_by_kind": {
       "provenance": 204,
-      "sentence": 147,
-      "scope": 74,
+      "sentence": 121,
+      "scope": 72,
       "matrix": 85,
       "video": 13
     },
@@ -45,7 +45,7 @@
       "飘字与数字": 4
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 54,
+    "no_visible_effect_sources": 53,
     "resolved_sources": 18
   },
   "top": [
@@ -132,9 +132,7 @@
       "category": "面板与界面",
       "sources": [
         "provenance:game/battle/scene/BattleSceneMenus.gd|timing|provisional|",
-        "provenance:game/battle/scene/BattleSceneMenus.gd|timing|remake-invented|",
-        "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#5a394b291f",
-        "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#90132e5c4e"
+        "provenance:game/battle/scene/BattleSceneMenus.gd|timing|remake-invented|"
       ]
     },
     {
@@ -243,9 +241,7 @@
       "category": "剧情走位",
       "sources": [
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
-        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md",
-        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#366880ce24",
-        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#c405918b68"
+        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md"
       ]
     },
     {
@@ -320,9 +316,7 @@
       "sources": [
         "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点",
-        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#3a79262110",
-        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#9fcbff8d85"
+        "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无引导施法者撒星高度 h 取重制站立帧高"
       ]
     },
     {
@@ -569,7 +563,6 @@
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#02cf79451c",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#60b362847c",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#61d6dc0b80",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#85f8668377",
@@ -578,7 +571,6 @@
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#df9bc3bea0",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#e72017fdd8",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#fc8cf6cb1d",
-        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d",
         "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#c15a3a7a72"
       ]
     },
@@ -1037,7 +1029,6 @@
         "provenance:game/battle/scene/BattleLootPanel.gd|rules|remake-invented|",
         "provenance:game/sim/BattleRewardRules.gd|rules|remake-invented|",
         "provenance:game/sim/loop/BattleLoopRewards.gd|rules|remake-invented|",
-        "sentence:docs/evidence_packets/static_reverse/battle_reward_inputs.md#0533437cf8",
         "sentence:docs/evidence_packets/static_reverse/original_getitem_window.md#31b216cb50"
       ]
     },
@@ -1120,9 +1111,8 @@
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|",
         "provenance:game/sim/ScriptWalkPath.gd|rules|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|走位速度、延时、镜头、地图别名的引擎 loader",
-        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、按键快进（remake-invented）",
-        "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#b3aa4efbaf"
+        "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|跟随偏移、效果取值、地图别名的引擎 loader",
+        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、按键快进（remake-invented）"
       ]
     },
     {
@@ -1212,8 +1202,7 @@
       "category": "城镇与大地图",
       "sources": [
         "provenance:game/world/WorldMapRuntime.gd|layout|remake-invented|",
-        "provenance:game/world/WorldMapRuntime.gd|strings|remake-invented|",
-        "scope:docs/evidence_packets/resource_inventory/bigmap_performances.md|provisional|原版画面构图待 runtime 实录"
+        "provenance:game/world/WorldMapRuntime.gd|strings|remake-invented|"
       ]
     },
     {
@@ -1261,7 +1250,6 @@
         "matrix:玩家槽1与祭司002",
         "matrix:装备移动力与刷新",
         "sentence:docs/evidence_packets/static_reverse/original_growth_lifecycle.md#3d5d239d14",
-        "sentence:docs/evidence_packets/static_reverse/original_growth_refresh.md#1f3e9c1039",
         "sentence:docs/evidence_packets/static_reverse/original_weapon_effects.md#5bca2d0cb2"
       ]
     },
@@ -1306,7 +1294,6 @@
       "effort": "S",
       "category": "镜头",
       "sources": [
-        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#316196e704",
         "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5287ca512d"
       ]
     },
@@ -1330,7 +1317,6 @@
       "category": "面板与界面",
       "sources": [
         "scope:docs/evidence_packets/static_reverse/original_cast_overlays.md|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#9ca377ec04",
         "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#587e4a745c",
         "sentence:docs/evidence_packets/static_reverse/original_range_cells.md#a4479738ba"
       ]
@@ -1670,11 +1656,7 @@
         "provenance:game/battle/scene/BattlePresentation.gd|strings|remake-invented|docs/OPTIONS.md",
         "provenance:game/battle/scene/BattleStatusPanel.gd|strings|remake-invented|docs/OPTIONS.md",
         "scope:docs/evidence_packets/static_reverse/original_identity_bar.md|negative-evidence|",
-        "scope:docs/evidence_packets/static_reverse/original_identity_bar.md|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#62fdc3fe42",
-        "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#88493b597d",
-        "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#b81101abad",
-        "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#cee04b6d63"
+        "scope:docs/evidence_packets/static_reverse/original_identity_bar.md|provisional|"
       ]
     },
     {
@@ -2150,7 +2132,7 @@
         "provenance:game/sim/WinfailConditions.gd|rules|provisional|",
         "provenance:game/sim/WinfailScenarioRules.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|节奏、镜头、条件极性",
+        "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|条件极性",
         "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组",
         "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|negative-evidence|碰撞、动画时序、飞行物理、对象旗标 0x4000",
         "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化与精化行走的洪泛度量",
@@ -2158,8 +2140,6 @@
         "scope:docs/evidence_packets/static_reverse/second_battle_opening_script.md|provisional|",
         "scope:docs/evidence_packets/static_reverse/winfail_claim_limits.md|provisional|",
         "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#24101724eb",
-        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#49015c7643",
-        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#87910702c4",
         "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#eb956fa5c0",
         "sentence:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md#804d52228f",
         "sentence:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md#f8d341e457",
@@ -2216,11 +2196,7 @@
       "category": "特写与施法演出",
       "sources": [
         "provenance:game/battle/scene/AnimalCastLead.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#1151c8fef7",
-        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9",
-        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#5f27f2029e",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#73a76a3778"
+        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081"
       ]
     },
     {
@@ -2284,10 +2260,8 @@
       "sources": [
         "matrix:UI/战斗反馈",
         "scope:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md|provisional|rows marked B",
-        "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_script_camera_scroll.md|provisional|16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定）",
         "scope:docs/evidence_packets/static_reverse/original_tick_counts.md|provisional|rows marked 未读",
-        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/README.md#54ea50ee96",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#6a3f57a6e5",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#705a20c6c6",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f2b15754a0",
@@ -2316,7 +2290,6 @@
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#449ea52b57",
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#88c3799049",
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#9bca1a0d51",
-        "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#f0c8e6287a",
         "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#c06f5fe340",
         "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#1e230aa201"
       ]
@@ -2417,9 +2390,7 @@
       "effort": "S",
       "category": "特写与施法演出",
       "sources": [
-        "provenance:game/battle/scene/BattleCombatCutin.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#5f27f2029e",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#73a76a3778"
+        "provenance:game/battle/scene/BattleCombatCutin.gd|timing|provisional|"
       ]
     }
   ],
@@ -2678,10 +2649,6 @@
       {
         "source": "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#08d3771dce",
         "reason": "菜单悬停与展开的可见行为已按原函数执行对照接入；事件位来自哪种输入只影响命名"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#9993ed8f9f",
-        "reason": "行动后的菜单集合由公共行动恢复包决定，本包只管集合与几何"
       },
       {
         "source": "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#47af19c725",

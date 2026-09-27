@@ -110,7 +110,7 @@
 | select 选择窗 | `TownRuntime._show_select_window`：BOARD02 下槽，有头像 x 144（头像 x 12）、无头像 x 75；行 +17、行距 28、行数 > 4 顶 4、> 5 分两列；FONT.24 白字＋阴影，悬停脉冲绿去阴影；点击放 ACCEPT01；选人只列在队队员、末行「離開」；Esc／右键不取消；选择期间石纹板隐藏 | 同；淡入 16 tick 满级前不收点击、点选后淡出 16 tick 再交回（玩家点击路径；脚本直调 `choose` 仍立即交回）；选择期间石纹板是否仍在未核对 |
 | 商店窗 | `TownShopScreen`：同一套 WINDOW10／20／90／40 板与六钮、价格右缘 x 594、悬停说明框、BOARD02 拒绝消息；红字按物品职业掩码 | 同；不画 ↓ |
 | 卖出 | 手上物 → 货表，`WorldPartyRules.sell` 半价，重要物品拒卖 | 同 |
-| 买入 | 点货行扣钱，直接放进所显示成员首个空格 | 异，见 [original_shop_transaction](../../static_reverse/original_shop_transaction.md) |
+| 买入 | 空手点货行走 `TownRuntime.shop_pick`：扣钱、物品进手持，再点背包格放下，右键放回首空格 | 同，见 [original_shop_transaction](../../static_reverse/original_shop_transaction.md) §结论；买卖音效未放 |
 | 退店 | 右键／Esc 先关消息、再放回手上物、再退店；告别话照该店事件 te 脚本 | 同（告别话是否由退店触发未单独核对） |
 
 城镇数据：菜单树与 te 事件 `content/imported/hsl/global/world_map/towndef.json`（解释器 `game/sim/TownEventRules.gd`），文字／头像／货表 `town_messages.json`／`town_portraits.json`／`town_shop_items.json`（`tools/hsltools/assets/town_assets.py`）；城镇交易只改 hand-off 的 carry（金币与各成员 8 格背包）。
@@ -123,6 +123,6 @@
 
 - 商店只看了 席達鎮 三家店、一名成员：换人、商店里的 裝備／倉庫／丟棄、买入后放到别的成员背包、背包满与重要物品拒收（消息 607）无样本；背包格与货表行格位沿用战后窗静态坐标，未逐像素重测。
 - 红色 ↓ 的含义未核对。
-- 城镇根菜单项字体、颜色、悬停色与菜单板纹理只看了截图，未核对资源文件；根菜单悬停黄字仍是重制读法。
+- 城镇根菜单项字体与菜单板纹理只看了截图，未核对资源文件；根／子菜单悬停色已照石纹菜单行 `0x4561d0` 用 `0x42c130` 脉冲绿、阴影照画（static-derived，lane TOWNMENU2，见 [original_world_town](../../static_reverse/original_world_town.md)）。
 - select 选择窗只有静态读数，无原版实拍帧；tePlayerSelect 只列 `0x42caa0` 判为在队的队员（重制按 `in_party` 滤行），`[mode]` 1／2 再按 `+0x134` 位 `0xc0000000`／`0x80000000`、`0x40000000` 过滤（case 0x1e），这一层重制未做。
 - 读存档那一趟在帧 07 后游戏失去前台（`game_not_foreground`），商店与离城由后续三趟补采。

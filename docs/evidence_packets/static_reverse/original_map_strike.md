@@ -18,21 +18,32 @@
 - `0x40aa80` 的效果位 `param_4 & 2` 是回复 HP（`0x40abb0..0x40ac2c`：`+0xd8` 加到 `+0xdc` 封顶、绿字 kind 2），不碰受击计数；全函数只有 `0x40b474` 一处写 MP（`+0xe0`，`0x8000` HealMP 加 MP），没有 MP 伤害分支，所以不存在「只伤 MP」的法术，受击计数只来自 HP 伤害（`0x40ab73` 置 1）与负面位（static-derived）。重制 `MapHitState.hurt` 同样只看 HP 伤害与施加成功的负面状态，一致。
 - 重制对照：`SkillEffectScriptPlayer._present_effect` 对 Global 在 `clip["map_target"]`（`BattlePresentation._show_strike` 取 `cast_center`，无则守方格，格中心投到逻辑屏幕）放一份，Local 在每个受影响单位格中心各一份；Global 原点是光标格中心而非屏幕中心，地图边缘镜头夹住时两者不同，现按格中心（static-derived）。
 
-## 2. 录屏对照
+## 证据
+
+静态读法（static-derived）逐行见上表所列地址，r2 命令见「复现」。
+
+### 2. 录屏对照
 
 - **受击 hit 帧**（runtime-measured）：V08 `14_tactical_map_magic_aoe/frame_041.png`（源帧 10162，幻火命中后受者血条 24/43 时）裁 (255..305, 85..125) 滑动 `024-P.png`（69×99，原点 (41, 81)），灰度相关 **0.918**（次优 0.70），左上 (277, 111) → 锚点 (318, 192)；`frame_046`（源帧 10187，数字 19）同一姿势、正常颜色。两帧都在 60 tick 受击态内，姿势是 SHAPEDEF `hit`，不是站立帧。
 - **特效原点**（runtime-measured）：R7 的拟合"落光首帧中心 y≈101–103 → 原点 ≈ y 190，比目标格中心（脚下，y≈204）高约 14 px"（[effect_motion 包](../runtime_observations/effect_motion/README.md)）量的是**脚下**：024 的 hit 帧左脚底在锚点下 12 px（行 93 − 原点 81），frame_041 左脚底 y 204 ＝ 锚点 192 ＋ 12。原点 190 比锚点 192 高约 2 px，在落光换帧 ±3 px 抖动之内——与静态读法"目标格中心"一致，不是 −14 px。镜头按目标居中（`0x43bf30`），两次录屏的受者落在同一屏幕位置。
 
-## 3. 剩余（provisional）
+## 重制接线
 
-- Local 法术同时命中多个受者时，`0x4c1cec` 是否逐个换目标、每人一份特效，遍历没读；重制现为每个受影响单位一份。
-- 计数若日后给 MAGIC 行配偷钱／偷物／取消行动位（续作数据），原版规则会让受者进受击态；重制 `native_magic_*` 不结算这三位，届时要在 `MapHitState.hurt` 补上。
-- 不支持的结论：切入层 ATTACK_FLASH 击中闪光的寿命与外观（`attack-flash-hold` 项）；落雷／喷气的抖动是否也换 hit 帧在重制里的接法（同一 `0x407230`，原版是换的）。
+- `game/battle/scene/MapHitState.gd` 照 `0x407230`／`0x43f288`／`0x4420ba` 写受击态：60 tick 内 hit 帧、格心左右 ±1 px 抖动，第 60 tick 回格心与站立。
+- `BattlePresentation` 对法术通道回执（`_present_impact` → `MapHitState.begin_strike`）与地形毒回执（`_refresh_terrain_poison`）调它；`BattlePoisonGasPresentation` 对喷气与落雷受者调 `MapHitState.begin`。切入路径不调。
 
-## 复跑
+## 复现
 
 ```text
 r2 -q -e scr.color=0 -c 'pd 70 @ 0x4420a0; pd 30 @ 0x43ef36; pd 40 @ 0x43f288; pd 12 @ 0x407230' hsl01.exe
 r2 -q -e scr.color=0 -c 'pD 0xdb1 @ 0x40aa80; pD 0x30c @ 0x40b525' hsl01.exe   # 计数 [esp+0x14]，按压栈深度换算
 r2 -q -e scr.color=0 -c 'pd 60 @ 0x442a90; pxw 64 @ 0x4432c8; px 32 @ 0x443304; pd 20 @ 0x442d57; pd 20 @ 0x443068' hsl01.exe
 ```
+
+## 边界
+
+### 3. 剩余（provisional）
+
+- Local 法术同时命中多个受者时，`0x4c1cec` 是否逐个换目标、每人一份特效，遍历没读；重制现为每个受影响单位一份。
+- 计数若日后给 MAGIC 行配偷钱／偷物／取消行动位（续作数据），原版规则会让受者进受击态；重制 `native_magic_*` 不结算这三位，届时要在 `MapHitState.hurt` 补上。
+- 不支持的结论：切入层 ATTACK_FLASH 击中闪光的寿命与外观（`attack-flash-hold` 项）。落雷、喷气与地形毒的受击已接：三处都经同一 `MapHitState.begin` 换 hit 帧并抖 60 tick（见 [落雷包](original_drop_lightning.md)「重制接线」、[喷气包](original_poison_gas.md)）。

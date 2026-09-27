@@ -1,6 +1,6 @@
 # 绝技对象的命令程序：objcomd.txt 解释器 0x4051d0 的运动指令与逐 tick 原指令执行
 
-> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处 · status: live · functions: 0x401390, 0x401480, 0x403aaa, 0x403be2, 0x4050a0, 0x405140, 0x4051d0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc · tools: effect_motion.py, objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
+> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处 · status: live · functions: 0x401390, 0x401480, 0x403aaa, 0x403be2, 0x4050a0, 0x405140, 0x4051d0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 

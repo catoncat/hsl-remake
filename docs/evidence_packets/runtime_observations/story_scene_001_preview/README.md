@@ -1,12 +1,12 @@
 # 剧情场景与开场预览：story 模式播放、过场链与略過戰鬥的世界写入
 
-> evidence: runtime-measured; resource-derived: STORY／WINFAIL token、EVEF 坐标、地图管理员记录、对白号; provisional: 走位速度、延时、镜头、地图别名的引擎 loader · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured; resource-derived: STORY／WINFAIL token、EVEF 坐标、地图管理员记录、对白号; static-derived: 走位速度表、actDelay tick 单位、寻路停格; provisional: 跟随偏移、效果取值、地图别名的引擎 loader · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-28
 
 ## 结论
 
-- 原版每关 STORY 脚本按 token 顺序播放开场或整段过场，story-only 关（无 WINFAIL）播完由 `actSetNextPlayLevelEvent` 交接；token 顺序、cast、对白号与世界写入可从资源读出，走位速度、延时与镜头曲线未读（resource-derived；provisional）。
+- 原版每关 STORY 脚本按 token 顺序播放开场或整段过场，story-only 关（无 WINFAIL）播完由 `actSetNextPlayLevelEvent` 交接；token 顺序、cast、对白号与世界写入可从资源读出（resource-derived）；走位速度表、`actDelay` tick 单位、剧情镜头步进与寻路停格已静态读出并照做（static-derived，见「边界」所引各包）。
 - 重制把 `level_kind: story` 场景交给 `BattleOpeningCoordinator` 的 story 模式（不建 PlayLoop），全部注册 story 场景由 `run_story_scene_tests.gd` 的注册扫描逐个播完，除条件成员（「有才產生」咕嚕／克羅蒂）与 -1 物件号外零跳过 token（runtime-measured）。
-- 与原版的差异：走位、跟随偏移、删除时机、效果粒子与混色为重制取值；差异清单 `script-walk-path`（provisional）。
+- 与原版的差异：寻路链与停格已照原版（差异清单 `script-walk-path`，[original_script_walk_path](../../static_reverse/original_script_walk_path.md)）；跟随偏移、效果粒子与混色为重制取值（provisional）。
 
 ## 证据
 
@@ -62,7 +62,8 @@
 
 ## 边界
 
-- 走位速度（160 px/s）、跟随偏移、`actWalkAndDelete` 删除时机、淡黑 0.8 s、雨密度、闪电／光环淡出、火球帧时长均为重制取值（provisional）。
+- 走位速度已按脚本速度参数走 `0x4543d8` 表 1／2／2／4／8 px/tick（缺省 4）、`actDelay` 每单位 1 tick（[tick 映射表](../original_tick_rate/tick_mapping.md) 第 28 行）；寻路与停格照原版链（[original_script_walk_path](../../static_reverse/original_script_walk_path.md)）；`actWalkAndDelete` 走完后 engMIX 16 级逐 tick 淡出再注销（[original_script_departure](../../static_reverse/original_script_departure.md)）。
+- 跟随偏移、淡黑 0.8 s、雨密度、闪电／光环淡出、火球帧时长为重制取值（provisional）。
 - 地图别名的引擎 level→map loader 未定位；`SID_ENEMY023,8` 这类实例查找按「第 N 名插入者」绑定（provisional）。
 - 条件成员在队判定、-1 物件号（STORY013 `actWalkDispWait(-1,…)`）语义未读。
 - 「視為勝利」只施加胜利段的城镇／大地图写入，不施加对白、走位、入队与战斗奖励。

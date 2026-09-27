@@ -1,8 +1,16 @@
 # 玩家槽1的002祭司：绑定、成长与资源行动链
 
-> evidence: static-derived; resource-derived · status: live · functions: 0x409e40, 0x42c700, 0x42caa0, 0x42cac0, 0x448840, 0x44cb10 · tools: hsltools/data/priest.py, hsltools/probes/mana_item.py, hsltools/probes/priest.py, hsltools/probes/priest_motion.py, run_support_magic_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived · status: live · functions: 0x409e40, 0x42c700, 0x42caa0, 0x42cac0, 0x448840, 0x44cb10 · tools: hsltools/data/priest.py, hsltools/probes/mana_item.py, hsltools/probes/priest.py, hsltools/probes/priest_motion.py, run_support_magic_tests.gd · updated: 2026-09-28
 
 证据等级为`static-derived`（有界原指令）与`resource-derived`（源表／程序）。本批先核对第三战受控角色，发现“029／jobWise就是战斗緹娜”的旧路由假设错误，未把演出头像或模型候选当作战斗模板证据。
+
+## 结论
+
+- 玩家槽 1 的战斗角色是 002 祭司（jobPriest、錫杖 82、治癒之水）；029 是 jobWise 演出模板，不是战斗模板（static-derived，有界原指令）。
+
+## 证据
+
+以下三节为有界原指令与源表读法。
 
 ## 绑定更正
 
@@ -41,7 +49,7 @@ MP = 110*m/100 + c/4
 
 原版满MP目标也能用回魔药：`0x409e40` 把回复量夹到0，state108 浮出0，`0x444aba` 消耗一件；目标是相邻一格与自己（见[物品命令包](original_item_actions.md)）。麻痺者不能自行用药，回魔不解除禁魔。本批没有声明原AI自动回魔策略，AI继续按真实剩余MP选择合法治疗／物理／物品／等待。
 
-## 接入、系统对照和边界
+## 重制接线：接入、系统对照和边界
 
 `hsltools/data/priest.py`提供002模板与独立`PriestTrial.tscn`，共用唯一PlayLoop、地图、装备、攻法援物、AI、经验与恢复。player_unit_id进入存档配置；开发目标适配器共用结算出口，败北姓名、死亡声、初始镜头按实际主角读取。零移动不会再回退为雷欧纳德的5格。
 
@@ -52,7 +60,7 @@ MP = 110*m/100 + c/4
 | 主角与恢复 | 非Leonard控制／镜头／零预算、取消与移动资格、AI回退、存档与三终态 | 正式WINFAIL053及第三战编队由presentation单独接入 |
 | 其余能力 | 复用末击附毒、未来槽取消、麻痺、双击／两次行动 | MP打击正向、弱化／随机多状态、复活仍未开放 |
 
-029仍用于离场演出，jobWise87不因旧候选被错误启用；月花圓舞未实现，按既有命令合同隐藏，不借用氣刃斬。第一／第二战授予不变；开发场景的附加库存、受伤同伴及站位明确标注。PLAYERS原包字节差异和固定NPC策略继续保持。
+029仍用于离场演出，jobWise87不因旧候选被错误启用；月花圓舞已按原版读法实现（自身中心 3×3、逐目标五段、整次一付气力，见 [original_moon_dance.md](original_moon_dance.md)「结论」），不借用氣刃斬。第一／第二战授予不变；开发场景的附加库存、受伤同伴及站位明确标注。PLAYERS原包字节差异和固定NPC策略继续保持。
 
 三个探针默认离线检查，只有显式execute才重新运行固定EXE，写回另需write。原文件只读，未调用候选模型。[十一条实玩及截图](#复现)按具名路线、后续构图补拍和未知旧进程退出码分别记录；最终完整门禁退出码写本批提交说明。当前Godot测试不升级为全职业、正式第三战或原全局初始化等价。
 
@@ -65,3 +73,7 @@ MP = 110*m/100 + c/4
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
 | [priest](../runtime_observations/priest/receipt.json) | manual、healing_growth、mana_extra、phase_mobility、melee_series、ai_heal、ai_silence、ai_paralysis、victory、defeat、escape | `run_support_magic_tests.gd`；截图驱动已退役，回执为历史记录 |
+
+## 边界
+
+- 重制侧边界记在「重制接线：接入、系统对照和边界」末段；绑定回执只证明角色路由，不扩张为整次原 actInsertActor／首次队伍全局初始化。

@@ -1,8 +1,17 @@
 # Town Job-Up Readings (命運神殿 「升級」)
 
-> evidence: static-derived; runtime-measured: both teCheckJobUp2 successes, the 0x434680 writes and the exchanged records from the native 回憶錄 (original_save_format.md), the 兩棲族部落 menu after the writes; negative-evidence: 018 has no SHAPEDEF row; provisional: 018 keeps 009 frames · status: live · functions: 0x4072b0, 0x414220, 0x42c700, 0x42caa0, 0x434680, 0x434770, 0x4347f0, 0x434830, 0x4348a0, 0x4348f0, 0x4373f0, 0x437a40, 0x448370, 0x448420, 0x448840, 0x44e0e0, 0x454740, 0x4547a0, 0x454870, 0x4548b0, 0x454e20, 0x45b29e, 0x45e307 · tools: hsltools/data/story_corpus.py, hsltools/probes/campaign_actor.py, hsltools/probes/steal_ratio.py · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: both teCheckJobUp2 successes, the 0x434680 writes and the exchanged records from the native 回憶錄 (original_save_format.md), the 兩棲族部落 menu after the writes; negative-evidence: 018 has no SHAPEDEF row; provisional: 018 keeps 009 frames · status: live · functions: 0x4072b0, 0x414220, 0x42c700, 0x42caa0, 0x434680, 0x434770, 0x4347f0, 0x434830, 0x4348a0, 0x4348f0, 0x4373f0, 0x437a40, 0x448370, 0x448420, 0x448840, 0x44e0e0, 0x454740, 0x4547a0, 0x454870, 0x4548b0, 0x454e20, 0x45b29e, 0x45e307 · tools: hsltools/data/story_corpus.py, hsltools/probes/campaign_actor.py, hsltools/probes/steal_ratio.py · updated: 2026-09-28
 
 Evidence tier: `static-derived` from a bounded read of the town event VM `0x454e20` (`hsl01.exe`, sha256 `f0b5f835…`) plus the resource texts already restored by `tools/hsltools/data/story_corpus.py`. This packet records what the three TOWNDEF job-up tokens do; it does not claim the whole town VM, its window timing or the original GUI.
+
+## 结论
+
+- `teCheckJobUp`（case 0x1f）与 `teCheckJobUp2`（case 0x20）同一条件 helper `0x434770`：槽启用、`+0x60` 升级码非 0、str／dex／mind／con 四项不低于上限减 50；成功时拼稱號公告并经 `0x4348f0` 交换记录（旗 0x80000000／0x40000000），`teCheckJobUp2` 另跑 `0x434680` 兩棲族部落写入（static-derived；原生回憶錄实测 runtime-measured）。
+- `teCheckJobUpDeny`（100）不被分派，只记录（negative-evidence）；原版没有等级或道具要求。
+
+## 证据
+
+以下各节为 `0x454e20` 等的有界反汇编读法与原生回憶錄观察。
 
 ## Tokens and dispatch
 
@@ -105,7 +114,15 @@ EvilMonster numeric branch: `max_hp = str/3 + 170·hp_level/100 + 240·con/100`,
 - `teCheckJobUp2` 的失败路径（fail message／fail event）与城镇内首次 `teCheckJobUp` 未原生观察，只有 `0x454e20` case 0x1f／0x20 的读法。
 - `steal_ratio` 的字相加已接入（`JobUpRules.merge_source_template` 相加 `combat_profile.base_steal_ratio`，偷窃规则消费刷新后的 `steal_ratio` 工作值；读法见 [技能功能位「偷窃加成字」](original_skill_function_bits.md#证据)）。
 
-## Limits
+## 重制接线
+
+- `game/sim/TownEventRules.gd` 解释三个 token，`game/sim/JobUpRules.gd` 合并目标模板，`CampaignCarryRules` 承接，`ActorSpriteKey` 按目标行取形象（细节见「边界」）。
+
+## 复现
+
+`tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd`
+
+## 边界（Limits）
 
 - The original message window timing, the `0x45e307` presentation object and the face/shape attachment are not remade; the remake shows the announcement through the existing town face-message effect.
 - `0x434680`'s 兩棲族部落 writes are applied through the shared tree helpers; the resulting root menu (154／155／156／145), the 集會場 speakers (147／150／151), event 153's three messages and the 武器店 closing line were observed natively from a generated 回憶錄 with the writes pre-applied, and the trigger itself — both `teCheckJobUp2` successes with their announcements, the `0x434680` town rewrite and the exchanged records — ran natively from the `before_second_tier_at_temple` 回憶錄 (`runtime-measured`, see above). Still not observed natively: a `teCheckJobUp2` **failure** (the fail message / fail event path) and the first-tier `teCheckJobUp` token in a town (its battle form is the level-37 `actPlayerJobUpProcess`).

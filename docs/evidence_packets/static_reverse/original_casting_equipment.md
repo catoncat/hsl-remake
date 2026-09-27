@@ -1,6 +1,6 @@
 # 装备：生命转魔力、状态防护与魔法命中
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x406fe0, 0x4094c0, 0x40e210, 0x40e430, 0x439f80, 0x448420, 0x448840 · tools: hsltools/probes/casting_equipment.py, run_position_equipment_tests.gd · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: live · functions: 0x406fe0, 0x4094c0, 0x40e210, 0x40e430, 0x439f80, 0x448420, 0x448840 · tools: hsltools/probes/casting_equipment.py, run_position_equipment_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -20,7 +20,7 @@
 | `0x448840`→`0x448420` | 清旧工作值，再从当前装备累加命中、OR 防护／转化；保留已有中毒／禁魔 | 40 组 × 2 = 80 次完整返回，每次预置脏值，不叠加；HP/MP/ST/EXP 与状态原样 |
 | `0x4094c0`→`0x406fe0` | 两次三角采样，按可付生命换魔力；HP 最低 1，MP 独立封顶 | 243 组：144 组有效前段停在 `0x40959f` 首个数字 renderer 前；99 组无损耗完整返回（含 1HP 仍抽样） |
 | `0x40e56b` | 已有 HP 回复、MP 回复之后才调转化 | caller 字节；不执行含 renderer 的完整末次行动 dispatcher |
-| `0x439f80`、`0x43ae60` | 职业余量分配与资格更新 | 仅定位，未接入 |
+| `0x439f80`、`0x43ae60` | 职业余量分配与资格更新 | 本包仅定位；`0x439f80` 的 NPC 交锋升级已由 `EntryGrowthRules` 接入，见 [original_growth_lifecycle.md](original_growth_lifecycle.md) §重制接线；`0x43ae60` 未接入 |
 
 采样式：`low = max(1, floor(max_hp*8/100))`，`high = max(low+1, floor(max_hp*12/100))`，`half = floor((high-low)/2)`，结果 `low + half - r1 + r2`，r1、r2 ∈ 0..half；奇数跨度不等价于含两端的均匀采样。1HP 时不扣不回但仍抽两次；未装备时不抽。refresh 样例覆盖 job80／90、六件装备及组合、已有毒／禁魔；原 refresh 不查职业资格。
 
@@ -57,6 +57,6 @@
 
 - 转化后续 MP 数字的调用次序只有字节记录，完整含 renderer 的返回未执行。
 - 原样例不证明每个职业都可穿每件装备；产品按源 `use_job`。
-- 伙伴自动成长与动态学技（`0x439f80`／`0x43ae60`）未接入。
+- 伙伴自动成长 `0x439f80` 已接入（[original_growth_lifecycle.md](original_growth_lifecycle.md) §重制接线）；`0x43ae60` 资格更新未接入。
 - 其他命中附带状态与完整高位 dispatcher 不在本包。
 - 转化反馈无原音效绑定；0.7 秒反馈时钟为重制选择。

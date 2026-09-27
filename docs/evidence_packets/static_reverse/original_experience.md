@@ -1,6 +1,13 @@
 # 原作贡献、击杀与最终 EXP 发放
 
-> evidence: static-derived · status: live · functions: 0x40a5d0, 0x40aa80 · tools: hsltools/data/progression.py, hsltools/probes/experience.py, run_magic_experience_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x40a5d0, 0x40aa80 · tools: hsltools/data/progression.py, hsltools/probes/experience.py, run_magic_experience_tests.gd · updated: 2026-09-28
+
+## 结论
+
+- 原版经验按每次动作结算：每个目标的实际效果贡献经 `0x40a5d0` 换算，整次动作合并后加倍入账，再查升级；没有整场胜利经验池（static-derived；原指令执行）。
+- 重制 `ExperienceRules` 按同一换算提案、PlayLoop 唯一提交（static-derived）。
+
+## 证据
 
 机器入口 [original_experience.json](original_experience.json)，执行器 `tools/hsltools/probes/experience.py`。SHA 锁定的原 EXE 在隔离 Unicorn 内存中实际运行：73 次 `0x40a5d0` 正常返回、30 次最终发放／击杀状态后缀、8 次新增状态贡献观察。后两类不是整函数返回，不包含 UI、操作系统或队列回调；没有替换原 callee。
 
@@ -48,7 +55,7 @@ actor+0xa8 的低16位是连续数，高位0x10000标记本次行动是否击杀
 
 升级门槛 `min(2000, (level+1)*50)`：`0x44b678` 把等级 `+0x9c` 加 1 后乘 5、5、2，夹到 2000 写入 `+0x8c`；升级路径 `0x43a235..0x43a243` 从 EXP `+0x88` 减去该门槛，溢出保留（static-derived；两段原字节可用 `PYTHONPATH=tools python3 -m hsltools.data.progression --check --check-exe <hsl01.exe>` 核对）。
 
-## 当前实现与边界
+## 重制接线
 
 `ExperienceRules` 只计算提案，PlayLoop 是唯一提交者。技能全目标、经验数值及装备数据在 RNG 前验证；同一次施法不能在中途升级、修改魔击力或再次扣费。普通主攻／反击先完成本次交锋效果，再各自一次发放；被反击击倒的攻击者不获死后成长。死亡、奖励去重、物品领取、剧情与原有动作交接继续共用同一状态。
 
@@ -63,3 +70,9 @@ actor+0xa8 的低16位是连续数，高位0x10000标记本次行动是否击杀
 `python3 tools/hsl.py check experience`
 
 实际控件、图片和默认路线结果见 [魔法与经验验收](../runtime_observations/magic_experience/README.md)。保存的原返回检查、Godot规则通过、图证可读与全游戏等价是不同结论。
+
+## 边界
+
+- 后两类原指令执行是后缀，不是整函数返回，不含 UI、操作系统或队列回调。
+- 无成长模型的角色返回 `unsupported_growth_model`；角色初始化、全职业成长、全原全局随机流、特殊技伤害输入及完整死亡 handler 不由本包证明。
+- 暂存点数占用成长容量是重制策略（provisional）。

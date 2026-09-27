@@ -1,12 +1,12 @@
 # 成长：NPC 交锋升级、玩家学魔法与学绝技的独立入口
 
-> evidence: static-derived · status: live · functions: 0x40e870, 0x4348f0, 0x437080, 0x4373f0, 0x437970, 0x437a40, 0x439f80, 0x442720, 0x450840 · tools: hsltools/data/growth_lifecycle.py, hsltools/data/growth_lifecycle_trial.py, hsltools/probes/growth_lifecycle.py, hsltools/probes/job_up_learning.py, run_growth_lifecycle_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x40e870, 0x4348f0, 0x437080, 0x4373f0, 0x437970, 0x437a40, 0x439f80, 0x442720, 0x450840 · tools: hsltools/data/growth_lifecycle.py, hsltools/data/growth_lifecycle_trial.py, hsltools/probes/growth_lifecycle.py, hsltools/probes/job_up_learning.py, run_growth_lifecycle_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版三种成长来源互不混合：一般 NPC 交锋后由 `0x442720` 调 `0x439f80(actor,5)` 按职业配额自动加点、不学技；玩家 kind3 进入手动分配 UI；玩家学魔法由 `0x4373f0` 按当前职业与「存储等级+1」查表，学绝技由 `0x437a40`／`0x437970` 按职业、阶级与四项基础属性查表；两者都不抽随机数（static-derived）。
-- 重制 `game/sim/LearningRules.gd` 按成员当前 `job_code` 选表（80–99 共二十个职业），`BattlePlayLoop` 在交锋事务里一并提交等级与新技能，`BattleAftermath` 只显示已提交消息；NPC 交锋升级沿 `EntryGrowthRules.allocate`（static-derived）。
-- 已知差异：原手动 UI 对象的逐 tick 创建／点击时序未执行；开场阵容按场景顺序出生是重制调度（provisional）；全局随机流跨子系统的抽样次数未对齐，同一种子下出生等级不等于原版那一局（provisional）。
+- 重制 `game/sim/LearningRules.gd` 按成员当前 `job_code` 选表（80–99 共二十个职业），`BattlePlayLoop` 在交锋事务里一并提交等级与新技能，`BattleAftermath` 只显示已提交消息，学技飘字只在 OPT-INFO＝公開 下出现（原版只在升级窗 WINDOW31／WINDOW50 印学会的技能，见 [original_growth_window.md](original_growth_window.md)）；NPC 交锋升级沿 `EntryGrowthRules.allocate`（static-derived）。
+- 已知差异：原手动 UI 对象的逐 tick 创建／点击时序未执行（开窗先后已由 Wine 实机核对，见 [original_growth_window.md](original_growth_window.md) §结论）；开场阵容按场景顺序出生是重制调度（provisional）；全局随机流跨子系统的抽样次数未对齐，同一种子下出生等级不等于原版那一局（provisional）。
 
 ## 证据
 

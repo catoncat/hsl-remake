@@ -1,6 +1,6 @@
 # 36 格 remake-invented 时序 → 原版 tick 的映射表
 
-> evidence: runtime-measured: tick period and walk／idle cadence; static-derived: native tick counts cited per row and in original_tick_counts.md; resource-derived: object shape_delay and teDelay fields; provisional: rows marked B · status: live · tools: hsl_win32_memread.c · updated: 2026-09-27
+> evidence: runtime-measured: tick period and walk／idle cadence; static-derived: native tick counts cited per row and in original_tick_counts.md; resource-derived: object shape_delay and teDelay fields; provisional: rows marked B · status: live · tools: hsl_win32_memread.c · updated: 2026-09-28
 
 ## 结论
 
@@ -54,7 +54,7 @@
 | 32 | [OpeningCinematics](../../../../game/battle/runtime/opening/OpeningCinematics.gd) | 标题 `0.2 s` 入／`0.3 s` 出、`DARK_SCREEN_TICKS_PER_LEVEL 3`×16 级、镜头速度单位 | C／B | 标题淡入出无原版对应；`actDarkScreen` 对象 700 过程 `0x43e2d0` 每 3 tick 一级、16 级（[tick 计数 §5](../../static_reverse/original_tick_counts.md)）；镜头同 27 | 标题 C；暗屏与镜头 B |
 | 33 | [OpeningSelectPrompt](../../../../game/battle/runtime/opening/OpeningSelectPrompt.gd) | 提示节拍（`SELECT_CHOICE_GAP 6.0` 为像素间距） | C | 选择窗等待输入，无时钟 | — |
 | 34 | [OpeningStoryObjects](../../../../game/battle/runtime/opening/OpeningStoryObjects.gd) | 行走 `walk_pixels_per_second 160`、揭示 `default_step_seconds 0.04`、`actMoveDispWait` speed 走行走表 | A／B | 同 28 | 揭示 `0.016`；`×62.5`；行走 B（若 4 px/tick → 250 px/s） |
-| 35 | [TownRuntime](../../../../game/world/TownRuntime.gd) | 菜单节拍（`teDelay` 只记录不执行） | A | `teDelay [ticks]` 6–100（[town_event_semantics](../../static_reverse/town_event_semantics.md)） | `teDelay(n) = n × 0.016 s`（0.10–1.6 s） |
+| 35 | [TownRuntime](../../../../game/world/TownRuntime.gd) | 菜单节拍（`teDelay` 已执行，见处置表第 35 行） | A | `teDelay [ticks]` 6–100（[town_event_semantics](../../static_reverse/town_event_semantics.md)） | `teDelay(n) = n × 0.016 s`（0.10–1.6 s） |
 | 36 | [WorldMapRuntime](../../../../game/world/WorldMapRuntime.gd) | `travel_pixels_per_second 96`、`EDGE_SCROLL_PIXELS_PER_SECOND 240`、`track_reveal_seconds 0.6` | A／B／C | 大地图行者 16.16 速度 2／tick（[world_map_data](../../static_reverse/world_map_data.md) SR-069） | 行者 **125 px/s**（2 px × 62.5）；边缘滚动同 27（B）；轨迹揭示 C |
 统计：A（含混合）21 格，B 12 格，C 15 格（一格可含多类，按常数计）。纯 C 且无任何 A／B 成分的格：2、7、8、14、23、33（6 格）——这些的「改不改」只是产品选择，与 tick 测量无关。
 
@@ -66,13 +66,13 @@
 | --- | --- | --- | --- |
 | 1 | BattleAftermath | REWARD 换算（B 读出）；FADE 读出（死亡分支 0x43f0cd／0x4435e9，[阵亡演出](../../static_reverse/original_death_disposal.md)） | 奖励浮字 1.0 s → 46 tick = 0.736 s（第 32 tick 放行后 14 tick 淡出）；死亡 0.45 s 淡出 → 16 tick 纵向拉伸＋淡出 |
 | 2 | BattleAttackCue | **换算**（static-derived）：玩家确认的普攻与施法都不播；AI 起手按原版 tick——普攻射程 6、滑动、目标 12，施法射程 24（12 是离开时的重置值）、滑动、目标 24；滑动逐 tick 移植 `0x45e882`（步长 clamp(距离>>3, 2, 16)），见[施法覆盖层「起手节拍」](../../static_reverse/original_cast_overlays.md#起手节拍) | 0.24＋0.22＋0.24 s → 普攻 (6＋N＋12)、施法 (24＋N＋24) tick，N＝滑动 tick（一格 15、两格 20、三格 24、十二格 42） |
-| 3 | BattleCombatCutin | fps 经 tick；PLAYBACK_SPEED 取 **1.0 原速**，0.4 只剩开发开关 `HSL_CUTIN_PLAYBACK_SPEED`；绝技切入的施法引导改按该角色 ANIMAL `s_action` 程序逐 call 播放（`AnimalCastLead`：aniShadowBG 1＋8 call、aniMoveToCenter 与施法对象滑入按 `0x45e80d(16,32)`、局部图每张 delay1、肖像每张 delay2＋末张 20、过渡 16＋停留 10——尾段 provisional，[ANIMAL 程序包 §8](../../static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释)） | ANIMAL 更新 60 → 62.5 次/s（manifest 删 presentation_fps）；攻方程序 60 tick = 0.96 s（原速）；雷歐納德 氣刃斬 引导 139 tick = 2.22 s，再接 60 tick 攻方脚本 |
+| 3 | BattleCombatCutin | fps 经 tick；PLAYBACK_SPEED 取 **1.0 原速**，0.4 只剩开发开关 `HSL_CUTIN_PLAYBACK_SPEED`；绝技切入的施法引导改按该角色 ANIMAL `s_action` 程序逐 call 播放（`AnimalCastLead`：aniShadowBG 1＋8 call、aniMoveToCenter 与施法对象滑入按 `0x45e80d(16,32)`、局部图每张 delay1、肖像每张 delay2＋末张 20、过渡 16＋停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球——见 [original_cast_overlays](../../static_reverse/original_cast_overlays.md) §施法引导的合成，[ANIMAL 程序包 §8](../../static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释)） | ANIMAL 更新 60 → 62.5 次/s（manifest 删 presentation_fps）；攻方程序 60 tick = 0.96 s（原速）；雷歐納德 氣刃斬 引导 139 tick = 2.22 s，再接 60 tick 攻方脚本 |
 | 4 | BattleCommandMenu | 换算 | 悬停／展开 60 → 62.5 次/s（D=6 → 7 tick/帧 = 112 ms） |
 | 5 | BattleDepartureView | 换算 | 0.24 s → 16 tick = 0.256 s |
 | 6 | BattleDialogue | timing 改 provisional（分页属 layout）；按 `0x414280` 读出的 tick 计数换算（见上表第 6 行） | 溶解 0.29／0.32 s → 16 tick＝0.256 s；逐行 0.1 s → 3 px/tick 擦出 |
 | 7 | BattleExtraActionCue | **有意保留**；消融：置 0 只挂自身一条断言「readable second-action transition」，流程不需要，可删 | 0.55 s 不变 |
 | 8 | BattleNavigationCue | **有意保留** | 0.55 s 不变 |
-| 9 | BattlePresentation | 换算（B 读出）；trail／受击色 0.18 s 与落空音 0.12 s provisional | 伤害数字 0.9 s 上浮＋0.3 s 淡 → 10 tick/位＋34（2 位 54 tick = 0.864 s）；回复／MISS／状态字 0.7 s → 46 tick；上浮 26 px/s → 0.5 px/tick = 31 px/s |
+| 9 | BattlePresentation | 换算（B 读出）；trail／受击色 0.18 s 已删，地图受击改由 `MapHitState` 照 `0x407230` 放 60 tick hit 帧与左右抖动（static-derived）；落空音时刻 provisional | 伤害数字 0.9 s 上浮＋0.3 s 淡 → 10 tick/位＋34（2 位 54 tick = 0.864 s）；回复／MISS／状态字 0.7 s → 46 tick；上浮 26 px/s → 0.5 px/tick = 31 px/s |
 | 10 | BattleScriptActorPresentation | 换算 | 揭示步 0.04 s → 1 tick = 0.016 s |
 | 11 | BattleScriptCoordinator | 随 28 | 同 28 |
 | 12 | ~~FirstBattleStoryStage~~ | **已删除**：第一战信使改为 WINFAIL051 event 3 的脚本对象 10000，由 `BattleOpeningCoordinator` 按 8 号（`actWalkDispWait`／`actWalkAndDeleteWait` speed 表 px/tick）走位 | 不再有独立时序常数 |
@@ -83,18 +83,18 @@
 | 17 | BattleSceneRuntime | **手写开场已删除**：章节标题、自动推进 0.04／0.06／0.14 s 随 `opening_*` 一并删除（第一战标题与步进走 `OpeningCinematics`／协调器的标题子状态机／1 tick）；剩 `AI_PLAYBACK_STEP_SECONDS 0.35`／结果音乐淡出 1.2 s，无 tick 依据，有意保留（C） |
 | 18 | MagicImpactPresentation | 数字换算（B 读出）；VITALS 条 **有意保留** | 数字 0.75 s → 伤害 10 tick/位＋34、MISS 46 tick；条 0.45 s 不变 |
 | 19 | MoonDancePresentation | 换算；INTRO provisional（002 的 s_action 引导程序已读——同 `AnimalCastLead` 的四 opcode——但 002 的 s_shape 条未导入 combat manifest，模块仍用自己的三帧施放画） | 100 tick/s（×0.4 = 40 真实 tick/s）→ 62.5 真实 tick/s：每目标 180 tick 4.5 s → 2.88 s；风声 0.2 s → 20 tick |
-| 20／22／23／24／25 | （已删） | 归 3／SkillEffectScriptPlayer | 60 → 62.5 tick/s；CAST_LEAD_IN provisional（m_action 引导：程序已读同 s_action，`m_shape` 条未导入） |
+| 20／22／23／24／25 | （已删） | 归 3／SkillEffectScriptPlayer | 60 → 62.5 tick/s；有 `m_shape` 条的施法者按 m_action 引导逐 call 播，无条带者照原版无引导路径 8 call 压暗、第 9 call 姿势（[original_cast_overlays](../../static_reverse/original_cast_overlays.md) §无条带起手序列） |
 | 21 | PoisonArrowPresentation | 换算；删 LEAD | LEAD 0.65 s 删；攻方 0.8 s → 80 tick（面板全程可见）；命中 0.32 s → 32 tick；结果 0.92 s → 92 tick；帧 0.04 s → 5 tick |
 | 26 | ActorRuntime | 换算 | 待机 8 fps → 62.5/11 = 5.68 fps；行走帧 30 fps → 每 3 tick = 20.8 fps；覆盖帧率 8 → 待机节奏（provisional）；manifest `fps: 8` 字段不再读 |
 | 27 | BattleCameraController | 换算（B 读出 §3） | 240 px/s → 12 px/tick = 750 px/s |
 | 28 | BattleOpeningCoordinator | 换算；删 min_walk／walk_margin／camera_scroll（消融通过：运动闸门与 tick 模拟覆盖） | actDelay 0.025 → 0.016 s；非等待 token 0.04 → 0.016 s；行走 160 px/s → 0x4543d8 表 1／2／2／4／8 px/tick（默认 250 px/s）；镜头 0.6 s → 0x45e80d 逐 tick 模拟（剧情步进 16 px，320 px ≈ 21 tick）；标题 1.4 s → **159＋320（任意键／点击可跳）＋103 = 582 tick**（按 `0x452f32` 汇编，层级段各 51 tick） |
 | 29 | CombatPresentationTiming | fps 经 tick；受击三段改 tick 表达（runtime-reference＋provisional）；PLAYBACK_SPEED 迁入，取 **1.0**，环境变量开关唯一读取点在此；守方 AnimalDefense `0x4038a0` 读出（[tick 计数包 §6](../../static_reverse/original_tick_counts.md#6-普攻切入的守方对象-defprocanimaldefense0x4038a0slot-23受击停留)），TARGET_PAUSE／hurt_hold 落 A，RECOVERY 仍 B（屏幕过渡 `0x46098f` 未读） | TARGET_PAUSE 0.12／HURT 0.60／RECOVERY 0.16（源钟）→ 15／77／20 tick（77 = 录像 1.5 s ÷ 19.4 ms）→ **中立 32 tick（0.512 s）；命中停留 68 ＋ 10×伤害位数 tick（1 位 78 = 1.248 s）、落空 56 tick（0.896 s）；RECOVERY 20 保留** |
-| 30 | MapObjectFlash | provisional（TYPE.H objsScore/objsHitPoint 字段未导出） | 0.55 s／0.22 不变 |
+| 30 | MapObjectFlash | 换算（static-derived：`0x43cee7` 每 obj_HitPoint tick 一步、层级 16 降 obj_Score 级再升回，[地图物件闪烁](../../static_reverse/original_map_object_flash.md)） | 0.55 s／0.22 → 逐 tick 计数器 |
 | 31 | StoryEffectObjects | 换算 | 0.025 → 0.016 s；闪光寿命 obj_Data7×2 且 ≥0.2 s → obj_Data7 tick（≥3）；雨滴帧 0.05 s → 3 tick |
 | 32 | OpeningCinematics | 换算（标题斜坡、镜头）；暗屏 provisional（对象 700） | 标题 0.2／0.3 s → 逐 tick 走 `0x452f32` 子状态机（横幅减色＋纵向缩放、章节名交叉淡化，层级段 51 tick）；镜头速度单位 60 → 62.5 Hz；暗屏 0.8 s 不变 |
 | 33 | OpeningSelectPrompt | timing 改 n/a（无时钟） | — |
 | 34 | OpeningStoryObjects | 随 28 | 揭示 0.04 → 0.016 s；行走同 28 |
-| 35 | TownRuntime | provisional（teDelay 记录未执行） | teDelay(n) = n × 0.016 s 待接线 |
+| 35 | TownRuntime | 换算（static-derived：`0x454e20` case 0xe 存 N 到 `0x4c1d54`，链停 N＋1 tick 不出板；teMenuMoveOut 20 tick） | teDelay(n) → (n＋1) × 0.016 s，经 `OriginalTick` 执行 |
 | 36 | WorldMapRuntime | 换算；轨迹揭示 provisional（0x4280d0） | 行者 96 → 125 px/s；边缘滚动 240 → 750 px/s；揭示 0.6 s 不变 |
 | 邻 | GameOverScreen | 换算 | 淡入 0.9 s → 60 tick = 0.96 s |
 | 邻 | MapObjectAnimation | 换算 | 60 → 62.5 更新/s（fire_animation manifest 删 presentation_tick_hz） |

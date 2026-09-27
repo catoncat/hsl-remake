@@ -95,7 +95,7 @@ AI 绝技通道（AI 对象过程 `0x43ede0`）：
 | 结果数字 | — | `game/battle/scene/ResultNumberFloater.gd`（kind 0／2／3／5；kind 2／3／5 层级 16 停 16 tick 后每 2 tick 减 1、第 46 tick 删除、每 2 tick 上 1 px；首位 x − 7×(位数−1)、间距 14）；出现点：普通特写 (320,200) 命中后 40 tick（`0x40424c`→`0x404290`），脚本 (320,180)，地图法术 (x, y−0x34)，道具 (x, y−0x30)，回合末 (x, y−48)；`BattleCombatCutin.shows_miss`／`show_result`；绝技片段收尾 `SkillEffectScriptPlayer.clip_complete_tick`＝编译时间线结束与结果数字删除（`ResultNumberFloater.life_of`）的较晚者，受击帧保持到片段结束；普通续击时上一镜存活数字挪进 `BattleCombatCutin.result_tail` 走完寿命；`BattleAftermath` 的「$」浮字加 `gold_effects`；结果行只剩无原字形的说明（增益、净化、未回復、武器效果，provisional） |
 | 绝技脚本 | — | `game/battle/scene/SkillEffectScriptPlayer.gd` 实现 24 个 opcode，`compile(attack, defense, hit, seed, manifest)` 编 tick 时间线；`BattleCombatCutin._process_skill` 按 `presentation` 分流（script 58 行；毒魔箭、月花圓舞 走专属模块）；`game/sim/loop/BattleLoopRewards.gd` 把 `stolen_items` 并入待领池（`0x44f2d0`），StealGold 见 `0x40b4e8` |
 
-脚本播放 provisional（manifest `policy`／`replacement_evidence`）：时钟 60 tick/s；Random 系列 delay 读作每实例 `rand(0..delay)`、FixDelay 读作 `base + i×delay`、range 为 ±range/2；Angle／RoundRandom／Tornado 的几何按参数名推读；守方底图压暗 0.45、双页攻方 (160,320)／守方 (480,320)、结果至少保留 40 tick（无数字的说明行的重制下限），有数字时保留到数字删除；混合模式默认加色。
+脚本播放 provisional（manifest `policy`／`replacement_evidence`）：时钟 60 tick/s；aniInsertRandomObject／aniInsertHitRandomObject／…Disp 已按生成器 `0x401390` 的折叠偏移与累加延迟（每只比前一只晚 rand(delay)＋1）放置（static-derived，见 [original_objcomd_programs.md](original_objcomd_programs.md)「结论」），其余 Random 系列 delay 仍读作每实例 `rand(0..delay)`、FixDelay 读作 `base + i×delay`、range 为 ±range/2；Angle／RoundRandom／Tornado 的几何按参数名推读；守方底图压暗 0.45、双页攻方 (160,320)／守方 (480,320)、结果至少保留 40 tick（无数字的说明行的重制下限），有数字时保留到数字删除；混合模式默认加色。
 
 ## 复现
 
@@ -104,7 +104,7 @@ AI 绝技通道（AI 对象过程 `0x43ede0`）：
 ## 边界
 
 - 除偷窃加成字外全部为反编译阅读，幅度、持续、贡献与原全局 RNG 顺序的等价未声明；衰弱施法者的 `0x40a7b0`／`0x409a60` 数值未做原执行。
-- 对象寿命与舞台外对象的飞行按 `shape_number × (shape_delay+1)` 推读，`defProcObjectMove` 与 `obj_Data7` 运动程序未读。
+- 对象寿命与舞台外对象的飞行：`defProcObjectMove`（`0x4051d0`）与 `obj_Data7` 选中的 objcomd.txt 命令程序已读，221 个对象经原指令逐 tick 执行写进 `objcomd_motion.json`，重制按它画（见 [original_objcomd_programs.md](original_objcomd_programs.md)「结论」）；种子变体与模式插入几何的剩余差异记在该包「边界」。
 - `aniDelay` 计数器（`0x4022aa`）的调用频率未量。
 - phase 0x63（放行后）的处理未逐条读，按"放行即续读脚本"推定；绝技片段结束后的变暗／变亮过渡重制未做，数字尾巴因此在片段内走完而非叠在过渡下；数字对象与守方对象同 tick 先后未读（±1 tick）。
 - `*0x4c13f0` 在多目标施放中跨目标累积，重制按每目标 `experience_basis` 判定；功能绝技命中未生效时守方是否切受击帧未核。

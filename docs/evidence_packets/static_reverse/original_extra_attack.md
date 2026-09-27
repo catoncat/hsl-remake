@@ -1,12 +1,12 @@
 # 追加攻击：`double_attack` 一次追加打击与完整普通交锋
 
-> evidence: static-derived · status: live · functions: 0x4092a0, 0x4423c0 · tools: hsltools/probes/extra_attack.py, run_extra_attack_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x4092a0, 0x4423c0 · tools: hsltools/probes/extra_attack.py, run_extra_attack_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版效果 `0x8000`（装备 `double_attack` 或角色天赋 capability `0x200` 映射而来，二者 OR 不叠成第三击）让一个普通系列最多两击；主攻与反击系列都可追加；目标死亡立即截断余击与反击；中间一击不积气，最后一击命中才按其 queued 伤害积气（static-derived）。
 - 重制 `game/sim/CombatSequenceRules.gd` 的 `attack_count` 给出 1／2，`BattlePlayLoop._resolve_attack_series` 在同一战斗状态逐击结算，收据以 `followups`／`counter` 分记，全交锋结束后每参与者一次 EXP 入账（static-derived）。
-- 一致：43 组原指令结果（7+6 组完整返回、30 组有界前段／后缀）与重制合同相符；逐击说明文字（連擊1/2 等）为重制反馈（provisional）。命中附带状态等其他被动未随本调度恢复（未读）。
+- 一致：43 组原指令结果（7+6 组完整返回、30 组有界前段／后缀）与重制合同相符；原版每击只出数字（`0x404643`），重制原版值同样只出数字；逐击说明文字（連擊 1/2 等）是重制反馈，只在 OPT-INFO＝公開 下显示（remake-invented，见 `BattlePresentation.strike_words`）。命中附带状态等其他被动未随本调度恢复（未读）。
 
 ## 证据
 

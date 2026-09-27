@@ -2569,9 +2569,6 @@
     "scope:docs/evidence_packets/resource_inventory/bigmap_performances.md|negative-evidence|无 STORY／WINFAIL 关卡以大地图为底图": {
       "no_visible_effect": "事实说明：没有关卡以大地图为底图，重制同样不用"
     },
-    "scope:docs/evidence_packets/resource_inventory/bigmap_performances.md|provisional|原版画面构图待 runtime 实录": {
-      "item": "world-map-presentation"
-    },
     "scope:docs/evidence_packets/resource_inventory/original_story_corpus.md|provisional|": {
       "no_visible_effect": "语料里 ??? 说话人的标签取舍，已由逐关对白证据决定显示"
     },
@@ -2617,9 +2614,6 @@
     },
     "scope:docs/evidence_packets/runtime_observations/remake_notes.md|provisional|": {
       "item": "stage-placement"
-    },
-    "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|": {
-      "item": "timing-estimates"
     },
     "scope:docs/evidence_packets/static_reverse/original_ai_navigation.md|provisional|固定点逐格路线": {
       "item": "ai-first-battle-moves"
@@ -2735,14 +2729,6 @@
       "item": "title-flow-extras",
       "text": "`0x42dc90(2)` 的淡出时长未读。"
     },
-    "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#9ca377ec04": {
-      "item": "cast-overlay-rules",
-      "text": "I_RECT02..08 是同一框的其他配色，何时使用未读；"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/README.md#54ea50ee96": {
-      "item": "timing-estimates",
-      "text": "这些是「已知以 tick 计但计数未读」，见 [映射表](tick_mapping.md)。"
-    },
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#3b94795095": {
       "resolved": "章节标题进出与停留已按 0x452f32 八段子状态播放（R7-TITLE 589524ea，original_tick_counts §2）",
       "text": "标题淡入淡出与音乐淡出无原版对应，原章节标题停留未读；"
@@ -2763,10 +2749,6 @@
       "item": "closeup-object-timing",
       "text": "守方 AnimalDefense `0x4038a0` 中立 32 tick、命中停留 68 ＋ 10×位数 tick、落空 56 tick，之后是未读长度的屏幕过渡（`0x46098f`）——`CombatPresentationTiming` 的 TARGET_PAUSE／hurt_hold 已 static-derived，RECOVERY 仍 provisional；"
     },
-    "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#f0c8e6287a": {
-      "item": "closeup-object-timing",
-      "text": "子状态 5–9（`0x403089..0x4031c7`）本包未读。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#283487b0af": {
       "item": "ai-skill-buckets",
       "text": "原桶的全部技能与评分仍未复原；"
@@ -2782,10 +2764,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#bd9b3b702a": {
       "item": "draw-depth-states",
       "text": "defProcEffectProcess1／defProcDropRain／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#02cf79451c": {
-      "item": "special-object-motion",
-      "text": "重制从未读过这些程序。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#37f0c15aa3": {
       "item": "effect-sound-timing",
@@ -2814,18 +2792,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_field_coverage.md#fe3af7c6c3": {
       "item": "unconsumed-display-flags",
       "text": "表现层未读；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#88493b597d": {
-      "item": "identity-bar-bits",
-      "text": "不支持的结论：位 0x100（印数字）的置位者与 mode 3 切入栏是否置位未读——若切入栏条对象置位，则未知单位的切入栏会印数字（现按 P2 悬停样本与 `0x434d10` 的 `???` 处理）。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#b81101abad": {
-      "item": "identity-bar-bits",
-      "text": "仍未读：位 0x100 数字文本的置位者、氣力条（重制自创，未知时仍空）。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#cee04b6d63": {
-      "item": "identity-bar-bits",
-      "text": "置位者未读）"
     },
     "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#90a588b6d5": {
       "item": "item-use-rules",
@@ -3009,18 +2975,6 @@
     "provenance:game/battle/scene/LevelUpStars.gd|timing|remake-invented|": {
       "no_visible_effect": "星光的随机落点／速度／停留取表现 RNG（原全局 0x458c10 流），分布与原版同一区间"
     },
-    "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#1151c8fef7": {
-      "item": "cast-lead-phase",
-      "text": "效果开始是否等姿势，由施法对象子状态 5 之后的逐 tick 读决定（未读）。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#3a79262110": {
-      "item": "cast-strip-missing",
-      "text": "没有引导的施法者（026 等）在片段开始就姿势，与重制的 Cast_Star 环同时（**provisional**：环是重制替身，原版 `0x403128` 的等待 `+0x90` 计数未读；"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#9fcbff8d85": {
-      "item": "cast-strip-missing",
-      "text": "无 m_shape 引导的施法者：原版 `0x403128` 前等待的 `+0x90` 计数未读；"
-    },
     "provenance:game/sim/RangePropagationRules.gd|rules|remake-invented|": {
       "item": [
         "weapon-range-semantics",
@@ -3128,12 +3082,8 @@
       "item": "carry-model",
       "text": "原版关卡间 HP/MP、金币、物品结算与关间剧情／商店未读；"
     },
-    "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|走位速度、延时、镜头、地图别名的引擎 loader": {
+    "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|跟随偏移、效果取值、地图别名的引擎 loader": {
       "item": "script-walk-path"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#b3aa4efbaf": {
-      "item": "script-walk-path",
-      "text": "token 顺序、cast、对白号与世界写入可从资源读出，走位速度、延时与镜头曲线未读（resource-derived；"
     },
     "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#f225891ffc": {
       "item": "carry-model",
@@ -3142,20 +3092,12 @@
     "scope:docs/evidence_packets/static_reverse/original_dialogue_board.md|negative-evidence|无方框 SHP": {
       "resolved": "翻页提示认定为对白框处理器 0x414280 画的 Big5 字形 ▼／□，重制照做（original_dialogue_board 翻页提示节）"
     },
-    "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|节奏、镜头、条件极性": {
+    "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|条件极性": {
       "item": "winfail-readings"
     },
     "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#24101724eb": {
       "item": "winfail-readings",
       "text": "对象生命周期、阵营与脚点未读。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#49015c7643": {
-      "item": "winfail-readings",
-      "text": "节奏：走位 160 px/s、`actDelay` 每单位 0.025 s、标题 1.4 s、镜头滚动 0.6 s 为重制值，原延迟单位与走位速度未读。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#87910702c4": {
-      "item": "winfail-readings",
-      "text": "handler 时序、镜头与走位速度未读（resource-derived；"
     },
     "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#eb956fa5c0": {
       "item": "winfail-readings",
@@ -3250,10 +3192,6 @@
     "scope:docs/evidence_packets/static_reverse/original_job_stats.md|provisional|合成初始化": {
       "item": "npc-level-policy"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_growth_refresh.md#1f3e9c1039": {
-      "item": "job-model-gaps",
-      "text": "转职如何改变 job 与上限未读。"
-    },
     "scope:docs/evidence_packets/static_reverse/original_ohm_village.md|negative-evidence|STORY001／WINFAIL001 無增援與撤離勝利": {
       "no_visible_effect": "事实说明：原第一战脚本没有增援与撤离胜利分支，重制同样不做"
     },
@@ -3276,14 +3214,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_growth_lifecycle.md#3d5d239d14": {
       "item": "job-model-gaps",
       "text": "转职当刻不升级时是否另有补学入口未读（原 caller 只在升级／分配时调学习函数）。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#5a394b291f": {
-      "item": "growth-window-timing",
-      "text": "`0x4071e0` 角色演出内容未读。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#90132e5c4e": {
-      "item": "growth-window-timing",
-      "text": "`exp ≥ next && 0x439f70(actor) != 0` → `0x4071e0(actor)`（`0x446c40(actor,+0xa2,7,3)` 角色演出，内容未读）→ `0x4084e0(...,6)` LEVEL UP 浮字"
     },
     "sentence:docs/evidence_packets/static_reverse/original_large_actor.md#3bc365c4a1": {
       "item": "dispatcher-scheduling",
@@ -3313,14 +3243,6 @@
       "no_visible_effect": "菜单悬停与展开的可见行为已按原函数执行对照接入；事件位来自哪种输入只影响命名",
       "text": "事件位 `0x02000000`／`0x20000000` 由哪种输入产生未读，不把它们命名为已证明的 hover-enter／leave。"
     },
-    "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#9993ed8f9f": {
-      "no_visible_effect": "行动后的菜单集合由公共行动恢复包决定，本包只管集合与几何",
-      "text": "菜单事件位的完整语义、行动后留哪几项的上层选择不由本包证明（未读）。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9": {
-      "item": "cast-lead-phase",
-      "text": "效果开始是否等姿势未读（`cast-lead-phase`）。"
-    },
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f2b15754a0": {
       "item": "timing-estimates",
       "text": "[docs/PROVENANCE.md](../../../PROVENANCE.md) 中 timing＝`remake-invented` 的 36 格逐格分为 A 可直接换算／B 以 tick 计但计数未读／C 与 tick 无关；"
@@ -3336,10 +3258,6 @@
     "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#88c3799049": {
       "item": "closeup-object-timing",
       "text": "ANIMAL.TXT loader 的 token 编译、隐式结束符、m/s 资源选择与缺省未读（线索：入口对 `0x4c1b6c` 表记录与多个通道字段的选择）。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#62fdc3fe42": {
-      "item": "identity-bar-bits",
-      "text": "差异：位 0x100（条上印数字）的置位者未读、氣力条是重制自创（差异清单 `identity-bar-bits`，provisional）；"
     },
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#d003b16b63": {
       "item": "closeup-object-timing",
@@ -3441,21 +3359,9 @@
       "item": "loot-panel",
       "text": "手持背包物点待领列表（原版 `0x44f2d0` 放入池）与点别的背包格（原版交换）重制未做，回原格；"
     },
-    "sentence:docs/evidence_packets/static_reverse/battle_reward_inputs.md#0533437cf8": {
-      "item": "loot-panel",
-      "text": "原遗言随机选择、完整死亡 handler、原取物暂持／取消 handler 与跨关经济未读；"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_weapon_ranges.md#d25c396c21": {
       "item": "weapon-range-semantics",
       "text": "`0x44cb10` 敌方槽表满返回 0 的调用方处理未读；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d": {
-      "item": "special-object-motion",
-      "text": "对象寿命与舞台外对象的飞行按 `shape_number × (shape_delay+1)` 推读，`defProcObjectMove` 与 `obj_Data7` 运动程序未读。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#316196e704": {
-      "item": "cam-script-walk-variants",
-      "text": "`actWalkFollow*` 的镜头规则未读，重制不跟随；"
     },
     "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5287ca512d": {
       "item": "cam-script-walk-variants",
@@ -3504,7 +3410,7 @@
       "item": "cast-overlay-rules",
       "text": "绝技态 `0x445060`／`0x445067`（`0x40ba80`→`0x411a30`，在 `test ebx, eax` 成立时）的用途未读。"
     },
-    "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点": {
+    "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无引导施法者撒星高度 h 取重制站立帧高": {
       "item": "cast-strip-missing"
     },
     "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#de46f1c9bf": {
@@ -3519,28 +3425,6 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_map_object_flash.md|provisional|层级表逐项值与 16 位通道舍入未逐像素对照": {
       "item": "map-object-flash"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#5f27f2029e": {
-      "item": [
-        "attack-flash-hold",
-        "cast-lead-phase"
-      ],
-      "text": "击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional（`mapobjFlash` 已读，见 [地图物件闪烁](original_map_object_flash.md)）；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#73a76a3778": {
-      "item": [
-        "attack-flash-hold",
-        "cast-lead-phase"
-      ],
-      "text": "未读（保留 provisional）：击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#366880ce24": {
-      "item": "level-specific-placement",
-      "text": "行走过程本身的寻路停点未读，重制留在终点。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#c405918b68": {
-      "item": "level-specific-placement",
-      "text": "未读：沙羅尼亞近郊（LEVEL034）037_2 终点 (36,17)、禁忌之魂・墳場地下（LEVEL080）嚎 终点 (5,22) 四邻全是 0xff，`0x44fbd0` 原指令留在原格，原版却分别站 (34,17)、(5,19)（离行走起点一侧最近的可达格）；"
     },
     "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/actor_animation_groups.md": {
       "item": "shape-override-cadence"

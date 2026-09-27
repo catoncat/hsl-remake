@@ -1,12 +1,16 @@
 # 原作对白框：位置、顶槽、换行、四行窗口与上卷、擦出与淡入淡出
 
-> evidence: static-derived; runtime-measured: 2026-09-24 原版录屏 307.9–309.9 s 与 398.6–400.6 s（WINFAIL051 消息 369）; resource-derived: BOARD02 形状头; negative-evidence: 无方框 SHP · status: live · functions: 0x4072b0, 0x413960, 0x414220, 0x414280, 0x4144aa, 0x4145b4, 0x4145f6, 0x41461b, 0x414632, 0x414659, 0x4146c5, 0x4146e0, 0x41475b, 0x414794, 0x4148ba, 0x414933, 0x4149c3, 0x44fad0, 0x45194c, 0x455612, 0x45f5b4, 0x460884 · tools: capture_dialogue_selection_review.gd, run_presentation_contract_tests.gd, run_story_scene_tests.gd, run_ui_class_contract_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 2026-09-24 原版录屏 307.9–309.9 s 与 398.6–400.6 s（WINFAIL051 消息 369）; resource-derived: BOARD02 形状头; negative-evidence: 无方框 SHP · status: live · functions: 0x4072b0, 0x413960, 0x414220, 0x414280, 0x4144aa, 0x4145b4, 0x4145f6, 0x41461b, 0x414632, 0x414659, 0x4146c5, 0x4146e0, 0x41475b, 0x414794, 0x4148ba, 0x414933, 0x4149c3, 0x44fad0, 0x45194c, 0x455612, 0x45f5b4, 0x460884 · tools: capture_dialogue_selection_review.gd, run_presentation_contract_tests.gd, run_story_scene_tests.gd, run_ui_class_contract_tests.gd · updated: 2026-09-28
 
 **static-derived**（objdump／r2 反汇编阅读 `hsl01.exe`，sha256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；无 Wine、无有界执行）＋ **runtime-measured**（原版录屏 `录屏2026-09-24 中午12.03.22.mov`，游戏区 `crop=1280:960:112:140` 缩到 640×480，按源帧逐帧量）。对应[差异清单](parity_gap_inventory.md)的 `dialogue-top-slot`、`dialogue-timing`、`dialogue-line-breaks`、`dialogue-continue-marker`。
 
-## 一句话
+## 结论
 
 原版只在**脚本自带人脸的台词**（剧情 `actShapeMessage`、城镇 `teShapeMessage` 与金钱不足提示）把对白框放到画面上方（y 20），其余台词一律在下方（y 320），与说话人站在哪里无关；无说话人的旁白框水平居中。正文按每行 38 字节（全角 19 字）硬断行、不护专名，名字占第 0 行，框里一次显示 4 行；确认后正文逐行上卷（每次至多 4 行），不是整页翻。
+
+## 证据
+
+下列各节为原版读法（static-derived）与录屏读数（runtime-measured）。
 
 ## 对象与调用
 
@@ -82,16 +86,16 @@ WINFAIL051 消息 369（雷歐納德「……原來……弟兄們！你們也�
 | 闪烁 | 擦出到头时 `0x4146e0` 置 `+0x98 = 0x000a000a`、`+0x94 = 1`；子状态 2 每 tick `word +0x98` 减一，归零重载 10 并翻转 `+0x94`，为 1 才画字：亮 10 tick、灭 10 tick | `0x41475b–0x414782`、`0x414788` |
 | 录屏实测（307.9–309.9 s，最后一页） | 白色 1 px 空心方框，白边 20×20、左上 (605,438)，右下一条灰阴影；亮 0.17–0.20 s、灭 0.17–0.20 s（tick 19.4 ms × 10 ＝ 0.194 s） | — |
 
-重制：`BattleDialogue` 的 `continue_label` 只在还有下一页时显示 `▼`（系统字＋`TEXT_SHADOW`，格位 `MARKER_CELL`）；最后一页显示 `end_marker`（按录屏墨迹画的 20×20 白框＋(+1,+1) 阴影框，墨迹在格位 ＋(2,3)，落在 (605,438)）；两者在擦出结束后按 `MARKER_BLINK_TICKS = 10` 亮灭（`marker_shown`）。provisional：▼ 用系统字、原版位图字形未导入；□ 墨迹偏移 (2,3) 按录屏量。
+重制：`BattleDialogue` 的 `continue_label` 只在还有下一页时显示 `▼`（FONT.24 位图字形＋`TEXT_SHADOW`，格位 `MARKER_CELL`）；最后一页显示 `end_marker`（按录屏墨迹画的 20×20 白框＋(+1,+1) 阴影框，墨迹在格位 ＋(2,3)，落在 (605,438)）；两者在擦出结束后按 `MARKER_BLINK_TICKS = 10` 亮灭（`marker_shown`）。▼ 的字库见 [original_font_script/README.md](original_font_script/README.md) §各窗字库；provisional：□ 墨迹偏移 (2,3) 按录屏量。
 
-## 重制
+## 重制接线
 
 **框位**（单独一个可回退的提交）：`BattleDialogue`（所有对白宿主共用）`show_message` 放 (144,320)；`show_face_message`（`actShapeMessage`）放顶槽 y 20（`PANEL_TOP_TOP_SLOT`）；`show_narration` 默认把框居中到 x 75（`NARRATION_BOARD_X`），宿主给有名字无人脸的重制台词（城镇、选择提示）传 `centred = false` 保持 144。去掉了按说话人站位上移的重制规则（`place_for_speaker_logical_y`，原 y 0）。城镇的顶／底分工 `TownRuntime` 早已按录屏做（y 20），与本包静态读法一致。换下一句时旧框按上一帧所在位置溶解收起（`_shown_position`）。检查：`run_presentation_contract_tests.dialogue_contracts`（消融：人脸台词放底部、旁白不居中 → 2 条失败）、`run_story_scene_tests`（63 关两名密探的 `actShapeMessage` 在 y 20、克里歐司的 `actMessage` 在 320；7／8 关站在下缘的说话人仍在 320；消融：人脸台词放底部 → 2 条失败）。
 
 **换行、窗口与节奏**：
 
 - 换行：`BattleUISkin.message_rows` 按 `0x413960` 的 38 字节规则切行（ASCII 计 1、其余计 2，`\n` 硬换行），`BattleDialogue` 把行用 `\n` 接起来交给不自动换行的 Label。
-- 窗口：文字窗 `TextWindow` 在框 ＋ (17,17)，裁切高 112；名字（`UISkin.TEXT_GREEN`，原版 @3）是第 0 行，正文从第 1 行起（旁白从第 0 行起），行距 28，系统字 `UISkin.FONT_BODY` 居中在 24 px 字格上，阴影 `UISkin.TEXT_SHADOW`。
+- 窗口：文字窗 `TextWindow` 在框 ＋ (17,17)，裁切高 112；名字（`UISkin.TEXT_GREEN`，原版 @3）是第 0 行，正文从第 1 行起（旁白从第 0 行起），行距 28，`UISkin.FONT_BODY`（默认 FONT.24 位图，字格顶即行顶；系统字体选项下居中在 24 px 字格上），阴影 `UISkin.TEXT_SHADOW`。
 - 翻页：`advance_page` 把逻辑页 `top_row` 立刻前移「剩余行数与 4 的较小者」并返回 true，最后一屏返回 false；画面按 `scroll_offset`（3 px/tick、每 10 tick 一行）上卷。
 - 擦出：`reveal_height`（17 起每 tick ＋3 到 112）按框出现后的 tick 裁切文字窗。
 - 淡入淡出：`DISSOLVE_IN_SECONDS`／`DISSOLVE_OUT_SECONDS` 都是 16 tick。
@@ -105,9 +109,13 @@ WINFAIL051 消息 369（雷歐納德「……原來……弟兄們！你們也�
 
 1. 专名保护：原版 38 字节断点会切开名字（语料里 17 句，如「雪｜拉」「通行｜證」）；重制在断点切开 `protected_words.json` 里的名字时把断点前移到名字前，作为重制改善保留。检查 `run_ui_class_contract_tests.word_breaks` 按源字符对照行首（插入的换行不再掩盖切开的名字）；消融：不前移 → 34 条失败（17 句 × 对白／旁白两框）。
 2. 即时确认：原版在擦出（状态 1）与上卷（状态 4）期间不读确认键；重制保持宿主的即时输入，擦出／上卷只是画面，确认立即翻到下一屏或下一句。
-3. 名字后的冒号用全角「：」（原版半角 `:`），避免改动所有读 `speaker_label` 的断言；字形仍是系统字，原版位图字库未导入（`bitmap-font` 条目）。
+3. 名字后的冒号用全角「：」（原版半角 `:`），避免改动所有读 `speaker_label` 的断言（`bitmap-font` 条目）；字形已是原版 FONT.24 位图（见 [original_font_script/README.md](original_font_script/README.md) §各窗字库）。
 
-## 不支持的结论
+## 复现
 
-- 不声明原版位图字形与重制系统字体等宽；重制按 38 字节断行，墨迹宽度仍随系统字体。
+`tools/godot.sh --headless --script res://tests/run_all.gd -- run_presentation_contract_tests.gd`（`dialogue_contracts`）；原版侧为录屏读数，不可再生。
+
+## 边界
+
+- 默认字体下墨迹宽度随原版 FONT.24 位图；系统字体选项下重制仍按 38 字节断行，墨迹宽度随系统字体，不声明等宽。
 - 城镇 VM 另两条 shape 台词分支（`0x4553bb`、`0x45513e`）的 te 名未逐条对上，只确认它们都经 `0x455612` 以 `top = 1` 置顶。

@@ -1,12 +1,12 @@
 # 原版逻辑 tick 率：设计 16 ms（1000/60 整除）、本机 Wine 实测 19.4 ms
 
-> evidence: static-derived: frame pacer and per-tick dispatch; runtime-measured: live pacer registers, tick counting, walk and idle cadence; resource-derived: cnc-ddraw configuration · status: live · functions: 0x42c110, 0x42d240, 0x42d280, 0x42da60, 0x457830, 0x458760, 0x45f4b9, 0x45f50d, 0x45f5f7 · tools: hsl_runtime_probe.py, hsl_win32_memread.c · updated: 2026-09-27
+> evidence: static-derived: frame pacer and per-tick dispatch; runtime-measured: live pacer registers, tick counting, walk and idle cadence; resource-derived: cnc-ddraw configuration · status: live · functions: 0x42c110, 0x42d240, 0x42d280, 0x42da60, 0x457830, 0x458760, 0x45f4b9, 0x45f50d, 0x45f5f7 · tools: hsl_runtime_probe.py, hsl_win32_memread.c · updated: 2026-09-28
 
 ## 结论
 
 - 原版一个逻辑 tick＝一次主循环＝每个对象过程调用一次，设计周期 **16 ms**（`1000 / 60` 无符号整除，62.5 tick/s）；`aniDelay`／`actDelay`／`shape_delay`、离场 16 tick、资源恢复数字 40 tick、`defProcGameOverBOSS` 60 tick 等一切计数都以它为单位（static-derived；runtime-measured：周期寄存器读得 16）。
 - 本机 Wine 实测 **19.40 ms/tick**（51.6 tick/s），偏离来自宿主 `GetTickCount` 步进粗，不是游戏另有时钟（runtime-measured）。
-- 重制 `game/core/OriginalTick.gd` 按 16 ms/tick 换算，各演出模块经它把 tick 计数转成秒；参考录像（同一台机器录）量出的秒数按 19.4 ms/tick 折回 tick 再乘 16 ms（static-derived 换算；取 16 还是 19.4 为产品取舍，重制取 16）。
+- 重制 `game/common/OriginalTick.gd` 按 16 ms/tick 换算，各演出模块经它把 tick 计数转成秒；参考录像（同一台机器录）量出的秒数按 19.4 ms/tick 折回 tick 再乘 16 ms（static-derived 换算；取 16 还是 19.4 为产品取舍，重制取 16）。
 
 ## 证据
 
@@ -75,7 +75,7 @@ pace_last 跨度 32079 ms（帧边界时间戳与主机钟一致）
 
 ## 重制接线
 
-- `game/core/OriginalTick.gd` 持有 16 ms/tick 换算；消费本包的模块（provenance 头写 `docs/evidence_packets/runtime_observations/original_tick_rate/README.md`）：`MapObjectDrift`、`MapObjectAnimation`、`CommandPresentationRules`、`BattleCommandMenu`、`ActorRuntime`、`StoryEffectObjects`、`OpeningStoryObjects`、`OpeningCinematics`、`BattleOpeningCoordinator`、`BattleScriptCoordinator`、`SkillEffectScriptPlayer`、`BattlePanelMotion`、`BattleMagicPanel`、`BattleCameraController`、`BattleCombatCutin`、`BattleWinFailBoard`、`BattleDepartureView`、`MoonDancePresentation`、`PoisonArrowPresentation`、`WorldMapRuntime`、`GameOverScreen`。
+- `game/common/OriginalTick.gd` 持有 16 ms/tick 换算；消费本包的模块（provenance 头写 `docs/evidence_packets/runtime_observations/original_tick_rate/README.md`）：`MapObjectDrift`、`MapObjectAnimation`、`CommandPresentationRules`、`BattleCommandMenu`、`ActorRuntime`、`StoryEffectObjects`、`OpeningStoryObjects`、`OpeningCinematics`、`BattleOpeningCoordinator`、`BattleScriptCoordinator`、`SkillEffectScriptPlayer`、`BattlePanelMotion`、`BattleMagicPanel`、`BattleCameraController`、`BattleCombatCutin`、`BattleWinFailBoard`、`BattleDepartureView`、`MoonDancePresentation`、`PoisonArrowPresentation`、`WorldMapRuntime`、`GameOverScreen`。
 - `game/title/GameOverScreen.gd` timing：`defProcGameOverBOSS` `0x42aea0` 保持 60 tick＝0.96 s 后才可离开，淡入跨这段保持。
 - remake-invented 时序的逐格换算见 [tick_mapping.md](tick_mapping.md)。
 
@@ -97,5 +97,5 @@ wine ignored/bin/hsl_win32_memread.exe --pid $PID \
 
 - 只证明主循环节拍与 tick 单位，不证明任何具体演出的帧内容、混色或坐标等价。
 - 19.4 ms 是本机 Wine 11.0 + macOS 的实测；不同宿主的 `GetTickCount` 粒度不同，原作在 1990 年代目标机上更接近 16–17 ms。重制取 16 ms/tick（62.5 tick/s）为「原版设计时钟」，参考录像的秒数按 19.4 折算成 tick 后再对照。
-- 未测：对白逐字节奏、`defProcShowNumber` 数字寿命、菜单展开步进的 tick 数、脚本 `actWalk` 速度参数与像素/tick 的关系（玩家行走 4 px/tick 不自动等于脚本行走）。这些是「已知以 tick 计但计数未读」，见 [映射表](tick_mapping.md)。
+- 本包未测、已由静态读出的 tick 计数：对白溶解 16 tick 与逐行 3 px/tick 擦出（`0x414280`，[映射表](tick_mapping.md) 第 6 行）、`defProcShowNumber` 数字寿命 10×位数＋34 tick（[map_pose_floaters](../map_pose_floaters/README.md) §3）、系统卷轴展开每 tick 走剩余 1/8（`0x45e882`，[menus_ui](../menus_ui/README.md) §6）、脚本 `actWalk` 速度参数经 `0x4543d8` 表为 1／2／2／4／8 px/tick（缺省 4，[映射表](tick_mapping.md) 第 28 行）。其余「以 tick 计但计数未读」的格见映射表 B 类。
 - `hsl_record_window`（ScreenCaptureKit 单窗口录制）对 Wine 窗口只送出前 ~0.9 s 的 53 帧就停止（Godot 窗口正常，原因未定位），本包的计数因此全部走内存采样；`hsl_win32_memread.exe` 每次 `wine` 启动约 1.9 s，连续采样用 `--repeat`。游戏窗口创建前 `inspect` 报 `game_window_not_found`，等 5 s 再查；原版右键＝系统卷轴，用 `key escape` 关。

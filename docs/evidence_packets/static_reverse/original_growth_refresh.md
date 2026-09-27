@@ -1,6 +1,6 @@
 # 成长：五点预算、四属性上限与 SwordMan 派生刷新
 
-> evidence: static-derived; runtime-measured: 重制侧成长面板读数 · status: live · functions: 0x439f20, 0x439f70, 0x448370, 0x448840 · tools: hsl_native_growth_probe.py, hsl_native_growth_refresh_probe.py, hsltools/data/first_battle_formation.py · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 重制侧成长面板读数 · status: live · functions: 0x439f20, 0x439f70, 0x448370, 0x448840 · tools: hsl_native_growth_probe.py, hsl_native_growth_refresh_probe.py, hsltools/data/first_battle_formation.py · updated: 2026-09-28
 
 ## 结论
 
@@ -60,6 +60,6 @@ Leonard Lv1→2，草稿 str+2 dex+1 mind+1 con+1：确认后基础 18/17/9/13�
 ## 边界
 
 - 夹具角色是合成的：只含 Leonard 模板、四基础属性、等级、当前 HP/MP、基础抗性与可选初始装备。
-- 转职如何改变 job 与上限未读。
+- 转职的字段交换由 [original_town_job_up.md](original_town_job_up.md) §Exchange helper 读出：`0x4348f0` 照抄 job code 与形态、累加抗性／移动／数值层，不动等级与四基础属性，随后调 `0x448840` 按新职业分支刷新；本包夹具不含转职后的刷新样例。
 - 临时状态／增益标志等刷新分支不在夹具内。
 - 经验获得公式另见 [original_experience.md](original_experience.md)，本包只证门槛。

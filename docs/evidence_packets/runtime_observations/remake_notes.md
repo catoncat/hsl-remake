@@ -1,8 +1,12 @@
 # 重制运行时的声明边界（claim limits）原文
 
-> evidence: provisional; runtime-measured: 开场三条的候选帧来源; resource-derived: 地图／城镇的解码数据; static-derived: SR-069 读法与商店交易; negative-evidence: 纯首控帧与镜头曲线 · status: record-only · tools: run_battle_scene_runtime_tests.gd, run_town_scene_tests.gd · updated: 2026-09-27
+> evidence: provisional; runtime-measured: 开场三条的候选帧来源; resource-derived: 地图／城镇的解码数据; static-derived: SR-069 读法与商店交易; negative-evidence: 纯首控帧与镜头曲线 · status: record-only · tools: run_battle_scene_runtime_tests.gd, run_town_scene_tests.gd · updated: 2026-09-28
+
+## 结论
 
 下列六段原文原先内嵌在运行时的测试只读摘要里（`FirstSceneReadback.gd` 的 `*_summary`、`WorldMapRuntime.gd` 与 `TownRuntime.gd` 的 `summary`），现集中在这里，代码只留引用 id `remake_notes:<id>`（`claim_limit`／`layer_policy` 字段的值）。本包是记录，不是新证据：每条只是当时声明"不证明什么"的边界句；evidence 列取自句中的层级词，句里点名的正／反证据仍在各自的包里。
+
+## 证据
 
 | id | evidence | 原文 | 出处 |
 | --- | --- | --- | --- |
@@ -12,3 +16,16 @@
 | `opening_camera_claim_limit` | runtime-measured: 候选镜头锚点; negative-evidence: 镜头曲线 | Current camera anchors switch between promoted original-runtime visual contexts; they do not prove original camera curve, scroll speed, exact crop, actor paths, or first-control idle. | `FirstSceneReadback.opening_camera_summary().claim_limit` |
 | `world_map_claim_limit` | resource-derived: 地图数据; static-derived: SR-069 读法; provisional: 节奏与配乐 | Decoded map, points, routes and sprites are resource-derived; show phases, hidden lists, arrival branches, marker frames, hit box and the status bar follow SR-069's static readings; travel pacing, reveal timing, the reveal trigger, party sprite and music are remake readings. | `WorldMapRuntime.summary().claim_limit`；[原作世界／城镇](../static_reverse/original_world_town.md) |
 | `town_claim_limit` | resource-derived: 菜单树／文本／货表; static-derived: 商店交易; provisional: 布局与放置 | Menu tree, texts, goods and portraits are resource-derived; buy price, half-price selling, important-item refusal and their two messages are static-derived (original_shop_transaction.md); the root-screen composition (undimmed map, TownBG, WINDOW70 board, top/bottom dialogue boards) is runtime-measured on original frames (original_world_town); the extras' placement, shop layout, pacing and the member/first-empty-slot placement are remake readings. | `TownRuntime.summary().claim_limit`；[原作商店交易](../static_reverse/original_shop_transaction.md)、[城镇回执](original_world_town/README.md) |
+
+## 重制接线
+
+- `remake_notes:world_map_claim_limit` 由 `game/world/WorldMapRuntime.gd` 的 summary 引用，`remake_notes:town_claim_limit` 由 `game/world/TownRuntime.gd` 引用，`remake_notes:map_object_layer_policy` 由 `tests/support/RuntimeReadback.gd` 引用。
+- 出处列的 `FirstSceneReadback.gd` 已不在仓库，三条 `opening_*` 现无代码引用，只作历史记录。
+
+## 复现
+
+无：本页是原文记录，不含测量。
+
+## 边界
+
+- 原文是当时的边界句，不随后续实现更新；各项当前状态以原文点名的证据包为准（例如商店买入与城镇菜单见 [original_shop_transaction](../static_reverse/original_shop_transaction.md)、[original_world_town](../static_reverse/original_world_town.md)）。

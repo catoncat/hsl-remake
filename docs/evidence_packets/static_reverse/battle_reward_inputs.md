@@ -1,13 +1,13 @@
 # 战斗奖励：携带选择、掉落、击杀金与地图收尾
 
-> evidence: resource-derived; static-derived; runtime-measured: 携带 0x407c86 与掉落 0x44f5d3 的抽样都在全局流 0x458c10（整镜像模拟器） · status: live · functions: 0x407c40, 0x407cc0, 0x40ba20, 0x43ede0, 0x44e100, 0x44f580, 0x458c10 · tools: hsltools/data/battle_rewards.py, hsltools/data/combat_aftermath.py, hsltools/evidence/reward.py, hsltools/probes/_reward_rng_trace.py, run_battle_reward_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-27
+> evidence: resource-derived; static-derived; runtime-measured: 携带 0x407c86 与掉落 0x44f5d3 的抽样都在全局流 0x458c10（整镜像模拟器） · status: live · functions: 0x407c40, 0x407cc0, 0x40ba20, 0x43ede0, 0x44e100, 0x44f580, 0x458c10 · tools: hsltools/data/battle_rewards.py, hsltools/data/combat_aftermath.py, hsltools/evidence/reward.py, hsltools/probes/_reward_rng_trace.py, run_battle_reward_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：任何在首次过程 tick 时已是 pmEnemy 的演员出生时按 PLAYERS `carry_item` 取 TOWNDEF 候选表，从阈值 24 起逐项 `rand(101)` 选首个接受项放进背包；击杀时扫描受害者八槽，重要物品不抽，普通物品 `rand(100)+1 < get_ratio` 才掉一件；两处都抽全局流 `0x458c10`，不经伤害流（static-derived；runtime-measured）。
 - 击杀金：可控方击杀付进队伍金钱（封顶 `0x3b9ac9ff`，黃金的聖杯翻倍），非可控击杀者加到自己记录 +0x98，其收集进自己背包（static-derived）。
 - 重制：`BattleRewardRules` 与 PlayLoop 在初始化与增援时执行携带选择、击杀时生成带 sequence 的奖励收据与待领实例；地图收尾为遗言→淡出→地图 EXP→金币→領取→成长→后继（static-derived；收尾时长 provisional）。
-- 差异：玩家奖励资格与初始余额 0 是重制策略；领取为确认／延期交互，单战 F5／F9 存档是重制功能（provisional）。
+- 差异：玩家奖励资格与初始余额 0 是重制策略；单战 F5／F9 存档是重制功能（provisional）。领取窗照原版五钮语义，见 [original_getitem_window.md](original_getitem_window.md)。
 
 ## 证据
 
@@ -46,7 +46,7 @@
 
 - `game/sim/BattleRewardRules.gd`：`data_error` 拒绝缺行或 `status` 非零的演员；初始化与增援为敌方执行携带选择；可控角色击败敌方（含反击）获得共享金币与掉落；剧情离场与主角失败不发奖。
 - PlayLoop：一次完整交锋生成奖励收据、死亡去重与待领实例；范围伤害累计实际扣血与 kill_exp，一次扣费；死亡清异常、命中补偿、气力、行动与呼叫状态，掉落生成后清空死者背包。
-- 领取：sequence／revision／实例 ID 与接收者真实槽位校验；满包显式交换，换出物留池；普通剩余物二次确认放弃，重要物品不能放弃；「稍後領取」保留跨交锋，可从状态页或结果页重开（provisional）。
+- 领取：sequence／revision／实例 ID 与接收者真实槽位校验；满包显式交换，换出物留池；界面照原版獲得物品窗——丟棄只丢手上一件、重要物品不能丢，倉庫与離開把物品放进队伍倉庫，不再有「稍後領取」与整池放弃确认（static-derived，见 [original_getitem_window.md](original_getitem_window.md) §结论）；规则层 `finish_rewards` 仍留延期／放弃参数供非界面路线（provisional）。
 - 地图收尾：不可变收据驱动遗言（BOARD02／肖像／分页，取第一条非零遗言，不耗战斗 RNG）→ 淡出 0.45 秒 → 地图 EXP 1 秒（紫色上浮）→ 金币 → 領取 → 成长 → 后继；终局台词与结果页等待（provisional：时长、颜色、字体）。
 - F5／F9：安静行动、领取、结果边界的单战存档，校验和原子替换，恢复不重放发奖；配置不同或损坏拒绝（provisional，不是原版存档兼容）。
 
@@ -59,4 +59,4 @@
 - 完整奖励／经验／取物状态机没有隔离执行。
 - 源 `status` 非零模板的掉落资格未解，重制明确拒绝。
 - PLAYERS tracked 表与原包差异未解决；`--pak` 只核对 TOWNDEF 与候选表。
-- 原遗言随机选择、完整死亡 handler、原取物暂持／取消 handler 与跨关经济未读；獲得物品窗见 [original_getitem_window.md](original_getitem_window.md)。
+- 原遗言随机选择、完整死亡 handler 与跨关经济未读；取物暂持／右键放置与五钮 handler 已在 [original_getitem_window.md](original_getitem_window.md) §结论 读出（`0x438160`、`0x43a640`、`0x414c00`）。

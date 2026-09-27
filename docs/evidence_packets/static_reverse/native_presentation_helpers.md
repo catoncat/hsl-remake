@@ -1,13 +1,13 @@
 # 行动菜单：原函数执行对照（集合、布局、换帧、展开、说明字）
 
-> evidence: static-derived; runtime-measured: 2026-09-27 Wine 原版地图边缘行动环一帧、原版悬停录像一帧（说明字位置与颜色） · status: live · functions: 0x409090, 0x43bf30, 0x43e5d0, 0x43ea30, 0x4477b0, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x460884 · tools: hsl_native_presentation_probe.py, hsltools/assets/combat_animation.py, hsltools/assets/command_frames.py, hsltools/assets/menu_layout.py, run_presentation_contract_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 2026-09-27 Wine 原版地图边缘行动环一帧、原版悬停录像一帧（说明字位置与颜色） · status: live · functions: 0x409090, 0x43bf30, 0x43e5d0, 0x43ea30, 0x4477b0, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x460884 · tools: hsl_native_presentation_probe.py, hsltools/assets/combat_animation.py, hsltools/assets/command_frames.py, hsltools/assets/menu_layout.py, run_presentation_contract_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版行动菜单由 `0x43ea30` 按 EXE 内 UTF-16 字符表选图标集合，用 256 项整数表 `0x4a35fc／0x4a39fc`（横 ×66、纵 ×72、右移 16，中心 y−28，六项步进 +1、七项索引掩 `~7`）排位；换帧走 `0x45e5a6`（循环）／`0x45e5d9`（往返），展开走 `0x45e80d`（容差 2、步进上限 8）；地图边缘处环心仍在行动者，只把全部图标目标整体平移到图标中心离地图边 ≥`0x15` px，不看视口——开环前 `0x43bf30` 已把镜头对准行动者（static-derived）。
 - 每个图标下都印中文说明字，原版默认就画，与数据包版本无关（EXE 代码）：`0x43e5d0` 消息 −1 取 `+0xac`（obj_Data9 `bcommand_N` → resource.h id 17／18／19／20／23／24／25／26／28／29／40）经 `0x4477b0` 查 RESOURCE 串，用 FONT.15 面 `[0x4c1adc]` 以 `0x460884` 画两遍：阴影 (x+1, cy+14)、正文 (x, cy+13)，`x = cx − 21 + (42 − 8·字节数)/2`（42 px 内按字节居中）；颜色 RGB565 正文 `0xffff`／阴影 `0x8430`，对象 `+0x80` 带 `0x02000000`（悬停换帧同一位）时 `0xffef`／`0x8420`（浅黄／橄榄）；位置只跟中心走，悬停放大后字压在放大图标下半部（static-derived，两帧原版像素相符）。字形繁简随数据包 RESOURCE 文本：本机 Wine 包显示简体，导入的 RESOURCE.TXT 为 Big5 繁体，同一 id。
 - 重制 `CommandPresentationRules`／`BattleCommandMenu` 消费（边缘平移在 `BattleCommandMenu.place_near`，收地图矩形） `menu_layout.py` 生成的 `native_layout.json` 与 `command_frames.py` 的源帧；三个 helper 在隔离 x86 仿真里逐次执行，Godot 用同一输入逐步比较（static-derived）。
-- 差异：菜单更新频率按每秒 60 次是重制时钟选择（provisional）；菜单事件位的完整语义、行动后留哪几项的上层选择不由本包证明（未读）。
+- 菜单每 tick 更新一次，按原版设计周期 16 ms（62.5 次/秒，`OriginalTick.TICKS_PER_SECOND`），见 [original_tick_rate](../runtime_observations/original_tick_rate/README.md) §结论；差异：菜单事件位的完整语义、行动后留哪几项的上层选择不由本包证明（未读）。
 
 ## 证据
 
@@ -56,7 +56,7 @@
 - 说明字：`BattleCommandMenu.gd` 每个图标子节点 `Caption`，默认就画（不读 OPT-GUIDE）；字号 14＝FONT.15 面，88×16 框以中心居中、顶在中心 y+13，阴影偏移 (1,1)，色 `CAPTION_*` 四常量，悬停换色；串为 RESOURCE 同 id 的繁体，简体显示走字形替换层。
 - 普通攻击：`PYTHONPATH=tools python3 -m hsltools.assets.combat_animation --bind-programs` 按 [ANIMAL 完整程序](animal_program_execution.md) 保留指令原序（Delay 的设置与退出各占一次调用、SetShape 让出、Flash 继续读后继指令），雷歐納德帧 1／2／3 出现在第 14／24／29 次调用、末段等待收束于 60 次。
 - provenance 写法：`## provenance:` 维度写 `static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md`。`CommandPresentationRules.gd` rules：0x43ea30 整数表 0x4a35fc／0x4a39fc 与六／七项索引；`BattleCommandMenu.gd` layout：经 CommandPresentationRules 取整数中心，`place_near(anchor, 地图矩形)` 做地图边平移（`BattleSceneMenus.map_logical_rect`；道具子菜单同）。
-- provisional：菜单更新按每秒 60 次；替换点是 [原版 tick 速率](../runtime_observations/original_tick_rate/README.md) 的调度结论。
+- 菜单更新：`BattleCommandMenu.HOVER_UPDATES_PER_SECOND` 取 `OriginalTick.TICKS_PER_SECOND`（16 ms/tick），依据 [原版 tick 速率](../runtime_observations/original_tick_rate/README.md) 的调度结论。
 
 ## 复现
 

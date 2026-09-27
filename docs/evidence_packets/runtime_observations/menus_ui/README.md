@@ -5,8 +5,8 @@
 ## 结论
 
 - 原版：标题版本号「V1.06」常驻左下，悬停只有火花不亮起，確認「開始新故事」亮起停 0.75 s 再 0.55 s 淡黑，離開遊戲 同样先经按住计时再淡出退出，戰場記錄 无记录弹消息 12「無存檔記錄」；目标格光标（玩家选目标与敌方预告）都是 `I_RECT01.SHP` 黄框；系统卷轴打开放 ACCEPT01，確定／取消压在卷轴中央 (256,217)、无问句、不压暗，存档完成提示在 BOARD02 (75,320)；战斗卷轴只在刚打开的玩家行动环上按 Esc／右键才开（选格、移动后的环、敌方回合、首个行动环之前、额外行动都不开），其 讀取回憶錄 开 Title031 八格读取列表；状态页开页总是属性页，状态页页按钮排在 y 387；技能页是状态窗 root mode 8／9，十行起才有滚动条；系统卷轴战斗版自静止位下方 400 px、大地图版自上方 600 px 卷入，展开每 tick 走剩余距离的 1/8（封顶 40、至少 2 px），收起 40 px/tick 回起点（runtime-measured；static-derived）。
-- 重制：`BattleSelectionCursor`／`BattleAttackCue` 画 I_RECT01，`TitleScreen` 原版值悬停不亮起、三项同一亮起停留与淡黑，`BattleSystemMenu` 开卷放 ACCEPT01、照原版位置与时长出確定／取消（原版值无问句）与完成提示，`BattleStatusPanel`／`BattleMagicPanel` 按 mode 0／1 与技能页读法落地；預備動作 开关做在 設定選項 第二行（`GameSettings.ready_action`）（runtime-measured）。
-- 差异：标题悬停亮起与卷轴确认问句收进 OPT-GUIDE＝提示；标题悬停火花的字形未认定、不画；回憶錄列表、標題语义与 GAME OVER 位置时长是重制读法；只有一份录屏样本的时长与未命中的声音保持 provisional（provisional）。
+- 重制：`BattleSelectionCursor` 在各选格态轮换 I_rect01..08、`BattleAttackCue` 画 I_RECT01，`TitleScreen` 原版值悬停不亮起、三项同一亮起停留与淡黑，`BattleSystemMenu` 开卷放 ACCEPT01、照原版位置与时长出確定／取消（原版值无问句）与完成提示，`BattleStatusPanel`／`BattleMagicPanel` 按 mode 0／1 与技能页读法落地；預備動作 开关做在 設定選項 第二行（`GameSettings.ready_action`）（runtime-measured）。
+- 差异：标题悬停亮起与卷轴确认问句收进 OPT-GUIDE＝提示；标题悬停火花（对象 788 Menu_Star，[original_title_ornaments](../original_title_ornaments/README.md)）重制不画；回憶錄列表、標題语义与 GAME OVER 位置时长是重制读法；只有一份录屏样本的时长与未命中的声音保持 provisional（provisional）。
 
 ## 证据
 
@@ -23,7 +23,7 @@
 | --- | --- | --- | --- | --- |
 | 版本号 | 左下常驻白字「V1.06」，定宽点阵字 8 px 步进，墨迹 (3,459)–(41,467)，整段录屏不变 | runtime-measured | 没有 | ASCFONT.15 半角字（8×15 格，墨迹行 3–11、列 1–7），格左上 (2,456)，墨迹 (3,459)–(41,467) 与原版逐像素一致 |
 | 確認「開始新故事」 | 点击后该项红色亮起字形（Title024 系）在 13.52 s 出现，停 0.75 s；14.27→14.82 s 整屏亮度线性降到黑（0.55 s） | runtime-measured | 0.6 s 直接淡黑 | 亮起停 0.75 s，再 0.55 s 淡黑（`CONFIRM_HOLD_SECONDS`／`FADE_TO_BLACK_SECONDS`）；戰場記錄 同用（provisional） |
-| 悬停 | 原版悬停只有火花，红色亮起出现在点击时 | runtime-measured | 悬停即亮起 | 原版值悬停不亮起；OPT-GUIDE＝提示 时悬停项亮起；方向键选中项亮起（重制键盘路径）；火花字形未认定，不画 |
+| 悬停 | 原版悬停只有火花，红色亮起出现在点击时 | runtime-measured | 悬停即亮起 | 原版值悬停不亮起；OPT-GUIDE＝提示 时悬停项亮起；方向键选中项亮起（重制键盘路径）；火花不画 |
 | 離開遊戲 | 标题 handler `0x423f00`：每项先经 state 3 `0x424004` 按住计时，码 2 `0x4240b2` 经 `0x42cb60`（置 `0xa0000000`）与 `0x42dc90(2)` 淡出后退出 | static-derived | 立即退出 | 同 開始新故事 亮起停 0.75 s、0.55 s 淡黑后退出（时长沿用，provisional） |
 | 戰場記錄 无记录 | 码 1 `0x42404c`：`0x42ebe0(0)` 失败时 `0x4072b0` 弹消息 11「讀取存檔失敗」或 12「無存檔記錄」（按 `0x4c43b8`） | static-derived | 底部提示字「沒有戰場記錄」1.6 s | 无可恢复进度时 BOARD02 (75,320) 消息「無存檔記錄」，出入时长沿用存档完成提示（provisional）；重制无"读取失败"路径，不出消息 11 |
 | 点击声 | 13.59 s 有一个短起点（峰值 −43.6 dB），NCC 不够认定；静态：defProcMainMenuString `0x4242d6` 点击放 RESOURCE 398 ACCEPT01（[original_title_ornaments](../original_title_ornaments/README.md)） | static-derived | 无声 | 放 ACCEPT01 |
@@ -35,7 +35,7 @@
 | 项 | 原版量值 | 等级 | 重制前 | 重制后 |
 | --- | --- | --- | --- | --- |
 | 形状 | 黄色格框，四角有饰纹，32×32：`I_RECT01.SHP`（黄色渐变 238,222,0 → 139,121,0）。模型描述里的"菱形"就是这个框 | resource-derived＋runtime-measured | 玩家选目标：青绿呼吸角括号；敌方预告：淡黄角括号方块 | 两处都画 I_RECT01 |
-| 玩家选目标 | 178.0 s 目标格 (320,220) 上的黄框 | runtime-measured | 同上 | `BattleSelectionCursor` 在攻击／魔法／特殊选目标时画 I_RECT01；选移动格仍是重制的角括号 |
+| 玩家选目标 | 178.0 s 目标格 (320,220) 上的黄框 | runtime-measured | 同上 | `BattleSelectionCursor` 在每个选格态（移动、攻击／魔法／特殊、道具／给予）照原版光标 `0x430230` 画 I_rect01..08 八帧、每 8 个绘制 tick 进一帧（见 [original_cast_overlays.md](../../static_reverse/original_cast_overlays.md) §窗与光标） |
 | 敌方预告 | 97.6 s (318,176)、199.1 s (316,192)、256.5 s (304,172)：同一黄框停在被攻击者格上；画面上没有玩家式选择框 | runtime-measured | 敌方预告期间，鼠标停在格上时玩家选择框也会出现 | `BattleAttackCue` 用同一张 I_RECT01；玩家选择框只在 `Interaction.TARGETING` 显示，敌方回合不出现 |
 | 底部卡片 | 普通攻击选目标时底部只有一张卡（头像＋数值条＋WINDOW10 身份条，178.0 s），与重制相同；"施术者＋目标两张卡"只出现在特殊技流程 | runtime-measured | 一张目标卡 | 不改（特殊技页见 §5） |
 
@@ -94,7 +94,7 @@
 | 项 | 读数 | 等级 |
 | --- | --- | --- |
 | 标题布局 | `hsltools/assets/title_assets.py` 解码 PAK `Title001／002／021–028`；`hsl_title_layout_probe.py` 对原录像参考帧模板匹配：标志 (99,12)、圆环 (197,161)、石像 (117,227)／(405,227)、宝珠／书参考位 (216,257)／(386,243)，逐 shape 平均色差 10–22 | resource-derived＋runtime-measured |
-| 宝珠与书 | 周期 1.646 s、振幅 5 px 的正弦，围绕参考位下方 3 px 往返，起始相位随机，不随选择移动（[original_title_ornaments](../original_title_ornaments/README.md)） | provisional（拟合值） |
+| 宝珠与书 | 周期 1.646 s、振幅 5 px 的正弦，围绕参考位下方 3 px 往返，起始相位随机，不随选择移动；重制按 `0x424360` 逐 tick y＝生成 y＋trunc(6·sin)、角 +3／256 走 `0x45e9bc` 正弦表（[original_title_ornaments](../original_title_ornaments/README.md)） | static-derived；runtime-measured：周期与振幅 |
 | 标题菜单语义 | 「戰場記錄」先恢复最近一份战斗检查点，否则接单槽战役进度；「開始新故事」清空进度，不清回憶錄与检查点；无存档时出消息「無存檔記錄」（§1） | provisional |
 | GAME OVER | 原版败北无结果页（`0x42cbd0`），160 tick 无输入自回标题（`0x42aea0`）；重制败北约 0.2 s 淡黑后显示 Title011＋Title012（居中）、淡入 0.9 s、任意键淡出 0.6 s 回标题；原版败北画面无录像 | static-derived；provisional：位置与时长 |
 | 系统卷轴 | 停在 (190,67)（对原版 `05_system_scroll_menu` 帧 003 模板差 10.6）；亮起框中心对齐字行中心 (128,56)；键盘选择也亮起、確定／取消预选取消 | runtime-measured；provisional：预选 |
@@ -183,9 +183,9 @@ Wine 原版 v1.06，读 HSLBAT.SAV 进 玩家第 2 场 · 惡夢的終曲（LEVE
 - 战斗卷轴开启条件：开场剧情中与首个行动环之前只有静态读法（`0x4000000`／`0x2000000`），Wine 只拍了行动环、移动选格与敌方回合三态；消息框打开期间 `0x413bce` 也置 `0x2000000`，重制由 `quiet()` 覆盖。
 - 版本号的点阵字形与颜色梯度没有导入；只对齐了墨迹外框。
 - 標題 戰場記錄／離開遊戲 的亮起停留与淡黑只量了 開始新故事 一次，二者沿用；`0x42dc90(2)` 的淡出时长未读。
-- 标题悬停火花：录屏可见，字形与位置未认定，重制不画。
+- 标题悬停火花：录屏可见；静态已认定为悬停时建的对象 788 Menu_Star（global.obs，`MAGIC\EAR24_22.SHP`，effProcFlyUpShape，见 [original_title_ornaments](../original_title_ornaments/README.md) §证据），重制不画。
 - 标题「無存檔記錄」消息的出入时长与是否等按键未读，沿用战斗卷轴存档完成提示。
 - 完成提示的淡入淡出只有一次样本；右下角小方块（录屏里 BOARD02 旁的指示）未识别，重制不画。
-- I_RECT02..08 是同一框的其他配色，何时使用未读；重制只用 01。
+- I_RECT02..08 是同一框的角点红色明暗帧：选格光标 `0x430230` 按帧字 `0x4784f8` 每 8 个绘制 tick 轮换 01..08，重制照此（见 [original_cast_overlays.md](../../static_reverse/original_cast_overlays.md) §窗与光标）；敌方预告 `BattleAttackCue` 仍只画 01。
 - 任務說明 面板在原版里的淡入时长与开场是否相同只量到起止（577.55 出现、579.48 按键收起），重制沿用开场的 32 tick。
 - 技能页：超过九行的滚动条只有静态读法——本机三份回憶錄存档（席達鎮 等級08、黃昏之丘 陰 等級18、兩棲族部落 等級24）里没有带十个以上技能的角色，Wine 实拍拍不到；悬停脉冲只有两帧样本，证明亮度在变，周期与相位来自静态读法；名字宽度原先因系统字对不上原版（63 对 71 px），换 FONT.24 点阵后一致。

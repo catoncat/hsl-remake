@@ -1,6 +1,6 @@
 # 战役承接与正式战斗强制胜利回执：跨关 carry、续战存档、各关结算流转
 
-> evidence: runtime-measured; resource-derived: 各关 STORY／WINFAIL token、EVEF 编队与宝箱字; static-derived: WINFAIL080 闸门 opcode; provisional · status: live · tools: capture_battle_review.gd, capture_campaign_handoff_review.gd, run_battle_sweep_tests.gd, run_campaign_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured; resource-derived: 各关 STORY／WINFAIL token、EVEF 编队与宝箱字; static-derived: WINFAIL080 闸门 opcode; provisional · status: live · tools: capture_battle_review.gd, capture_campaign_handoff_review.gd, run_battle_sweep_tests.gd, run_campaign_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -70,6 +70,7 @@
 ## 边界
 
 - 原版关卡间 HP/MP、金币、物品结算与关间剧情／商店未读；承接策略为重制选择（provisional）。
-- 强制胜利夹具不是自然通关；增援落点、阻挡格最近合法落点、条件成员（咕嚕 008、克羅蒂 009）资格与安装时序、船壳计数条件、对象身份与 native scheduler 均为 provisional。
+- 上表「取最近可用格／最近合法格」是当时回执；剧情与战中走位终点现照原版经 `0x44fbd0` 修正后走 `0x4111d0` 寻路链提交停格（[original_script_walk_path](../../static_reverse/original_script_walk_path.md) §结论）。
+- 强制胜利夹具不是自然通关；增援落点、条件成员（咕嚕 008、克羅蒂 009）资格与安装时序、船壳计数条件、对象身份与 native scheduler 均为 provisional。
 - 镜头、走位、对白时钟与结果页文案是重制表现，不作原版视觉依据。
 - 各工作树的 Godot 测试共用 `user://`，并发 campaign 测试会清掉落盘文件。

@@ -1,6 +1,6 @@
 # 呼嘯平原（level 5）：正式战斗、原版开局对照与自动对局败因
 
-> evidence: runtime-measured: 重制窗口化运行与自动对局、原版 5 关开局全部单位记录与第 1 回合（两趟 Wine）、同一交接 5 种子×3 属性档对局与只待機探针; resource-derived: STORY005／WINFAIL005／EVEF／PLAYERS 036／038; static-derived: 0x406fe0 毒强度与 0x409be0 伤害公式（经重制规则）、0x43ede0 初始化分支的出生调级与 0x40e870 的四个调用点; negative-evidence: 回憶錄 直进战斗关不安装敌军; provisional: 机器人策略、AI 同距落点次序、WINFAIL 插入单位当回合是否行动 · status: live · functions: 0x406fe0, 0x409be0, 0x40e870, 0x43ede0, 0x43f603 · tools: capture_battle_review.gd, hsl_original_control.py, hsl_original_probe_units.py, hsltools/data/original_save.py, hsltools/levels/battle.py, run_autoplay_sweep_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured: 重制窗口化运行与自动对局、原版 5 关开局全部单位记录与第 1 回合（两趟 Wine）、同一交接 5 种子×3 属性档对局与只待機探针; resource-derived: STORY005／WINFAIL005／EVEF／PLAYERS 036／038; static-derived: 0x406fe0 毒强度与 0x409be0 伤害公式（经重制规则）、0x43ede0 初始化分支的出生调级与 0x40e870 的四个调用点; negative-evidence: 回憶錄 直进战斗关不安装敌军; provisional: 机器人策略、AI 同距落点次序、WINFAIL 插入单位当回合是否行动 · status: live · functions: 0x406fe0, 0x409be0, 0x40e870, 0x43ede0, 0x43f603 · tools: capture_battle_review.gd, hsl_original_control.py, hsl_original_probe_units.py, hsltools/data/original_save.py, hsltools/levels/battle.py, run_autoplay_sweep_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -83,7 +83,7 @@ negative-evidence：用 `entry_level 5`（header 直接写 5 关）进关时，S
 ## 重制接线
 
 - `python3 tools/hsl.py generate level_battle:5`（`tools/hsltools/levels/battle.py`）从 `story_005.json`（开场 timeline、EVEF 绑定、资源、演员清单）＋`battle005_seed.json`（STORY 走位终点、WINFAIL005、地图物件）＋`first_battle.json` 与 `content/generated/hsl/actors/` 组装 `battle_005_level5`：4 名 `player_controlled`、9 名 `enemy_ai`；WINFAIL005 编为 `win_0`、`fail_0`、`event_0`；EVEF 宝箱记录 17 写入 `content/generated/hsl/treasures/battle_005.json`。
-- 走位终点落在阻挡格时用最近可用格（provisional）；无走位的安装点原样保留（[actor_placement_initialization](../../static_reverse/actor_placement_initialization.md#install-has-no-terrain-test)）；13 名单位与原版首控逐格一致（`tools/test_hsl_opening_positions.py`）。
+- 走位终点照原版：目的格先经 `0x44fbd0` 修正，再走 `0x4111d0` 寻路链、`0x453b90` 在所站格提交停格（static-derived，见 [original_script_walk_path](../../static_reverse/original_script_walk_path.md) §结论，lane SCRIPTWALKPATH／WINFAILWALK）；无走位的安装点原样保留（[actor_placement_initialization](../../static_reverse/actor_placement_initialization.md#install-has-no-terrain-test)）；13 名单位与原版首控逐格一致（`tools/test_hsl_opening_positions.py`）。
 
 ## 复现
 

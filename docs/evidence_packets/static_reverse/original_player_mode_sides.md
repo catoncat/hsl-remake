@@ -1,6 +1,6 @@
 # 阵营位：演员的 player mode 覆盖、HP 加值、谁打谁与门／船壳
 
-> evidence: static-derived; resource-derived: OBJ 字段普查与 TYPE.H 位定义; runtime-measured: 裁判开局盘 obj_Data9 换边单位与全库 NPC 最大 HP（DATA9）；整镜像 LEVEL012 62 枚船壳同一 live 记录（改一枚 HP 其余同读）; provisional: 玩家可见后果未原生观察 · status: live · functions: 0x407660, 0x407720, 0x407ec0, 0x40ba20, 0x40ba80, 0x40bab0, 0x40bb00, 0x40bb80, 0x40f5d0, 0x40f8b0, 0x40fdc0, 0x4104d0, 0x42bdb0, 0x43f413, 0x4420ef, 0x446b30, 0x446b60, 0x446be0, 0x44cb10, 0x450710 · tools: hsl_payload_inspector.py, hsltools/levels/battle.py, hsltools/probes/_enemy_level.py, run_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: OBJ 字段普查与 TYPE.H 位定义; runtime-measured: 裁判开局盘 obj_Data9 换边单位与全库 NPC 最大 HP（DATA9）；整镜像 LEVEL012 62 枚船壳同一 live 记录（改一枚 HP 其余同读）; provisional: 玩家可见后果未原生观察 · status: live · functions: 0x407660, 0x407720, 0x407ec0, 0x40ba20, 0x40ba80, 0x40bab0, 0x40bb00, 0x40bb80, 0x40f5d0, 0x40f8b0, 0x40fdc0, 0x4104d0, 0x42bdb0, 0x43f413, 0x4420ef, 0x446b30, 0x446b60, 0x446be0, 0x44cb10, 0x450710 · tools: hsl_payload_inspector.py, hsltools/levels/battle.py, hsltools/probes/_enemy_level.py, run_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -65,7 +65,7 @@ provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_pla
 
 - 玩家可见后果（士兵不打村民、531–533 关 049 与其余敌军互打、24 关三方、44／45 关与 34 关到场阵营）未原生观察；替换证据为原版存档预设 `level06_pre_battle` 加原版全待机两回合读 +0x28 与目标。
 - 支援同侧按「有交集」；原 AI 支援扫描要求相等、支援范围 8／9／10 只留同首位格，未按原读法改。
-- `0x800000` 位被 `side_mask` 丢弃；魔法范围对该位的排除未接。
-- `0x450710` 的按模式着色未接。
+- `0x800000` 位不算侧位，被 `side_mask` 丢弃、留在 player_mode；武器范围（`0x409090`，flag 1）丢掉带该位的 pmALL 格，魔法／特殊技范围（flag 0）保留，重制 `ActorRoleRules.player_range_selectable` 照此接（static-derived）。
+- `0x450710` 的按模式着色：重制地图高亮色由 `BattleSceneStage.highlight_side` 按当前 player_mode 的侧位重取，三色与本表一致，行同步时随模式变（见 [dialogue_death](../runtime_observations/dialogue_death/README.md) §5）；换模式当 tick 的着色时机未逐帧核。
 - 船壳只并 HP；池归零后其余船壳保持最后正值；同一行动打两枚时逐次截断未核对；船壳计入玩家总数未单独核对。
 - `obj_Y1`（+0x134）未进数据链。

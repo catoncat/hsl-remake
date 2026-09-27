@@ -1,12 +1,12 @@
 # 第二战（level 52）重制运行回执：开场、交锋对白、event1 增援
 
-> evidence: runtime-measured; resource-derived: STORY052／WINFAIL052 token 与对白正文; provisional: 节奏、镜头、条件极性 · status: live · tools: run_winfail_rules_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured; resource-derived: STORY052／WINFAIL052 token 与对白正文; static-derived: 走位速度表、actDelay tick 单位、剧情镜头步进（经 tick_mapping）; provisional: 条件极性 · status: live · tools: run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
-- 原版 STORY052 开场、WINFAIL052 event0 交锋对白与 event1 增援的 token 顺序与对白正文见 [second_battle_opening_script](../../static_reverse/second_battle_opening_script.md)；handler 时序、镜头与走位速度未读（resource-derived；provisional）。
+- 原版 STORY052 开场、WINFAIL052 event0 交锋对白与 event1 增援的 token 顺序与对白正文见 [second_battle_opening_script](../../static_reverse/second_battle_opening_script.md)；走位速度、`actDelay` 单位与剧情镜头步进已静态读出并照做（static-derived，见「边界」）；其余 handler 时序未读（resource-derived；provisional）。
 - 重制以 `product_opening` 启动 `battle_052.json`，`BattleOpeningCoordinator` 播完 57 个 token 后把首次控制交给同一 PlayLoop；event0 对白与 event1 的四名 021 增援由 `WinfailScenarioRules` 触发、`ScriptActorCreationRules` 出生（runtime-measured）。
-- 差异：节奏为重制值；差异清单 `winfail-readings`（provisional）。
+- 差异：条件极性与插入生命周期是读法，差异清单 `winfail-readings`（provisional）。
 
 ## 证据
 
@@ -43,7 +43,7 @@ Leonard 攻击皇帝的行动完成扫描触发 event_0：法蘭克（speaker 38
 
 ## 边界
 
-- 节奏：走位 160 px/s、`actDelay` 每单位 0.025 s、标题 1.4 s、镜头滚动 0.6 s 为重制值，原延迟单位与走位速度未读。
+- 节奏已换原版单位：走位按脚本速度 `0x4543d8` 表 1／2／2／4／8 px/tick、`actDelay` 每单位 1 tick、镜头按 `0x45e80d` 逐 tick 步进 16 px、章节标题走 `0x452f32` 子状态机（[tick 映射表](../original_tick_rate/tick_mapping.md) 第 28 行）；上文 35.0 s 开场回执是换算前的历史记录。
 - 插入行走终点用脚本像素量化出的格，不是原非 32 对齐像素；对象生命周期、阵营与脚点未读。
 - `actCheckPlayerAttacked` 的触发极性、对白在攻击演出前后的时机、`actCheckEnemyNumber` 的比较极性、增援是否伴随镜头移动与等待回合未读。
 - `actPlaySound(WAV\CLIP001.WAV)` 只记录不播放；说话人「帝國法師」为重制标签。

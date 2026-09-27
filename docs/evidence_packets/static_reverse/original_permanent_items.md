@@ -1,10 +1,10 @@
 # 永久能力道具、原始抗性与派生刷新
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x409e10, 0x409e40, 0x448840 · tools: hsltools/data/permanent_items.py, hsltools/probes/permanent_items.py · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: live · functions: 0x409e10, 0x409e40, 0x448840 · tools: hsltools/data/permanent_items.py, hsltools/probes/permanent_items.py · updated: 2026-09-28
 
 证据等级：原表字段为`resource-derived`；固定EXE内的有界执行为`static-derived`。独立随机流、开发库存和战役承接属于明示重制策略。与临时攻防状态的规则见[战斗道具](original_tactical_items.md)及[攻防增益／退魔](original_stat_magic.md)。
 
-## 原表与实际作用字段
+## 结论：原表与实际作用字段
 
 | 原道具 | ITEM字段 | 原角色持久字段 | 每次成功使用 |
 | --- | --- | --- | --- |
@@ -18,7 +18,7 @@
 
 原始抗性和最终抗性是两个不同位置的限幅：道具先将原始抗性限制到0～80；职业计算自己的抗性部分、加入原始值及当前装备之后，派生刷新再把最终抗性限制到0～80。显示已经80而原始尚未80时，仍可增加原始值；卸掉装备后可以看到这部分保留的收益。80不是命中概率或通用免疫位，魔法数值／状态仍经过各自已验证的roll和装备防护门禁。
 
-## 原指令验证
+## 证据：原指令验证
 
 [`original_permanent_items.json`](original_permanent_items.json)由`tools/hsltools/probes/permanent_items.py`实际执行生成，锁定原EXE哈希、ITEM／PLAYERS／TYPE来源和四段原字节。82组输入包括001剑士、002祭司、026法师、024兽战士，初值／已取得加值、1／20／80级、当前装备、毒／禁魔／麻痺与攻防增益，以及五系原始抗性79／80边界。
 
@@ -26,7 +26,7 @@
 
 每一步比较九个持久字段、攻击／防御／魔击／速度、HP／MP上限、移动和五抗性。还逐字节确认四基础属性、现有异常、装备、库存、EXP及当前HP／MP／ST未被道具前段误改。后续刷新前故意污染缓存派生值，确认从持久来源恢复；不能依赖上一帧的派生值。
 
-## Godot的同一来源链
+## 重制接线：Godot的同一来源链
 
 `PermanentCapabilityRules`保存九个具名`permanent_gains`，与不可变`growth_profile.source`分开；纯`effective_profile`将二者组合后交给已有四职业`JobStatsRules`，再合并当前装备与临时状态。所有当前单位和增援模板初始化为空收益；获得仅发生在实际库存物使用被接受时。升级／装卸／到期／退魔使用相同重算入口，不能把收益反写到模板或叠加上次派生值。
 
@@ -38,12 +38,6 @@ Checkpoint保存获得值和原item收据，恢复只验证、不再次施加或
 
 战役承接把`permanent_gains`作为独立字段捕获、写入JSON，再应用到相同ID／原角色编号的新单位；先校验数值和来源，再规范JSON整数表示并共同刷新。不会把临时攻防、旧RNG／物品收据或上次派生缓存当作永久来源。第二战重开恢复本战进入值，新战役从原始模板开始；独立队伍不接收另一角色的收益。HP/MP回满与队伍承接仍是既有重制策略，不作为原作跨关handler的证据。实际跨进程范围见[补充验收](#复现)。
 
-## 实际体验与后续边界
-
-已支持战斗但尚未实现职业成长的角色可以保留全零永久账本并继续既有行为；缺少原始来源时永久道具明确拒绝。非零取得值没有对应来源、或已有来源结构损坏时仍拒绝，不能用零值或另一个职业补齐。这项兼容边界由已有027友援路线和新增无消费回归共同检查。
-
-GUI与原指令证据分开，见[永久道具实际输入与截图](#复现)。未验证范围包括负区间道具、原溢出行为、所有职业、原全局随机序列、自然取得这九件物品的完整关卡路线及主动稀有道具AI。扩展这些能力需要对应原caller／职业的独立验证；本批不以现有四职业和合成演练替代它们。
-
 ## 复现
 
 `python3 tools/hsl.py check permanent_items`
@@ -53,3 +47,9 @@ GUI与原指令证据分开，见[永久道具实际输入与截图](#复现)。
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
 | [permanent_items](../runtime_observations/permanent_items/receipt.json) | manual、repeat、magic、melee、growth、movement、resistance、cap、details、mixed、paralysis、ai、speed、victory、defeat、escape | `run_permanent_items_tests.gd`；`run_permanent_carry_tests.gd` 与截图驱动已退役，回执为历史记录 |
+
+## 实际体验与后续边界
+
+已支持战斗但尚未实现职业成长的角色可以保留全零永久账本并继续既有行为；缺少原始来源时永久道具明确拒绝。非零取得值没有对应来源、或已有来源结构损坏时仍拒绝，不能用零值或另一个职业补齐。这项兼容边界由已有027友援路线和新增无消费回归共同检查。
+
+GUI与原指令证据分开，见[永久道具实际输入与截图](#复现)。未验证范围包括负区间道具、原溢出行为、所有职业、原全局随机序列、自然取得这九件物品的完整关卡路线及主动稀有道具AI。扩展这些能力需要对应原caller／职业的独立验证；本批不以现有四职业和合成演练替代它们。

@@ -1,6 +1,12 @@
 # Chapter 01 dialogue source
 
-> evidence: resource-derived; static-derived · status: record-only · functions: 0x447620, 0x447720, 0x4477b0 · tools: hsl_chapter_dialogue.py, hsltools/levels/message_text.py · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: record-only · functions: 0x447620, 0x447720, 0x4477b0 · tools: hsl_chapter_dialogue.py, hsltools/levels/message_text.py · updated: 2026-09-28
+
+## 结论
+
+Chapter 01 dialogue text comes from `@:\DATA\RESOURCE.TXT`, a cp950 `[name]` table loaded by `0x447720` and indexed by `0x4477b0`; the first-battle messenger is OBS object 100 (resource-derived; static-derived).
+
+## 证据
 
 Original `hsl.pak` member `@:\DATA\RESOURCE.TXT` is a cp950 `[name]` table containing resource paths, names and dialogue. `item = id,text` splits on the first comma. `@0` through `@9` are color controls; `#` is a line break. Imported source bytes and SHA-256 are retained in the chapter message manifest. Reproduce the chapter-wide manifest with `PYTHONPATH=. python3 tools/hsl_chapter_dialogue.py --pak <hsl.pak> --chapter` (check `python3 tools/hsl.py check message_text_evidence_check:chapter01`); a level's own manifest with `--level N` (check `message_text_evidence_check:N`, level 51 included).
 
@@ -19,4 +25,15 @@ STORY051 actShowSectionName references SHAPE01\WORD051.SHP. The chapter importer
 
 `obj-051.h` assigns `obj_Story_Level51_Object1 = 100`. PAK member `@:\data\obj-051.obs`, Object 100, names SHAPE\021-00001.SHP, ENEMY021_Total, defProcEnemy, SID_ENEMY021, extra-data ID 21 (extract with `hsl_resource_scanner.find_decoded_paks_packages`, `find_paks_record_by_name`, `read_paks_record_bytes`, select `obj_code = 100`). WINFAIL051 inserts Object 100, changes its ID to 10000, walks displacement `(32,32)`, speaks message 368, walks back to `(267,209)` and deletes it; `actWalkAndDeleteWait,SID_ENEMY026,1` and `SID_ENEMY021,1` then drive one departure each.
 
-Remake: the messenger is visual-only (not in the battle roster), anchored on the exit marker with the source displacement and imported 021 walk frames; departures remove a living actor without recording damage or a kill. Provisional: native absolute coordinate mapping, camera curve, half-second walk, and ordinal lookup among defeated/reinforced actors (the remake picks the first living match).
+## 重制接线
+
+Remake: the messenger is visual-only (not in the battle roster), anchored on the exit marker with the source displacement and imported 021 walk frames; departures remove a living actor without recording damage or a kill. Its walks go through the same script walk chain as other WINFAIL walks (`ScriptActorCreationRules`／`ScriptWalkPath`, see [original_script_walk_path.md](original_script_walk_path.md) §结论) instead of the former fixed half-second walk.
+
+## 复现
+
+`PYTHONPATH=. python3 tools/hsl_chapter_dialogue.py --pak <hsl.pak> --chapter`, then `python3 tools/hsl.py check message_text_evidence_check:chapter01`.
+
+## 边界
+
+- Text source resolution does not claim original font, message-box layout or handler timing.
+- Provisional: native absolute coordinate mapping, camera curve, and ordinal lookup among defeated／reinforced actors (the remake picks the first living match).
