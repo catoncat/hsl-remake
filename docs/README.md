@@ -1,57 +1,42 @@
-# Documentation Map
+# 文档索引
 
-Checked: 2026-09-27
+根目录 [README](../README.md) 是项目首页；当前进度与排队事项在 [PROJECT](PROJECT.md)。
 
-先按你要做的事选一条路径；不需要通读全部资料。根目录 [README](../README.md) 是第一页，现状与下一步只看 [PROJECT](PROJECT.md)。
+## 玩与试玩
 
-## 玩
-
-| 需要 | 读 |
-| --- | --- |
-| 装好就玩、操作键位 | [README「怎么跑」](../README.md) |
-| 跳到某一关、按固定格式报问题 | [PLAYTEST](PLAYTEST.md) |
-| 「重製選項」各项是什么（默认照原版） | [OPTIONS](OPTIONS.md) |
-| 现在能玩到哪、和原版还差什么 | [PROJECT](PROJECT.md)、[差异清单](evidence_packets/static_reverse/parity_gap_inventory.md) |
+- [PLAYTEST](PLAYTEST.md) — 跳到某一关试玩、回报问题的格式
+- [OPTIONS](OPTIONS.md) — 「重製選項」各项、默认值与注册表字段
+- [BATTLE_NAMES](BATTLE_NAMES.md) — 战斗称呼对照：玩家第几场、场景名、文件号
+- [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md) — 与原版的已知差异，逐条登记（生成物）
 
 ## 改游戏
 
-按顺序读：MODDING → MODDING_LEVELS → WINFAIL_TOKENS（参考区）→ OPTIONS → ARCHITECTURE。
+- [MODDING](MODDING.md) — 四层结构、换素材、改规则、去掉原版依赖、现在做不到什么
+- [MODDING_LEVELS](MODDING_LEVELS.md) — 加关卡、角色、职业、招式，改剧情流转、换配乐，写续集
+- [WINFAIL_TOKENS](WINFAIL_TOKENS.md) — 胜负脚本词表（生成物）
+- [战役总览](evidence_packets/resource_inventory/campaign_overview.md) — 逐关流转（生成物）
 
-| 需要 | 读 |
-| --- | --- |
-| 总入口：四层结构、换素材、改规则、去掉原版依赖、现在做不到什么 | [MODDING](MODDING.md) |
-| 加关卡与角色逐步表：从零写一关一个角色（续集示范）、改剧情流转、换配乐、加脚本 opcode 表现 | [MODDING_LEVELS](MODDING_LEVELS.md)、[战役总览](evidence_packets/resource_inventory/campaign_overview.md)（逐关流转，生成物） |
-| 胜负脚本词表（参考区） | [WINFAIL_TOKENS](WINFAIL_TOKENS.md)（`hsl generate winfail_token_table` 生成） |
-| 选项注册表字段与默认值 | [OPTIONS](OPTIONS.md) |
-| 要改代码时去哪 | [ARCHITECTURE](ARCHITECTURE.md) |
-| 战斗怎么称呼：玩家第几场 · 场景名（文件号） | [BATTLE_NAMES](BATTLE_NAMES.md) |
+## 代码
 
-## 贡献代码
+- [CONTRIBUTING](../CONTRIBUTING.md) — 准备正版、门禁、不提交原版派生物、PR
+- [ARCHITECTURE](ARCHITECTURE.md) — 代码分层、状态所有者、术语
+- [Battle systems](architecture/BATTLE_SYSTEMS.md) — 行动、背包与装备、成长、技能与状态、AI
+- [Presentation](architecture/PRESENTATION.md) — 开场、菜单与面板、移动、交锋、地图收尾
+- [PROVENANCE](PROVENANCE.md) — 每个模块的来源等级，remake-invented 与 provisional 清单（生成物）
+- [测试路由](../tests/README.md)、[工具说明](../tools/README.md) — 每个套件与脚本守什么、怎么跑
+- [AGENTS](../AGENTS.md) — 代理的工作手册
+- [CONTEXT](../CONTEXT.md) — 证据用语的定义
+- [NOTICE](../NOTICE.md) — 合规说明
 
-| 需要 | 读 |
-| --- | --- |
-| 准备正版、门禁口径、不提交原版派生物、PR 流程 | [CONTRIBUTING](../CONTRIBUTING.md)、[NOTICE](../NOTICE.md) |
-| 代理（Claude Code、Codex 等）的工作手册：阅读顺序、硬规则、lane 流程 | [AGENTS](../AGENTS.md) |
-| 代码分层、状态所有者、任务路由 | [ARCHITECTURE](ARCHITECTURE.md) |
-| 行动、背包／装备、成长、技能／状态与 AI 事务 | [Battle systems](architecture/BATTLE_SYSTEMS.md)；只读命中章节 |
-| 开场、菜单／面板、移动、交锋与地图收尾 | [Presentation](architecture/PRESENTATION.md)；只读命中章节 |
-| 某类改动要跑什么、如何判断通过 | [测试路由](../tests/README.md)、[工具说明](../tools/README.md) |
-| 证据用语的唯一定义 | [CONTEXT](../CONTEXT.md) |
-| 每个 game 模块五维度来源、remake-invented 与 provisional 清单 | [PROVENANCE](PROVENANCE.md)（由模块头生成，`hsl check provenance` 强制） |
+## 原版研究
 
-## 研究附录
+- [证据包首页](evidence_packets/README.md) — 怎么读证据包
+- [KNOWLEDGE_INDEX](KNOWLEDGE_INDEX.md) — 证据包索引（生成物）
+- [MECHANICS_EVIDENCE_MATRIX](MECHANICS_EVIDENCE_MATRIX.md) — 每个机制的证据等级与未恢复边界
+- [核心规则证据](first_battle_core_logic_evidence.md) — 核心公式与地址的静态结论
+- [资源证据](first_battle_static_resource_evidence.md) — 早期第一战资源结论，已被逐关导入链覆盖
 
-| 需要 | 读 |
-| --- | --- |
-| 资源、静态包、原图与具体来源 | [KNOWLEDGE_INDEX](KNOWLEDGE_INDEX.md)（证据包索引，生成块由 `hsl check evidence_index` 维护） |
-| 机制证据等级与未恢复边界 | [MECHANICS_EVIDENCE_MATRIX](MECHANICS_EVIDENCE_MATRIX.md) |
-| 研究附录首页：怎么读证据包、证据用语、从哪进 | [evidence_packets](evidence_packets/README.md) |
-| 核心公式／地址的静态结论 | [核心规则证据](first_battle_core_logic_evidence.md) |
-| 第一战资源／脚本的早期结论（09-01，已被逐关导入链与各证据包覆盖） | [资源证据](first_battle_static_resource_evidence.md) |
-
-## 内部（不随公开导出）
-
-`docs/internal/`（lane 任务书模板、时间账、轮次记录 ROUNDS、各轮决策记录、开源计划）与 `docs/audits/`（审计报告）是我们自己的过程文档，`tools/oss_export.sh` 导出公开树时整目录去掉；公开文档不得链接它们（`tools/hsl_docs_check.py` 拦），需要提到时写成代码样式的路径。
+`docs/internal/` 与 `docs/audits/` 是过程文档，不随公开导出，公开文档不得链接它们。
 
 ## Machine-readable authority
 

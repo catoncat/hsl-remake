@@ -39,11 +39,13 @@ Checked: 2026-09-27
 
 ## 文档地图
 
-- 玩：[README](../README.md) → [PLAYTEST](PLAYTEST.md) → [OPTIONS](OPTIONS.md)
-- 改游戏：[MODDING](MODDING.md) → [MODDING_LEVELS](MODDING_LEVELS.md) → [WINFAIL_TOKENS](WINFAIL_TOKENS.md) → [OPTIONS](OPTIONS.md) → [ARCHITECTURE](ARCHITECTURE.md)
-- 贡献代码：[CONTRIBUTING](../CONTRIBUTING.md) → [AGENTS](../AGENTS.md) → [ARCHITECTURE](ARCHITECTURE.md) → [测试路由](../tests/README.md)／[工具说明](../tools/README.md)
-- 研究与查表：[知识索引](KNOWLEDGE_INDEX.md)、[机制矩阵](MECHANICS_EVIDENCE_MATRIX.md)、[PROVENANCE](PROVENANCE.md)、[战斗称呼对照](BATTLE_NAMES.md)
-- 完整地图：[docs/README](README.md)。R1–R8 逐轮流水、逐关注册现状与合并回执在内部文档 `docs/internal/ROUNDS.md`（不随公开导出）。
+- [README](../README.md) — 项目首页
+- [docs/README](README.md) — 全部文档索引
+- [MODDING](MODDING.md)、[MODDING_LEVELS](MODDING_LEVELS.md) — 改游戏
+- [CONTRIBUTING](../CONTRIBUTING.md)、[ARCHITECTURE](ARCHITECTURE.md)、[AGENTS](../AGENTS.md) — 参与开发
+- [KNOWLEDGE_INDEX](KNOWLEDGE_INDEX.md)、[MECHANICS_EVIDENCE_MATRIX](MECHANICS_EVIDENCE_MATRIX.md)、[BATTLE_NAMES](BATTLE_NAMES.md) — 查表
+
+R1–R8 逐轮流水与合并回执在内部文档 `docs/internal/ROUNDS.md`（不随公开导出）。
 
 <a id="validation"></a>
 
