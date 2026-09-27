@@ -20,7 +20,7 @@ Checked: 2026-09-27
 
 ## 在跑
 
-整理收口后回到产品与最后两件代码小事：CODE5（`CampaignProgress`／`BattleCameraController` 搬 `game/common/`，删无产品调用的 `can_job_up`）；LV200（龍脊隘口（LEVEL200）自动对局 3 回合败与 MODDING_LEVELS 说法对不上，查数据还是机器人）；UI7（状态页按钮排列、说明框只在悬停、气力条只在原版脉动的窗口脉动）；AIDIST（支援 AI 的 99 号补抽分支；古代神殿遺跡（LEVEL037）的随机落点与行动队列顺序，用原版裁判闭合）。
+整理收口后回到产品与最后两件代码小事：CODE5（`CampaignProgress`／`BattleCameraController` 搬 `game/common/`，删无产品调用的 `can_job_up`）；UI7（状态页按钮排列、说明框只在悬停、气力条只在原版脉动的窗口脉动）；AIDIST（支援 AI 的 99 号补抽分支；古代神殿遺跡（LEVEL037）的随机落点与行动队列顺序，用原版裁判闭合）。
 
 <a id="next-steps"></a>
 
