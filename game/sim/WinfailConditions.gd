@@ -5,11 +5,11 @@ extends RefCounted
 ## mutates. Rule compilation is WinfailCompiler, result actions WinfailActions, the outcome
 ## state machine WinfailScenarioRules.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md; static-derived docs/evidence_packets/static_reverse/original_check_targets.md; static-derived docs/evidence_packets/static_reverse/original_round_display.md; provisional (condition polarity, AND prefix — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
+##   rules: provisional
+##     (condition polarity, AND prefix — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md)
 
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")

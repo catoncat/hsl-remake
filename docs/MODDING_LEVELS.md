@@ -1,0 +1,234 @@
+# 加关卡、角色与剧情：逐步表
+
+[MODDING](MODDING.md) 的附篇。MODDING 讲每件事改哪一层；本页讲从零写一关、一名角色、一段剧情时，每一步改哪个文件、跑哪条命令，以及这一步是**只写数据**、**必须有素材**还是**必须改代码**。分层规则（导入层 `content/imported/` 不要直接改、生成物不要手改）只在 [MODDING §1](MODDING.md#1-三分钟看懂结构) 讲一次，这里默认你已经读过。
+
+示范：第 200 关「龍脊隘口」和两名新角色 102「蕾雅」、103「托蘭」，全部在 `content/authored/` 里，不需要原版剧本。跑通标准是 `tests/run_authored_level_tests.gd`：夹具战役（`start_level` 为 200）从「開始新故事」直接进第 200 关；从标题的「戰場記錄」进第 200 关 → 开场对白 → 机器人打到自然胜负 → 结果页 → 谢幕；102／103 用自己文件夹里的走行帧、切入、头像和称号。公开仓库里没有 102／103 的 PNG（占位美术是原版帧换色），要跑第 200 关得自己把图放进 `content/authored/actors/102/`、`103/`。
+
+## 1. 文件在哪
+
+```text
+content/authored/level200/        目录名必须是 level＋三位数字，注册表自动发现
+  level.json      地图图片、表现 manifest 来源（走行帧／音效／头像／切入，可选 sprite_aliases）、
+                  单位（id／角色代号／剧本代号／阵营／起始格）、winfail 会插入的物件代号
+  story.txt       开场剧情，原版 STORY 文法（UTF-8）
+  winfail.txt     胜负与事件，原版 winfail 文法
+  messages.json   两个剧本用到的全部讯息编号 → 文字，以及说话者代号 → 显示名
+  terrain.txt     地形：每行一列、每个字符一格（# 不可通行，. 平地，1–9 高度）
+content/battles/levels/200.json   关卡档案，只有 battle 分区：id／title／initial_focus_unit_id／initial_objective_phase／result_labels
+content/battles/campaign.json     battles 里注册一行
+content/authored/roles/characters.json   你的角色（PLAYERS.TXT 的字段，UTF-8），code 不与原表重复
+content/authored/roles/roster.json       名册：参与角色链的代号
+content/authored/roles/job_formulas.json、learning_tables.json   职业公式与学习表
+content/authored/roles/skills.json       你的招式（SPECIAL.TXT／MAGIC.TXT 的字段＋表现脚本），code 以 authored 开头
+content/authored/actors/<外观>/   一名角色的一套外观（文件夹名＝外观 id，默认＝角色代号）
+  art.json        hsl_authored_actor_art.v1：walk.anchor、walk.fps、cutin（null 或 program_of＋anchor）、sounds_of
+  walk/<stand|down|right|up|left>-<n>.png    走行帧，n 从 1 开始，五组张数相同
+  cutin/<n>.png   切入帧，n 从 0 开始，张数＝program_of 那一行打击程序的帧数
+  portrait.png    头像（characters.json 的 portrait 指向它）
+```
+
+图片格式、尺寸、锚点的要求见 [MODDING §3](MODDING.md#3-换素材)。`python3 tools/hsl.py generate authored_level:200` 的产物（都是生成物，不要手改）：
+
+```text
+content/generated/hsl/authored/battle200_seed.json              hsl_battle_seed.v1（evidence_tier authored）
+content/generated/hsl/authored/level200_terrain.json            hsl_wrd_terrain.v2
+content/generated/hsl/authored/battle200/opening_timeline.json  与第一章同一个 timeline 编译器
+content/generated/hsl/authored/battle200/message_text_evidence.json、progression.json
+content/generated/hsl/authored/battle200/actor_walk_manifest.json、actor_audio.json、portraits.json、combat_animation.json
+content/battles/battle_200.json                                 hsl_level_battle.v1
+```
+
+## 2. 一遍跑通的命令
+
+```sh
+# 角色、职业、招式表改了才需要；generate 会按依赖排好先后
+python3 tools/hsl.py generate job_formulas role_data initial_skill_book skill_target_data authored_effect_scripts growth_lifecycle_data ai_profiles entry_growth_data battle_rewards combat_aftermath_data roster_portraits actor_panels
+python3 tools/hsl.py generate authored_level:200     # 组出关卡
+python3 tools/hsl.py generate campaign_overview      # campaign.json 加了行之后更新战役总览
+tools/godot.sh --headless --import                   # 新放的 PNG 先让 Godot 导入，才能被 load()
+python3 tools/hsl.py check authored_level:200 authored_art actor_panels level_profile:200 battle_schema unit_schema campaign_overview
+# 想马上玩：campaign.json 的 start_level 临时改成 "200"，再 tools/play.sh →「開始新故事」
+```
+
+`hsl generate` 发现还没导入的资源时会打印 `HSL_GENERATE_HINT unimported=N`。
+
+## 3. 逐步表
+
+### 3.1 关卡与剧情
+
+| # | 步骤 | 类型 | 改哪里、怎么做 |
+| --- | --- | --- | --- |
+| 1 | 关卡骨架（标题、结果标签、初始焦点、目标阶段） | 只写数据 | `content/battles/levels/200.json` 的 `battle` 分区，字段见 [LEVEL_PROFILES](architecture/LEVEL_PROFILES.md) |
+| 2 | 地形（格子、阻挡、高度） | 只写数据 | `terrain.txt`；生成器算出统计和 `hsl_wrd_terrain.v2`。没有 tile id（原版 WRD 的 t 值运行时不读） |
+| 3 | 地图图片 | **必须有素材** | `level.json` 的 `map_texture` 指任一 PNG，尺寸＝格数×32 像素，和 `terrain.txt` 的行列数对上。示范借了第 2 关的原版图 |
+| 4 | 单位与阵营 | 只写数据 | `level.json` 的 `units[]`：`id`、`actor`（PLAYERS 或 characters.json 的代号）、`token`（剧本里用的 `SID_…`）、`role`、`cell`。同一 token 的多个单位依次是 serial 1、2、3… |
+| 5 | 开场剧情（配乐、延迟、走位、对白、亡语、状态） | 只写数据 | `story.txt`。能用的 token 见 `tools/hsltools/levels/timeline.py` 的 `ACTION_KIND`／`EXTENDED_TOKENS`；`game/battle/runtime/BattleOpeningCoordinator.gd` 里没有演出分支的 token 落进 `RECORD_ONLY_KINDS`，只记录不演。走位终点由生成器算成格子坐标。**配乐**：只有 0–99 号关在原版曲目表里有曲子，100 号以上的关写 `actPlayLevelMusic` 没有声音，用 `actPlayMusic,N` 指定曲号 |
+| 6 | 胜负条件与事件（清场胜、主角倒下败、第 N 回合援军） | 只写数据 | `winfail.txt`：`[win]`／`[fail]`／`[event]` 段，每段是 `code`、`message` 加一串 `action =`；开头的 action 是条件（`actCheckEnemyTotalNumber,0` 清场，`actCheckPlayer,1,SID_雷歐納德` 主角倒下，`actCheckRoundNumber,3` 第 3 回合），后面是动作。19 个条件、47 个动作及参数写法见 [WINFAIL_TOKENS](WINFAIL_TOKENS.md)。剧本插入的物件代号在 `level.json` 的 `objects` 里给出 `actor`／`token` |
+| 7 | 对白文字与说话者名 | 只写数据 | `messages.json`；缺讯息编号或缺说话者名，生成即失败。原版用 RESOURCE.TXT 编号当说话者 id，你的关直接用 token 当 id |
+| 8 | 下一关／结局 | 只写数据 | 胜利段写 `actSetNextPlayLevelEvent,200,<下一关 key>`；`998` 表示进谢幕（战斗结果页可以直接进谢幕） |
+| 9 | 注册 | 只写数据 | `content/battles/campaign.json` 的 `battles` 加 `"200": {"scenario": "res://content/battles/battle_200.json", "title": "龍脊隘口"}`，再重生成战役总览（§2）。自动对局结果文件要补一行，见 §9 |
+
+### 3.2 角色、职业与招式
+
+新角色写进 `content/authored/roles/characters.json`，**不要往导入的 `PLAYERS.TXT` 里加段**：那份是导入层，下次导入会被原版覆盖（[MODDING §1](MODDING.md#1-三分钟看懂结构)）。`tools/hsltools/sources/tables.py` 的 `character_rows()` 把你的行接在原表之后，七张全局表（角色、技能书、成长、AI、入场成长、奖励、战后）和名册头像表自动长出该行，原表哈希不动。
+
+| # | 步骤 | 类型 | 改哪里、怎么做 |
+| --- | --- | --- | --- |
+| 10 | 新角色（属性、装备、初始技能、AI 参数、开场气力、经验） | 只写数据 | `characters.json` 的 `characters` 加一行（值都写成字符串，同原表）。必填 `code name_text job mode str dex mind con move_point`；其余同 PLAYERS：装备槽 `*_equip`、`special_*`／`magic_*`、`find_*`／`ai_*`、`level`／`exp`／`kill_exp`、`stamina`、`item1`…`item8`、`resist_*`；另有你的表专有的 `portrait`（res:// PNG）和 `allocation`（`manual` 手动分配）。再把 code 加进 `roster.json` 的 `actors`。AI 参数和开场气力各字段的含义见 [MODDING §4](MODDING.md#4-改规则) 例二、例三 |
+| 11 | 新职业 | 只写数据 | `job_formulas.json` 的 `jobs` 下加 `"101": {…}`：`symbol`（自己起的代号，如 `jobDragonLord`，不得与 `TYPE.H` 重名或重号；角色行 `job` 就写它，`TYPE.H` 不改）、`name_text`（称号，必填）、`caps`（str dex mind con 上限）、`allocation_quota`、`max_hp`／`max_mp`／`attack`／`defense`／`speed` 的项列表（`[mul, var, div]`＝mul×var÷div，`[mul, var, div, pre]`＝mul×(var÷pre)÷div，裸整数＝常数；变量 `str dex mind con level hp_level`）、`magic_attack`（`terms`＋可选 `cap`／`soft_knee`＋`bonus`）、`resist`（`cap`＋五行 `[p, div]`），行内标 `"evidence_tier": "authored"`。80–100 号用 `TYPE.H` 的名字（100 号 `jobDarkAngel` 原版有代号无公式），数值由原版回执钉住。再在 `learning_tables.json` 的 `jobs["101"]` 写它学什么（§5） |
+| 12 | 角色一开始就会的绝技／魔法 | 只写数据 | 角色行的 `special_*`／`magic_*` 栏：写 SPECIAL.TXT 已有、且 `tools/hsltools/data/skill_book.py` 的 `REGISTRY` 支持的招名（如 `"special_wind": "天雷猛襲劍"`），或你的招式表里的招名，写在该招元素对应的栏（`"special_fire": "龍炎斬"`、`"magic_fire": "龍息"`），写错栏生成即失败。学习表也可以引用你的招式 id |
+| 13 | **全新**绝技／魔法（新名字、新数值、新表现） | 只写数据（效果族限已有公式） | `skills.json` 加一行（字段见 §4），生成后技能书 `content/generated/hsl/skills/initial_book.json` 长出该招（id 如 `special:magicFIRE:authoredDragonFlame`），`targeting.json` 补上它用到而原表没用过的 RANGE 行，`authored_effect_scripts.json` 长出表现行，由 `SkillEffectScriptPlayer` 和原表行同路播放。新的效果族（治疗、状态、增益……）和新 opcode 生成器会拒绝并说明原因，属于改代码（§8） |
+| 14 | 走行帧、音效、对白头像 | 只写数据（新图**必须有素材**） | `content/authored/actors/<代号>/` 放 `art.json`＋`walk/*.png`＋`portrait.png`，characters.json 的 `portrait` 指向头像；`sounds_of` 借某个原版角色的走、攻、闪、亡音效。借现成外观：`level.json` 的 `presentation.sprite_aliases`（`{"<代号>": "<外观 id 或 PLAYERS 行>"}`），也可以给一名角色换第二套外观。你的角色既没有文件夹也没有 alias 时生成即失败（不会落到同号的导入行）。示范 103 是零代码加入的：那次提交只动了 characters.json、roster.json、level.json 和 `actors/103/` |
+| 15 | 战斗切入 | 只写数据（新图**必须有素材**） | `cutin/<n>.png`＋`art.json` 的 `cutin.program_of`（借哪一个 PLAYERS 行的打击程序：时间轴、受击帧、闪光、朝向）和 `cutin.anchor`；生成器把上场各行组成该关的 `combat_animation.json`（导入行原样）。`cutin: null` 或没有导入切入的行走"无美术"片段。截图验看：`tools/godot.sh --script res://tests/capture_authored_art_review.gd`（需要窗口，输出到 `ignored/authored-art-review/`） |
+| 16 | 名册头像（状态面板取脸） | 只写数据 | characters.json 的 `portrait`；`roster_portraits` 生成合并表 `content/generated/hsl/roles/actor_portraits.json` |
+| 17 | 行走特征（飞行、穿墙、体型） | 只写数据 | PLAYERS 字段 `move_fly`／`no_block`／`size_type` |
+| 18 | 身份栏的称号、种族、姓名（切入、悬停、目标预览、道具面板） | 只写数据 | `actor_panels` 生成 `content/generated/hsl/roles/actor_panels.json`：称号＝角色行 `job` 在 RESOURCE 里的名字（你自己的职业用 job_formulas 那一行的 `name_text`），种族＝`class` 的 RESOURCE 名，姓名＝`name_text`。角色表或外观改了就重跑它，缺行时一上切入身份栏就失败 |
+
+### 3.3 从标题开始与续集世界
+
+| # | 步骤 | 类型 | 改哪里、怎么做 |
+| --- | --- | --- | --- |
+| 19 | 从标题直接开始你的关 | 只写数据 | `campaign.json` 的 `start_level` 改成第一关的 key，「開始新故事」直接进它；片头动画是 `start_movie`（第一章是 `"start"`），不写就不播 |
+| 20 | 城镇、大地图 | 只写数据，**未验证** | 表在哪见 §6；示范没有碰过 |
+
+## 4. 招式表字段（`content/authored/roles/skills.json`）
+
+每行一招，字段名和值都照原表写（字符串或数字）。`tools/hsltools/data/authored_skills.py` 逐字段校验，并用和运行时同一道描述符判断（`skill_coverage._descriptor_judgment`）核过才写进技能书。
+
+| 字段 | 绝技 `special` | 魔法 `magic` | 值 |
+| --- | --- | --- | --- |
+| `channel` | ✓ | ✓ | `special`（SPECIAL.TXT 形，耗 ST＝`expend`×20）或 `magic`（MAGIC.TXT 形，耗 MP＝`expend`） |
+| `code` | ✓ | ✓ | `authored` 开头，表内唯一；招式 id＝`channel:type:code` |
+| `name_text` | ✓ | ✓ | 显示名，表内唯一，不得与 mag-spc.h 的招式别名同名；角色行声明栏写的就是它 |
+| `type` | ✓ | ✓ | 元素 `magicEARTH`／`magicWATER`／`magicAIR`／`magicFIRE`／`magicMIND`／`magicOTHER`，决定抗性槽和角色声明栏；`magicOTHER` 不读抗性 |
+| `range`／`effect_range` | ✓ | ✓ | RANGE.TXT 的形状名（施放距离／作用范围），如 `range2Cell`、`range4CellThrust`、`range3CellDir`（直线） |
+| `expend` | ✓ | ✓ | 0–999 |
+| `damage` | ✓ | ✓ | `"低,高"`，0 ≤ 低 ≤ 高 ≤ 10000，原版三角分布抽样 |
+| `hit_ratio`／`use_ratio` | ✓ | ✓ | 0–100（命中率；AI 使用率） |
+| `function` | ✓ | ✓ | 目前只收 `magicFun_Attack`：绝技走原版绝技伤害（等级抽样＋con/8＋mind/4＋dex/3，×`attackpow_ratio`），魔法走原版魔法伤害（等级＋mind＋抽样，×魔攻） |
+| `attackpow_ratio` | ✓ | — | 0–1000（%） |
+| `attack_code`／`defense_code` | ✓ | — | 切入的施法段／受击段：EFFECTS.TXT 的 specCode（如 `specCode31`），或本表 `scripts` 里的 `authored…` 段（只能用 `ani*` opcode） |
+| `effect_proc`／`effect_code` | — | ✓ | `eff_proc_Local`（每个受影响格播一次）或 `eff_proc_Global`（画面中心播一次）；effCode 段或 `scripts` 里的 `authored…` 段（只能用 `eff*` opcode） |
+
+`scripts`：`{"authoredXxx": ["effInsertObject,obj_Effect_FireBomb2,0,0,effWait,50", …]}`，每一项就是 EFFECTS.TXT 的一条 `action =`。动词必须在 `SkillEffectScriptPlayer.IMPLEMENTED_OPCODES` 里，物件、WAV、SHP 必须是 `skill_effects` 已经导入的（新美术见 #14，新 opcode 属于改代码）。
+
+## 5. 最小文件原文
+
+`content/authored/level200/story.txt`（节选）：
+
+```ini
+[story]
+action = actPlayLevelMusic
+action = actDelay,20
+action = actWalkWait,SID_雷歐納德,1,224,256,4
+action = actMessage,SID_雷歐納德,1,1001
+action = actMessage,SID_蕾雅,1,1002
+action = actSetDeadMessage,SID_雷歐納德,1,1004,0
+action = actInsertWinStatus,0
+action = actInsertFailStatus,0
+action = actInsertEventStatus,0
+action = actShowWinFailStatus
+```
+
+`winfail.txt`（节选）：
+
+```ini
+[win]
+code = 0
+message = -1,1101
+action = actCheckEnemyTotalNumber,0
+action = actMessage,SID_雷歐納德,1,1102
+action = actSetNextPlayLevelEvent,200,998
+
+[fail]
+code = 0
+message = SID_雷歐納德,1103
+action = actCheckPlayer,1,SID_雷歐納德
+
+[event]
+code = 0
+message = -1,1104
+action = actCheckRoundNumber,3
+action = actInsertObject,obj_Level200_Wolf,608,256
+action = actWalkPrevInsertObject,512,288,4
+```
+
+`level.json` 的单位行和物件行：
+
+```json
+{"id": "reia", "actor": "102", "token": "SID_蕾雅", "role": "player_controlled", "cell": [8, 9]}
+"objects": {"obj_Level200_Wolf": {"actor": "036", "token": "SID_ENEMY036"}}
+```
+
+`learning_tables.json` 的新职业行（魔法、绝技的 id 是 MAGIC.TXT／SPECIAL.TXT 或你的招式表的 `channel:type:code`，名字在生成时解析）：
+
+```json
+"101": {"tier": 1, "magic": [{"id": "magic:magicFIRE:authoredDragonBreath", "level": 3}], "special": [{"id": "special:magicFIRE:authoredDragonFlame", "tier": 1, "attributes": {"str": 20, "dex": 22, "mind": 14, "con": 18}}], "evidence_tier": "authored"}
+```
+
+`skills.json` 的第二招（只加数据）：
+
+```json
+"scripts": {"authoredDragonBreath": ["effPlaySound,WAV\\FIRE0006.WAV", "effInsertObject,obj_Effect_FireRoundFire,0,0,effWait,30", "effInsertRandomObject,obj_Effect_FireFire,0,8,48,16,10,6", "effWait,40", "effInsertObject,obj_Effect_FireBomb2,0,0,effWait,50", "effWait,30"]},
+{"channel": "magic", "code": "authoredDragonBreath", "name_text": "龍息", "type": "magicFIRE", "range": "range4CellThrust", "effect_range": "range1Cell", "expend": "10", "damage": "30,48", "hit_ratio": "94", "function": "magicFun_Attack", "use_ratio": "90", "effect_proc": "eff_proc_Local", "effect_code": "authoredDragonBreath"}
+```
+
+## 6. 其他内容表（战役流转、城镇、大地图、标题）
+
+| 想改什么 | 文件 | 说明 |
+| --- | --- | --- |
+| 战役流转（哪一关接哪一关、哪一关是战斗／剧情／谢幕） | `content/battles/campaign.json` | `battles["N"]` 一行一关：`scenario`、`title`、`kind`（省略＝正式战斗；`story`＝剧情场景或开场预览；`game_clear`＝谢幕）。运行时 `CampaignProgress.next_destination` 只看这张表；`campaign_overview` 生成[战役总览](evidence_packets/resource_inventory/campaign_overview.md) |
+| 查原版剧本怎么写 | `content/imported/hsl/story_corpus/` | 原版全部 STORY／winfail／STORYOVER／TOWNDEF 的机器可读语料（`story_corpus`），写剧情前在这里查文法和用例 |
+| 城镇菜单与事件 | `content/world/town_initial_trees.json`（手写）＋导入的 `content/imported/hsl/global/world_map/towndef.json` | 事件由 `TownEventRules` 解释；剧本对城镇树的改写（actAddTE 等）在交接时由 `WorldScriptActions` 施加 |
+| 转职后哪座城怎么变 | `content/world/town_job_up_writes.json`（`hsl_town_job_up_writes.v1`） | `teCheckJobUp2` 成功后回放这份表；改后 `python3 tools/hsl.py check town_job_up_writes`，改成别的城要把 `evidence_tier` 标成 `authored` |
+| 酒馆神秘男子的价格、货表 | `content/generated/hsl/static/hsl01/secret_man_goods.json` | 生成物（`secret_man_goods`，需要原版 EXE），没有手写层入口 |
+| 大地图点位、路线、隐藏 | 导入的 `content/imported/hsl/global/world_map/world_map.json`＋手写的 `content/world/world_map_scene.json`（`new_game` 隐藏集） | 运行时状态随存档 |
+| 标题、系统菜单、谢幕的美术与版式 | 导入的 `content/imported/hsl/global/title/manifest.json`（`title_assets`） | 版式常量在 `tools/hsltools/assets/title_assets.py` 里 |
+| 配乐 | 见 [MODDING §3](MODDING.md#3-换素材) 素材表的"配乐"行 | |
+
+## 7. 手写一场战斗：battle JSON 的合同
+
+加一关**不需要**手写 battle JSON，`authored_level:N` 会组出来；这一节给想绕过作者格式直接喂引擎的人。
+
+- `content/battles/*.json` 里 `rule_adapter` 为 `winfail`／`development_battle` 的文件是战斗，装载时按 `content/schema/battle.schema.json`（`hsl_battle.v1`）校验：`required` 是没有默认值可顶替的输入（`schema`、`id`、`title`、`rule_adapter`、`player_unit_id`、`playable_units`、`resources` 里的 `map_texture`／`terrain`／`attack_ranges`／`consumables`／`progression`、`scenario_rules.initial_objective_phase`），其余键都带 `default`。`BattleScenario.load_file` 先填默认值再交给 `BattlePlayLoop.create`；违规明确失败（`scenario_error = "battle_schema:$.<path>: <reason>"`，Python 侧 `python3 tools/hsl.py check battle_schema` 同一文本）。
+- 场景进入 `BattleSceneRuntime` 还需要表现输入 `actor_walk_manifest`／`actor_audio`／`interface_audio`（缺了 push_error）和对白说话者表 `portraits`（缺了该场对白没有脸）。引擎级全局表（技能书、targeting、成长、AI、奖励、装备目录、名册头像表）不在 `resources` 里，登记在 `game/sim/ContentPaths.gd`。
+- 单位只需要 `content/schema/unit.schema.json` 的规则键（`tools/hsltools/schema/unit.py` 的 `RULE_KEYS`）；证据台账键（`PROVENANCE_KEYS`）一个都不用写，运行时按 `authored` 处理。
+- 最小原文：`tests/support/authored_minimal_battle.json`；`tests/run_authored_battle_tests.gd` 证明它能建局、开到首次控制，并让机器人打完几回合。
+
+## 8. 必须改代码的情况
+
+| 想做什么 | 改哪里 |
+| --- | --- |
+| 新的 winfail 条件或动作 | 先在 `game/sim/WinfailCompiler.gd` 加词表（token 行尾的 `# 语义` 注释就是 WINFAIL_TOKENS 的语义列，缺了 `python3 tools/hsl.py check winfail_token_table` 失败），再在 `WinfailConditions.condition_holds`／`WinfailActions.apply_actions` 加分支，然后 `python3 tools/hsl.py generate winfail_coverage winfail_token_table`（前者需要原版 PAK） |
+| 新的开场 opcode 演出 | 在 `tools/hsltools/levels/timeline.py` 的 `ACTION_KIND` 映射 kind，再在 `game/battle/runtime/BattleOpeningCoordinator.gd` 的 `_apply_event` 加分支 |
+| 新的技能效果族（治疗、状态、增益、特殊行动） | 你的招式目前只收两个通道的原版伤害（`authored_skills.py` 的 `DAMAGE_POLICIES`）；要先在运行时决定哪些原版分支可以由数据驱动 |
+| 新的特效 opcode | `SkillEffectScriptPlayer.IMPLEMENTED_OPCODES` 及其播放分支 |
+| 新的切入打击程序（不借 `program_of`）、切入 s_shape／m_shape 条带 | 不在作者格式的约定内（绝技切入目前显示站立的施法者） |
+| 手写层的新音效、新界面美术、覆盖原版已有的表行 | 没有入口，见 [MODDING「现在做不到的」](MODDING.md#现在做不到的需要先改代码或工具) |
+
+改代码时的入口：场景宿主 `game/battle/scene/BattleSceneRuntime.gd` → 开场协调器 `game/battle/runtime/BattleOpeningCoordinator.gd`；战斗规则 `game/sim/`（`TacticalGridRules`、`CoreCombatRules`、`CoreTurnQueue`、`WinfailScenarioRules`…），唯一可变的战斗状态在 `game/battle/scene/BattlePlayLoop.gd`；大地图和城镇 `game/world/`；标题、GAME OVER、谢幕 `game/title/`；战斗内系统菜单 `game/battle/scene/BattleSystemMenu.gd`；设置 `game/settings/GameSettings.gd`；战役存档、交接、回憶錄、戰場記錄只经 `game/battle/runtime/CampaignProgress.gd`。新加 `game/**/*.gd` 要写 `## provenance:` 头，然后 `python3 tools/hsl.py generate provenance`（格式见 [ARCHITECTURE](ARCHITECTURE.md#provenance-headers)）。模块地图见 [ARCHITECTURE](ARCHITECTURE.md)。
+
+## 9. 验证
+
+```sh
+python3 tools/hsl.py check authored_level:200 authored_art actor_panels level_profile:200 battle_schema unit_schema campaign_overview autoplay_results
+python3 tools/hsl.py check job_formulas role_data growth_lifecycle_data entry_growth_data     # 改了角色、职业表
+tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests.gd run_entry_growth_tests.gd
+tools/godot.sh --headless --script res://tests/run_authored_level_tests.gd                   # 第 200 关端到端
+python3 tools/hsl.py affected --since <基线提交> --check                                      # 只跑改动命中的任务
+```
+
+- **注册后自动覆盖**：`tests/run_battle_sweep_tests.gd`（开场 → 首次控制 → 强制胜利 → 交接；胜利条件不是清敌时，在 `levels/NNN.json` 写 `sweep_fixture`）和 `tests/run_autoplay_sweep_tests.gd` 会自动测到新关。窗口化截图：`tools/godot.sh --script res://tests/capture_battle_review.gd -- --level=200`。
+- **自动对局结果文件** `content/generated/hsl/development/autoplay/results.json` 要补一行：跑一次全量 `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd`，它会重写结果文件，并因"新增了一关"报一次不一致，看过重写结果后提交即可。`HSL_AUTOPLAY_LEVELS=200` 只跑这一关，**不写**结果文件，适合调试；`HSL_RNG_SEED=7` 换种子（同样不写）。
+- **改了剧情流转、大地图或城镇**：`tests/run_story_scene_tests.gd`（全部注册剧情场景：启动 → 跑完 → 交接）、`run_town_scene_tests.gd`，用法同上；大地图与流转改动按需跑 `run_story_mode_explorer_tests.gd`（约 20 分钟，自动走全图）。
+- **原版链的关**（有原版时）：`python3 tools/hsl.py list '*:37'` 列出第 37 关的全部任务，`python3 tools/hsl.py check '*:37'` 只跑它们。
+- 本仓库的"原版裁判"对你有意改动的规则报不一致是正常的，见 [MODDING §4](MODDING.md#4-改规则) 末段；完整门禁口径见 [CONTRIBUTING §2](../CONTRIBUTING.md#2-门禁口径)。
+
+## 10. 边界
+
+- **authored 标记**：你的关的 seed、battle JSON 和全部单位都不带证据台账，`UnitSchema.evidence_tier` 返回 `authored`；角色 102 的数值由公式表算出，也标 authored。伤害公式本身仍是第一章的原版公式（static-derived）。
+- **借用的素材只是通路验证**：第 200 关借第 2 关的地图和 036 的模板，102／103 的外观是原版 003／004 的帧和脸换色（各自 `art.json` 的 note 写明），不是续集美术方案；剩下的是"画出来"本身。
+- **切入**：作者关的切入表只含上场各行；转职过的第一章角色在作者关里切入仍用基础行（走行帧走共享的转职表）。
+- **平衡**由作者负责：机器人 4 回合打赢只说明链路通，不是难度证据。
+- **职业可装备表**：你的职业沿用 `items.json` 的 `job_mask` 位（位＝代号−80），101 读原表第 21 位；112 以上没有位，任何装备都换不上。要自定义可装备表得另加数据。
+- 给本仓库提交内容时，改剧情属于重制决定，在场景 `unresolved_semantics` 里写明"重制读法／原创"，证据用语见 [CONTEXT](../CONTEXT.md)。

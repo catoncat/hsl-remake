@@ -2,17 +2,19 @@ extends Control
 ## Original 獲得物品 window (status mode 0xb, docs/evidence_packets/static_reverse/original_getitem_window.md).
 ## Immutable snapshots and one uncommitted held item only. All transfers use PlayLoop.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md; runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#16 (frame_003／frame_006 held-item and green hover); remake-invented (scroll arrows for more than five codes; disabled 離開 while holding)
-##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H; remake-invented (再按一次 discard confirmation and its tooltip)
-##   timing: n/a
+##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#16
+##     (frame_003／frame_006 held-item and green hover)
+##   layout: remake-invented (scroll arrows for more than five codes; disabled 離開 while holding)
+##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
+##   strings: remake-invented (再按一次 discard confirmation and its tooltip)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
 signal claim_requested(request: Dictionary)
 signal finish_requested(request: Dictionary)
 signal cue_requested(event: String)
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const EquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
-const ItemText = preload("res://game/battle/scene/BattleItemText.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
+const BattleItemText = preload("res://game/battle/scene/BattleItemText.gd")
 ## Recipient bag: WINDOW20 at (12,168), eight 32 px rows; icon anchor (44, 184+32i), name (68, 176+32i).
 const BAG_AT := Vector2(12, 168)
 const BAG_ROW := 32
@@ -102,7 +104,7 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	rows.clear()
 	_arrows.clear()
 	slots.clear()
-	UISkin.clear_panel(self)
+	BattleUISkin.clear_panel(self)
 	_build_bag()
 	_build_list()
 	_build_money(gold)
@@ -110,7 +112,7 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	description_box = Control.new()
 	description_box.position = DESCRIPTION_AT
 	description_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UISkin.board(description_box, "WINDOW50", Vector2.ZERO)
+	BattleUISkin.board(description_box, "WINDOW50", Vector2.ZERO)
 	description_box.hide()
 	add_child(description_box)
 	hand_icon = TextureRect.new()
@@ -144,7 +146,7 @@ func first_empty_slot() -> int:
 
 
 func _build_bag() -> void:
-	UISkin.board(self, "WINDOW20", BAG_AT)
+	BattleUISkin.board(self, "WINDOW20", BAG_AT)
 	var actor := _actor()
 	for index in range(8):
 		var code := 0 if actor.is_empty() else int(actor["inventory"][index])
@@ -153,8 +155,8 @@ func _build_bag() -> void:
 		button.set_meta("inventory_index", index)
 		button.set_meta("item_code", code)
 		if code > 0:
-			UISkin.anchored_asset(button, str(_catalog[str(code)]["icon"]), Vector2(24, 8))
-			var label := UISkin.text(button, Vector2(48, 0), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(160, BAG_ROW))
+			BattleUISkin.anchored_asset(button, str(_catalog[str(code)]["icon"]), Vector2(24, 8))
+			var label := BattleUISkin.text(button, Vector2(48, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(160, BAG_ROW))
 			label.text = str(_catalog[str(code)]["name"])
 			button.mouse_entered.connect(_show_description.bind(code, label))
 			button.mouse_exited.connect(_hide_description.bind(label))
@@ -166,8 +168,8 @@ func _build_bag() -> void:
 
 
 func _build_list() -> void:
-	UISkin.board(self, "WINDOW90", LIST_AT)
-	var title := UISkin.text(self, LIST_AT + Vector2(0, 10), UISkin.TEXT_IVORY, UISkin.FONT_BODY, Vector2(375, 24))
+	BattleUISkin.board(self, "WINDOW90", LIST_AT)
+	var title := BattleUISkin.text(self, LIST_AT + Vector2(0, 10), BattleUISkin.TEXT_IVORY, BattleUISkin.FONT_BODY, Vector2(375, 24))
 	title.text = "獲得物品"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_rebuild_rows()
@@ -200,14 +202,14 @@ func _rebuild_rows() -> void:
 		button.name = "Loot_%d" % code
 		button.set_meta("item_code", code)
 		button.set_meta("entry_id", group["entry_ids"][0])
-		UISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
+		BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
 		var usable := job >= 80 and job <= 100 and (int(details["job_mask"]) & (1 << (job - 80))) != 0
 		# 0x414c00 row colour: important @6, usable by the recipient's job @1, otherwise @2.
-		var color := UISkin.TEXT_IVORY if bool(details["important"]) else (UISkin.TEXT_WHITE if usable else UISkin.TEXT_RED)
-		var label := UISkin.text(button, Vector2(48, 0), color, UISkin.FONT_BODY, Vector2(168, LIST_ROW))
+		var color := BattleUISkin.TEXT_IVORY if bool(details["important"]) else (BattleUISkin.TEXT_WHITE if usable else BattleUISkin.TEXT_RED)
+		var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, LIST_ROW))
 		label.text = str(details["name"])
 		label.set_meta("base_color", color)
-		var count := UISkin.text(button, Vector2(COUNT_RIGHT - 8 - 84, 0), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(84, LIST_ROW))
+		var count := BattleUISkin.text(button, Vector2(COUNT_RIGHT - 8 - 84, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(84, LIST_ROW))
 		count.text = str(group["entry_ids"].size())
 		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		button.mouse_entered.connect(_show_description.bind(code, label))
@@ -230,8 +232,8 @@ func _rebuild_rows() -> void:
 
 
 func _build_money(gold: int) -> void:
-	UISkin.board(self, "WINDOW40", MONEY_AT)
-	var amount := UISkin.text(self, MONEY_AT + Vector2(80, 4), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(108, 24))
+	BattleUISkin.board(self, "WINDOW40", MONEY_AT)
+	var amount := BattleUISkin.text(self, MONEY_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
 	amount.text = str(gold)
 	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
@@ -262,21 +264,21 @@ func _build_buttons() -> void:
 func _icon_button(key: String, resource: String, caption: String) -> TextureButton:
 	var button := TextureButton.new()
 	button.name = "Button_" + key
-	button.texture_normal = load(UISkin.ROOT + resource + ".SHP.png")
+	button.texture_normal = load(BattleUISkin.ROOT + resource + ".SHP.png")
 	button.position = Vector2(BUTTON_CENTRES[key] - 21, BUTTON_Y - 21)
 	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(button)
 	# 0x43a640 draws the 15 px caption centred under the icon at centre_y + 13, yellow while hovered.
-	var label := UISkin.text(self, Vector2(BUTTON_CENTRES[key] - 40, BUTTON_Y + 13), UISkin.TEXT_WHITE, UISkin.FONT_SMALL, Vector2(80, 16))
+	var label := BattleUISkin.text(self, Vector2(BUTTON_CENTRES[key] - 40, BUTTON_Y + 13), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(80, 16))
 	label.text = caption
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.set_meta("caption", caption)
 	button_labels[key] = label
-	button.mouse_entered.connect(func(): if not button.disabled: label.add_theme_color_override("font_color", UISkin.TEXT_YELLOW))
+	button.mouse_entered.connect(func(): if not button.disabled: label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
 	button.mouse_exited.connect(func():
 		# Remake safety: 丟棄 discards the whole remaining pool, so the second press must stay on the icon.
 		if key == "drop" and _abandon_armed: disarm_abandon()
-		label.add_theme_color_override("font_color", UISkin.TEXT_WHITE))
+		label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
 	return button
 
 
@@ -305,7 +307,7 @@ func _refresh_buttons() -> void:
 	_set_enabled(finish_button, not holding())
 	var drop_label: Label = button_labels["drop"]
 	drop_label.text = "再按一次" if _abandon_armed else str(drop_label.get_meta("caption"))
-	drop_label.add_theme_color_override("font_color", UISkin.TEXT_RED if _abandon_armed else UISkin.TEXT_WHITE)
+	drop_label.add_theme_color_override("font_color", BattleUISkin.TEXT_RED if _abandon_armed else BattleUISkin.TEXT_WHITE)
 	drop_button.tooltip_text = "重製版一次放棄全部剩餘物品（%d 件）；已入包與金錢保留。" % pending.size() if _abandon_armed else ""
 
 
@@ -319,8 +321,8 @@ func _take(group: Dictionary) -> void:
 	_hand = {"entry_id": str(group["entry_ids"][0]), "code": code}
 	_abandon_armed = false
 	# Sound 399 TAKEUP01: the picked item travels with the cursor; the list row loses one count.
-	var record: Dictionary = UISkin.data()["assets"][str(_catalog[str(code)]["icon"])]
-	UISkin.show_shape(hand_icon, UISkin.texture(str(_catalog[str(code)]["icon"])))
+	var record: Dictionary = BattleUISkin.data()["assets"][str(_catalog[str(code)]["icon"])]
+	BattleUISkin.show_shape(hand_icon, BattleUISkin.texture(str(_catalog[str(code)]["icon"])))
 	hand_icon.set_meta("origin", Vector2(float(record["draw_origin"][0]), float(record["draw_origin"][1])))
 	hand_icon.position = _pointer - hand_icon.get_meta("origin")
 	hand_icon.show()
@@ -357,27 +359,27 @@ func _request(extra: Dictionary) -> Dictionary:
 
 
 func _show_description(code: int, label: Label) -> void:
-	label.add_theme_color_override("font_color", UISkin.TEXT_GREEN)
+	label.add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
 	for child in description_box.get_children():
 		if child is Label: description_box.remove_child(child); child.queue_free()
 	var lines: Array = _description_lines(code)
 	for index in range(mini(lines.size(), 4)):
-		var row := UISkin.text(description_box, Vector2(8, 12 + index * 16), UISkin.TEXT_GREEN if index == 0 else UISkin.TEXT_WHITE, UISkin.FONT_SMALL, Vector2(360, 16))
+		var row := BattleUISkin.text(description_box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
 		row.text = str(lines[index])
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	description_box.show()
 
 
 func _hide_description(label: Label) -> void:
-	label.add_theme_color_override("font_color", label.get_meta("base_color", UISkin.TEXT_WHITE))
+	label.add_theme_color_override("font_color", label.get_meta("base_color", BattleUISkin.TEXT_WHITE))
 	description_box.hide()
 
 
 func _description_lines(code: int) -> Array:
 	var details: Dictionary = _catalog[str(code)]
 	if int(details["type_code"]) in range(2, 7):
-		return EquipmentView.description_lines(details)
+		return BattleEquipmentView.description_lines(details)
 	var lines: Array = [str(details["name"]), "可使用"]
 	var definition: Dictionary = _consumables.get(str(code), {})
-	if not definition.is_empty(): lines.append_array(ItemText.description(definition).split("\n"))
+	if not definition.is_empty(): lines.append_array(BattleItemText.description(definition).split("\n"))
 	return lines

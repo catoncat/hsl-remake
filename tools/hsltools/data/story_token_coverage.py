@@ -118,7 +118,7 @@ def build_report(catalog: dict[str, dict[str, Any]], stories: dict[str, str], he
     return {
         'schema': SCHEMA,
         'evidence_tier': 'resource-derived',
-        'source_policy': 'Token names, opcodes and argument comments come from DATA\\ACTION.H; usage counts come from the action= lines of every DATA\\STORY*.TXT (comments removed). Winfail scripts are not scanned. Mapping is the current tools/hsl_opening_timeline_compile.py ACTION_KIND table; a mapped kind names the source intent, not a proven handler.',
+        'source_policy': 'Token names, opcodes and argument comments come from DATA\\ACTION.H; usage counts come from the action= lines of every DATA\\STORY*.TXT (comments removed). Winfail scripts are not scanned. Mapping is the current tools/hsltools/levels/timeline.py ACTION_KIND table; a mapped kind names the source intent, not a proven handler.',
         'sources': {
             'headers': {name: {'path': f'content/imported/hsl/global/tables/{name}', 'sha256': header_digests[name]} for name in HEADERS},
             'story_file_count': len(stories),

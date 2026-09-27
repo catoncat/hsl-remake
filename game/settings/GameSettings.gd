@@ -17,11 +17,14 @@ extends RefCounted
 ## the bus model and the volume curve are the remake's: 0 mutes and a change is heard at once,
 ## where the original skips PlayMusic at volume 0 and only its next call starts a track (§1).
 ## provenance:
-##   rules: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md (預備動作 = [0x477c14] bit1, default on); provisional (設定選項 row semantics read from the baked Title039 labels; original mixer not located); remake-invented docs/OPTIONS.md (preset／presentation keys hold the 重製選項 choice)
+##   rules: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md
+##     (預備動作 = [0x477c14] bit1, default on)
+##   rules: provisional (設定選項 row semantics read from the baked Title039 labels; original mixer not located)
+##   rules: remake-invented docs/OPTIONS.md (preset／presentation keys hold the 重製選項 choice)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
-##   timing: n/a
-##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md; resource-derived content/imported/hsl/music/manifest.json
+##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
+##   audio: resource-derived content/imported/hsl/music/manifest.json
 
 const PATH := "user://settings.json"
 const SCHEMA := "hsl_settings.v1"

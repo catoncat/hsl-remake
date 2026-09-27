@@ -3,20 +3,23 @@ extends RefCounted
 ## Native carry/drop comparisons: battle_reward_inputs.md. Carry and drops draw from the
 ## original global stream (GlobalRandomStream, not saved); eligibility is a remake policy.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/battle_reward_inputs.md; static-derived docs/evidence_packets/static_reverse/original_ai_navigation.md; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md; static-derived docs/evidence_packets/static_reverse/original_player_mode.md; provisional (the drops ahead of a StealItem take in one receipt's collection is remake order, unproven); resource-derived content/generated/hsl/combat/rewards.json; runtime-measured tools/hsltools/probes/_reward_rng_trace.py (carry 0x407c86 rand(101), drops 0x44f5d3 rand(100), both global 0x458c10; 32 seeds match); remake-invented (eligibility, claim revisions; controlled recipients always take the party branch)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Inventory = preload("res://game/sim/InventoryRules.gd")
-const Sequence = preload("res://game/sim/CombatSequenceRules.gd")
-const Roles = preload("res://game/sim/ActorRoleRules.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/battle_reward_inputs.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_navigation.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode.md
+##   rules: provisional (the drops ahead of a StealItem take in one receipt's collection is remake order, unproven)
+##   rules: resource-derived content/generated/hsl/combat/rewards.json
+##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
+##     (carry 0x407c86 rand(101), drops 0x44f5d3 rand(100), both global 0x458c10; 32 seeds match)
+##   rules: remake-invented (eligibility, claim revisions; controlled recipients always take the party branch)
+const InventoryRules = preload("res://game/sim/InventoryRules.gd")
+const CombatSequenceRules = preload("res://game/sim/CombatSequenceRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 ## Gold the unit's own record +0x98 gained in this battle (0x442720 state 2, 0x442856..0x442875):
 ## kill gold and StealGold takes paid to a recipient that does not pay the party. The template,
 ## EVEF instance and entry growth part stays derived (carried_gold); only the gain is stored.
 const CARRIED_GAINED := "carried_gold_gained"
-const DATA_PATH := preload("res://game/sim/ContentPaths.gd").BATTLE_REWARDS
 const MODULUS := 2147483647
 const EMPTY_BAG := [0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -46,7 +49,7 @@ static func data_error(data: Dictionary, units: Array) -> String:
 		if unit.has(CARRIED_GAINED) and not integer(unit[CARRIED_GAINED]):
 			return "invalid_carried_gold"
 		if unit.has("inventory"):
-			if not unit["inventory"] is Array or not Inventory.valid(unit["inventory"]):
+			if not unit["inventory"] is Array or not InventoryRules.valid(unit["inventory"]):
 				return "invalid_reward_inventory"
 			for code in unit["inventory"]:
 				if not integer(code) or (int(code) > 0 and not data["items"].has(str(int(code)))):
@@ -63,7 +66,7 @@ static func carry(choices: Array, state: Array) -> Dictionary:
 		var code := int(value)
 		if code == 0: break
 		if code != -1:
-			var roll := GlobalRandom.rand(state, 101)
+			var roll := GlobalRandomStream.rand(state, 101)
 			state = roll["state"]
 			if int(roll["value"]) <= threshold:
 				return {"code": code, "state": state}
@@ -76,10 +79,10 @@ static func carry(choices: Array, state: Array) -> Dictionary:
 ## (0x436e30). Other actors draw nothing. Returns "" or "inventory_full".
 static func install_carry(loop: Dictionary, actor: Dictionary) -> String:
 	if actor.get("battle_actor_role") != "enemy_ai": return ""
-	var roll := carry(loop["reward_data"]["actors"][str(actor["actor_id"])]["carry_items"], loop[GlobalRandom.LOOP_KEY])
-	loop[GlobalRandom.LOOP_KEY] = roll["state"]
+	var roll := carry(loop["reward_data"]["actors"][str(actor["actor_id"])]["carry_items"], loop[GlobalRandomStream.LOOP_KEY])
+	loop[GlobalRandomStream.LOOP_KEY] = roll["state"]
 	if int(roll["code"]) <= 0: return ""
-	var inserted := Inventory.insert(actor["inventory"], int(roll["code"]))
+	var inserted := InventoryRules.insert(actor["inventory"], int(roll["code"]))
 	if not inserted["ok"]: return "inventory_full"
 	actor["inventory"] = inserted["inventory"]
 	return ""
@@ -95,7 +98,7 @@ static func drops(inventory: Array, items: Dictionary, state: Array) -> Dictiona
 		var item: Dictionary = items[str(code)]
 		var accepted: bool = item["important"]
 		if not accepted:
-			var roll := GlobalRandom.rand(state, 100)
+			var roll := GlobalRandomStream.rand(state, 100)
 			state = roll["state"]
 			# The native branch skips when (rand(100) + 1) >= get_ratio.
 			accepted = int(roll["value"]) + 1 < int(item["get_ratio"])
@@ -104,7 +107,7 @@ static func drops(inventory: Array, items: Dictionary, state: Array) -> Dictiona
 
 
 static func results(receipt: Dictionary) -> Array:
-	return Sequence.outcomes(receipt).duplicate(true)
+	return CombatSequenceRules.outcomes(receipt).duplicate(true)
 
 
 static func kill_gold(target: Dictionary, template_gold: int) -> int:
@@ -130,7 +133,7 @@ static func carried_gold(target: Dictionary, template_gold: int) -> int:
 ## 0x40ba20(recipient) — the live +0x28 & 0x870000 — is exactly 0x10000; every other
 ## recipient (enemy, NPC, 0x50000／0x30000 camps, 0x870000) adds it to its own record +0x98.
 static func pays_party(unit: Dictionary) -> bool:
-	return (Roles.side_mask(unit) | (int(unit.get("player_mode", 0)) & Roles.MAGIC_ONLY_BIT)) == Roles.SIDE_PLAYER
+	return (ActorRoleRules.side_mask(unit) | (int(unit.get("player_mode", 0)) & ActorRoleRules.MAGIC_ONLY_BIT)) == ActorRoleRules.SIDE_PLAYER
 
 
 ## 0x442837..0x44284a: `add [0x4c1bcc], gold` then `cmp 0x3b9ac9ff; jle` — every state-2 payment
@@ -215,14 +218,14 @@ static func hand_over(inventory: Array, entries: Array, items: Dictionary) -> Di
 	var stopped := false
 	for row in rows:
 		if stopped: continue
-		var inserted := Inventory.insert(bag, int(row["code"]))
+		var inserted := InventoryRules.insert(bag, int(row["code"]))
 		if not inserted["ok"]:
 			for slot in range(bag.size()):
 				if int(bag[slot]) != 0 and not bool(items[str(int(bag[slot]))]["important"]):
 					row["discarded"] = int(bag[slot])
-					bag = Inventory.remove(bag, slot, int(bag[slot]))["inventory"]
+					bag = InventoryRules.remove(bag, slot, int(bag[slot]))["inventory"]
 					break
-			inserted = Inventory.insert(bag, int(row["code"]))
+			inserted = InventoryRules.insert(bag, int(row["code"]))
 		if inserted["ok"]:
 			bag = inserted["inventory"]
 			row["slot"] = int(inserted["slot"])
@@ -314,14 +317,14 @@ static func transfer(pending: Array, entry_id: String, inventory: Array, slot: i
 	var index := -1
 	for i in range(pending.size()):
 		if pending[i]["id"] == entry_id: index = i; break
-	if index < 0 or not Inventory.valid(inventory) or slot < -1 or slot >= Inventory.CAPACITY:
+	if index < 0 or not InventoryRules.valid(inventory) or slot < -1 or slot >= InventoryRules.CAPACITY:
 		return {"ok": false, "reason": "stale_claim"}
 	if (slot == -1 and expected_code != 0) or (slot >= 0 and int(inventory[slot]) != expected_code):
 		return {"ok": false, "reason": "stale_inventory_slot"}
 	var bag := inventory.duplicate()
-	if expected_code != 0: bag = Inventory.remove(bag, slot, expected_code)["inventory"]
+	if expected_code != 0: bag = InventoryRules.remove(bag, slot, expected_code)["inventory"]
 	var item: Dictionary = pending[index].duplicate(true)
-	var inserted := Inventory.insert(bag, int(item["code"]))
+	var inserted := InventoryRules.insert(bag, int(item["code"]))
 	if not inserted["ok"]: return inserted
 	var remaining := pending.duplicate(true)
 	if expected_code == 0:

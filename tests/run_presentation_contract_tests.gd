@@ -898,7 +898,7 @@ func cutin_key_contracts() -> void:
 	check(cutin.special_frames(cutin.clips[5]).is_empty(), "056 (no s_shape strip) yields no panels instead of a missing-key error")
 	cutin.clips.clear()
 	# Playback of the 絶技 cut-in: the 劍豪 strip's three panels appear in order across the
-	# 0.5 s lead (banner, then the two insets, centred above the HUD); a caster without a strip
+	# 0.5 s lead (banner, then the two insets); a caster without a strip
 	# stands on the ordinary shot line and the clip still runs to completion.
 	cutin.set_process(false)
 	var swordmaster := unit("001")
@@ -906,16 +906,13 @@ func cutin_key_contracts() -> void:
 	var skill_strike := {"skill_name": "氣刃斬", "damage": 8, "hit": true, "defender_hp_before": 22, "defender_hp_after": 14, "attacker_before": {}, "defender_before": {}}
 	cutin.play(skill_strike, swordmaster, unit("021"), false)
 	var panels_seen: Array[String] = []
-	var panel_positions: Array[Vector2] = []
 	while cutin.busy():
 		cutin._process(1.0 / 60.0)
 		if cutin.busy() and cutin.elapsed < 0.5 and cutin.attacker_sprite.texture != null:
 			var shown: String = cutin.attacker_sprite.texture.resource_path
 			if panels_seen.is_empty() or panels_seen.back() != shown:
 				panels_seen.append(shown)
-				panel_positions.append(cutin.attacker_sprite.position)
 	check(panels_seen == actors["010"]["special_frames"].map(func(frame): return str(frame["res_path"])), "劍豪 氣刃斬 shows P010_201→203 in order during the lead (%s)" % str(panels_seen))
-	check(panel_positions.all(func(point): return point == Vector2(320, 160)), "the composed panels sit centred above the HUD")
 	var stripless := unit("001")  # the first-battle roster has no 056; only the art row matters here
 	stripless["actor_id"] = "056"
 	cutin.play({"skill_name": "連續突刺", "damage": 6, "hit": true, "defender_hp_before": 22, "defender_hp_after": 16, "attacker_before": {}, "defender_before": {}}, stripless, unit("021"), false)

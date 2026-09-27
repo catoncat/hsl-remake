@@ -42,4 +42,6 @@ tools/godot.sh --headless --script res://tests/run_paralysis_tests.gd
 tools/verify.sh
 ```
 
+> TESTCUT2（2026-09-27）备注：`tests/capture_paralysis_review.gd` 已退役——它读的 `view._item_feedback` 已从 BattlePresentation 删除，驱动已失效（ITEMFX 记录）；上面的截图回执为历史，复跑需先按当前节点修好驱动，原文见 `git show 84d8b3d6:tests/capture_paralysis_review.gd`。
+
 最终完整门禁结果以本批真实日志及提交说明为准。原完整高位dispatcher、全部wake／死亡回调、其他异常及多格占地仍单列边界；不能用本批实玩或测试绿推导它们完成。

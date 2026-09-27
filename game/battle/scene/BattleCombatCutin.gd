@@ -1,16 +1,36 @@
 extends CanvasLayer
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json; static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释; static-derived docs/evidence_packets/static_reverse/original_effect_motion.md; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md#7-普攻切入的攻方开场0x401c20-phase-10024-tick-缩放--32-tick-叠层无放声; runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#12 (one full-size actor per shot over BG051; frame_001 whited-out board); static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md; runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (the zoom grows over the battlefield map, centred (320,240), before the white-out); provisional (window composition scale, hurt-frame binding, the identity board hidden during the zoom draws — the original builds the strip text at the overlay switch, the board's own draw is unread)
-##   strings: resource-derived content/imported/hsl/shared/first_skill/manifest.json; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md; remake-invented (cure labels, stat-buff captions, 未回復 and the weapon-effect line on the result line — effects the original shows no glyph for)
-##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json; static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; provisional (0.12 s attack-flash hold until defProcAttackFlash is read in ticks); static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md; remake-invented (the borrowed 氣刃斬 staging used only by synthetic clips)
+##   layout: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
+##   layout: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md#7-普攻切入的攻方开场
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#12
+##     (one full-size actor per shot over BG051; frame_001 whited-out board)
+##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (the zoom grows over the battlefield map, centred (320,240), before the white-out)
+##   layout: provisional
+##     (window composition scale, hurt-frame binding, the identity board hidden during the zoom draws — the original
+##     builds the strip text at the overlay switch, the board's own draw is unread)
+##   strings: resource-derived content/imported/hsl/shared/first_skill/manifest.json
+##   strings: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+##   strings: remake-invented
+##     (cure labels, stat-buff captions, 未回復 and the weapon-effect line on the result line — effects the original shows
+##     no glyph for)
+##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
+##   timing: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: provisional (0.12 s attack-flash hold until defProcAttackFlash is read in ticks)
+##   timing: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   timing: remake-invented (the borrowed 氣刃斬 staging used only by synthetic clips)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 ## The presenters skill_effects/manifest.json names: `skill_effects` (the script player, every
 ## `script` row) and one node per `dedicated_module` file, each holding its routed rows. The
 ## first whose matches(strike) is true presents the clip; a strike none claims is an ordinary
 ## strike, or the borrowed 氣刃斬 staging when it carries a skill_name.
 var presenters: Array[SkillPresenter] = []
-var skill_effects: SkillEffects
+var skill_effects: SkillEffectScriptPlayer
 signal impact(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counter: bool)
 signal released(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counter: bool)
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
@@ -23,12 +43,13 @@ const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
 ## switch slows it).
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const SkillPresenter = preload("res://game/battle/scene/SkillPresenter.gd")
-const SkillEffects = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
+const SkillEffectScriptPlayer = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const AnimalCastLead = preload("res://game/battle/scene/AnimalCastLead.gd")
-const StatEnhancements = preload("res://game/sim/StatEnhancementRules.gd")
+const StatEnhancementRules = preload("res://game/sim/StatEnhancementRules.gd")
+const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 const ShowNumberStyle = preload("res://game/battle/runtime/ShowNumberStyle.gd")
-const ResultNumber = preload("res://game/battle/scene/ResultNumberFloat.gd")
+const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
 ## The word of the NUM513 glyph: a miss reads MISS on the result line and the map (0x404643 kind 5).
 const MISS_TEXT := "MISS"
 ## 0x404290: an ordinary shot's defender object spawns its red damage number at (320, camera
@@ -164,7 +185,7 @@ func _ready() -> void:
 	for spark in sparks:
 		spark.material = light_material
 	panel.hide()
-	skill_effects = SkillEffects.new()
+	skill_effects = SkillEffectScriptPlayer.new()
 	stage.add_child(skill_effects)
 	var modules := {}
 	for skill_id in skill_effects.manifest["rows"]:
@@ -572,9 +593,6 @@ func _process_missing_ordinary_clip(clip: Dictionary) -> void:
 		_complete_clip()
 
 
-const CURE_LABELS := {"poison": ["解毒", "無中毒"], "paralysis": ["麻痺解除", "無麻痺"], "no_magic": ["禁魔解除", "無禁魔"], "weaken": ["衰弱解除", "無衰弱"]}
-
-
 ## Result text of one strike (the digits, MISS or the receipt captions; the map label and tests).
 ## Numbers carry no sign glyph, as the original's defProcShowNumber digit sets (ShowNumberStyle);
 ## the number stands alone — no 暴擊 caption, and a miss reads MISS, the NUM513 glyph (UI6).
@@ -602,7 +620,7 @@ func show_result(strike: Dictionary, age_ticks: float, point: Vector2 = SCRIPT_N
 		_result_key = key
 		for number in result_number.get_children():
 			number.free()
-		ResultNumber.spawn_all(result_number, spawns, point, false)
+		ResultNumberFloat.spawn_all(result_number, spawns, point, false)
 	result_number.show()
 	for number in result_number.get_children():
 		number.draw_at(age_ticks)
@@ -629,9 +647,9 @@ static func result_spawns(strike: Dictionary) -> Array[Dictionary]:
 		var amounts := {"damage": 0, "heal": 0, "mp": 0}
 		for part in feedback_parts(strike):
 			if amounts.has(str(part["kind"])): amounts[str(part["kind"])] = int(part["text"])
-		return ResultNumber.spawns(amounts["damage"], amounts["heal"], amounts["mp"], false)
-	if shows_miss(strike): return ResultNumber.spawns(0, 0, 0, true)
-	return ResultNumber.spawns(strike_actual_damage(strike), 0, 0, false)
+		return ResultNumberFloat.spawns(amounts["damage"], amounts["heal"], amounts["mp"], false)
+	if shows_miss(strike): return ResultNumberFloat.spawns(0, 0, 0, true)
+	return ResultNumberFloat.spawns(strike_actual_damage(strike), 0, 0, false)
 
 
 ## An ordinary shot's number (0x404290): the red HP loss of a hit; a miss spawns nothing.
@@ -683,10 +701,10 @@ static func feedback_parts(result: Dictionary) -> Array[Dictionary]:
 	if int(result.get("healing", 0)) > 0: parts.append({"text": "%d" % int(result["healing"]), "kind": "heal"})
 	if int(result.get("restored_mp", 0)) > 0: parts.append({"text": "%d" % int(result["restored_mp"]), "kind": "mp"})
 	for effect in result.get("support_effects", []):
-		var labels: Array = CURE_LABELS[effect.get("status", "poison")]
-		parts.append({"text": labels[0] if effect["removed"] else labels[1], "kind": "caption"})
+		var row: Dictionary = StatusCatalog.ENTRIES[effect.get("status", StatusCatalog.POISON_KEY)]
+		parts.append({"text": str(row["cure_label"]) if effect["removed"] else "無" + str(row["name"]), "kind": "caption"})
 	for effect in result.get("stat_effects", []):
-		var name: String = StatEnhancements.LABELS[effect["kind"]]
+		var name: String = StatEnhancementRules.LABELS[effect["kind"]]
 		parts.append({"text": name + "增益解除" if int(effect["after_word"]) == 0 else "%s +%d · %d回" % [name, int(effect["after_power"]), int(effect["duration"])], "kind": "caption"})
 	if result.has("support_effects") and parts.is_empty(): parts.append({"text": "未回復", "kind": "caption"})
 	return parts

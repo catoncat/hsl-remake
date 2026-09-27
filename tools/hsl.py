@@ -3,6 +3,9 @@
 
   hsl list [PATTERN...]                       tasks: name, family, outputs
   hsl check --all | PATTERN... [-j N]         prove tracked outputs match sources and code
+  hsl check --profile=modder|parity|maintainer  the tasks of a tier and the tiers before it
+                                              (registry.TIERS); modder prints one SKIP line
+                                              counting the tiers it left out; --all = maintainer
   hsl generate PATTERN... [--exe PATH]        regenerate outputs (producers before consumers);
                                               a task whose original input is absent FAILs
                                               (WINEPREFIX / --exe), pure checkers are skipped
@@ -53,10 +56,17 @@ def cmd_list(args) -> int:
 def cmd_check(args) -> int:
     tasks = registry.all_tasks()
     if not args.all:
-        if not args.patterns:
-            print('hsl check: give --all or at least one task pattern', file=sys.stderr)
+        if not args.patterns and not args.profile:
+            print('hsl check: give --all, --profile=TIER or at least one task pattern', file=sys.stderr)
             return 2
-        tasks = registry.select(tasks, args.patterns)
+        if args.patterns:
+            tasks = registry.select(tasks, args.patterns)
+        if args.profile:
+            tasks, skipped = registry.in_profile(tasks, args.profile)
+            if skipped:
+                # A modder pass is not an equivalence claim: say what did not run.
+                counts = ' '.join(f'{tier}={skipped[tier]}' for tier in registry.TIERS if tier in skipped)
+                print(f'SOURCE_CHECKS_SKIP profile={args.profile} {counts} (--profile=maintainer or --all runs them)', flush=True)
     ctx = registry.Context(original_exe=args.exe)
     return registry.run_tasks('SOURCE_CHECKS', tasks, 'check', ctx, args.jobs)
 
@@ -141,7 +151,8 @@ def main(argv: list[str]) -> int:
 
     p = sub.add_parser('check', help='check that tracked outputs match sources and code')
     p.add_argument('patterns', nargs='*')
-    p.add_argument('--all', action='store_true')
+    p.add_argument('--all', action='store_true', help='every task (= --profile=maintainer; tools/verify.sh and CI)')
+    p.add_argument('--profile', choices=registry.TIERS, help='a tier and the tiers before it (modder < parity < maintainer)')
     common(p)
     p.set_defaults(handler=cmd_check)
 

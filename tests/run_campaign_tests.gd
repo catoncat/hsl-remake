@@ -64,7 +64,7 @@ func _run() -> void:
 
 
 ## next_level_event [level, event] follows the original scripts' reading
-## (tools/hsl_big_map_flow.py): event = the level whose script set runs next,
+## (tools/hsltools/data/big_map_flow.py, `hsl generate big_map_flow`): event = the level whose script set runs next,
 ## gameBigMapLevel (49) = back to the big map at point <level>; a battle whose
 ## script sets no next level returns to the map at its own point.
 func _test_destinations() -> void:

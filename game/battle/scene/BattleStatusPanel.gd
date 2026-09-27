@@ -8,18 +8,27 @@ extends Control
 ## The left column opens on 屬性 (WINDOW21): 0x43ac10 sets root +0x94 = 4 and only a page
 ## button changes it (0x43a640 case 3); the item list is the 道具 page and the bag windows.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; static-derived docs/evidence_packets/static_reverse/original_growth_window.md; static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md; static-derived docs/evidence_packets/static_reverse/original_getitem_window.md; runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05 (frame_006: status page fields, 魔擊力 percent suffix, WINDOW40 at the bottom right); remake-invented docs/OPTIONS.md (OPT-INFO=公開: permanent-gain row and tooltips; OPT-GUIDE=提示: save／load／pending-loot／back buttons; OPT-GROWTH: growth button)
-##   strings: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05 (魔擊力 %); static-derived docs/evidence_packets/static_reverse/original_identity_bar.md; remake-invented (tooltip prose and captions); remake-invented docs/OPTIONS.md (OPT-INFO=公開: the page never masks, every unit reads as known)
-##   timing: n/a
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
+##   layout: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05
+##     (frame_006: status page fields, 魔擊力 percent suffix, WINDOW40 at the bottom right)
+##   layout: remake-invented docs/OPTIONS.md
+##     (OPT-INFO=公開: permanent-gain row and tooltips; OPT-GUIDE=提示: save／load／pending-loot／back buttons; OPT-GROWTH:
+##     growth button)
+##   strings: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05
+##     (魔擊力 %)
+##   strings: static-derived docs/evidence_packets/static_reverse/original_identity_bar.md
+##   strings: remake-invented (tooltip prose and captions)
+##   strings: remake-invented docs/OPTIONS.md (OPT-INFO=公開: the page never masks, every unit reads as known)
 signal growth_requested(unit_id: String)
 signal save_requested
 signal load_requested
 signal rewards_requested
-const Combat = preload("res://game/sim/CoreCombatRules.gd")
-const Permanent = preload("res://game/sim/PermanentCapabilityRules.gd")
-const Entry = preload("res://game/sim/EntryGrowthRules.gd")
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const PermanentCapabilityRules = preload("res://game/sim/PermanentCapabilityRules.gd")
+const EntryGrowthRules = preload("res://game/sim/EntryGrowthRules.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 var portrait: TextureRect
 var equipment_labels: Dictionary = {}
@@ -27,7 +36,7 @@ var portraits: Dictionary
 var growth_button: Button
 var inspected_unit_id := ""
 const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const Vitals = preload("res://game/battle/scene/BattleVitals.gd")
+const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 var vitals: Control
 var equipment_view: Control
 var stat_values: Dictionary = {}
@@ -43,7 +52,7 @@ var hint_buttons: Array[Button] = []
 ## window's static row geometry — the status page and mode 10 share Status_Window_2 at
 ## (12,174), 28 px text rows from y+8, attribute values at x 92 and derived rows at x 116
 ## (BattleGrowthPanel, docs/evidence_packets/static_reverse/original_growth_window.md §2–3).
-const Growth = preload("res://game/battle/scene/BattleGrowthPanel.gd")
+const BattleGrowthPanel = preload("res://game/battle/scene/BattleGrowthPanel.gd")
 const STAT_KEYS := ["str", "dex", "mind", "con", "attack", "defense", "magic", "speed", "move"]
 ## `$:` money box: WINDOW40 at the bottom right of the page (06_status_and_stats_screen
 ## frame_006 template match (415,439) in the 638 px recording → 416 in 640), amount drawn
@@ -67,12 +76,12 @@ func _ready() -> void:
 	size = Vector2(640, 480)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UISkin.clear_panel(self)
-	UISkin.asset(self, "WINDOW21", Growth.LEFT)
+	UISkin.asset(self, "WINDOW21", BattleGrowthPanel.LEFT)
 	portraits = preload("res://game/sim/ContentPaths.gd").actor_portraits()
 	for index in range(STAT_KEYS.size()):
-		var top := Growth.LEFT.y + 8 + index * Growth.ROW_HEIGHT
-		var x: int = Growth.ATTRIBUTE_VALUE_X if index < 4 else Growth.DERIVED_VALUE_X
-		var value := UISkin.text(self, Vector2(x, top), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(0, Growth.GLYPH_ROW))
+		var top := BattleGrowthPanel.LEFT.y + 8 + index * BattleGrowthPanel.ROW_HEIGHT
+		var x: int = BattleGrowthPanel.ATTRIBUTE_VALUE_X if index < 4 else BattleGrowthPanel.DERIVED_VALUE_X
+		var value := UISkin.text(self, Vector2(x, top), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(0, BattleGrowthPanel.GLYPH_ROW))
 		value.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		stat_values[STAT_KEYS[index]] = value
 	permanent_summary = UISkin.label(self, SUMMARY_AT, 14)
@@ -99,7 +108,7 @@ func _ready() -> void:
 	close.tooltip_text = "空格 / Esc / 右鍵返回"
 	close.pressed.connect(hide)
 	hint_buttons = [save, load_button, rewards_button, close]
-	vitals = Vitals.new()
+	vitals = BattleVitals.new()
 	vitals.position = Vector2(0, 14)
 	add_child(vitals)
 	portrait = vitals.portrait
@@ -149,19 +158,19 @@ func show_unit(unit: Dictionary, known: bool = true, own_page: bool = true) -> v
 	money_board.visible = own_page
 	money_label.visible = own_page
 	inspected_unit_id = str(unit["id"])
-	var profile := Combat.combat_profile_from_unit(unit)
-	var masked: bool = Vitals.mask(unit, known)["identity"]
-	permanent_summary.text = Permanent.description(unit)
+	var profile := CoreCombatRules.combat_profile_from_unit(unit)
+	var masked: bool = BattleVitals.mask(unit, known)["identity"]
+	permanent_summary.text = PermanentCapabilityRules.description(unit)
 	permanent_summary.tooltip_text = permanent_summary.text.replace("、", "\n") + "\n與力量、反應、精神、體質分開累計"
 	if unit.has("entry_growth"):
-		var birth := Entry.description(unit)
-		permanent_summary.text = birth + (" · 永久加成" if Permanent.active(unit) else "")
-		permanent_summary.tooltip_text = birth + "\n入場時確定的固有能力；換裝與讀取進度不會重複增加。\n" + Permanent.description(unit)
+		var birth := EntryGrowthRules.description(unit)
+		permanent_summary.text = birth + (" · 永久加成" if PermanentCapabilityRules.active(unit) else "")
+		permanent_summary.tooltip_text = birth + "\n入場時確定的固有能力；換裝與讀取進度不會重複增加。\n" + PermanentCapabilityRules.description(unit)
 	permanent_summary.visible = public and not permanent_summary.text.is_empty() and not masked
 	vitals.show_unit(unit, -1, known)
 	for index in range(5):
 		var key := "resist_" + str(index)
-		var source := Permanent.base_value(unit, key)
+		var source := PermanentCapabilityRules.base_value(unit, key)
 		var gained := int(unit["permanent_gains"][key])
 		vitals.resist_values[index].tooltip_text = "原始 %d ＋ 永久 %d ＝ %d / 80\n職業與裝備另計；最終抗性上限80%%" % [source, gained, source + gained] if source >= 0 and not masked and public else ""
 		vitals.resist_values[index].mouse_filter = Control.MOUSE_FILTER_STOP if public else Control.MOUSE_FILTER_IGNORE
@@ -181,7 +190,7 @@ func show_unit(unit: Dictionary, known: bool = true, own_page: bool = true) -> v
 		var permanent := int(unit["permanent_gains"].get(permanent_key,0))
 		stat_values[key].tooltip_text = "含永久獲得 +%d；不含在四項基礎屬性內" % permanent if permanent>0 and public else ""
 		if public and unit.has("entry_growth") and unit["entry_growth"]["result"]["source_gains"].has(permanent_key):
-			var birth_bonus := Entry.source_gain(unit, permanent_key)
+			var birth_bonus := EntryGrowthRules.source_gain(unit, permanent_key)
 			if birth_bonus > 0: stat_values[key].tooltip_text += "\n含入場固有加成 +%d，與永久道具、裝備及臨時增益分開。" % birth_bonus
 		stat_values[key].mouse_filter = Control.MOUSE_FILTER_STOP if not stat_values[key].tooltip_text.is_empty() else Control.MOUSE_FILTER_IGNORE
 		if key in ["attack", "defense"]:

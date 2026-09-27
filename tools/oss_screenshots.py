@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Screenshot plan for the public export (docs/OPEN_SOURCE_PLAN.md §2.2, lane OSS2).
+"""Screenshot plan for the public export (docs/internal/OPEN_SOURCE_PLAN.md §2.2, lane OSS2).
 
 The user decided (2026-09-27) that original screenshots and recording frames move to the private archive and
 public docs show remake screenshots instead. This tool lists every Markdown link to a media file and classifies

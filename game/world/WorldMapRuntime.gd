@@ -15,17 +15,29 @@ extends Node2D
 ## the beginning; a picture-card town is the original's town that did not open, so the
 ## track does not change. Both play on the shared BattleMusic player.
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json; static-derived docs/evidence_packets/static_reverse/original_world_town.md (reveal order and dropped clicks: walker 0x427420); provisional (encounter die and provisional town-tree unlocks; the glide uses the battle step 32)
-##   layout: resource-derived content/imported/hsl/global/world_map/world_map.json; runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md (status bar subtracted, text rows, grid lines visible; walker at battle size, frame 01); static-derived docs/evidence_packets/static_reverse/original_growth_window.md; remake-invented (not-remade card, point name labels)
-##   strings: static-derived docs/evidence_packets/static_reverse/original_world_town.md; remake-invented (card texts)
-##   timing: static-derived docs/evidence_packets/static_reverse/original_world_town.md (walker speed; track reveal: 0x4280d0 square clip round the anchor, +1 px per tick); static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md; resource-derived content/imported/hsl/music/manifest.json
+##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
+##     (reveal order and dropped clicks: walker 0x427420)
+##   rules: provisional (encounter die and provisional town-tree unlocks; the glide uses the battle step 32)
+##   layout: resource-derived content/imported/hsl/global/world_map/world_map.json
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
+##     (status bar subtracted, text rows, grid lines visible; walker at battle size, frame 01)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
+##   layout: remake-invented (not-remade card, point name labels)
+##   strings: static-derived docs/evidence_packets/static_reverse/original_world_town.md
+##   strings: remake-invented (card texts)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_world_town.md
+##     (walker speed; track reveal: 0x4280d0 square clip round the anchor, +1 px per tick)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
+##   audio: resource-derived content/imported/hsl/music/manifest.json
 
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const Rules = preload("res://game/world/WorldMapRules.gd")
-const TownRules = preload("res://game/sim/TownEventRules.gd")
+const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const TownRuntime = preload("res://game/world/TownRuntime.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
 const ConditionalPartyRules = preload("res://game/sim/ConditionalPartyRules.gd")
@@ -382,18 +394,18 @@ func _initial_towns() -> Dictionary:
 	_load_town_data()
 	if _towndef.has("error"):
 		return {}
-	var trees := TownRules.load_initial_trees(BattleScenario.resource_path(config, "town_initial_trees"))
+	var trees := TownEventRules.load_initial_trees(BattleScenario.resource_path(config, "town_initial_trees"))
 	if trees.has("error"):
 		push_error("Town initial trees failed to load: %s" % str(trees.get("error", "")))
 		return {}
-	var towns := TownRules.initial_town_state(_towndef, trees)
+	var towns := TownEventRules.initial_town_state(_towndef, trees)
 	return towns if not towns.has("error") else {}
 
 
 func _load_town_data() -> void:
 	if not _towndef.is_empty():
 		return
-	_towndef = TownRules.load_towndef(BattleScenario.resource_path(config, "towndef"))
+	_towndef = TownEventRules.load_towndef(BattleScenario.resource_path(config, "towndef"))
 	var messages := _load_json(BattleScenario.resource_path(config, "town_messages"), "hsl_town_message_text.v1")
 	_town_messages = messages.get("messages", {}) if typeof(messages.get("messages")) == TYPE_DICTIONARY else {}
 	_town_speakers = messages.get("speakers", {}) if typeof(messages.get("speakers")) == TYPE_DICTIONARY else {}
@@ -757,7 +769,7 @@ const STATUS_TEXT_ROW_TOP := 11.5
 const STATUS_CAPTION_X := 6.0
 const STATUS_PERCENT_X := 114.0
 const STATUS_TIME_RIGHT := 634.0
-## @5's shadow colour in the 0x476b44 table (RGB565 0x8420); @1 white uses UISkin.TEXT_SHADOW.
+## @5's shadow colour in the 0x476b44 table (RGB565 0x8420); @1 white uses BattleUISkin.TEXT_SHADOW.
 const STATUS_CAPTION_SHADOW := Color8(131, 133, 0)
 
 
@@ -779,16 +791,16 @@ func _build_status_bar() -> void:
 	shade.blend_mode = CanvasItemMaterial.BLEND_MODE_SUB
 	picture.material = shade
 	_status_bar.add_child(picture)
-	_completion_caption = _status_label(STATUS_CAPTION_X, 4 * 24.0, UISkin.TEXT_YELLOW, STATUS_CAPTION_SHADOW, HORIZONTAL_ALIGNMENT_LEFT)
+	_completion_caption = _status_label(STATUS_CAPTION_X, 4 * 24.0, BattleUISkin.TEXT_YELLOW, STATUS_CAPTION_SHADOW, HORIZONTAL_ALIGNMENT_LEFT)
 	_completion_caption.text = str(bar_config.get("completion_label", "完成度："))
-	_completion_label = _status_label(STATUS_PERCENT_X, 4 * 12.0, UISkin.TEXT_YELLOW, STATUS_CAPTION_SHADOW, HORIZONTAL_ALIGNMENT_LEFT)
-	_time_label = _status_label(STATUS_TIME_RIGHT - 160.0, 160.0, UISkin.TEXT_WHITE, UISkin.TEXT_SHADOW, HORIZONTAL_ALIGNMENT_RIGHT)
+	_completion_label = _status_label(STATUS_PERCENT_X, 4 * 12.0, BattleUISkin.TEXT_YELLOW, STATUS_CAPTION_SHADOW, HORIZONTAL_ALIGNMENT_LEFT)
+	_time_label = _status_label(STATUS_TIME_RIGHT - 160.0, 160.0, BattleUISkin.TEXT_WHITE, BattleUISkin.TEXT_SHADOW, HORIZONTAL_ALIGNMENT_RIGHT)
 	runtime.get_node("UI").add_child(_status_bar)
 	runtime.get_node("UI").move_child(_status_bar, 0)
 
 
 func _status_label(x: float, width: float, color: Color, shadow: Color, alignment: int) -> Label:
-	var label := UISkin.text(_status_bar, Vector2(x, STATUS_TEXT_ROW_TOP), color, UISkin.FONT_BODY, Vector2(width, 24))
+	var label := BattleUISkin.text(_status_bar, Vector2(x, STATUS_TEXT_ROW_TOP), color, BattleUISkin.FONT_BODY, Vector2(width, 24))
 	label.add_theme_color_override("font_shadow_color", shadow)
 	label.horizontal_alignment = alignment
 	return label

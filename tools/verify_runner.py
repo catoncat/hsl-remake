@@ -70,9 +70,9 @@ BATTLES = ROOT / "content" / "battles"
 # End-to-end suites too long for the fast gate: `deep` runs them, `godot` skips them.
 # The explorer walks 歐姆村 → GameClear (~25 s on the fixed clock, ~17 min on the real one);
 # the autoplay sweep plays every registered battle to a natural outcome (~15 min, CPU-bound
-# on either clock; docs/PLAYABILITY.md R1); the chapter autoplay walks the explorer's path
+# on either clock; docs/internal/PLAYABILITY.md R1); the chapter autoplay walks the explorer's path
 # fighting every battle with the lookahead commander until GameClear, the first battle it
-# cannot win or CHAPTER_BUDGET_SECONDS (docs/PLAYABILITY.md R10; ends early when stuck).
+# cannot win or CHAPTER_BUDGET_SECONDS (docs/internal/PLAYABILITY.md R10; ends early when stuck).
 DEEP_SUITES = {"run_story_mode_explorer_tests.gd", "run_autoplay_sweep_tests.gd", "run_chapter_autoplay_tests.gd"}
 DEEP_TIMEOUT_SECONDS = 2400
 # The chapter autoplay grows with every battle the commander wins; the gate bounds it by
@@ -108,15 +108,11 @@ DEFAULT_SWEEP_SHARDS = 4
 # clock for every suite.
 FAST_CLOCK_SUITES = {
     SWEEP_SUITE,
-    "run_story_mode_walkthrough_tests.gd",
     "run_story_scene_tests.gd",
     "run_battle_scene_runtime_tests.gd",
     "run_title_screen_tests.gd",
     "run_system_menu_tests.gd",
     "run_campaign_tests.gd",
-    # Its "wait starts while the non-blocking walk is still running" assertion depends on
-    # the frame delta: a long real-clock frame under load finishes the 32 px walk first.
-    "run_opening_token_tests.gd",
     # Condition-driven frame loops over the first enemy turn and the level-51 opening.
     "run_walk_camera_follow_tests.gd",
     "run_story_mode_explorer_tests.gd",
@@ -148,10 +144,8 @@ UNKNOWN_DURATION = 600.0
 # of one full fixed-fps sweep under load.
 DURATION_PRIORS = {
     "run_story_scene_tests.gd": 60.0,
-    "run_story_mode_walkthrough_tests.gd": 50.0,
     "run_battle_scene_runtime_tests.gd": 40.0,
     "run_title_screen_tests.gd": 30.0,
-    "run_action_handoff_tests.gd": 25.0,
 }
 SWEEP_SERIAL_ESTIMATE = 240.0
 

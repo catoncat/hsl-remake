@@ -7,9 +7,10 @@ extends RefCounted
 ## The magic channel of 0x40aa80 calls it for every receiver it hurt (0x40b831); the close-up
 ## (ordinary attack, 絶技) never does.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_map_strike.md (hit shape for 60 ticks, ±1 px shake); runtime-measured docs/evidence_packets/static_reverse/original_map_strike.md#录屏对照 (V08 frame_041 receiver in its hit shape)
-##   strings: n/a
+##   layout: static-derived docs/evidence_packets/static_reverse/original_map_strike.md
+##     (hit shape for 60 ticks, ±1 px shake)
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_map_strike.md#录屏对照
+##     (V08 frame_041 receiver in its hit shape)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_strike.md (60 ticks, phase period 7)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_map_strike.md (0x407230 plays no sound)
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")

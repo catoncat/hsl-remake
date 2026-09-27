@@ -22,13 +22,11 @@ extends RefCounted
 ## TODO(source-research): make BattlePlayLoop.change_equipment delegate to
 ## change() so the two transaction bodies stop being duplicated.
 ## provenance:
-##   rules: remake-invented (sandbox PlayLoop transaction mirroring change_equipment between battles; no original between-battle transaction located)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: remake-invented
+##     (sandbox PlayLoop transaction mirroring change_equipment between battles; no original between-battle transaction
+##     located)
 
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
@@ -124,7 +122,7 @@ static func _prepare(loop: Dictionary, unit_id: String, slot: String, inventory_
 	var weapon := EquipmentRules.equipped_code(result["equipment"], "weapon")
 	if not loop["weapon_ranges"].has(str(weapon)):
 		return {"ok": false, "reason": "missing_weapon_range"}
-	var next := LoopConfig.copy(loop)
+	var next := BattleLoopConfig.copy(loop)
 	var changed := _live_unit(next, unit_id) # the in-place record of the sandbox copy
 	changed["inventory"] = result["inventory"]
 	changed["equipment"] = result["equipment"]

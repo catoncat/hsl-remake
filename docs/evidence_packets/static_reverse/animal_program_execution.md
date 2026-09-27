@@ -2,7 +2,7 @@
 
 > evidence: resource-derived; static-derived · status: live · tools: hsl_native_animal_probe.py, hsltools/assets/animal_programs.py, hsltools/assets/combat_animation.py, run_animal_program_tests.gd, test_hsl_animal_programs.py · updated: 2026-09-24
 
-本包承接 [原版表现离线恢复](presentation_source_recovery.md)，交付可复跑的资源解析和原指令有界探针。协作入口：[PARALLEL_WORK.md](../../../PARALLEL_WORK.md)；研究线负责这些新文件，现有 Godot 接入由 presentation 线负责。
+本包承接 [原版表现离线恢复](presentation_source_recovery.md)，交付可复跑的资源解析和原指令有界探针。协作入口：PARALLEL_WORK.md（已删，见 Git 历史）；研究线负责这些新文件，现有 Godot 接入由 presentation 线负责。
 
 研究日期：2026-09-11。资源事实为 `resource-derived`；EXE 指令及其合成输入隔离执行为 `static-derived`。本包没有启动 Wine、控制游戏窗口或修改 live 战斗状态。
 

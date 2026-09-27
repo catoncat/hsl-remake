@@ -2,17 +2,20 @@ extends RefCounted
 ## 打人閃電 (defProcDropLightn 0x43ca70) presentation: replays the receipt DropLightningRules left
 ## on winfail_runtime.presentation_requests[].drop_lightning. Rules (HP, draws) are already committed.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md (camera, AIR14 2× additive, FireBomb 162／165, numbers at y − 48, shake); static-derived content/generated/hsl/skills/effect_motion.json (FireBomb tracks); provisional (planeEffect6 drawn over planeEffect2)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md (scroll, 11 full + 15 fading frames, strike on tick 27, 80／20-tick hold)
-##   audio: static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md (the process plays nothing; FireBomb obj_X1 BOMB0004 as it starts)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md
+##     (camera, AIR14 2× additive, FireBomb 162／165, numbers at y − 48, shake)
+##   layout: static-derived content/generated/hsl/skills/effect_motion.json (FireBomb tracks)
+##   layout: provisional (planeEffect6 drawn over planeEffect2)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md
+##     (scroll, 11 full + 15 fading frames, strike on tick 27, 80／20-tick hold)
+##   audio: static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md
+##     (the process plays nothing; FireBomb obj_X1 BOMB0004 as it starts)
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
-const Motion = preload("res://game/battle/scene/EffectObjectMotion.gd")
+const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
-const PoisonGas = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
+const BattlePoisonGasPresentation = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
 const TOKEN := "actInsertStoryObjectWait"
 ## OBJ-010 code 25: obj_Shape_Name MAGIC\AIR14_01.SHP is shape +0x32; +0x32 + frame is AIR14_0(frame+1).
@@ -103,7 +106,7 @@ class Burst extends Node2D:
 	var sprites: Array[Sprite2D] = []
 	var manifest: Dictionary = {}
 	var materials := {}
-	var end_tick := STRIKE_TICK + PoisonGas.SHAKE_TICKS + 1
+	var end_tick := STRIKE_TICK + BattlePoisonGasPresentation.SHAKE_TICKS + 1
 
 	func _ready() -> void:
 		manifest = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST))
@@ -112,8 +115,8 @@ class Burst extends Node2D:
 			material.blend_mode = {"add": CanvasItemMaterial.BLEND_MODE_ADD, "sub": CanvasItemMaterial.BLEND_MODE_SUB, "mix": CanvasItemMaterial.BLEND_MODE_MIX}[blend]
 			materials[blend] = material
 		for object_name in FIREBOMBS:
-			if Motion.tracked(object_name):
-				end_tick = maxi(end_tick, int(Motion.track(object_name)["frames"]))
+			if EffectObjectMotion.tracked(object_name):
+				end_tick = maxi(end_tick, int(EffectObjectMotion.track(object_name)["frames"]))
 		bolt = Sprite2D.new()
 		var entry: Dictionary = manifest["frames"].get(FRAME_NAME % (frame + 1), {})
 		if not entry.is_empty():
@@ -144,9 +147,9 @@ class Burst extends Node2D:
 		bolt.modulate.a = 1.0 if tick < FULL_TICKS else float(FADE_LEVELS - 1 - (tick - FULL_TICKS)) / FADE_LEVELS
 		var used := 0
 		for object_name in FIREBOMBS:
-			if not Motion.tracked(object_name):
+			if not EffectObjectMotion.tracked(object_name):
 				continue
-			for entry in Motion.sprites_at(Motion.track(object_name), tick):
+			for entry in EffectObjectMotion.sprites_at(EffectObjectMotion.track(object_name), tick):
 				var record: Dictionary = manifest["frames"].get(str(entry["member"]), {})
 				if record.is_empty():
 					continue
@@ -177,7 +180,7 @@ class Burst extends Node2D:
 				number.z_as_relative = false
 				add_child(number)
 				number.present("damage", int(hit["damage"]))
-				PoisonGas._shake(runtime, self, str(hit["unit_id"]))
+				BattlePoisonGasPresentation._shake(runtime, self, str(hit["unit_id"]))
 		if tick >= end_tick:
 			queue_free()
 

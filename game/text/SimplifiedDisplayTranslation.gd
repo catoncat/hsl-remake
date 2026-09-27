@@ -8,11 +8,9 @@ extends Translation
 ## Controls translate automatically (auto_translate_mode inherits ALWAYS from the root);
 ## text drawn outside a Control would bypass this seam — game/ has none.
 ## provenance:
-##   rules: n/a
-##   layout: n/a
-##   strings: resource-derived docs/evidence_packets/static_reverse/original_font_script/glyph_review.json; remake-invented content/generated/hsl/text/simplified_chars.json#remake_choices (職 font bug, 噁 outside the system font, 鍾針魘 unresolved)
-##   timing: n/a
-##   audio: n/a
+##   strings: resource-derived docs/evidence_packets/static_reverse/original_font_script/glyph_review.json
+##   strings: remake-invented content/generated/hsl/text/simplified_chars.json#remake_choices
+##     (職 font bug, 噁 outside the system font, 鍾針魘 unresolved)
 
 const TABLE_PATH := "res://content/generated/hsl/text/simplified_chars.json"
 const SCHEMA := "hsl_simplified_chars.v1"

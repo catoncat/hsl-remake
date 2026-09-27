@@ -8,18 +8,30 @@ extends RefCounted
 ## (summary()), and every walk still resolves bindings through
 ## `coordinator.binding_for_token` so the battle subclass override applies.
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H; static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md; static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md; provisional (follow／slide walk readings); static-derived docs/evidence_packets/static_reverse/original_random_position.md; provisional docs/evidence_packets/static_reverse/original_random_position.md (random-position slots in table order instead of the native shuffle)
-##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json; resource-derived content/imported/hsl/chapter01/map_object_alignment.json; provisional (walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over the following actDelay); static-derived docs/evidence_packets/static_reverse/original_range_cells.md
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
+##   rules: static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
+##   rules: provisional (follow／slide walk readings)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_random_position.md
+##   rules: provisional docs/evidence_packets/static_reverse/original_random_position.md
+##     (random-position slots in table order instead of the native shuffle)
+##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json
+##   layout: resource-derived content/imported/hsl/chapter01/map_object_alignment.json
+##   layout: provisional
+##     (walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over
+##     the following actDelay)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const ScriptWalkPath = preload("res://game/battle/runtime/opening/ScriptWalkPath.gd")
 const WrdTerrainTiles = preload("res://game/battle/runtime/WrdTerrainTiles.gd")
-const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
-const RangeCells = preload("res://game/battle/runtime/RangeCellOverlay.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
+const RangeCellOverlay = preload("res://game/battle/runtime/RangeCellOverlay.gd")
 
 ## obj_Story_Show_Pos (process 0x4504d0) steps its I_rect31..38 frame every 6 ticks (words
 ## 0x479358／0x47935a), where the range-cell drawers step every 8.
@@ -40,7 +52,7 @@ var _effects: RefCounted = StoryEffectObjects.new()
 var _position_markers: Array[Node2D] = []
 ## One RangeCellOverlay holds every live marker, so they share one clock (0x4504d0: only the
 ## first marker, flag 0x10000, advances the frame and pulse); freed with the last marker.
-var _position_overlay: RangeCells = null
+var _position_overlay: RangeCellOverlay = null
 var _position_serial: int = 0
 ## actSetRandomPos slots (script pixels) after the battle's shuffle: the PlayLoop decided
 ## the slot order once at create (BattleLoopInit._load_opening_story_state, 0x451d0f) and
@@ -65,7 +77,7 @@ func _clear_position_markers(event: Dictionary) -> void:
 
 
 func _load_shape_sets() -> void:
-	## actChangeShape frame sets decoded by tools/hsl_level_actors.py (resources.actor_shape_sets).
+	## actChangeShape frame sets decoded by tools/hsltools/levels/actors.py (resources.actor_shape_sets).
 	_shape_sets = {}
 	if runtime == null:
 		return
@@ -577,7 +589,7 @@ func _show_position_marker(event: Dictionary) -> void:
 	var script_pixel := Vector2(float(str(args[0])), float(str(args[1])))
 	var cell_rect := _show_position_cell(script_pixel)
 	if _position_overlay == null or not is_instance_valid(_position_overlay):
-		_position_overlay = RangeCells.new()
+		_position_overlay = RangeCellOverlay.new()
 		_position_overlay.name = "ShowPosOverlay"
 		_position_overlay.frame_ticks = SHOW_POS_FRAME_TICKS
 		_position_overlay.z_index = 4000
@@ -653,7 +665,7 @@ func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, 
 func _walk_terrain() -> Dictionary:
 	var cell_size: Vector2 = runtime.map_config.grid_projection["cell_size"] if runtime.map_config != null else Vector2(32, 32)
 	if runtime.play_loop.has("tiles"):
-		return {"tiles": TerrainEdits.tiles(runtime.play_loop), "map_size": runtime.play_loop.get("map_size", Vector2i.ZERO), "cell_size": cell_size}
+		return {"tiles": TerrainEditRules.tiles(runtime.play_loop), "map_size": runtime.play_loop.get("map_size", Vector2i.ZERO), "cell_size": cell_size}
 	if _story_terrain.is_empty():
 		var path := str((runtime.first_battle_scenario.get("resources", {}) as Dictionary).get("terrain", ""))
 		var loaded: Dictionary = WrdTerrainTiles.load_tiles(path) if path != "" else {}

@@ -3,10 +3,6 @@ extends RefCounted
 ## One read-only quote serves availability and actual MP/ST debit.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_resources.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 const ST_PER_EXPEND := 20
 const MAX_SIGNED := 2147483647
 

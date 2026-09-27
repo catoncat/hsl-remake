@@ -16,10 +16,24 @@ extends Node2D
 ## menu appears once the original timeline has reached its wait, then waits for the choice
 ## instead of leaving by itself.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md; static-derived docs/evidence_packets/static_reverse/original_game_clear_epilogue.md; static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md (0x42aea0: count 60, no input above 40, word at 0 or input, then 160 → 0x42cb90); remake-invented docs/OPTIONS.md (OPT-RETRY=可重新挑戰本戰 only: re-enter the battle from its entry hand-off, no self-timed exit)
-##   layout: resource-derived content/imported/hsl/global/title/manifest.json; static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md (word object at (320,240), Title012 drawn about its centre); remake-invented docs/OPTIONS.md (OPT-RETRY=可重新挑戰本戰 only: the two-row menu under the text)
-##   strings: resource-derived content/imported/hsl/global/title/manifest.json; remake-invented docs/OPTIONS.md (OPT-RETRY=可重新挑戰本戰 only: 重新挑戰本戰／回到標題)
-##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md (0x42afc0: scale 0x800 +0x200 a tick, 16 alpha levels every 4 ticks; input speeds both); runtime-measured docs/evidence_packets/static_reverse/original_battle_end_flow.md (0.2 s black, 0.5 s fade in: the victory's 0x42dc90(2), taken for level 999); provisional (0.6 s fade-out)
+##   rules: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_game_clear_epilogue.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md
+##     (0x42aea0: count 60, no input above 40, word at 0 or input, then 160 → 0x42cb90)
+##   rules: remake-invented docs/OPTIONS.md
+##     (OPT-RETRY=可重新挑戰本戰 only: re-enter the battle from its entry hand-off, no self-timed exit)
+##   layout: resource-derived content/imported/hsl/global/title/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md
+##     (word object at (320,240), Title012 drawn about its centre)
+##   layout: remake-invented docs/OPTIONS.md (OPT-RETRY=可重新挑戰本戰 only: the two-row menu under the text)
+##   strings: resource-derived content/imported/hsl/global/title/manifest.json
+##   strings: remake-invented docs/OPTIONS.md (OPT-RETRY=可重新挑戰本戰 only: 重新挑戰本戰／回到標題)
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md
+##     (0x42afc0: scale 0x800 +0x200 a tick, 16 alpha levels every 4 ticks; input speeds both)
+##   timing: runtime-measured docs/evidence_packets/static_reverse/original_battle_end_flow.md
+##     (0.2 s black, 0.5 s fade in: the victory's 0x42dc90(2), taken for level 999)
+##   timing: provisional (0.6 s fade-out)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
@@ -29,7 +43,7 @@ const BATTLE_SCENE_PATH := "res://game/battle/scene/BattleSceneRuntime.tscn"
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 ## OPT-RETRY menu rows (remake layout): centred under the GAME OVER text, one 32 px pitch.
 const RETRY_ROWS := [{"id": "retry", "text": "重新挑戰本戰"}, {"id": "title", "text": "回到標題"}]
 const RETRY_MENU_TOP := 352.0
@@ -245,7 +259,7 @@ func retry() -> Dictionary:
 
 func _build_retry_menu() -> void:
 	for index in RETRY_ROWS.size():
-		var row := UISkin.text(self, Vector2(0, RETRY_MENU_TOP + index * RETRY_MENU_PITCH), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(640, 24))
+		var row := BattleUISkin.text(self, Vector2(0, RETRY_MENU_TOP + index * RETRY_MENU_PITCH), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(640, 24))
 		row.name = "Retry_" + str(RETRY_ROWS[index]["id"])
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		row.text = str(RETRY_ROWS[index]["text"])
@@ -256,13 +270,13 @@ func _build_retry_menu() -> void:
 
 func _refresh_retry_menu() -> void:
 	for index in retry_labels.size():
-		retry_labels[index].add_theme_color_override("font_color", UISkin.TEXT_YELLOW if index == retry_focus else UISkin.TEXT_WHITE)
+		retry_labels[index].add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW if index == retry_focus else BattleUISkin.TEXT_WHITE)
 
 
 func _retry_row_at(point: Vector2) -> int:
 	for index in retry_labels.size():
 		var row := retry_labels[index]
-		var width := row.get_theme_font("font").get_string_size(row.text, HORIZONTAL_ALIGNMENT_LEFT, -1, UISkin.FONT_BODY).x
+		var width := row.get_theme_font("font").get_string_size(row.text, HORIZONTAL_ALIGNMENT_LEFT, -1, BattleUISkin.FONT_BODY).x
 		if Rect2(row.position + Vector2((row.size.x - width) / 2.0, 0), Vector2(width, row.size.y)).has_point(point):
 			return index
 	return -1

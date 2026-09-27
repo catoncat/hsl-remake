@@ -9,14 +9,18 @@ extends RefCounted
 ## `apply_campaign_carry`) live here too. The module owns no state; BattlePlayLoop
 ## forwards to it and remains the single mutable battle-state owner.
 ## provenance:
-##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json; resource-derived content/generated/hsl/skills/initial_book.json; resource-derived content/generated/hsl/ai/profiles.json; static-derived docs/evidence_packets/static_reverse/original_damage_random.md; static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md; remake-invented (create() stage order and scenario_error intake contract; reward_seed seeds the damage／global streams for pure callers — docs/architecture/BATTLE_CONFIG_STATE.md); static-derived docs/evidence_packets/static_reverse/original_random_position.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json
+##   rules: resource-derived content/generated/hsl/skills/initial_book.json
+##   rules: resource-derived content/generated/hsl/ai/profiles.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
+##   rules: remake-invented
+##     (create() stage order and scenario_error intake contract; reward_seed seeds the damage／global streams for pure
+##     callers — docs/architecture/BATTLE_CONFIG_STATE.md)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_random_position.md
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
 const WrdTerrainTiles = preload("res://game/battle/runtime/WrdTerrainTiles.gd")
 const EquipmentCatalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
@@ -26,11 +30,11 @@ const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 const ScriptWait = preload("res://game/sim/ScriptWaitRules.gd")
 const ReinforcementGrowth = preload("res://game/sim/ReinforcementGrowthRules.gd")
-const InitialRosterGrowth = preload("res://game/sim/InitialRosterGrowthRules.gd")
+const InitialRosterGrowthRules = preload("res://game/sim/InitialRosterGrowthRules.gd")
 const ItemResolutionRules = preload("res://game/sim/ItemResolutionRules.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
-const RewardRules = preload("res://game/sim/BattleRewardRules.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const ExtraActionRules = preload("res://game/sim/ExtraActionRules.gd")
 const TurnEndRules = preload("res://game/sim/TurnEndRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
@@ -39,8 +43,8 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const StaminaRules = preload("res://game/sim/StaminaRules.gd")
 const TraversalRules = preload("res://game/sim/ActorTraversalRules.gd")
-const ActorInitialization = preload("res://game/sim/ActorInitializationRules.gd")
-const ScriptActors = preload("res://game/sim/ScriptActorCreationRules.gd")
+const ActorInitializationRules = preload("res://game/sim/ActorInitializationRules.gd")
+const ScriptActorCreationRules = preload("res://game/sim/ScriptActorCreationRules.gd")
 const Treasure = preload("res://game/sim/TreasureRules.gd")
 const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 
@@ -85,8 +89,8 @@ static func create(units: Array = [], terrain_path: String = "", scenario: Dicti
 		var reason: String = stage.call(loop, active_scenario, intake)
 		if reason != "":
 			return _fail(loop, reason)
-	if LoopConfig.freeze_enabled:
-		LoopConfig.freeze(loop)
+	if BattleLoopConfig.freeze_enabled:
+		BattleLoopConfig.freeze(loop)
 	return loop
 
 
@@ -133,7 +137,7 @@ static func _initial_loop(active_scenario: Dictionary, roster: Array, terrain: D
 		# The global stream AI decisions, NPC level adjustment (0x40e870), birth carry (0x407c40),
 		# kill drops (0x44f580), random positions and the opening's slot shuffle draw from
 		# (0x458c80). Not saved: a checkpoint load keeps the live words (BattleCheckpoint.restored).
-		GlobalRandom.LOOP_KEY: global_state.duplicate() if GlobalRandom.valid(global_state) else GlobalRandom.seeded(reward_seed),
+		GlobalRandomStream.LOOP_KEY: global_state.duplicate() if GlobalRandomStream.valid(global_state) else GlobalRandomStream.seeded(reward_seed),
 		"tiles": terrain.get("tiles", {}),
 		"terrain_edits": [],
 		"map_size": terrain.get("map_size", Vector2i(24, 24)),
@@ -151,7 +155,7 @@ static func _initial_loop(active_scenario: Dictionary, roster: Array, terrain: D
 		"item_use_policy": ItemResolutionRules.POLICY,
 		# The one damage stream items, exchanges, casts and the turn-end tail draw from. New game
 		# (0x42ca47): word0 = t, word1 = ~t; a campaign carry replaces it (apply_campaign_carry).
-		DamageRandom.LOOP_KEY: DamageRandom.seeded(reward_seed),
+		DamageRandomStream.LOOP_KEY: DamageRandomStream.seeded(reward_seed),
 		"item_use_sequence": 0,
 		"last_item_use": {},
 		"extra_action": ExtraActionRules.empty(),
@@ -168,7 +172,7 @@ static func _initial_loop(active_scenario: Dictionary, roster: Array, terrain: D
 		"last_command_reject": {},
 		"last_ai_actions": [],
 		"battle_outcome": {},
-		"command_menu": Loop._product_command_menu(
+		"command_menu": BattlePlayLoop._product_command_menu(
 			CoreTurnQueue.build_command_menu(
 				bool(command_flags.get("has_special", false)),
 				bool(command_flags.get("has_magic", false))
@@ -287,7 +291,7 @@ static func _load_inventory_catalog(loop: Dictionary, scenario: Dictionary, inta
 
 static func _load_rewards(loop: Dictionary, _scenario: Dictionary, _intake: Dictionary) -> String:
 	var rewards: Variant = _read_json(ContentPaths.BATTLE_REWARDS)
-	if not rewards is Dictionary or RewardRules.data_error(rewards, loop["units"]) != "":
+	if not rewards is Dictionary or BattleRewardRules.data_error(rewards, loop["units"]) != "":
 		return "invalid_reward_source"
 	loop["reward_data"] = rewards
 	return ""
@@ -301,7 +305,7 @@ static func _check_inventory_catalog(loop: Dictionary, _scenario: Dictionary, in
 
 static func _prepare_roster(loop: Dictionary, _scenario: Dictionary, intake: Dictionary) -> String:
 	for index in range(loop["units"].size()):
-		var prepared := ActorInitialization.prepare(loop["units"][index], loop["skill_book"], loop["ai_profiles"], intake["progression"], intake["items"]["initial_inventory"], loop["equipment_items"], intake["initial_stamina"])
+		var prepared := ActorInitializationRules.prepare(loop["units"][index], loop["skill_book"], loop["ai_profiles"], intake["progression"], intake["items"]["initial_inventory"], loop["equipment_items"], intake["initial_stamina"])
 		if not prepared["ok"]:
 			return str(prepared["reason"])
 		loop["units"][index] = prepared["actor"]
@@ -313,7 +317,7 @@ static func _check_roster_inputs(loop: Dictionary, _scenario: Dictionary, _intak
 		var placement_error := TraversalRules.placement_error(actor, loop["units"], loop["tiles"], loop["map_size"], true)
 		if placement_error != "":
 			return placement_error
-		var resource_error := Loop._skill_input_error(loop, actor)
+		var resource_error := BattlePlayLoop._skill_input_error(loop, actor)
 		if resource_error == "": resource_error = CoreCombatRules.input_error(actor)
 		if resource_error != "":
 			return resource_error
@@ -327,7 +331,7 @@ static func _check_roster_inputs(loop: Dictionary, _scenario: Dictionary, _intak
 static func _load_script_actor_templates(loop: Dictionary, scenario: Dictionary, intake: Dictionary) -> String:
 	if not scenario.has("script_actor_templates"):
 		return ""
-	var source_error := ScriptActors.source_error(scenario["script_actor_templates"])
+	var source_error := ScriptActorCreationRules.source_error(scenario["script_actor_templates"])
 	if source_error != "":
 		return source_error
 	var source := {}
@@ -344,11 +348,11 @@ static func _load_script_actor_templates(loop: Dictionary, scenario: Dictionary,
 			# instead of initializing a playable substitute.
 			spec["actor"] = normalized[0]
 		else:
-			var prepared := ActorInitialization.prepare(normalized[0], loop["skill_book"], loop["ai_profiles"], intake["progression"], intake["items"]["initial_inventory"], loop["equipment_items"], intake["initial_stamina"])
+			var prepared := ActorInitializationRules.prepare(normalized[0], loop["skill_book"], loop["ai_profiles"], intake["progression"], intake["items"]["initial_inventory"], loop["equipment_items"], intake["initial_stamina"])
 			if not prepared["ok"]:
 				return str(prepared["reason"])
 			spec["actor"] = prepared["actor"]
-			var error := Loop._skill_input_error(loop, spec["actor"])
+			var error := BattlePlayLoop._skill_input_error(loop, spec["actor"])
 			if error == "": error = CoreCombatRules.input_error(spec["actor"])
 			if error != "":
 				return error
@@ -374,7 +378,7 @@ static func _rebuild_queue(loop: Dictionary, _scenario: Dictionary, _intake: Dic
 	# Initial queue is built from refreshed speeds. Mid-round changes still wait
 	# for the ordinary queue wrap; this seam is initialization only.
 	# The enemies' birth carry rolls with their level adjustment (InitialRosterGrowthRules).
-	loop["turn_queue"] = CoreTurnQueue.rebuild(Loop._queue_actors(loop))
+	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
 	return ""
 
 
@@ -408,7 +412,7 @@ static func _load_scenario_rules(loop: Dictionary, scenario: Dictionary, _intake
 	loop["events"] = rules["events"]
 	loop["reinforcement_templates"] = []
 	for entry in rules["reinforcements"]:
-		var template := Loop._unit(loop, str(entry["template_unit_id"])).duplicate(true)
+		var template := BattlePlayLoop._unit(loop, str(entry["template_unit_id"])).duplicate(true)
 		if template.is_empty():
 			return "missing_reinforcement_template"
 		loop["reinforcement_templates"].append(template)
@@ -434,7 +438,7 @@ static func _initialize_script_state(loop: Dictionary, scenario: Dictionary, int
 static func _load_script_walk_source(loop: Dictionary, _scenario: Dictionary, _intake: Dictionary) -> String:
 	if loop.has("script_actor_source"):
 		return ""
-	var source := ScriptActors.walk_only_source(loop.get("winfail_script_rules", {}))
+	var source := ScriptActorCreationRules.walk_only_source(loop.get("winfail_script_rules", {}))
 	if not source.is_empty():
 		loop["script_actor_source"] = source
 		loop["script_actor_transactions"] = []
@@ -485,7 +489,7 @@ static func _load_opening_story_state(loop: Dictionary, scenario: Dictionary, in
 				order = range(table.size())
 				rolls = []
 				for index in range(table.size()):
-					var roll := GlobalRandom.loop_draw(loop, -1) & 1
+					var roll := GlobalRandomStream.loop_draw(loop, -1) & 1
 					rolls.append(roll)
 					var other := index + 2 if index + 2 < 5 else index + 2 - 5
 					if roll == 1 and other < table.size():
@@ -509,7 +513,7 @@ static func _load_opening_story_state(loop: Dictionary, scenario: Dictionary, in
 				inserts[symbol] = int(inserts.get(symbol, 0)) + 1
 				var slot := int(str(args[3])) if args.size() > 3 else -1
 				var binding: Dictionary = scenario.get("opening", {}).get("actor_bindings", {}).get("%s/insert%d" % [symbol, inserts[symbol]], {})
-				var unit := Loop._unit(loop, str(binding.get("unit_id", "")))
+				var unit := BattlePlayLoop._unit(loop, str(binding.get("unit_id", "")))
 				if unit.is_empty() or slot < 0 or slot >= order.size():
 					continue
 				var pixel: Vector2i = table[order[slot]] + Vector2i(int(str(args[1])), int(str(args[2])))
@@ -527,20 +531,20 @@ static func _load_script_waits(loop: Dictionary, scenario: Dictionary, intake: D
 		return str(wait_source["reason"])
 	loop["script_wait_source"] = wait_source["source"]
 	for assignment in wait_source["source"]["initial"]:
-		Loop._unit(loop, assignment["unit_id"])["ai_wait_remaining"] = assignment["rounds"]
+		BattlePlayLoop._unit(loop, assignment["unit_id"])["ai_wait_remaining"] = assignment["rounds"]
 	return ""
 
 
 static func initialize_roster_growth(loop: Dictionary) -> Dictionary:
 	if not bool(loop.get("scenario_ok", false)):
-		return Loop.copy(loop)
-	var proposal := InitialRosterGrowth.prepare(loop)
+		return BattlePlayLoop.copy(loop)
+	var proposal := InitialRosterGrowthRules.prepare(loop)
 	if not proposal["ok"]:
-		var failed := Loop.copy(loop)
+		var failed := BattlePlayLoop.copy(loop)
 		failed.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": proposal.get("reason", "invalid_initial_roster")}, true)
 		return failed
 	var next: Dictionary = proposal["loop"]
-	if not loop.has("initial_roster_growth"): next["turn_queue"] = CoreTurnQueue.rebuild(Loop._queue_actors(next))
+	if not loop.has("initial_roster_growth"): next["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(next))
 	return next
 
 
@@ -549,7 +553,7 @@ static func initialize_roster_growth(loop: Dictionary) -> Dictionary:
 ## begin_battle. Empty carry or an invalid scenario leaves the loop untouched.
 static func apply_campaign_carry(loop: Dictionary, carry: Dictionary) -> Dictionary:
 	if carry.is_empty() or not bool(loop.get("scenario_ok", false)) or str(loop.get("interaction", "")) != "idle":
-		return Loop.copy(loop)
+		return BattlePlayLoop.copy(loop)
 	var applied := CampaignCarryRules.apply(loop, carry)
 	# The carry is JSON from a previous battle or save; the merged roster must still
 	# match the shared unit contract before begin_battle.

@@ -18,11 +18,11 @@ extends RefCounted
 ## What sets a track to mode 1 (the reveal animation) is not located: this remake
 ## reveals the non-hidden tracks at the point the party stands on (provisional).
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json; static-derived docs/evidence_packets/static_reverse/original_world_town.md; provisional (track reveal trigger — what sets mode 1 is not located)
+##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
+##   rules: provisional (track reveal trigger — what sets mode 1 is not located)
 ##   layout: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   strings: resource-derived content/imported/hsl/global/world_map/world_map.json
-##   timing: n/a
-##   audio: n/a
 
 const STATE_SCHEMA := "hsl_world_state.v1"
 const DATA_SCHEMA := "hsl_world_map.v1"

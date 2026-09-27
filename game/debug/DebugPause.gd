@@ -20,11 +20,12 @@ extends Node
 ## starts the game any other way never freezes it by accident. Off, the node stays installed
 ## but takes no key and never touches the pause.
 ## provenance:
-##   rules: remake-invented (debug freeze and single-frame step behind the HSL_DEBUG_PAUSE development switch; the original has no such control)
+##   rules: remake-invented
+##     (debug freeze and single-frame step behind the HSL_DEBUG_PAUSE development switch; the original has no such
+##     control)
 ##   layout: remake-invented (top-left badge)
 ##   strings: remake-invented (「停格中」badge)
 ##   timing: remake-invented (one step = one process frame)
-##   audio: n/a
 
 const TOGGLE_KEY := KEY_P
 const STEP_KEY := KEY_N

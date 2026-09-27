@@ -7,11 +7,15 @@ extends RefCounted
 ## node at its origin (`holds`) and counts as actor motion so AI playback, combat and menus
 ## wait for it. Explicit fast-forward (`finish`) starts the walk at once.
 ## provenance:
-##   rules: n/a
-##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (blue reach centred on the mover, ≈ RGB(70,75,170) over the map, then the walk); static-derived docs/evidence_packets/static_reverse/original_range_cells.md
-##   strings: n/a
-##   timing: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (reach shown 0.20–0.48 s, median 0.26 s ≈ 16 ticks; the camera scroll ends before it appears); provisional (one fixed hold for the bimodal 0.20–0.23 s／0.40–0.48 s spread whose cause is unread); static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
-##   audio: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (no onset while the reach shows)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (blue reach centred on the mover, ≈ RGB(70,75,170) over the map, then the walk)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (reach shown 0.20–0.48 s, median 0.26 s ≈ 16 ticks; the camera scroll ends before it appears)
+##   timing: provisional (one fixed hold for the bimodal 0.20–0.23 s／0.40–0.48 s spread whose cause is unread)
+##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##   audio: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (no onset while the reach shows)
 
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const PREVIEW_TICKS := 16

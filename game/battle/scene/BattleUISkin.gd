@@ -1,10 +1,16 @@
 extends RefCounted
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; resource-derived content/generated/hsl/text/protected_words.json; static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md; provisional (set_wrapped_text's break-before-name rule for the shaped UI labels; those labels have no original counterpart read); runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (panel shade: black at level 9 of 16, map luma × 0.46 under the status page and the growth panel); remake-invented (button and label styling; system font centred on the original 24／16 px glyph rows; message_rows keeps a protected name whole where the 38-byte break cuts it (user playtest))
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: resource-derived content/generated/hsl/text/protected_words.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
+##   layout: provisional
+##     (set_wrapped_text's break-before-name rule for the shaped UI labels; those labels have no original counterpart
+##     read)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (panel shade: black at level 9 of 16, map luma × 0.46 under the status page and the growth panel)
+##   layout: remake-invented
+##     (button and label styling; system font centred on the original 24／16 px glyph rows; message_rows keeps a
+##     protected name whole where the 38-byte break cuts it (user playtest))
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ROOT := ContentPaths.BATTLE_UI_PREVIEWS
 const PANEL_DATA := "res://content/imported/hsl/shared/panels/manifest.json"

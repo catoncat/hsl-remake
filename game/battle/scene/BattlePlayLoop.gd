@@ -11,11 +11,18 @@ extends RefCounted
 ## BattleLoopInventory (use／give／equip). Original fidelity remains required; the opening
 ## timeline is owned by BattleSceneRuntime, this loop owns post-control play.
 ## provenance:
-##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json; static-derived docs/evidence_packets/static_reverse/original_poison_gas.md; static-derived docs/evidence_packets/static_reverse/original_identity_bar.md; runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured (known byte indexed by PLAYERS template row obj+0xa2 — unit_known reads any known unit of the actor_id); resource-derived content/generated/hsl/skills/initial_book.json; static-derived docs/evidence_packets/static_reverse/original_round_display.md; static-derived docs/evidence_packets/static_reverse/original_death_disposal.md; runtime-reference docs/evidence_packets/runtime_observations/menus_ui/README.md#5 (特殊技 always opens the skill page first, even with one skill and an empty gauge; then the cell); remake-invented (one-owner transaction ordering, action-budget hand-off and menu surface — docs/architecture/BATTLE_SYSTEMS.md)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_identity_bar.md
+##   rules: runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured
+##     (known byte indexed by PLAYERS template row obj+0xa2 — unit_known reads any known unit of the actor_id)
+##   rules: resource-derived content/generated/hsl/skills/initial_book.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
+##   rules: runtime-reference docs/evidence_packets/runtime_observations/menus_ui/README.md#5
+##     (特殊技 always opens the skill page first, even with one skill and an empty gauge; then the cell)
+##   rules: remake-invented
+##     (one-owner transaction ordering, action-budget hand-off and menu surface — docs/architecture/BATTLE_SYSTEMS.md)
 
 const WeaponEffects = preload("res://game/sim/WeaponEffectRules.gd")
 const Treasure = preload("res://game/sim/TreasureRules.gd")
@@ -34,11 +41,11 @@ const PositionCapabilities = preload("res://game/sim/PositionCapabilityRules.gd"
 const Footprint = preload("res://game/sim/FootprintRules.gd")
 const ResourceRecoveryRules = preload("res://game/sim/ResourceRecoveryRules.gd")
 const TurnEndRules = preload("res://game/sim/TurnEndRules.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
-const RangePropagation = preload("res://game/sim/RangePropagationRules.gd")
+const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
 const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
-const PoisonGas = preload("res://game/sim/PoisonGasRules.gd")
+const PoisonGasRules = preload("res://game/sim/PoisonGasRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
@@ -77,44 +84,44 @@ static func same_state(left: Dictionary, right: Dictionary) -> bool:
 ## resolution, script actors／waits／departures／reinforcement pressure), AI turn driving,
 ## the combat commit seam player and AI share (exchange／strike／skill receipts), inventory
 ## and equipment transactions (use／drop／give／equip, storage projection).
-const Init = preload("res://game/battle/scene/BattleLoopInit.gd")
-const Rewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
-const ScriptFlow = preload("res://game/battle/scene/BattleLoopScript.gd")
+const BattleLoopInit = preload("res://game/battle/scene/BattleLoopInit.gd")
+const BattleLoopRewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
+const BattleLoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
 const AI = preload("res://game/battle/scene/BattleLoopAI.gd")
 const Combat = preload("res://game/battle/scene/BattleLoopCombat.gd")
-const Inventory = preload("res://game/battle/scene/BattleLoopInventory.gd")
+const BattleLoopInventory = preload("res://game/battle/scene/BattleLoopInventory.gd")
 
 ## Rule modules re-exported for callers that reach them through this facade (`Loop.X`);
 ## the facade's own code no longer calls them — the owning module above does.
-const BattleScenario = Init.BattleScenario
-const WrdTerrainTiles = Init.WrdTerrainTiles
-const InitialRosterGrowth = Init.InitialRosterGrowth
-const RewardRules = Rewards.RewardRules
-const ScriptWait = ScriptFlow.ScriptWait
-const ReinforcementGrowth = ScriptFlow.ReinforcementGrowth
-const ScriptActors = ScriptFlow.ScriptActors
+const BattleScenario = BattleLoopInit.BattleScenario
+const WrdTerrainTiles = BattleLoopInit.WrdTerrainTiles
+const InitialRosterGrowth = BattleLoopInit.InitialRosterGrowthRules
+const RewardRules = BattleLoopRewards.BattleRewardRules
+const ScriptWait = BattleLoopScript.ScriptWait
+const ReinforcementGrowth = BattleLoopScript.ReinforcementGrowth
+const ScriptActors = BattleLoopScript.ScriptActorCreationRules
 const ItemUseRules = AI.ItemUseRules
 const SkillResourceRules = AI.SkillResourceRules
 const AISkillPlanning = AI.AISkillPlanning
 const AINavigationRules = AI.AINavigationRules
 const CombatSequence = Combat.CombatSequence
-const InventoryRules = Inventory.InventoryRules
-const EquipmentRules = Inventory.EquipmentRules
-const CampaignCarryRules = Inventory.CampaignCarryRules
-const ItemResolutionRules = Inventory.ItemResolutionRules
+const InventoryRules = BattleLoopInventory.InventoryRules
+const EquipmentRules = BattleLoopInventory.EquipmentRules
+const CampaignCarryRules = BattleLoopInventory.CampaignCarryRules
+const ItemResolutionRules = BattleLoopInventory.ItemResolutionRules
 
 
 ## Build the loop from a scenario (BattleLoopInit: `_initial_loop` + the `_load_*` stages).
 static func create(units: Array = [], terrain_path: String = "", scenario: Dictionary = {}, reward_seed: int = 1, global_state: Array = []) -> Dictionary:
-	return Init.create(units, terrain_path, scenario, reward_seed, global_state)
+	return BattleLoopInit.create(units, terrain_path, scenario, reward_seed, global_state)
 
 
 static func initialize_roster_growth(loop: Dictionary) -> Dictionary:
-	return Init.initialize_roster_growth(loop)
+	return BattleLoopInit.initialize_roster_growth(loop)
 
 
 static func apply_campaign_carry(loop: Dictionary, carry: Dictionary) -> Dictionary:
-	return Init.apply_campaign_carry(loop, carry)
+	return BattleLoopInit.apply_campaign_carry(loop, carry)
 
 
 static func summary(loop: Dictionary) -> Dictionary:
@@ -378,8 +385,8 @@ static func weapon_cells(loop: Dictionary, unit: Dictionary, pattern: Dictionary
 	var rows: Variant = loop["attack_patterns"].get(str(pattern.get("name", "")), {}).get("data")
 	if pattern["offsets"].is_empty() or not rows is Array:
 		return TacticalGridRules.attack_pattern_cells(origin, pattern["offsets"], loop["map_size"])
-	var mode := 2 if str(unit.get("battle_actor_role", "")) == "player_controlled" else RangePropagation.offensive_mode(unit)
-	return RangePropagation.cells(RangePropagation.weapon_coverage(rows, origin, RangePropagation.loop_words(loop), loop["map_size"], mode, true), origin)
+	var mode := 2 if str(unit.get("battle_actor_role", "")) == "player_controlled" else RangePropagationRules.offensive_mode(unit)
+	return RangePropagationRules.cells(RangePropagationRules.weapon_coverage(rows, origin, RangePropagationRules.loop_words(loop), loop["map_size"], mode, true), origin)
 
 
 ## The player's skill terrain (the command path 0x444eb7／0x444f08／0x4450e0): the cast range
@@ -392,7 +399,7 @@ static func weapon_cells(loop: Dictionary, unit: Dictionary, pattern: Dictionary
 ## caster keeps the flat area (the cast range, mode -1, excludes no side and always applies).
 static func skill_terrain(loop: Dictionary, caster: Dictionary = {}) -> Dictionary:
 	var unit := caster if not caster.is_empty() else _unit(loop, str(loop.get("selected_unit_id", "")))
-	return RangePropagation.player_skill_terrain(loop, not unit.is_empty() and RangePropagation.side_word(unit) & RangePropagation.P != 0)
+	return RangePropagationRules.player_skill_terrain(loop, not unit.is_empty() and RangePropagationRules.side_word(unit) & RangePropagationRules.P != 0)
 
 
 ## `skill_terrain` while the player's command cast is in progress — the selected unit's
@@ -471,7 +478,7 @@ static func unit_id_at_coord(loop: Dictionary, coord: Vector2i) -> String:
 
 
 static func attack_target(loop: Dictionary, target_unit_id: String, rng: Variant = null, center_coord: Variant = null) -> Dictionary:
-	if loot_waiting(loop) or Rewards._reward_input_error(loop) != "": return copy(loop)
+	if loot_waiting(loop) or BattleLoopRewards._reward_input_error(loop) != "": return copy(loop)
 	if BattleOutcome.decided(loop) or not bool(loop.get("scenario_ok", false)):
 		return copy(loop)
 	var next := copy(loop)
@@ -544,7 +551,7 @@ static func attack_target(loop: Dictionary, target_unit_id: String, rng: Variant
 	# scan read it (_advance_current_actor); there is no scan after the strike itself.
 	next["action_attacker_id"] = attacker_id
 	next = _settle_action(next, "magic" if magic else ("special" if special else "attack"))
-	return ScriptFlow._resolve_outcome(next)
+	return BattleLoopScript._resolve_outcome(next)
 
 
 static func attack_coord(loop: Dictionary, coord: Vector2i, rng: Variant = null) -> Dictionary:
@@ -622,7 +629,7 @@ static func begin_wait_resolution(loop: Dictionary) -> Dictionary:
 	next["last_ai_actions"] = []
 	next["last_ai_action"] = {}
 	next["interaction"] = "ai_resolving"
-	next = ScriptFlow._resolve_outcome(next)
+	next = BattleLoopScript._resolve_outcome(next)
 	if BattleOutcome.decided(next):
 		return next
 	return next if not _is_current_actor(next, finishing_id) else _advance_current_actor(next)
@@ -645,7 +652,7 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 			# Terrain poison runs first in the original action end (0x4454a5／0x441eb8, before
 			# the 0x80000 treasure test and the extra-action query), once per completed action;
 			# the status tail below then ticks it (original_poison_gas.md «地形毒»).
-			var terrain_poison := PoisonGas.terrain(loop, actor, TerrainEdits.tiles(loop))
+			var terrain_poison := PoisonGasRules.terrain(loop, actor, TerrainEdits.tiles(loop))
 			if not terrain_poison.is_empty():
 				terrain_poison["turn"] = int(loop["turn"])
 				loop["terrain_poison"] = (loop.get("terrain_poison", []) as Array) + [terrain_poison]
@@ -692,7 +699,7 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 			# actor) before the death sequence's own 0x407510 scans and steps again — the
 			# next actor loses this round's action (at a wrap: the new round's first).
 			var successor_id := _step_past_dead_actor(loop)
-			loop = ScriptFlow._resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(loop, true))
+			loop = BattleLoopScript._resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(loop, true))
 			if BattleOutcome.decided(loop):
 				loop["interaction"] = "battle_result"
 				return loop
@@ -700,7 +707,7 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 				return loop
 	if Presence.living(actor):
 		var capabilities: Dictionary = ResourceRecoveryRules.effects(actor, loop["equipment_items"])["effects"]
-		var tick := TurnEndRules.prepare(actor, capabilities, loop[DamageRandom.LOOP_KEY], int(loop["action_end_sequence"]) + 1)
+		var tick := TurnEndRules.prepare(actor, capabilities, loop[DamageRandomStream.LOOP_KEY], int(loop["action_end_sequence"]) + 1)
 		if not tick["ok"]:
 			loop["scenario_ok"] = false
 			loop["scenario_error"] = tick["reason"]
@@ -715,7 +722,7 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 				return loop
 			after_tail = ProgressionRules.refresh_growth_stats(after_tail, loop["equipment_items"])
 		actor.merge(after_tail, true)
-		loop[DamageRandom.LOOP_KEY] = tick["rng"]
+		loop[DamageRandomStream.LOOP_KEY] = tick["rng"]
 		loop["last_action_end"] = tick["receipt"]
 		loop["action_end_sequence"] = tick["receipt"]["sequence"]
 		actor["kill_chain_word"] = ExperienceRules.after_action(int(actor["kill_chain_word"]))
@@ -728,7 +735,7 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 		# this same scan, so an attack action is scanned once, after its tail.
 		var actor_id := str(actor["id"])
 		var attacked := _takes_attack_scan(loop, actor_id)
-		loop = ScriptFlow._resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(loop, attacked))
+		loop = BattleLoopScript._resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(loop, attacked))
 		if BattleOutcome.decided(loop):
 			loop["interaction"] = "battle_result"
 			return loop
@@ -771,11 +778,11 @@ static func _finish_ai_or_continue(loop: Dictionary) -> Dictionary:
 		# The wrap only bumps the counter; statuses are next scanned after the new
 		# round's first completed action (_advance_current_actor).
 		next["turn"] = round_number
-	next = ScriptFlow._resolve_outcome(next)
+	next = BattleLoopScript._resolve_outcome(next)
 	if BattleOutcome.decided(next):
 		next["interaction"] = "battle_result"
 		return next
-	ScriptFlow._maintain_script_pressure(next)
+	BattleLoopScript._maintain_script_pressure(next)
 	var cur: Dictionary = CoreTurnQueue.current(next.get("turn_queue", {}))
 	var cur_id := str(cur.get("id", ""))
 	if cur_id == "":
@@ -977,7 +984,7 @@ static func _set_unit_defeated(loop: Dictionary, unit_id: String, defeated: bool
 				if loop["extra_action"]["owner_id"] == unit_id: _clear_extra_action(loop)
 				unit["hp"] = 0
 				unit["status_flags"] = 0
-				unit["status_counters"] = {"poison": 0, "paralysis": 0, "no_magic": 0}
+				unit["status_counters"] = StatusEffectRules.cleared_counters()
 				if had_buff and ProgressionRules.refresh_input_error(unit, loop["equipment_items"]) == "":
 					unit.merge(ProgressionRules.refresh_growth_stats(unit, loop["equipment_items"]), true)
 				unit["hit_bonus_accum"] = 0
@@ -1095,38 +1102,38 @@ static func _resource_input_error(loop: Dictionary, actor: Dictionary) -> String
 
 ## Settlement (BattleLoopRewards): pending-loot interaction and growth allocation.
 static func loot_waiting(loop: Dictionary) -> bool:
-	return Rewards.loot_waiting(loop)
+	return BattleLoopRewards.loot_waiting(loop)
 
 
 static func loot_recipients(loop: Dictionary) -> Array:
-	return Rewards.loot_recipients(loop)
+	return BattleLoopRewards.loot_recipients(loop)
 
 
 static func claim_reward(loop: Dictionary, sequence: int, revision: int, entry_id: String, recipient_id: String, slot: int = -1, expected_code: int = 0) -> Dictionary:
-	return Rewards.claim_reward(loop, sequence, revision, entry_id, recipient_id, slot, expected_code)
+	return BattleLoopRewards.claim_reward(loop, sequence, revision, entry_id, recipient_id, slot, expected_code)
 
 
 static func finish_rewards(loop: Dictionary, sequence: int, revision: int, abandon: bool = false, defer: bool = false) -> Dictionary:
-	return Rewards.finish_rewards(loop, sequence, revision, abandon, defer)
+	return BattleLoopRewards.finish_rewards(loop, sequence, revision, abandon, defer)
 
 
 static func reopen_rewards(loop: Dictionary) -> Dictionary:
-	return Rewards.reopen_rewards(loop)
+	return BattleLoopRewards.reopen_rewards(loop)
 
 
 static func allocate_growth(loop: Dictionary, unit_id: String, allocation: Dictionary) -> Dictionary:
-	return Rewards.allocate_growth(loop, unit_id, allocation)
+	return BattleLoopRewards.allocate_growth(loop, unit_id, allocation)
 
 
 ## Internal seams of the extracted modules that Checkpoint, GrowthCampaignProgress and
 ## BattleSceneRuntime reach through this facade. Tests reach the other module seams on the
 ## module itself (`const LoopAI = preload(BattleLoopAI)` …).
 static func _reward_input_error(loop: Dictionary) -> String:
-	return Rewards._reward_input_error(loop)
+	return BattleLoopRewards._reward_input_error(loop)
 
 
 static func _resolve_outcome(next: Dictionary) -> Dictionary:
-	return ScriptFlow._resolve_outcome(next)
+	return BattleLoopScript._resolve_outcome(next)
 
 
 ## AI turn driving (BattleLoopAI): the stepped AI entry.
@@ -1142,36 +1149,36 @@ static func attack_count(loop: Dictionary, actor: Dictionary) -> Dictionary:
 ## Inventory and equipment (BattleLoopInventory): player Use／Drop／Give／Equip and the
 ## battle equipment carry.
 static func use_item(loop: Dictionary, item_code: String, target_id: String = "", inventory_index: int = -1) -> Dictionary:
-	return Inventory.use_item(loop, item_code, target_id, inventory_index)
+	return BattleLoopInventory.use_item(loop, item_code, target_id, inventory_index)
 
 
 static func discard_item(loop: Dictionary, item_code: String, inventory_index: int = -1) -> Dictionary:
-	return Inventory.discard_item(loop, item_code, inventory_index)
+	return BattleLoopInventory.discard_item(loop, item_code, inventory_index)
 
 
 static func recovery_target_ids(loop: Dictionary) -> Array:
-	return Inventory.recovery_target_ids(loop)
+	return BattleLoopInventory.recovery_target_ids(loop)
 
 
 static func begin_give(loop: Dictionary) -> Dictionary:
-	return Inventory.begin_give(loop)
+	return BattleLoopInventory.begin_give(loop)
 
 
 static func give_target_ids(loop: Dictionary) -> Array:
-	return Inventory.give_target_ids(loop)
+	return BattleLoopInventory.give_target_ids(loop)
 
 
 static func confirm_give(loop: Dictionary, target_id: String, index: int, expected_code: int, target_index: int, expected_return: int, revision: int) -> Dictionary:
-	return Inventory.confirm_give(loop, target_id, index, expected_code, target_index, expected_return, revision)
+	return BattleLoopInventory.confirm_give(loop, target_id, index, expected_code, target_index, expected_return, revision)
 
 
 static func finish_give(loop: Dictionary, revision: int) -> Dictionary:
-	return Inventory.finish_give(loop, revision)
+	return BattleLoopInventory.finish_give(loop, revision)
 
 
 static func change_equipment(loop: Dictionary, slot: String, inventory_index: int, expected_code: int) -> Dictionary:
-	return Inventory.change_equipment(loop, slot, inventory_index, expected_code)
+	return BattleLoopInventory.change_equipment(loop, slot, inventory_index, expected_code)
 
 
 static func apply_battle_equipment_carry(loop: Dictionary, carry: Dictionary) -> Dictionary:
-	return Inventory.apply_battle_equipment_carry(loop, carry)
+	return BattleLoopInventory.apply_battle_equipment_carry(loop, carry)

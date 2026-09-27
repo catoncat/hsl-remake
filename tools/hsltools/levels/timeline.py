@@ -1613,7 +1613,7 @@ PROFILES: dict[str, dict[str, Any]] = {
 # 19,904,0) is STORY019 byte for byte — so their profiles are the base profiles.
 PROFILES["story903"] = PROFILES["story024"]
 PROFILES["story904"] = PROFILES["story019"]
-# Random-encounter levels 501-578 share one opening shape (tools/hsl_battle_seed.py ENCOUNTER_RANGE):
+# Random-encounter levels 501-578 share one opening shape (tools/hsltools/legacy.py ENCOUNTER_RANGE):
 # the base level's default music, a 40-tick delay, 雷歐納德's dead message 741, win / fail status 0
 # and the board refresh before first control — no walks, dialogue or section title.
 ENCOUNTER_PROFILE: dict[str, Any] = {

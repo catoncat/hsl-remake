@@ -2,18 +2,14 @@ extends RefCounted
 ## Current source/equipment capability proposals. No cached actor or map state.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_position_equipment.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Number = preload("res://game/sim/SkillResourceRules.gd")
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 
 
 static func equipment(actor: Dictionary, catalog: Dictionary) -> Dictionary:
 	if not actor.get("equipment") is Array: return {"ok": false, "reason": "missing_position_equipment"}
 	var result := {"move_magic_use": false, "add_attack_range": false}
 	for slot in actor["equipment"]:
-		if not slot is Dictionary or Number._integer(slot.get("item_code")) <= 0:
+		if not slot is Dictionary or SkillResourceRules._integer(slot.get("item_code")) <= 0:
 			return {"ok": false, "reason": "invalid_position_equipment"}
 		var item: Variant = catalog.get(str(int(slot["item_code"])))
 		for key in result:
@@ -44,10 +40,10 @@ static func cast_error(actor: Dictionary, book: Dictionary, catalog: Dictionary,
 static func attack_pattern(actor: Dictionary, catalog: Dictionary, patterns: Dictionary, weapons: Dictionary) -> Dictionary:
 	var result := equipment(actor, catalog)
 	if not result["ok"]: return result
-	var code := Number._integer(actor.get("weapon_code"))
+	var code := SkillResourceRules._integer(actor.get("weapon_code"))
 	var key: String = weapons.get(str(code), "")
 	var pattern: Variant = patterns.get(key)
-	if not pattern is Dictionary or Number._integer(pattern.get("index")) < 0 or not pattern.get("offsets") is Array:
+	if not pattern is Dictionary or SkillResourceRules._integer(pattern.get("index")) < 0 or not pattern.get("offsets") is Array:
 		return {"ok": false, "reason": "missing_source_weapon_range"}
 	if code == 0:
 		if int(pattern["index"]) != 0 or not pattern["offsets"].is_empty(): return {"ok": false, "reason": "invalid_unarmed_range"}

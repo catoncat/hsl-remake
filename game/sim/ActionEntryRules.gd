@@ -3,21 +3,21 @@ extends RefCounted
 ## entry/queue transitions; this module stores no actor, phase or timer.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_paralysis.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Status = preload("res://game/sim/StatusEffectRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+## Catalog rows with blocks_action (麻痺) and their flags.
+static var BLOCKING_KEYS: Array = StatusEffectRules.Catalog.keys_where("blocks_action", true)
+static var BLOCKING_FLAGS: int = StatusEffectRules.Catalog.flag_mask("blocks_action")
 
 
 static func skips(flags: int, phase: int = 0, enabled: bool = true) -> bool:
-	return enabled and phase == 0 and (flags & Status.PARALYSIS) != 0
+	return enabled and phase == 0 and (flags & BLOCKING_FLAGS) != 0
 
 
 static func prepare(actor: Dictionary) -> Dictionary:
-	var error := Status.input_error(actor)
+	var error := StatusEffectRules.input_error(actor)
 	if error != "": return {"ok": false, "reason": error}
-	if not Status._unsigned(actor.get("hp")) or actor["hp"] == 0 or actor.get("defeated", false) or actor.get("departed", false):
+	if not StatusEffectRules._unsigned(actor.get("hp")) or actor["hp"] == 0 or actor.get("defeated", false) or actor.get("departed", false):
 		return {"ok": false, "reason": "entry_actor_unavailable"}
-	return {"ok": true, "skip": skips(int(actor["status_flags"])),
-		"remaining": int(actor["status_counters"]["paralysis"])}
+	var remaining := 0
+	for key in BLOCKING_KEYS: remaining = maxi(remaining, int(actor["status_counters"].get(key, 0)))
+	return {"ok": true, "skip": skips(int(actor["status_flags"])), "remaining": remaining}

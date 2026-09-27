@@ -3,10 +3,6 @@ extends RefCounted
 ## This module proposes changes; the sole PlayLoop commits them. No RNG or ticks.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_wait.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 const POLICY := "script_wait_v1"
 const MAX_WAIT := 10000

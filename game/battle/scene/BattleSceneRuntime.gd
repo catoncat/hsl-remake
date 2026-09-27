@@ -1,15 +1,21 @@
 extends Node2D
 ## provenance:
-##   rules: remake-invented (scene orchestration, dev seams, input gating); static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md; remake-invented docs/OPTIONS.md (OPT-TREASURE read point)
+##   rules: remake-invented (scene orchestration, dev seams, input gating)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
+##   rules: remake-invented docs/OPTIONS.md (OPT-TREASURE read point)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##   strings: resource-derived content/imported/hsl/chapter01/battle051/message_text_evidence.json
-##   timing: static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md; runtime-measured docs/evidence_packets/static_reverse/original_battle_end_flow.md (≈0.2 s fade to black)
-##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md (silent at scene start; plays on past the battle end until the level is left; 讀取戰場記錄 restarts the table track); resource-derived content/imported/hsl/music/manifest.json; resource-derived content/imported/hsl/shared/interface_audio/manifest.json
+##   timing: static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md
+##   timing: runtime-measured docs/evidence_packets/static_reverse/original_battle_end_flow.md (≈0.2 s fade to black)
+##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
+##     (silent at scene start; plays on past the battle end until the level is left; 讀取戰場記錄 restarts the table track)
+##   audio: resource-derived content/imported/hsl/music/manifest.json
+##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 
 var treasure_view: Node
 const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const ScriptActorsPresentation = preload("res://game/battle/scene/BattleScriptActorPresentation.gd")
 
 const GameSettings = preload("res://game/settings/GameSettings.gd")
@@ -103,7 +109,7 @@ const ENTRYPOINT_DEV_FIRST_CONTROL_HARNESS := "dev_first_control_harness"
 ## RNG streams (damage / reward) and of the process's global stream (GlobalRandomStream:
 ## AI decisions, NPC level adjustment, random positions) so the autoplay sweep's tracked
 ## results.json is reproducible. A display-server product run never reads it.
-const LOOP_SEED_ENV := GlobalRandom.SEED_ENV
+const LOOP_SEED_ENV := GlobalRandomStream.SEED_ENV
 
 @export_enum("product_opening", "dev_first_control") var startup_mode: String = STARTUP_MODE_PRODUCT_OPENING
 ## The scene to boot. Empty (the title's 開始新故事, BattleSceneRuntime.tscn launched directly,
@@ -562,7 +568,7 @@ func maybe_start_script_cutscene() -> bool:
 			continue
 		var key := str(entry.get("key", ""))
 		var timeline: Dictionary = timelines.get(key, {})
-		if int(timeline.get("playable_event_count", 0)) <= 0 and not ScriptPresentation.PoisonGas.has_gas(play_loop, script_cutscene_consumed - 1):
+		if int(timeline.get("playable_event_count", 0)) <= 0 and not ScriptPresentation.BattlePoisonGasPresentation.has_gas(play_loop, script_cutscene_consumed - 1):
 			# A status that carried actSetNextPlayLevelEvent but has nothing to play
 			# still ends an undecided battle (event-only hand-off) — otherwise the
 			# scene could never leave. Today 73／78／900 all have playable chains.
@@ -572,7 +578,7 @@ func maybe_start_script_cutscene() -> bool:
 				return true
 			continue
 		var events: Array = ScriptActorsPresentation.attach(self, timeline.get("events", []), script_cutscene_consumed - 1)
-		events = ScriptPresentation.PoisonGas.attach(play_loop, events, script_cutscene_consumed - 1)
+		events = ScriptPresentation.BattlePoisonGasPresentation.attach(play_loop, events, script_cutscene_consumed - 1)
 		# A chain gate (actCheckEventNotExist) that ended this firing: the rest never ran.
 		var chain_stop := int(entry.get("chain_stop_index", -1))
 		if chain_stop >= 0:
@@ -903,7 +909,7 @@ func _configure_camera() -> void:
 func _configure_play_loop() -> void:
 	var seed := _loop_seed()
 	# The battle continues the process's global stream (not per battle, not carried).
-	var loop := BattlePlayLoop.create([], "", first_battle_scenario, seed, GlobalRandom.session())
+	var loop := BattlePlayLoop.create([], "", first_battle_scenario, seed, GlobalRandomStream.session())
 	if not campaign_handoff.is_empty():
 		var carry: Dictionary = campaign_handoff.get("carry", {})
 		if CampaignProgress.separate_party(CampaignProgress.load_campaign(), str(scenario_path)):
@@ -921,7 +927,7 @@ func _configure_play_loop() -> void:
 func apply_loop(next: Dictionary, reason: String) -> void:
 	play_loop = next
 	loop_write_reason = reason
-	GlobalRandom.remember(next)
+	GlobalRandomStream.remember(next)
 	_sync_from_play_loop()
 
 
@@ -1033,7 +1039,7 @@ func enter_first_control_state(source_event_id: String) -> void:
 	last_move_result = {}
 	last_attack_result = {}
 	if play_loop.is_empty():
-		apply_loop(BattlePlayLoop.create([], "", first_battle_scenario, 1, GlobalRandom.session()), "first_control_without_loop")
+		apply_loop(BattlePlayLoop.create([], "", first_battle_scenario, 1, GlobalRandomStream.session()), "first_control_without_loop")
 	apply_opening_object_deletes()
 	# Opening choices use the same status interpreter as in-battle cutscenes.
 	# Resolve them at the first-control boundary, after the inserted branch played.

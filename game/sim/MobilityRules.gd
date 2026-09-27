@@ -3,10 +3,6 @@ extends RefCounted
 ## No path, action budget, actor position or UI cache belongs in this module.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_equipment_mobility.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 const CAP := 12
 const SLOTS := ["weapon", "head", "armor", "foot", "accessory1", "accessory2"]
 

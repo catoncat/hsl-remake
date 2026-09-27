@@ -2,11 +2,9 @@ extends Node2D
 ## Read-only action feedback. Motion comes from the existing ActorRuntime tween;
 ## a Wait has a finite visible beat before successor controls become available.
 ## provenance:
-##   rules: n/a
 ##   layout: remake-invented (path／destination overlay)
 ##   strings: remake-invented (「待機」／「守候 · 尚餘N次」／「麻痺 · 無法行動」)
 ##   timing: remake-invented (0.55 s 待機／守候 beat — deliberately kept remake beat; the original shows no AI wait cue)
-##   audio: n/a
 const WAIT_SECONDS := 0.55
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 var points := PackedVector2Array()

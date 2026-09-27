@@ -7,13 +7,11 @@ extends Node
 ## installs the UI font (OriginalBitmapFont.install, the OPT-FONT read point) at start and again
 ## when the 重製選項 page closes with a changed value.
 ## provenance:
-##   rules: n/a
-##   layout: n/a
-##   strings: resource-derived docs/evidence_packets/static_reverse/original_font_script/README.md; remake-invented content/generated/hsl/text/simplified_images.json (workteam credits redrawn with FONT.24 glyphs)
-##   timing: n/a
-##   audio: n/a
+##   strings: resource-derived docs/evidence_packets/static_reverse/original_font_script/README.md
+##   strings: remake-invented content/generated/hsl/text/simplified_images.json
+##     (workteam credits redrawn with FONT.24 glyphs)
 
-const DisplayTranslation = preload("res://game/text/SimplifiedDisplayTranslation.gd")
+const SimplifiedDisplayTranslation = preload("res://game/text/SimplifiedDisplayTranslation.gd")
 const OriginalBitmapFont = preload("res://game/text/OriginalBitmapFont.gd")
 ## RemakeOptionsPage.LISTENERS (a literal: preloading the page would pull the UI skin into the autoload).
 const OPTION_LISTENERS := "remake_options_listeners"
@@ -35,7 +33,7 @@ static func texture_path(path: String) -> String:
 
 
 func _enter_tree() -> void:
-	translation = DisplayTranslation.new()
+	translation = SimplifiedDisplayTranslation.new()
 	TranslationServer.add_translation(translation)
 	TranslationServer.set_locale(translation.locale)
 	OriginalBitmapFont.install()

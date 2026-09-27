@@ -6,11 +6,10 @@ extends "res://game/battle/runtime/CampaignProgress.gd"
 ## separate party (campaign `party: separate`) cannot carry its pool, so its battle end
 ## reopens the get-item window and the notice line says why instead of a silent gate.
 ## provenance:
-##   rules: remake-invented (deferred validated reward pool at a quiet ordinary-party victory; a separate party's pool must be taken or abandoned before the hand-off)
-##   layout: n/a
+##   rules: remake-invented
+##     (deferred validated reward pool at a quiet ordinary-party victory; a separate party's pool must be taken or
+##     abandoned before the hand-off)
 ##   strings: remake-invented (the separate-party notice line)
-##   timing: n/a
-##   audio: n/a
 
 ## Notice line while a separate party's pool holds the battle end — no engineering terms.
 const SEPARATE_LOOT_PROMPT := "這支隊伍不會帶走戰利品，請先拿取或放棄，再前往下一戰。"

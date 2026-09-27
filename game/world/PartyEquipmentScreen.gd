@@ -9,11 +9,9 @@ extends CanvasLayer
 ## sandbox back into the carry and emits closed(next_carry, changes) for the host to persist.
 ## Presentation only: no second copy of the carry is kept after close.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_storage_window.md (mode 0 of the shared window — drawn by TownShopScreen)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_storage_window.md
+##     (mode 0 of the shared window — drawn by TownShopScreen)
 ##   strings: remake-invented (the no-sandbox failure lines)
-##   timing: n/a
-##   audio: n/a
 
 signal closed(next_carry: Dictionary, changes: int)
 
@@ -21,7 +19,7 @@ const SCHEMA := "hsl_party_equipment.v1"
 const Rules = preload("res://game/sim/PartyEquipmentRules.gd")
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
-const PlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
 const StatusWindow = preload("res://game/world/TownShopScreen.gd")
 const REASONS := {
 	"wrong_job": "職業不符", "wrong_equipment_slot": "部位不符", "inventory_full": "背包已滿",
@@ -71,7 +69,7 @@ func open(next_carry: Dictionary, campaign: Dictionary, scenario_path_override: 
 		if scenario_path == "":
 			error = "unknown_source_scenario"
 		else:
-			var box := Rules.sandbox(PlayLoop.create([], "", BattleScenario.load_file(scenario_path)), carry)
+			var box := Rules.sandbox(BattlePlayLoop.create([], "", BattleScenario.load_file(scenario_path)), carry)
 			if not bool(box["ok"]):
 				error = str(box["error"])
 			else:
@@ -104,7 +102,7 @@ func bag_entries() -> Array:
 	var selected := str(window.unit_id)
 	if error != "" or selected == "":
 		return out
-	var unit := PlayLoop.unit(loop, selected)
+	var unit := BattlePlayLoop.unit(loop, selected)
 	var catalog: Dictionary = loop["equipment_items"]
 	var inventory: Array = unit.get("inventory", [])
 	for index in range(inventory.size()):
@@ -154,7 +152,7 @@ func request_unequip(slot: String) -> Dictionary:
 
 
 func _on_equip_requested(unit_id: String, inventory_index: int, code: int) -> void:
-	var unit := PlayLoop.unit(loop, unit_id)
+	var unit := BattlePlayLoop.unit(loop, unit_id)
 	var item: Dictionary = loop["equipment_items"].get(str(code), {})
 	var slot := _slot_for(unit, int(item.get("type_code", 0))) if not item.is_empty() else "weapon"
 	_change({"kind": "equip", "unit_id": unit_id, "slot": slot, "index": inventory_index, "code": code})

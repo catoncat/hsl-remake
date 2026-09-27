@@ -1,18 +1,24 @@
 extends Node2D
 ## Visual-only lead-in. The immutable settled exchange remains in PlayLoop.
 ## provenance:
-##   rules: n/a
-##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#08 (range cells and target square exist in recording 08／12); static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md (caption font [0x4c1ae0] = FONT.24 body face); static-derived docs/evidence_packets/static_reverse/original_range_cells.md; resource-derived content/imported/hsl/shared/range_cells/manifest.json; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (the AI lead-in cursor is the yellow I_RECT01 cell frame)
-##   strings: resource-derived content/imported/hsl/global/tables/MAGIC.TXT; resource-derived content/imported/hsl/global/tables/SPECIAL.TXT
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#08
+##     (range cells and target square exist in recording 08／12)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md
+##     (caption font [0x4c1ae0] = FONT.24 body face)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##   layout: resource-derived content/imported/hsl/shared/range_cells/manifest.json
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (the AI lead-in cursor is the yellow I_RECT01 cell frame)
+##   strings: resource-derived content/imported/hsl/global/tables/MAGIC.TXT
+##   strings: resource-derived content/imported/hsl/global/tables/SPECIAL.TXT
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md
-##   audio: n/a
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
-const PaceTiming = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
+const CombatPresentationTiming = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 ## OPT-PACE (docs/OPTIONS.md), read once per begin: the multiplier on advance (PACE_MAP).
 var pace := 1.0
-const CameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
-const RangeCells = preload("res://game/battle/runtime/RangeCellOverlay.gd")
+const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+const RangeCellOverlay = preload("res://game/battle/runtime/RangeCellOverlay.gd")
 ## The yellow cell frame drawn on the cursor cell (BattleSelectionCursor.TARGET_FRAME).
 const TARGET_FRAME: Texture2D = preload("res://game/battle/scene/BattleSelectionCursor.gd").TARGET_FRAME
 
@@ -151,7 +157,7 @@ func begin(exchange_sequence: int, strike: Dictionary, cells: Array, origin: Vec
 	range_palette = "attack"
 	target_unit_id = str(strike.get("defender_id", ""))
 	elapsed = 0.0
-	pace = float(PaceTiming.PACE_MAP.get(GameOptions.value("OPT-PACE"), 1.0))
+	pace = float(CombatPresentationTiming.PACE_MAP.get(GameOptions.value("OPT-PACE"), 1.0))
 	cell_size = map_config.grid_projection["cell_size"]
 	source = map_config.grid_to_world(origin)
 	target = map_config.grid_to_world(destination)
@@ -183,7 +189,7 @@ func begin(exchange_sequence: int, strike: Dictionary, cells: Array, origin: Vec
 	camera_ticks = 0
 	_camera_tick = -1
 	if camera_controller != null and camera_controller.camera != null and camera_controller.scroll_to_grid(origin) and camera_controller.is_scrolling():
-		camera_ticks = CameraController.scroll_ticks(camera_controller.camera.position, camera_controller.scroll_target, CameraController.BATTLE_SCROLL_STEP) - 1
+		camera_ticks = BattleCameraController.scroll_ticks(camera_controller.camera.position, camera_controller.scroll_target, BattleCameraController.BATTLE_SCROLL_STEP) - 1
 	duration = OriginalTick.seconds(camera_ticks + range_ticks + glide.size() + target_ticks)
 	caption = str(strike.get("magic_name", strike.get("skill_name", ""))) if cast else ""
 	if caption_label != null:
@@ -383,9 +389,9 @@ func _draw() -> void:
 func _draw_cells(rects: Array, palette: String, tick: int) -> void:
 	if rects.is_empty():
 		return
-	var fill := RangeCells.fill_color(palette, tick)
-	var sheet := RangeCells.border_sheet(palette)
-	var frame := RangeCells.border_region(palette, tick)
+	var fill := RangeCellOverlay.fill_color(palette, tick)
+	var sheet := RangeCellOverlay.border_sheet(palette)
+	var frame := RangeCellOverlay.border_region(palette, tick)
 	for rect in rects:
 		draw_rect(rect, fill)
 		draw_texture_rect_region(sheet, rect, frame)

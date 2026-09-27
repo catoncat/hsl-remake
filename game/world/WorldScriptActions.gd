@@ -11,17 +11,15 @@ extends RefCounted
 ## new dictionaries plus the interpreter's effects/records; token semantics are
 ## TownEventRules' provisional readings.
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H; provisional (token semantics are TownEventRules' readings — docs/evidence_packets/static_reverse/town_event_semantics.md)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
+##   rules: provisional
+##     (token semantics are TownEventRules' readings — docs/evidence_packets/static_reverse/town_event_semantics.md)
 
-const MapRules = preload("res://game/world/WorldMapRules.gd")
-const TownRules = preload("res://game/sim/TownEventRules.gd")
+const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
+const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
 
-## Compiled-timeline event kinds (tools/hsl_opening_timeline_compile.py) back to
+## Compiled-timeline event kinds (tools/hsltools/levels/timeline.py) back to
 ## the script token TownEventRules interprets.
 const STORY_KIND_ACTIONS := {
 	"town_exec_event": "actSetTownExecEvent",
@@ -87,22 +85,22 @@ static func story_actions(records: Array) -> Array:
 ## tree. Returns an error when the campaign registers no world map or its data
 ## cannot be loaded — callers then leave the actions recorded.
 static func ensure_state(world: Dictionary, campaign: Dictionary) -> Dictionary:
-	if MapRules.state_valid(world):
+	if WorldMapRules.state_valid(world):
 		return {"state": world.duplicate(true), "seeded": false}
 	var config := scene_config(campaign)
 	if config.is_empty():
 		return {"state": {}, "seeded": false, "error": "no_world_map_scene"}
-	var world_map := MapRules.load_world_map(BattleScenario.resource_path(config, "world_map"))
+	var world_map := WorldMapRules.load_world_map(BattleScenario.resource_path(config, "world_map"))
 	if not bool(world_map.get("ok", false)):
 		return {"state": {}, "seeded": false, "error": "world_map_load_failed"}
-	var towndef := TownRules.load_towndef(BattleScenario.resource_path(config, "towndef"))
-	var trees := TownRules.load_initial_trees(BattleScenario.resource_path(config, "town_initial_trees"))
+	var towndef := TownEventRules.load_towndef(BattleScenario.resource_path(config, "towndef"))
+	var trees := TownEventRules.load_initial_trees(BattleScenario.resource_path(config, "town_initial_trees"))
 	if towndef.has("error") or trees.has("error"):
 		return {"state": {}, "seeded": false, "error": "town_data_load_failed"}
-	var towns := TownRules.initial_town_state(towndef, trees)
+	var towns := TownEventRules.initial_town_state(towndef, trees)
 	if towns.has("error"):
 		return {"state": {}, "seeded": false, "error": str(towns["error"])}
-	return {"state": MapRules.initial_state(world_map, int(config.get("start_point", 1)), towns, config.get("new_game", {})), "seeded": true, "world_map": world_map}
+	return {"state": WorldMapRules.initial_state(world_map, int(config.get("start_point", 1)), towns, config.get("new_game", {})), "seeded": true, "world_map": world_map}
 
 
 ## Stands the party at a big-map point (a level's "N,gameBigMapLevel" return or
@@ -113,13 +111,13 @@ static func place_party(world: Dictionary, point: int, campaign: Dictionary) -> 
 		return {"world": world.duplicate(true), "error": str(ensured["error"])}
 	var world_map: Dictionary = ensured.get("world_map", {})
 	if world_map.is_empty():
-		world_map = MapRules.load_world_map(BattleScenario.resource_path(scene_config(campaign), "world_map"))
+		world_map = WorldMapRules.load_world_map(BattleScenario.resource_path(scene_config(campaign), "world_map"))
 		if not bool(world_map.get("ok", false)):
 			return {"world": world.duplicate(true), "error": "world_map_load_failed"}
-	var placed := MapRules.visit(ensured["state"], world_map, point)
+	var placed := WorldMapRules.visit(ensured["state"], world_map, point)
 	# The returned-to point is shown even when its reveal never played (script returns).
 	var modes: Dictionary = placed.get("point_modes", {})
-	modes[str(point)] = MapRules.MODE_SHOWN
+	modes[str(point)] = WorldMapRules.MODE_SHOWN
 	placed["point_modes"] = modes
 	return {"world": placed, "seeded": bool(ensured.get("seeded", false))}
 
@@ -136,11 +134,11 @@ static func apply_actions(world: Dictionary, actions: Array, campaign: Dictionar
 		untouched["error"] = str(ensured["error"])
 		return untouched
 	var config := scene_config(campaign)
-	var towndef := TownRules.load_towndef(BattleScenario.resource_path(config, "towndef"))
+	var towndef := TownEventRules.load_towndef(BattleScenario.resource_path(config, "towndef"))
 	if towndef.has("error"):
 		untouched["error"] = "town_data_load_failed"
 		return untouched
-	var result := TownRules.apply_script_town_actions(ensured["state"], actions, towndef)
+	var result := TownEventRules.apply_script_town_actions(ensured["state"], actions, towndef)
 	if result.has("error"):
 		untouched["error"] = str(result["error"])
 		return untouched

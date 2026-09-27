@@ -4,7 +4,7 @@
 
 ## 来源与可复跑边界
 
-`static-derived`，来自 SHA256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7` 的 `hsl01.exe`（与[原宝箱](original_treasure.md)同一映像）：以 `r2 -q -e scr.color=0 -c "s ADDR; pd N" hsl01.exe` 直接读反汇编，函数边界与调用点由 .text 段的 `E8` 相对调用逐字节扫描核对（`0x42c520` 只被 `0x452a26` 调用；`0x42c4b0` 被 `0x451182` 调用；`0x42c4d0` 被 `0x451196`（剧情解释器）与 `0x455494`（城镇解释器 `0x454e20`，teAddOverScore）调用）。本包只做静态读法，没有有界执行；脚本侧的写入清单来自 tracked 语料库 `content/imported/hsl/story_corpus/scripts/` 与 `content/imported/hsl/global/world_map/towndef.json`。回答 [P-051](../../collaboration/presentation.md) 的第一问；第二问（兩棲族部落 150／151）不在本包。
+`static-derived`，来自 SHA256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7` 的 `hsl01.exe`（与[原宝箱](original_treasure.md)同一映像）：以 `r2 -q -e scr.color=0 -c "s ADDR; pd N" hsl01.exe` 直接读反汇编，函数边界与调用点由 .text 段的 `E8` 相对调用逐字节扫描核对（`0x42c520` 只被 `0x452a26` 调用；`0x42c4b0` 被 `0x451182` 调用；`0x42c4d0` 被 `0x451196`（剧情解释器）与 `0x455494`（城镇解释器 `0x454e20`，teAddOverScore）调用）。本包只做静态读法，没有有界执行；脚本侧的写入清单来自 tracked 语料库 `content/imported/hsl/story_corpus/scripts/` 与 `content/imported/hsl/global/world_map/towndef.json`。回答 P-051（已删，见 Git 历史） 的第一问；第二问（兩棲族部落 150／151）不在本包。
 
 ACTION.H：`actSetOverFlag 127 [flag]`、`actAddOverScore 128 [id][score]`、`actSetNextPlayLevelGetOverEvent 129 [level]`；TYPE.H：`gameoverflagFreeEnemy 0x1`、`gameoverflagEnemyJobUp 0x2`、`gameoverID1..3 = 1..3`。
 

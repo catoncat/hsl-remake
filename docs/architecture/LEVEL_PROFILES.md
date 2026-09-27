@@ -32,7 +32,7 @@
 
 ## Tracer：level 200（S1 第 4 步，临时文件已删；S4 起 200 是正式的授权关）
 
-S4 之后 `content/battles/levels/200.json` 只有 `battle` 分区，其余输入在 `content/authored/level200/`，由 `authored_level:200` 组装（[作者指南](../AUTHORING.md)）；下面是 S1 用导入链复制品量出的记录，其中前两点已由 S4 的作者格式与 `CampaignProgress` 进谢幕解决。
+S4 之后 `content/battles/levels/200.json` 只有 `battle` 分区，其余输入在 `content/authored/level200/`，由 `authored_level:200` 组装（[加关卡与角色逐步表](../MODDING_LEVELS.md)）；下面是 S1 用导入链复制品量出的记录，其中前两点已由 S4 的作者格式与 `CampaignProgress` 进谢幕解决。
 
 把 level 5 的 seed（`battle200_seed.json`）与导入目录（`battle200/`）复制为输入，只手写 `levels/200.json`（`battle`／`story_scene`／`cast`／`speakers`／`sweep_fixture: clear`）＋ `campaign.json` 一行：`level_profile:200`、`level_actors:200`、`story_scene:200`（生成 `story_200.json`）、`level_battle:200`（生成 `battle_200.json`，13 单位／4 受控，标题与结果标签来自 200.json）、`level_map_objects`／`level_sounds`／`level_source_texts:200` 全部 PASS，不改任何 Python／GDScript；`HSL_SWEEP_LEVELS=200` 的 sweep 启动、播完开场、`clear` 夹具到达胜利结束。仍需代码或非本文件数据的地方：
 

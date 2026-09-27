@@ -9,11 +9,8 @@ extends Node2D
 ## truth. Adding a skill presentation = a manifest row (+ a module file when the script
 ## player cannot play it).
 ## provenance:
-##   rules: remake-invented (released／impact fire once each at the presenter's own schedule; the contract carries no clock of its own)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: remake-invented
+##     (released／impact fire once each at the presenter's own schedule; the contract carries no clock of its own)
 var skill_ids: Array[String] = []
 
 

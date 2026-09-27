@@ -4,11 +4,9 @@ extends Sprite2D
 ## and obj_HitPoint = delay, which the map-object export does not carry yet, so cadence
 ## and depth stay provisional values.
 ## provenance:
-##   rules: n/a
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
-##   strings: n/a
-##   timing: provisional content/imported/hsl/global/tables/TYPE.H (mapobjFlash objsScore = level, objsHitPoint = delay ticks; 0.55 s／0.22 stand in until the flash branch is read)
-##   audio: n/a
+##   timing: provisional content/imported/hsl/global/tables/TYPE.H
+##     (mapobjFlash objsScore = level, objsHitPoint = delay ticks; 0.55 s／0.22 stand in until the flash branch is read)
 
 const PERIOD_SECONDS := 0.55
 const DEPTH := 0.22

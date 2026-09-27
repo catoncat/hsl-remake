@@ -7,9 +7,6 @@ extends RefCounted
 ## Pure lookups over the PlayLoop unit dictionary — no state lives here.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_town_job_up.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
 ##   audio: resource-derived content/imported/hsl/shared/actor_audio.json
 
 const SHARED_WALK_MANIFEST_PATH := "res://content/imported/hsl/shared/actor_walk_frames/actor_walk_manifest.json"

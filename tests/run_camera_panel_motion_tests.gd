@@ -324,7 +324,7 @@ func _test_panel_shade_fade() -> void:
 func _test_every_panel_attaches_motion() -> void:
 	var menus := FileAccess.get_file_as_string("res://game/battle/scene/BattleSceneMenus.gd")
 	var settlement := FileAccess.get_file_as_string("res://game/battle/scene/BattleSettlementController.gd")
-	_assert_true(menus.contains("for panel in runtime.modal_panels:\n\t\tPanelMotion.attach(panel)"), "every modal panel gets the shared motion")
+	_assert_true(menus.contains("for panel in runtime.modal_panels:\n\t\tBattlePanelMotion.attach(panel)"), "every modal panel gets the shared motion")
 	_assert_true(settlement.contains("BattlePanelMotion.gd\").attach(panel)"), "the loot window gets the shared motion")
 	var modal_line := ""
 	for line in menus.split("\n"):

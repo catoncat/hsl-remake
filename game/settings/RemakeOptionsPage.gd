@@ -17,11 +17,11 @@ extends Control
 ## `remake_options_changed` on the LISTENERS group, so a screen that read an option once when it
 ## was built (BattleSceneRuntime's OPT-TREASURE) takes the new value at once.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/global/title/manifest.json (Title031 frame, stone and slot band rebuilt at page size); remake-invented content/authored/options/remake_options.json (page layout)
-##   strings: remake-invented content/authored/options/remake_options.json (option names, value labels, descriptions, preset buttons)
-##   timing: n/a
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/global/title/manifest.json
+##     (Title031 frame, stone and slot band rebuilt at page size)
+##   layout: remake-invented content/authored/options/remake_options.json (page layout)
+##   strings: remake-invented content/authored/options/remake_options.json
+##     (option names, value labels, descriptions, preset buttons)
 
 signal back_requested
 
@@ -30,7 +30,7 @@ const GROUP := "remake_options_page"
 ## Nodes told `remake_options_changed()` when the page closes with a changed value.
 const LISTENERS := "remake_options_listeners"
 const GameOptions = preload("res://game/settings/GameOptions.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const TITLE_MANIFEST := "res://content/imported/hsl/global/title/manifest.json"
 ## Title031 (466×392) pieces: the ornamented corners, the rim between them (the top rim in two
 ## title-free spans), the stone of the bottom rim that fills the inside, and one slot band.
@@ -385,7 +385,7 @@ func _tag_label(id: String) -> String:
 
 
 func _text(text: String, at: Vector2, font: int, color: Color) -> Label:
-	var label := UISkin.label(_fronts, at, font)
+	var label := BattleUISkin.label(_fronts, at, font)
 	label.text = text
 	label.add_theme_color_override("font_color", color)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE

@@ -7,10 +7,8 @@ extends RefCounted
 ## runtime chain viewport → logical → world → grid; hit-test values are not tuned here.
 ## provenance:
 ##   rules: remake-invented (mouse／keyboard dispatch order, right-click cancel, Home recenter)
-##   layout: runtime-measured docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md (hit-test shares the measured grid projection; not tuned here)
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md
+##     (hit-test shares the measured grid projection; not tuned here)
 
 const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
 const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")

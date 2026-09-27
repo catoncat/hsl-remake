@@ -26,11 +26,34 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ## the effProc* programs listed unrestored are not restored; an object's own sounds are — a
 ## special object's objcomd.txt command sounds and an effect object's obj_X1／obj_Y1／obj_X2 WAVs.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived content/generated/hsl/skills/effect_motion.json; resource-derived content/imported/hsl/shared/skill_effects/manifest.json; resource-derived content/imported/hsl/global/tables/ANIMAL.H; resource-derived content/imported/hsl/global/tables/effects.h; resource-derived content/imported/hsl/shared/mage_magic/manifest.json; static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释; provisional (ANIMAL random／angle／round／tornado geometry, off-stage flights, static hold of the objects effect_motion.json lists unrestored, eff_proc_Global at screen centre — manifest policy); remake-invented (Cast_Star ring around a caster without an imported m_shape strip); static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
-##   strings: resource-derived content/generated/hsl/skills/special_effect_scripts.json; remake-invented content/generated/hsl/skills/authored_effect_scripts.json (the authored skills' names and scripts, sequel content from content/authored/roles/skills.json)
-##   timing: resource-derived content/generated/hsl/skills/special_effect_scripts.json; static-derived content/generated/hsl/skills/effect_motion.json; static-derived docs/evidence_packets/static_reverse/original_effect_motion.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json; provisional (lifetime = shape_number × (shape_delay＋1); untracked objects' lifetime／fade; impact at the last cue; CAST_LEAD_IN／EMPTY_ATTACK_LEAD_TICKS stand in; effProc* motion not restored)
-##   audio: resource-derived content/imported/hsl/shared/skill_effects/manifest.json; static-derived docs/evidence_packets/static_reverse/original_effect_object_sounds.md; provisional (a command sound behind a motion wait counted at zero wait; effect-program cues behind unrun motion — program_sounds timing provisional; SOUND_VOICES); resource-derived content/imported/hsl/shared/interface_audio/manifest.json
+##   layout: static-derived content/generated/hsl/skills/effect_motion.json
+##   layout: resource-derived content/imported/hsl/shared/skill_effects/manifest.json
+##   layout: resource-derived content/imported/hsl/global/tables/ANIMAL.H
+##   layout: resource-derived content/imported/hsl/global/tables/effects.h
+##   layout: resource-derived content/imported/hsl/shared/mage_magic/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
+##   layout: provisional
+##     (ANIMAL random／angle／round／tornado geometry, off-stage flights, static hold of the objects effect_motion.json
+##     lists unrestored, eff_proc_Global at screen centre — manifest policy)
+##   layout: remake-invented (Cast_Star ring around a caster without an imported m_shape strip)
+##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   strings: resource-derived content/generated/hsl/skills/special_effect_scripts.json
+##   strings: remake-invented content/generated/hsl/skills/authored_effect_scripts.json
+##     (the authored skills' names and scripts, sequel content from content/authored/roles/skills.json)
+##   timing: resource-derived content/generated/hsl/skills/special_effect_scripts.json
+##   timing: static-derived content/generated/hsl/skills/effect_motion.json
+##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
+##   timing: provisional
+##     (lifetime = shape_number × (shape_delay＋1); untracked objects' lifetime／fade; impact at the last cue;
+##     CAST_LEAD_IN／EMPTY_ATTACK_LEAD_TICKS stand in; effProc* motion not restored)
+##   audio: resource-derived content/imported/hsl/shared/skill_effects/manifest.json
+##   audio: static-derived docs/evidence_packets/static_reverse/original_effect_object_sounds.md
+##   audio: provisional
+##     (a command sound behind a motion wait counted at zero wait; effect-program cues behind unrun motion —
+##     program_sounds timing provisional; SOUND_VOICES)
+##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MANIFEST_PATH := ContentPaths.SKILL_EFFECTS
@@ -41,7 +64,7 @@ const AUTHORED_SCRIPTS_PATH := "res://content/generated/hsl/skills/authored_effe
 const CASTING_PATH := ContentPaths.MAGE_MAGIC
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
-const Motion = preload("res://game/battle/scene/EffectObjectMotion.gd")
+const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
 const STAGE_SIZE := Vector2(640, 320)
 const TARGET_CENTRE := Vector2(320, 160)
@@ -346,10 +369,10 @@ static func compile_effect(lines: Array, seed: int, data: Dictionary, row: Dicti
 	var complete := cursor
 	for event in timeline["events"]:
 		if event["kind"] == "object":
-			if Motion.tracked(str(event["object"])):
+			if EffectObjectMotion.tracked(str(event["object"])):
 				# The native tree: frame f of the track shows at insertion tick + f, until its
 				# last instance is gone; an anchored program drives itself from the origin.
-				var native: Dictionary = Motion.track(str(event["object"]))
+				var native: Dictionary = EffectObjectMotion.track(str(event["object"]))
 				event["motion"] = "native"
 				event["anchored"] = str(native["motion"]) == "anchored"
 				event["expire"] = int(event["tick"]) + int(native["frames"])
@@ -688,7 +711,7 @@ func _draw_object(sprite: Sprite2D, event: Dictionary, tick: float, origin: Vect
 func _draw_native(event: Dictionary, tick: float, origins: Array, used: int) -> int:
 	var frame := int(tick - float(event["tick"]))
 	var displacement: Vector2 = Vector2.ZERO if bool(event["anchored"]) else event["position"]
-	for entry in Motion.sprites_at(Motion.track(str(event["object"])), frame):
+	for entry in EffectObjectMotion.sprites_at(EffectObjectMotion.track(str(event["object"])), frame):
 		var member := _native_member(str(entry["member"]))
 		if member == "":
 			continue

@@ -2,12 +2,9 @@ extends RefCounted
 ## Original kernels; caller adapters and unsupported effects stay separate.
 ## docs/evidence_packets/static_reverse/original_ai_skills.md
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_skills.md; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Combat = preload("res://game/sim/CoreCombatRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_skills.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 
 
 static func buckets(mask: int, area: bool) -> Array:
@@ -69,6 +66,6 @@ static func farthest_index(positions: Array, threat: Vector2i, rng: Variant) -> 
 
 
 static func _draw(bound: int, rng: Variant, draws: Array) -> int:
-	var value := Combat._rand_range(bound, rng)
+	var value := CoreCombatRules._rand_range(bound, rng)
 	draws.append({"bound": bound, "value": value})
 	return value

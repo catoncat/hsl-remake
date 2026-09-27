@@ -191,7 +191,7 @@ def png_sha256(source: Path | bytes) -> str:
     RGBA bytes (palette, tRNS and bit depth normalised by Pillow). The derived manifest's
     `rgba_sha256` and every `png_sha256`-style field a generator embeds for a PNG it wrote: a
     player's Pillow / zlib build encodes the same image to other bytes, and the JSON must still come
-    out identical (docs/OPEN_SOURCE_PLAN.md §8.1)."""
+    out identical (docs/internal/OPEN_SOURCE_PLAN.md §8.1)."""
     import hashlib
     import io
 

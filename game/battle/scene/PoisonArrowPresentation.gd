@@ -6,10 +6,10 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ## This view never changes gameplay or draws RNG.
 ## The cut-in routes 毒魔箭 here through skill_effects/manifest.json (`dedicated_module`).
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/poison_arrow/manifest.json; remake-invented (trajectory and particle placement)
-##   strings: n/a
-##   timing: resource-derived content/imported/hsl/shared/poison_arrow/manifest.json; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   layout: resource-derived content/imported/hsl/shared/poison_arrow/manifest.json
+##   layout: remake-invented (trajectory and particle placement)
+##   timing: resource-derived content/imported/hsl/shared/poison_arrow/manifest.json
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   audio: resource-derived content/imported/hsl/shared/poison_arrow/manifest.json
 var data: Dictionary
 var backdrop: Sprite2D

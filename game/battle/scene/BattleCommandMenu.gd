@@ -1,10 +1,15 @@
 extends Control
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/command_menu/manifest.json; static-derived content/imported/hsl/shared/command_menu/native_layout.json; static-derived docs/evidence_packets/static_reverse/presentation_source_recovery.md (0x43ea30 command strings 0x4784fc..0x478554: nopqzvw, rtus); remake-invented (viewport clamping, caption placement)
-##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H; remake-invented (Chinese captions under the icons, drawn only under OPT-GUIDE 提示 — the original ring is icons only)
-##   timing: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/command_menu/manifest.json
+##   layout: static-derived content/imported/hsl/shared/command_menu/native_layout.json
+##   layout: static-derived docs/evidence_packets/static_reverse/presentation_source_recovery.md
+##     (0x43ea30 command strings 0x4784fc..0x478554: nopqzvw, rtus)
+##   layout: remake-invented (viewport clamping, caption placement)
+##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
+##   strings: remake-invented
+##     (Chinese captions under the icons, drawn only under OPT-GUIDE 提示 — the original ring is icons only)
+##   timing: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 signal command_selected(command_id: String)
 ## Presentation only. Icon identity comes from BCMD resources and original captures.
 ## Radial order is the 0x43ea30 UTF-16 command strings (nopqzvw: move, attack, item, wait,

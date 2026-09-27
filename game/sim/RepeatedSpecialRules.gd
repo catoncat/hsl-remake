@@ -2,17 +2,13 @@ extends RefCounted
 ## Moon Dance: immutable, target-major receiver proposals. PlayLoop commits once.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_moon_dance.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 const ID := "special:magicOTHER:magicCode06"
 const PULSES := 5
-const Target = preload("res://game/sim/SkillTargetRules.gd")
-const Special = preload("res://game/sim/SpecialDamageRules.gd")
-const Experience = preload("res://game/sim/ExperienceRules.gd")
-const Combat = preload("res://game/sim/CoreCombatRules.gd")
-const Status = preload("res://game/sim/StatusEffectRules.gd")
+const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
+const SpecialDamageRules = preload("res://game/sim/SpecialDamageRules.gd")
+const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 
 
 static func definition_error(entry: Dictionary, fields: Dictionary) -> String:
@@ -30,19 +26,19 @@ static func definition_error(entry: Dictionary, fields: Dictionary) -> String:
 ## (RangePropagationRules.player_skill_terrain) — the area is then the 0x4100e0 mode 2 flood.
 static func prepare(caster: Dictionary, primary: Dictionary, units: Array, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary, origin: Vector2i, map_size: Vector2i, payment: Dictionary, center: Variant, terrain: Dictionary = {}) -> Dictionary:
 	if center != null and center != origin: return {"ok": false, "reason": "out_of_range"}
-	var area := Target.cast_footprint(origin, origin, fields, targeting, map_size, terrain)
+	var area := SkillTargetRules.cast_footprint(origin, origin, fields, targeting, map_size, terrain)
 	var targets: Array = []
 	var prepared: Array = []
 	var ids := {}
 	# 0x4104d0 scans coverage row-major, returning each object pointer once.
 	for cell in area:
-		var unit := Target.Footprint.unit_at(units, cell)
-		if unit.is_empty() or ids.has(unit["id"]) or not Target._living(unit): continue
-		if unit.get("battle_actor_role") not in Target.ROLES: return {"ok": false, "reason": "unsupported_target_role"}
-		if not Target.area_side_matches(caster, unit, fields, targeting): continue
-		for error in [Experience.actor_error(unit), Status.input_error(unit), Combat.input_error(unit)]:
+		var unit := SkillTargetRules.Footprint.unit_at(units, cell)
+		if unit.is_empty() or ids.has(unit["id"]) or not SkillTargetRules._living(unit): continue
+		if unit.get("battle_actor_role") not in SkillTargetRules.ROLES: return {"ok": false, "reason": "unsupported_target_role"}
+		if not SkillTargetRules.area_side_matches(caster, unit, fields, targeting): continue
+		for error in [ExperienceRules.actor_error(unit), StatusEffectRules.input_error(unit), CoreCombatRules.input_error(unit)]:
 			if error != "": return {"ok": false, "reason": error}
-		var special := Special.prepare(caster, unit, fields, book, equipment)
+		var special := SpecialDamageRules.prepare(caster, unit, fields, book, equipment)
 		if not special["ok"]: return special
 		ids[unit["id"]] = true
 		targets.append(unit)
@@ -70,13 +66,13 @@ static func resolve(caster: Dictionary, ready: Dictionary, entry: Dictionary, rn
 		for pulse in range(PULSES):
 			var input: Dictionary = ready["prepared"][index]["special"]["input"].duplicate(true)
 			input["hit_bonus"] = bonus
-			var roll := Special.roll(input, rng)
+			var roll := SpecialDamageRules.roll(input, rng)
 			bonus = int(roll["hit_bonus_after"])
 			var before := int(target["hp"])
 			var damage := mini(before, int(roll["value"]))
 			var after := before - damage
 			# Neither target death nor earlier target kills advance the chain here.
-			var basis := Experience.from_contribution(damage, int(owner["level"]), int(target["level"]), after, int(target["kill_exp"]), initial_word, rng)
+			var basis := ExperienceRules.from_contribution(damage, int(owner["level"]), int(target["level"]), after, int(target["kill_exp"]), initial_word, rng)
 			var killed := before > 0 and after == 0
 			basis.merge({"killed": killed, "kills_added": 1 if killed else 0, "kill_word_after": initial_word,
 				"deferred_kill_accounting": true})
@@ -86,7 +82,7 @@ static func resolve(caster: Dictionary, ready: Dictionary, entry: Dictionary, rn
 				"damage": damage, "actual_damage": damage, "native_contribution": damage,
 				"defender_hp_before": before, "defender_hp_after": after, "experience_basis": basis,
 				"resource_payment": payment, "payment_applied": segments.is_empty(), "silent_after_defeat": before == 0,
-				"attacker_before": Combat.receipt_vitals(owner), "defender_before": Combat.receipt_vitals(target),
+				"attacker_before": CoreCombatRules.receipt_vitals(owner), "defender_before": CoreCombatRules.receipt_vitals(target),
 				"cast_center": ready["cast_center"], "formula_source": "0x403968_opcode17_to_0x40b8f0"}
 			if first.is_empty(): first = segment.duplicate(true)
 			segments.append(segment)
@@ -108,7 +104,7 @@ static func resolve(caster: Dictionary, ready: Dictionary, entry: Dictionary, rn
 		"pulses_per_target": PULSES, "sequence_policy": "target_major_deferred_kills", "counter": {}})
 	return {"ok": true, "receipt": receipt, "targets": changes, "target_changes": changes[0]["changes"],
 		"caster_changes": {payment["resource"]: payment["after"], "hit_bonus_accum": bonus,
-			"kill_chain_word": (initial_word | Experience.KILL_MARK) + 1 if kills > 0 else initial_word,
+			"kill_chain_word": (initial_word | ExperienceRules.KILL_MARK) + 1 if kills > 0 else initial_word,
 			"kill_count": int(caster["kill_count"]) + kills}}
 
 

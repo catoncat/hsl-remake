@@ -6,11 +6,15 @@ extends RefCounted
 ## for the readback; nothing here is battle state — positions come from the PlayLoop
 ## through the runtime's coordinate chain.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/chapter01/actor_walk_frames; resource-derived content/imported/hsl/chapter01/map_objects.json; resource-derived content/imported/hsl/chapter01/map_object_alignment.json; provisional (combined-placement child offsets, layer hints)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md (mapobjCloud drift and mapobjMoveBG parallax, run by MapObjectDrift)
-##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json; resource-derived content/imported/hsl/chapter01/scripts; provisional (background sounds play map-wide at −8 dB; native attenuation not located)
+##   layout: resource-derived content/imported/hsl/chapter01/actor_walk_frames
+##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
+##   layout: resource-derived content/imported/hsl/chapter01/map_object_alignment.json
+##   layout: provisional (combined-placement child offsets, layer hints)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
+##     (mapobjCloud drift and mapobjMoveBG parallax, run by MapObjectDrift)
+##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
+##   audio: resource-derived content/imported/hsl/chapter01/scripts
+##   audio: provisional (background sounds play map-wide at −8 dB; native attenuation not located)
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
@@ -22,7 +26,7 @@ const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresenta
 const ScriptActorsPresentation = preload("res://game/battle/scene/BattleScriptActorPresentation.gd")
 
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
-## map_objects.json placement roles drawn as stand sprites (tools/hsl_level_map_objects.py).
+## map_objects.json placement roles drawn as stand sprites (tools/hsltools/levels/map_objects.py).
 const STAND_OBJECT_ROLES := ["map_object", "static_enemy_object", "treasure_box"]
 
 var runtime: Node
@@ -261,9 +265,9 @@ func _clear_map_object_layer(layer: Node2D) -> void:
 		child.free()
 
 
-## EVEF background-sound objects (mapobjPlayBGSound; tools/hsl_level_map_objects.py
+## EVEF background-sound objects (mapobjPlayBGSound; tools/hsltools/levels/map_objects.py
 ## exports them as role background_sound instead of drawing their I_RECT01 marker):
-## the obj_Data2 WAV, decoded by tools/hsl_level_sounds.py into the scenario's
+## the obj_Data2 WAV, decoded by tools/hsltools/levels/sounds.py into the scenario's
 ## script_sounds manifest, loops for the whole scene at a remake -8 dB. Placement
 ## position is not used (the original plays it map-wide as far as is known).
 func _start_background_sounds() -> void:
@@ -302,7 +306,7 @@ func _start_background_sounds() -> void:
 func map_object_stand_records() -> Array:
 	## Stand-object records to place: the manifest's plain placements plus the
 	## children of combined placements (EVEF anchor + child offset already resolved
-	## to candidate_x/candidate_y by tools/hsl_level_map_objects.py; e.g. level 1's
+	## to candidate_x/candidate_y by tools/hsltools/levels/map_objects.py; e.g. level 1's
 	## tree/house + shadow pairs). Children take the group's record_index and a
 	## child index so node names stay unique (the first child stands on the EVEF point,
 	## static-derived from the original installer 0x46bd67).

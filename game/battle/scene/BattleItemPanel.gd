@@ -2,11 +2,13 @@ extends Control
 ## One modal stack: item commands -> inventory -> recipient/confirmation.
 ## Draft selection is presentation-only; all item mutations return to PlayLoop.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#07 (item sub-menu, target selection); remake-invented (scrollable target list, recipient／preview rows)
-##   strings: resource-derived content/generated/hsl/equipment/items.json; resource-derived content/imported/hsl/chapter01/consumables.json; remake-invented (captions and refusals)
-##   timing: n/a
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#07
+##     (item sub-menu, target selection)
+##   layout: remake-invented (scrollable target list, recipient／preview rows)
+##   strings: resource-derived content/generated/hsl/equipment/items.json
+##   strings: resource-derived content/imported/hsl/chapter01/consumables.json
+##   strings: remake-invented (captions and refusals)
 signal use_requested(item_code: String, target_id: String)
 signal give_started
 signal give_requested(target_id: String, index: int, code: int, target_index: int, return_code: int, revision: int)
@@ -18,10 +20,10 @@ const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
 const EquipmentCatalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const Vitals = preload("res://game/battle/scene/BattleVitals.gd")
-const Equipment = preload("res://game/battle/scene/BattleEquipmentView.gd")
-const GiveView = preload("res://game/battle/scene/BattleGiveView.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
+const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
+const BattleGiveView = preload("res://game/battle/scene/BattleGiveView.gd")
 var rows: VBoxContainer
 var menu: Control
 var page_root: Control
@@ -96,12 +98,12 @@ func _show_list(command: String) -> void:
 	_clear_page()
 	operation = command
 	page = "inventory"
-	UISkin.clear_panel(page_root)
-	var vitals := Vitals.new()
+	BattleUISkin.clear_panel(page_root)
+	var vitals := BattleVitals.new()
 	vitals.position = Vector2(0, 14)
 	page_root.add_child(vitals)
 	vitals.show_unit(source_unit)
-	var equipment := Equipment.new()
+	var equipment := BattleEquipmentView.new()
 	equipment_view = equipment
 	equipment.interactive = operation == "equip"
 	equipment.slot_requested.connect(func(slot):
@@ -110,7 +112,7 @@ func _show_list(command: String) -> void:
 		_show_equipment_confirmation(slot))
 	page_root.add_child(equipment)
 	equipment.show_unit(source_unit)
-	UISkin.board(page_root, "WINDOW20", Vector2(12, 174))
+	BattleUISkin.board(page_root, "WINDOW20", Vector2(12, 174))
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(20, 180)
 	scroll.size = Vector2(207, 250)
@@ -141,7 +143,7 @@ func _show_list(command: String) -> void:
 			var style := StyleBoxEmpty.new()
 			style.content_margin_left = 43
 			button.add_theme_stylebox_override(state, style)
-		var art := UISkin.asset(button, str(details["icon"]), Vector2(3, 0))
+		var art := BattleUISkin.asset(button, str(details["icon"]), Vector2(3, 0))
 		art.name = "OriginalConsumable"
 		button.disabled = operation == "use" and ItemUseRules.definition_error(items.get(code, {})) != ""
 		if operation == "use" and not button.disabled:
@@ -159,15 +161,15 @@ func _show_list(command: String) -> void:
 		empty.text = "沒有可更換的裝備" if operation == "equip" else "沒有道具"
 		empty.add_theme_font_size_override("font_size", 16)
 		rows.add_child(empty)
-	var back := UISkin.button(page_root, "返回", Vector2(502, 442), Vector2(113, 30))
+	var back := BattleUISkin.button(page_root, "返回", Vector2(502, 442), Vector2(113, 30))
 	back.pressed.connect(cancel)
-	var capacity := UISkin.label(page_root, Vector2(20, 440), 15)
+	var capacity := BattleUISkin.label(page_root, Vector2(20, 440), 15)
 	capacity.text = "道具 %d / 8" % (8 - source_unit["inventory"].count(0))
 	if operation == "equip":
-		var hint := UISkin.label(page_root, Vector2(252, 444), 12)
+		var hint := BattleUISkin.label(page_root, Vector2(252, 444), 12)
 		hint.text = "點選裝備卸下；空手不能攻擊"
 	elif operation == "drop":
-		var hint := UISkin.label(page_root, Vector2(252, 444), 12)
+		var hint := BattleUISkin.label(page_root, Vector2(252, 444), 12)
 		hint.text = "重要道具不可丟棄"
 
 
@@ -189,7 +191,7 @@ func _select_item(code: String, index: int = -1) -> void:
 func _show_targets() -> void:
 	_clear_page()
 	page = "give_target" if operation == "give" else "target"
-	var vitals := Vitals.new()
+	var vitals := BattleVitals.new()
 	vitals.position = Vector2(0, 322)
 	page_root.add_child(vitals)
 	vitals.hide()
@@ -201,7 +203,7 @@ func _show_targets() -> void:
 		button.position = point - Vector2(16, 16)
 		button.size = Vector2(32, 32)
 		button.set_meta("target_id", str(target["id"]))
-		button.tooltip_text = str(UISkin.data()["actors"][str(target["actor_id"])]["title"])
+		button.tooltip_text = str(BattleUISkin.data()["actors"][str(target["actor_id"])]["title"])
 		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 			var style := StyleBoxFlat.new()
 			style.bg_color = Color(0.0, 0.15, 1.0, 0.14)
@@ -220,10 +222,10 @@ func _show_targets() -> void:
 		page_root.add_child(button)
 		target_buttons[str(target["id"])] = button
 	if target_buttons.is_empty():
-		var hint := UISkin.label(page_root, Vector2(172, 412), 17)
+		var hint := BattleUISkin.label(page_root, Vector2(172, 412), 17)
 		hint.text = "附近沒有可交換的同伴"
 	if operation == "give":
-		UISkin.button(page_root, "結束給予", Vector2(474, 438), Vector2(148, 34)).pressed.connect(cancel)
+		BattleUISkin.button(page_root, "結束給予", Vector2(474, 438), Vector2(148, 34)).pressed.connect(cancel)
 
 
 func show_give_session(unit: Dictionary, recipients: Array, revision: int, keep_target: bool = false) -> void:
@@ -261,7 +263,7 @@ func _select_give_target(id: String) -> void:
 func _show_give_inventories() -> void:
 	_clear_page()
 	page = "give_inventory"
-	give_view = GiveView.new()
+	give_view = BattleGiveView.new()
 	page_root.add_child(give_view)
 	give_view.show_inventories(source_unit, _give_target(), EquipmentCatalog.items(), selected_index)
 	var view := give_view
@@ -289,17 +291,17 @@ func _show_give_confirmation(target_index: int, return_code: int) -> void:
 	var catalog := EquipmentCatalog.items()
 	var target := _give_target()
 	var result := InventoryRules.exchange(source_unit["inventory"], selected_index, int(selected_item), target["inventory"], target_index, return_code)
-	GiveView.fitted_board(page_root, Vector2(112, 140), Vector2(416, 224))
-	var title := UISkin.label(page_root, Vector2(132, 158), 19)
+	BattleGiveView.fitted_board(page_root, Vector2(112, 140), Vector2(416, 224))
+	var title := BattleUISkin.label(page_root, Vector2(132, 158), 19)
 	title.text = "確認交換" if return_code > 0 else "確認給予"
-	var description := UISkin.label(page_root, Vector2(132, 201), 17)
+	var description := BattleUISkin.label(page_root, Vector2(132, 201), 17)
 	description.size = Vector2(376, 85)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var summary := "%s → %s" % [catalog[selected_item]["name"], GiveView.unit_name(target)]
+	var summary := "%s → %s" % [catalog[selected_item]["name"], BattleGiveView.unit_name(target)]
 	if return_code > 0:
 		summary += "\n換回：%s" % catalog[str(return_code)]["name"]
-	UISkin.set_wrapped_text(description, summary)
-	confirm_button = UISkin.button(page_root, "確定", Vector2(132, 306), Vector2(158, 36))
+	BattleUISkin.set_wrapped_text(description, summary)
+	confirm_button = BattleUISkin.button(page_root, "確定", Vector2(132, 306), Vector2(158, 36))
 	confirm_button.disabled = not result["ok"]
 	# Capture this exact proposal: an old Button signal cannot authorize a newer selection.
 	var request := [give_target_id, selected_index, int(selected_item), target_index, return_code, give_revision]
@@ -307,37 +309,37 @@ func _show_give_confirmation(target_index: int, return_code: int) -> void:
 	confirm_button.pressed.connect(func():
 		if page == "give_confirm" and confirm_button == proposal_button:
 			give_requested.emit(request[0], request[1], request[2], request[3], request[4], request[5]))
-	UISkin.button(page_root, "取消", Vector2(350, 306), Vector2(158, 36)).pressed.connect(cancel)
+	BattleUISkin.button(page_root, "取消", Vector2(350, 306), Vector2(158, 36)).pressed.connect(cancel)
 
 
 func _show_drop_confirmation() -> void:
 	_clear_page()
 	page = "drop_confirm"
-	UISkin.board(page_root, "WINDOW50", Vector2(132, 174))
-	var title := UISkin.label(page_root, Vector2(154, 191), 19)
+	BattleUISkin.board(page_root, "WINDOW50", Vector2(132, 174))
+	var title := BattleUISkin.label(page_root, Vector2(154, 191), 19)
 	var catalog := EquipmentCatalog.items()
 	var rejected := InventoryRules.discard_error(int(selected_item), catalog) != ""
 	title.text = "此道具不可丟棄" if rejected else "丟棄 %s？" % catalog[selected_item]["name"]
-	confirm_button = UISkin.button(page_root, "確定", Vector2(152, 268), Vector2(150, 36))
+	confirm_button = BattleUISkin.button(page_root, "確定", Vector2(152, 268), Vector2(150, 36))
 	confirm_button.disabled = rejected
 	confirm_button.pressed.connect(func(): drop_requested.emit(selected_item))
-	var back := UISkin.button(page_root, "取消", Vector2(338, 268), Vector2(150, 36))
+	var back := BattleUISkin.button(page_root, "取消", Vector2(338, 268), Vector2(150, 36))
 	back.pressed.connect(cancel)
 
 
 func _show_accessory_slots() -> void:
 	_clear_page()
 	page = "equipment_slot"
-	var board := UISkin.board(page_root, "WINDOW50", Vector2(132, 174))
+	var board := BattleUISkin.board(page_root, "WINDOW50", Vector2(132, 174))
 	board.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	board.size = Vector2(376, 164)
-	var title := UISkin.label(page_root, Vector2(154, 191), 19)
+	var title := BattleUISkin.label(page_root, Vector2(154, 191), 19)
 	title.text = "選擇飾品位置"
 	for index in range(2):
 		var slot := "accessory%d" % (index + 1)
-		var button := UISkin.button(page_root, "飾品 %d" % (index + 1), Vector2(152 + 186 * index, 235), Vector2(150, 36))
+		var button := BattleUISkin.button(page_root, "飾品 %d" % (index + 1), Vector2(152 + 186 * index, 235), Vector2(150, 36))
 		button.pressed.connect(_show_equipment_confirmation.bind(slot))
-	UISkin.button(page_root, "取消", Vector2(246, 286), Vector2(150, 36)).pressed.connect(cancel)
+	BattleUISkin.button(page_root, "取消", Vector2(246, 286), Vector2(150, 36)).pressed.connect(cancel)
 
 
 func _show_equipment_confirmation(slot: String) -> void:
@@ -353,10 +355,10 @@ func _show_equipment_confirmation(slot: String) -> void:
 		proposed["equipment"] = result["equipment"]
 		var error := ProgressionRules.refresh_input_error(proposed, catalog)
 		if error != "": result = {"ok": false, "reason": error}
-	var board := UISkin.board(page_root, "WINDOW50", Vector2(132, 140))
+	var board := BattleUISkin.board(page_root, "WINDOW50", Vector2(132, 140))
 	board.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	board.size = Vector2(376, 248)
-	var title := UISkin.label(page_root, Vector2(154, 160), 19)
+	var title := BattleUISkin.label(page_root, Vector2(154, 160), 19)
 	var old := EquipmentRules.equipped_code(source_unit["equipment"], slot)
 	title.text = "卸下 %s？" % catalog[str(old)]["name"] if selected_item == "0" else "裝備 %s？" % catalog[selected_item]["name"]
 	var scroll := ScrollContainer.new()
@@ -364,7 +366,7 @@ func _show_equipment_confirmation(slot: String) -> void:
 	scroll.size = Vector2(330, 125)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	page_root.add_child(scroll)
-	var preview := UISkin.label(scroll, Vector2.ZERO, 17)
+	var preview := BattleUISkin.label(scroll, Vector2.ZERO, 17)
 	preview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	preview.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if result["ok"]:
@@ -442,7 +444,7 @@ func _show_equipment_confirmation(slot: String) -> void:
 				var before_protected: bool = (int(old_casting["effects"]) & (int(status.IMMUNITY[key]) | 0x80)) != 0
 				var after_protected: bool = (int(new_casting["effects"]) & (int(status.IMMUNITY[key]) | 0x80)) != 0
 				if before_protected != after_protected:
-					preview.text += "\n%s  %s → %s" % [{"poison": "防止中毒", "no_magic": "防止禁魔", "paralysis": "防止麻痺"}[key], "有" if before_protected else "無", "有" if after_protected else "無"]
+					preview.text += "\n%s  %s → %s" % ["防止" + preload("res://game/sim/StatusCatalog.gd").name_of(key), "有" if before_protected else "無", "有" if after_protected else "無"]
 					if after_protected: preview.text += "（不解除已有狀態）"
 			if old_casting["magic_hit_bonus"] != new_casting["magic_hit_bonus"]:
 				preview.text += "\n魔法命中修正  +%d → +%d" % [old_casting["magic_hit_bonus"], new_casting["magic_hit_bonus"]]
@@ -462,10 +464,10 @@ func _show_equipment_confirmation(slot: String) -> void:
 	else:
 		var messages := {"inventory_full": "背包已滿，無法收回裝備。", "wrong_job": "目前職業無法使用這件裝備。", "equipment_cannot_be_removed": "這件裝備無法卸下。", "equipment_unchanged": "已裝備相同道具。", "unsupported_equipment": "此裝備效果尚未開放。"}
 		preview.text = messages.get(result["reason"], "目前無法更換這件裝備。")
-	confirm_button = UISkin.button(page_root, "確定", Vector2(152, 334), Vector2(150, 36))
+	confirm_button = BattleUISkin.button(page_root, "確定", Vector2(152, 334), Vector2(150, 36))
 	confirm_button.disabled = not result["ok"]
 	confirm_button.pressed.connect(func(): equipment_requested.emit(selected_slot, selected_index, int(selected_item)))
-	UISkin.button(page_root, "取消", Vector2(338, 334), Vector2(150, 36)).pressed.connect(cancel)
+	BattleUISkin.button(page_root, "取消", Vector2(338, 334), Vector2(150, 36)).pressed.connect(cancel)
 
 
 ## Modal input while the stack is up: right click / Esc step back one page (`cancel`)

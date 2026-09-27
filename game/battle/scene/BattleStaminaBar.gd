@@ -15,13 +15,11 @@ extends Control
 ## The red fill is clipped at object x + width with an exclusive right edge (the default
 ## clip is (0,0,640,480)) while the shape starts one pixel in, so it shows width - 1 pixels.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_stamina.md; resource-derived content/imported/hsl/shared/panels/manifest.json
-##   strings: n/a
+##   layout: static-derived docs/evidence_packets/static_reverse/original_stamina.md
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_stamina.md
-##   audio: n/a
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const Stamina = preload("res://game/sim/StaminaRules.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const StaminaRules = preload("res://game/sim/StaminaRules.gd")
 ## 0x436904／0x43696a／0x4369c9: the bar's stage boundaries (cmp esi, 0x14／0x28／0x3c).
 const SEGMENT_POINTS := 20
 ## Completed-segment overlay per stage (0x436ab2..0x436adb: ebx+2, ebx+3, ebx+1).
@@ -48,7 +46,7 @@ var shared_pulse := true
 var _own_origin_msec := 0
 var _drawn_level := -1
 
-var max_value := float(Stamina.CAP)
+var max_value := float(StaminaRules.CAP)
 var value := 0.0:
 	set(next):
 		value = clampf(next, 0.0, max_value)
@@ -65,10 +63,10 @@ var _lit: Array[Texture2D] = []
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_under = UISkin.texture("bar_st1")
-	_fill = UISkin.texture("bar_st2")
+	_under = BattleUISkin.texture("bar_st1")
+	_fill = BattleUISkin.texture("bar_st2")
 	for key in LIT_SHAPES:
-		_lit.append(UISkin.texture(key))
+		_lit.append(BattleUISkin.texture(key))
 	size = _under.get_size()
 
 
@@ -84,7 +82,7 @@ func fill_width() -> int:
 	if st <= 0 or lit_segments() == LIT_SHAPES.size():
 		return 0
 	var stage := mini((st - 1) / SEGMENT_POINTS, STAGE_SHAPES.size() - 1)
-	var reference := int(UISkin.texture(STAGE_SHAPES[stage]).get_width())
+	var reference := int(BattleUISkin.texture(STAGE_SHAPES[stage]).get_width())
 	# 16.16 fixed point as the original: ((st << 16) / (20 × (stage + 1))) × width >> 16.
 	return (((st << 16) / (SEGMENT_POINTS * (stage + 1))) * reference) >> 16
 
@@ -92,7 +90,7 @@ func fill_width() -> int:
 ## Width of the completed-segment overlay in pixels (0 when no segment is complete).
 func lit_width() -> int:
 	var lit := lit_segments()
-	return 0 if lit == 0 else int(UISkin.texture(LIT_SHAPES[lit - 1]).get_width())
+	return 0 if lit == 0 else int(BattleUISkin.texture(LIT_SHAPES[lit - 1]).get_width())
 
 
 ## Blend level of the completed-segment overlay now (12..16 of 16).

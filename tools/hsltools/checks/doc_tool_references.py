@@ -7,8 +7,7 @@ this task closes the gap it leaves: a README that tells the reader to run a dele
 an unregistered task passed every gate before (T1's ablation of hsl_combat_resolution_probe.py).
 
 Scope: the Markdown the reader is told to act on — the root *.md, docs/, tests/, tools/ — minus
-docs/external/ (vendored documentation names its own paths) and docs/collaboration/ (message
-logs: a past message names the tool of its day). Generated READMEs under content/ are the
+docs/external/ (vendored documentation names its own paths). Generated READMEs under content/ are the
 generators' output and are not documentation (their strings change only with a regeneration).
 Rules, per code span or code-block line:
 
@@ -40,13 +39,13 @@ from hsltools.checks import CheckTask
 from hsltools.registry import CheckFailed, Context, Task, all_tasks
 
 SCOPE_DIRECTORIES = ('docs', 'tests', 'tools')
-EXCLUDED_PREFIXES = ('docs/external/', 'docs/collaboration/')
+EXCLUDED_PREFIXES = ('docs/external/',)
 TOOL_PATH = re.compile(r'(?<![\w/.\-@])(tools/[\w./\-]+\.(?:py|sh|swift|c|json))(?![\w/])')
 BARE_SCRIPT = re.compile(r'(?<![\w/.\-@])(hsl_\w+\.py)(?![\w/])')
 MODULE = re.compile(r'python3?\s+-m\s+(hsltools(?:\.\w+)+)')
 HSL_COMMAND = re.compile(r'(?<![\w/.\-])(?:python3\s+)?(?:tools/)?hsl(?:\.py)?\s+(check|generate|list|affected)\b(.*)')
 CODE_SPAN = re.compile(r'(`+)(.+?)\1')
-OPTIONS_WITH_VALUE = ('--exe', '-j', '--root', '--since')
+OPTIONS_WITH_VALUE = ('--exe', '-j', '--root', '--since', '--profile')
 # Where the argument list ends: a shell operator, a closing bracket, anything non-ASCII (prose).
 # A pipe ends it only as its own token: `story_scene:902|903` is the documentation's alternative shorthand.
 TERMINATOR = re.compile(r'#|;|&|\)|\]|`|<-|[^\x20-\x7e]|^\|')

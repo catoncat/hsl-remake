@@ -11,17 +11,24 @@ extends Node2D
 ##            (x, y − 0x30); the last number releases the action on its 32nd tick and 0x43b4c0
 ##            drops the bars.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md (effect point, burst directions and motion, bar docking); resource-derived content/imported/hsl/shared/skill_effects/manifest.json (WAT04／WAT01 frames); resource-derived content/imported/hsl/shared/reward_floats/manifest.json (NUM510); resource-derived content/imported/hsl/shared/panels/manifest.json (BAR_HP4..6); provisional (range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36; the bars' cur/max text is not drawn)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md (12／12 lead ticks, 25-tick effect stagger, 16 sparks 1..3 ticks apart × 24 ticks, 32-tick flash, number release)
-##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md (sfxUseItem 402 = WAV\MHEAL001.WAV, played by 0x409e40 as the item applies)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
+##     (effect point, burst directions and motion, bar docking)
+##   layout: resource-derived content/imported/hsl/shared/skill_effects/manifest.json (WAT04／WAT01 frames)
+##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json (NUM510)
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json (BAR_HP4..6)
+##   layout: provisional
+##     (range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36;
+##     the bars' cur/max text is not drawn)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
+##     (12／12 lead ticks, 25-tick effect stagger, 16 sparks 1..3 ticks apart × 24 ticks, 32-tick flash, number release)
+##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
+##     (sfxUseItem 402 = WAV\MHEAL001.WAV, played by 0x409e40 as the item applies)
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
-const RewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
-const Roles = preload("res://game/sim/ActorRoleRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
@@ -97,10 +104,10 @@ func _ready() -> void:
 	_effect_layer.material = additive
 	_effect_layer.draw.connect(_draw_effects)
 	add_child(_effect_layer)
-	var assets: Dictionary = UISkin.data()["assets"]
+	var assets: Dictionary = BattleUISkin.data()["assets"]
 	for key in ["bar_hp4", "bar_hp5", "bar_hp6"]:
 		_art[key] = {"texture": load(str(assets[key]["res_path"])), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
-	var flash: Dictionary = RewardFloat.manifest()["assets"]["damage_flash"]
+	var flash: Dictionary = BattleRewardFloat.manifest()["assets"]["damage_flash"]
 	_art["flash"] = {"texture": load(str(flash["res_path"])), "origin": Vector2(float(flash["draw_origin"][0]), float(flash["draw_origin"][1]))}
 	for kind in SPARK_FRAME_NAMES:
 		for frame in range(SPARK_FRAMES): _frame(str(SPARK_FRAME_NAMES[kind]) % (frame + 1))
@@ -159,7 +166,7 @@ static func use_cells(loop: Dictionary, user: Dictionary, origin: Vector2i) -> A
 		if cell.x < 0 or cell.y < 0 or cell.x >= map_size.x or cell.y >= map_size.y:
 			continue
 		var occupant := Footprint.unit_at(loop.get(LoopKeys.UNITS, []), cell)
-		if not occupant.is_empty() and Roles.hostile(user, occupant):
+		if not occupant.is_empty() and ActorRoleRules.hostile(user, occupant):
 			continue
 		cells.append(cell)
 	return cells

@@ -1,21 +1,22 @@
 extends RefCounted
 const Footprint = preload("res://game/sim/FootprintRules.gd")
-const Propagation = preload("res://game/sim/RangePropagationRules.gd")
+const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
 ## Pure source-backed skill targeting. Native mode selection is separate from
 ## the current battle-role adapter and the subset of effects actually implemented.
 ## `terrain` (optional, RangePropagationRules.player_skill_terrain) switches the cast range
 ## (`cast_mode`) and the effect area (`area_modes`) from the flat RANGE projection to the
 ## original 0x4000／occupant propagation; without it the projection stays flat.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_targets.md; static-derived docs/evidence_packets/static_reverse/original_line_ranges.md; static-derived docs/evidence_packets/static_reverse/original_weapon_ranges.md; resource-derived content/generated/hsl/skills/targeting.json; static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md; provisional (battle-role adapter, support same-side as overlap, unsupported effects refused)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_targets.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_line_ranges.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_weapon_ranges.md
+##   rules: resource-derived content/generated/hsl/skills/targeting.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
+##   rules: provisional (battle-role adapter, support same-side as overlap, unsupported effects refused)
 const MAGIC_SUPPORT_MASK := 0x0f62
 const SPECIAL_SUPPORT_MASK := 0x18f62
 const ROLES := ["player_controlled", "friendly_ai", "enemy_ai"]
-const Sides = preload("res://game/sim/ActorRoleRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 
 
 static func function_mask(expression: Variant, symbols: Dictionary) -> int:
@@ -118,7 +119,7 @@ static func line_direction(origin: Vector2i, center: Vector2i) -> Vector2i:
 
 static func line_cells(center: Vector2i, size: int, origin: Vector2i, map_size: Vector2i, terrain: Dictionary = {}, mode: int = 2) -> Array:
 	var step := line_direction(origin, center)
-	var coverage := Propagation.line_coverage(size, origin, center, terrain["words"], map_size, mode) if terrain.has("words") else {}
+	var coverage := RangePropagationRules.line_coverage(size, origin, center, terrain["words"], map_size, mode) if terrain.has("words") else {}
 	var result: Array = []
 	for index in range(1 if step == Vector2i.ZERO else size):
 		var cell: Vector2i = center + step * index
@@ -139,7 +140,7 @@ static func effect_cells(center: Vector2i, fields: Dictionary, data: Dictionary,
 		return line_cells(center, int(pattern["size"]), origin, map_size, terrain if area else {}, mode)
 	if area:
 		if not _inside(center, map_size): return []
-		return Propagation.cells(Propagation.area_coverage(pattern["data"], center, terrain["words"], map_size, mode))
+		return RangePropagationRules.cells(RangePropagationRules.area_coverage(pattern["data"], center, terrain["words"], map_size, mode))
 	var result: Array = []
 	var half := int(pattern["size"]) / 2
 	for y in range(int(pattern["size"])):
@@ -197,7 +198,7 @@ static func cells(origin: Vector2i, fields: Dictionary, data: Dictionary, map_si
 	var pattern: Dictionary = data["ranges"][fields["range"]]
 	var support := is_support(fields, data)
 	var half := int(pattern["size"]) / 2
-	var reached := Propagation.weapon_coverage(pattern["data"], origin, terrain["words"], map_size, int(terrain.get("cast_mode", Propagation.PLAYER_CAST_MODE)), false) if terrain.has("words") else {}
+	var reached := RangePropagationRules.weapon_coverage(pattern["data"], origin, terrain["words"], map_size, int(terrain.get("cast_mode", RangePropagationRules.PLAYER_CAST_MODE)), false) if terrain.has("words") else {}
 	var result: Array = []
 	for y in range(int(pattern["size"])):
 		for x in range(int(pattern["size"])):
@@ -231,10 +232,10 @@ static func side_matches(caster: Dictionary, target: Dictionary, fields: Diction
 	# special ranges also keep a pmALL occupant (the level-37 gems, pmMagicAttack):
 	# ActorRoleRules.player_range_selectable; AI casters keep the target scan's disjoint sides.
 	if is_support(fields, data):
-		return Sides.same_side(caster, target)
+		return ActorRoleRules.same_side(caster, target)
 	if str(caster.get("battle_actor_role", "")) == "player_controlled":
-		return Sides.player_range_selectable(caster, target, true)
-	return Sides.hostile(caster, target) and caster["id"] != target["id"]
+		return ActorRoleRules.player_range_selectable(caster, target, true)
+	return ActorRoleRules.hostile(caster, target) and caster["id"] != target["id"]
 
 
 static func area_side_matches(caster: Dictionary, target: Dictionary, fields: Dictionary, data: Dictionary) -> bool:
@@ -245,7 +246,7 @@ static func area_side_matches(caster: Dictionary, target: Dictionary, fields: Di
 	# (The same builder also drops pmNPCPlayerNoMagic 0x850000 occupants; no remake unit has it.)
 	if side_matches(caster, target, fields, data):
 		return true
-	return not is_support(fields, data) and Sides.side_mask(target) == Sides.SIDE_MASK and caster["id"] != target["id"]
+	return not is_support(fields, data) and ActorRoleRules.side_mask(target) == ActorRoleRules.SIDE_MASK and caster["id"] != target["id"]
 
 
 static func target_error(caster: Dictionary, target: Dictionary, origin: Vector2i, fields: Dictionary, data: Dictionary, map_size: Vector2i, terrain: Dictionary = {}) -> String:

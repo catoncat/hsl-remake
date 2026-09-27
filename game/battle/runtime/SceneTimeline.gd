@@ -1,10 +1,7 @@
 extends RefCounted
 ## provenance:
-##   rules: resource-derived content/imported/hsl/chapter01/source_texts/STORY051.TXT; static-derived docs/evidence_packets/static_reverse/original_select_insert_event.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: resource-derived content/imported/hsl/chapter01/source_texts/STORY051.TXT
+##   rules: static-derived docs/evidence_packets/static_reverse/original_select_insert_event.md
 
 const SUMMARY_SCHEMA := "hsl_scene_timeline.v1"
 const TRANSITION_SCHEMA := "hsl_scene_timeline_transition.v1"

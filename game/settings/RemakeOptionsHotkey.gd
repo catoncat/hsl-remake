@@ -18,11 +18,9 @@ extends Node
 ## this node processes right after the freeze (process_priority) so a step frame never reaches
 ## the game under the page.
 ## provenance:
-##   rules: remake-invented docs/OPTIONS.md (Tab opens and closes 重製選項 over any screen and holds the game with the tree pause while it is up; the original binds no key to Tab)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: remake-invented docs/OPTIONS.md
+##     (Tab opens and closes 重製選項 over any screen and holds the game with the tree pause while it is up; the original
+##     binds no key to Tab)
 
 const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")
 const TOGGLE_KEY := KEY_TAB

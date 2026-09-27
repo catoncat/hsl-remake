@@ -2,22 +2,24 @@ extends RefCounted
 ## Shared initialization/equipment/growth refresh for the six proved source jobs.
 ## Manual player points, live automatic NPCs and inert templates stay distinct.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_growth_refresh.md; static-derived docs/evidence_packets/static_reverse/original_job_stats.md; static-derived docs/evidence_packets/static_reverse/original_experience.md; remake-invented (a multi-level award settles into one pending pool reserving the capacity left, split one window per level by BattleGrowthPanel; the original counts each as it opens)
-##   layout: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_growth_refresh.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_job_stats.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_experience.md
+##   rules: remake-invented
+##     (a multi-level award settles into one pending pool reserving the capacity left, split one window per level by
+##     BattleGrowthPanel; the original counts each as it opens)
 ##   strings: remake-invented (GROWTH_CHOICES attribute names and effect prose shown by the growth panel)
-##   timing: n/a
-##   audio: n/a
 
 const POINTS_PER_LEVEL := 5
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const MobilityRules = preload("res://game/sim/MobilityRules.gd")
 const JobStats = preload("res://game/sim/JobStatsRules.gd")
-const Enhancements = preload("res://game/sim/StatEnhancementRules.gd")
+const StatEnhancementRules = preload("res://game/sim/StatEnhancementRules.gd")
 const Permanent = preload("res://game/sim/PermanentCapabilityRules.gd")
-const EntryGrowth = preload("res://game/sim/EntryGrowthRules.gd")
+const EntryGrowthRules = preload("res://game/sim/EntryGrowthRules.gd")
 const Learning = preload("res://game/sim/LearningRules.gd")
-const StatusEffects = preload("res://game/sim/StatusEffectRules.gd")
-const Sides = preload("res://game/sim/ActorRoleRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const GROWTH_CHOICES := {
 	"str": {"name": "力量", "effect": "基礎力量 +1；確認後按職業公式刷新派生數值"},
 	"dex": {"name": "反應", "effect": "基礎反應 +1；確認後按職業公式刷新派生數值"},
@@ -44,7 +46,7 @@ static func apply_level_ups(unit: Dictionary, equipment_items: Dictionary) -> Di
 		if next["growth_profile"]["allocation"] == "automatic":
 			var attrs := {}
 			for key in GROWTH_CHOICES: attrs[key] = int(next["combat_profile"][key])
-			var allocated := EntryGrowth.allocate(attrs, int(next["level"]), int(next["exp"]), exp_to_next(int(next["level"])), next["growth_profile"]["caps"], int(next["growth_profile"]["job_code"]), POINTS_PER_LEVEL)
+			var allocated := EntryGrowthRules.allocate(attrs, int(next["level"]), int(next["exp"]), exp_to_next(int(next["level"])), next["growth_profile"]["caps"], int(next["growth_profile"]["job_code"]), POINTS_PER_LEVEL)
 			for key in GROWTH_CHOICES: next["combat_profile"][key] = allocated["attributes"][key]
 			next["level"] = allocated["level"]
 			next["exp"] = allocated["exp"]
@@ -116,9 +118,9 @@ static func growth_capacity(unit: Dictionary) -> int:
 static func refresh_input_error(unit: Dictionary, equipment_items: Dictionary) -> String:
 	var learning_error := Learning.basic_error(unit)
 	if learning_error != "": return learning_error
-	var entry_error := EntryGrowth.input_error(unit)
+	var entry_error := EntryGrowthRules.input_error(unit)
 	if entry_error != "": return entry_error
-	var enhancement_error := Enhancements.input_error(unit)
+	var enhancement_error := StatEnhancementRules.input_error(unit)
 	if enhancement_error != "": return enhancement_error
 	var mobility := MobilityRules.prepare(unit, equipment_items)
 	if not mobility["ok"]: return mobility["reason"]
@@ -200,7 +202,7 @@ static func refresh_growth_stats(unit: Dictionary, equipment_items: Dictionary) 
 ## empty (`enhancement_profile_error`, the hot per-action check, would otherwise run it twice).
 static func _refreshed_growth_stats(unit: Dictionary, equipment_items: Dictionary) -> Dictionary:
 	var next := unit.duplicate(true)
-	var effective := EntryGrowth.effective_profile(next, Permanent.effective_profile(next))
+	var effective := EntryGrowthRules.effective_profile(next, Permanent.effective_profile(next))
 	# Campaign JSON represents numbers as floats. Normalize only after the full
 	# input check, so fractional or out-of-domain gains still fail without change.
 	for key in Permanent.KEYS: next["permanent_gains"][key] = int(next["permanent_gains"][key])
@@ -216,13 +218,13 @@ static func _refreshed_growth_stats(unit: Dictionary, equipment_items: Dictionar
 	var level := int(next["level"])
 	# 0x448840 subtracts an active 衰弱 power from the live attributes first; its hp_level
 	# term reads the live +0x28 side (installed player_mode, else the role-implied side).
-	var base := JobStats.base_values(effective, StatusEffects.weakened_attributes(next), level, Sides.side_mask(next))
+	var base := JobStats.base_values(effective, StatusEffectRules.weakened_attributes(next), level, ActorRoleRules.side_mask(next))
 	var max_hp := int(base["max_hp"]) + int(delta["max_hp"])
 	var max_mp := int(base["max_mp"]) + int(delta["max_mp"])
 	if not source["has_magic"]:
 		max_mp = 0
-	var attack := int(base["attack"]) + int(delta["attack"]) + Enhancements.power(unit, "attack_up")
-	var defense := int(base["defense"]) + int(delta["defense"]) + Enhancements.power(unit, "defense_up")
+	var attack := int(base["attack"]) + int(delta["attack"]) + StatEnhancementRules.power(unit, "attack_up")
+	var defense := int(base["defense"]) + int(delta["defense"]) + StatEnhancementRules.power(unit, "defense_up")
 	var magic_attack := int(base["magic_attack"]) + int(delta["magic_attack"])
 	var speed := int(base["speed"]) + int(delta["speed"])
 	var base_resists: Dictionary = source["base_resist_by_type"]
@@ -230,7 +232,7 @@ static func _refreshed_growth_stats(unit: Dictionary, equipment_items: Dictionar
 	var bonuses: Array = base["resist_bonuses"]
 	var resists := {}
 	# 0x448903: an active 魔障壁 (flag 0x40) adds its +0x4a strength to all five resistances, cap 80.
-	var resist_up := Enhancements.power(unit, "resist_up")
+	var resist_up := StatEnhancementRules.power(unit, "resist_up")
 	for index in range(5):
 		var key := str(index)
 		resists[key] = clampi(int(base_resists[key]) + int(bonuses[index]) + int(equip_resists[key]) + resist_up, 0, 80)

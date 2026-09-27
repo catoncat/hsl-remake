@@ -103,7 +103,7 @@ REFERENCE_LAYOUT = {
 # stands in for the indicator/knob (no knob shape exists in the family: provisional).
 OPTIONS_ROWS = [
     {'id': 'scene_effects', 'label': '場景效果', 'glyphs_in_shape': '场景效果', 'kind': 'toggle', 'center_y_in_panel': 106},
-    {'id': 'ready_motion', 'label': '預備動作', 'glyphs_in_shape': '预备动作', 'kind': 'toggle', 'center_y_in_panel': 149},
+    {'id': 'ready_action', 'label': '預備動作', 'glyphs_in_shape': '预备动作', 'kind': 'toggle', 'center_y_in_panel': 149},
     {'id': 'sfx_volume', 'label': '音效音量', 'glyphs_in_shape': '音效音量', 'kind': 'slider', 'center_y_in_panel': 206},
     {'id': 'music_volume', 'label': '音樂音量', 'glyphs_in_shape': '音乐音量', 'kind': 'slider', 'center_y_in_panel': 249},
 ]
@@ -343,7 +343,7 @@ def build(pak: Path) -> dict:
             'the in-battle system menu (Title041-047) opens on Esc during the player action phase and scrolls in from the bottom edge (remake timing); its handler and the exact scroll speed are not located in the EXE (provisional); 讀取回憶錄 is read as "resume the saved campaign position" and 設定選項 is not remade yet',
             'the between-battle scroll (Title051-057) and the 回憶錄 list (Title031-033) are not shown in any recording: their positions, the eight-slot memoir model (user://memoir_N.json) and the slot labels are remake readings (provisional); 整理裝備 and the world variant of 讀取戰場記錄 are not remade yet',
             'the GameClear sequence (level 998: OverBG01/02, Over001/002, workteam) is not shown in any recording: the phase order follows obj-998.obs and the defProcClearBOSS states, and the music is located — 07 from the first frame, 04 when the players start, 02 with the credits (static-derived, original_music.md §3.5; manifest.game_clear.music); text positions, scroll speeds, phase lengths and skipping are remake readings (provisional); the per-slot player showcase is a remake layout and the runtime credit strings are not remade',
-            'the 設定選項 panel (Title039) sits at (142,90) on the user recording 2026-09-24 (588.0 s, runtime-measured); the gem knob, the row semantics (場景效果 = story effect objects such as rain/lightning/fire; 音效／音樂音量 = SFX/music buses) and the key bindings are remake readings (provisional); 預備動作 is not remade and is the original cast-lead switch (READYACTION 2026-09-27: GameSettings.ready_action, 0x477c14 bit 1)',
+            'the 設定選項 panel (Title039) sits at (142,90) on the user recording 2026-09-24 (588.0 s, runtime-measured); the gem knob, the row semantics (場景效果 = story effect objects such as rain/lightning/fire; 音效／音樂音量 = SFX/music buses) and the key bindings are remake readings (provisional); 預備動作 is the original cast-lead switch (READYACTION 2026-09-27: GameSettings.ready_action, 0x477c14 bit 1)',
         ],
     }
     (OUT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

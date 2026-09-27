@@ -14,12 +14,10 @@ extends RefCounted
 ## not the AI's choices (this stream moved on), as in the original.
 ## A state is [word0, word1], two unsigned 32-bit ints (JSON-exact).
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md; static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md; remake-invented (the session holder and loop key plumbing; HSL_RNG_SEED stands in for the clock headless)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Generator = preload("res://game/sim/DamageRandomStream.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
+##   rules: remake-invented (the session holder and loop key plumbing; HSL_RNG_SEED stands in for the clock headless)
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 const MASK := 0xffffffff
 const LOOP_KEY := "global_rng"
 ## The words' static initial values in the data section (never drawn from: the first draw
@@ -36,11 +34,11 @@ static var _session: Array = []
 
 
 static func valid(state: Variant) -> bool:
-	return Generator.valid(state)
+	return DamageRandomStream.valid(state)
 
 
 static func from_words(value: Variant) -> Array:
-	return Generator.from_words(value)
+	return DamageRandomStream.from_words(value)
 
 
 ## 0x458c10's lazy seed branch for clock value t.
@@ -49,15 +47,15 @@ static func seeded(seed: int) -> Array:
 
 
 static func raw(state: Array) -> Dictionary:
-	return Generator.raw(state)
+	return DamageRandomStream.raw(state)
 
 
 static func rand(state: Array, bound: int) -> Dictionary:
-	return Generator.rand(state, bound)
+	return DamageRandomStream.rand(state, bound)
 
 
 static func advance(state: Array, count: int) -> Array:
-	return Generator.advance(state, count)
+	return DamageRandomStream.advance(state, count)
 
 
 ## One draw on the loop's stream, written back at once; the DamageRandomStream Callable

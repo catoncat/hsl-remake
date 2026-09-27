@@ -14,11 +14,11 @@ extends RefCounted
 ## granted by a town event (teGetItem) fill the first member with room, and a
 ## party with no room gets a visible "dropped" receipt instead of a silent loss.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md; remake-invented (bought item to a chosen member's first empty slot instead of the hand cursor; dropped receipt when the party has no room)
-##   layout: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
+##   rules: remake-invented
+##     (bought item to a chosen member's first empty slot instead of the hand cursor; dropped receipt when the party has
+##     no room)
 ##   strings: resource-derived content/imported/hsl/global/tables/EXTRAS.H
-##   timing: n/a
-##   audio: n/a
 
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")

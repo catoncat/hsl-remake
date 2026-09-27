@@ -1,10 +1,9 @@
 extends RefCounted
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/chapter01/map_object_alignment.json; static-derived docs/evidence_packets/static_reverse/actor_shp_draw_origin.md; runtime-measured docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md (historical bridge calibration kept as comparison metadata only)
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/chapter01/map_object_alignment.json
+##   layout: static-derived docs/evidence_packets/static_reverse/actor_shp_draw_origin.md
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md
+##     (historical bridge calibration kept as comparison metadata only)
 
 var alignment_manifest: Dictionary = {}
 var calibration_by_record_index: Dictionary = {}

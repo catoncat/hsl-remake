@@ -6,11 +6,10 @@ extends RefCounted
 ## the loop state machine is WinfailScenarioRules, the interpreters WinfailConditions /
 ## WinfailActions. Schema: hsl_winfail_script_rules.v1.
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H; provisional (AND-combined condition prefix and insert lifecycle — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
+##   rules: provisional
+##     (AND-combined condition prefix and insert lifecycle — ids in
+##     docs/evidence_packets/static_reverse/winfail_claim_limits.md)
 
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 
@@ -476,7 +475,7 @@ static func first_next_level_event(rules: Dictionary) -> Array:
 
 ## Level arguments are numbers or the TYPE.H symbol gameBigMapLevel (49): "N,
 ## gameBigMapLevel" returns to the big map standing at point N (script reading
-## recorded by tools/hsl_big_map_flow.py).
+## recorded by tools/hsltools/data/big_map_flow.py).
 
 
 static func level_arg(value: Variant) -> int:

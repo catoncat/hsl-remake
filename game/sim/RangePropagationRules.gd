@@ -18,15 +18,15 @@ extends RefCounted
 ## stop at 0; up／down／left／right continue in the native DFS order. A negative value
 ## carries the flood without writing and without the onward check. Heights are not read.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_weapon_ranges.md; static-derived docs/evidence_packets/static_reverse/original_range_terrain.json; remake-invented (map words from WRD movement_flags and FootprintRules.occupants; ACTOR marker for 0x40fc90's hit; local frame unclamped — every battlefield ≥ 20x15, largest record 13x13)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_weapon_ranges.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_range_terrain.json
+##   rules: remake-invented
+##     (map words from WRD movement_flags and FootprintRules.occupants; ACTOR marker for 0x40fc90's hit; local frame
+##     unclamped — every battlefield ≥ 20x15, largest record 13x13)
 
 const Footprint = preload("res://game/sim/FootprintRules.gd")
-const Roles = preload("res://game/sim/ActorRoleRules.gd")
-const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 
 const WALL := 0x4000
 const P := 0x10000
@@ -57,8 +57,8 @@ static var _walls := {"tiles": null, "words": {}}
 ## The occupant word a unit leaves on its cells: the installed player_mode's side and
 ## pmMagicAttack bits, else the side its role implies.
 static func side_word(unit: Dictionary) -> int:
-	if unit.has("player_mode"): return int(unit["player_mode"]) & (Roles.SIDE_MASK | Roles.MAGIC_ONLY_BIT)
-	return Roles.side_mask(unit)
+	if unit.has("player_mode"): return int(unit["player_mode"]) & (ActorRoleRules.SIDE_MASK | ActorRoleRules.MAGIC_ONLY_BIT)
+	return ActorRoleRules.side_mask(unit)
 
 
 ## Map words the range builders read (0x4c0928): the WRD 0x4000 flag and every living
@@ -77,7 +77,7 @@ static func cell_words(tiles: Dictionary, units: Array) -> Dictionary:
 
 
 static func loop_words(loop: Dictionary) -> Dictionary:
-	return cell_words(TerrainEdits.tiles(loop), loop["units"])
+	return cell_words(TerrainEditRules.tiles(loop), loop["units"])
 
 
 ## 0x40bab0: the offensive builder mode from the actor's player_mode (P 2, else E 3, else

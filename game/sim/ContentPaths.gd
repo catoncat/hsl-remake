@@ -6,10 +6,6 @@ extends RefCounted
 ## entry growth, rewards, the equipment catalog and the roster face table.
 ## provenance:
 ##   rules: remake-invented (path registry; the tables themselves carry their own provenance)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 
 const SKILL_TARGETING := "res://content/generated/hsl/skills/targeting.json"
 const SKILL_BOOK := "res://content/generated/hsl/skills/initial_book.json"

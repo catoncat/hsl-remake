@@ -1,6 +1,6 @@
 """Original-derived content: which repository paths are derived from the original game, whether
 they are present in this checkout, and the tracked path + SHA-256 manifest that stands in for
-them where they are not (docs/OPEN_SOURCE_PLAN.md).
+them where they are not (docs/internal/OPEN_SOURCE_PLAN.md).
 
   A  original-derived: decoded assets, original text / source files, saves, EXE-derived tables,
      screenshots / recordings / renders of the original game, recoloured original frames

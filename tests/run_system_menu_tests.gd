@@ -332,7 +332,7 @@ func _run_world_scroll_and_memoirs() -> void:
 	_assert_eq(menu.get_node("Title_world_panel/Lit").position, Vector2(54, 38), "整理裝備 is lit on its glyph row")
 	var result: Dictionary = menu.activate()
 	_assert_eq(result.get("status", ""), "party_equipment", "整理裝備 hands off to the party equipment screen")
-	_assert_true(scene.party_equipment_screen.active, "the screen opened (run_party_equipment_tests covers it)")
+	_assert_true(scene.party_equipment_screen.active, "the screen opened")
 	_assert_eq(str(scene.party_equipment_screen.summary().get("error", "")), "no_party", "this boot's {gold} carry is not a party: the screen only offers to close")
 	scene.party_equipment_screen.close()
 	_assert_eq(menu.summary().get("phase", ""), "menu", "closing the window brings the world scroll straight back")

@@ -1,13 +1,32 @@
 extends Node
-const Sequence = preload("res://game/sim/CombatSequenceRules.gd")
+const CombatSequenceRules = preload("res://game/sim/CombatSequenceRules.gd")
 ## Read-only, sequence-scoped presentation after the complete combat exchange.
 ## Jobs contain receipt snapshots; no HP, EXP, inventory or turn is committed here.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/actor_hit_poses/manifest.json; static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md; static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md; runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md (recording 337.95 KILL 3, 338.37 EXP, 338.97 $, 339.59 LEVEL UP)
-##   strings: resource-derived content/generated/hsl/combat/aftermath.json; static-derived docs/evidence_packets/static_reverse/original_field_coverage.md; resource-derived content/imported/hsl/chapter01/battle051/message_text_evidence.json; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md; static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md; remake-invented (the roll is a hash of exchange sequence and victim instead of the original global PRNG: no combat RNG spent, a reload speaks the same line)
-##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md; static-derived docs/evidence_packets/static_reverse/original_death_disposal.md; provisional (draw mode 0x2c000000 read as additive, alpha = level／16; one $ float per action with its recipient — the original keeps a second total 0x4c2978 for the counter)
-##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json; resource-derived content/imported/hsl/shared/actor_audio.json; static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md; static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
+##   layout: resource-derived content/imported/hsl/shared/actor_hit_poses/manifest.json
+##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##     (recording 337.95 KILL 3, 338.37 EXP, 338.97 $, 339.59 LEVEL UP)
+##   strings: resource-derived content/generated/hsl/combat/aftermath.json
+##   strings: static-derived docs/evidence_packets/static_reverse/original_field_coverage.md
+##   strings: resource-derived content/imported/hsl/chapter01/battle051/message_text_evidence.json
+##   strings: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+##   strings: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##   strings: remake-invented
+##     (the roll is a hash of exchange sequence and victim instead of the original global PRNG: no combat RNG spent, a
+##     reload speaks the same line)
+##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
+##   timing: provisional
+##     (draw mode 0x2c000000 read as additive, alpha = level／16; one $ float per action with its recipient — the
+##     original keeps a second total 0x4c2978 for the counter)
+##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
+##   audio: resource-derived content/imported/hsl/shared/actor_audio.json
+##   audio: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   audio: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
 signal experience_presented(growth: Dictionary)
 ## Emitted when a LEVEL UP float appears (0x4084e0 kind 6 plays sfxLevelUp 0x191 there).
 signal level_up_presented(growth: Dictionary)
@@ -45,7 +64,7 @@ const REWARD_RELEASE_SECONDS := OriginalTick.TICK_SECONDS * Timing.SHOW_NUMBER_R
 ## Spawn points above the object (0x442720 pushes y − 0x30; the dead branch y − 0x18).
 const REWARD_LIFT := 48.0
 const KILL_LIFT := 24.0
-const RewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
 const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
 var source: Dictionary
 var dialogue: Control
@@ -78,7 +97,7 @@ func _ready() -> void:
 
 
 func _new_float() -> Node2D:
-	var node: Node2D = RewardFloat.new()
+	var node: Node2D = BattleRewardFloat.new()
 	node.name = "MapExperience"
 	ui.add_child(node)
 	return node
@@ -86,7 +105,7 @@ func _new_float() -> Node2D:
 
 static func defeated_ids(receipt: Dictionary) -> Array[String]:
 	var ids: Array[String] = []
-	var strikes := Sequence.outcomes(receipt)
+	var strikes := CombatSequenceRules.outcomes(receipt)
 	for strike in strikes:
 		if int(strike.get("defender_hp_before", 0)) > 0 and int(strike["defender_hp_after"]) <= 0:
 			var id := str(strike["defender_id"])
@@ -328,7 +347,7 @@ func _begin_disposal() -> void:
 	elapsed = 0.0
 	var job: Dictionary = jobs[cursor]
 	if int(job.get("kill_count", 0)) > 1:
-		var kill: Node2D = RewardFloat.new()
+		var kill: Node2D = BattleRewardFloat.new()
 		kill.name = "MapKill"
 		ui.add_child(kill)
 		kill.present("kill", int(job["kill_count"]))

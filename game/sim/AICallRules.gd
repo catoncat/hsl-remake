@@ -2,15 +2,11 @@ extends RefCounted
 ## Call distribution and adoption only. PlayLoop owns and commits pending IDs.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_calls.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Decision = preload("res://game/sim/AIDecisionRules.gd")
+const AIDecisionRules = preload("res://game/sim/AIDecisionRules.gd")
 
 
 static func recipients(rows: Array, owner_index: int, radius: int) -> Dictionary:
-	var error := Decision.rows_error(rows, owner_index)
+	var error := AIDecisionRules.rows_error(rows, owner_index)
 	if error != "": return {"ok": false, "reason": error}
 	if radius < 0 or radius > 512: return {"ok": false, "reason": "invalid_ai_call_range"}
 	var owner: Dictionary = rows[owner_index]
@@ -20,7 +16,7 @@ static func recipients(rows: Array, owner_index: int, radius: int) -> Dictionary
 		if row == null or index == owner_index: continue
 		# Unlike target search, native broadcast uses exact masked equality and
 		# does not inspect the removed bit. Live unavailable slots are null inputs.
-		if (int(row["side"]) & 0x870000) == (int(owner["side"]) & 0x870000) and Decision._squared_distance(row["coord"], owner["coord"]) <= radius * radius:
+		if (int(row["side"]) & 0x870000) == (int(owner["side"]) & 0x870000) and AIDecisionRules._squared_distance(row["coord"], owner["coord"]) <= radius * radius:
 			indices.append(index)
 	return {"ok": true, "indices": indices, "source": "0x40bee0"}
 

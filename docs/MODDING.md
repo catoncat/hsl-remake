@@ -1,6 +1,6 @@
 # 基于本仓库做你自己的游戏（Modding）
 
-写给想拿这套代码改出自己游戏的人：换美术和音乐、改数值与规则、写新关卡和剧情，最后不再依赖原版。怎么跑、怎么协作见 [README](../README.md)／[CONTRIBUTING](../CONTRIBUTING.md)；加关卡、加角色的逐步表见 [EXTENDING](EXTENDING.md) 与 [AUTHORING](AUTHORING.md)。本页只讲每件事改哪一层、跑什么命令，以及现在哪些做不到。
+写给想拿这套代码改出自己游戏的人：换美术和音乐、改数值与规则、写新关卡和剧情，最后不再依赖原版。怎么跑、怎么协作见 [README](../README.md)／[CONTRIBUTING](../CONTRIBUTING.md)；从零加关卡、角色、剧情的逐步表见[加关卡与角色逐步表](MODDING_LEVELS.md)。本页只讲每件事改哪一层、跑什么命令，以及现在哪些做不到。
 
 先把现状说清楚：代码（`game/`、`tools/`、`tests/`）是 MIT，可以随便改；但目前几乎所有画面、声音和数据表都是从你本机的正版《幻世錄》导入的。所以一般的路线是：先带着原版素材做一个自己玩的改版，再一块块换成自己的东西（§7 列了要换哪些）。
 
@@ -42,7 +42,7 @@ python3 tools/hsl.py check original_derived_manifest          # 逐文件比对�
 tools/play.sh                                 # 先导入 Godot 资源再开游戏；Windows 用 powershell -ExecutionPolicy Bypass -File tools\play.ps1
 ```
 
-从空仓库一条命令导入全部原版资源的工具还在做（README 也这么写）。现在只能按族分批 `generate`，再用 `check original_derived_manifest` 查还缺哪些文件；进度见[开源计划 §8](OPEN_SOURCE_PLAN.md#8-进度oss1-工具侧2026-09-27)。
+从空仓库一条命令导入全部原版资源的工具还在做（README 也这么写）。现在只能按族分批 `generate`，再用 `check original_derived_manifest` 查还缺哪些文件；进度见 [PROJECT](PROJECT.md)「排队」。
 
 **没有原版的时候**：凡是读写原版派生文件的任务都会报 `SKIP original-absent`，只有文档和纯代码的检查会真正跑出 PASS；`tools/verify.sh` 会跳过 Godot 导入和场景套件。游戏本身开不起来，因为关卡 JSON 和素材都是生成物。注意 SKIP 只是跳过，不等于通过。
 
@@ -83,7 +83,7 @@ tools/play.sh                                 # 先导入 Godot 资源再开游�
 | `global/tables/MAGIC.TXT`、`SPECIAL.TXT`、`RANGE.TXT`／`content/authored/roles/skills.json`（新招） | 魔法、绝技、施放范围 | `python3 tools/hsl.py generate initial_skill_book skill_target_data authored_effect_scripts` |
 | 各关 `winfail` 剧本 | 胜负条件、援军、事件 | 该关的生成链（§5） |
 
-`global/tables/` 下的原版表只要重跑 `original_tables` 导入就会被覆盖。新角色、新职业、新招式请写进 `content/authored/roles/`（[AUTHORING](AUTHORING.md) #10–13）；要改原版已有的行，目前只能直接改导入的副本（见本页末"现在做不到的"）。
+`global/tables/` 下的原版表只要重跑 `original_tables` 导入就会被覆盖。新角色、新职业、新招式请写进 `content/authored/roles/`（[逐步表 §3.2](MODDING_LEVELS.md#32-角色职业与招式) #10–18）；要改原版已有的行，目前只能直接改导入的副本（见本页末"现在做不到的"）。
 
 **例一：改普攻伤害公式。** 位置是 `game/sim/CoreCombatRules.gd` 的 `preview_damage()`：先算攻击力减防御力，加上力量差项（限制在 −20～30），再做三次随机抽取，结果不大于 0 时走保底。命中是同一文件的 `hit_chance()`，暴击是 `critical_impact()`；绝技和魔法的伤害抽取在 `game/sim/NativeMagicRollRules.gd`。随机抽取的次数和顺序变了，同一个种子打出来的结果就会变，旧存档读回来后面的发展也会跟着变。
 
@@ -106,34 +106,7 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 
 **原版关卡是怎么来的**：原版每一关有三份剧本——`STORYNNN.TXT`（开场演出）、`winfailNNN.txt`（胜负与事件）和 PAK 里的 EVEF（出场单位），它们被导入到 `content/imported/hsl/chapter01/battleNNN/source_texts/` 和该关的 seed。之后依次经过 `battle_seed:N`、`opening_timeline_compile:N`、`story_scene:N`、`level_battle:N`，编译成 `content/battles/story_NNN.json` 和 `battle_NNN.json`。关卡档案 `content/battles/levels/NNN.json` 是手写的（标题、结果标签、初始焦点等，见 [LEVEL_PROFILES](architecture/LEVEL_PROFILES.md)）。这条链只能在有原版的情况下跑；原版全部剧本文本可以在 `content/imported/hsl/story_corpus/` 里查。
 
-**你自己的关**：不需要原版剧本，也不用改代码。第 200 关「龍脊隘口」就是完整的示范：
-
-```text
-content/authored/level200/        目录名必须是 level＋三位数字，注册表会自动发现
-  level.json      地图图片、表现 manifest、单位（id／角色代号／剧本代号／阵营／起始格）、剧本会插入的物件
-  story.txt       开场剧情，原版 STORY 文法（UTF-8）
-  winfail.txt     胜负与事件，原版 winfail 文法
-  messages.json   剧本里用到的全部讯息编号 → 文字，以及说话者代号 → 显示名
-  terrain.txt     地形：每行一列、每个字符一格（# 不可通行，. 平地，1–9 高度）
-content/battles/levels/200.json   battle 分区：id、title、initial_focus_unit_id、initial_objective_phase、result_labels
-content/battles/campaign.json     battles 里加一行 "200": {"scenario": "res://content/battles/battle_200.json", "title": "龍脊隘口"}
-```
-
-```sh
-python3 tools/hsl.py generate authored_level:200     # 生成 battle_200.json 和 content/generated/hsl/authored/ 下的 seed、时间线、对白、地形
-python3 tools/hsl.py check authored_level:200 level_profile:200 battle_schema campaign_overview
-# 想马上玩：campaign.json 的 start_level 临时改成 "200"，tools/play.sh →「開始新故事」直接进这一关
-```
-
-- **胜负条件**写在 `winfail.txt`：`[win]`／`[fail]`／`[event]` 段，每段是 `code`、`message`，加上一串 `action =`。第一个 action 是条件（例如 `actCheckEnemyTotalNumber,0` 表示清场，`actCheckPlayer,1,SID_雷歐納德` 表示主角倒下，`actCheckRoundNumber,3` 表示第 3 回合），后面是动作。能用的条件和动作（19 个条件、47 个动作）及参数写法见 [WINFAIL_TOKENS](WINFAIL_TOKENS.md)。
-- **开场剧情**能用的 token 见 `tools/hsltools/levels/timeline.py` 的 `ACTION_KIND`／`EXTENDED_TOKENS`。在 `game/battle/runtime/BattleOpeningCoordinator.gd` 里没有演出分支的 token 会落进 `RECORD_ONLY_KINDS`，只记录，不演。
-- **接到下一关**：在胜利段写 `actSetNextPlayLevelEvent,200,<下一关 key>`，`998` 表示进谢幕。想让「開始新故事」直接从你的关开始：把 `campaign.json` 的 `start_level` 改成它；不写 `start_movie` 就不播片头。
-- **配乐**：只有 0–99 号关卡在原版曲目表里有对应曲子，100 号以上的关写 `actPlayLevelMusic` 不会有声音。用 `actPlayMusic,N` 指定曲号即可。
-- **新角色、新职业、新招式**都只写数据（[AUTHORING](AUTHORING.md) #10–13）。改完先跑 `python3 tools/hsl.py generate job_formulas role_data initial_skill_book skill_target_data authored_effect_scripts growth_lifecycle_data ai_profiles entry_growth_data battle_rewards combat_aftermath_data roster_portraits actor_panels`，再生成关卡。
-- **自动覆盖**：关卡注册后，`run_battle_sweep_tests`／`run_autoplay_sweep_tests` 会自动测到它；`autoplay_results` 的结果文件需要补一行。
-- 公开仓库里没有示范角色 102／103 的 PNG（占位美术是原版帧换色）。要跑第 200 关，得自己把图放进 `content/authored/actors/102/`、`103/`。
-
-**必须改代码的情况**：新的 winfail 条件或动作（先在 `game/sim/WinfailCompiler.gd` 加词表，再在 `WinfailConditions`／`WinfailActions` 里加分支）；新的开场 opcode 演出（`timeline.py` 映射 kind，再在协调器 `_apply_event` 加分支）；治疗、状态、增益这类新的技能效果族；新的切入打击程序。
+**你自己的关**：不需要原版剧本，也不用改代码。在 `content/authored/levelNNN/` 写五个文件（`level.json` 地图与单位、`story.txt` 开场、`winfail.txt` 胜负、`messages.json` 对白、`terrain.txt` 地形，剧本沿用原版文法），在 `content/battles/levels/NNN.json` 写关卡档案，再往 `campaign.json` 注册一行；`python3 tools/hsl.py generate authored_level:200` 一条命令组出和原版链同形的 `battle_200.json`。新角色、新职业、新招式也都只写数据。第 200 关「龍脊隘口」和角色 102／103 是完整示范。每一步改哪个文件、跑什么命令、哪些步骤必须有素材或必须改代码（新的 winfail 条件或动作、新的开场演出、新的技能效果族、新的切入打击程序），都在[加关卡与角色逐步表](MODDING_LEVELS.md)里。
 
 ## 6. 选项系统
 
@@ -175,7 +148,7 @@ python3 tools/hsl.py check authored_level:200 level_profile:200 battle_schema ca
 - **别手改生成物**：`content/generated/`、`battle_NNN.json` 都会被下次生成覆盖，要改就改它的源头。
 - **引擎代码不写章节路径**：`game/` 里一出现 `chapter01` 这样的目录名，`python3 tools/hsl.py check engine:chapter_paths` 就失败；逐关素材路径要通过场景 JSON 的 `resources` 传进来。
 - **新加 `game/**/*.gd` 文件**：文件头要写 `## provenance:` 块，然后跑 `python3 tools/hsl.py generate provenance`，否则门禁失败（格式见 [ARCHITECTURE](ARCHITECTURE.md#provenance-headers)）。
-- **只跑相关检查**：`python3 tools/hsl.py affected --since <基线提交>` 列出改动命中的任务，加 `--check` 直接跑；`tools/lane_verify.sh affected <基线提交>` 还会带上命中的 Python 测试和 Godot 套件；也可以只跑一关，例如 `python3 tools/hsl.py check '*:200'`；只改了文档就跑 `python3 tools/hsl.py check docs`。
+- **只跑相关检查**：`python3 tools/hsl.py affected --since <基线提交>` 列出改动命中的任务，加 `--check` 直接跑；`tools/lane_verify.sh affected <基线提交>` 还会带上命中的 Python 测试和 Godot 套件；也可以只跑一关，例如 `python3 tools/hsl.py check '*:200'`；只改了文档就跑 `python3 tools/hsl.py check docs`。改自己的游戏时用 `python3 tools/hsl.py check --profile=modder` 跑全部"我改的数据能生成、能读"的检查；它跳过原版等价层（parity：探针包、出场顺序、配乐、繁体文案）和我们的证据流程层（maintainer：来源头、差异清单等），并打印一行 `SOURCE_CHECKS_SKIP profile=modder parity=N maintainer=N`——通过不代表仍和原版等价。
 - **SKIP 不是 PASS**：原版不在场时，读原版的检查一律显式跳过；看到 `SKIP original-absent` 说明这部分根本没验证。
 
 ## 现在做不到的（需要先改代码或工具）
@@ -185,4 +158,4 @@ python3 tools/hsl.py check authored_level:200 level_profile:200 battle_schema ca
 - 手写层的新音效、新界面美术：两者都没有 authored 入口。
 - 关卡配乐用任意路径：剧本 `actPlayMusic` 的路径模板写死在 `tools/hsltools/levels/timeline.py` 的 `MUSIC_STREAM`。
 - 规则类选项：存档与锁定的底座（[OPTIONS §9](OPTIONS.md#9-实施计划) B2）还没建，现有卡都是演出／外观类。
-- 续集自己的大地图和城镇：数据入口存在，但没有验证过（[AUTHORING](AUTHORING.md) #18）。
+- 续集自己的大地图和城镇：数据入口存在，但没有验证过（[逐步表](MODDING_LEVELS.md#33-从标题开始与续集世界) #20）。

@@ -4,11 +4,17 @@ extends Node
 ## Hidden treasure (chest `hidden`: template obj_Attribute without objattrATTACKFLAG) is not
 ## drawn and gives no hover hint; its discovery plays sfxGetTreasure like 0x445526.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_treasure.md (hidden chests not drawn: 0x415730 shape word 0xffff)
-##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json; remake-invented (discovery caption)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_treasure.md
+##     (hidden chests not drawn: 0x415730 shape word 0xffff)
+##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
+##   layout: remake-invented (discovery caption)
 ##   strings: remake-invented (discovery text)
-##   timing: remake-invented (0.45 s caption fade — deliberately kept remake beat; the original disposes the chest at once, docs/evidence_packets/static_reverse/original_treasure.md)
-##   audio: static-derived docs/evidence_packets/static_reverse/original_treasure.md (hidden chest: 0x4477b0(0xa05) sfxGetTreasure before 0x4156d0); remake-invented (shown chest: accept sound)
+##   timing: remake-invented
+##     (0.45 s caption fade — deliberately kept remake beat; the original disposes the chest at once,
+##     docs/evidence_packets/static_reverse/original_treasure.md)
+##   audio: static-derived docs/evidence_packets/static_reverse/original_treasure.md
+##     (hidden chest: 0x4477b0(0xa05) sfxGetTreasure before 0x4156d0)
+##   audio: remake-invented (shown chest: accept sound)
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const DURATION := 0.45

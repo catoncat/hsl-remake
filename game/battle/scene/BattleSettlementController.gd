@@ -2,12 +2,9 @@ extends Node
 ## Coordinates loot and explicit safe-boundary saves. Holds no mutable combat state.
 ## provenance:
 ##   rules: remake-invented (F5／F9 quiet-boundary saves; the original has no in-battle checkpoint)
-##   layout: n/a
 ##   strings: remake-invented (save／load notices)
-##   timing: n/a
-##   audio: n/a
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const Checkpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
+const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 var runtime: Node
@@ -68,7 +65,7 @@ func tick() -> bool:
 	resume_button.visible = runtime.interaction_state == Interaction.OPENING_TIMELINE and FileAccess.file_exists(checkpoint_path)
 	runtime.status_panel.money_label.text = str(int(runtime.play_loop[LoopKeys.GOLD]))
 	runtime.status_panel.rewards_button.disabled = runtime.play_loop[LoopKeys.SETTLEMENT].get("pending", []).is_empty()
-	if not Loop.loot_waiting(runtime.play_loop):
+	if not BattlePlayLoop.loot_waiting(runtime.play_loop):
 		if panel.visible: panel.close()
 		return false
 	runtime.menus.set_action_menu_visible(false)
@@ -82,9 +79,9 @@ func tick() -> bool:
 ## chest opener. A reopen from Status keeps the inspected member; otherwise the visible recipient stays.
 func _refresh_panel(preferred: String = "") -> void:
 	var loop: Dictionary = runtime.play_loop
-	var recipients: Array = Loop.loot_recipients(loop)
+	var recipients: Array = BattlePlayLoop.loot_recipients(loop)
 	var actors: Array = []
-	for id in recipients: actors.append(Loop.unit(loop, id))
+	for id in recipients: actors.append(BattlePlayLoop.unit(loop, id))
 	var state: Dictionary = loop[LoopKeys.SETTLEMENT]
 	var kills: Array = state.get("kills", [])
 	var earner := str(state.get("owner_id", "")) if kills.is_empty() else str(kills[0]["attacker_id"])
@@ -96,7 +93,7 @@ func _refresh_panel(preferred: String = "") -> void:
 
 func _claim(request: Dictionary) -> void:
 	if not panel.accepts(request): return
-	var next := Loop.claim_reward(runtime.play_loop, request["sequence"], request["revision"], request["entry_id"], request["recipient_id"], request["slot"], request["expected_code"])
+	var next := BattlePlayLoop.claim_reward(runtime.play_loop, request["sequence"], request["revision"], request["entry_id"], request["recipient_id"], request["slot"], request["expected_code"])
 	if next == runtime.play_loop: return
 	runtime.apply_loop(next, "claim_reward")
 	runtime.play_ui_sound("put_down") # 400 PUT00003: the held item lands in the bag slot
@@ -105,7 +102,7 @@ func _claim(request: Dictionary) -> void:
 
 func _finish(request: Dictionary) -> void:
 	if not panel.accepts(request): return
-	var next := Loop.finish_rewards(runtime.play_loop, request["sequence"], request["revision"], request["abandon"], request["defer"])
+	var next := BattlePlayLoop.finish_rewards(runtime.play_loop, request["sequence"], request["revision"], request["abandon"], request["defer"])
 	if next == runtime.play_loop: return
 	runtime.apply_loop(next, "finish_rewards")
 	panel.close()
@@ -114,7 +111,7 @@ func _finish(request: Dictionary) -> void:
 
 func open_rewards() -> void:
 	if not (runtime.status_panel.visible or runtime.get_node("BattlePresentation").battle_finished) or not quiet(): return
-	var next := Loop.reopen_rewards(runtime.play_loop)
+	var next := BattlePlayLoop.reopen_rewards(runtime.play_loop)
 	if next == runtime.play_loop: return
 	var inspected := str(runtime.status_panel.inspected_unit_id) if runtime.status_panel.visible else ""
 	runtime.apply_loop(next, "reopen_rewards")
@@ -156,14 +153,14 @@ func save_battle(announce: bool = true) -> Dictionary:
 		"growth_offered_levels": runtime.growth_offered_levels.duplicate(),
 		"script_cutscene_consumed": runtime.script_cutscene_consumed,
 		"treasure_presented_sequence": runtime.treasure_view.shown_sequence if runtime.treasure_view != null else 0}
-	return _report(Checkpoint.write(checkpoint_path, runtime.play_loop, meta), "戰鬥已保存（F9 讀取）。" if announce else "")
+	return _report(BattleCheckpoint.write(checkpoint_path, runtime.play_loop, meta), "戰鬥已保存（F9 讀取）。" if announce else "")
 
 
 func load_battle() -> Dictionary:
 	# A freshly launched opening has not accepted a battle action. Loading may
 	# replace it directly; an in-progress battle still requires a quiet boundary.
 	if runtime.interaction_state != Interaction.OPENING_TIMELINE and not quiet(): return _report({"ok": false, "reason": "請等演出或目前操作完成後讀取。"})
-	var result := Checkpoint.read(checkpoint_path, runtime.play_loop)
+	var result := BattleCheckpoint.read(checkpoint_path, runtime.play_loop)
 	if not result["ok"]: return _report(result)
 	var saved: Dictionary = result["snapshot"]
 	var meta: Dictionary = saved["view"]
@@ -203,7 +200,7 @@ func load_battle() -> Dictionary:
 	view._shown_item_sequence = int(runtime.play_loop.get(LoopKeys.LAST_ITEM_USE, {}).get("sequence", 0))
 	view.extra_action_cue.finish(runtime.play_loop)
 	view.turn_end_cue.finish(runtime.play_loop)
-	runtime.growth_offered_levels = Checkpoint.growth_offered_levels(meta, runtime.play_loop)
+	runtime.growth_offered_levels = BattleCheckpoint.growth_offered_levels(meta, runtime.play_loop)
 	runtime.resume_turn_presentation()
 	runtime.camera_controller.snap_to(meta["camera"])
 	runtime.scene_input.disarm_pointer_scroll()

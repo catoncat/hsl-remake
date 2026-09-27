@@ -5,16 +5,25 @@ extends RefCounted
 ## It owns no state of its own. Rule compilation is WinfailCompiler, condition reads
 ## WinfailConditions, the outcome state machine WinfailScenarioRules.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md; resource-derived content/imported/hsl/global/tables/ACTION.H; static-derived docs/evidence_packets/static_reverse/original_player_mode.md; static-derived docs/evidence_packets/static_reverse/original_check_targets.md; static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md; static-derived docs/evidence_packets/static_reverse/original_story_object_terrain.md; static-derived docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md; static-derived docs/evidence_packets/static_reverse/original_use_item_no_attack.md; static-derived docs/evidence_packets/static_reverse/original_poison_gas.md; static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md; static-derived docs/evidence_packets/static_reverse/original_random_position.md; provisional (insert lifecycle, wait／fly／exec-mode readings — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
+##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_story_object_terrain.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_use_item_no_attack.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_random_position.md
+##   rules: provisional
+##     (insert lifecycle, wait／fly／exec-mode readings — ids in
+##     docs/evidence_packets/static_reverse/winfail_claim_limits.md)
 
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const ItemResolutionRules = preload("res://game/sim/ItemResolutionRules.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 const JobUpRules = preload("res://game/sim/JobUpRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
@@ -41,6 +50,66 @@ const PLAYER_MODE_ROLES := {
 }
 
 
+## Token → handler table of the result chain (apply_actions). Every handler takes the chain
+## context `c` (next, runtime, key, message_key, status, fired, insert_index, rerun), the token
+## name and its args. A token missing here takes _act_unlisted: WinfailCompiler's world-flag and
+## presentation vocabularies are recorded for their consumers, anything else as unsupported.
+static var ACTION_HANDLERS := {
+	"actMessage": _act_message,
+	"actMessageIfExist": _act_message_if_exist,
+	"actGetItem": _act_get_item,
+	"actInsertObject": _act_insert_object,
+	"actInsertObjectRandomPos": _act_insert_object,
+	"actInsertStoryObjectRandomPos": _act_insert_object,
+	"actInsertRandomObject": _act_insert_random_object,
+	"actSetPlayerPosToRandom0": _act_set_player_pos_to_random0,
+	"actDeleteRandomPosObject": _act_delete_random_pos_object,
+	"actSetDoublePageMode": _act_set_double_page_mode,
+	"actSetPrevInsertObjectWaitRound": _act_set_prev_insert_object_wait_round,
+	"actWalkPrevInsertObject": _act_folded_into_insert,
+	"actWalkPrevInsertObjectWait": _act_folded_into_insert,
+	"actSetPrevInsertObjectAdjustLevel": _act_folded_into_insert,
+	"actSetPrevInsertObjectFly": _act_folded_into_insert,
+	"actSetPrevInsertObjectST": _act_folded_into_insert,
+	"actSetPrevInsertObjectEquip": _act_folded_into_insert,
+	"actInsertEventStatus": _act_insert_status,
+	"actInsertWinStatus": _act_insert_status,
+	"actInsertFailStatus": _act_insert_status,
+	"actDeleteEventStatus": _act_delete_status,
+	"actDeleteWinStatus": _act_delete_status,
+	"actDeleteFailStatus": _act_delete_status,
+	"actSetNextPlayLevelEvent": _act_set_next_play_level_event,
+	"actSetPlayerMode": _act_set_player_mode,
+	"actPlayerJobUpProcess": _act_player_job_up_process,
+	"actSetPlayerWalkShape": _act_set_player_walk_shape,
+	"actSetPlayerExecMode": _act_set_player_exec_mode,
+	"actRandomSetSysArrivePos": _act_random_set_sys_arrive_pos,
+	"actKeepPlayerST": _act_keep_player_st,
+	"actDeletePlayerCode": _act_delete_player_code,
+	"actExecWinFailProcess": _act_exec_win_fail_process,
+	"actSetPlayerUndead": _act_set_player_undead,
+	"actSetPlayerFixPos": _act_set_player_fix_pos,
+	"actSetPlayerFly": _act_set_player_fly,
+	"actSetPlayerNoAttack": _act_set_player_no_attack,
+	"actUseItem": _act_use_item,
+	"actInsertStoryObjectWaitPos": _act_insert_story_object_wait_pos,
+	"actInsertStoryObjectXRange": _act_insert_story_object_x_range,
+	"actInsertStoryObject": _act_insert_story_object,
+	"actInsertStoryObjectWait": _act_insert_story_object_wait,
+	"actDeletePosPlayerXRange": _act_delete_pos_player_x_range,
+	"actInsertLevelUpStar": _act_insert_level_up_star,
+	"actPlayMovie": _act_play_movie,
+	"actChangePrevInsertObjectID": _act_change_prev_insert_object_id,
+	"actWaitPlayer": _act_wait_player,
+	"actSetWaitRound": _act_set_wait_round,
+	"actDeleteObject": _act_delete_object,
+	"actDeletePosObject": _act_delete_object,
+	"actWalkAndDelete": _act_delete_object,
+	"actWalkAndDeleteWait": _act_delete_object,
+	"actSetDeadMessage": _act_set_dead_message,
+}
+
+
 ## ---------------------------------------------------------------------------
 ## Result chain
 
@@ -50,7 +119,6 @@ static func apply_actions(next: Dictionary, status: Dictionary, context: String,
 	var runtime: Dictionary = next["winfail_runtime"]
 	var key := str(status["key"])
 	var message_key := dialogue_key if dialogue_key != "" else key
-	var rerun := false
 	var fired: Array = runtime.get("fired", [])
 	fired.append({"key": key, "turn": int(next.get("turn", 1)), "context": context})
 	runtime["fired"] = fired
@@ -58,8 +126,7 @@ static func apply_actions(next: Dictionary, status: Dictionary, context: String,
 	if event_log.find(key) == -1:
 		event_log.append(key)
 	next["event_log"] = event_log
-	var pending_insert: Dictionary = {}
-	var insert_index := 0
+	var c := {"next": next, "runtime": runtime, "key": key, "message_key": message_key, "status": status, "fired": fired, "insert_index": 0, "rerun": false}
 	var actions: Array = status.get("actions", [])
 	for action_index in range(actions.size()):
 		var action: Dictionary = actions[action_index]
@@ -75,195 +142,310 @@ static func apply_actions(next: Dictionary, status: Dictionary, context: String,
 				(fired.back() as Dictionary)["chain_stop_index"] = action_index + (status.get("conditions", []) as Array).size()
 				break
 			continue
-		match name:
-			"actMessage":
-				if args.size() >= 3:
-					_push_dialogue(runtime, message_key, _arg(args, 0), _arg(args, 2))
-			"actMessageIfExist":
-				# [player code][serial][true id][false id][check number][check codes...]
-				if args.size() >= 5:
-					var count := int(_arg(args, 4))
-					var all_alive := true
-					for offset in range(count):
-						var index := 5 + offset
-						if index >= args.size() or WinfailConditions.alive_units_for_token(next, _arg(args, index)).is_empty():
-							all_alive = false
-							break
-					var chosen := _arg(args, 2) if all_alive else _arg(args, 3)
-					if chosen != "" and chosen != "0":
-						_push_dialogue(runtime, message_key, _arg(args, 0), chosen)
-			"actGetItem":
-				# 0x450840 case 0x55 writes the same party item store used by
-				# ordinary treasure/carry. The controlled actor's eight slots are
-				# the remake's single party inventory representation.
-				_apply_item_grant(next, runtime, key, args, fired.size() - 1)
-			"actInsertObject", "actInsertObjectRandomPos", "actInsertStoryObjectRandomPos":
-				var inserts: Array = status.get("inserts", [])
-				pending_insert = (inserts[insert_index] as Dictionary).duplicate(true) if insert_index < inserts.size() else {}
-				insert_index += 1
-				if pending_insert.is_empty():
-					continue
-				pending_insert["key"] = key
-				pending_insert["firing_index"] = fired.size() - 1
-				if name != "actInsertObject":
-					var placed := _slot_position(next, int(pending_insert.get("position_slot", 0)), Vector2i(int(_arg(args, 1)), int(_arg(args, 2))))
-					if not placed["ok"]:
-						record_unresolved(runtime, name, key)
-						continue
-					pending_insert["position_xy"] = placed["pixel"]
-					(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "position": placed["pixel"], "coord": placed["coord"]})
-				# Apply wait setters in action order rather than the parser's final fold.
-				pending_insert["wait_round_set"] = false
-				pending_insert["wait_round"] = 0
-				(runtime["inserts"] as Array).append(pending_insert)
-				var class_id := str(pending_insert.get("class_id", ""))
-				if class_id == "":
-					record_unresolved(runtime, str(pending_insert.get("object_symbol", "")), key)
-				else:
-					var target: Dictionary = runtime["spawn_target"]
-					target[class_id] = int(target.get(class_id, 0)) + 1
-			"actInsertRandomObject":
-				_record_random_effect(next, runtime, key, args)
-			"actSetPlayerPosToRandom0":
-				var ids := WinfailConditions.units_for_token(next, _arg(args, 0), _int_arg(args, 1))
-				if ids.is_empty():
-					record_unresolved(runtime, name, key)
-					continue
-				var actor := WinfailConditions.unit(next, str(ids[0]))
-				var coord: Vector2i = actor.get("coord", Vector2i.ZERO)
-				(runtime["random_position_slots"] as Dictionary)["0"] = [coord.x * WinfailCompiler.DEFAULT_CELL_SIZE, coord.y * WinfailCompiler.DEFAULT_CELL_SIZE]
-				(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "position_slot": 0, "coord": coord, "unit_ids": ids.duplicate()})
-			"actDeleteRandomPosObject":
-				var slot_id := _int_arg(args, 0)
-				var slot: Array = (runtime.get("random_position_slots", {}) as Dictionary).get(str(slot_id), [])
-				var deleted: Array = []
-				if slot.size() == 2:
-					var target_coord := Vector2i(floori(float(slot[0]) / WinfailCompiler.DEFAULT_CELL_SIZE), floori(float(slot[1]) / WinfailCompiler.DEFAULT_CELL_SIZE))
-					for unit in next.get("units", []):
-						if typeof(unit) == TYPE_DICTIONARY and unit.get("coord", Vector2i(-1, -1)) == target_coord and not bool(unit.get("defeated", false)):
-							deleted.append(str(unit.get("id", "")))
-				(runtime["object_delete_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "position": slot.duplicate(), "position_slot": slot_id, "unit_ids": deleted.duplicate()})
-				for unit_id in deleted:
-					if (runtime["departed_unit_ids"] as Array).find(unit_id) == -1: (runtime["departed_unit_ids"] as Array).append(unit_id)
-			"actSetDoublePageMode":
-				(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "mode": _int_arg(args, 0)})
-			"actSetPrevInsertObjectWaitRound":
-				var previous: int = runtime["inserts"].size() - 1
-				var previous_id := str(runtime["inserts"][previous].get("unit_id", "")) if previous >= 0 else str(next.get("script_wait_source", {}).get("previous_insert_unit_id", ""))
-				_record_wait(next, key, name, args, [previous_id] if previous_id != "" else [], -1 if previous_id != "" else previous, fired.size() - 1)
-			"actWalkPrevInsertObject", "actWalkPrevInsertObjectWait", "actSetPrevInsertObjectAdjustLevel", "actSetPrevInsertObjectFly", "actSetPrevInsertObjectST", "actSetPrevInsertObjectEquip":
-				pass  # folded into the insert record at parse time
-			"actInsertEventStatus", "actInsertWinStatus", "actInsertFailStatus":
-				if args.size() >= 1:
-					var kind := WinfailCompiler.status_kind_of(name)
-					var list: Array = next.get("%s_statuses" % kind, []).duplicate()
-					if list.find(int(_arg(args, 0))) == -1:
-						list.append(int(_arg(args, 0)))
-					next["%s_statuses" % kind] = list
-			"actDeleteEventStatus", "actDeleteWinStatus", "actDeleteFailStatus":
-				if args.size() >= 1:
-					var kind := WinfailCompiler.status_kind_of(name)
-					next["%s_statuses" % kind] = WinfailCompiler.without(next.get("%s_statuses" % kind, []), int(_arg(args, 0)))
-			"actSetNextPlayLevelEvent":
-				if args.size() >= 2:
-					next["next_level_event"] = [WinfailCompiler.level_arg(_arg(args, 0)), WinfailCompiler.level_arg(_arg(args, 1))]
-					next["next_level_event_status"] = key
-			"actSetPlayerMode":
-				_apply_player_mode(next, runtime, key, args)
-			"actPlayerJobUpProcess":
-				_apply_player_job_up(next, runtime, key, args)
-			"actSetPlayerWalkShape":
-				_apply_player_walk_shape(next, runtime, key, args)
-			"actSetPlayerExecMode":
-				_apply_player_exec_mode(next, runtime, key, args)
-			"actRandomSetSysArrivePos":
-				_apply_random_system_arrival_position(next, runtime, key, args, fired.size() - 1)
-			"actKeepPlayerST":
-				(runtime["carry_requests"] as Array).append({"key": key, "kind": "keep_stamina"})
-			"actDeletePlayerCode":
-				(runtime["deleted_player_codes"] as Array).append({"key": key, "actor_token": _arg(args, 0), "mode": int(_arg(args, 1)), "unit_ids": WinfailConditions.units_for_token(next, _arg(args, 0))})
-			"actExecWinFailProcess":
-				rerun = true
-			"actSetPlayerUndead":
-				_apply_player_undead(next, runtime, key, args)
-			"actSetPlayerFixPos":
-				_apply_player_fix_pos(next, runtime, key, args)
-			"actSetPlayerFly":
-				_apply_player_fly(next, runtime, key, args)
-			"actSetPlayerNoAttack":
-				_apply_player_no_attack(next, runtime, key, args)
-			"actUseItem":
-				_apply_item_use(next, runtime, key, args, fired.size() - 1)
-			"actInsertStoryObjectWaitPos":
-				_apply_story_object_wait_pos(next, runtime, key, args, fired.size() - 1)
-			"actInsertStoryObjectXRange":
-				_apply_story_object_x_range(next, runtime, key, args, fired.size() - 1)
-			"actInsertStoryObject":
-				(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
-				_apply_story_object_terrain(next, key, args)
-			"actInsertStoryObjectWait":
-				var request := {"key": key, "name": name, "args": args.duplicate()}
-				_apply_drop_lightning(next, request, _arg(args, 0))
-				(runtime["presentation_requests"] as Array).append(request)
-			"actDeletePosPlayerXRange":
-				_apply_player_x_range_delete(next, runtime, key, args, fired.size() - 1)
-			"actInsertLevelUpStar":
-				(runtime["level_up_star_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "sound_id": _arg(args, 0), "firing_index": fired.size() - 1, "status": "skipped_no_level_up_star_sprite"})
-			"actPlayMovie":
-				(runtime["movie_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "movie": "end" if not args.is_empty() and _arg(args, 0) == "140" else "", "firing_index": fired.size() - 1, "status": "pending_movie_player"})
-			"actChangePrevInsertObjectID":
-				_apply_previous_insert_id(runtime, key, args)
-			"actWaitPlayer":
-				var target := _wait_target(next, args, true)
-				_record_wait(next, key, name, args, target["unit_ids"], target["insert_index"], fired.size() - 1)
-			"actSetWaitRound":
-				var target := _wait_target(next, args, false)
-				_record_wait(next, key, name, args, target["unit_ids"], target["insert_index"], fired.size() - 1)
-			"actDeleteObject", "actDeletePosObject", "actWalkAndDelete", "actWalkAndDeleteWait":
-				# Resolve once into stable IDs. PlayLoop owns the actual departure;
-				# its record remains available to the script presentation and saves.
-				if name == "actDeletePosObject":
-					# 0x42c400 selects live objects by absolute world position,
-					# process code and square range. BattleSceneRuntime consumes this
-					# presentation mirror; it never changes the unit roster.
-					var position_request := {"key": key, "name": name, "args": args.duplicate(), "x": int(_arg(args, 0)), "y": int(_arg(args, 1)), "range": int(_arg(args, 2)), "proc_code": _arg(args, 3), "firing_index": fired.size() - 1}
-					(runtime["object_delete_requests"] as Array).append(position_request)
-					if args.size() < 4:
-						record_unresolved(runtime, name, key)
-					continue
-				if name != "actDeleteObject":
-					(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
-				var token := _arg(args, 0)
-				var serial := int(_arg(args, 1))
-				var candidates := WinfailConditions.alive_units_for_token(next, token)
-				if not candidates.is_empty():
-					# Original0x44fad0:0/1 select first, oversize selects last match.
-					# Count currently registered actors, not a frozen opening ordinal.
-					candidates = [candidates[clampi(serial - 1, 0, candidates.size() - 1)]]
-				if not runtime.has("departure_requests"): runtime["departure_requests"] = []
-				(runtime["departure_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(true), "unit_ids": candidates.duplicate(), "firing_index": fired.size() - 1})
-				var departed: Array = runtime["departed_unit_ids"]
-				for unit_id in candidates:
-					if departed.find(unit_id) == -1:
-						departed.append(unit_id)
-			"actSetDeadMessage":
-				if args.size() >= 3:
-					runtime["dead_messages"][_arg(args, 0)] = _arg(args, 2)
-				if not next.has("script_actor_source"):
-					# A level without script actor inserts: the token can only name a unit that
-					# already stands, so the word is written now. With inserts, the same-chain
-					# insert may be the target: ScriptActorCreationRules replays the chain in
-					# action order and writes it there.
-					_apply_dead_message(next, runtime, key, args)
-			_:
-				if WinfailCompiler.WORLD_FLAG_ACTIONS.find(name) != -1:
-					(runtime["pending_world_flags"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
-				elif WinfailCompiler.PRESENTATION_ACTIONS.find(name) != -1:
-					(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
-				else:
-					(runtime["unsupported_encountered"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
+		var handler: Callable = ACTION_HANDLERS.get(name, Callable())
+		if handler.is_valid():
+			handler.call(c, name, args)
+		else:
+			_act_unlisted(c, name, args)
 	next["last_action"] = "Event hook: winfail%03d %s fired (%s)." % [int(next["winfail_script_rules"].get("source_level", 0)), key, context]
-	return rerun
+	return bool(c["rerun"])
+
+
+## Index of this chain's firing record (the entry apply_actions appended to runtime.fired).
+static func _firing(c: Dictionary) -> int:
+	return (c["fired"] as Array).size() - 1
+
+
+static func _act_message(c: Dictionary, _name: String, args: Array) -> void:
+	if args.size() >= 3:
+		_push_dialogue(c["runtime"], c["message_key"], _arg(args, 0), _arg(args, 2))
+
+
+static func _act_message_if_exist(c: Dictionary, _name: String, args: Array) -> void:
+	# [player code][serial][true id][false id][check number][check codes...]
+	if args.size() >= 5:
+		var count := int(_arg(args, 4))
+		var all_alive := true
+		for offset in range(count):
+			var index := 5 + offset
+			if index >= args.size() or WinfailConditions.alive_units_for_token(c["next"], _arg(args, index)).is_empty():
+				all_alive = false
+				break
+		var chosen := _arg(args, 2) if all_alive else _arg(args, 3)
+		if chosen != "" and chosen != "0":
+			_push_dialogue(c["runtime"], c["message_key"], _arg(args, 0), chosen)
+
+
+static func _act_get_item(c: Dictionary, _name: String, args: Array) -> void:
+	# 0x450840 case 0x55 writes the same party item store used by
+	# ordinary treasure/carry. The controlled actor's eight slots are
+	# the remake's single party inventory representation.
+	_apply_item_grant(c["next"], c["runtime"], c["key"], args, _firing(c))
+
+
+## actInsertObject／actInsertObjectRandomPos／actInsertStoryObjectRandomPos: the next parsed
+## insert record (status.inserts, in chain order) is queued on runtime.inserts.
+static func _act_insert_object(c: Dictionary, name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	var runtime: Dictionary = c["runtime"]
+	var key: String = c["key"]
+	var inserts: Array = (c["status"] as Dictionary).get("inserts", [])
+	var insert_index := int(c["insert_index"])
+	var pending_insert: Dictionary = (inserts[insert_index] as Dictionary).duplicate(true) if insert_index < inserts.size() else {}
+	c["insert_index"] = insert_index + 1
+	if pending_insert.is_empty():
+		return
+	pending_insert["key"] = key
+	pending_insert["firing_index"] = _firing(c)
+	if name != "actInsertObject":
+		var placed := _slot_position(next, int(pending_insert.get("position_slot", 0)), Vector2i(int(_arg(args, 1)), int(_arg(args, 2))))
+		if not placed["ok"]:
+			record_unresolved(runtime, name, key)
+			return
+		pending_insert["position_xy"] = placed["pixel"]
+		(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "position": placed["pixel"], "coord": placed["coord"]})
+	# Apply wait setters in action order rather than the parser's final fold.
+	pending_insert["wait_round_set"] = false
+	pending_insert["wait_round"] = 0
+	(runtime["inserts"] as Array).append(pending_insert)
+	var class_id := str(pending_insert.get("class_id", ""))
+	if class_id == "":
+		record_unresolved(runtime, str(pending_insert.get("object_symbol", "")), key)
+	else:
+		var target: Dictionary = runtime["spawn_target"]
+		target[class_id] = int(target.get(class_id, 0)) + 1
+
+
+static func _act_insert_random_object(c: Dictionary, _name: String, args: Array) -> void:
+	_record_random_effect(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_set_player_pos_to_random0(c: Dictionary, name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	var runtime: Dictionary = c["runtime"]
+	var key: String = c["key"]
+	var ids := WinfailConditions.units_for_token(next, _arg(args, 0), _int_arg(args, 1))
+	if ids.is_empty():
+		record_unresolved(runtime, name, key)
+		return
+	var actor := WinfailConditions.unit(next, str(ids[0]))
+	var coord: Vector2i = actor.get("coord", Vector2i.ZERO)
+	(runtime["random_position_slots"] as Dictionary)["0"] = [coord.x * WinfailCompiler.DEFAULT_CELL_SIZE, coord.y * WinfailCompiler.DEFAULT_CELL_SIZE]
+	(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "position_slot": 0, "coord": coord, "unit_ids": ids.duplicate()})
+
+
+static func _act_delete_random_pos_object(c: Dictionary, name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	var runtime: Dictionary = c["runtime"]
+	var key: String = c["key"]
+	var slot_id := _int_arg(args, 0)
+	var slot: Array = (runtime.get("random_position_slots", {}) as Dictionary).get(str(slot_id), [])
+	var deleted: Array = []
+	if slot.size() == 2:
+		var target_coord := Vector2i(floori(float(slot[0]) / WinfailCompiler.DEFAULT_CELL_SIZE), floori(float(slot[1]) / WinfailCompiler.DEFAULT_CELL_SIZE))
+		for unit in next.get("units", []):
+			if typeof(unit) == TYPE_DICTIONARY and unit.get("coord", Vector2i(-1, -1)) == target_coord and not bool(unit.get("defeated", false)):
+				deleted.append(str(unit.get("id", "")))
+	(runtime["object_delete_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(), "position": slot.duplicate(), "position_slot": slot_id, "unit_ids": deleted.duplicate()})
+	for unit_id in deleted:
+		if (runtime["departed_unit_ids"] as Array).find(unit_id) == -1: (runtime["departed_unit_ids"] as Array).append(unit_id)
+
+
+static func _act_set_double_page_mode(c: Dictionary, name: String, args: Array) -> void:
+	(c["runtime"]["presentation_requests"] as Array).append({"key": c["key"], "name": name, "args": args.duplicate(), "mode": _int_arg(args, 0)})
+
+
+static func _act_set_prev_insert_object_wait_round(c: Dictionary, name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	var runtime: Dictionary = c["runtime"]
+	var previous: int = runtime["inserts"].size() - 1
+	var previous_id := str(runtime["inserts"][previous].get("unit_id", "")) if previous >= 0 else str(next.get("script_wait_source", {}).get("previous_insert_unit_id", ""))
+	_record_wait(next, c["key"], name, args, [previous_id] if previous_id != "" else [], -1 if previous_id != "" else previous, _firing(c))
+
+
+## actWalkPrevInsertObject(Wait)／actSetPrevInsertObjectAdjustLevel／Fly／ST／Equip.
+static func _act_folded_into_insert(_c: Dictionary, _name: String, _args: Array) -> void:
+	pass  # folded into the insert record at parse time
+
+
+static func _act_insert_status(c: Dictionary, name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	if args.size() >= 1:
+		var kind := WinfailCompiler.status_kind_of(name)
+		var list: Array = next.get("%s_statuses" % kind, []).duplicate()
+		if list.find(int(_arg(args, 0))) == -1:
+			list.append(int(_arg(args, 0)))
+		next["%s_statuses" % kind] = list
+
+
+static func _act_delete_status(c: Dictionary, name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	if args.size() >= 1:
+		var kind := WinfailCompiler.status_kind_of(name)
+		next["%s_statuses" % kind] = WinfailCompiler.without(next.get("%s_statuses" % kind, []), int(_arg(args, 0)))
+
+
+static func _act_set_next_play_level_event(c: Dictionary, _name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	if args.size() >= 2:
+		next["next_level_event"] = [WinfailCompiler.level_arg(_arg(args, 0)), WinfailCompiler.level_arg(_arg(args, 1))]
+		next["next_level_event_status"] = c["key"]
+
+
+static func _act_set_player_mode(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_mode(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_player_job_up_process(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_job_up(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_set_player_walk_shape(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_walk_shape(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_set_player_exec_mode(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_exec_mode(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_random_set_sys_arrive_pos(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_random_system_arrival_position(c["next"], c["runtime"], c["key"], args, _firing(c))
+
+
+static func _act_keep_player_st(c: Dictionary, _name: String, _args: Array) -> void:
+	(c["runtime"]["carry_requests"] as Array).append({"key": c["key"], "kind": "keep_stamina"})
+
+
+static func _act_delete_player_code(c: Dictionary, _name: String, args: Array) -> void:
+	(c["runtime"]["deleted_player_codes"] as Array).append({"key": c["key"], "actor_token": _arg(args, 0), "mode": int(_arg(args, 1)), "unit_ids": WinfailConditions.units_for_token(c["next"], _arg(args, 0))})
+
+
+static func _act_exec_win_fail_process(c: Dictionary, _name: String, _args: Array) -> void:
+	c["rerun"] = true
+
+
+static func _act_set_player_undead(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_undead(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_set_player_fix_pos(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_fix_pos(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_set_player_fly(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_fly(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_set_player_no_attack(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_no_attack(c["next"], c["runtime"], c["key"], args)
+
+
+static func _act_use_item(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_item_use(c["next"], c["runtime"], c["key"], args, _firing(c))
+
+
+static func _act_insert_story_object_wait_pos(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_story_object_wait_pos(c["next"], c["runtime"], c["key"], args, _firing(c))
+
+
+static func _act_insert_story_object_x_range(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_story_object_x_range(c["next"], c["runtime"], c["key"], args, _firing(c))
+
+
+static func _act_insert_story_object(c: Dictionary, name: String, args: Array) -> void:
+	(c["runtime"]["presentation_requests"] as Array).append({"key": c["key"], "name": name, "args": args.duplicate()})
+	_apply_story_object_terrain(c["next"], c["key"], args)
+
+
+static func _act_insert_story_object_wait(c: Dictionary, name: String, args: Array) -> void:
+	var request := {"key": c["key"], "name": name, "args": args.duplicate()}
+	_apply_drop_lightning(c["next"], request, _arg(args, 0))
+	(c["runtime"]["presentation_requests"] as Array).append(request)
+
+
+static func _act_delete_pos_player_x_range(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_player_x_range_delete(c["next"], c["runtime"], c["key"], args, _firing(c))
+
+
+static func _act_insert_level_up_star(c: Dictionary, name: String, args: Array) -> void:
+	(c["runtime"]["level_up_star_requests"] as Array).append({"key": c["key"], "name": name, "args": args.duplicate(), "sound_id": _arg(args, 0), "firing_index": _firing(c), "status": "skipped_no_level_up_star_sprite"})
+
+
+static func _act_play_movie(c: Dictionary, name: String, args: Array) -> void:
+	(c["runtime"]["movie_requests"] as Array).append({"key": c["key"], "name": name, "args": args.duplicate(), "movie": "end" if not args.is_empty() and _arg(args, 0) == "140" else "", "firing_index": _firing(c), "status": "pending_movie_player"})
+
+
+static func _act_change_prev_insert_object_id(c: Dictionary, _name: String, args: Array) -> void:
+	_apply_previous_insert_id(c["runtime"], c["key"], args)
+
+
+static func _act_wait_player(c: Dictionary, name: String, args: Array) -> void:
+	var target := _wait_target(c["next"], args, true)
+	_record_wait(c["next"], c["key"], name, args, target["unit_ids"], target["insert_index"], _firing(c))
+
+
+static func _act_set_wait_round(c: Dictionary, name: String, args: Array) -> void:
+	var target := _wait_target(c["next"], args, false)
+	_record_wait(c["next"], c["key"], name, args, target["unit_ids"], target["insert_index"], _firing(c))
+
+
+## actDeleteObject／actDeletePosObject／actWalkAndDelete／actWalkAndDeleteWait.
+static func _act_delete_object(c: Dictionary, name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	var runtime: Dictionary = c["runtime"]
+	var key: String = c["key"]
+	# Resolve once into stable IDs. PlayLoop owns the actual departure;
+	# its record remains available to the script presentation and saves.
+	if name == "actDeletePosObject":
+		# 0x42c400 selects live objects by absolute world position,
+		# process code and square range. BattleSceneRuntime consumes this
+		# presentation mirror; it never changes the unit roster.
+		var position_request := {"key": key, "name": name, "args": args.duplicate(), "x": int(_arg(args, 0)), "y": int(_arg(args, 1)), "range": int(_arg(args, 2)), "proc_code": _arg(args, 3), "firing_index": _firing(c)}
+		(runtime["object_delete_requests"] as Array).append(position_request)
+		if args.size() < 4:
+			record_unresolved(runtime, name, key)
+		return
+	if name != "actDeleteObject":
+		(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
+	var token := _arg(args, 0)
+	var serial := int(_arg(args, 1))
+	var candidates := WinfailConditions.alive_units_for_token(next, token)
+	if not candidates.is_empty():
+		# Original0x44fad0:0/1 select first, oversize selects last match.
+		# Count currently registered actors, not a frozen opening ordinal.
+		candidates = [candidates[clampi(serial - 1, 0, candidates.size() - 1)]]
+	if not runtime.has("departure_requests"): runtime["departure_requests"] = []
+	(runtime["departure_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate(true), "unit_ids": candidates.duplicate(), "firing_index": _firing(c)})
+	var departed: Array = runtime["departed_unit_ids"]
+	for unit_id in candidates:
+		if departed.find(unit_id) == -1:
+			departed.append(unit_id)
+
+
+static func _act_set_dead_message(c: Dictionary, _name: String, args: Array) -> void:
+	var next: Dictionary = c["next"]
+	var runtime: Dictionary = c["runtime"]
+	if args.size() >= 3:
+		runtime["dead_messages"][_arg(args, 0)] = _arg(args, 2)
+	if not next.has("script_actor_source"):
+		# A level without script actor inserts: the token can only name a unit that
+		# already stands, so the word is written now. With inserts, the same-chain
+		# insert may be the target: ScriptActorCreationRules replays the chain in
+		# action order and writes it there.
+		_apply_dead_message(next, runtime, c["key"], args)
+
+
+## A token with no handler: world-flag and presentation vocabulary is recorded for its
+## consumer; anything else is recorded as unsupported.
+static func _act_unlisted(c: Dictionary, name: String, args: Array) -> void:
+	var runtime: Dictionary = c["runtime"]
+	var key: String = c["key"]
+	if WinfailCompiler.WORLD_FLAG_ACTIONS.find(name) != -1:
+		(runtime["pending_world_flags"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
+	elif WinfailCompiler.PRESENTATION_ACTIONS.find(name) != -1:
+		(runtime["presentation_requests"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
+	else:
+		(runtime["unsupported_encountered"] as Array).append({"key": key, "name": name, "args": args.duplicate()})
 
 
 ## actInsertObjectRandomPos 107 (0x450f2c → 0x407ec0) and actInsertStoryObjectRandomPos 108
@@ -295,7 +477,7 @@ static func _folded(value: int, bound: int) -> int:
 ## slot's x／y, 0x45e307 makes the object with the delay summed so far (+0xae), then rand(delay)
 ## 0x451075 adds to that sum. Presentation only; the draws still advance the stream.
 static func _record_random_effect(next: Dictionary, runtime: Dictionary, key: String, args: Array) -> void:
-	if not GlobalRandom.valid(next.get(GlobalRandom.LOOP_KEY)):
+	if not GlobalRandomStream.valid(next.get(GlobalRandomStream.LOOP_KEY)):
 		record_unresolved(runtime, "actInsertRandomObject", key)
 		return
 	var anchor: Array = (runtime.get("random_position_slots", {}) as Dictionary).get(str(_int_arg(args, 1)), [])
@@ -303,17 +485,17 @@ static func _record_random_effect(next: Dictionary, runtime: Dictionary, key: St
 	var height := _int_arg(args, 3)
 	if width == 0: width = 1
 	if height == 0: height = 1
-	var rng_before: Array = (next[GlobalRandom.LOOP_KEY] as Array).duplicate()
+	var rng_before: Array = (next[GlobalRandomStream.LOOP_KEY] as Array).duplicate()
 	var objects: Array = []
 	var delay := 0
 	for _index in range(maxi(0, _int_arg(args, 5))):
-		var dx := _folded(GlobalRandom.loop_draw(next, width), width)
-		var dy := _folded(GlobalRandom.loop_draw(next, height), height)
+		var dx := _folded(GlobalRandomStream.loop_draw(next, width), width)
+		var dy := _folded(GlobalRandomStream.loop_draw(next, height), height)
 		var row := {"offset": [dx, dy], "delay": delay}
 		if anchor.size() == 2: row["position"] = [int(anchor[0]) + dx, int(anchor[1]) + dy]
 		objects.append(row)
-		delay += GlobalRandom.loop_draw(next, _int_arg(args, 4))
-	(runtime["presentation_requests"] as Array).append({"key": key, "name": "actInsertRandomObject", "args": args.duplicate(), "objects": objects, "slot_set": anchor.size() == 2, "rng_before": rng_before, "rng_after": (next[GlobalRandom.LOOP_KEY] as Array).duplicate()})
+		delay += GlobalRandomStream.loop_draw(next, _int_arg(args, 4))
+	(runtime["presentation_requests"] as Array).append({"key": key, "name": "actInsertRandomObject", "args": args.duplicate(), "objects": objects, "slot_set": anchor.size() == 2, "rng_before": rng_before, "rng_after": (next[GlobalRandomStream.LOOP_KEY] as Array).duplicate()})
 
 
 static func _apply_item_grant(next: Dictionary, runtime: Dictionary, key: String, args: Array, firing_index: int) -> void:
@@ -548,9 +730,9 @@ static func _apply_random_system_arrival_position(next: Dictionary, runtime: Dic
 		var y := int(_arg(args, 2 + index * 2))
 		candidates.append([x & -32, y & -32])
 	# 0x451787: one rand(count) 0x458c80 on the global stream picks the pair.
-	var rng_before: Array = (next.get(GlobalRandom.LOOP_KEY, []) as Array).duplicate()
-	var selected_index := GlobalRandom.loop_draw(next, pair_count)
-	var receipt := {"key": key, "candidates": candidates, "selected_index": selected_index, "position": candidates[selected_index], "rng_before": rng_before, "rng_after": (next[GlobalRandom.LOOP_KEY] as Array).duplicate(), "firing_index": firing_index}
+	var rng_before: Array = (next.get(GlobalRandomStream.LOOP_KEY, []) as Array).duplicate()
+	var selected_index := GlobalRandomStream.loop_draw(next, pair_count)
+	var receipt := {"key": key, "candidates": candidates, "selected_index": selected_index, "position": candidates[selected_index], "rng_before": rng_before, "rng_after": (next[GlobalRandomStream.LOOP_KEY] as Array).duplicate(), "firing_index": firing_index}
 	runtime["system_arrival_position"] = receipt.duplicate(true)
 	(runtime["system_arrival_position_changes"] as Array).append(receipt)
 
@@ -674,7 +856,7 @@ static func _apply_item_use(next: Dictionary, runtime: Dictionary, key: String, 
 		request["status"] = "rejected_missing_item_rule_input"
 		runtime["unsupported_encountered"].append({"key": key, "name": "actUseItem", "args": args.duplicate(), "reason": "missing_item_rule_input"})
 		return
-	var rng: Array = DamageRandom.from_words(next.get(DamageRandom.LOOP_KEY))
+	var rng: Array = DamageRandomStream.from_words(next.get(DamageRandomStream.LOOP_KEY))
 	var sequence := int(next.get("item_use_sequence", 0)) + 1
 	var proposed := ItemResolutionRules.prepare(actor, actor, item_code, -1, definition, catalog, rng, sequence)
 	if not proposed.get("ok", false):
@@ -683,7 +865,7 @@ static func _apply_item_use(next: Dictionary, runtime: Dictionary, key: String, 
 		return
 	actor.merge(proposed["target_changes"], true)
 	actor["inventory"] = proposed["inventory"]
-	next[DamageRandom.LOOP_KEY] = proposed["rng"]
+	next[DamageRandomStream.LOOP_KEY] = proposed["rng"]
 	next["item_use_sequence"] = proposed["receipt"]["sequence"]
 	next["last_item_use"] = proposed["receipt"]
 	request["status"] = "applied"
@@ -777,12 +959,12 @@ static func _apply_story_object_wait_pos(next: Dictionary, runtime: Dictionary, 
 		positions.append([_int_arg(args, offset), _int_arg(args, offset + 1)])
 	# 0x451ecf: a non-empty table draws one rand(count) 0x458c80 on the global stream (clamped
 	# to count-1) to pick the pair; an empty table draws nothing.
-	var rng_before: Array = (next.get(GlobalRandom.LOOP_KEY, []) as Array).duplicate()
+	var rng_before: Array = (next.get(GlobalRandomStream.LOOP_KEY, []) as Array).duplicate()
 	var selected_index := -1
 	if not positions.is_empty():
-		selected_index = mini(GlobalRandom.loop_draw(next, positions.size()), positions.size() - 1)
+		selected_index = mini(GlobalRandomStream.loop_draw(next, positions.size()), positions.size() - 1)
 	var selected: Array = positions[selected_index] if selected_index >= 0 else []
-	var request := {"key": key, "name": "actInsertStoryObjectWaitPos", "args": args.duplicate(), "object_symbol": _arg(args, 0), "position_count": count, "positions": positions, "selected_index": selected_index, "selected_position": selected, "rng_before": rng_before, "rng_after": (next.get(GlobalRandom.LOOP_KEY, []) as Array).duplicate(), "firing_index": firing_index, "status": "applied"}
+	var request := {"key": key, "name": "actInsertStoryObjectWaitPos", "args": args.duplicate(), "object_symbol": _arg(args, 0), "position_count": count, "positions": positions, "selected_index": selected_index, "selected_position": selected, "rng_before": rng_before, "rng_after": (next.get(GlobalRandomStream.LOOP_KEY, []) as Array).duplicate(), "firing_index": firing_index, "status": "applied"}
 	# The installed object runs its own process; a defProcPoisonGas one (0x43c7c0) spews once
 	# at that position before it frees the script's wait. The chain waits on it, so the
 	# burst lands before the chain goes on (original_poison_gas.md).

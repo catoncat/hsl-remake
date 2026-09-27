@@ -2,13 +2,11 @@ extends "res://game/battle/runtime/BattleOpeningCoordinator.gd"
 ## Battle-only binding adapter; the shared story/world coordinator is unchanged.
 ## Re-arming the same script may select another registered instance of a code.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_script_wait.md; provisional (re-arming may pick another registered instance)
-##   layout: n/a
-##   strings: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_wait.md
+##   rules: provisional (re-arming may pick another registered instance)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   audio: n/a
-const PoisonGas = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
-const DropLightning = preload("res://game/battle/scene/BattleDropLightningPresentation.gd")
+const BattlePoisonGasPresentation = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
+const BattleDropLightningPresentation = preload("res://game/battle/scene/BattleDropLightningPresentation.gd")
 var _wait_actor_id := ""
 
 func _apply_event(event: Dictionary) -> void:
@@ -18,13 +16,13 @@ func _apply_event(event: Dictionary) -> void:
 		# The installed defProcPoisonGas object holds the script until its burst is over.
 		runtime.opening_overlay.clear_message()
 		_blocking_motion = false
-		wait_remaining = PoisonGas.play(self, event)
+		wait_remaining = BattlePoisonGasPresentation.play(self, event)
 		return
 	if not story_mode and event.has("drop_lightning"):
 		# The installed defProcDropLightn object holds the script until its hold is over.
 		runtime.opening_overlay.clear_message()
 		_blocking_motion = false
-		wait_remaining = DropLightning.play(self, event)
+		wait_remaining = BattleDropLightningPresentation.play(self, event)
 		return
 	if not story_mode and event.get("kind") == "actor_action_wait":
 		# Older compiled timelines classified this token as a rule-only record.
@@ -35,7 +33,7 @@ func _apply_event(event: Dictionary) -> void:
 
 func start_cutscene(status_key: String, events: Array) -> Dictionary:
 	if runtime != null and not runtime.play_loop.is_empty():
-		events = DropLightning.attach(runtime.play_loop, events, runtime.script_cutscene_consumed - 1)
+		events = BattleDropLightningPresentation.attach(runtime.play_loop, events, runtime.script_cutscene_consumed - 1)
 	return super.start_cutscene(status_key, events)
 
 func _wait_bound_actor(event: Dictionary) -> void:

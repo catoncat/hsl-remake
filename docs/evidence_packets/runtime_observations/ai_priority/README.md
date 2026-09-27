@@ -23,4 +23,6 @@ godot --path . --position 160,160 --resolution 640x480 \
   --script res://tests/capture_ai_priority_review.gd
 ```
 
+> TESTCUT2（2026-09-27）备注：`tests/capture_ai_priority_review.gd` 已退役——它读的 `ItemUseHeal` 节点已从 game/ 删除，驱动已失效（ITEMFX 记录）；上面的截图回执为历史，复跑需先按当前节点修好驱动，原文见 `git show 84d8b3d6:tests/capture_ai_priority_review.gd`。
+
 图片及原始详细回执先写入`ignored/ai-priority-review`，55秒总上限；无系统鼠标／键盘操作。渲染失败必须保留原失败信息，不把headless结果代称可见验收。

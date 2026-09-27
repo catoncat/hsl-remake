@@ -10,10 +10,18 @@ extends RefCounted
 ## placement are static readings (every level's actShowSectionName plays through here).
 ## provenance:
 ##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
-##   layout: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; runtime-measured docs/evidence_packets/static_reverse/original_tick_counts.md (user recording 27.6–31.9 s: whole screen darkens, band settles centred on y 240, 棄卒 name 161 px wide at 1×); runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (recording 212.45 s: a framed unit stands at (320,192))
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; provisional (0.8 s dark-screen fade until the obj_ScreenDarker 700 process is read)
-##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md (§3.4: the film player stops the music and nothing resumes it)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_tick_counts.md
+##     (user recording 27.6–31.9 s: whole screen darkens, band settles centred on y 240, 棄卒 name 161 px wide at 1×)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (recording 212.45 s: a framed unit stands at (320,192))
+##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: provisional (0.8 s dark-screen fade until the obj_ScreenDarker 700 process is read)
+##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
+##     (§3.4: the film player stops the music and nothing resumes it)
 
 const SceneTimeline = preload("res://game/battle/runtime/SceneTimeline.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
@@ -25,7 +33,7 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 ## darkening cadence is unread, so the remake fades in and (actDeleteDarkScreen) out over
 ## this provisional duration.
 const DARK_SCREEN_FADE_SECONDS := 0.8
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 ## actShowSectionName (opcode 12, original_tick_counts.md §2): 0x452f32 steps sub-state
 ## +0x8c once per tick and then draws two layers at the view's (0x140, 0xf0):
 ## - layer 0x32, the SHAPE\LEVELSEC.SHP band (+0x9e level): mode 0x2000000 (0x22000000 below
@@ -389,7 +397,7 @@ func _darken_screen(event: Dictionary) -> void:
 
 
 ## actPlayMovie: the film named by the compiled event (params.movie, from
-## tools/hsl_opening_timeline_compile.py's code table) plays over the scene and holds
+## tools/hsltools/levels/timeline.py's code table) plays over the scene and holds
 ## the timeline until it ends or is skipped; an unmapped code is only recorded.
 func _play_movie(event: Dictionary) -> void:
 	var params: Dictionary = event.get("params", {})
@@ -435,8 +443,8 @@ func _ensure_title() -> void:
 	var res_path := str(title_info.get("res_path", ""))
 	if res_path == "" or not ResourceLoader.exists(res_path):
 		return
-	var band_origin: Array = UISkin.data()["assets"][TITLE_BAND_ASSET]["draw_origin"]
-	_title = build_section_title_view(load(res_path), UISkin.texture(TITLE_BAND_ASSET), Vector2(float(band_origin[0]), float(band_origin[1])))
+	var band_origin: Array = BattleUISkin.data()["assets"][TITLE_BAND_ASSET]["draw_origin"]
+	_title = build_section_title_view(load(res_path), BattleUISkin.texture(TITLE_BAND_ASSET), Vector2(float(band_origin[0]), float(band_origin[1])))
 	_title_band = _title.get_node("SectionTitleBand")
 	_title_name = _title.get_node("SectionTitleName")
 	runtime.get_node("UI").add_child(_title)

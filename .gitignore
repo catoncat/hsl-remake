@@ -41,7 +41,7 @@ tools/hsl_window
 tools/hsl_input
 tools/*.exe
 
-# Original-derived content (docs/OPEN_SOURCE_PLAN.md): imported locally from the player's own copy with
+# Original-derived content (NOTICE.md): imported locally from the player's own copy with
 # `HSL_ORIGINAL_DIR=... python3 tools/hsl.py generate ...`, never committed. Checked against the tracked
 # content/generated/hsl/original_derived_manifest.json by `python3 tools/hsl.py check original_derived_manifest`.
 /content/imported/

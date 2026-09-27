@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 107,
-    "sources": 486,
+    "sources": 487,
     "sources_by_kind": {
-      "provenance": 225,
+      "provenance": 226,
       "sentence": 84,
       "scope": 79,
       "matrix": 85,
@@ -838,6 +838,7 @@
         "provenance:game/battle/scene/BattleTurnEndCue.gd|layout|remake-invented|",
         "provenance:game/battle/scene/BattleTurnEndCue.gd|strings|remake-invented|",
         "provenance:game/battle/scene/BattleTurnEndCue.gd|strings|remake-invented|docs/OPTIONS.md",
+        "provenance:game/sim/StatusCatalog.gd|strings|remake-invented|",
         "video:9"
       ]
     },

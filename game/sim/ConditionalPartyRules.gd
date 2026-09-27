@@ -1,6 +1,6 @@
 extends RefCounted
 ## Conditional party installs for random encounters (content/battles/battle_5NN.json,
-## tools/hsl_level_battle.py build_encounter): every encounter EVEF installs the nine
+## tools/hsltools/levels/battle.py build_encounter): every encounter EVEF installs the nine
 ## registered slots as 有才產生, so a scenario lists each fieldable slot as a
 ## player_controlled unit flagged install_if_carried and the remake fields only the members
 ## the campaign carry holds (matched by actor_id — the same member keeps one actor id across
@@ -18,11 +18,8 @@ extends RefCounted
 ## names the carried members the encounter would have to leave out, and the world map keeps
 ## the party on the map with a card instead of entering.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_player_install.md; remake-invented (carry stands in for the registered-and-enabled slot table; dev launches field every slot)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_install.md
+##   rules: remake-invented (carry stands in for the registered-and-enabled slot table; dev launches field every slot)
 
 const SCHEMA := "hsl_conditional_party.v1"
 

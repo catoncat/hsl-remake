@@ -6,14 +6,10 @@ extends RefCounted
 ## were retired once the interpreter matched them; their ids fail explicitly.
 ## provenance:
 ##   rules: remake-invented (dispatch seam: winfail interpreter vs development objectives)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
-const DevelopmentRules = preload("res://game/sim/DevelopmentBattleRules.gd")
+const DevelopmentBattleRules = preload("res://game/sim/DevelopmentBattleRules.gd")
 
 const WINFAIL := "winfail"
 const DEVELOPMENT := "development_battle"
@@ -60,9 +56,9 @@ static func initialize_script_state(loop: Dictionary, scenario: Dictionary, scri
 		WINFAIL:
 			return WinfailScenarioRules.initialize_script_state(loop, scenario, script_or_seed)
 		DEVELOPMENT:
-			return DevelopmentRules.initialize(loop, scenario, script_or_seed)
+			return DevelopmentBattleRules.initialize(loop, scenario, script_or_seed)
 		_:
-			var failed := LoopConfig.copy(loop)
+			var failed := BattleLoopConfig.copy(loop)
 			failed["scenario_ok"] = false
 			failed["interaction"] = "scenario_error"
 			failed["scenario_error"] = "unsupported_rule_adapter"
@@ -76,7 +72,7 @@ static func run_event_hooks(loop: Dictionary, attacked: bool = false) -> Diction
 		WINFAIL:
 			return WinfailScenarioRules.run_event_hooks(loop, attacked)
 		_:
-			return LoopConfig.copy(loop)
+			return BattleLoopConfig.copy(loop)
 
 
 static func reinforcement_deficits(loop: Dictionary) -> Dictionary:
@@ -126,7 +122,7 @@ static func commit_outcome(loop: Dictionary) -> Dictionary:
 		WINFAIL:
 			return WinfailScenarioRules.commit_outcome(loop)
 		_:
-			return LoopConfig.copy(loop)
+			return BattleLoopConfig.copy(loop)
 
 
 static func victory_state(loop: Dictionary, escape_zone: Array = []) -> Dictionary:
@@ -135,6 +131,6 @@ static func victory_state(loop: Dictionary, escape_zone: Array = []) -> Dictiona
 		WINFAIL:
 			return WinfailScenarioRules.victory_state(loop, escape_zone)
 		DEVELOPMENT:
-			return DevelopmentRules.victory(loop)
+			return DevelopmentBattleRules.victory(loop)
 		_:
 			return {}

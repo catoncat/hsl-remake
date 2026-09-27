@@ -1,10 +1,21 @@
 extends Node2D
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/chapter01/actor_walk_frames; resource-derived content/imported/hsl/shared/actor_magic_poses/manifest.json; resource-derived content/generated/hsl/chapter01/battle080_seed.json; static-derived docs/evidence_packets/static_reverse/actor_shp_draw_origin.md; static-derived docs/evidence_packets/static_reverse/original_draw_order.md; provisional (pixel foot Y instead of the original's 32 px row buckets)
-##   strings: n/a
-##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md (speaker／target／actor highlight tint and pulse, one recording — provisional); static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md; static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md; runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md (idle 6 × 11 ticks, 4 px per tick = 8 ticks per cell, 3 ticks per walk frame, 16 ms tick); provisional (actChangeShape sets cycle at the standing cadence — the actor state during a script shape override is unread)
-##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json; provisional (script walks step at relative frames 0／3)
+##   layout: resource-derived content/imported/hsl/chapter01/actor_walk_frames
+##   layout: resource-derived content/imported/hsl/shared/actor_magic_poses/manifest.json
+##   layout: resource-derived content/generated/hsl/chapter01/battle080_seed.json
+##   layout: static-derived docs/evidence_packets/static_reverse/actor_shp_draw_origin.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
+##   layout: provisional (pixel foot Y instead of the original's 32 px row buckets)
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##     (speaker／target／actor highlight tint and pulse, one recording — provisional)
+##   timing: static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##     (idle 6 × 11 ticks, 4 px per tick = 8 ticks per cell, 3 ticks per walk frame, 16 ms tick)
+##   timing: provisional
+##     (actChangeShape sets cycle at the standing cadence — the actor state during a script shape override is unread)
+##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
+##   audio: provisional (script walks step at relative frames 0／3)
 
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const MOVE_SCHEMA := "hsl_actor_runtime_move.v1"

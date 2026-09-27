@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Assemble the public repository tree (docs/OPEN_SOURCE_PLAN.md 方案甲) into OUT_DIR:
+# Assemble the public repository tree (docs/internal/OPEN_SOURCE_PLAN.md 方案甲) into OUT_DIR:
 #
 #   tools/oss_export.sh OUT_DIR [REF]      REF defaults to HEAD
 #
 # Reads the committed tree at REF only (git ls-tree + git cat-file; the working tree, ignored/ and .claude/
 # are never read) and writes B-class files plus processed C-class files (hsltools.original_content.classify):
 #   dropped   every A-class file (original-derived), docs/external/typesafe/ (third-party mirror; its README
-#             links the mirrored pages), legal-assets/, asset-dumps/, ignored/, .claude/
+#             links the mirrored pages), docs/internal/ and docs/audits/ (process docs), legal-assets/,
+#             asset-dumps/, ignored/, .claude/
 #   processed text files: /Users/<name> home paths -> ~, author e-mail addresses -> <author e-mail>;
 #             .gitignore gains the rules that keep a player's import out of commits
 #   added     OSS_EXPORT_REPORT.md (file counts, MB, dropped list by subclass, processed files)
@@ -16,7 +17,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PYTHON_BIN="${PYTHON_BIN:-$([[ -x /opt/homebrew/bin/python3 ]] && echo /opt/homebrew/bin/python3 || command -v python3 || echo python3)}"
-[ $# -ge 1 ] && [ $# -le 2 ] || { sed -n '2,15p' "$0" >&2; exit 2; }
+[ $# -ge 1 ] && [ $# -le 2 ] || { sed -n '2,16p' "$0" >&2; exit 2; }
 OUT="$1"
 REF="${2:-HEAD}"
 if [ -e "$OUT" ] && [ -n "$(ls -A "$OUT" 2>/dev/null)" ]; then
@@ -36,11 +37,14 @@ root, out, ref = Path(sys.argv[1]), Path(sys.argv[2]).resolve(), sys.argv[3]
 sys.path.insert(0, str(root / 'tools'))
 from hsltools.original_content import classify  # noqa: E402
 
-DROPPED_PREFIXES = ('legal-assets/', 'asset-dumps/', 'ignored/', '.claude/', 'docs/external/typesafe/')
+# docs/internal/ and docs/audits/ are our process docs (lane briefs, time log, round log, audits); public docs
+# may not link them (tools/hsl_docs_check.py PRIVATE_DOCS keeps the two lists in step).
+DROPPED_PREFIXES = ('legal-assets/', 'asset-dumps/', 'ignored/', '.claude/', 'docs/external/typesafe/',
+                    'docs/internal/', 'docs/audits/')
 HOME_PATH = re.compile(rb'/Users/[A-Za-z0-9._-]+')
 EMAIL = re.compile(rb'[A-Za-z0-9._-]+@(?:chen\.rs|[A-Za-z0-9-]+\.local)')  # maintainer addresses; the local-host form is not spelled out here
 PUBLIC_IGNORE = '''
-# Original-derived content (docs/OPEN_SOURCE_PLAN.md): imported locally from the player's own copy with
+# Original-derived content (NOTICE.md): imported locally from the player's own copy with
 # `HSL_ORIGINAL_DIR=... python3 tools/hsl.py generate ...`, never committed. Checked against the tracked
 # content/generated/hsl/original_derived_manifest.json by `python3 tools/hsl.py check original_derived_manifest`.
 /content/imported/
@@ -103,7 +107,7 @@ batch.stdin.close()
 batch.wait()
 
 # Original measurement frames / resource renders are not exported: their links become text + archive id
-# (docs/OPEN_SOURCE_PLAN.md §2.2; the private repository keeps the links).
+# (docs/internal/OPEN_SOURCE_PLAN.md §2.2; the private repository keeps the links).
 sys.path.insert(0, str(root / 'tools'))
 from oss_screenshots import export_text  # noqa: E402
 processed += [path for path in export_text(out) if path not in processed]

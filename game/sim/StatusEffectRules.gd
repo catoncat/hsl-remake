@@ -3,23 +3,41 @@ extends RefCounted
 ## Sources: original_status_effects.md and original_status_application.md.
 ## Receives sampled applications; it does not decide hit chance or consume RNG.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_status_effects.md; static-derived docs/evidence_packets/static_reverse/original_status_application.md; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const POISON := 1
-const NO_MAGIC := 2
-const PARALYSIS := 4
+##   rules: static-derived docs/evidence_packets/static_reverse/original_status_effects.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_status_application.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+## Which statuses exist, their flags, counters, expiry and cures: StatusCatalog (one row each).
+const Catalog = preload("res://game/sim/StatusCatalog.gd")
+const POISON: int = Catalog.ENTRIES[Catalog.POISON_KEY]["flag"]
+const NO_MAGIC: int = Catalog.ENTRIES[Catalog.NO_MAGIC_KEY]["flag"]
+const PARALYSIS: int = Catalog.ENTRIES[Catalog.PARALYSIS_KEY]["flag"]
 ## 衰弱 (magicFun_Weaken): 0x40aa80 bit 0x1000 sets actor flag 8, duration word +0x38
 ## (low 16) and power +0x3a (high 16); 0x448840 subtracts power from the four live
 ## attributes (floor 1) before the job refresh; 0x40b910 expires it with a refresh.
 ## The counter key is optional: absent means never weakened (like enhancements).
-const WEAKEN := 8
-const WEAKEN_KEY := "weaken"
-const COUNTERS := {"poison": POISON, "paralysis": PARALYSIS, "no_magic": NO_MAGIC}
-const ALL_FLAGS := {"poison": POISON, "paralysis": PARALYSIS, "no_magic": NO_MAGIC, "weaken": WEAKEN}
+const WEAKEN: int = Catalog.ENTRIES[Catalog.WEAKEN_KEY]["flag"]
+const WEAKEN_KEY := Catalog.WEAKEN_KEY
+## Views of the catalog: always-present counter words ({key: flag}, catalog order) and every flag.
+static var COUNTERS: Dictionary = _flags(Catalog.keys_where("counter", "required"))
+static var ALL_FLAGS: Dictionary = Catalog.by_key("flag")
+## Absent-while-off counter words (衰弱), expired after the required ones.
+static var OPTIONAL_COUNTERS: Array = Catalog.keys_where("counter", "optional")
+## Every catalog flag (1|2|4|8): the affliction part of status_flags, below the 0x70 enhancements.
+static var AFFLICTION_MASK: int = _mask(ALL_FLAGS)
 const Enhancements = preload("res://game/sim/StatEnhancementRules.gd")
+
+
+static func _mask(flags: Dictionary) -> int:
+	var mask := 0
+	for key in flags: mask |= int(flags[key])
+	return mask
+
+
+static func _flags(keys: Array) -> Dictionary:
+	var result := {}
+	for key in keys: result[key] = int(Catalog.ENTRIES[key]["flag"])
+	result.make_read_only()
+	return result
 
 
 static func _unsigned(value: Variant, maximum: int = 0xffffffff) -> bool:
@@ -39,7 +57,7 @@ static func input_error(unit: Dictionary) -> String:
 			return "inconsistent_status_state"
 		if int(word) != 0 and (int(word) & 0xffff) not in range(1, 10):
 			return "unsupported_status_duration"
-		if key == "paralysis" and int(word) > 9:
+		if key == Catalog.PARALYSIS_KEY and int(word) > 9:
 			return "unsupported_paralysis_counter"
 	var weaken_error := weaken_input_error(unit)
 	if weaken_error != "": return weaken_error
@@ -92,9 +110,14 @@ static func weakened_attributes(unit: Dictionary) -> Dictionary:
 
 static func cure_weaken(unit: Dictionary) -> Dictionary:
 	# 0x40aa80 bit 0x2000: clear +0x38 word and flag 8, then 0x448840 refresh (caller).
-	var words: Dictionary = unit["status_counters"].duplicate(true)
-	words.erase(WEAKEN_KEY)
-	return {"status_flags": int(unit["status_flags"]) & ~WEAKEN, "status_counters": words}
+	return cure(unit, WEAKEN_KEY)
+
+
+## A fallen unit's counters: every always-present word 0; optional words and enhancements dropped.
+static func cleared_counters() -> Dictionary:
+	var words := {}
+	for key in COUNTERS: words[key] = 0
+	return words
 
 
 static func magic_blocked(unit: Dictionary) -> bool:
@@ -112,7 +135,7 @@ static func paralyzed(unit: Dictionary) -> bool:
 static func apply(unit: Dictionary, key: String, turns: int, power: int = 0) -> Dictionary:
 	var error := input_error(unit)
 	if error != "": return {"ok": false, "reason": error}
-	if key not in COUNTERS or turns not in range(2, 4) or power < 0 or power > 65535 or (key != "poison" and power != 0):
+	if key not in COUNTERS or turns not in range(2, 4) or power < 0 or power > 65535 or (not Catalog.ENTRIES[key]["power"] and power != 0):
 		return {"ok": false, "reason": "invalid_status_application"}
 	if not _unsigned(unit.get("hp"), 0x7fffffff) or int(unit["hp"]) == 0 or bool(unit.get("defeated", false)):
 		return {"ok": false, "reason": "status_actor_unavailable"}
@@ -122,14 +145,15 @@ static func apply(unit: Dictionary, key: String, turns: int, power: int = 0) -> 
 ## 0x409310 status helpers 0x4091b0 (poison) / 0x409240 (weaken) / 0x409210 (no_magic) / 0x409110
 ## (paralysis): flag |= bit, turns += rand(2)+1 capped at 9, power from 0x406fe0 (16..32 poison,
 ## 3..7 weaken; none for no_magic / paralysis) merged as max(old, (old+new)/2). They run after a
-## lethal hit too; PlayLoop consumes the draws before clearing death.
-const WEAPON_POWER_DOMAIN := {"poison": [16, 32], "weaken": [3, 7], "no_magic": [0, 0], "paralysis": [0, 0]}
+## lethal hit too; PlayLoop consumes the draws before clearing death. Domains: catalog weapon_power.
+const WEAPON_POWER_DOMAIN := Catalog.WEAPON_POWER_DOMAIN
 
 
 static func weapon_status(unit: Dictionary, key: String, turns: int, power: int) -> Dictionary:
 	var error := input_error(unit)
 	if error != "": return {"ok": false, "reason": error}
-	if not WEAPON_POWER_DOMAIN.has(key) or turns not in [1, 2] or power < int(WEAPON_POWER_DOMAIN[key][0]) or power > int(WEAPON_POWER_DOMAIN[key][1]):
+	var domain: Array = Catalog.ENTRIES[key]["weapon_power"] if Catalog.ENTRIES.has(key) else []
+	if domain.is_empty() or turns not in [1, 2] or power < int(domain[0]) or power > int(domain[1]):
 		return {"ok": false, "reason": "invalid_weapon_%s_application" % key}
 	return _merge_application(unit, key, turns, power)
 
@@ -144,26 +168,28 @@ static func _merge_application(unit: Dictionary, key: String, turns: int, power:
 		"before_word": previous, "after_word": words[key]}
 
 
+## A cure branch clears the whole packed word (an optional word is dropped) and the flag, nothing
+## else; a refresh row's caller runs 0x448840 afterwards.
+static func cure(unit: Dictionary, key: String) -> Dictionary:
+	var words: Dictionary = unit["status_counters"].duplicate(true)
+	if Catalog.ENTRIES[key]["counter"] == "optional": words.erase(key)
+	else: words[key] = 0
+	return {"status_flags": int(unit["status_flags"]) & ~int(Catalog.ENTRIES[key]["flag"]), "status_counters": words}
+
+
 static func cure_poison(unit: Dictionary) -> Dictionary:
 	# ITEM cure_poison -> bit31 -> 0x40a2ed: clear flag1 AND the packed DWORD.
-	var words: Dictionary = unit["status_counters"].duplicate(true)
-	words["poison"] = 0
-	return {"status_flags": int(unit["status_flags"]) & ~POISON,
-		"status_counters": words}
+	return cure(unit, Catalog.POISON_KEY)
 
 
 static func cure_paralysis(unit: Dictionary) -> Dictionary:
 	# Original item20000000 clears +3c and flag4; unrelated conditions remain.
-	var words: Dictionary = unit["status_counters"].duplicate(true)
-	words["paralysis"] = 0
-	return {"status_flags": int(unit["status_flags"]) & ~PARALYSIS, "status_counters": words}
+	return cure(unit, Catalog.PARALYSIS_KEY)
 
 
 static func cure_no_magic(unit: Dictionary) -> Dictionary:
 	# Item40000000 at40a2f9..40a30c clears only this complete word and flag.
-	var words: Dictionary = unit["status_counters"].duplicate(true)
-	words["no_magic"] = 0
-	return {"status_flags": int(unit["status_flags"]) & ~NO_MAGIC, "status_counters": words}
+	return cure(unit, Catalog.NO_MAGIC_KEY)
 
 
 static func after_action(unit: Dictionary) -> Dictionary:
@@ -177,10 +203,11 @@ static func after_action(unit: Dictionary) -> Dictionary:
 	var words: Dictionary = unit["status_counters"].duplicate(true)
 	var damage := 0
 	if (flags & POISON) != 0:
-		damage = mini(hp - 1, int(words["poison"]) >> 16)
+		damage = mini(hp - 1, int(words[Catalog.POISON_KEY]) >> 16)
 		hp -= damage
 	var expired: Array[String] = []
 	for key in COUNTERS:
+		if Catalog.ENTRIES[key]["expiry"] != "action_end_countdown": continue
 		var word := int(words[key])
 		if word == 0:
 			continue
@@ -189,15 +216,17 @@ static func after_action(unit: Dictionary) -> Dictionary:
 		if remaining <= 0:
 			flags &= ~int(COUNTERS[key])
 			expired.append(key)
-	var weaken := int(words.get(WEAKEN_KEY, 0))
-	if weaken != 0:
-		# 0x40b910: low word decrements; expiry clears the word and flag 8 and refreshes.
-		var remaining := (weaken & 0xffff) - 1
-		if remaining > 0: words[WEAKEN_KEY] = (weaken & 0xffff0000) | remaining
-		else:
-			words.erase(WEAKEN_KEY)
-			flags &= ~WEAKEN
-			expired.append(WEAKEN_KEY)
+	for key in OPTIONAL_COUNTERS:
+		if Catalog.ENTRIES[key]["expiry"] != "action_end_countdown": continue
+		var optional := int(words.get(key, 0))
+		if optional != 0:
+			# 0x40b910: low word decrements; expiry clears the word and the flag (衰弱 then refreshes).
+			var remaining := (optional & 0xffff) - 1
+			if remaining > 0: words[key] = (optional & 0xffff0000) | remaining
+			else:
+				words.erase(key)
+				flags &= ~int(Catalog.ENTRIES[key]["flag"])
+				expired.append(key)
 	var enhancements := Enhancements.after_action(flags, words)
 	flags = enhancements["flags"]
 	words = enhancements["words"]

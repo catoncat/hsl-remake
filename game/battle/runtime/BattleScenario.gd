@@ -4,11 +4,9 @@ extends RefCounted
 ## its optional keys take the schema defaults; scenes that are not battles (story,
 ## world map) only parse. Scenario-specific rule payloads stay in their own adapter modules.
 ## provenance:
-##   rules: remake-invented (scenario JSON contract content/schema/battle.schema.json, normalisation and defaults; evidence tiers are carried as data, not decided here)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: remake-invented
+##     (scenario JSON contract content/schema/battle.schema.json, normalisation and defaults; evidence tiers are carried
+##     as data, not decided here)
 
 const UnitSchema = preload("res://game/sim/UnitSchema.gd")
 const BATTLE_SCHEMA_PATH := "res://content/schema/battle.schema.json"

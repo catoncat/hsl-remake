@@ -2,23 +2,24 @@ extends RefCounted
 ## Ordered installation and placement proposals for a fired battle status.
 ## Templates are immutable configuration; only PlayLoop commits the result.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_player_install.md; remake-invented (atomic whole-event install, nearest legal landing when blocked); static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md; runtime-measured tools/hsltools/probes/_reward_rng_trace.py (birth: carry 0x407c86 on the global stream, then level adjustment 0x40e92c); resource-derived content/imported/hsl/chapter01/battle051/source_texts/winfail051.txt
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_install.md
+##   rules: remake-invented (atomic whole-event install, nearest legal landing when blocked)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
+##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
+##     (birth: carry 0x407c86 on the global stream, then level adjustment 0x40e92c)
+##   rules: resource-derived content/imported/hsl/chapter01/battle051/source_texts/winfail051.txt
 const POLICY := "source_script_actor_v1"
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
 const WinfailActions = preload("res://game/sim/WinfailActions.gd")
-const Initial = preload("res://game/sim/InitialRosterGrowthRules.gd")
-const Birth = preload("res://game/sim/ReinforcementGrowthRules.gd")
-const Traversal = preload("res://game/sim/ActorTraversalRules.gd")
-const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
-const Reward = preload("res://game/sim/BattleRewardRules.gd")
+const InitialRosterGrowthRules = preload("res://game/sim/InitialRosterGrowthRules.gd")
+const ReinforcementGrowthRules = preload("res://game/sim/ReinforcementGrowthRules.gd")
+const ActorTraversalRules = preload("res://game/sim/ActorTraversalRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
+const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const MOVE_ABSOLUTE := ["actWalk", "actWalkWait"]
 const MOVE_RELATIVE := ["actWalkDisp", "actWalkDispWait"]
 const MOVE_TO_ACTOR := ["actWalkToPlayerDisp", "actWalkToPlayerDispWait"]
@@ -70,7 +71,7 @@ static func prepare(loop: Dictionary) -> Dictionary:
 	if BattleOutcome.decided(loop) or not loop.get("scenario_ok", false): return {"ok": false, "reason": "invalid_script_creation_boundary"}
 	var error := source_error(loop["script_actor_source"].get("templates"))
 	if error != "": return {"ok": false, "reason": error}
-	var next := LoopConfig.copy(loop)
+	var next := BattleLoopConfig.copy(loop)
 	var fired: Array = next["winfail_runtime"]["fired"]
 	while next["script_actor_transactions"].size() < fired.size():
 		var index: int = next["script_actor_transactions"].size()
@@ -227,7 +228,7 @@ static func _install(loop: Dictionary, spec: Dictionary, symbol: String, firing:
 	actor["defeated"] = false
 	var record := {"policy": POLICY, "symbol": symbol, "firing_index": firing, "action_index": action, "kind": spec["kind"]}
 	if registered:
-		var grown := Initial.prepare_player(actor, loop["equipment_items"])
+		var grown := InitialRosterGrowthRules.prepare_player(actor, loop["equipment_items"])
 		if not grown["ok"]: return grown
 		actor = grown["actor"]
 		record["player_growth"] = grown["receipt"]
@@ -238,11 +239,11 @@ static func _install(loop: Dictionary, spec: Dictionary, symbol: String, firing:
 		if request.is_empty(): return {"ok": false, "reason": "missing_npc_script_insert"}
 		# The birth 0x407cc0 rolls a pmEnemy's carry (0x407c40) on the global stream before the
 		# level adjustment 0x40e870 draws.
-		if Reward.install_carry(loop, actor) != "": return {"ok": false, "reason": "script_carry_inventory_full"}
-		var grown := Birth.prepare(loop, actor, request)
+		if BattleRewardRules.install_carry(loop, actor) != "": return {"ok": false, "reason": "script_carry_inventory_full"}
+		var grown := ReinforcementGrowthRules.prepare(loop, actor, request)
 		if not grown["ok"]: return grown
 		actor = grown["actor"]
-		loop[GlobalRandom.LOOP_KEY] = grown["rng"]
+		loop[GlobalRandomStream.LOOP_KEY] = grown["rng"]
 		request["unit_id"] = id
 		if request.get("wait_round_set", false): actor["ai_wait_remaining"] = int(request["wait_round"])
 	actor["script_creation"] = record
@@ -302,7 +303,7 @@ static func _landing(actor: Dictionary, requested: Vector2i, occupants: Array, l
 			for x in range(maxi(0, origin.x - distance), mini(size.x, origin.x + distance + 1)):
 				if absi(x - origin.x) + absi(y - origin.y) != distance: continue
 				candidate["coord"] = Vector2i(x, y)
-				if Traversal.placement_error(candidate, occupants, TerrainEdits.tiles(loop), size) == "": return {"ok": true, "coord": candidate["coord"]}
+				if ActorTraversalRules.placement_error(candidate, occupants, TerrainEditRules.tiles(loop), size) == "": return {"ok": true, "coord": candidate["coord"]}
 	return {"ok": false, "reason": "no_legal_script_landing"}
 
 
@@ -357,8 +358,8 @@ static func state_error(loop: Dictionary) -> String:
 			if birth["kind"] == "registered_player":
 				var growth: Dictionary = birth.get("player_growth", {})
 				if actor["id"] != spec["actor"]["id"] or growth.get("actor_id") != actor["actor_id"] or growth.get("unit_id") != id or growth.get("attributes") != _attributes(spec["actor"]): return "invalid_script_player_growth"
-				if growth.get("level") != Birth.Entry.inferred_level(growth["attributes"]) or int(actor["level"]) < int(growth["level"]): return "script_player_growth_rollback"
-				for key in Birth.Entry.KEYS:
+				if growth.get("level") != ReinforcementGrowthRules.Entry.inferred_level(growth["attributes"]) or int(actor["level"]) < int(growth["level"]): return "script_player_growth_rollback"
+				for key in ReinforcementGrowthRules.Entry.KEYS:
 					if int(actor["combat_profile"][key]) < int(growth["attributes"][key]): return "script_player_attribute_rollback"
 			elif not actor.has("entry_growth"):
 				return "invalid_script_npc_growth"
@@ -377,5 +378,5 @@ static func state_error(loop: Dictionary) -> String:
 
 static func _attributes(actor: Dictionary) -> Dictionary:
 	var attributes := {}
-	for key in Birth.Entry.KEYS: attributes[key] = int(actor["combat_profile"][key])
+	for key in ReinforcementGrowthRules.Entry.KEYS: attributes[key] = int(actor["combat_profile"][key])
 	return attributes

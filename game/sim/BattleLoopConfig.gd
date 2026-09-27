@@ -7,10 +7,6 @@ extends RefCounted
 ## reference. Contract: docs/architecture/BATTLE_CONFIG_STATE.md.
 ## provenance:
 ##   rules: remake-invented (configuration／state key partition of the remake's loop dictionary; no original counterpart)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 
 ## Always present after a successful create(); BattleCheckpoint digests them in this order.
 ## `escape_zone` is not here although create() fills it: WinfailScenarioRules._refresh_objective

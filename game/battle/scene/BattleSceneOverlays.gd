@@ -8,11 +8,17 @@ extends RefCounted
 ## overlay is part of the spatial contract (camera, projection, hit-test, menu anchor)
 ## and its geometry is not tuned here.
 ## provenance:
-##   rules: n/a
-##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V02 (32 px axis-aligned cells, diamond reach outline); static-derived docs/evidence_packets/static_reverse/original_range_cells.md; provisional (refresh_skill_footprint: 0x444f08／0x4450e0 feed the cursor cell to 0x4100e0, whose coverage 0x4116a0 draws; per-hover redraw and layering not traced); remake-invented (the footprint's magenta fill and white outline over the range palette, FOOTPRINT_FILL／FOOTPRINT_EDGE — user decision 2026-09-24)
-##   strings: n/a
-##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md (sync_unit_highlights: the original lights the targeted and the acting unit; when is provisional)
-##   audio: n/a
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V02
+##     (32 px axis-aligned cells, diamond reach outline)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##   layout: provisional
+##     (refresh_skill_footprint: 0x444f08／0x4450e0 feed the cursor cell to 0x4100e0, whose coverage 0x4116a0 draws;
+##     per-hover redraw and layering not traced)
+##   layout: remake-invented
+##     (the footprint's magenta fill and white outline over the range palette, FOOTPRINT_FILL／FOOTPRINT_EDGE — user
+##     decision 2026-09-24)
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##     (sync_unit_highlights: the original lights the targeted and the acting unit; when is provisional)
 
 const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")

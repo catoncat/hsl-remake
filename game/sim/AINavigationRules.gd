@@ -2,21 +2,23 @@ extends RefCounted
 ## Read-only target memory decisions and complete current-map route proposals.
 ## Native distance/wait/lock kernels are separate from the shared WRD adapter.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_navigation.md; static-derived docs/evidence_packets/static_reverse/original_weapon_ranges.md; static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md; static-derived docs/evidence_packets/static_reverse/original_movement.md; provisional (shortest-path tie-breaks, guard routes, refinement flood metric and candidate order are remake composition; approach_goals (candidate_filters, no_attack pursuit) use flat RANGE offsets)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Grid = preload("res://game/sim/TacticalGridRules.gd")
-const Targets = preload("res://game/sim/SkillTargetRules.gd")
-const Resolution = preload("res://game/sim/SkillResolutionRules.gd")
-const Decisions = preload("res://game/sim/AIDecisionRules.gd")
-const Number = preload("res://game/sim/SkillResourceRules.gd")
-const Skills = preload("res://game/sim/AISkillPlanning.gd")
-const Position = preload("res://game/sim/PositionCapabilityRules.gd")
-const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
-const Roles = preload("res://game/sim/ActorRoleRules.gd")
-const RangeFlood = preload("res://game/sim/RangePropagationRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_navigation.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_weapon_ranges.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_movement.md
+##   rules: provisional
+##     (shortest-path tie-breaks, guard routes, refinement flood metric and candidate order are remake composition;
+##     approach_goals (candidate_filters, no_attack pursuit) use flat RANGE offsets)
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
+const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
+const SkillResolutionRules = preload("res://game/sim/SkillResolutionRules.gd")
+const AIDecisionRules = preload("res://game/sim/AIDecisionRules.gd")
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const AISkillPlanning = preload("res://game/sim/AISkillPlanning.gd")
+const PositionCapabilityRules = preload("res://game/sim/PositionCapabilityRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
+const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
 
 
 # Live-record AI fields an EVEF instance word may replace (install callback 0x42bd50,
@@ -77,9 +79,9 @@ static func instance_profile(actor: Dictionary, declared: Dictionary) -> Diction
 
 static func state_error(actor: Dictionary, guard_radius: int = 0) -> String:
 	if not actor.get("ai_target_id") is String: return "invalid_ai_target_id"
-	if Number._integer(actor.get("ai_wait_remaining")) < 0 or int(actor["ai_wait_remaining"]) > 10000: return "invalid_ai_wait_remaining"
+	if SkillResourceRules._integer(actor.get("ai_wait_remaining")) < 0 or int(actor["ai_wait_remaining"]) > 10000: return "invalid_ai_wait_remaining"
 	if not actor.get("ai_home_coord") is Vector2i: return "invalid_ai_home_coord"
-	if actor.has("ai_fixed_radius") and (Number._integer(actor["ai_fixed_radius"]) <= 0 or int(actor["ai_fixed_radius"]) > COORDINATE_LIMIT): return "invalid_ai_fixed_radius"
+	if actor.has("ai_fixed_radius") and (SkillResourceRules._integer(actor["ai_fixed_radius"]) <= 0 or int(actor["ai_fixed_radius"]) > COORDINATE_LIMIT): return "invalid_ai_fixed_radius"
 	# A free-moving actor never reads the guard anchor. A guard's anchor may lie beyond
 	# the map (WINFAIL012 retreat points -160,1824 / 576,-160 / 1632,608 / 736,2112 on a
 	# 45x60 map): the walk measures Manhattan distance to it and stops at the edge, so
@@ -93,8 +95,8 @@ static func _measurable(anchor: Vector2i) -> bool:
 
 
 static func profile_error(profile: Dictionary) -> String:
-	if Number._integer(profile.get("wait_round")) < 0 or int(profile["wait_round"]) > 10000: return "invalid_ai_wait_round"
-	if Number._integer(profile.get("ai_lock")) < 0 or int(profile["ai_lock"]) > 100: return "invalid_ai_lock"
+	if SkillResourceRules._integer(profile.get("wait_round")) < 0 or int(profile["wait_round"]) > 10000: return "invalid_ai_wait_round"
+	if SkillResourceRules._integer(profile.get("ai_lock")) < 0 or int(profile["ai_lock"]) > 100: return "invalid_ai_lock"
 	return ""
 
 
@@ -134,7 +136,7 @@ static func acquire(actor: Dictionary, units: Array, prepared: Dictionary, rng: 
 			result["wait"] = true
 	for index in range(rows.size()):
 		if rows[index] != null and not guard_allows(actor, units[index], profile): rows[index].merge({"removed": true, "excluded": false}, true)
-	var selected := Decisions.select_registered_target(rows, prepared.get("registry", []), int(prepared["owner_index"]), search_profile, int(actor["move_point"]), rng)
+	var selected := AIDecisionRules.select_registered_target(rows, prepared.get("registry", []), int(prepared["owner_index"]), search_profile, int(actor["move_point"]), rng)
 	result.merge({"index": selected["index"], "selection": selected, "draws": selected["draws"]}, true)
 	if result["wait"]:
 		result["reason"] = "wait_round" if int(result["index"]) < 0 else "nearby_enemy"
@@ -144,23 +146,23 @@ static func acquire(actor: Dictionary, units: Array, prepared: Dictionary, rng: 
 	return result
 
 
-## `traversal`: the actor's accepted Grid.Traversal context when the caller holds one.
+## `traversal`: the actor's accepted TacticalGridRules.Traversal context when the caller holds one.
 ## `route_cells`: the cells whose routes the caller will read (Grid's `route_cells`); null
 ## routes every reached cell. The actor's own cell always has its one-cell route.
 static func full_routes(loop: Dictionary, actor: Dictionary, traversal: Dictionary = {}, route_cells: Variant = null) -> Dictionary:
 	var size: Vector2i = loop["map_size"]
-	if size.x <= 0 or size.y <= 0 or size.x > 256 or size.y > 256 or not Targets._inside(actor["coord"], size): return {"ok": false, "reason": "invalid_ai_map"}
+	if size.x <= 0 or size.y <= 0 or size.x > 256 or size.y > 256 or not SkillTargetRules._inside(actor["coord"], size): return {"ok": false, "reason": "invalid_ai_map"}
 	# An accepted traversal context of this map has already passed every tile through
 	# `tile_error` and carries the largest arrival cost; without one, check the map here.
 	var max_cost := 1
 	if not traversal.is_empty():
 		max_cost = int(traversal["max_cost"])
 	else:
-		for tile in TerrainEdits.tiles(loop).values():
-			var error := Grid.Traversal.tile_error(tile)
+		for tile in TerrainEditRules.tiles(loop).values():
+			var error := TacticalGridRules.Traversal.tile_error(tile)
 			if error != "": return {"ok": false, "reason": error}
 			max_cost = maxi(max_cost, int(tile.get("move_cost", 1)))
-	var result := Grid.movement_reachability_envelope(actor, loop["units"], TerrainEdits.tiles(loop), size, size.x * size.y * (max_cost + 3), traversal, route_cells)
+	var result := TacticalGridRules.movement_reachability_envelope(actor, loop["units"], TerrainEditRules.tiles(loop), size, size.x * size.y * (max_cost + 3), traversal, route_cells)
 	if not result["ok"]: return result
 	result["reachable_by_coord"][actor["coord"]] = {"path": [actor["coord"]], "path_costs": [0], "path_stops": [true], "cost": 0}
 	return result
@@ -173,31 +175,31 @@ static func approach_goals(loop: Dictionary, actor: Dictionary, foes: Array, fie
 	for id in loop["skill_book"]["skills"]:
 		var entry: Dictionary = loop["skill_book"]["skills"][id]
 		var fields: Dictionary = fields_by_id[id]
-		if Targets.is_support(fields, loop["skill_target_data"]) or Resolution.ownership_error(actor, id, loop["skill_book"]) != "": continue
-		if Number._integer(fields.get("use_ratio"), true) == 0: continue
-		if Resolution.available(actor, id, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])["ok"]: available.append({"id": id, "fields": fields})
+		if SkillTargetRules.is_support(fields, loop["skill_target_data"]) or SkillResolutionRules.ownership_error(actor, id, loop["skill_book"]) != "": continue
+		if SkillResourceRules._integer(fields.get("use_ratio"), true) == 0: continue
+		if SkillResolutionRules.available(actor, id, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])["ok"]: available.append({"id": id, "fields": fields})
 	var result := {}
-	var pattern := Position.attack_pattern(actor, loop["equipment_items"], loop["attack_patterns"], loop["weapon_ranges"])
+	var pattern := PositionCapabilityRules.attack_pattern(actor, loop["equipment_items"], loop["attack_patterns"], loop["weapon_ranges"])
 	if not pattern["ok"]: return pattern
 	var offsets: Array = pattern["offsets"]
 	for target in foes:
 		var goals := {}
 		if not bool(actor.get("no_attack", false)):
-			for point in Targets.Footprint.cells(target):
+			for point in SkillTargetRules.Footprint.cells(target):
 				for offset in offsets:
 					goals[point - Vector2i(int(offset[0]), int(offset[1]))] = true
 		for skill in available:
 			var fields: Dictionary = skill["fields"]
 			if loop["skill_book"]["skills"][skill["id"]]["damage_policy"] == "native_magic_status":
-				var effect := Resolution.StatusApplication.prepare(actor, target, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])
+				var effect := SkillResolutionRules.StatusApplication.prepare(actor, target, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])
 				if not effect["ok"]: return effect
-				if Skills.useful_ids({"targets": [target], "prepared": [{"status": effect}]}).is_empty(): continue
+				if AISkillPlanning.useful_ids({"targets": [target], "prepared": [{"status": effect}]}).is_empty(): continue
 			var range_data: Dictionary = loop["skill_target_data"]["ranges"][fields["range"]]
 			var half := int(range_data["size"]) / 2
-			for center in Targets.candidate_centers(actor, [target], fields, loop["skill_target_data"], loop["map_size"], actor["coord"]):
+			for center in SkillTargetRules.candidate_centers(actor, [target], fields, loop["skill_target_data"], loop["map_size"], actor["coord"]):
 				for y in range(int(range_data["size"])):
 					for x in range(int(range_data["size"])):
-						if int(range_data["data"][y][x]) <= 0 or (x == half and y == half and not Targets.self_centered(fields)): continue
+						if int(range_data["data"][y][x]) <= 0 or (x == half and y == half and not SkillTargetRules.self_centered(fields)): continue
 						goals[center - Vector2i(x - half, y - half)] = true
 		result[target["id"]] = goals
 	return {"ok": true, "goals": result}
@@ -255,7 +257,7 @@ static func approach_point(loop: Dictionary, actor: Dictionary, envelope: Dictio
 	while true:
 		var flood: Dictionary = envelope
 		if radius != move:
-			flood = Grid.movement_reachability_envelope(actor, loop["units"], TerrainEdits.tiles(loop), loop["map_size"], radius)
+			flood = TacticalGridRules.movement_reachability_envelope(actor, loop["units"], TerrainEditRules.tiles(loop), loop["map_size"], radius)
 			if not flood["ok"]:
 				result["reason"] = flood["reason"]
 				return result
@@ -288,8 +290,8 @@ static func _nearest_stoppable(cells: Array, target: Vector2i, origin: Vector2i,
 		var distance := absi(cell.x - target.x) + absi(cell.y - target.y)
 		if not best.is_empty():
 			if distance > int(best["distance"]): continue
-			if distance == int(best["distance"]) and Decisions._draw(2, rng, draws) == 0: continue
-		if adjacent_blockers(cell, mask, cell_words, map_size) >= CROWDED_NEIGHBOURS and Decisions._draw(100, rng, draws) < CROWDED_SKIP_BELOW:
+			if distance == int(best["distance"]) and AIDecisionRules._draw(2, rng, draws) == 0: continue
+		if adjacent_blockers(cell, mask, cell_words, map_size) >= CROWDED_NEIGHBOURS and AIDecisionRules._draw(100, rng, draws) < CROWDED_SKIP_BELOW:
 			skipped += 1
 			continue
 		best = {"cell": cell, "distance": distance}
@@ -311,8 +313,8 @@ static func weapon_terrain(loop: Dictionary, actor: Dictionary, pattern: Diction
 	var rows: Variant = loop["attack_patterns"].get(str(pattern.get("name", "")), {}).get("data")
 	if not rows is Array: return {}
 	var others: Array = loop["units"].filter(func(unit): return unit["id"] != actor["id"])
-	return {"rows": rows, "mode": RangeFlood.offensive_mode(actor), "map_size": loop["map_size"],
-		"words": RangeFlood.loop_words(loop), "lifted": RangeFlood.cell_words(TerrainEdits.tiles(loop), others)}
+	return {"rows": rows, "mode": RangePropagationRules.offensive_mode(actor), "map_size": loop["map_size"],
+		"words": RangePropagationRules.loop_words(loop), "lifted": RangePropagationRules.cell_words(TerrainEditRules.tiles(loop), others)}
 
 
 ## State 0xb's in-range test on the board as it stands: the actor's own weapon coverage
@@ -321,8 +323,8 @@ static func weapon_terrain(loop: Dictionary, actor: Dictionary, pattern: Diction
 ## target's coverage need not see the target back — so the arrival re-test after the walk
 ## (0x441311..0x441369: a miss ends the turn at 0x441eb8) reads this, not the station set.
 static func target_in_range(loop: Dictionary, actor: Dictionary, target: Dictionary, terrain: Dictionary) -> bool:
-	var reach := RangeFlood.weapon_coverage(terrain["rows"], actor["coord"], RangeFlood.loop_words(loop), loop["map_size"], int(terrain["mode"]), true)
-	for point in Targets.Footprint.cells(target):
+	var reach := RangePropagationRules.weapon_coverage(terrain["rows"], actor["coord"], RangePropagationRules.loop_words(loop), loop["map_size"], int(terrain["mode"]), true)
+	for point in SkillTargetRules.Footprint.cells(target):
 		if int(reach.get(point, 0)) > 0: return true
 	return false
 
@@ -340,11 +342,11 @@ static func attack_stations(actor: Dictionary, target: Dictionary, offsets: Arra
 	var origin: Vector2i = actor["coord"]
 	var anchor: Vector2i = target["coord"]
 	var centres: Array = [anchor]
-	if Targets.Footprint.radius(target) == 1: centres = LARGE_TARGET_CENTRES.map(func(delta): return anchor + delta)
+	if SkillTargetRules.Footprint.radius(target) == 1: centres = LARGE_TARGET_CENTRES.map(func(delta): return anchor + delta)
 	var in_place := false
 	var reach := {}
-	if not terrain.is_empty(): reach = RangeFlood.weapon_coverage(terrain["rows"], origin, terrain["words"], terrain["map_size"], int(terrain["mode"]), true)
-	for point in Targets.Footprint.cells(target):
+	if not terrain.is_empty(): reach = RangePropagationRules.weapon_coverage(terrain["rows"], origin, terrain["words"], terrain["map_size"], int(terrain["mode"]), true)
+	for point in SkillTargetRules.Footprint.cells(target):
 		if not terrain.is_empty():
 			if int(reach.get(point, 0)) > 0: in_place = true
 			continue
@@ -356,7 +358,7 @@ static func attack_stations(actor: Dictionary, target: Dictionary, offsets: Arra
 		if terrain.is_empty():
 			for offset in offsets: covered.append(centre - Vector2i(int(offset[0]), int(offset[1])))
 		else:
-			covered = RangeFlood.cells(RangeFlood.weapon_coverage(terrain["rows"], centre, terrain["lifted"], terrain["map_size"], int(terrain["mode"]), false), centre)
+			covered = RangePropagationRules.cells(RangePropagationRules.weapon_coverage(terrain["rows"], centre, terrain["lifted"], terrain["map_size"], int(terrain["mode"]), false), centre)
 		for cell in covered:
 			if cell == origin: stations.append({"cell": cell, "cost": 0})
 			elif routes.has(cell): stations.append({"cell": cell, "cost": int(routes[cell]["cost"])})
@@ -388,7 +390,7 @@ static func attack_station(choice: Dictionary, origin: Vector2i, foes_adjacent: 
 	var no_farther := absi(station.x - anchor.x) + absi(station.y - anchor.y) <= absi(origin.x - anchor.x) + absi(origin.y - anchor.y)
 	if no_farther:
 		if foes_adjacent != 0:
-			result["roll"] = Decisions._draw(99, rng, draws) + 1
+			result["roll"] = AIDecisionRules._draw(99, rng, draws) + 1
 			if int(result["roll"]) > (REPOSITION_ABOVE_MELEE if bool(choice["melee"]) else REPOSITION_ABOVE_RANGED) and station != origin:
 				result.merge({"to": station, "reason": "reposition_roll"}, true)
 				return result
@@ -412,7 +414,7 @@ static func station_order(choice: Dictionary, rng: Variant) -> Dictionary:
 		var before := int(far.call(order[i - 1]))
 		var distance := int(far.call(held))
 		if before == distance:
-			if Decisions._draw(2, rng, draws) & 1:
+			if AIDecisionRules._draw(2, rng, draws) & 1:
 				order[i] = order[i - 1]
 				order[i - 1] = held
 		elif before < distance:
@@ -426,20 +428,20 @@ static func station_order(choice: Dictionary, rng: Variant) -> Dictionary:
 
 ## 0x40ba80: the search mask of an actor — every side bit its own side word lacks.
 static func search_mask(unit: Dictionary) -> int:
-	return ~side_word(unit) & Roles.SIDE_MASK
+	return ~side_word(unit) & ActorRoleRules.SIDE_MASK
 
 
 ## The side word 0x40ba20 returns: the pmPlayer／pmEnemy／pmNPC bits of the live mode plus
 ## 0x800000, or the side the role implies when no mode is installed.
 static func side_word(unit: Dictionary) -> int:
-	if unit.has("player_mode"): return int(unit["player_mode"]) & (Roles.SIDE_MASK | Roles.MAGIC_ONLY_BIT)
-	return Roles.side_mask(unit)
+	if unit.has("player_mode"): return int(unit["player_mode"]) & (ActorRoleRules.SIDE_MASK | ActorRoleRules.MAGIC_ONLY_BIT)
+	return ActorRoleRules.side_mask(unit)
 
 
 ## 0x413740's 0x40d800 mask: a single side is replaced by the two others (0x4137ae), any
 ## other word is kept; 0x4000 (hard block) is always added.
 static func blocker_mask(side: int) -> int:
-	var others := {Roles.SIDE_PLAYER: Roles.SIDE_ENEMY | Roles.SIDE_NPC, Roles.SIDE_ENEMY: Roles.SIDE_PLAYER | Roles.SIDE_NPC, Roles.SIDE_NPC: Roles.SIDE_PLAYER | Roles.SIDE_ENEMY}
+	var others := {ActorRoleRules.SIDE_PLAYER: ActorRoleRules.SIDE_ENEMY | ActorRoleRules.SIDE_NPC, ActorRoleRules.SIDE_ENEMY: ActorRoleRules.SIDE_PLAYER | ActorRoleRules.SIDE_NPC, ActorRoleRules.SIDE_NPC: ActorRoleRules.SIDE_PLAYER | ActorRoleRules.SIDE_ENEMY}
 	return int(others.get(side, side)) | HARD_BLOCK_FLAG
 
 
@@ -447,10 +449,10 @@ static func blocker_mask(side: int) -> int:
 ## (0x411a30 marks every footprint cell) and a hard-blocked cell's 0x4000.
 static func neighbour_words(loop: Dictionary) -> Dictionary:
 	var words := {}
-	var tiles: Dictionary = TerrainEdits.tiles(loop)
+	var tiles: Dictionary = TerrainEditRules.tiles(loop)
 	for cell in tiles:
 		if int(tiles[cell].get("movement_flags", 0)) & HARD_BLOCK_FLAG: words[cell] = HARD_BLOCK_FLAG
-	var occupants := Targets.Footprint.occupants(loop["units"])
+	var occupants := SkillTargetRules.Footprint.occupants(loop["units"])
 	for cell in occupants:
 		words[cell] = int(words.get(cell, 0)) | side_word(occupants[cell])
 	return words

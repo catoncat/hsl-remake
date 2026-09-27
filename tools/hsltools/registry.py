@@ -15,7 +15,7 @@ them). Three shapes exist:
                        regenerates from the original PAK when it is installed
 
 Every task runs in-process. all_tasks() is the complete gate check set of `hsl check --all`
-(docs/CONSOLIDATION.md P1); its invariant is the command ledger of hsltools.legacy: every
+(docs/internal/CONSOLIDATION.md P1); its invariant is the command ledger of hsltools.legacy: every
 ledger command is `replaces`d by exactly one task and every `replaces` names a ledger
 command, so the PASS-line set is fixed by the ledger and a task cannot silently drop out.
 """
@@ -82,6 +82,8 @@ class Task:
     replaces: tuple[str, ...] = ()
     scripts: tuple[str, ...] = ()   # tools/*.py files whose change affects this task
     level: int | None = None
+    tier: str | None = None         # None: tier_of() decides (TIERS); a class may pin it
+
 
     def check(self, ctx: Context) -> str:
         raise NotImplementedError
@@ -203,6 +205,62 @@ def original_archive(ctx: Context, filename: str = 'hsl.pak') -> Path:
     if not pak.exists():
         raise NotGeneratable(f'original {filename} not found at {pak} (needs the original install; WINEPREFIX or --exe)')
     return pak
+
+
+# --- tiers (hsl check --profile) --------------------------------------------------------------
+# Who needs a task to pass (docs/audits/TOOLS_AUDIT_2026-09-27.md §5). A profile runs its tier and
+# every tier before it; `--all` = maintainer = every task (tools/verify.sh and CI).
+#   modder      the product data a modded game reads is generated and consistent (the default)
+#   parity      still equivalent to the original: probe packets, evidence packet validation and the
+#               guards a deliberate mod change turns red (registration order, music, traditional copy)
+#   maintainer  our evidence workflow: provenance headers, parity inventory, field coverage, indexes,
+#               autoplay reports, development saves
+TIERS = ('modder', 'parity', 'maintainer')
+PARITY_FAMILIES = ('probe', 'evidence')
+PARITY_NAMES = frozenset({
+    'registration_order', 'level_music', 'role_profiles_proof', 'learning_tables_proof',
+    'core_logic_check', 'static_index_check', 'content:player_copy_traditional',
+    'message_text_evidence_check:chapter01',
+    'original_save:sample', 'original_save:native_second_tier', 'original_save:members',
+})
+MAINTAINER_FAMILIES = ('autoplay', 'development', 'original_save')
+MAINTAINER_NAMES = frozenset({
+    'provenance', 'parity_inventory', 'field_coverage', 'function_catalog', 'docs:tool_references',
+    'original_derived_manifest', 'evidence_index', 'visual_evidence_index', 'campaign_overview',
+    'winfail_token_table', 'evef_instances',
+})
+# A probe that writes product data the game reads (content/generated/hsl/skills/effect_motion.json).
+MODDER_NAMES = frozenset({'effect_motion'})
+
+
+def tier_of(task: Task) -> str:
+    if task.tier:
+        return task.tier
+    if task.name in MODDER_NAMES:
+        return 'modder'
+    if task.name in MAINTAINER_NAMES:
+        return 'maintainer'
+    if task.name in PARITY_NAMES:
+        return 'parity'
+    if task.family in PARITY_FAMILIES:
+        return 'parity'
+    if task.family in MAINTAINER_FAMILIES:
+        return 'maintainer'
+    return 'modder'
+
+
+def in_profile(tasks: list[Task], profile: str) -> tuple[list[Task], dict[str, int]]:
+    """(tasks of `profile` and the tiers before it, {skipped tier: count})."""
+    keep = set(TIERS[:TIERS.index(profile) + 1])
+    skipped: dict[str, int] = {}
+    chosen: list[Task] = []
+    for task in tasks:
+        tier = tier_of(task)
+        if tier in keep:
+            chosen.append(task)
+        else:
+            skipped[tier] = skipped.get(tier, 0) + 1
+    return chosen, skipped
 
 
 def task_modules() -> list[str]:

@@ -30,11 +30,16 @@ extends RefCounted
 ## them). current_point and visited_points belong to the caller (teSetBMWalkToPoint
 ## only leaves pending_walk for it).
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/world_map/towndef.json; resource-derived content/world/town_initial_trees.json; static-derived content/world/town_job_up_writes.json; static-derived content/generated/hsl/static/hsl01/secret_man_goods.json; static-derived docs/evidence_packets/static_reverse/original_world_town.md; static-derived docs/evidence_packets/static_reverse/original_town_job_up.md; provisional (execution model, every behaviour reading and the initial menu trees — docs/evidence_packets/static_reverse/town_event_semantics.md)
-##   layout: n/a
+##   rules: resource-derived content/imported/hsl/global/world_map/towndef.json
+##   rules: resource-derived content/world/town_initial_trees.json
+##   rules: static-derived content/world/town_job_up_writes.json
+##   rules: static-derived content/generated/hsl/static/hsl01/secret_man_goods.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_town_job_up.md
+##   rules: provisional
+##     (execution model, every behaviour reading and the initial menu trees —
+##     docs/evidence_packets/static_reverse/town_event_semantics.md)
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
-##   timing: n/a
-##   audio: n/a
 
 const WORLD_STATE_SCHEMA := "hsl_world_state.v1"
 const RUN_SCHEMA := "hsl_town_event_run.v1"
@@ -124,7 +129,63 @@ const SECRET_MAN_MAX_INDEX := 8
 ## data sets (瑪哈亞鎮 event 96). Provisional.
 const DEFAULT_SECRET_APPEAR_RATIO := 8
 
-const BM_MODE_SYMBOLS := ["gameBMShowHidden", "gameBMShowSlow", "gameBMShow"]
+## Token → handler tables of the te interpreter. STEP_HANDLERS: tokens of a running town event
+## (_step; handler(run, ctx, frame, name, args, pc) → "next"／"jump"／"abort"／"stop"／
+## "pending_hold"). WORLD_TOKEN_HANDLERS: writes to the shared world state (towns／big map),
+## reached from _step for tokens without a step handler and from apply_script_town_actions for
+## script act* actions (_apply_world_token; handler(ctx, name, args)). A token in neither table
+## is recorded (recorded_only／unknown_token) and skipped.
+static var STEP_HANDLERS := {
+	"tePlayerMessage": _te_player_message,
+	"teDeletePlayerMessage": _te_delete_player_message,
+	"teShapeMessage": _te_shape_message,
+	"teDeleteShapeMessage": _te_delete_shape_message,
+	"teDelay": _te_delay,
+	"tePlaySound": _te_play_sound,
+	"teGetGold": _te_get_gold,
+	"teGetItem": _te_get_item,
+	"teCreateShop": _te_create_shop,
+	"teCreateSubEventMenu": _te_create_sub_event_menu,
+	"teMenuMoveOut": _te_menu_move_out,
+	"teExecEvent": _te_exec_event,
+	"teSelectInsertEvent": _te_select_insert_event,
+	"tePlayerSelectInsertEvent": _te_player_select_insert_event,
+	"teCheckMoney": _te_check_money,
+	"teCheckPlayerExist": _te_check_exist_noop,
+	"teCheckItemExist": _te_check_exist_noop,
+	"teCheckItemExecEvent": _te_check_item_exec_event,
+	"teCheckTEExist": _te_check_te_exist,
+	"teSecretManBuyThing": _te_secret_man_buy_thing,
+	"teCheckJobUp": _te_check_job_up,
+	"teCheckJobUp2": _te_check_job_up,
+	"teSetNextPlayLevelEvent": _te_set_next_play_level_event,
+}
+static var WORLD_TOKEN_HANDLERS := {
+	"teAddSelfTE": _world_tree_edit,
+	"teDeleteSelfTE": _world_tree_edit,
+	"teAddTE": _world_tree_edit,
+	"teDeleteTE": _world_tree_edit,
+	"teSetExecEvent": _world_set_exec_event,
+	"teSetTownExecEvent": _world_set_exec_event,
+	"teSetTownExitExecEvent": _world_set_town_exit_exec_event,
+	"teBMSetPointFlag": _world_bm_flag,
+	"teBMClearPointFlag": _world_bm_flag,
+	"teBMSetTrackFlag": _world_bm_flag,
+	"teBMClearTrackFlag": _world_bm_flag,
+	"teBMSetShowTrackPoint": _world_bm_set_show_track_point,
+	"teBMSetPointEvent": _world_bm_set_point_event,
+	"teBMSetPointEventNotVisit": _world_bm_set_point_event,
+	"teBMSetPointMode": _world_bm_set_mode,
+	"teBMSetTrackMode": _world_bm_set_mode,
+	"teBMSetPointEncounterRatio": _world_bm_set_point_encounter_ratio,
+	"teSetBMWalkToPoint": _world_set_bm_walk_to_point,
+	"teAddOverScore": _world_add_over_score,
+	"teSetOverFlag": _world_set_over_flag,
+	"teAppearSecretMan": _world_appear_secret_man,
+	"teDeleteSecretMan": _world_delete_secret_man,
+	"teSetSecretAppearRatio": _world_set_secret_appear_ratio,
+}
+
 
 
 ## ---------------------------------------------------------------------------
@@ -381,207 +442,268 @@ static func _after_frame_pop(run: Dictionary, frames: Array) -> void:
 
 
 static func _step(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	## One te token of the running frame (STEP_HANDLERS); a token without a step handler is
+	## tried as a world-state write (WORLD_TOKEN_HANDLERS), else recorded and skipped.
+	var handler: Callable = STEP_HANDLERS.get(name, Callable())
+	if handler.is_valid():
+		return handler.call(run, ctx, frame, name, args, pc)
+	var event_code := int(frame["event"])
+	if _apply_world_token(ctx, name, args, event_code, pc):
+		_record(run, event_code, pc, name, args, "applied")
+		return "next"
+	(run["effects"] as Array).append({"kind": "recorded_only", "token": name, "args": args.duplicate()})
+	_record(run, event_code, pc, name, args, "recorded_only" if RECORDED_ONLY_TOKENS.has(name) else "unknown_token")
+	return "next"
+
+
+static func _te_player_message(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var effects: Array = run["effects"]
+	effects.append({"kind": "player_message", "player_token": _arg(args, 0), "player_id": _symbol_int(run["towndef"], _arg(args, 0), -1), "message_id": _int_arg(args, 1), "wait": _int_arg(args, 2) != 0})
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_delete_player_message(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	(run["effects"] as Array).append({"kind": "delete_player_message"})
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_shape_message(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	(run["effects"] as Array).append(_shape_message(_arg(args, 0), _int_arg(args, 1), _int_arg(args, 2), _int_arg(args, 3) != 0))
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_delete_shape_message(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	(run["effects"] as Array).append({"kind": "delete_shape_message"})
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_delay(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	(run["effects"] as Array).append({"kind": "delay", "ticks": _int_arg(args, 0)})
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_play_sound(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	(run["effects"] as Array).append({"kind": "play_sound", "sound": _arg(args, 0)})
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_get_gold(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var party: Dictionary = run["party"]
+	var raw := _int_arg(args, 0)
+	var display := raw < 0 or (raw & 0x80000000) != 0
+	var amount := raw & 0x7fffffff
+	party["gold"] = int(party.get("gold", 0)) + amount
+	(run["effects"] as Array).append({"kind": "get_gold", "amount": amount, "display": display})
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_get_item(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var item_id := _int_arg(args, 0)
+	var count := maxi(_int_arg(args, 1), 1)
+	_party_add_item(run["party"], item_id, count)
+	(run["effects"] as Array).append({"kind": "get_item", "item_id": item_id, "count": count})
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_create_shop(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var event_code := int(frame["event"])
+	var event: Dictionary = (ctx["index"] as Dictionary).get(str(event_code), {})
+	var item_code := int(event.get("item_code", 0)) if event.get("item_code") != null else 0
+	run["pending"] = {"kind": "shop", "shop_name_id": _int_arg(args, 0), "item_code": item_code, "item_ids": _shop_item_ids(run["towndef"], item_code), "event": event_code}
+	_record(run, event_code, pc, name, args, "pending")
+	return "next"
+
+
+static func _te_create_sub_event_menu(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	frame["menu_open"] = true
+	frame["menu_close"] = false
+	_open_sub_menu(run, frame)
+	_record(run, int(frame["event"]), pc, name, args, "pending")
+	return "pending_hold"
+
+
+static func _te_menu_move_out(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	(run["effects"] as Array).append({"kind": "menu_move_out"})
+	var frames: Array = run["frames"]
+	for offset in range(frames.size() - 1, -1, -1):
+		var candidate: Dictionary = frames[offset]
+		if bool(candidate.get("menu_open", false)):
+			candidate["menu_close"] = true
+			break
+	_record(run, int(frame["event"]), pc, name, args, "applied")
+	return "next"
+
+
+static func _te_exec_event(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var target := _int_arg(args, 0)
+	_record(run, int(frame["event"]), pc, name, args, "jump")
+	if target > 0 and (ctx["index"] as Dictionary).has(str(target)):
+		var frames: Array = run["frames"]
+		frames[frames.size() - 1] = _frame(target)
+		return "jump"
+	(run["effects"] as Array).append({"kind": "check_failed", "token": name, "reason": "unknown_event", "event": target})
+	return "abort"
+
+
+static func _te_select_insert_event(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var event_code := int(frame["event"])
+	var options: Array = []
+	var count := _int_arg(args, 1)
+	var position := 2
+	while position + 1 < args.size() and options.size() < maxi(count, 0):
+		options.append({"message_id": _int_arg(args, position), "event": _int_arg(args, position + 1)})
+		position += 2
+	run["pending"] = {"kind": "select", "speaker": _arg(args, 0), "speaker_id": _symbol_int(run["towndef"], _arg(args, 0), -1), "options": options, "event": event_code}
+	_record(run, event_code, pc, name, args, "pending")
+	return "next"
+
+
+static func _te_player_select_insert_event(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var event_code := int(frame["event"])
+	var party: Dictionary = run["party"]
+	var towndef: Dictionary = run["towndef"]
+	var options: Array = []
+	var count := _int_arg(args, 2)
+	var position := 3
+	while position + 1 < args.size() and options.size() < maxi(count, 0):
+		var token := _arg(args, position)
+		options.append({"player_token": token, "player_id": _symbol_int(towndef, token, -1), "event": _int_arg(args, position + 1), "in_party": _party_has_member(party, towndef, token)})
+		position += 2
+	run["pending"] = {"kind": "player_select", "shape": _arg(args, 0), "mode": _int_arg(args, 1), "options": options, "event": event_code}
+	_record(run, event_code, pc, name, args, "pending")
+	return "next"
+
+
+static func _te_check_money(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var event_code := int(frame["event"])
+	var party: Dictionary = run["party"]
+	var effects: Array = run["effects"]
+	var needed := _int_arg(args, 0)
+	var have := int(party.get("gold", 0))
+	if have >= needed:
+		party["gold"] = have - needed
+		effects.append({"kind": "spend_gold", "amount": needed})
+		_record(run, event_code, pc, name, args, "applied")
+		return "next"
+	effects.append(_shape_message(_arg(args, 1), _int_arg(args, 2), _int_arg(args, 3), false))
+	effects.append({"kind": "check_failed", "token": name, "needed": needed, "have": have})
+	_record(run, event_code, pc, name, args, "abort")
+	return "abort"
+
+
+## teCheckPlayerExist／teCheckItemExist.
+static func _te_check_exist_noop(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	# The original VM advances past these opcodes without a check (0x454e20).
+	_record(run, int(frame["event"]), pc, name, args, "noop")
+	return "next"
+
+
+static func _te_check_item_exec_event(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var event_code := int(frame["event"])
+	var party: Dictionary = run["party"]
+	var item_id := _int_arg(args, 0)
+	var target := _int_arg(args, 1)
+	if _party_item_count(party, item_id) <= 0:
+		_record(run, event_code, pc, name, args, "applied")
+		return "next"
+	if _int_arg(args, 2) != 0:
+		_party_remove_item(party, item_id, 1)
+		(run["effects"] as Array).append({"kind": "remove_item", "item_id": item_id, "count": 1})
+	if target > 0 and (ctx["index"] as Dictionary).has(str(target)):
+		_record(run, event_code, pc, name, args, "jump")
+		var frames: Array = run["frames"]
+		frames[frames.size() - 1] = _frame(target)
+		return "jump"
+	_record(run, event_code, pc, name, args, "applied")
+	return "next"
+
+
+static func _te_check_te_exist(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var event_code := int(frame["event"])
+	var town_id := _town_arg(run["towndef"], _arg(args, 0), int(run["town_id"]))
+	var target := _int_arg(args, 3)
+	if _tree_has_child(run["state"], town_id, _int_arg(args, 1), _int_arg(args, 2)):
+		if target == 0:
+			_record(run, event_code, pc, name, args, "abort")
+			return "abort"
+		if (ctx["index"] as Dictionary).has(str(target)):
+			_record(run, event_code, pc, name, args, "jump")
+			var frames: Array = run["frames"]
+			frames[frames.size() - 1] = _frame(target)
+			return "jump"
+	_record(run, event_code, pc, name, args, "applied")
+	return "next"
+
+
+static func _te_secret_man_buy_thing(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	# [shape][name][fail msg][fail event] — the tavern 神秘男子's gift (0x454e20 case 0x27).
 	var event_code := int(frame["event"])
 	var party: Dictionary = run["party"]
 	var state: Dictionary = run["state"]
-	var towndef: Dictionary = run["towndef"]
 	var effects: Array = run["effects"]
-	match name:
-		"tePlayerMessage":
-			effects.append({"kind": "player_message", "player_token": _arg(args, 0), "player_id": _symbol_int(towndef, _arg(args, 0), -1), "message_id": _int_arg(args, 1), "wait": _int_arg(args, 2) != 0})
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teDeletePlayerMessage":
-			effects.append({"kind": "delete_player_message"})
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teShapeMessage":
-			effects.append(_shape_message(_arg(args, 0), _int_arg(args, 1), _int_arg(args, 2), _int_arg(args, 3) != 0))
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teDeleteShapeMessage":
-			effects.append({"kind": "delete_shape_message"})
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teDelay":
-			effects.append({"kind": "delay", "ticks": _int_arg(args, 0)})
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"tePlaySound":
-			effects.append({"kind": "play_sound", "sound": _arg(args, 0)})
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teGetGold":
-			var raw := _int_arg(args, 0)
-			var display := raw < 0 or (raw & 0x80000000) != 0
-			var amount := raw & 0x7fffffff
-			party["gold"] = int(party.get("gold", 0)) + amount
-			effects.append({"kind": "get_gold", "amount": amount, "display": display})
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teGetItem":
-			var item_id := _int_arg(args, 0)
-			var count := maxi(_int_arg(args, 1), 1)
-			_party_add_item(party, item_id, count)
-			effects.append({"kind": "get_item", "item_id": item_id, "count": count})
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teCreateShop":
-			var event: Dictionary = (ctx["index"] as Dictionary).get(str(event_code), {})
-			var item_code := int(event.get("item_code", 0)) if event.get("item_code") != null else 0
-			run["pending"] = {"kind": "shop", "shop_name_id": _int_arg(args, 0), "item_code": item_code, "item_ids": _shop_item_ids(towndef, item_code), "event": event_code}
-			_record(run, event_code, pc, name, args, "pending")
-			return "next"
-		"teCreateSubEventMenu":
-			frame["menu_open"] = true
-			frame["menu_close"] = false
-			_open_sub_menu(run, frame)
-			_record(run, event_code, pc, name, args, "pending")
-			return "pending_hold"
-		"teMenuMoveOut":
-			effects.append({"kind": "menu_move_out"})
-			var frames: Array = run["frames"]
-			for offset in range(frames.size() - 1, -1, -1):
-				var candidate: Dictionary = frames[offset]
-				if bool(candidate.get("menu_open", false)):
-					candidate["menu_close"] = true
-					break
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teExecEvent":
-			var target := _int_arg(args, 0)
+	var goods := _load_json(SECRET_MAN_GOODS_PATH, SECRET_MAN_GOODS_SCHEMA)
+	var index := clampi(int(state.get("secret_man_index", 0)), 0, SECRET_MAN_MAX_INDEX)
+	var rows: Array = goods.get("rows", [])
+	if goods.has("error") or index >= rows.size():
+		effects.append({"kind": "check_failed", "token": name, "reason": "missing_secret_man_goods", "error": str(goods.get("error", "row"))})
+		_record(run, event_code, pc, name, args, "abort")
+		return "abort"
+	var row: Dictionary = rows[index]
+	var price := int(row.get("price", 0))
+	var have := int(party.get("gold", 0))
+	if have < price:
+		var face := _arg(args, 0)
+		effects.append(_shape_message("" if face == "-1" else face, _int_arg(args, 1), _int_arg(args, 2), false))
+		effects.append({"kind": "check_failed", "token": name, "needed": price, "have": have})
+		var target := _int_arg(args, 3)
+		if target > 0 and (ctx["index"] as Dictionary).has(str(target)):
 			_record(run, event_code, pc, name, args, "jump")
-			if target > 0 and (ctx["index"] as Dictionary).has(str(target)):
-				var frames: Array = run["frames"]
-				frames[frames.size() - 1] = _frame(target)
-				return "jump"
-			effects.append({"kind": "check_failed", "token": name, "reason": "unknown_event", "event": target})
-			return "abort"
-		"teSelectInsertEvent":
-			var options: Array = []
-			var count := _int_arg(args, 1)
-			var position := 2
-			while position + 1 < args.size() and options.size() < maxi(count, 0):
-				options.append({"message_id": _int_arg(args, position), "event": _int_arg(args, position + 1)})
-				position += 2
-			run["pending"] = {"kind": "select", "speaker": _arg(args, 0), "speaker_id": _symbol_int(towndef, _arg(args, 0), -1), "options": options, "event": event_code}
-			_record(run, event_code, pc, name, args, "pending")
-			return "next"
-		"tePlayerSelectInsertEvent":
-			var options: Array = []
-			var count := _int_arg(args, 2)
-			var position := 3
-			while position + 1 < args.size() and options.size() < maxi(count, 0):
-				var token := _arg(args, position)
-				options.append({"player_token": token, "player_id": _symbol_int(towndef, token, -1), "event": _int_arg(args, position + 1), "in_party": _party_has_member(party, towndef, token)})
-				position += 2
-			run["pending"] = {"kind": "player_select", "shape": _arg(args, 0), "mode": _int_arg(args, 1), "options": options, "event": event_code}
-			_record(run, event_code, pc, name, args, "pending")
-			return "next"
-		"teCheckMoney":
-			var needed := _int_arg(args, 0)
-			var have := int(party.get("gold", 0))
-			if have >= needed:
-				party["gold"] = have - needed
-				effects.append({"kind": "spend_gold", "amount": needed})
-				_record(run, event_code, pc, name, args, "applied")
-				return "next"
-			effects.append(_shape_message(_arg(args, 1), _int_arg(args, 2), _int_arg(args, 3), false))
-			effects.append({"kind": "check_failed", "token": name, "needed": needed, "have": have})
-			_record(run, event_code, pc, name, args, "abort")
-			return "abort"
-		"teCheckPlayerExist", "teCheckItemExist":
-			# The original VM advances past these opcodes without a check (0x454e20).
-			_record(run, event_code, pc, name, args, "noop")
-			return "next"
-		"teCheckItemExecEvent":
-			var item_id := _int_arg(args, 0)
-			var target := _int_arg(args, 1)
-			if _party_item_count(party, item_id) <= 0:
-				_record(run, event_code, pc, name, args, "applied")
-				return "next"
-			if _int_arg(args, 2) != 0:
-				_party_remove_item(party, item_id, 1)
-				effects.append({"kind": "remove_item", "item_id": item_id, "count": 1})
-			if target > 0 and (ctx["index"] as Dictionary).has(str(target)):
-				_record(run, event_code, pc, name, args, "jump")
-				var frames: Array = run["frames"]
-				frames[frames.size() - 1] = _frame(target)
-				return "jump"
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teCheckTEExist":
-			var town_id := _town_arg(towndef, _arg(args, 0), int(run["town_id"]))
-			var target := _int_arg(args, 3)
-			if _tree_has_child(state, town_id, _int_arg(args, 1), _int_arg(args, 2)):
-				if target == 0:
-					_record(run, event_code, pc, name, args, "abort")
-					return "abort"
-				if (ctx["index"] as Dictionary).has(str(target)):
-					_record(run, event_code, pc, name, args, "jump")
-					var frames: Array = run["frames"]
-					frames[frames.size() - 1] = _frame(target)
-					return "jump"
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teSecretManBuyThing":
-			# [shape][name][fail msg][fail event] — the tavern 神秘男子's gift (0x454e20 case 0x27).
-			var goods := _load_json(SECRET_MAN_GOODS_PATH, SECRET_MAN_GOODS_SCHEMA)
-			var index := clampi(int(state.get("secret_man_index", 0)), 0, SECRET_MAN_MAX_INDEX)
-			var rows: Array = goods.get("rows", [])
-			if goods.has("error") or index >= rows.size():
-				effects.append({"kind": "check_failed", "token": name, "reason": "missing_secret_man_goods", "error": str(goods.get("error", "row"))})
-				_record(run, event_code, pc, name, args, "abort")
-				return "abort"
-			var row: Dictionary = rows[index]
-			var price := int(row.get("price", 0))
-			var have := int(party.get("gold", 0))
-			if have < price:
-				var face := _arg(args, 0)
-				effects.append(_shape_message("" if face == "-1" else face, _int_arg(args, 1), _int_arg(args, 2), false))
-				effects.append({"kind": "check_failed", "token": name, "needed": price, "have": have})
-				var target := _int_arg(args, 3)
-				if target > 0 and (ctx["index"] as Dictionary).has(str(target)):
-					_record(run, event_code, pc, name, args, "jump")
-					var frames: Array = run["frames"]
-					frames[frames.size() - 1] = _frame(target)
-					return "jump"
-				_record(run, event_code, pc, name, args, "applied")
-				return "next"
-			var slots: Array = []
-			for code in row.get("items", []):
-				if int(code) != 0:
-					slots.append(int(code))
-			if slots.is_empty():
-				effects.append({"kind": "check_failed", "token": name, "reason": "empty_secret_man_row", "index": index})
-				_record(run, event_code, pc, name, args, "abort")
-				return "abort"
-			party["gold"] = have - price
-			var pick := _secret_pick(state, slots.size())
-			var item_id := int((row["items"] as Array)[pick])
-			_party_add_item(party, item_id, 1)
-			state["secret_man_index"] = mini(index + 1, SECRET_MAN_MAX_INDEX)
-			effects.append({"kind": "spend_gold", "amount": price})
-			effects.append({"kind": "get_item", "item_id": item_id, "count": 1})
-			effects.append({"kind": "secret_man", "action": "purchase", "index": index, "price": price, "item_id": item_id, "pick": pick, "next_index": int(state["secret_man_index"])})
-			_record(run, event_code, pc, name, args, "applied")
-			return "next"
-		"teCheckJobUp", "teCheckJobUp2":
-			return _step_check_job_up(run, ctx, name, args, event_code, pc)
-		"teSetNextPlayLevelEvent":
-			var level := _symbol_int(towndef, _arg(args, 0), _int_arg(args, 0))
-			var event := _symbol_int(towndef, _arg(args, 1), _int_arg(args, 1))
-			run["next_level_event"] = [level, event]
-			effects.append({"kind": "next_level", "level": level, "event": event})
-			_record(run, event_code, pc, name, args, "stop")
-			return "stop"
-		_:
-			if _apply_world_token(ctx, name, args, event_code, pc):
-				_record(run, event_code, pc, name, args, "applied")
-				return "next"
-			effects.append({"kind": "recorded_only", "token": name, "args": args.duplicate()})
-			_record(run, event_code, pc, name, args, "recorded_only" if RECORDED_ONLY_TOKENS.has(name) else "unknown_token")
-			return "next"
+			var frames: Array = run["frames"]
+			frames[frames.size() - 1] = _frame(target)
+			return "jump"
+		_record(run, event_code, pc, name, args, "applied")
+		return "next"
+	var slots: Array = []
+	for code in row.get("items", []):
+		if int(code) != 0:
+			slots.append(int(code))
+	if slots.is_empty():
+		effects.append({"kind": "check_failed", "token": name, "reason": "empty_secret_man_row", "index": index})
+		_record(run, event_code, pc, name, args, "abort")
+		return "abort"
+	party["gold"] = have - price
+	var pick := _secret_pick(state, slots.size())
+	var item_id := int((row["items"] as Array)[pick])
+	_party_add_item(party, item_id, 1)
+	state["secret_man_index"] = mini(index + 1, SECRET_MAN_MAX_INDEX)
+	effects.append({"kind": "spend_gold", "amount": price})
+	effects.append({"kind": "get_item", "item_id": item_id, "count": 1})
+	effects.append({"kind": "secret_man", "action": "purchase", "index": index, "price": price, "item_id": item_id, "pick": pick, "next_index": int(state["secret_man_index"])})
+	_record(run, event_code, pc, name, args, "applied")
+	return "next"
+
+
+## teCheckJobUp／teCheckJobUp2 (_step_check_job_up below).
+static func _te_check_job_up(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	return _step_check_job_up(run, ctx, name, args, int(frame["event"]), pc)
+
+
+static func _te_set_next_play_level_event(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
+	var towndef: Dictionary = run["towndef"]
+	var level := _symbol_int(towndef, _arg(args, 0), _int_arg(args, 0))
+	var event := _symbol_int(towndef, _arg(args, 1), _int_arg(args, 1))
+	run["next_level_event"] = [level, event]
+	(run["effects"] as Array).append({"kind": "next_level", "level": level, "event": event})
+	_record(run, int(frame["event"]), pc, name, args, "stop")
+	return "stop"
 
 
 ## teCheckJobUp / teCheckJobUp2 [player][fail message][fail event] (0x454e20 case
@@ -674,193 +796,230 @@ static func _apply_second_tier_town_writes(run: Dictionary, ctx: Dictionary, rec
 
 static func _apply_world_token(ctx: Dictionary, name: String, args: Array, event_code: int, pc: int) -> bool:
 	## Tokens that only rewrite the shared world state (towns / big map); shared
-	## between te chains and script act* actions. Returns false when unhandled.
+	## between te chains and script act* actions (WORLD_TOKEN_HANDLERS). Returns false
+	## when unhandled.
+	var handler: Callable = WORLD_TOKEN_HANDLERS.get(name, Callable())
+	if not handler.is_valid():
+		return false
+	handler.call(ctx, name, args)
+	return true
+
+
+## teAddSelfTE／teDeleteSelfTE／teAddTE／teDeleteTE: the town menu tree.
+static func _world_tree_edit(ctx: Dictionary, name: String, args: Array) -> void:
 	var state: Dictionary = ctx["state"]
-	var towndef: Dictionary = ctx["towndef"]
 	var effects: Array = ctx["effects"]
 	var self_town := int(ctx["town_id"])
-	match name:
-		"teAddSelfTE", "teDeleteSelfTE", "teAddTE", "teDeleteTE":
-			var has_town := name == "teAddTE" or name == "teDeleteTE"
-			var town_id := _town_arg(towndef, _arg(args, 0), self_town) if has_town else self_town
-			var rest: Array = args.slice(1) if has_town else args
-			if rest.size() < 2:
-				effects.append({"kind": "check_failed", "token": name, "reason": "short_args"})
-				return true
-			var parent := int(str(rest[0]))
-			var num := int(str(rest[1]))
-			var children: Array = []
-			for value in rest.slice(2):
-				if str(value).is_valid_int():
-					children.append(int(str(value)))
-			var change: Dictionary
-			if name.begins_with("teAdd"):
-				change = _tree_add(state, town_id, parent, num, children)
-			else:
-				change = _tree_delete(state, town_id, parent, num, children)
-			effects.append({"kind": "tree_change", "town_id": town_id, "parent": parent, "added": change["added"], "removed": change["removed"]})
-			return true
-		"teSetExecEvent", "teSetTownExecEvent":
-			var town_id := _town_arg(towndef, _arg(args, 0), self_town)
-			var town := _town(state, town_id)
-			if town.is_empty():
-				effects.append({"kind": "check_failed", "token": name, "reason": "unknown_town", "town": _arg(args, 0)})
-				return true
-			town["exec_event"] = _int_arg(args, 1)
-			effects.append({"kind": "set_exec_event", "town_id": town_id, "event": _int_arg(args, 1)})
-			return true
-		"teSetTownExitExecEvent":
-			var town_id := _town_arg(towndef, _arg(args, 0), self_town)
-			var town := _town(state, town_id)
-			if town.is_empty():
-				effects.append({"kind": "check_failed", "token": name, "reason": "unknown_town", "town": _arg(args, 0)})
-				return true
-			town["exit_exec_event"] = _int_arg(args, 1)
-			effects.append({"kind": "set_exit_exec_event", "town_id": town_id, "event": _int_arg(args, 1)})
-			return true
-		"teBMSetPointFlag", "teBMClearPointFlag", "teBMSetTrackFlag", "teBMClearTrackFlag":
-			var is_point := name.contains("Point")
-			var set_flag := name.begins_with("teBMSet")
-			var id := _town_arg(towndef, _arg(args, 0), -1) if is_point else _int_arg(args, 0)
-			var flag := _arg(args, 1)
-			var table: Dictionary = state.get("point_flags" if is_point else "track_flags", {})
-			var flags: Array = table.get(str(id), [])
-			if set_flag and not flags.has(flag):
-				flags.append(flag)
-			elif not set_flag:
-				flags.erase(flag)
-			table[str(id)] = flags
-			state["point_flags" if is_point else "track_flags"] = table
-			effects.append({"kind": "bm_flag_change", "target": "point" if is_point else "track", "id": id, "flag": flag, "set": set_flag})
-			return true
-		"teBMSetShowTrackPoint":
-			var id := _town_arg(towndef, _arg(args, 0), -1)
-			var shown: Array = state.get("show_track_points", [])
-			if not shown.has(id):
-				shown.append(id)
-			state["show_track_points"] = shown
-			effects.append({"kind": "bm_show_track_point", "point": id})
-			return true
-		"teBMSetPointEvent", "teBMSetPointEventNotVisit":
-			# 0x426c70(point, event, flags) — static-derived (SR-069): event -1 keeps the
-			# current event; a non-zero flags word first clears Visit, and when it
-			# carries Town / General / Battle the old type bits go before it is ORed in;
-			# flags 0 touches neither. The NotVisit variant is read as the same write
-			# that leaves Visit alone (provisional: its handler was not executed).
-			var id := _town_arg(towndef, _arg(args, 0), -1)
-			var flag := _arg(args, 2)
-			if flag == "0" or flag == "":
-				flag = ""
-			var event := _int_arg(args, 1)
-			var table: Dictionary = state.get("point_events", {})
-			var current: Dictionary = table.get(str(id), {}) if typeof(table.get(str(id))) == TYPE_DICTIONARY else {}
-			if event == -1:
-				event = int(current.get("event", id))
-			table[str(id)] = {"event": event, "flag": flag}
-			state["point_events"] = table
-			if flag != "":
-				var flags_table: Dictionary = state.get("point_flags", {})
-				var flags: Array = (flags_table.get(str(id), []) as Array).duplicate()
-				if not name.ends_with("NotVisit"):
-					flags.erase("bmpmVisit")
-				if flag in ["bmpmTown", "bmpmGeneral", "bmpmBattle"]:
-					for type_name in ["bmpmTown", "bmpmGeneral", "bmpmBattle"]:
-						flags.erase(type_name)
-				if not flags.has(flag):
-					flags.append(flag)
-				flags_table[str(id)] = flags
-				state["point_flags"] = flags_table
-			effects.append({"kind": "bm_point_event", "point": id, "event": event, "flag": flag, "not_visit": name.ends_with("NotVisit")})
-			return true
-		"teBMSetPointMode", "teBMSetTrackMode":
-			var is_point := name == "teBMSetPointMode"
-			var id := _town_arg(towndef, _arg(args, 0), -1) if is_point else _int_arg(args, 0)
-			var mode := _symbol_int(towndef, _arg(args, 1), _int_arg(args, 1))
-			var key := "point_modes" if is_point else "track_modes"
-			var table: Dictionary = state.get(key, {})
-			table[str(id)] = mode
-			state[key] = table
-			effects.append({"kind": "bm_point_mode" if is_point else "bm_track_mode", "id": id, "mode": mode, "mode_symbol": _arg(args, 1)})
-			return true
-		"teBMSetPointEncounterRatio":
-			var id := _town_arg(towndef, _arg(args, 0), -1)
-			var table: Dictionary = state.get("encounter_ratios", {})
-			table[str(id)] = _int_arg(args, 1)
-			state["encounter_ratios"] = table
-			effects.append({"kind": "bm_encounter_ratio", "point": id, "ratio": _int_arg(args, 1)})
-			return true
-		"teSetBMWalkToPoint":
-			# The walk itself belongs to the world-map runtime: it consumes pending_walk
-			# when the town closes / the map opens (the harbour events that ship the party
-			# between two points; the pairs are the TOWNDEF data).
-			var walk := {"from": _town_arg(towndef, _arg(args, 0), -1), "to": _town_arg(towndef, _arg(args, 1), -1)}
-			state["pending_walk"] = walk
-			effects.append({"kind": "bm_walk_to_point", "from_point": int(walk["from"]), "to_point": int(walk["to"])})
-			return true
-		"teAddOverScore":
-			var id := _symbol_int(towndef, _arg(args, 0), _int_arg(args, 0))
-			var table: Dictionary = state.get("over_score", {})
-			var total := int(table.get(str(id), 0)) + _int_arg(args, 1)
-			table[str(id)] = total
-			state["over_score"] = table
-			effects.append({"kind": "over_score", "id": id, "delta": _int_arg(args, 1), "total": total})
-			return true
-		"teSetOverFlag":
-			var flag_arg := _arg(args, 0)
-			var bits := int(flag_arg) if flag_arg.is_valid_int() else int(OVER_FLAGS.get(flag_arg, _symbol_int(towndef, flag_arg, 0)))
-			var flag := int(state.get("over_flag", 0)) | bits
-			state["over_flag"] = flag
-			effects.append({"kind": "over_flag", "flag": flag_arg, "bits": bits, "total": flag})
-			return true
-		"teAppearSecretMan":
-			var town_id := _town_arg(towndef, _arg(args, 0), self_town)
-			var town := _town(state, town_id)
-			if town.is_empty():
-				effects.append({"kind": "check_failed", "token": name, "reason": "unknown_town", "town": _arg(args, 0)})
-				return true
-			var tavern := _int_arg(args, 1)
-			var force := _int_arg(args, 2) != 0
-			var current: Variant = town.get("secret_man")
-			var cache := int((current as Dictionary).get("cache", 0)) if typeof(current) == TYPE_DICTIONARY else 0
-			if cache != 0 and not force:
-				effects.append({"kind": "secret_man", "action": "cached", "town_id": town_id, "tavern_event": tavern, "cache": cache})
-				return true
-			var goods := _load_json(SECRET_MAN_GOODS_PATH, SECRET_MAN_GOODS_SCHEMA)
-			var rows: Array = goods.get("rows", [])
-			if goods.has("error") or rows.is_empty():
-				effects.append({"kind": "check_failed", "token": name, "reason": "missing_secret_man_goods", "error": str(goods.get("error", "rows"))})
-				return true
-			var ratio := int(town.get("secret_appear_ratio", 0))
-			if ratio <= 0:
-				ratio = DEFAULT_SECRET_APPEAR_RATIO  # unset (no script has set it yet)
-			var roll := _secret_roll(state)
-			if force or roll < ratio:
-				var index := clampi(int(state.get("secret_man_index", 0)), 0, rows.size() - 1)
-				var event := int((rows[index] as Dictionary).get("event", 0))
-				_tree_add(state, town_id, tavern, 1, [event])
-				town["secret_man"] = {"cache": event, "tavern_event": tavern, "roll": roll, "ratio": ratio, "forced": force}
-				effects.append({"kind": "secret_man", "action": "appear", "town_id": town_id, "tavern_event": tavern, "event": event, "roll": roll, "ratio": ratio, "forced": force})
-			else:
-				town["secret_man"] = {"cache": -1, "tavern_event": tavern, "roll": roll, "ratio": ratio, "forced": false}
-				effects.append({"kind": "secret_man", "action": "absent", "town_id": town_id, "tavern_event": tavern, "roll": roll, "ratio": ratio})
-			return true
-		"teDeleteSecretMan":
-			var town := _town(state, self_town)
-			if not town.is_empty():
-				var current: Variant = town.get("secret_man")
-				if typeof(current) == TYPE_DICTIONARY and int((current as Dictionary).get("cache", 0)) > 0:
-					_tree_delete(state, self_town, int((current as Dictionary).get("tavern_event", 0)), 1, [int((current as Dictionary).get("cache", 0))])
-				town["secret_man"] = null
-			effects.append({"kind": "secret_man", "action": "delete", "town_id": self_town})
-			return true
-		"teSetSecretAppearRatio":
-			var town := _town(state, self_town)
-			if not town.is_empty():
-				town["secret_appear_ratio"] = _int_arg(args, 0)
-			effects.append({"kind": "secret_man", "action": "ratio", "town_id": self_town, "ratio": _int_arg(args, 0)})
-			return true
-		_:
-			return false
+	var has_town := name == "teAddTE" or name == "teDeleteTE"
+	var town_id := _town_arg(ctx["towndef"], _arg(args, 0), self_town) if has_town else self_town
+	var rest: Array = args.slice(1) if has_town else args
+	if rest.size() < 2:
+		effects.append({"kind": "check_failed", "token": name, "reason": "short_args"})
+		return
+	var parent := int(str(rest[0]))
+	var num := int(str(rest[1]))
+	var children: Array = []
+	for value in rest.slice(2):
+		if str(value).is_valid_int():
+			children.append(int(str(value)))
+	var change: Dictionary
+	if name.begins_with("teAdd"):
+		change = _tree_add(state, town_id, parent, num, children)
+	else:
+		change = _tree_delete(state, town_id, parent, num, children)
+	effects.append({"kind": "tree_change", "town_id": town_id, "parent": parent, "added": change["added"], "removed": change["removed"]})
+
+
+## teSetExecEvent／teSetTownExecEvent.
+static func _world_set_exec_event(ctx: Dictionary, name: String, args: Array) -> void:
+	var effects: Array = ctx["effects"]
+	var town_id := _town_arg(ctx["towndef"], _arg(args, 0), int(ctx["town_id"]))
+	var town := _town(ctx["state"], town_id)
+	if town.is_empty():
+		effects.append({"kind": "check_failed", "token": name, "reason": "unknown_town", "town": _arg(args, 0)})
+		return
+	town["exec_event"] = _int_arg(args, 1)
+	effects.append({"kind": "set_exec_event", "town_id": town_id, "event": _int_arg(args, 1)})
+
+
+static func _world_set_town_exit_exec_event(ctx: Dictionary, name: String, args: Array) -> void:
+	var effects: Array = ctx["effects"]
+	var town_id := _town_arg(ctx["towndef"], _arg(args, 0), int(ctx["town_id"]))
+	var town := _town(ctx["state"], town_id)
+	if town.is_empty():
+		effects.append({"kind": "check_failed", "token": name, "reason": "unknown_town", "town": _arg(args, 0)})
+		return
+	town["exit_exec_event"] = _int_arg(args, 1)
+	effects.append({"kind": "set_exit_exec_event", "town_id": town_id, "event": _int_arg(args, 1)})
+
+
+## teBMSetPointFlag／teBMClearPointFlag／teBMSetTrackFlag／teBMClearTrackFlag.
+static func _world_bm_flag(ctx: Dictionary, name: String, args: Array) -> void:
+	var state: Dictionary = ctx["state"]
+	var is_point := name.contains("Point")
+	var set_flag := name.begins_with("teBMSet")
+	var id := _town_arg(ctx["towndef"], _arg(args, 0), -1) if is_point else _int_arg(args, 0)
+	var flag := _arg(args, 1)
+	var table: Dictionary = state.get("point_flags" if is_point else "track_flags", {})
+	var flags: Array = table.get(str(id), [])
+	if set_flag and not flags.has(flag):
+		flags.append(flag)
+	elif not set_flag:
+		flags.erase(flag)
+	table[str(id)] = flags
+	state["point_flags" if is_point else "track_flags"] = table
+	(ctx["effects"] as Array).append({"kind": "bm_flag_change", "target": "point" if is_point else "track", "id": id, "flag": flag, "set": set_flag})
+
+
+static func _world_bm_set_show_track_point(ctx: Dictionary, _name: String, args: Array) -> void:
+	var state: Dictionary = ctx["state"]
+	var id := _town_arg(ctx["towndef"], _arg(args, 0), -1)
+	var shown: Array = state.get("show_track_points", [])
+	if not shown.has(id):
+		shown.append(id)
+	state["show_track_points"] = shown
+	(ctx["effects"] as Array).append({"kind": "bm_show_track_point", "point": id})
+
+
+## teBMSetPointEvent／teBMSetPointEventNotVisit.
+static func _world_bm_set_point_event(ctx: Dictionary, name: String, args: Array) -> void:
+	# 0x426c70(point, event, flags) — static-derived (SR-069): event -1 keeps the
+	# current event; a non-zero flags word first clears Visit, and when it
+	# carries Town / General / Battle the old type bits go before it is ORed in;
+	# flags 0 touches neither. The NotVisit variant is read as the same write
+	# that leaves Visit alone (provisional: its handler was not executed).
+	var state: Dictionary = ctx["state"]
+	var id := _town_arg(ctx["towndef"], _arg(args, 0), -1)
+	var flag := _arg(args, 2)
+	if flag == "0" or flag == "":
+		flag = ""
+	var event := _int_arg(args, 1)
+	var table: Dictionary = state.get("point_events", {})
+	var current: Dictionary = table.get(str(id), {}) if typeof(table.get(str(id))) == TYPE_DICTIONARY else {}
+	if event == -1:
+		event = int(current.get("event", id))
+	table[str(id)] = {"event": event, "flag": flag}
+	state["point_events"] = table
+	if flag != "":
+		var flags_table: Dictionary = state.get("point_flags", {})
+		var flags: Array = (flags_table.get(str(id), []) as Array).duplicate()
+		if not name.ends_with("NotVisit"):
+			flags.erase("bmpmVisit")
+		if flag in ["bmpmTown", "bmpmGeneral", "bmpmBattle"]:
+			for type_name in ["bmpmTown", "bmpmGeneral", "bmpmBattle"]:
+				flags.erase(type_name)
+		if not flags.has(flag):
+			flags.append(flag)
+		flags_table[str(id)] = flags
+		state["point_flags"] = flags_table
+	(ctx["effects"] as Array).append({"kind": "bm_point_event", "point": id, "event": event, "flag": flag, "not_visit": name.ends_with("NotVisit")})
+
+
+## teBMSetPointMode／teBMSetTrackMode: the TYPE.H bm* display mode of a point or track.
+static func _world_bm_set_mode(ctx: Dictionary, name: String, args: Array) -> void:
+	var state: Dictionary = ctx["state"]
+	var towndef: Dictionary = ctx["towndef"]
+	var is_point := name == "teBMSetPointMode"
+	var id := _town_arg(towndef, _arg(args, 0), -1) if is_point else _int_arg(args, 0)
+	var mode := _symbol_int(towndef, _arg(args, 1), _int_arg(args, 1))
+	var key := "point_modes" if is_point else "track_modes"
+	var table: Dictionary = state.get(key, {})
+	table[str(id)] = mode
+	state[key] = table
+	(ctx["effects"] as Array).append({"kind": "bm_point_mode" if is_point else "bm_track_mode", "id": id, "mode": mode, "mode_symbol": _arg(args, 1)})
+
+
+static func _world_bm_set_point_encounter_ratio(ctx: Dictionary, _name: String, args: Array) -> void:
+	var state: Dictionary = ctx["state"]
+	var id := _town_arg(ctx["towndef"], _arg(args, 0), -1)
+	var table: Dictionary = state.get("encounter_ratios", {})
+	table[str(id)] = _int_arg(args, 1)
+	state["encounter_ratios"] = table
+	(ctx["effects"] as Array).append({"kind": "bm_encounter_ratio", "point": id, "ratio": _int_arg(args, 1)})
+
+
+static func _world_set_bm_walk_to_point(ctx: Dictionary, _name: String, args: Array) -> void:
+	# The walk itself belongs to the world-map runtime: it consumes pending_walk
+	# when the town closes / the map opens (the harbour events that ship the party
+	# between two points; the pairs are the TOWNDEF data).
+	var towndef: Dictionary = ctx["towndef"]
+	var walk := {"from": _town_arg(towndef, _arg(args, 0), -1), "to": _town_arg(towndef, _arg(args, 1), -1)}
+	(ctx["state"] as Dictionary)["pending_walk"] = walk
+	(ctx["effects"] as Array).append({"kind": "bm_walk_to_point", "from_point": int(walk["from"]), "to_point": int(walk["to"])})
+
+
+static func _world_add_over_score(ctx: Dictionary, _name: String, args: Array) -> void:
+	var state: Dictionary = ctx["state"]
+	var id := _symbol_int(ctx["towndef"], _arg(args, 0), _int_arg(args, 0))
+	var table: Dictionary = state.get("over_score", {})
+	var total := int(table.get(str(id), 0)) + _int_arg(args, 1)
+	table[str(id)] = total
+	state["over_score"] = table
+	(ctx["effects"] as Array).append({"kind": "over_score", "id": id, "delta": _int_arg(args, 1), "total": total})
+
+
+static func _world_set_over_flag(ctx: Dictionary, _name: String, args: Array) -> void:
+	var state: Dictionary = ctx["state"]
+	var flag_arg := _arg(args, 0)
+	var bits := int(flag_arg) if flag_arg.is_valid_int() else int(OVER_FLAGS.get(flag_arg, _symbol_int(ctx["towndef"], flag_arg, 0)))
+	var flag := int(state.get("over_flag", 0)) | bits
+	state["over_flag"] = flag
+	(ctx["effects"] as Array).append({"kind": "over_flag", "flag": flag_arg, "bits": bits, "total": flag})
+
+
+static func _world_appear_secret_man(ctx: Dictionary, name: String, args: Array) -> void:
+	var state: Dictionary = ctx["state"]
+	var effects: Array = ctx["effects"]
+	var town_id := _town_arg(ctx["towndef"], _arg(args, 0), int(ctx["town_id"]))
+	var town := _town(state, town_id)
+	if town.is_empty():
+		effects.append({"kind": "check_failed", "token": name, "reason": "unknown_town", "town": _arg(args, 0)})
+		return
+	var tavern := _int_arg(args, 1)
+	var force := _int_arg(args, 2) != 0
+	var current: Variant = town.get("secret_man")
+	var cache := int((current as Dictionary).get("cache", 0)) if typeof(current) == TYPE_DICTIONARY else 0
+	if cache != 0 and not force:
+		effects.append({"kind": "secret_man", "action": "cached", "town_id": town_id, "tavern_event": tavern, "cache": cache})
+		return
+	var goods := _load_json(SECRET_MAN_GOODS_PATH, SECRET_MAN_GOODS_SCHEMA)
+	var rows: Array = goods.get("rows", [])
+	if goods.has("error") or rows.is_empty():
+		effects.append({"kind": "check_failed", "token": name, "reason": "missing_secret_man_goods", "error": str(goods.get("error", "rows"))})
+		return
+	var ratio := int(town.get("secret_appear_ratio", 0))
+	if ratio <= 0:
+		ratio = DEFAULT_SECRET_APPEAR_RATIO  # unset (no script has set it yet)
+	var roll := _secret_roll(state)
+	if force or roll < ratio:
+		var index := clampi(int(state.get("secret_man_index", 0)), 0, rows.size() - 1)
+		var event := int((rows[index] as Dictionary).get("event", 0))
+		_tree_add(state, town_id, tavern, 1, [event])
+		town["secret_man"] = {"cache": event, "tavern_event": tavern, "roll": roll, "ratio": ratio, "forced": force}
+		effects.append({"kind": "secret_man", "action": "appear", "town_id": town_id, "tavern_event": tavern, "event": event, "roll": roll, "ratio": ratio, "forced": force})
+	else:
+		town["secret_man"] = {"cache": -1, "tavern_event": tavern, "roll": roll, "ratio": ratio, "forced": false}
+		effects.append({"kind": "secret_man", "action": "absent", "town_id": town_id, "tavern_event": tavern, "roll": roll, "ratio": ratio})
+
+
+static func _world_delete_secret_man(ctx: Dictionary, _name: String, _args: Array) -> void:
+	var state: Dictionary = ctx["state"]
+	var self_town := int(ctx["town_id"])
+	var town := _town(state, self_town)
+	if not town.is_empty():
+		var current: Variant = town.get("secret_man")
+		if typeof(current) == TYPE_DICTIONARY and int((current as Dictionary).get("cache", 0)) > 0:
+			_tree_delete(state, self_town, int((current as Dictionary).get("tavern_event", 0)), 1, [int((current as Dictionary).get("cache", 0))])
+		town["secret_man"] = null
+	(ctx["effects"] as Array).append({"kind": "secret_man", "action": "delete", "town_id": self_town})
+
+
+static func _world_set_secret_appear_ratio(ctx: Dictionary, _name: String, args: Array) -> void:
+	var self_town := int(ctx["town_id"])
+	var town := _town(ctx["state"], self_town)
+	if not town.is_empty():
+		town["secret_appear_ratio"] = _int_arg(args, 0)
+	(ctx["effects"] as Array).append({"kind": "secret_man", "action": "ratio", "town_id": self_town, "ratio": _int_arg(args, 0)})
 
 
 ## ---------------------------------------------------------------------------

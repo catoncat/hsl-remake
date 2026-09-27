@@ -3,20 +3,23 @@ extends RefCounted
 ## PlayLoop dictionary: capture from a finished battle, apply to a freshly created
 ## one, refresh derived stats through the shared progression/mobility rules.
 ## provenance:
-##   rules: remake-invented (carry model replaces the original registered-slot table — docs/evidence_packets/static_reverse/original_check_targets.md#R8); static-derived docs/evidence_packets/static_reverse/original_town_job_up.md; static-derived docs/evidence_packets/static_reverse/original_damage_random.md; static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md; runtime-measured docs/evidence_packets/static_reverse/original_stamina.md (carried ST 0 at 0x407632, kept after actKeepPlayerST)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: remake-invented
+##     (carry model replaces the original registered-slot table —
+##     docs/evidence_packets/static_reverse/original_check_targets.md#R8)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_town_job_up.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
+##   rules: runtime-measured docs/evidence_packets/static_reverse/original_stamina.md
+##     (carried ST 0 at 0x407632, kept after actKeepPlayerST)
 
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")
-const RewardRules = preload("res://game/sim/BattleRewardRules.gd")
+const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const JobUpRules = preload("res://game/sim/JobUpRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const StaminaRules = preload("res://game/sim/StaminaRules.gd")
 
@@ -74,7 +77,7 @@ static func capture(loop: Dictionary, policy: Dictionary = DEFAULT_POLICY) -> Di
 	keep_damage_stream(carry, loop)
 	if keep:
 		carry[KEEP_STAMINA] = true
-	var pending := RewardRules.carry_pending(loop)
+	var pending := BattleRewardRules.carry_pending(loop)
 	if not pending.is_empty(): carry["pending_rewards"] = pending
 	return carry
 
@@ -104,12 +107,12 @@ static func pass_level_entry(carry: Dictionary, keep: bool) -> Dictionary:
 ## original save): a carry that passes a party through still takes the stream where this
 ## battle left it.
 static func keep_damage_stream(carry: Dictionary, loop: Dictionary) -> void:
-	if carry.get("schema") == SCHEMA and DamageRandom.valid(loop.get(DamageRandom.LOOP_KEY)):
-		carry[DamageRandom.LOOP_KEY] = (loop[DamageRandom.LOOP_KEY] as Array).duplicate()
+	if carry.get("schema") == SCHEMA and DamageRandomStream.valid(loop.get(DamageRandomStream.LOOP_KEY)):
+		carry[DamageRandomStream.LOOP_KEY] = (loop[DamageRandomStream.LOOP_KEY] as Array).duplicate()
 
 
 static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
-	var next := LoopConfig.copy(loop)
+	var next := BattleLoopConfig.copy(loop)
 	var receipt: Dictionary = {"schema": SCHEMA, "applied_unit_ids": [], "skipped_unit_ids": [], "loop_keys": [], "errors": []}
 	if str(carry.get("schema", "")) != SCHEMA:
 		receipt["errors"].append("invalid_carry_schema")
@@ -117,18 +120,18 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 		return next
 	var equipment_items: Dictionary = next.get("equipment_items", {})
 	var pending: Variant = carry.get("pending_rewards", {})
-	if not pending is Dictionary or (not pending.is_empty() and (pending.get("schema") != "hsl_pending_rewards.v1" or RewardRules.pending_error(pending.get("items"), equipment_items) != "" or not next.get("settlement", {}).is_empty() or next.has("campaign_carry_receipt"))):
+	if not pending is Dictionary or (not pending.is_empty() and (pending.get("schema") != "hsl_pending_rewards.v1" or BattleRewardRules.pending_error(pending.get("items"), equipment_items) != "" or not next.get("settlement", {}).is_empty() or next.has("campaign_carry_receipt"))):
 		receipt["errors"].append("invalid_carry_pending_rewards")
 		next["campaign_carry_receipt"] = receipt
 		return next
-	if carry.has(DamageRandom.LOOP_KEY):
-		var words := DamageRandom.from_words(carry[DamageRandom.LOOP_KEY])
+	if carry.has(DamageRandomStream.LOOP_KEY):
+		var words := DamageRandomStream.from_words(carry[DamageRandomStream.LOOP_KEY])
 		if words.is_empty():
 			receipt["errors"].append("invalid_carry_damage_rng")
 			next["campaign_carry_receipt"] = receipt
 			return next
-		next[DamageRandom.LOOP_KEY] = words
-		receipt[DamageRandom.LOOP_KEY] = words.duplicate()
+		next[DamageRandomStream.LOOP_KEY] = words
+		receipt[DamageRandomStream.LOOP_KEY] = words.duplicate()
 	var carried_units: Dictionary = carry.get("units", {})
 	# A carried member was registered before: the construction copies no template (0x407ec0)
 	# and the level entry clears its ST (0x407632) unless the previous script kept it.
@@ -217,7 +220,7 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 		for item in retained:
 			item["code"] = int(item["code"]); item["source_slot"] = int(item["source_slot"])
 		receipt["pending_rewards"] = retained.duplicate(true)
-		next["settlement"] = RewardRules.settle({}, "campaign", 0, int(next["gold"]), 0, retained, [])
+		next["settlement"] = BattleRewardRules.settle({}, "campaign", 0, int(next["gold"]), 0, retained, [])
 	next["campaign_carry_receipt"] = receipt
 	return next
 
@@ -226,9 +229,9 @@ static func initialization_only(carry: Dictionary) -> Dictionary:
 	# A separate party inherits the campaign's damage stream, never the other party's
 	# actors, wallet or vitals (the global stream is the process's, not the carry's). Older
 	# carries without the stream keep their baseline.
-	if not carry.has(DamageRandom.LOOP_KEY): return {}
+	if not carry.has(DamageRandomStream.LOOP_KEY): return {}
 	return {"schema":carry.get("schema"),"units":{},"loop":{},"restore_vitals":false,
-		"from_scenario_id":carry.get("from_scenario_id",""), DamageRandom.LOOP_KEY: _copy(carry[DamageRandom.LOOP_KEY])}
+		"from_scenario_id":carry.get("from_scenario_id",""), DamageRandomStream.LOOP_KEY: _copy(carry[DamageRandomStream.LOOP_KEY])}
 
 
 static func _copy(value: Variant) -> Variant:

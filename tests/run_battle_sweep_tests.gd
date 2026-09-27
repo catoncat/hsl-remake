@@ -5,7 +5,7 @@ extends SceneTree
 ## first control, is force-won through the shared traversal fixture (every living enemy
 ## defeated, the outcome resolved, script phases replayed) and hands the campaign on
 ## like the result page's button. A scale guard for levels assembled by
-## tools/hsl_level_battle.py; per-level rule semantics stay in their own suites and
+## tools/hsltools/levels/battle.py; per-level rule semantics stay in their own suites and
 ## nothing here is evidence about original balance or pacing.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
@@ -137,7 +137,7 @@ func _sweep_battle(key: String, path: String, campaign: Dictionary) -> void:
 	await _free(scene)
 
 
-## Level 6 席達鎮 (tools/hsl_level_battle.py --level 6): STORY006 installs the four
+## Level 6 席達鎮 (`python3 tools/hsl.py generate level_battle:6`): STORY006 installs the four
 ## registered slots and inserts three soldiers and a captain who waits three rounds;
 ## the twelve villagers are friendly, uncontrollable NPCs; the seven EVEF soldiers are
 ## enemies; both EVEF chests carry their original contents.

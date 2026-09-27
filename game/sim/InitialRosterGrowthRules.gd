@@ -8,25 +8,28 @@ extends RefCounted
 ## an opening that runs actAdjustAllPlayerLevel (opcode 73, level 6) then re-adjusts
 ## every unit alive at that point once (`opening_birth.adjust_all_level`).
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_growth_lifecycle.md; static-derived docs/evidence_packets/static_reverse/original_auto_growth.md; runtime-measured docs/evidence_packets/runtime_observations/battle_053/README.md (STORY053 pursuers L1 28 HP under 0,0); static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md; runtime-measured tools/hsltools/probes/_reward_rng_trace.py (birth per object: frame delay 0x407dba, pmEnemy carry 0x407c86, adjustment 0x40e92c, all global); remake-invented (creation order, fill to maxima; the frame-delay rand(24) is not drawn)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
-const Birth = preload("res://game/sim/ReinforcementGrowthRules.gd")
-const Growth = preload("res://game/sim/ProgressionRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_growth_lifecycle.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_auto_growth.md
+##   rules: runtime-measured docs/evidence_packets/runtime_observations/battle_053/README.md
+##     (STORY053 pursuers L1 28 HP under 0,0)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
+##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
+##     (birth per object: frame delay 0x407dba, pmEnemy carry 0x407c86, adjustment 0x40e92c, all global)
+##   rules: remake-invented (creation order, fill to maxima; the frame-delay rand(24) is not drawn)
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const ReinforcementGrowthRules = preload("res://game/sim/ReinforcementGrowthRules.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
-const Reward = preload("res://game/sim/BattleRewardRules.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const POLICY := "source_initial_roster_v1"
 
 
 static func prepare(loop: Dictionary) -> Dictionary:
-	if loop.has("initial_roster_growth"): return {"ok": state_error(loop) == "", "loop": LoopConfig.copy(loop), "reason": state_error(loop)}
+	if loop.has("initial_roster_growth"): return {"ok": state_error(loop) == "", "loop": BattleLoopConfig.copy(loop), "reason": state_error(loop)}
 	if not loop.get("scenario_ok", false) or BattleOutcome.decided(loop): return {"ok": false, "reason": "invalid_initial_roster_boundary"}
-	var next := LoopConfig.copy(loop)
-	if not GlobalRandom.valid(next.get(GlobalRandom.LOOP_KEY)): return {"ok": false, "reason": "invalid_global_rng"}
+	var next := BattleLoopConfig.copy(loop)
+	if not GlobalRandomStream.valid(next.get(GlobalRandomStream.LOOP_KEY)): return {"ok": false, "reason": "invalid_global_rng"}
 	var receipt := {"policy": POLICY, "players": [], "npcs": [], "carried": []}
 	var carried: Array = next.get("campaign_carry_receipt", {}).get("applied_unit_ids", [])
 	# Registered players provide the level baseline before unregistered instances.
@@ -44,13 +47,13 @@ static func prepare(loop: Dictionary) -> Dictionary:
 		if actor["growth_profile"]["allocation"] == "manual": continue
 		# A pre-baked STORY insert carries its actSetPrevInsertObjectAdjustLevel halves
 		# (`script_insert.adjust_level`, opcode 56) exactly like a runtime insert request;
-		# other units fall back to the PLAYERS template / EVEF override inside Birth.prepare.
+		# other units fall back to the PLAYERS template / EVEF override inside ReinforcementGrowthRules.prepare.
 		# The birth 0x407cc0 rolls a pmEnemy's carry (0x407c40) on the same stream just before.
-		if Reward.install_carry(next, actor) != "": return {"ok": false, "reason": "initial_carry_inventory_full"}
-		var born := Birth.prepare(next, actor, actor.get("script_insert", {}), "initial_roster")
+		if BattleRewardRules.install_carry(next, actor) != "": return {"ok": false, "reason": "initial_carry_inventory_full"}
+		var born := ReinforcementGrowthRules.prepare(next, actor, actor.get("script_insert", {}), "initial_roster")
 		if not born["ok"]: return born
 		next["units"][index] = born["actor"]
-		next[GlobalRandom.LOOP_KEY] = born["rng"]
+		next[GlobalRandomStream.LOOP_KEY] = born["rng"]
 		receipt["npcs"].append(actor["id"])
 	# Opcode 73 runs after the opening's inserts: every non-player unit alive then re-runs
 	# 0x40e870 once. kind3 players only re-infer their unchanged level, an identity step.
@@ -58,10 +61,10 @@ static func prepare(loop: Dictionary) -> Dictionary:
 	for index in range(next["units"].size()):
 		var actor: Dictionary = next["units"][index]
 		if actor["growth_profile"]["allocation"] == "manual" or not bool(actor.get("opening_birth", {}).get("adjust_all_level", false)): continue
-		var again := Birth.readjust(next, actor)
+		var again := ReinforcementGrowthRules.readjust(next, actor)
 		if not again["ok"]: return again
 		next["units"][index] = again["actor"]
-		next[GlobalRandom.LOOP_KEY] = again["rng"]
+		next[GlobalRandomStream.LOOP_KEY] = again["rng"]
 		readjusted.append(actor["id"])
 	if not readjusted.is_empty(): receipt["readjusted"] = readjusted
 	next["initial_roster_growth"] = receipt
@@ -69,15 +72,15 @@ static func prepare(loop: Dictionary) -> Dictionary:
 
 
 static func prepare_player(template: Dictionary, equipment: Dictionary) -> Dictionary:
-	var error := Growth.refresh_input_error(template, equipment)
+	var error := ProgressionRules.refresh_input_error(template, equipment)
 	if error != "": return {"ok": false, "reason": error}
 	if template["growth_profile"]["allocation"] != "manual" or template.has("entry_growth") or int(template["pending_stat_points"]) != 0 or not template.get("learned_skills", []).is_empty():
 		return {"ok": false, "reason": "already_progressed_initial_actor"}
 	var actor := template.duplicate(true)
 	var before := int(actor["level"])
 	var attrs := {}
-	for key in Birth.Entry.KEYS: attrs[key] = int(actor["combat_profile"][key])
-	actor["level"] = Birth.Entry.inferred_level(attrs)
+	for key in ReinforcementGrowthRules.Entry.KEYS: attrs[key] = int(actor["combat_profile"][key])
+	actor["level"] = ReinforcementGrowthRules.Entry.inferred_level(attrs)
 	# The birth refresh (0x40e870 → 0x40eb18 → 0x448840) takes its hp_level term from the +0x28
 	# the actor was born with (0x448851 tests 0x10000). A scripted mode change the level
 	# assembly pre-baked into player_mode (birth_player_mode keeps the born word: level 3's
@@ -85,7 +88,7 @@ static func prepare_player(template: Dictionary, equipment: Dictionary) -> Dicti
 	var born := actor
 	if actor.has("birth_player_mode"):
 		born = actor.duplicate(true); born["player_mode"] = actor["birth_player_mode"]
-	var refreshed := Growth.refresh_growth_stats(born, equipment)
+	var refreshed := ProgressionRules.refresh_growth_stats(born, equipment)
 	refreshed.erase("player_mode")
 	actor.merge(refreshed, true)
 	actor["hp"] = actor["max_hp"]; actor["mp"] = actor["max_mp"]
@@ -117,9 +120,9 @@ static func state_error(loop: Dictionary) -> String:
 		if not row is Dictionary or not row.get("attributes") is Dictionary: return "invalid_initial_player_record"
 		var matches: Array = loop["units"].filter(func(a): return a["id"] == row.get("unit_id"))
 		if matches.size() != 1 or matches[0]["actor_id"] != row.get("actor_id") or seen.has(row["unit_id"]): return "initial_player_identity_mismatch"
-		for key in Birth.Entry.KEYS:
-			if Birth.Entry.Number._integer(row["attributes"].get(key)) < 1 or int(matches[0]["combat_profile"][key]) < int(row["attributes"][key]): return "initial_player_attribute_rollback"
-		if row.get("level") != Birth.Entry.inferred_level(row["attributes"]) or int(matches[0]["level"]) < int(row["level"]): return "initial_player_level_rollback"
+		for key in ReinforcementGrowthRules.Entry.KEYS:
+			if ReinforcementGrowthRules.Entry.SkillResourceRules._integer(row["attributes"].get(key)) < 1 or int(matches[0]["combat_profile"][key]) < int(row["attributes"][key]): return "initial_player_attribute_rollback"
+		if row.get("level") != ReinforcementGrowthRules.Entry.inferred_level(row["attributes"]) or int(matches[0]["level"]) < int(row["level"]): return "initial_player_level_rollback"
 		seen[row["unit_id"]] = true
 	for id in record["carried"]:
 		if seen.has(id) or not loop.get("campaign_carry_receipt", {}).get("applied_unit_ids", []).has(id): return "invalid_carried_initial_actor"

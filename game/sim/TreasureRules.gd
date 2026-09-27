@@ -4,15 +4,12 @@ extends RefCounted
 ## Each chest's `hidden` (template obj_Attribute without objattrATTACKFLAG) is carried for
 ## the presentation only: hidden and shown chests are collected by the same rule.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_treasure.md; resource-derived content/generated/hsl/treasures
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_treasure.md
+##   rules: resource-derived content/generated/hsl/treasures
 const POLICY := "source_treasure_v1"
-const Reward = preload("res://game/sim/BattleRewardRules.gd")
+const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
-const Status = preload("res://game/sim/StatusEffectRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 
@@ -25,27 +22,27 @@ static func initialize(data: Dictionary, level: int, catalog: Dictionary, size: 
 	for chest in source["chests"]:
 		if not chest is Dictionary or not chest.get("coord") is Array or chest["coord"].size() != 2: return {"ok": false, "reason": "invalid_treasure_coord"}
 		for value in chest["coord"]:
-			if not Reward.integer(value): return {"ok": false, "reason": "invalid_treasure_coord"}
+			if not BattleRewardRules.integer(value): return {"ok": false, "reason": "invalid_treasure_coord"}
 		chest["coord"] = Vector2i(int(chest["coord"][0]), int(chest["coord"][1]))
-		if chest.get("items") is Array: chest["items"] = chest["items"].map(func(code): return int(code) if Reward.integer(code, 1) else code)
+		if chest.get("items") is Array: chest["items"] = chest["items"].map(func(code): return int(code) if BattleRewardRules.integer(code, 1) else code)
 	var error := source_error(source, catalog, size)
 	if error != "": return {"ok": false, "reason": error}
 	return {"ok": true, "source": source, "state": {"policy": POLICY, "opened_ids": [], "receipts": [], "handoff": {}}}
 
 
 static func source_error(source: Variant, catalog: Dictionary, size: Vector2i) -> String:
-	if not source is Dictionary or source.get("policy") != POLICY or not Reward.integer(source.get("level"), 1) or not source.get("chests") is Array or source["chests"].size() > 128:
+	if not source is Dictionary or source.get("policy") != POLICY or not BattleRewardRules.integer(source.get("level"), 1) or not source.get("chests") is Array or source["chests"].size() > 128:
 		return "invalid_treasure_source"
 	for key in ["level_sha256", "obs_sha256"]:
 		if not source.get(key) is String or source[key].length() != 64: return "invalid_treasure_provenance"
 	var ids := {}
 	for chest in source["chests"]:
-		if not chest is Dictionary or not Reward.integer(chest.get("record_index")) or chest.get("id") != "%d:%d" % [source["level"], chest["record_index"]] or ids.has(chest["id"]): return "invalid_treasure_identity"
+		if not chest is Dictionary or not BattleRewardRules.integer(chest.get("record_index")) or chest.get("id") != "%d:%d" % [source["level"], chest["record_index"]] or ids.has(chest["id"]): return "invalid_treasure_identity"
 		if not chest.get("coord") is Vector2i or chest["coord"].x < 0 or chest["coord"].y < 0 or chest["coord"].x >= size.x or chest["coord"].y >= size.y: return "invalid_treasure_coord"
 		if not chest.get("items") is Array or chest["items"].size() > 8 or not chest.get("shape_resource_id") is String: return "invalid_treasure_contents"
 		if not chest.get("hidden") is bool: return "invalid_treasure_visibility"
 		for code in chest["items"]:
-			if not Reward.integer(code, 1) or not catalog.has(str(int(code))): return "unknown_treasure_item"
+			if not BattleRewardRules.integer(code, 1) or not catalog.has(str(int(code))): return "unknown_treasure_item"
 		ids[chest["id"]] = true
 	return ""
 
@@ -68,14 +65,14 @@ static func entries(chests: Array) -> Array:
 static func prepare(loop: Dictionary, actor: Dictionary) -> Dictionary:
 	var error := state_error(loop)
 	if error != "": return {"ok": false, "reason": error}
-	if not loop.has("treasure_source") or not Presence.living(actor) or not actor.get("player_commandable", false) or actor.get("source_object_kind", 3) != 3 or Status.paralyzed(actor): return {"ok": true}
+	if not loop.has("treasure_source") or not Presence.living(actor) or not actor.get("player_commandable", false) or actor.get("source_object_kind", 3) != 3 or StatusEffectRules.paralyzed(actor): return {"ok": true}
 	if BattleOutcome.decided(loop) or not loop.get("scenario_ok", false) or awaiting_handoff(loop) or not loop.get("settlement", {}).get("closed", true): return {"ok": true}
 	var chests: Array = loop["treasure_source"]["chests"].filter(func(chest): return chest["coord"] == actor["coord"] and not loop["treasures"]["opened_ids"].has(chest["id"]))
 	if chests.is_empty(): return {"ok": true}
 	var state: Dictionary = loop["treasures"].duplicate(true)
 	var found := entries(chests)
 	var sequence: int = state["receipts"].size() + 1
-	var settled := Reward.settle(loop["settlement"], "treasure", int(loop.get("last_combat", {}).get("sequence", 0)), int(loop["gold"]), 0, found, [], actor["id"], str(sequence))
+	var settled := BattleRewardRules.settle(loop["settlement"], "treasure", int(loop.get("last_combat", {}).get("sequence", 0)), int(loop["gold"]), 0, found, [], actor["id"], str(sequence))
 	var ids: Array = chests.map(func(chest): return chest["id"])
 	state["opened_ids"].append_array(ids)
 	state["receipts"].append({"sequence": sequence, "reward_sequence": settled["sequence"], "actor_id": actor["id"],
@@ -103,7 +100,7 @@ static func state_error(loop: Dictionary) -> String:
 	var previous_reward := 0
 	for index in range(state["receipts"].size()):
 		var record: Variant = state["receipts"][index]
-		if not record is Dictionary or record.get("sequence") != index + 1 or not Reward.integer(record.get("reward_sequence"), previous_reward + 1) or not record.get("chest_ids") is Array or record["chest_ids"].is_empty() or not record.get("coord") is Vector2i or record.get("rng_consumed") != 0 or not Reward.integer(record.get("turn"), 1): return "invalid_treasure_receipt"
+		if not record is Dictionary or record.get("sequence") != index + 1 or not BattleRewardRules.integer(record.get("reward_sequence"), previous_reward + 1) or not record.get("chest_ids") is Array or record["chest_ids"].is_empty() or not record.get("coord") is Vector2i or record.get("rng_consumed") != 0 or not BattleRewardRules.integer(record.get("turn"), 1): return "invalid_treasure_receipt"
 		var actor := _actor(loop, str(record.get("actor_id", "")))
 		if actor.is_empty() or record.get("source_actor_id") != actor.get("actor_id"): return "invalid_treasure_actor"
 		var boxes: Array = []
@@ -117,7 +114,7 @@ static func state_error(loop: Dictionary) -> String:
 		var handoff: Dictionary = state["handoff"]
 		var queue: Dictionary = loop["turn_queue"]
 		var slots: Variant = queue.get("slots")
-		if not slots is Array or not Reward.integer(queue.get("index"), 0, slots.size() - 1): return "invalid_treasure_handoff_queue"
+		if not slots is Array or not BattleRewardRules.integer(queue.get("index"), 0, slots.size() - 1): return "invalid_treasure_handoff_queue"
 		if not slots[int(queue["index"])] is Dictionary: return "invalid_treasure_handoff_queue"
 		var owner := _actor(loop, str(handoff.get("actor_id", "")))
 		if state["receipts"].is_empty() or handoff.get("receipt_sequence") != state["receipts"].size() or handoff.get("queue_round") != queue["round"] or handoff.get("queue_index") != queue["index"] or queue["slots"][queue["index"]]["id"] != handoff["actor_id"]:
@@ -129,11 +126,11 @@ static func state_error(loop: Dictionary) -> String:
 static func settlement_error(loop: Dictionary) -> String:
 	var settled: Dictionary = loop.get("settlement", {})
 	if settled.is_empty(): return ""
-	if not Reward.integer(settled.get("sequence"), 1): return "invalid_saved_settlement"
-	if settled.has("combat_sequence") and not Reward.integer(settled["combat_sequence"]): return "invalid_settlement_combat_sequence"
+	if not BattleRewardRules.integer(settled.get("sequence"), 1): return "invalid_saved_settlement"
+	if settled.has("combat_sequence") and not BattleRewardRules.integer(settled["combat_sequence"]): return "invalid_settlement_combat_sequence"
 	var kind := str(settled.get("source_kind", "combat"))
 	var combat := int(loop.get("last_combat", {}).get("sequence", 0))
-	if Reward.combat_sequence(settled) != combat or int(settled["sequence"]) < combat: return "unbound_saved_settlement"
+	if BattleRewardRules.combat_sequence(settled) != combat or int(settled["sequence"]) < combat: return "unbound_saved_settlement"
 	match kind:
 		"combat":
 			if combat == 0: return "unbound_saved_settlement"

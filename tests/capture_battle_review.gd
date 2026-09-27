@@ -1,5 +1,5 @@
 extends SceneTree
-## Windowed review of a formal battle assembled by tools/hsl_level_battle.py
+## Windowed review of a formal battle assembled by tools/hsltools/levels/battle.py
 ## (`-- --level=6` for 席達鎮; default 6): the opening at remake pacing with every dialogue
 ## line captured, the first-control frame, then the shared forced-victory fixture with the
 ## win cutscene's lines and the result page. Output: ignored/battle-<level>-review/*.png +

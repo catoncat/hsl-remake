@@ -98,7 +98,7 @@
     "game/battle/first_scene/FirstBattleCommandMenu.gd": "20c068bea064bed1e7d91757d486779fbe97b199040807bc15a836db65327656",
     "game/battle/first_scene/FirstSceneRuntime.gd": "fdf3e0f771ee6cf9d131133857d9da271959aab0da2f8a8964532ab2e1ba3261",
     "content/generated/hsl/combat/aftermath.json": "77dafcfff13e71e103256ddd785e4003a0427d7c747f82d1b11f656d05dd7009",
-    "tools/hsl_combat_aftermath_data.py": "6557234dccf817d9c55f2a52f4eac965c85ef3ac9b960396a725f9b6263b1da0",
+    "tools/hsltools/data/combat_aftermath.py": "6557234dccf817d9c55f2a52f4eac965c85ef3ac9b960396a725f9b6263b1da0",
     "tools/test_hsl_combat_aftermath_data.py": "c8030d1475cd167ffc7c9426d0ffcc86fbcb73471377e1dd7d1fe9be5f819ae2",
     "tools/verify.sh": "5fb0867bc11a210ab5fc7a18a35ab8b148df303777bb884bfc94a56fdff0c0f9",
     "tests/run_combat_aftermath_tests.gd": "99996bcea8e367f56d554b826d522342489cbcfa25b588978e5562a2d27e6cde",

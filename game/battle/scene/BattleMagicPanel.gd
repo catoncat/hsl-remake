@@ -8,15 +8,23 @@ extends Control
 ## appears (arrows, trough paging, thumb drag, ↑↓／PgUp PgDn; no wheel). Choosing／cancelling
 ## returns intent to PlayLoop.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5; static-derived docs/evidence_packets/static_reverse/original_getitem_window.md#描述框-0x436d70; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5 (2026-09-26 Wine frames: all four boards at offset 0, rows, red row, hover)
-##   strings: resource-derived content/imported/hsl/global/tables/MAGIC.TXT; resource-derived content/imported/hsl/global/tables/SPECIAL.TXT; resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT; static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5
-##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5 (hovered name green 236／244 in two Wine frames)
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5
+##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md#描述框-0x436d70
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5
+##     (2026-09-26 Wine frames: all four boards at offset 0, rows, red row, hover)
+##   strings: resource-derived content/imported/hsl/global/tables/MAGIC.TXT
+##   strings: resource-derived content/imported/hsl/global/tables/SPECIAL.TXT
+##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
+##   strings: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5
+##     (hovered name green 236／244 in two Wine frames)
 signal spell_selected(skill_id: String)
 signal cancelled
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const Vitals = preload("res://game/battle/scene/BattleVitals.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 ## Left column: 0x43add0 docks WINDOW20 (object 132) at (12,174). 0x438160 case 2: first row
 ## 8 px below the top (+0x9a), 28 px rows (+0x98), nine rows per page (0x446060). Names at
@@ -106,8 +114,8 @@ var _pulse_clock := 0.0
 func _ready() -> void:
 	size = Vector2(640, 480)
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	UISkin.clear_panel(self)
-	UISkin.board(self, "WINDOW20", LIST_AT)
+	BattleUISkin.clear_panel(self)
+	BattleUISkin.board(self, "WINDOW20", LIST_AT)
 	list = Control.new()
 	list.name = "Skills"
 	list.position = LIST_AT + Vector2(0, ROW_TOP)
@@ -119,15 +127,15 @@ func _ready() -> void:
 	_rows.add_theme_constant_override("separation", 0)
 	list.add_child(_rows)
 	_build_scroll_bar()
-	UISkin.board(self, "WINDOW40", MONEY_AT)
-	money_label = UISkin.text(self, MONEY_AT + Vector2(80, 4), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(108, 24))
+	BattleUISkin.board(self, "WINDOW40", MONEY_AT)
+	money_label = BattleUISkin.text(self, MONEY_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
 	money_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	description_box = UISkin.board(self, "WINDOW50", DESCRIPTION_AT)
+	description_box = BattleUISkin.board(self, "WINDOW50", DESCRIPTION_AT)
 	description_box.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	description_box.size = DESCRIPTION_SIZE
 	description_box.name = "Description"
 	description_box.hide()
-	vitals = Vitals.new()
+	vitals = BattleVitals.new()
 	vitals.position = Vector2(0, 14)
 	add_child(vitals)
 	hide()
@@ -165,7 +173,7 @@ func handle_input(event: InputEvent) -> bool:
 
 
 func _build_scroll_bar() -> void:
-	scroll_bar = UISkin.board(self, "WIN02BAR", LIST_AT + BAR_AT)
+	scroll_bar = BattleUISkin.board(self, "WIN02BAR", LIST_AT + BAR_AT)
 	scroll_bar.name = "ScrollBar"
 	scroll_bar.mouse_filter = Control.MOUSE_FILTER_STOP
 	scroll_bar.gui_input.connect(_trough_input)
@@ -173,13 +181,13 @@ func _build_scroll_bar() -> void:
 	_thumb.clip_contents = true
 	_thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	scroll_bar.add_child(_thumb)
-	UISkin.board(_thumb, "BAR_BLK1", Vector2.ZERO)
-	_thumb_foot = UISkin.asset(_thumb, "BAR_BLK2", Vector2.ZERO)
+	BattleUISkin.board(_thumb, "BAR_BLK1", Vector2.ZERO)
+	_thumb_foot = BattleUISkin.asset(_thumb, "BAR_BLK2", Vector2.ZERO)
 	var held := ShaderMaterial.new()
 	held.shader = Shader.new()
 	held.shader.code = ARROW_HELD_SHADER
 	for step in [-1, 1]:
-		var arrow := UISkin.asset(scroll_bar, "BAR_UP" if step < 0 else "BAR_DOWN", ARROW_UP_AT if step < 0 else ARROW_DOWN_AT)
+		var arrow := BattleUISkin.asset(scroll_bar, "BAR_UP" if step < 0 else "BAR_DOWN", ARROW_UP_AT if step < 0 else ARROW_DOWN_AT)
 		arrow.mouse_filter = Control.MOUSE_FILTER_STOP
 		arrow.gui_input.connect(_arrow_input.bind(arrow, step, held))
 	scroll_bar.hide()
@@ -274,10 +282,10 @@ func show_spells(options: Array, channel: String = "magic", unit: Dictionary = {
 		row.disabled = not option["quote"]["ok"]
 		_rows.add_child(row)
 		var element := ELEMENT_TYPES.find(str(fields.get("type", "")))
-		if element >= 0: UISkin.asset(row, "magicon%d" % (element + 1), GEM_AT)
+		if element >= 0: BattleUISkin.asset(row, "magicon%d" % (element + 1), GEM_AT)
 		# 0x434d10 codes an affordable row @1 white and one 0x409040／0x408fe0 refuses @2 red.
-		var rest := UISkin.TEXT_RED if row.disabled else UISkin.TEXT_WHITE
-		var name_label := UISkin.text(row, Vector2(NAME_DX, 0), rest, UISkin.FONT_BODY)
+		var rest := BattleUISkin.TEXT_RED if row.disabled else BattleUISkin.TEXT_WHITE
+		var name_label := BattleUISkin.text(row, Vector2(NAME_DX, 0), rest, BattleUISkin.FONT_BODY)
 		name_label.text = str(option["name"])
 		var lines := description_lines(option, channel)
 		# The hovered row's name pulses green (a red row too); no cursor bar is drawn.
@@ -342,7 +350,7 @@ func show_description(lines: Array) -> void:
 		description_box.remove_child(child)
 		child.queue_free()
 	for index in range(mini(lines.size(), 4)):
-		var row := UISkin.text(description_box, Vector2(8, 12 + index * 16), UISkin.TEXT_GREEN if index == 0 else UISkin.TEXT_WHITE, UISkin.FONT_SMALL, Vector2(360, 16))
+		var row := BattleUISkin.text(description_box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
 		row.text = str(lines[index])
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	description_box.show()

@@ -8,14 +8,27 @@ extends Control
 ## seam `automation_hold_ticks` for `--script` drivers. The system scroll's 任務說明 shows the
 ## same board.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (the system scroll's 任務說明 shows this board over the scroll); remake-invented (under a `--script` SceneTree (tests, autoplay, captures) the opening board ends itself after HOLD_TICKS, the game has no timeout; leaving 任務說明 mid-dissolve fades out from there)
-##   layout: resource-derived content/generated/hsl/chapter01/battle038_seed.json; static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md; runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (board box (136,108)–(502,370) at 32.6 s); remake-invented (system font centred on the 24 px glyph rows)
+##   rules: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##   rules: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (the system scroll's 任務說明 shows this board over the scroll)
+##   rules: remake-invented
+##     (under a `--script` SceneTree (tests, autoplay, captures) the opening board ends itself after HOLD_TICKS, the
+##     game has no timeout; leaving 任務說明 mid-dissolve fades out from there)
+##   layout: resource-derived content/generated/hsl/chapter01/battle038_seed.json
+##   layout: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (board box (136,108)–(502,370) at 32.6 s)
+##   layout: remake-invented (system font centred on the 24 px glyph rows)
 ##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
-##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md; runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (32.01–32.55 s in, 33.16–33.73 s out); static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   audio: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (no onset during the three boards)
+##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (32.01–32.55 s in, 33.16–33.73 s out)
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   audio: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (no onset during the three boards)
 
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const RuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
 
 const BOARD_SIZE := Vector2(368, 264)
@@ -57,7 +70,7 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	position = ((Vector2(640, 480) - BOARD_SIZE) * 0.5).floor()
 	size = BOARD_SIZE
-	UISkin.board(self, "WINDOW60", Vector2.ZERO)
+	BattleUISkin.board(self, "WINDOW60", Vector2.ZERO)
 	_rows_root = Control.new()
 	_rows_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_rows_root)
@@ -82,15 +95,15 @@ func show_rows(rows: Dictionary) -> void:
 	for child in _rows_root.get_children():
 		child.queue_free()
 	row_labels.clear()
-	_row(WIN_TITLE, TITLE_Y, UISkin.TEXT_GREEN)
+	_row(WIN_TITLE, TITLE_Y, BattleUISkin.TEXT_GREEN)
 	var y := WIN_ROWS_Y
 	for text in (rows.get("win", []) as Array).slice(0, ROWS_PER_KIND):
-		_row(str(text), y, UISkin.TEXT_WHITE)
+		_row(str(text), y, BattleUISkin.TEXT_WHITE)
 		y += ROW_STEP
-	_row(FAIL_TITLE, FAIL_TITLE_Y, UISkin.TEXT_GREEN)
+	_row(FAIL_TITLE, FAIL_TITLE_Y, BattleUISkin.TEXT_GREEN)
 	y = FAIL_ROWS_Y
 	for text in (rows.get("fail", []) as Array).slice(0, ROWS_PER_KIND):
-		_row(str(text), y, UISkin.TEXT_WHITE)
+		_row(str(text), y, BattleUISkin.TEXT_WHITE)
 		y += ROW_STEP
 	stage = "in"
 	level = 0
@@ -102,7 +115,7 @@ func show_rows(rows: Dictionary) -> void:
 
 
 func _row(text: String, y: float, color: Color) -> void:
-	var row := UISkin.text(_rows_root, Vector2(ROW_X, y), color, UISkin.FONT_BODY, Vector2(ROW_WIDTH, 24))
+	var row := BattleUISkin.text(_rows_root, Vector2(ROW_X, y), color, BattleUISkin.FONT_BODY, Vector2(ROW_WIDTH, 24))
 	row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	row.text = text
 	row_labels.append(row)

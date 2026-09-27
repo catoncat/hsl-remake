@@ -63,14 +63,14 @@
       ]
     },
     {
-      "path": "tools/hsl_consumables.py",
+      "path": "tools/hsltools/data/consumables.py",
       "sha256": "978f5be9d1a8e56a36b6b126568504b159787b669ca8dd4d539d922f32e4e663",
       "reviewed_symbols": [
         "build"
       ]
     },
     {
-      "path": "tools/hsl_progression_data.py",
+      "path": "tools/hsltools/data/progression.py",
       "sha256": "a1542ee8532472c2cb577f0e47194f829ba187a0cd1c48d8e156f4508abefc6d",
       "reviewed_symbols": [
         "check_exe"

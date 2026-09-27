@@ -2,12 +2,10 @@ extends RefCounted
 ## Original 0x40e590. A read-only proposal; PlayLoop alone commits resources.
 ## Only successful ordinary strikes/counters call this, not magic or specials.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_stamina.md; runtime-measured docs/evidence_packets/static_reverse/original_stamina.md (opening ST: ActorInitializationRules, CampaignCarryRules)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Resources = preload("res://game/sim/SkillResourceRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_stamina.md
+##   rules: runtime-measured docs/evidence_packets/static_reverse/original_stamina.md
+##     (opening ST: ActorInitializationRules, CampaignCarryRules)
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const CAP := 60
 const DOUBLE := 0x40
 const BLOCK := 0x400
@@ -17,11 +15,11 @@ static func effects(unit: Dictionary, catalog: Dictionary) -> Dictionary:
 	if not unit.get("equipment") is Array: return {"ok": false, "reason": "missing_stamina_equipment"}
 	var flags := 0
 	for entry in unit["equipment"]:
-		if not entry is Dictionary or Resources._integer(entry.get("item_code")) <= 0:
+		if not entry is Dictionary or SkillResourceRules._integer(entry.get("item_code")) <= 0:
 			return {"ok": false, "reason": "invalid_stamina_equipment"}
 		var item: Variant = catalog.get(str(int(entry["item_code"])))
 		if not item is Dictionary: return {"ok": false, "reason": "missing_stamina_equipment_effect"}
-		var value := Resources._integer(item.get("stamina_effect_flags"))
+		var value := SkillResourceRules._integer(item.get("stamina_effect_flags"))
 		if value < 0 or (value & ~(DOUBLE | BLOCK)) != 0:
 			return {"ok": false, "reason": "invalid_stamina_equipment_effect"}
 		flags |= value # Same predicate bit; two pieces never multiply the multiplier.
@@ -29,10 +27,10 @@ static func effects(unit: Dictionary, catalog: Dictionary) -> Dictionary:
 
 
 static func input_error(unit: Dictionary, catalog: Dictionary) -> String:
-	var stamina := Resources._integer(unit.get("stamina"))
+	var stamina := SkillResourceRules._integer(unit.get("stamina"))
 	if stamina < 0 or stamina > CAP: return "invalid_stamina"
-	if Resources._integer(unit.get("level")) <= 0: return "invalid_stamina_level"
-	if Resources._integer(unit.get("max_hp")) <= 0: return "invalid_stamina_max_hp"
+	if SkillResourceRules._integer(unit.get("level")) <= 0: return "invalid_stamina_level"
+	if SkillResourceRules._integer(unit.get("max_hp")) <= 0: return "invalid_stamina_max_hp"
 	var equipment := effects(unit, catalog)
 	return "" if equipment["ok"] else equipment["reason"]
 

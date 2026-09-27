@@ -40,7 +40,7 @@ python3 tools/hsl.py check command_frames
 tools/play.sh --headless --script res://tests/run_presentation_contract_tests.gd
 ```
 
-目前将菜单更新映射到每秒 60 次是单独的表现时钟选择。函数调用计数等价不证明原作主循环每秒必定调用 60 次，不证明 Wine 显示帧率，也不能推导 ANIMAL 的 aniDelay。ANIMAL 的完整程序恢复由另一条已授权研究线负责，见 [协作入口](../../../PARALLEL_WORK.md)。
+目前将菜单更新映射到每秒 60 次是单独的表现时钟选择。函数调用计数等价不证明原作主循环每秒必定调用 60 次，不证明 Wine 显示帧率，也不能推导 ANIMAL 的 aniDelay。ANIMAL 的完整程序恢复由另一条已授权研究线负责，见 协作入口（已删，见 Git 历史）。
 
 ### ANIMAL 最小 live 接入
 

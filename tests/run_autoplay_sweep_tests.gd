@@ -19,7 +19,7 @@ extends SceneTree
 ## A SCRIPT ERROR fails the run through tools/godot.sh. The other oracle is "no battle ends
 ## in a dead_end" unless known_dead_ends.json lists it; win or fail is recorded, not asserted
 ## beyond the comparison with the tracked file. Not a gate suite
-## (docs/PLAYABILITY.md R1): run it alone with
+## (docs/internal/PLAYABILITY.md R1): run it alone with
 ## `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd`.
 ## Developer filters: HSL_AUTOPLAY_LEVELS="51,501" (or HSL_SWEEP_LEVELS) plays only those
 ## battles and skips the results file; HSL_RNG_SEED=N plays another seed (also skips it) — it seeds

@@ -62,4 +62,6 @@ tools/godot.sh --screen 0 --script res://tests/capture_paralysis_review.gd
 tools/verify.sh
 ```
 
+> TESTCUT2（2026-09-27）备注：`tests/capture_paralysis_review.gd` 已退役——它读的 `view._item_feedback` 已从 BattlePresentation 删除，驱动已失效（ITEMFX 记录）；上面的截图回执为历史，复跑需先按当前节点修好驱动，原文见 `git show 84d8b3d6:tests/capture_paralysis_review.gd`。
+
 下一关键缺口仍是大型占地的全空间合同、伙伴自动成长／动态学技，以及弱化／增益、复活、命中附带状态和高位状态机其余分支。需要各自原输入初始化、完整调用边界与可玩事务证据；本批不以名字、模型候选或异常入口一段代码替代它们。

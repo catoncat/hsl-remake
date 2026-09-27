@@ -24,7 +24,7 @@ README = """# Level {level} Source Texts
 
 本目录保存从原版 PAK 提升出来的第 {level} 关原始脚本／头文件文本（`resource-derived` 输入层）。
 文件字节与 `content/generated/hsl/chapter01/battle{code}_seed.json` 的 `sources` 摘要一致，
-复跑：`python3 tools/hsl_level_source_texts.py --level {level} --check`。
+复跑：`python3 tools/hsl.py generate level_source_texts:{level}`（需原版 PAK）；核对：`python3 tools/hsl.py check level_source_texts:{level}`。
 
 优先使用已结构化的 seed 与编译后的 `../opening_timeline.json`；需要查原始 token、注释或被注释掉的备用动作时再读这里。
 原始脚本中的坐标、对象名或 message id 不是最终 Godot 行为；handler 语义、镜头、坐标投影和可见编舞仍需独立证据。

@@ -7,11 +7,10 @@ extends RefCounted
 ## map-flag bits the traversal rules know (0x974000, in practice the 0x4000 hard block
 ## the level WRDs mark under houses) become `movement_flags`.
 ## provenance:
-##   rules: resource-derived content/generated/hsl/static/hsl01/level051_terrain.json; static-derived docs/evidence_packets/static_reverse/original_story_object_terrain.md; static-derived docs/evidence_packets/static_reverse/original_movement.md; static-derived docs/evidence_packets/static_reverse/original_actor_traversal.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: resource-derived content/generated/hsl/static/hsl01/level051_terrain.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_story_object_terrain.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_movement.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_actor_traversal.md
 
 const DEFAULT_PATH := "res://content/generated/hsl/static/hsl01/level051_terrain.json"
 ## Map-flag bits of the WRD word kept as movement_flags (ActorTraversalRules.MAP_FLAGS).

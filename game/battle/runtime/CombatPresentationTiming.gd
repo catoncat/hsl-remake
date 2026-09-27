@@ -4,11 +4,12 @@ extends RefCounted
 ## counters; number lifetimes are the defProcShowNumber state machine. Durations are not
 ## combat rules.
 ## provenance:
-##   rules: n/a
-##   layout: n/a
-##   strings: n/a
-##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; remake-invented (OPT-PACE 快／極快 clock multipliers PACE_CLOSEUP／PACE_MAP; 原版 is × 1.0); provisional (CAST_LEAD_IN stands in for the m_action lead of a magic caster whose m_shape strip is not imported — the imported ones and the 絶技 s_action lead are played by AnimalCastLead)
-##   audio: n/a
+##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: remake-invented (OPT-PACE 快／極快 clock multipliers PACE_CLOSEUP／PACE_MAP; 原版 is × 1.0)
+##   timing: provisional
+##     (CAST_LEAD_IN stands in for the m_action lead of a magic caster whose m_shape strip is not imported — the
+##     imported ones and the 絶技 s_action lead are played by AnimalCastLead)
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 
 ## Multiplier on the ordinary cut-in clock. The product plays the attacker's ANIMAL program
@@ -179,11 +180,6 @@ const SHOW_NUMBER_SECONDS := OriginalTick.TICK_SECONDS * SHOW_NUMBER_TICKS
 ## The remake fades a number over the ticks after the original releases its waiter.
 const SHOW_NUMBER_FADE_SECONDS := OriginalTick.TICK_SECONDS * (SHOW_NUMBER_TICKS - SHOW_NUMBER_RELEASE_TICKS)
 const SHOW_NUMBER_RISE_PX_PER_SECOND := SHOW_NUMBER_RISE_PX_PER_TICK * OriginalTick.TICKS_PER_SECOND
-
-
-static func damage_number_seconds(amount: int) -> float:
-	var digits := str(absi(amount)).length()
-	return OriginalTick.seconds(DAMAGE_NUMBER_BASE_TICKS + DAMAGE_NUMBER_DIGIT_TICKS * digits)
 
 
 ## Ticks from a kind-0 damage number's spawn (hold 0) to the tick it increments its waiter's

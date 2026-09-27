@@ -1,6 +1,6 @@
 # HSL Project Vocabulary and Evidence Policy
 
-Checked: 2026-09-14
+Checked: 2026-09-27
 
 本文件只定义当前项目必须共享的术语和证据写法。项目进度看 `docs/PROJECT.md`，代码结构看 `docs/ARCHITECTURE.md`，具体资料位置看 `docs/KNOWLEDGE_INDEX.md`。
 
@@ -8,14 +8,14 @@ Checked: 2026-09-14
 
 ### Original game
 
-用户本机 Wine prefix 中的《幻世录》原作。它是行为参考实现，不是本项目运行时依赖。普通开发、Godot 测试和静态检查不需要启动原作。
+玩家自备的正版《幻世录》1998 年經典版目录（Steam《幻世錄 重製版》里的 `GAME-PAK/`），由 `HSL_ORIGINAL_DIR` 指定，未设时工具按平台找 Steam 库；维护者做运行观测时另用 Wine 前缀里的原作（`$WINEPREFIX/drive_c/hsl`）。它是行为参考实现，不是本项目运行时依赖。普通开发、Godot 测试和静态检查不需要启动原作。
 
 ### Remake runtime
 
 当前 Godot 产品路径：
 
 ```text
-BattleSceneRuntime.tscn → BattleSceneRuntime.gd → BattlePlayLoop.gd
+project.godot → game/title/TitleScreen.tscn → BattleSceneRuntime.tscn → BattleSceneRuntime.gd → BattlePlayLoop.gd
 ```
 
 ### Live scenario

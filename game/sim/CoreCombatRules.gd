@@ -6,18 +6,16 @@ extends RefCounted
 ## This module is replaceable. Do not scatter formula constants into UI code.
 ## Field naming resolved: +0x4c=str, +0x50=dex (joined via stat_refresh 0x448840).
 ## provenance:
-##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json; static-derived docs/first_battle_core_logic_evidence.md; static-derived docs/evidence_packets/static_reverse/original_ordinary_special.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json
+##   rules: static-derived docs/first_battle_core_logic_evidence.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ordinary_special.md
 
 const PACKET_PATH := "res://content/generated/hsl/static/hsl01/core_logic.json"
 const EVIDENCE_DOC := "docs/first_battle_core_logic_evidence.md" # repository document, never loaded at runtime
 const HIT_ADDR := "0x409a60"
 const DAMAGE_ADDR := "0x409be0"
-const Number = preload("res://game/sim/SkillResourceRules.gd")
-const StatusEffects = preload("res://game/sim/StatusEffectRules.gd")
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const EQUIP_ADDR := "0x448420"
 const RESOLVE_ADDR := "0x4423c0"
 const REFRESH_ADDR := "0x448840"
@@ -60,18 +58,18 @@ static func input_error(unit: Dictionary) -> String:
 	var profile: Variant = unit.get("combat_profile")
 	if not profile is Dictionary: return "missing_physical_profile"
 	for key in ["live_attack_damage", "live_defense", "live_hit_ratio", "avoid_hit_ratio", "attack_back", "attack_damagex2", "str", "dex"]:
-		var value := Number._integer(profile.get(key))
+		var value := SkillResourceRules._integer(profile.get(key))
 		if value < 0 or value > 1000000: return "invalid_physical_" + key
 	var element: Variant = profile.get("weapon_magic_attack_type")
 	if typeof(element) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(element)) or element != int(element) or int(element) < -1 or int(element) > 5:
 		return "invalid_physical_weapon_element"
 	for key in ["weapon_damage_variance_lo", "weapon_damage_variance_hi"]:
-		var value := Number._integer(profile.get(key))
+		var value := SkillResourceRules._integer(profile.get(key))
 		if value < 0 or value > 10000: return "invalid_physical_" + key
 	var resists: Variant = profile.get("resist_by_type")
 	if not resists is Dictionary: return "missing_physical_resists"
 	for index in range(5):
-		if Number._integer(resists.get(str(index))) < 0 or int(resists[str(index)]) > 80: return "invalid_physical_resist"
+		if SkillResourceRules._integer(resists.get(str(index))) < 0 or int(resists[str(index)]) > 80: return "invalid_physical_resist"
 	return ""
 
 
@@ -113,7 +111,7 @@ static func combat_profile_from_unit(unit: Dictionary) -> Dictionary:
 	var avoid := int(combat.get("avoid_hit_ratio", 0))
 	# 0x409a60 (+0x50 dex delta) and 0x409be0 (+0x4c str delta) read the live attributes that
 	# 0x448840 derives: base minus an active 衰弱 power (floor 1), never the base +0x64.. words.
-	var live: Dictionary = StatusEffects.weakened_attributes(unit) if combat.has_all(["str", "dex", "mind", "con"]) else combat
+	var live: Dictionary = StatusEffectRules.weakened_attributes(unit) if combat.has_all(["str", "dex", "mind", "con"]) else combat
 	var str_val := int(live.get("str", stats.get("str", level)))
 	var dex_val := int(live.get("dex", stats.get("dex", level)))
 	var mind_val := int(live.get("mind", stats.get("mind", 0)))

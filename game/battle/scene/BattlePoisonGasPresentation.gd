@@ -2,10 +2,11 @@ extends RefCounted
 ## 噴人沼氣 (defProcPoisonGas 0x43c7c0) presentation: replays the receipt PoisonGasRules left
 ## on winfail_runtime.story_object_wait_requests[].poison_gas. Rules are already committed.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md (camera, 3 SMOKE001 at the centre ±38 px rising 0.25..0.75 px/tick, hit actors shake ±1 px); remake-invented (ADDCOLOR_MIX level drawn as additive alpha)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md (scroll, burst, 90／40-tick hold, 60-tick shake, smoke fade in 16 ticks then a level per 3..7 ticks)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md
+##     (camera, 3 SMOKE001 at the centre ±38 px rising 0.25..0.75 px/tick, hit actors shake ±1 px)
+##   layout: remake-invented (ADDCOLOR_MIX level drawn as additive alpha)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md
+##     (scroll, burst, 90／40-tick hold, 60-tick shake, smoke fade in 16 ticks then a level per 3..7 ticks)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md (the process plays no sound)
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const MapHitState = preload("res://game/battle/scene/MapHitState.gd")
@@ -24,7 +25,6 @@ const SMOKE_SPEED_BASE := 0x4000
 const SMOKE_LEVELS := 16
 ## 0x407230: +0x92 = 60 ticks, +0x98 = 0x300 (phase 0, amplitude 3); 0x43f288 per tick.
 const SHAKE_TICKS := 60
-const SHAKE_AMPLITUDE := 3
 
 
 ## The actInsertStoryObjectWaitPos requests one firing installed, in chain order.

@@ -5,16 +5,11 @@ extends RefCounted
 ## here is a scene-facing contract, not a new field.
 ## provenance:
 ##   rules: remake-invented (dictionary field names of the remake's loop)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 
 const INTERACTION := "interaction"
 const SELECTED_UNIT_ID := "selected_unit_id"
 const BATTLE_OUTCOME := "battle_outcome"
 const UNITS := "units"
-const COORD := "coord"
 const PENDING_MOVE := "pending_move"
 const PENDING_MOVE_FROM := "pending_move_from"
 const ATTACKED_THIS_ACTION := "attacked_this_action"

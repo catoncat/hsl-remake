@@ -8,13 +8,13 @@ extends Node2D
 ## object would be deleted); `state_at` replays the object's counters tick by tick. The node's
 ## own alpha is the draw level; `followers` (a caption beside it) take the same alpha.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json; static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md; provisional (the 0x2c000000 flash read as additive at alpha level／16, the level-blend modes as alpha level／16)
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
+##   layout: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
+##   timing: provisional
+##     (the 0x2c000000 flash read as additive at alpha level／16, the level-blend modes as alpha level／16)
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
-const RewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
 const DIGIT_PITCH := 14
 const DIGIT_STEP_TICKS := 10
 const FLASH_TICKS := 6
@@ -49,7 +49,7 @@ func present(amount: int) -> void:
 	glyphs.clear()
 	if flash != null:
 		flash.queue_free()
-	var assets: Dictionary = RewardFloat.manifest()["assets"]
+	var assets: Dictionary = BattleRewardFloat.manifest()["assets"]
 	flash = _sprite(assets["damage_flash"])
 	flash.material = flash_blend
 	for index in range(digits.length()):

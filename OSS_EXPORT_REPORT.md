@@ -1,16 +1,16 @@
 # OSS export report
 
-Source: private repository `main` = `e3a918139a1a75d9f313cfc7fb4103936bf5dc60` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `01868163217acbe8112fc9368306d70e7de64e44` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
-- written: **1908 files, 55.6 MB**
-- dropped: **19260 files, 733.1 MB**
-- processed (home path / author e-mail / public .gitignore rules): 21 files
+- written: **1773 files, 54.5 MB**
+- dropped: **19271 files, 733.4 MB**
+- processed (home path / author e-mail / public .gitignore rules): 19 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1426 | 21.0 |
+| B | 1291 | 19.9 |
 | C | 482 | 34.6 |
 
 ## Dropped (by reason)
@@ -23,6 +23,8 @@ No git history or author metadata is carried; the first commit of the public rep
 | A: content/generated tables (EXE / PAK derived) | 422 | 25.2 |
 | A: content/battles assembled level data | 210 | 18.8 |
 | A: content/authored placeholder art (recoloured original frames) | 73 | 0.9 |
+| excluded directory docs/internal/ | 8 | 0.2 |
+| excluded directory docs/audits/ | 3 | 0.1 |
 | A: original saves / runtime memory dumps | 12 | 0.1 |
 | A: content/generated README / report (migrate) | 5 | 0.0 |
 | excluded directory docs/external/typesafe/ | 1 | 0.0 |
@@ -34,14 +36,23 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 (path, SHA-256, generating task); every excluded-directory file is listed below.
 
 - `asset-dumps/README.md`
+- `docs/audits/CODE_AUDIT_2026-09-27.md`
+- `docs/audits/DOCS_AUDIT_2026-09-27.md`
+- `docs/audits/TOOLS_AUDIT_2026-09-27.md`
 - `docs/external/typesafe/README.md`
+- `docs/internal/CONSOLIDATION.md`
+- `docs/internal/FIRST_BATTLE_ACCEPTANCE.md`
+- `docs/internal/LANE_TIMELOG.md`
+- `docs/internal/OPEN_SOURCE_PLAN.md`
+- `docs/internal/PLAYABILITY.md`
+- `docs/internal/ROUNDS.md`
+- `docs/internal/SEQUEL_READINESS.md`
+- `docs/internal/lane_brief.md`
 - `legal-assets/README.md`
 
 ## Processed files
 
 - `.gitignore`
-- `docs/OPEN_SOURCE_PLAN.md`
-- `tools/test_hsl_function_catalog.py`
 - `docs/OPTIONS.md`
 - `docs/PROVENANCE.md`
 - `docs/evidence_packets/resource_inventory/original_movies.md`

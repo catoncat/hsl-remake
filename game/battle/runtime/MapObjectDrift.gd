@@ -5,11 +5,23 @@ extends Node
 ## (−1 pins it to the view). Works on the original object point (the EVEF anchor); a sprite
 ## draws at point − its SHP draw origin. Presentation only, no battle state.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md (0x43d7e0 wrap by map size + picture size; 0x43d4c1 camera parallax); runtime-measured docs/evidence_packets/static_reverse/original_map_object_drift.md (wraps and parallax samples of levels 1／2／6／53); resource-derived content/imported/hsl/chapter01/map_objects.json (obj_Data7／obj_Data8／obj_Score／obj_HitPoint)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md (0x45eb9d／0x45ebdc 16.16 step per tick); runtime-measured docs/evidence_packets/static_reverse/original_map_object_drift.md (level 1: +265,+265 in 1499 ticks); static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; remake-invented (moving backgrounds are placed every display frame from the current camera, the original once per tick before that frame's scroll); provisional (the original hides and holds clouds while [0x4c1b00] & 0x1400000 or its options bit 0x477c14 & 1 is clear; not wired)
-##   audio: n/a
+##   layout: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
+##     (0x43d7e0 wrap by map size + picture size; 0x43d4c1 camera parallax)
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_map_object_drift.md
+##     (wraps and parallax samples of levels 1／2／6／53)
+##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
+##     (obj_Data7／obj_Data8／obj_Score／obj_HitPoint)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
+##     (0x45eb9d／0x45ebdc 16.16 step per tick)
+##   timing: runtime-measured docs/evidence_packets/static_reverse/original_map_object_drift.md
+##     (level 1: +265,+265 in 1499 ticks)
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: remake-invented
+##     (moving backgrounds are placed every display frame from the current camera, the original once per tick before
+##     that frame's scroll)
+##   timing: provisional
+##     (the original hides and holds clouds while [0x4c1b00] & 0x1400000 or its options bit 0x477c14 & 1 is clear; not
+##     wired)
 
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 

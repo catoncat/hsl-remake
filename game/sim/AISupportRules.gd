@@ -2,20 +2,18 @@ extends RefCounted
 ## Native ally scan order/continuation and aid-check suffix. Live adapters filter
 ## unavailable actors and unsupported effects before committing an action.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_support.md; static-derived docs/evidence_packets/static_reverse/original_stat_magic.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Priority = preload("res://game/sim/AIPriorityRules.gd")
-const Decision = preload("res://game/sim/AIDecisionRules.gd")
-const Number = preload("res://game/sim/SkillResourceRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_support.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_stat_magic.md
+const AIPriorityRules = preload("res://game/sim/AIPriorityRules.gd")
+const AIDecisionRules = preload("res://game/sim/AIDecisionRules.gd")
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const SEARCH_RADIUS := 8
 
 
 static func profile_error(profile: Dictionary, include_buffs: bool = false) -> String:
 	for key in (["ai_help_otherhp", "ai_help_status", "ai_help_attack"] if include_buffs else ["ai_help_otherhp", "ai_help_status"]):
-		var value := Number._integer(profile.get(key))
+		var value := SkillResourceRules._integer(profile.get(key))
 		if value < 0 or value > 100: return "invalid_ai_support_" + key
 	return ""
 
@@ -29,7 +27,7 @@ static func next_check(profile: Dictionary, attempted: int, roll: int, rng: Vari
 		if roll <= int(profile[{4: "ai_help_otherhp", 8: "ai_help_status", 16: "ai_help_attack"}[flag]]):
 			mode = {4: 3, 8: 4, 16: 6}[flag]
 			break
-		roll = Decision._draw(99, rng, draws) + 1
+		roll = AIDecisionRules._draw(99, rng, draws) + 1
 	return {"mode": mode, "attempted": attempted, "next_roll": roll, "draws": draws,
 		"source": "0x440e3d..0x440ef1" if include_buffs else "0x440e3d..0x440eb5"}
 
@@ -42,11 +40,11 @@ static func scan(rows: Array, owner_index: int, kind: String, cursor: int, radiu
 		var row: Variant = rows[index]
 		if row == null or index == owner_index: continue
 		if (int(row["side"]) & 0x870000) != (int(owner["side"]) & 0x870000): continue
-		if not Priority.within_square(row["coord"], owner["coord"], radius): continue
+		if not AIPriorityRules.within_square(row["coord"], owner["coord"], radius): continue
 		var needed := false
-		var mask := int(row["status_flags"]) & 15
+		var mask := int(row["status_flags"]) & StatusEffectRules.AFFLICTION_MASK
 		if kind == "heal":
-			var health := Priority.self_recovery(row, rng)
+			var health := AIPriorityRules.self_recovery(row, rng)
 			draws.append_array(health["draws"])
 			evaluated.append({"index": index, "threshold": health["threshold"]})
 			needed = health["needed"]

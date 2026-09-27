@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_story_scene_review.gd, hsltools/levels/map_objects.py, hsltools/levels/story_scene.py · updated: 2026-09-19
 
-2026-09-19，presentation 线。数据链由三条并行工具子线（ch2a／ch2b／ch2c，[P-048](../../../collaboration/presentation.md)）按 P-044 协议建成并由本线合并；
+2026-09-19，presentation 线。数据链由三条并行工具子线（ch2a／ch2b／ch2c，P-048（已删，见 Git 历史））按 P-044 协议建成并由本线合并；
 运行时接入（注册、静态物件插入／删除读法、扫描回归）由本线完成。窗口化 `tests/capture_story_scene_review.gd -- --level=13|44` 与 headless 套件的实际运行回执。
 
 ## 玩家结果

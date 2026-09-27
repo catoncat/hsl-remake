@@ -62,7 +62,7 @@ INSERT_OBJECT = ('actInsertObject', 'actInsertObjectWait', 'actInsertObjectRando
 DELETE = ('actWalkAndDelete', 'actWalkAndDeleteWait', 'actDeleteObject')
 
 # obj_Story_PlayerN installs registered party slot N-1 (OBJ-ALL.H codes 6..14); unit ids
-# follow the story previews' bindings (tools/hsl_story_scene.py).
+# follow the story previews' bindings (tools/hsltools/levels/story_scene.py).
 PARTY_SLOTS: dict[int, tuple[str, str, str]] = {
     1: ('001', 'leonard', 'SID_雷歐納德'), 2: ('002', 'tina', 'SID_緹娜'), 3: ('003', 'hu', 'SID_琥'),
     4: ('004', 'hanks', 'SID_漢克斯'), 5: ('005', 'shera', 'SID_雪拉'), 6: ('006', 'rett', 'SID_雷特'),
@@ -1146,7 +1146,7 @@ def build(level: int) -> dict:
                                      if profile.get('job_up_targets') else {})},
                   provenance={'seed_sha256': digest((ROOT / f'content/generated/hsl/chapter01/battle{level:03d}_seed.json').read_bytes()),
                               'preview_sha256': digest(preview_path.read_bytes()),
-                              'assembly': 'tools/hsl_level_battle.py: preview opening/bindings/resources, seed STORY endpoints and winfail, reviewed source templates; roles from obj_Story_PlayerN installs and the installed player mode (PLAYERS mode, obj_Data9 swap, obj_X1 override); obj_HitPoint added to the growth source hit_point.'},
+                              'assembly': f'python3 tools/hsl.py generate level_battle:{level} (tools/hsltools/levels/battle.py build): preview opening/bindings/resources, seed STORY endpoints and winfail, reviewed source templates; roles from obj_Story_PlayerN installs and the installed player mode (PLAYERS mode, obj_Data9 swap, obj_X1 override); obj_HitPoint added to the growth source hit_point.'},
                   unresolved_semantics=[
                       *profile.get('unresolved_semantics', []),
                       *([f"STORY movements of uninstalled conditional party members are skipped: {sorted({s['args'][0] for s in trace['skipped']})}"] if trace['skipped'] else []),
@@ -1309,7 +1309,7 @@ def build_encounter(level: int) -> dict:
                                 'events': {}, 'reinforcements': [], 'reinforcement_spawn_cells': [],
                                 'script_fallback': {'escape_zone': []}, 'status_timelines': timelines},
                 provenance={'seed_sha256': digest(seed_path.read_bytes()), 'base_level': int(base_level), 'base_scenario': str(base.get('id', '')),
-                            'assembly': 'tools/hsl_level_battle.py build_encounter: seed EVEF placements (player installs by obj_Data9 slot, monsters by obj_Data7), seed winfail, base level map / terrain / view, shared encounter actor pool.'},
+                            'assembly': f'python3 tools/hsl.py generate level_battle:{level} (tools/hsltools/levels/battle.py build_encounter): seed EVEF placements (player installs by obj_Data9 slot, monsters by obj_Data7), seed winfail, base level map / terrain / view, shared encounter actor pool.'},
                 unresolved_semantics=[
                     'The conditional install (有才產生) is read as "field the member when the party carries it"; the original defProcPlayerInstall branch is not located (provisional).',
                     *([f"Slots without a reviewed template or shared portrait are not fielded yet: {sorted({u['actor_id'] for u in unavailable})}; a party carrying one of them cannot enter this encounter (explicit card)."] if unavailable else []),

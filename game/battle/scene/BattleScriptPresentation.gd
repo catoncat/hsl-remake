@@ -2,12 +2,8 @@ extends RefCounted
 ## Presentation cursor only. Effects and presence are already committed by the
 ## PlayLoop; retained sprites cannot become another map or queue truth.
 ## provenance:
-##   rules: n/a
 ##   layout: remake-invented (retained sprites stay at the last cell)
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const PoisonGas = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
+const BattlePoisonGasPresentation = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
 
 static func timeline(runtime: Node, key: String) -> Dictionary:
 	return runtime.first_battle_scenario.get("scenario_rules", {}).get("status_timelines", {}).get(key, {})
@@ -16,7 +12,7 @@ static func pending(runtime: Node) -> bool:
 	var fired: Array = runtime.play_loop.get("winfail_runtime", {}).get("fired", [])
 	for index in range(runtime.script_cutscene_consumed, fired.size()):
 		if int(timeline(runtime, str(fired[index].get("key", ""))).get("playable_event_count", 0)) > 0: return true
-		if PoisonGas.has_gas(runtime.play_loop, index): return true
+		if BattlePoisonGasPresentation.has_gas(runtime.play_loop, index): return true
 	return false
 
 static func active(runtime: Node) -> bool:

@@ -2717,6 +2717,9 @@
     "provenance:game/sim/SpecialUtilityRules.gd|rules|remake-invented|": {
       "no_visible_effect": "队列效果经 CoreTurnQueue 以提案应用，结果与直接应用相同"
     },
+    "provenance:game/sim/StatusCatalog.gd|strings|remake-invented|": {
+      "item": "floater-extra-words"
+    },
     "provenance:game/sim/TacticalGridRules.gd|rules|provisional|": {
       "item": [
         "ai-first-battle-moves",

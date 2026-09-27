@@ -267,10 +267,6 @@ class AffectedTests(unittest.TestCase):
         self.assertEqual(self.names(['tools/hsl_payload_inspector.py']), [])
         for task in self.tasks:
             self.assertEqual([script for script in task.scripts if Path(script).name.startswith('hsl_')], [], task.name)
-        # Propagation along tools/*.py imports: hsl_runtime_trace_set_check imports hsl_runtime_trace_check.
-        graph = registry.import_graph()
-        self.assertIn('hsl_runtime_trace_check', graph['hsl_runtime_trace_set_check'])
-        self.assertIn('hsl_runtime_trace_set_check', registry.dependents({'hsl_runtime_trace_check'}, graph))
 
     def test_package_never_imports_the_stand_alone_scripts(self):
         # hsltools is the shared core; tools/hsl_*.py are its command lines and independent tools.

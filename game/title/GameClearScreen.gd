@@ -22,16 +22,23 @@ extends Node2D
 ## With no party to show there is no showcase phase, so 07 runs on until the credits bring 02
 ## (in the original the nine-player state, and 04 with it, always runs).
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/title/manifest.json; static-derived docs/evidence_packets/static_reverse/original_game_clear_epilogue.md
-##   layout: resource-derived content/imported/hsl/global/title/manifest.json; provisional (text positions, showcase card layout — no original GameClear recording); remake-invented content/generated/hsl/text/simplified_images.json (workteam lettering redrawn with the original FONT.24 simplified glyphs)
-##   strings: resource-derived content/imported/hsl/global/title/manifest.json; remake-invented (showcase names from portraits)
+##   rules: resource-derived content/imported/hsl/global/title/manifest.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_game_clear_epilogue.md
+##   layout: resource-derived content/imported/hsl/global/title/manifest.json
+##   layout: provisional (text positions, showcase card layout — no original GameClear recording)
+##   layout: remake-invented content/generated/hsl/text/simplified_images.json
+##     (workteam lettering redrawn with the original FONT.24 simplified glyphs)
+##   strings: resource-derived content/imported/hsl/global/title/manifest.json
+##   strings: remake-invented (showcase names from portraits)
 ##   timing: provisional (phase lengths, scroll speed, skip input; actDelay units are the coordinator's 16 ms ticks)
-##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md; resource-derived content/imported/hsl/music/manifest.json; resource-derived content/imported/hsl/global/title/manifest.json (WALKSOUND cue)
+##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
+##   audio: resource-derived content/imported/hsl/music/manifest.json
+##   audio: resource-derived content/imported/hsl/global/title/manifest.json (WALKSOUND cue)
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const TITLE_SCENE_PATH := "res://game/title/TitleScreen.tscn"
 const GameSettings = preload("res://game/settings/GameSettings.gd")
-const Dialogue = preload("res://game/battle/scene/BattleDialogue.gd")
+const BattleDialogue = preload("res://game/battle/scene/BattleDialogue.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const SimplifiedDisplay = preload("res://game/text/SimplifiedDisplay.gd")
 const FADE_SECONDS := 0.8
@@ -112,7 +119,7 @@ func _ready() -> void:
 	dialogue_layer.name = "DialogueLayer"
 	dialogue_layer.layer = 20
 	add_child(dialogue_layer)
-	_board = Dialogue.new()
+	_board = BattleDialogue.new()
 	_board.name = "EpilogueBoard"
 	dialogue_layer.add_child(_board)
 	_board.configure_portraits(ContentPaths.ACTOR_PORTRAITS)

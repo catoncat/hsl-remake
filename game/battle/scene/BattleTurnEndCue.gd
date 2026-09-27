@@ -6,17 +6,20 @@ extends CanvasLayer
 ## event per 40-tick beat; each number keeps its own tick clock (ResultNumberFloat), so the
 ## previous one finishes fading while the next appears, and the last lives its full life.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md; remake-invented (caption position over the actor)
-##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json; remake-invented (the 麻痺解除／增益結束 captions; number kinds keep source order — original_resource_recovery.md); remake-invented docs/OPTIONS.md (OPT-INFO=公開 only: 中毒／轉化 and HP／MP words over a number beat)
-##   timing: static-derived docs/evidence_packets/static_reverse/original_resource_recovery.md; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
-##   audio: n/a
+##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+##   layout: remake-invented (caption position over the actor)
+##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
+##   strings: remake-invented (the 麻痺解除／增益結束 captions; number kinds keep source order — original_resource_recovery.md)
+##   strings: remake-invented docs/OPTIONS.md (OPT-INFO=公開 only: 中毒／轉化 and HP／MP words over a number beat)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_resource_recovery.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ShowNumberStyle = preload("res://game/battle/runtime/ShowNumberStyle.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
+const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 const EVENT_INTERVAL_TICKS := 40
 const EVENT_SECONDS := OriginalTick.TICK_SECONDS * EVENT_INTERVAL_TICKS
 ## The last beat's floor: a kind 2／3 number lives 46 ticks (a longer red kind-0 number, 10 per
@@ -65,15 +68,23 @@ func showing() -> bool:
 ## The number kind of a turn-end event: poison and an HP loss red, MP blue, an HP gain green;
 ## "" for a caption event.
 static func number_kind(event: Dictionary) -> String:
-	if str(event["kind"]) == "paralysis_expired" or str(event["kind"]).ends_with("_up_expired"): return ""
-	if str(event["kind"]) == "poison" or int(event["amount"]) < 0: return "damage"
+	if expired_status(event) != "" or str(event["kind"]).ends_with("_up_expired"): return ""
+	if StatusCatalog.ENTRIES.has(str(event["kind"])) or int(event["amount"]) < 0: return "damage"
 	return "mp" if str(event.get("resource", "")) == "mp" else "heal"
+
+
+## The catalog status whose "<key>_expired" event this is (expiry_event rows, 麻痺), or "".
+static func expired_status(event: Dictionary) -> String:
+	var kind := str(event["kind"])
+	if not kind.ends_with("_expired"): return ""
+	var key := kind.trim_suffix("_expired")
+	return key if StatusCatalog.ENTRIES.has(key) and StatusCatalog.ENTRIES[key]["expiry_event"] else ""
 
 
 ## OPT-INFO=公開: the words a number beat carried before UI6 (ea45f5b4) — 中毒／轉化 and HP／MP;
 ## the original path shows the number alone.
 static func number_words(event: Dictionary) -> String:
-	var head := "中毒 " if event["kind"] == "poison" else "轉化 " if str(event["kind"]).begins_with("transfer_") else ""
+	var head := StatusCatalog.name_of(str(event["kind"])) + " " if StatusCatalog.ENTRIES.has(str(event["kind"])) else "轉化 " if str(event["kind"]).begins_with("transfer_") else ""
 	return head + str(event.get("resource", "")).to_upper()
 
 
@@ -116,7 +127,7 @@ func refresh(loop: Dictionary, point: Vector2, allowed: bool, delta: float) -> v
 		number.draw_at(OriginalTick.ticks(now - float(index) * EVENT_SECONDS))
 	var event: Dictionary = events[cursor]
 	var caption := ""
-	if event["kind"] == "paralysis_expired": caption = "麻痺解除"
+	if expired_status(event) != "": caption = str(StatusCatalog.ENTRIES[expired_status(event)]["cure_label"])
 	elif event["kind"] in ["attack_up_expired", "defense_up_expired", "resist_up_expired"]:
 		caption = "%s增益結束 −%d" % [{"attack_up_expired": "攻擊", "defense_up_expired": "防禦", "resist_up_expired": "抗性"}[event["kind"]], int(event["before"]) >> 16]
 	elif _words:

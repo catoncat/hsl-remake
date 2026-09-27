@@ -7,15 +7,19 @@ extends Control
 ## (docs/OPTIONS.md), read as the window opens: 合成一窗，可暫緩 shows every pending point in one
 ## window and lets right click／Esc close it with the points kept (Status 成長點 reopens it).
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_growth_window.md; remake-invented docs/OPTIONS.md (OPT-GROWTH=合成一窗，可暫緩 only: one window for every pending point, right click／Esc postpone them)
-##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md; resource-derived content/imported/hsl/shared/panels/manifest.json; runtime-measured docs/evidence_packets/static_reverse/original_growth_window.md#8-录屏对照r7-ui (unavailable buttons are not drawn: ＋ needs a point left, － a draft point on its row, OK all placed)
-##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H; static-derived docs/evidence_packets/static_reverse/original_growth_window.md
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
+##   rules: remake-invented docs/OPTIONS.md
+##     (OPT-GROWTH=合成一窗，可暫緩 only: one window for every pending point, right click／Esc postpone them)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_growth_window.md#8-录屏对照r7-ui
+##     (unavailable buttons are not drawn: ＋ needs a point left, － a draft point on its row, OK all placed)
+##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
+##   strings: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
 signal allocation_requested(unit_id: String, allocation: Dictionary)
-const Growth = preload("res://game/sim/ProgressionRules.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const EquipmentCatalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const ATTRIBUTES := ["str", "dex", "mind", "con"]
 const DERIVED := ["attack", "defense", "magic", "speed", "move"]
@@ -57,25 +61,25 @@ var shown_level := 0
 func _ready() -> void:
 	size = Vector2(640, 480)
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	UISkin.clear_panel(self)
-	UISkin.asset(self, "WINDOW21", LEFT)
+	BattleUISkin.clear_panel(self)
+	BattleUISkin.asset(self, "WINDOW21", LEFT)
 	for index in range(ATTRIBUTES.size() + DERIVED.size()):
 		var top := LEFT.y + 8 + index * ROW_HEIGHT
 		var attribute_row := index < ATTRIBUTES.size()
-		var value := UISkin.text(self, Vector2(ATTRIBUTE_VALUE_X if attribute_row else DERIVED_VALUE_X, top), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(60, GLYPH_ROW))
+		var value := BattleUISkin.text(self, Vector2(ATTRIBUTE_VALUE_X if attribute_row else DERIVED_VALUE_X, top), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(60, GLYPH_ROW))
 		if attribute_row:
 			var key: String = ATTRIBUTES[index]
-			var plus := _button(UISkin.ROOT + "BT_ADD1.SHP.png", Vector2(BUTTON_X[0], BUTTON_Y + index * ROW_HEIGHT))
+			var plus := _button(BattleUISkin.ROOT + "BT_ADD1.SHP.png", Vector2(BUTTON_X[0], BUTTON_Y + index * ROW_HEIGHT))
 			plus.pressed.connect(_adjust.bind(key, 1))
-			var minus := _button(UISkin.data()["assets"]["BT_ADD2"]["res_path"], Vector2(BUTTON_X[1], BUTTON_Y + index * ROW_HEIGHT))
+			var minus := _button(BattleUISkin.data()["assets"]["BT_ADD2"]["res_path"], Vector2(BUTTON_X[1], BUTTON_Y + index * ROW_HEIGHT))
 			minus.pressed.connect(_adjust.bind(key, -1))
 			choices[key] = {"plus": plus, "minus": minus, "value": value}
 		else:
 			derived_values[DERIVED[index - ATTRIBUTES.size()]] = value
-	confirm_button = _button(UISkin.ROOT + "BT_OK.SHP.png", OK_AT)
+	confirm_button = _button(BattleUISkin.ROOT + "BT_OK.SHP.png", OK_AT)
 	confirm_button.pressed.connect(_confirm)
-	UISkin.asset(self, "WINDOW41", POINTS_BOX)
-	remaining_label = UISkin.text(self, POINTS_BOX + Vector2(128, 6), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(72, 24))
+	BattleUISkin.asset(self, "WINDOW41", POINTS_BOX)
+	remaining_label = BattleUISkin.text(self, POINTS_BOX + Vector2(128, 6), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(72, 24))
 	remaining_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	magic_box = _message_box("WINDOW31", MAGIC_BOX)
 	special_box = _message_box("WINDOW50", SPECIAL_BOX)
@@ -99,8 +103,8 @@ func _message_box(resource: String, at: Vector2) -> Control:
 	box.position = at
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(box)
-	if resource == "WINDOW31": UISkin.asset(box, resource, Vector2.ZERO)
-	else: UISkin.board(box, resource, Vector2.ZERO)
+	if resource == "WINDOW31": BattleUISkin.asset(box, resource, Vector2.ZERO)
+	else: BattleUISkin.board(box, resource, Vector2.ZERO)
 	box.hide()
 	return box
 
@@ -122,10 +126,10 @@ func show_unit(unit: Dictionary, book: Dictionary = {}) -> void:
 	postpone_allowed = not GameOptions.is_original("OPT-GROWTH")
 	source_unit = unit.duplicate(true)
 	var pending := int(source_unit.get("pending_stat_points", 0))
-	window_points = pending if postpone_allowed else mini(Growth.POINTS_PER_LEVEL, pending)
+	window_points = pending if postpone_allowed else mini(ProgressionRules.POINTS_PER_LEVEL, pending)
 	# The original raises the level as each window opens: the windows still to come after
 	# this one are levels the remake has already settled, shown here one below per window.
-	var later_windows := 0 if postpone_allowed else ceili(float(pending - window_points) / Growth.POINTS_PER_LEVEL)
+	var later_windows := 0 if postpone_allowed else ceili(float(pending - window_points) / ProgressionRules.POINTS_PER_LEVEL)
 	shown_level = int(source_unit["level"]) - later_windows
 	skill_book = book
 	draft.clear()
@@ -137,28 +141,28 @@ func _adjust(key: String, amount: int) -> void:
 	var proposed := draft.duplicate()
 	proposed[key] = int(proposed.get(key, 0)) + amount
 	if int(proposed[key]) <= 0: proposed.erase(key)
-	var cost := Growth.allocation_cost(proposed)
-	if cost < 0 or cost > window_points or not Growth.can_allocate(source_unit, proposed):
+	var cost := ProgressionRules.allocation_cost(proposed)
+	if cost < 0 or cost > window_points or not ProgressionRules.can_allocate(source_unit, proposed):
 		return
 	draft = proposed
 	_refresh()
 
 
 func _refresh() -> void:
-	var remaining := window_points - Growth.allocation_cost(draft)
-	var preview := Growth.apply_allocation(source_unit, draft, EquipmentCatalog.items())
+	var remaining := window_points - ProgressionRules.allocation_cost(draft)
+	var preview := ProgressionRules.apply_allocation(source_unit, draft, EquipmentCatalog.items())
 	var caps: Dictionary = source_unit.get("growth_profile", {}).get("caps", {})
 	var profile: Dictionary = preview["combat_profile"]
 	for key in ATTRIBUTES:
 		var value := int(profile[key])
 		var cap := int(caps.get(key, value + 1))
 		# 0x434bf0: at cap → @2 red; within 50 of cap → @5 yellow; otherwise default white.
-		var color := UISkin.TEXT_RED if value >= cap else (UISkin.TEXT_YELLOW if value >= cap - 50 else UISkin.TEXT_WHITE)
+		var color := BattleUISkin.TEXT_RED if value >= cap else (BattleUISkin.TEXT_YELLOW if value >= cap - 50 else BattleUISkin.TEXT_WHITE)
 		choices[key]["value"].text = str(value)
 		choices[key]["value"].add_theme_color_override("font_color", color)
 		var plus_draft := draft.duplicate()
 		plus_draft[key] = int(plus_draft.get(key, 0)) + 1
-		_set_enabled(choices[key]["plus"], remaining > 0 and Growth.can_allocate(source_unit, plus_draft))
+		_set_enabled(choices[key]["plus"], remaining > 0 and ProgressionRules.can_allocate(source_unit, plus_draft))
 		_set_enabled(choices[key]["minus"], int(draft.get(key, 0)) > 0)
 	derived_values["attack"].text = str(int(profile["live_attack_damage"]))
 	derived_values["defense"].text = str(int(profile["live_defense"]))
@@ -167,10 +171,10 @@ func _refresh() -> void:
 	derived_values["move"].text = str(int(preview["move_point"]))
 	remaining_label.text = str(remaining)
 	# The original OK only lights once every point is placed; empty drafts cannot be submitted.
-	_set_enabled(confirm_button, remaining == 0 and Growth.allocation_cost(draft) > 0)
+	_set_enabled(confirm_button, remaining == 0 and ProgressionRules.allocation_cost(draft) > 0)
 	var magics: Array = source_unit.get("learned_skills", []).filter(func(row): return str(row["id"]).begins_with("magic:") and row.get("trigger") == "level_up" and int(row["level"]) == shown_level)
 	_show_messages(magic_box, "學會魔法:", magics.map(func(row): return str(row["name"])))
-	var specials: Array = Growth.Learning.acquire(preview, skill_book, "special")["added"] if not skill_book.is_empty() else []
+	var specials: Array = ProgressionRules.Learning.acquire(preview, skill_book, "special")["added"] if not skill_book.is_empty() else []
 	_show_messages(special_box, "學會特殊技:", specials.map(func(row): return str(row["name"])))
 	vitals.show_unit(_shown_unit())
 
@@ -181,7 +185,7 @@ func _shown_unit() -> Dictionary:
 	if shown_level == int(source_unit["level"]): return source_unit
 	var shown := source_unit.duplicate()
 	for level in range(shown_level, int(source_unit["level"])):
-		shown["exp"] = int(shown["exp"]) + Growth.exp_to_next(level)
+		shown["exp"] = int(shown["exp"]) + ProgressionRules.exp_to_next(level)
 	shown["level"] = shown_level
 	return shown
 
@@ -200,7 +204,7 @@ func _show_messages(box: Control, heading: String, names: Array) -> void:
 	if names.is_empty(): return
 	var lines: Array = [heading] + names
 	for index in range(lines.size()):
-		UISkin.text(box, Vector2(8, 10 + index * MESSAGE_ROW), UISkin.TEXT_GREEN if index == 0 else UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(360, 24)).text = str(lines[index])
+		BattleUISkin.text(box, Vector2(8, 10 + index * MESSAGE_ROW), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(360, 24)).text = str(lines[index])
 
 
 func _confirm() -> void:

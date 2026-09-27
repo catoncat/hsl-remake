@@ -1,10 +1,16 @@
 extends RefCounted
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_mechanics_audit.md; remake-invented (Home recenter, clamp)
-##   layout: runtime-measured docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md (logical 640×480 → world → grid chain)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md; runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (focus moves 32→24→12→6→2 px per frame; during an AI walk it follows the path at ≈4 px per tick); static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md; remake-invented (Home recenter and save restore snap; the ×2 modifier-key scroll rate is not wired)
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_mechanics_audit.md
+##   rules: remake-invented (Home recenter, clamp)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md
+##     (logical 640×480 → world → grid chain)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (focus moves 32→24→12→6→2 px per frame; during an AI walk it follows the path at ≈4 px per tick)
+##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##   timing: remake-invented (Home recenter and save restore snap; the ×2 modifier-key scroll rate is not wired)
 ##
 ## Every write of the battle camera's position goes through this controller: `scroll_to` /
 ## `scroll_to_grid` (the original's per-tick glide; the speed token passes its own step and

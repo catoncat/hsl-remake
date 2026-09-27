@@ -10,8 +10,8 @@
 #
 # Every mode runs every check and every suite (tools/verify_runner.py enumerates them from the
 # repository data, not from a hand-written list). Nothing is deleted on exit: the import cache
-# stays warm for the next focused test or gate run. See docs/CONSOLIDATION.md P0 and
-# docs/PLAYABILITY.md R0.
+# stays warm for the next focused test or gate run. See docs/internal/CONSOLIDATION.md P0 and
+# docs/internal/PLAYABILITY.md R0.
 #
 # At most two runs execute at once on this machine (tools/verify_slot.sh): the lead gate
 # (HSL_VERIFY_PRIORITY=1, set by tools/lane_merge.sh gate) has its own slot, every other run

@@ -9,11 +9,14 @@ extends RefCounted
 ## tracked object at its insertion tick and reads the frame the clip has reached; nothing here
 ## owns combat truth, a clock or a random stream.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived content/generated/hsl/skills/effect_motion.json; static-derived docs/evidence_packets/static_reverse/original_effect_motion.md; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; provisional (one RNG seed per root: random spark angles and spawn offsets replay identically for every instance; a member hsl.pak lacks cycles the series' existing members like the untracked player)
-##   strings: n/a
-##   timing: static-derived content/generated/hsl/skills/effect_motion.json; provisional (±1 frame where the original plane-list order differs from the probe's)
-##   audio: n/a
+##   layout: static-derived content/generated/hsl/skills/effect_motion.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   layout: provisional
+##     (one RNG seed per root: random spark angles and spawn offsets replay identically for every instance; a member
+##     hsl.pak lacks cycles the series' existing members like the untracked player)
+##   timing: static-derived content/generated/hsl/skills/effect_motion.json
+##   timing: provisional (±1 frame where the original plane-list order differs from the probe's)
 const PATH := "res://content/generated/hsl/skills/effect_motion.json"
 ## PROCESS.DEF eng* bits the tracks carry (resource-derived names; the effect process ORs
 ## engADDCOLOR into every object's mode at 0x415e52).

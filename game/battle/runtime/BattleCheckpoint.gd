@@ -6,17 +6,15 @@ extends RefCounted
 ## saved: the restored loop keeps the running battle's live words, so the AI's choices
 ## after a load may differ from the ones before the save.
 ## provenance:
-##   rules: remake-invented (versioned checksummed single-battle save format; the original has no in-battle save); static-derived docs/evidence_packets/static_reverse/original_damage_random.md; static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+##   rules: remake-invented (versioned checksummed single-battle save format; the original has no in-battle save)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
+const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const MAGIC := "HSL-BATTLE-1\n"
 const MAX_BYTES := 16 * 1024 * 1024
 ## v6: the NPC birth receipts (entry_growth／entry_readjust, initial_roster_growth, script
@@ -34,13 +32,13 @@ const MAX_BYTES := 16 * 1024 * 1024
 ## key is WinfailScenarioRules.TERMINAL_DIALOGUE_KEY. v3 wrote the outcome as a key
 ## string ("victory_escape" …) and is refused by name like v1 (first-battle skill
 ## manifests in the digest) and v2 (whole loop written): no save migration exists. The snapshot
-## carries the state half of the loop only — every key outside Loop.CONFIG_SHARED. The
+## carries the state half of the loop only — every key outside BattlePlayLoop.CONFIG_SHARED. The
 ## read-only configuration (terrain, skill book, catalogs, script sources …) is the
 ## running battle's own, matched by the configuration digest and shared back into the
 ## restored loop by reference (docs/architecture/BATTLE_CONFIG_STATE.md).
 const SCHEMA := "hsl_battle_checkpoint.v6"
 const RETIRED_SCHEMAS := ["hsl_battle_checkpoint.v1", "hsl_battle_checkpoint.v2", "hsl_battle_checkpoint.v3", "hsl_battle_checkpoint.v4", "hsl_battle_checkpoint.v5"]
-const CONFIG_KEYS := Loop.CONFIG_KEYS
+const CONFIG_KEYS := BattlePlayLoop.CONFIG_KEYS
 
 
 static func digest(bytes: PackedByteArray) -> String:
@@ -55,15 +53,15 @@ static func configuration(loop: Dictionary) -> String:
 	for key in CONFIG_KEYS:
 		if not loop.has(key): return ""
 		fields.append(loop[key])
-	if loop.get("script_wait_source", {}).get("policy") != Loop.ScriptWait.POLICY: return ""
+	if loop.get("script_wait_source", {}).get("policy") != BattlePlayLoop.ScriptWait.POLICY: return ""
 	fields.append(loop["script_wait_source"])
 	if loop.get("entry_growth_data",{}).get("schema") != "hsl_entry_growth_sources.v1": return ""
 	fields.append(loop["entry_growth_data"])
 	if loop.has("script_actor_source"):
-		if loop["script_actor_source"].get("policy") != Loop.ScriptActors.POLICY: return ""
+		if loop["script_actor_source"].get("policy") != BattlePlayLoop.ScriptActors.POLICY: return ""
 		fields.append(loop["script_actor_source"])
 	if loop.has("treasure_source"):
-		if Loop.Treasure.source_error(loop[LoopKeys.TREASURE_SOURCE], loop["equipment_items"], loop[LoopKeys.MAP_SIZE]) != "": return ""
+		if BattlePlayLoop.Treasure.source_error(loop[LoopKeys.TREASURE_SOURCE], loop["equipment_items"], loop[LoopKeys.MAP_SIZE]) != "": return ""
 		fields.append(loop[LoopKeys.TREASURE_SOURCE])
 	if loop.get("rule_adapter") == "winfail":
 		var source: Variant = loop.get("script_presentation_source")
@@ -78,7 +76,7 @@ static func configuration(loop: Dictionary) -> String:
 static func state(loop: Dictionary) -> Dictionary:
 	var out := {}
 	for key in loop:
-		if not Loop.CONFIG_SHARED.has(key) and key != GlobalRandom.LOOP_KEY:
+		if not BattlePlayLoop.CONFIG_SHARED.has(key) and key != GlobalRandomStream.LOOP_KEY:
 			out[key] = loop[key]
 	return out
 
@@ -89,14 +87,14 @@ static func state(loop: Dictionary) -> Dictionary:
 ## battle's blocks are the saved ones.
 static func restored(saved: Dictionary, current: Dictionary) -> Dictionary:
 	var loop := {}
-	for key in Loop.CONFIG_SHARED:
+	for key in BattlePlayLoop.CONFIG_SHARED:
 		if current.has(key):
 			loop[key] = current[key]
 	for key in saved:
-		if not Loop.CONFIG_SHARED.has(key) and key != GlobalRandom.LOOP_KEY:
+		if not BattlePlayLoop.CONFIG_SHARED.has(key) and key != GlobalRandomStream.LOOP_KEY:
 			loop[key] = saved[key]
-	if GlobalRandom.valid(current.get(GlobalRandom.LOOP_KEY)):
-		loop[GlobalRandom.LOOP_KEY] = (current[GlobalRandom.LOOP_KEY] as Array).duplicate()
+	if GlobalRandomStream.valid(current.get(GlobalRandomStream.LOOP_KEY)):
+		loop[GlobalRandomStream.LOOP_KEY] = (current[GlobalRandomStream.LOOP_KEY] as Array).duplicate()
 	return loop
 
 
@@ -135,13 +133,13 @@ static func validate(snapshot: Variant, current: Dictionary) -> String:
 		if not loop.get(key) is Array: return "missing_saved_array"
 	if loop[LoopKeys.UNITS].is_empty() or loop[LoopKeys.UNITS].size() > 4096 or not loop[LoopKeys.GIVE_SESSION].is_empty(): return "unsupported_saved_roster"
 	# Before the placement checks: they read the map through the saved edits.
-	var terrain_error := Loop.TerrainEdits.state_error(loop)
+	var terrain_error := BattlePlayLoop.TerrainEdits.state_error(loop)
 	if terrain_error != "": return terrain_error
 	if loop.get(LoopKeys.INTERACTION) not in [Interaction.ACTION_MENU, Interaction.AI_RESOLVING, Interaction.BATTLE_RESULT]: return "unsupported_save_boundary"
 	for key in ["turn", "item_revision"]:
-		if not Loop.RewardRules.integer(loop.get(key)): return "invalid_saved_counter"
-	if not DamageRandom.valid(loop.get(DamageRandom.LOOP_KEY)): return "invalid_saved_damage_rng"
-	if not GlobalRandom.valid(loop.get(GlobalRandom.LOOP_KEY)): return "missing_live_global_rng"
+		if not BattlePlayLoop.RewardRules.integer(loop.get(key)): return "invalid_saved_counter"
+	if not DamageRandomStream.valid(loop.get(DamageRandomStream.LOOP_KEY)): return "invalid_saved_damage_rng"
+	if not GlobalRandomStream.valid(loop.get(GlobalRandomStream.LOOP_KEY)): return "missing_live_global_rng"
 	for key in ["pending_move", "moved_this_action", "attacked_this_action"]:
 		if not loop.get(key) is bool: return "invalid_saved_action"
 	if not loop.get("action_attacker_id", "") is String: return "invalid_saved_action"
@@ -153,78 +151,78 @@ static func validate(snapshot: Variant, current: Dictionary) -> String:
 		ids.append(actor["id"])
 		if not actor.get("coord") is Vector2i or not actor.get("combat_profile") is Dictionary or not actor.get("defeated") is bool: return "invalid_saved_actor"
 		for key in ["hp", "max_hp", "level", "exp", "pending_stat_points", "live_speed", "move_point"]:
-			if not Loop.RewardRules.integer(actor.get(key)): return "invalid_saved_vitals"
-		if actor["hp"] > actor["max_hp"] or actor["defeated"] != (actor["hp"] == 0) or Loop.StatusEffectRules.input_error(actor) != "": return "inconsistent_saved_vitals"
-		if Loop.TraversalRules.actor_error(actor, loop[LoopKeys.SKILL_BOOK]) != "": return "invalid_saved_actor_traversal"
-		if Loop.ExperienceRules.actor_error(actor) != "" or not Loop.ExperienceRules.multiplier(actor, loop["equipment_items"])["ok"]: return "invalid_saved_experience"
-		if Loop.CoreCombatRules.input_error(actor) != "": return "invalid_saved_physical_profile"
-		if not Loop.attack_count(loop, actor)["ok"]: return "invalid_saved_extra_attack_source"
-		if not Loop.weapon_pattern(loop, actor)["ok"]: return "invalid_saved_weapon_range"
-		if not Loop.ExtraActionRules.equipment(actor, loop["equipment_items"])["ok"]: return "invalid_saved_extra_action_source"
-		if Loop._resource_input_error(loop, actor) != "": return "invalid_saved_resource_state"
-		var placement := Loop.TraversalRules.placement_error(actor, loop[LoopKeys.UNITS], Loop.TerrainEdits.tiles(loop), loop[LoopKeys.MAP_SIZE], true)
+			if not BattlePlayLoop.RewardRules.integer(actor.get(key)): return "invalid_saved_vitals"
+		if actor["hp"] > actor["max_hp"] or actor["defeated"] != (actor["hp"] == 0) or BattlePlayLoop.StatusEffectRules.input_error(actor) != "": return "inconsistent_saved_vitals"
+		if BattlePlayLoop.TraversalRules.actor_error(actor, loop[LoopKeys.SKILL_BOOK]) != "": return "invalid_saved_actor_traversal"
+		if BattlePlayLoop.ExperienceRules.actor_error(actor) != "" or not BattlePlayLoop.ExperienceRules.multiplier(actor, loop["equipment_items"])["ok"]: return "invalid_saved_experience"
+		if BattlePlayLoop.CoreCombatRules.input_error(actor) != "": return "invalid_saved_physical_profile"
+		if not BattlePlayLoop.attack_count(loop, actor)["ok"]: return "invalid_saved_extra_attack_source"
+		if not BattlePlayLoop.weapon_pattern(loop, actor)["ok"]: return "invalid_saved_weapon_range"
+		if not BattlePlayLoop.ExtraActionRules.equipment(actor, loop["equipment_items"])["ok"]: return "invalid_saved_extra_action_source"
+		if BattlePlayLoop._resource_input_error(loop, actor) != "": return "invalid_saved_resource_state"
+		var placement := BattlePlayLoop.TraversalRules.placement_error(actor, loop[LoopKeys.UNITS], BattlePlayLoop.TerrainEdits.tiles(loop), loop[LoopKeys.MAP_SIZE], true)
 		if placement != "": return placement
-		var mobility_error := Loop.MobilityRules.saved_error(actor, loop["equipment_items"])
+		var mobility_error := BattlePlayLoop.MobilityRules.saved_error(actor, loop["equipment_items"])
 		if mobility_error != "": return mobility_error
 		var ai_profile: Dictionary = loop["ai_profiles"]["actors"].get(str(actor.get("actor_id", "")), {}).get("profile", {})
-		if Loop.AINavigationRules.state_error(actor, int(Loop.AINavigationRules.instance_profile(actor, ai_profile).get("ai_fixed", 0))) != "": return "invalid_saved_ai_navigation"
-		if actor.has("growth_profile") and Loop.ProgressionRules.refresh_input_error(actor, loop["equipment_items"]) != "": return "invalid_saved_growth"
-		var learning_error := Loop.ProgressionRules.Learning.input_error(actor, loop[LoopKeys.SKILL_BOOK].get("learning", {}))
+		if BattlePlayLoop.AINavigationRules.state_error(actor, int(BattlePlayLoop.AINavigationRules.instance_profile(actor, ai_profile).get("ai_fixed", 0))) != "": return "invalid_saved_ai_navigation"
+		if actor.has("growth_profile") and BattlePlayLoop.ProgressionRules.refresh_input_error(actor, loop["equipment_items"]) != "": return "invalid_saved_growth"
+		var learning_error := BattlePlayLoop.ProgressionRules.Learning.input_error(actor, loop[LoopKeys.SKILL_BOOK].get("learning", {}))
 		if learning_error != "": return learning_error
-	var reward_error := Loop._reward_input_error(loop)
+	var reward_error := BattlePlayLoop._reward_input_error(loop)
 	for receipt in [loop.get(LoopKeys.LAST_ATTACK, {}), loop.get(LoopKeys.LAST_COMBAT, {})]:
-		var sequence_error := Loop.SkillResolutionRules.Repeated.receipt_error(receipt)
+		var sequence_error := BattlePlayLoop.SkillResolutionRules.RepeatedSpecialRules.receipt_error(receipt)
 		if sequence_error != "": return sequence_error
-		var stat_error := Loop.SkillResolutionRules.StatMagic.receipt_error(receipt,loop[LoopKeys.SKILL_BOOK])
+		var stat_error := BattlePlayLoop.SkillResolutionRules.StatMagic.receipt_error(receipt,loop[LoopKeys.SKILL_BOOK])
 		if stat_error != "": return stat_error
 	if not ids.has(loop.get("player_unit_id")): return "invalid_saved_primary_actor"
 	for known_id in loop[LoopKeys.KNOWN_UNIT_IDS]:
 		if not known_id is String or not ids.has(known_id) or loop[LoopKeys.KNOWN_UNIT_IDS].count(known_id) != 1: return "invalid_saved_known_units"
 	if reward_error != "": return reward_error
 	var queue: Dictionary = loop["turn_queue"]
-	if not queue.get("slots") is Array or not Loop.RewardRules.integer(queue.get("index"), 0, queue["slots"].size()) or not Loop.RewardRules.integer(queue.get("round")): return "invalid_saved_queue"
-	if Loop.CoreTurnQueue.cancellation_input_error(queue) != "": return "invalid_saved_queue_eligibility"
-	var presence_error := Loop.Presence.state_error(loop)
+	if not queue.get("slots") is Array or not BattlePlayLoop.RewardRules.integer(queue.get("index"), 0, queue["slots"].size()) or not BattlePlayLoop.RewardRules.integer(queue.get("round")): return "invalid_saved_queue"
+	if BattlePlayLoop.CoreTurnQueue.cancellation_input_error(queue) != "": return "invalid_saved_queue_eligibility"
+	var presence_error := BattlePlayLoop.Presence.state_error(loop)
 	if presence_error != "": return presence_error
-	var wait_error := Loop.ScriptWait.state_error(loop)
+	var wait_error := BattlePlayLoop.ScriptWait.state_error(loop)
 	if wait_error != "": return wait_error
-	var initialization_error := Loop.ReinforcementGrowth.state_error(loop)
+	var initialization_error := BattlePlayLoop.ReinforcementGrowth.state_error(loop)
 	if initialization_error != "": return initialization_error
-	var initial_error := Loop.InitialRosterGrowth.state_error(loop)
+	var initial_error := BattlePlayLoop.InitialRosterGrowth.state_error(loop)
 	if initial_error != "": return initial_error
-	var script_actor_error := Loop.ScriptActors.state_error(loop)
+	var script_actor_error := BattlePlayLoop.ScriptActors.state_error(loop)
 	if script_actor_error != "": return script_actor_error
 	var queued_ids: Array = []
 	for slot in queue["slots"]:
 		if not slot is Dictionary or not ids.has(slot.get("id")): return "invalid_saved_queue_actor"
 		if queued_ids.has(slot["id"]): return "duplicate_saved_queue_actor"
 		queued_ids.append(slot["id"])
-	if loop[LoopKeys.INTERACTION] == Interaction.ACTION_MENU and (not ids.has(loop[LoopKeys.SELECTED_UNIT_ID]) or Loop.CoreTurnQueue.current(queue).get("id") != loop[LoopKeys.SELECTED_UNIT_ID]): return "invalid_saved_current_actor"
-	if loop[LoopKeys.INTERACTION] == Interaction.ACTION_MENU and Loop.StatusEffectRules.paralyzed(Loop.unit(loop, loop[LoopKeys.SELECTED_UNIT_ID])): return "invalid_saved_paralysis_phase"
+	if loop[LoopKeys.INTERACTION] == Interaction.ACTION_MENU and (not ids.has(loop[LoopKeys.SELECTED_UNIT_ID]) or BattlePlayLoop.CoreTurnQueue.current(queue).get("id") != loop[LoopKeys.SELECTED_UNIT_ID]): return "invalid_saved_current_actor"
+	if loop[LoopKeys.INTERACTION] == Interaction.ACTION_MENU and BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(loop, loop[LoopKeys.SELECTED_UNIT_ID])): return "invalid_saved_paralysis_phase"
 	var settled: Dictionary = loop[LoopKeys.SETTLEMENT]
 	if not settled.is_empty():
-		if not Loop.RewardRules.integer(settled.get("sequence"), 1) or not Loop.RewardRules.integer(settled.get("revision")) or not settled.get("closed") is bool: return "invalid_saved_settlement"
-		var settlement_error := Loop.Treasure.settlement_error(loop)
+		if not BattlePlayLoop.RewardRules.integer(settled.get("sequence"), 1) or not BattlePlayLoop.RewardRules.integer(settled.get("revision")) or not settled.get("closed") is bool: return "invalid_saved_settlement"
+		var settlement_error := BattlePlayLoop.Treasure.settlement_error(loop)
 		if settlement_error != "": return settlement_error
 		for key in ["pending", "claimed", "abandoned", "kills"]:
 			if not settled.get(key) is Array: return "invalid_saved_loot"
 		var entries: Array = []
 		for item in settled["pending"]:
-			if not item is Dictionary or not item.get("id") is String or entries.has(item["id"]) or not Loop.RewardRules.integer(item.get("code"), 1) or not loop["equipment_items"].has(str(item["code"])): return "invalid_saved_loot_entry"
+			if not item is Dictionary or not item.get("id") is String or entries.has(item["id"]) or not BattlePlayLoop.RewardRules.integer(item.get("code"), 1) or not loop["equipment_items"].has(str(item["code"])): return "invalid_saved_loot_entry"
 			entries.append(item["id"])
 	var rewarded: Array = []
 	for id in loop["rewarded_unit_ids"]:
-		if not ids.has(id) or rewarded.has(id) or not Loop.unit(loop, id)["defeated"]: return "invalid_saved_death_ledger"
+		if not ids.has(id) or rewarded.has(id) or not BattlePlayLoop.unit(loop, id)["defeated"]: return "invalid_saved_death_ledger"
 		rewarded.append(id)
 	if not view.get("camera") is Vector2 or not view.get("shown_story_events") is Array: return "invalid_saved_presentation"
 	if view.has("growth_offered_levels"):
 		if not view["growth_offered_levels"] is Dictionary: return "invalid_saved_presentation"
 		for id in view["growth_offered_levels"]:
-			if not ids.has(id) or not Loop.RewardRules.integer(view["growth_offered_levels"][id], 1): return "invalid_saved_presentation"
-	elif not Loop.RewardRules.integer(view.get("growth_notified_level"), 1): return "invalid_saved_presentation"
+			if not ids.has(id) or not BattlePlayLoop.RewardRules.integer(view["growth_offered_levels"][id], 1): return "invalid_saved_presentation"
+	elif not BattlePlayLoop.RewardRules.integer(view.get("growth_notified_level"), 1): return "invalid_saved_presentation"
 	if view.get("treasure_presented_sequence", 0) != loop.get(LoopKeys.TREASURES, {}).get("receipts", []).size(): return "pending_saved_treasure_presentation"
 	var fired: Array = loop.get(LoopKeys.WINFAIL_RUNTIME, {}).get("fired", [])
-	if not Loop.RewardRules.integer(view.get("script_cutscene_consumed", 0), 0, fired.size()): return "invalid_saved_script_cursor"
+	if not BattlePlayLoop.RewardRules.integer(view.get("script_cutscene_consumed", 0), 0, fired.size()): return "invalid_saved_script_cursor"
 	var playable: Array = loop.get("script_presentation_source", {}).get("playable_keys", [])
 	for index in range(fired.size()):
 		if not fired[index] is Dictionary or not fired[index].get("key") is String: return "invalid_saved_script_firing"

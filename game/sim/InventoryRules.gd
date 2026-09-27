@@ -2,11 +2,8 @@ extends RefCounted
 ## Original actor +0x138: eight item-code slots. Zero is empty.
 ## 0x436e30 inserts at the first empty slot; 0x436e80 removes and shifts left.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_inventory_equipment.md; static-derived docs/evidence_packets/static_reverse/original_item_actions.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_inventory_equipment.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_item_actions.md
 
 const CAPACITY := 8
 

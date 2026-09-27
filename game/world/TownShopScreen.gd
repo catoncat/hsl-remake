@@ -39,11 +39,18 @@ extends Control
 ## is only kept for summary(). Original frames of the 狀態／裝備／倉庫 pages:
 ## docs/evidence_packets/runtime_observations/original_world_town/README.md (15–17).
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md; static-derived docs/evidence_packets/static_reverse/original_storage_window.md (mode 0 boards, nine buttons at y 429 x 272／320／389／457／389／437／505／553／601, page flags, equipment slot hand rules); runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md (boards over the undimmed big map; buttons at y 429; price right edge x 594; hover description); remake-invented (dimmed 裝備／倉庫／丟棄; no ↓ mark; mode 0: dimmed 倉庫, magic／special lists on the plain WINDOW20 board — the original's shape-table boards 5／10 are not read)
-##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT; resource-derived content/imported/hsl/global/world_map/town_messages.json; remake-invented (tooltips of the dimmed buttons)
-##   timing: n/a
-##   audio: n/a
+##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_storage_window.md
+##     (mode 0 boards, nine buttons at y 429 x 272／320／389／457／389／437／505／553／601, page flags, equipment slot hand
+##     rules)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
+##     (boards over the undimmed big map; buttons at y 429; price right edge x 594; hover description)
+##   layout: remake-invented
+##     (dimmed 裝備／倉庫／丟棄; no ↓ mark; mode 0: dimmed 倉庫, magic／special lists on the plain WINDOW20 board — the original's
+##     shape-table boards 5／10 are not read)
+##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
+##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
+##   strings: remake-invented (tooltips of the dimmed buttons)
 signal buy_requested(item_id: int, unit_id: String)
 signal sell_requested(unit_id: String, slot: int)
 signal close_requested
@@ -51,20 +58,20 @@ signal close_requested
 signal equip_requested(unit_id: String, inventory_index: int, code: int)
 signal unequip_requested(unit_id: String, slot: String)
 
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const Loot = preload("res://game/battle/scene/BattleLootPanel.gd")
-const Vitals = preload("res://game/battle/scene/BattleVitals.gd")
-const EquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
-const ItemText = preload("res://game/battle/scene/BattleItemText.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleLootPanel = preload("res://game/battle/scene/BattleLootPanel.gd")
+const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
+const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
+const BattleItemText = preload("res://game/battle/scene/BattleItemText.gd")
 const EquipmentCatalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
 const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
-const PlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
 const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
-const JobStats = preload("res://game/sim/JobStatsRules.gd")
+const JobStatsRules = preload("res://game/sim/JobStatsRules.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
-const PartyRules = preload("res://game/world/WorldPartyRules.gd")
-const Combat = preload("res://game/sim/CoreCombatRules.gd")
-const Growth = preload("res://game/battle/scene/BattleGrowthPanel.gd")
+const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const BattleGrowthPanel = preload("res://game/battle/scene/BattleGrowthPanel.gd")
 
 ## 0x42ab40 param_1; the page is the root's +0x94 (Data6 of the button that set it).
 const MODE_ARRANGE := 0
@@ -77,7 +84,7 @@ const PAGE_EQUIP := 10
 const PAGE_TRADE := 11
 
 ## Frames 08／12 (weapon and armour shops): every price's glyphs end at x 594 — ten pixels
-## right of the loot window's count column (Loot.COUNT_RIGHT, x 584); the cell ends there.
+## right of the loot window's count column (BattleLootPanel.COUNT_RIGHT, x 584); the cell ends there.
 const PRICE_RIGHT := 342
 ## Frames 08／12: the six status buttons' red frames span x 263–304, 311–352, 376–417, 424–465,
 ## 472–513 and 568–609 over y 408–449 (42×42 icons centred on these points); the cell between
@@ -140,7 +147,7 @@ var shop_catalog: Dictionary = {}
 var unit_id := ""
 var vitals_error := ""
 var message := ""
-var message_color := UISkin.TEXT_WHITE
+var message_color := BattleUISkin.TEXT_WHITE
 var buttons: Dictionary = {}
 var goods_rows: Array[Button] = []
 var bag_slots: Array[Button] = []
@@ -186,7 +193,7 @@ func open(shop_title: String, shop_goods: Array[int], next_carry: Dictionary, sh
 	if scenario_path == "":
 		vitals_error = "unknown_source_scenario"
 	else:
-		var box := PartyEquipmentRules.sandbox(PlayLoop.create([], "", BattleScenario.load_file(scenario_path)), next_carry)
+		var box := PartyEquipmentRules.sandbox(BattlePlayLoop.create([], "", BattleScenario.load_file(scenario_path)), next_carry)
 		if bool(box["ok"]):
 			_loop = box["loop"]
 		else:
@@ -196,7 +203,7 @@ func open(shop_title: String, shop_goods: Array[int], next_carry: Dictionary, sh
 
 ## Redraws for a new carry (after every transaction); `next_message` is the board line to show
 ## in `next_color` (the host's: RESOURCE 606 is coded @2 red, 607 @5 yellow).
-func show_carry(next_carry: Dictionary, next_message: String, next_color: Color = UISkin.TEXT_WHITE) -> void:
+func show_carry(next_carry: Dictionary, next_message: String, next_color: Color = BattleUISkin.TEXT_WHITE) -> void:
 	carry = next_carry.duplicate(true)
 	message = next_message
 	message_color = next_color
@@ -227,7 +234,7 @@ func show_loop(next_carry: Dictionary, loop: Dictionary, next_message: String = 
 	carry = next_carry.duplicate(true)
 	_loop = loop
 	message = next_message
-	message_color = UISkin.TEXT_WHITE
+	message_color = BattleUISkin.TEXT_WHITE
 	_hand = {}
 	last_refusal = ""
 	var ids := member_ids()
@@ -284,7 +291,7 @@ static func _shown_on(flags: int, on_page: int) -> bool:
 func member_ids() -> Array:
 	if mode == MODE_ARRANGE:
 		return [] if _loop.is_empty() else PartyEquipmentRules.members(_loop).map(func(unit): return str(unit["id"]))
-	return PartyRules.members(carry, speakers).map(func(member): return str(member["unit_id"]))
+	return WorldPartyRules.members(carry, speakers).map(func(member): return str(member["unit_id"]))
 
 
 func holding() -> bool:
@@ -345,14 +352,14 @@ func drop_on_list() -> void:
 func _member() -> Dictionary:
 	if mode == MODE_ARRANGE:
 		return _actor()
-	for member in PartyRules.members(carry, speakers):
+	for member in WorldPartyRules.members(carry, speakers):
 		if str(member["unit_id"]) == unit_id:
 			return member
 	return {}
 
 
 func _actor() -> Dictionary:
-	return {} if _loop.is_empty() or unit_id == "" else PlayLoop.unit(_loop, unit_id)
+	return {} if _loop.is_empty() or unit_id == "" else BattlePlayLoop.unit(_loop, unit_id)
 
 
 func _rebuild() -> void:
@@ -362,7 +369,7 @@ func _rebuild() -> void:
 	goods_rows.clear()
 	bag_slots.clear()
 	buttons.clear()
-	var vitals := Vitals.new()
+	var vitals := BattleVitals.new()
 	vitals.name = "Vitals"
 	vitals.position = Vector2(0, 14)
 	add_child(vitals)
@@ -380,8 +387,8 @@ func _rebuild() -> void:
 			_: _build_bag()
 		if page != PAGE_STORAGE:
 			_build_equipment()
-	UISkin.board(self, "WINDOW40", Loot.MONEY_AT).name = "MoneyBoard"
-	var amount := UISkin.text(self, Loot.MONEY_AT + Vector2(80, 4), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(108, 24))
+	BattleUISkin.board(self, "WINDOW40", BattleLootPanel.MONEY_AT).name = "MoneyBoard"
+	var amount := BattleUISkin.text(self, BattleLootPanel.MONEY_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
 	amount.name = "Money"
 	amount.text = str(int((carry.get("loop", {}) as Dictionary).get("gold", 0)))
 	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -390,9 +397,9 @@ func _rebuild() -> void:
 			_status_button(spec[0], spec[1], spec[2], spec[3])
 	description_box = Control.new()
 	description_box.name = "Description"
-	description_box.position = Loot.DESCRIPTION_AT
+	description_box.position = BattleLootPanel.DESCRIPTION_AT
 	description_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UISkin.board(description_box, "WINDOW50", Vector2.ZERO)
+	BattleUISkin.board(description_box, "WINDOW50", Vector2.ZERO)
 	description_box.hide()
 	add_child(description_box)
 	if message_visible():
@@ -407,25 +414,25 @@ func _rebuild() -> void:
 	add_child(hand_icon)
 	if holding():
 		var key := str(_items[str(int(_hand["code"]))]["icon"])
-		var origin: Array = UISkin.data()["assets"][key]["draw_origin"]
-		UISkin.show_shape(hand_icon, UISkin.texture(key))
+		var origin: Array = BattleUISkin.data()["assets"][key]["draw_origin"]
+		BattleUISkin.show_shape(hand_icon, BattleUISkin.texture(key))
 		hand_icon.set_meta("origin", Vector2(float(origin[0]), float(origin[1])))
 		hand_icon.position = _pointer - hand_icon.get_meta("origin")
 		hand_icon.show()
 
 
 func _build_bag() -> void:
-	UISkin.board(self, "WINDOW20", Loot.BAG_AT).name = "BagBoard"
+	BattleUISkin.board(self, "WINDOW20", BattleLootPanel.BAG_AT).name = "BagBoard"
 	var inventory: Array = _member().get("inventory", [])
 	for index in range(inventory.size()):
 		var code := int(inventory[index])
 		var shown := code > 0 and not (holding() and int(_hand["slot"]) == index)
-		var button := _row_button(Loot.BAG_AT + Vector2(8, 8 + index * Loot.BAG_ROW), Vector2(208, Loot.BAG_ROW))
+		var button := _row_button(BattleLootPanel.BAG_AT + Vector2(8, 8 + index * BattleLootPanel.BAG_ROW), Vector2(208, BattleLootPanel.BAG_ROW))
 		button.name = "Bag_%d" % index
 		if shown:
 			var details: Dictionary = _items[str(code)]
-			UISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 8))
-			var label := UISkin.text(button, Vector2(48, 0), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(160, Loot.BAG_ROW))
+			BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 8))
+			var label := BattleUISkin.text(button, Vector2(48, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(160, BattleLootPanel.BAG_ROW))
 			label.text = str(details["name"])
 			button.mouse_entered.connect(_show_description.bind(code, label))
 			button.mouse_exited.connect(_hide_description.bind(label))
@@ -437,28 +444,28 @@ func _build_bag() -> void:
 
 
 func _build_goods() -> void:
-	UISkin.board(self, "WINDOW90", Loot.LIST_AT).name = "GoodsBoard"
-	var heading := UISkin.text(self, Loot.LIST_AT + Vector2(0, 10), UISkin.TEXT_IVORY, UISkin.FONT_BODY, Vector2(375, 24))
+	BattleUISkin.board(self, "WINDOW90", BattleLootPanel.LIST_AT).name = "GoodsBoard"
+	var heading := BattleUISkin.text(self, BattleLootPanel.LIST_AT + Vector2(0, 10), BattleUISkin.TEXT_IVORY, BattleUISkin.FONT_BODY, Vector2(375, 24))
 	heading.name = "ShopTitle"
 	heading.text = title
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# While an item is held the whole list area takes the drop (rows included).
-	var drop_area := _row_button(Loot.LIST_AT + Vector2(8, Loot.LIST_TOP), Vector2(340, Loot.LIST_ROW * Loot.VISIBLE_ROWS))
+	var drop_area := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP), Vector2(340, BattleLootPanel.LIST_ROW * BattleLootPanel.VISIBLE_ROWS))
 	drop_area.name = "GoodsDrop"
 	drop_area.pressed.connect(func(): if not message_visible(): drop_on_list())
-	_scroll = clampi(_scroll, 0, maxi(0, goods.size() - Loot.VISIBLE_ROWS))
+	_scroll = clampi(_scroll, 0, maxi(0, goods.size() - BattleLootPanel.VISIBLE_ROWS))
 	var job := int(_actor().get("growth_profile", {}).get("job_code", -1))
-	for index in range(mini(Loot.VISIBLE_ROWS, goods.size() - _scroll)):
+	for index in range(mini(BattleLootPanel.VISIBLE_ROWS, goods.size() - _scroll)):
 		var code := goods[_scroll + index]
 		var details: Dictionary = _items[str(code)]
-		var button := _row_button(Loot.LIST_AT + Vector2(8, Loot.LIST_TOP + index * Loot.LIST_ROW), Vector2(340, Loot.LIST_ROW))
+		var button := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP + index * BattleLootPanel.LIST_ROW), Vector2(340, BattleLootPanel.LIST_ROW))
 		button.name = "Goods%d" % code
-		UISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
+		BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
 		var color := _row_color(details, job)
-		var label := UISkin.text(button, Vector2(48, 0), color, UISkin.FONT_BODY, Vector2(168, Loot.LIST_ROW))
+		var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, BattleLootPanel.LIST_ROW))
 		label.text = str(details["name"])
 		label.set_meta("base_color", color)
-		var price := UISkin.text(button, Vector2(PRICE_RIGHT - 8 - 108, 0), color, UISkin.FONT_BODY, Vector2(108, Loot.LIST_ROW))
+		var price := BattleUISkin.text(button, Vector2(PRICE_RIGHT - 8 - 108, 0), color, BattleUISkin.FONT_BODY, Vector2(108, BattleLootPanel.LIST_ROW))
 		price.text = "$%d" % _cost(code)
 		price.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		button.mouse_entered.connect(_show_description.bind(code, label))
@@ -468,39 +475,39 @@ func _build_goods() -> void:
 			if holding(): drop_on_list()
 			else: buy_requested.emit(code, unit_id))
 		goods_rows.append(button)
-	if goods.size() > Loot.VISIBLE_ROWS:
+	if goods.size() > BattleLootPanel.VISIBLE_ROWS:
 		for step in [-1, 1]:
-			var arrow := _row_button(Loot.LIST_AT + Vector2(351, 0 if step < 0 else 200), Vector2(24, 20))
+			var arrow := _row_button(BattleLootPanel.LIST_AT + Vector2(351, 0 if step < 0 else 200), Vector2(24, 20))
 			arrow.name = "Scroll_up" if step < 0 else "Scroll_down"
 			arrow.pressed.connect(func():
-				_scroll = clampi(_scroll + step, 0, goods.size() - Loot.VISIBLE_ROWS)
+				_scroll = clampi(_scroll + step, 0, goods.size() - BattleLootPanel.VISIBLE_ROWS)
 				_rebuild())
 
 
 ## Mode 0 page 4: the status page's attribute column (WINDOW21, BattleGrowthPanel rows) on the
 ## left board's (12,168).
 func _build_attributes() -> void:
-	var at := Loot.BAG_AT
-	UISkin.asset(self, "WINDOW21", at).name = "AttributeBoard"
+	var at := BattleLootPanel.BAG_AT
+	BattleUISkin.asset(self, "WINDOW21", at).name = "AttributeBoard"
 	var unit := _actor()
 	if unit.is_empty():
 		return
-	var profile := Combat.combat_profile_from_unit(unit)
+	var profile := CoreCombatRules.combat_profile_from_unit(unit)
 	var values := [int(profile["str"]), int(profile["dex"]), int(profile["mind"]), int(profile["con"]), int(profile["live_attack_damage"]), int(profile["live_defense"]), "%d%%" % int(profile["live_magic_attack"]), int(unit["live_speed"]), int(unit["move_point"])]
 	for index in range(values.size()):
-		var value := UISkin.text(self, Vector2(Growth.ATTRIBUTE_VALUE_X if index < 4 else Growth.DERIVED_VALUE_X, at.y + 8 + index * Growth.ROW_HEIGHT), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(60, Growth.GLYPH_ROW))
+		var value := BattleUISkin.text(self, Vector2(BattleGrowthPanel.ATTRIBUTE_VALUE_X if index < 4 else BattleGrowthPanel.DERIVED_VALUE_X, at.y + 8 + index * BattleGrowthPanel.ROW_HEIGHT), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(60, BattleGrowthPanel.GLYPH_ROW))
 		value.name = "Attribute_%d" % index
 		value.text = str(values[index])
 
 
 ## Mode 0 pages 2／3: the member's magic or special list, 28 px rows (0x4289e0).
 func _build_skills() -> void:
-	UISkin.board(self, "WINDOW20", Loot.BAG_AT).name = "SkillBoard"
+	BattleUISkin.board(self, "WINDOW20", BattleLootPanel.BAG_AT).name = "SkillBoard"
 	if unit_id == "" or _loop.is_empty():
 		return
-	var options: Array = PlayLoop.magic_options(_loop, unit_id) if page == PAGE_MAGIC else PlayLoop.special_options(_loop, unit_id)
+	var options: Array = BattlePlayLoop.magic_options(_loop, unit_id) if page == PAGE_MAGIC else BattlePlayLoop.special_options(_loop, unit_id)
 	for index in range(mini(options.size(), SKILL_ROWS)):
-		var row := UISkin.text(self, Loot.BAG_AT + Vector2(48, 8 + index * SKILL_ROW), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(160, SKILL_ROW))
+		var row := BattleUISkin.text(self, BattleLootPanel.BAG_AT + Vector2(48, 8 + index * SKILL_ROW), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(160, SKILL_ROW))
 		row.name = "Skill_%d" % index
 		row.text = str(options[index]["name"])
 
@@ -508,21 +515,21 @@ func _build_skills() -> void:
 ## Mode 0 right board: WINDOW30 with the six slots (two columns × three rows); hovering shows
 ## the item's description, a click goes to click_equipment (acts on the 裝備 page only).
 func _build_equipment() -> void:
-	UISkin.board(self, "WINDOW30", EQUIPMENT_AT).name = "EquipmentBoard"
+	BattleUISkin.board(self, "WINDOW30", EQUIPMENT_AT).name = "EquipmentBoard"
 	var origin := EQUIPMENT_AT
-	for index in range(EquipmentView.SLOTS.size()):
-		var slot: String = EquipmentView.SLOTS[index]
+	for index in range(BattleEquipmentView.SLOTS.size()):
+		var slot: String = BattleEquipmentView.SLOTS[index]
 		var column := index % 2
 		var row := floori(index / 2.0)
-		var at: Vector2 = origin + Vector2(EquipmentView.SLOT_LEFTS[column], EquipmentView.LABEL_ROW_CENTERS[row] - EquipmentView.SLOT_SIZE.y / 2.0)
-		var button := _row_button(at, EquipmentView.SLOT_SIZE)
+		var at: Vector2 = origin + Vector2(BattleEquipmentView.SLOT_LEFTS[column], BattleEquipmentView.LABEL_ROW_CENTERS[row] - BattleEquipmentView.SLOT_SIZE.y / 2.0)
+		var button := _row_button(at, BattleEquipmentView.SLOT_SIZE)
 		button.name = "Slot_" + slot
 		var code := _worn_code(slot)
 		if code > 0:
 			var details: Dictionary = _items[str(code)]
-			var anchor: Vector2 = origin + EquipmentView.ICON_ANCHORS[column] + Vector2(0, EquipmentView.ICON_ROW_PITCH * row) - at
-			UISkin.anchored_asset(button, str(details["icon"]), anchor)
-			var label := UISkin.text(button, Vector2(EquipmentView.COLON_ENDS[column] + EquipmentView.NAME_GAP - EquipmentView.SLOT_LEFTS[column], 0), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(150, EquipmentView.SLOT_SIZE.y))
+			var anchor: Vector2 = origin + BattleEquipmentView.ICON_ANCHORS[column] + Vector2(0, BattleEquipmentView.ICON_ROW_PITCH * row) - at
+			BattleUISkin.anchored_asset(button, str(details["icon"]), anchor)
+			var label := BattleUISkin.text(button, Vector2(BattleEquipmentView.COLON_ENDS[column] + BattleEquipmentView.NAME_GAP - BattleEquipmentView.SLOT_LEFTS[column], 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(150, BattleEquipmentView.SLOT_SIZE.y))
 			label.name = "Name"
 			label.text = str(details["name"])
 			label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -535,10 +542,10 @@ func _build_equipment() -> void:
 ## @1, otherwise @2. A member without a sandbox job shows every row usable.
 static func _row_color(details: Dictionary, job: int) -> Color:
 	if bool(details["important"]):
-		return UISkin.TEXT_IVORY
-	if job < 0 or (JobStats.has_job(job) and (int(details["job_mask"]) & JobStats.job_mask_bit(job)) != 0):
-		return UISkin.TEXT_WHITE
-	return UISkin.TEXT_RED
+		return BattleUISkin.TEXT_IVORY
+	if job < 0 or (JobStatsRules.has_job(job) and (int(details["job_mask"]) & JobStatsRules.job_mask_bit(job)) != 0):
+		return BattleUISkin.TEXT_WHITE
+	return BattleUISkin.TEXT_RED
 
 
 func _cost(code: int) -> int:
@@ -548,12 +555,12 @@ func _cost(code: int) -> int:
 func _status_button(key: String, resource: String, caption: String, centre_x: int) -> void:
 	var button := TextureButton.new()
 	button.name = "Button_" + key
-	button.texture_normal = load(UISkin.ROOT + resource + ".SHP.png")
+	button.texture_normal = load(BattleUISkin.ROOT + resource + ".SHP.png")
 	button.position = Vector2(centre_x - 21, BUTTON_Y - 21)
 	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(button)
 	# 0x43a640: 15 px caption centred under the icon at centre_y + 13, yellow while hovered.
-	var label := UISkin.text(self, Vector2(centre_x - 40, BUTTON_Y + 13), UISkin.TEXT_WHITE, UISkin.FONT_SMALL, Vector2(80, 16))
+	var label := BattleUISkin.text(self, Vector2(centre_x - 40, BUTTON_Y + 13), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(80, 16))
 	label.name = "Caption_" + key
 	label.text = caption
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -566,8 +573,8 @@ func _status_button(key: String, resource: String, caption: String, centre_x: in
 	button.self_modulate = Color(0.45, 0.45, 0.45) if dimmed or current else Color.WHITE
 	button.tooltip_text = str(dimmed_table.get(key, ""))
 	if not dimmed:
-		button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", UISkin.TEXT_YELLOW))
-		button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", UISkin.TEXT_WHITE))
+		button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
+		button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
 	match key:
 		"prev": button.pressed.connect(func(): if not message_visible(): step_member(-1))
 		"next": button.pressed.connect(func(): if not message_visible(): step_member(1))
@@ -582,8 +589,8 @@ func _build_message() -> void:
 	var blocker := _row_button(Vector2.ZERO, size)
 	blocker.name = "MessageBlocker"
 	blocker.pressed.connect(dismiss_message)
-	UISkin.board(self, "BOARD02", MESSAGE_BOARD_AT).name = "MessageBoard"
-	var line := UISkin.text(self, MESSAGE_BOARD_AT, message_color, UISkin.FONT_BODY, Vector2(MESSAGE_BOARD_SIZE.x, MESSAGE_BOARD_SIZE.y))
+	BattleUISkin.board(self, "BOARD02", MESSAGE_BOARD_AT).name = "MessageBoard"
+	var line := BattleUISkin.text(self, MESSAGE_BOARD_AT, message_color, BattleUISkin.FONT_BODY, Vector2(MESSAGE_BOARD_SIZE.x, MESSAGE_BOARD_SIZE.y))
 	line.name = "MessageText"
 	line.text = message
 	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -605,21 +612,21 @@ func _row_button(at: Vector2, dimensions: Vector2) -> Button:
 func _show_description(code: int, label: Label) -> void:
 	if holding() or message_visible():
 		return
-	label.add_theme_color_override("font_color", UISkin.TEXT_GREEN)
+	label.add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
 	for child in description_box.get_children():
 		if child is Label:
 			description_box.remove_child(child)
 			child.queue_free()
 	var lines := description_lines(code)
 	for index in range(mini(lines.size(), 4)):
-		var row := UISkin.text(description_box, Vector2(8, 12 + index * 16), UISkin.TEXT_GREEN if index == 0 else UISkin.TEXT_WHITE, UISkin.FONT_SMALL, Vector2(360, 16))
+		var row := BattleUISkin.text(description_box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
 		row.text = str(lines[index])
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	description_box.show()
 
 
 func _hide_description(label: Label) -> void:
-	label.add_theme_color_override("font_color", label.get_meta("base_color", UISkin.TEXT_WHITE))
+	label.add_theme_color_override("font_color", label.get_meta("base_color", BattleUISkin.TEXT_WHITE))
 	description_box.hide()
 
 
@@ -627,18 +634,18 @@ func description_lines(code: int) -> Array:
 	var details: Dictionary = _items[str(code)]
 	var lines: Array = []
 	if int(details["type_code"]) in range(2, 7):
-		lines.append_array(EquipmentView.description_lines(details))
+		lines.append_array(BattleEquipmentView.description_lines(details))
 	else:
 		lines.append_array([str(details["name"]), "可使用"])
 		var definition: Dictionary = (_loop.get(LoopKeys.CONSUMABLES, {}) as Dictionary).get(str(code), {})
 		if not definition.is_empty():
-			lines.append_array(ItemText.description(definition).split("\n"))
+			lines.append_array(BattleItemText.description(definition).split("\n"))
 	lines = lines.filter(func(line): return str(line) != "")
 	if mode == MODE_ARRANGE:
 		return lines.slice(0, 4)
 	if lines.size() > 3:
 		lines = lines.slice(0, 3)
-	lines.append("賣價$%d" % PartyRules.sell_price(_cost(code)))
+	lines.append("賣價$%d" % WorldPartyRules.sell_price(_cost(code)))
 	return lines
 
 

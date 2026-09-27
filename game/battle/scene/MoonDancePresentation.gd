@@ -2,12 +2,15 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ## Original Moon artwork and source delay ratios; only immutable receipt playback. The
 ## cut-in routes 月花圓舞 here through skill_effects/manifest.json (`dedicated_module`).
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/moon_dance/manifest.json; remake-invented (particle paths and layout)
-##   strings: n/a
-##   timing: resource-derived content/generated/hsl/skills/moon_dance.json; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; provisional (the 1.5 s intro lead stands in for 002's s_action lead — read by AnimalCastLead, but 002's s_shape strip is not in the combat manifest; petal／burst particle curves)
+##   layout: resource-derived content/imported/hsl/shared/moon_dance/manifest.json
+##   layout: remake-invented (particle paths and layout)
+##   timing: resource-derived content/generated/hsl/skills/moon_dance.json
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: provisional
+##     (the 1.5 s intro lead stands in for 002's s_action lead — read by AnimalCastLead, but 002's s_shape strip is not
+##     in the combat manifest; petal／burst particle curves)
 ##   audio: resource-derived content/imported/hsl/shared/moon_dance/manifest.json
-const RULES = preload("res://game/sim/RepeatedSpecialRules.gd")
+const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
@@ -54,7 +57,7 @@ func reset() -> void:
 
 
 func impact_time(index: int) -> float:
-	return intro + (float(index / RULES.PULSES) * float(data["source_duration"]) + float(data["source_hit_delays"][index % RULES.PULSES])) * scaled_tick_seconds
+	return intro + (float(index / RepeatedSpecialRules.PULSES) * float(data["source_duration"]) + float(data["source_hit_delays"][index % RepeatedSpecialRules.PULSES])) * scaled_tick_seconds
 
 
 func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
@@ -63,7 +66,7 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 	host.blade.hide();host.flash_sprite.hide()
 	host.scenery.texture = load(host.manifest["background"]["res_path"])
 	var segments: Array = clip["strike"]["special_segments"]
-	var target_count := segments.size() / RULES.PULSES
+	var target_count := segments.size() / RepeatedSpecialRules.PULSES
 	var duration := float(data["source_duration"]) * scaled_tick_seconds
 	var emitted := int(clip.get("moon_emitted", 0))
 	while emitted < segments.size() and elapsed >= impact_time(emitted):
@@ -101,10 +104,10 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 		return false
 	var target_index := mini(target_count - 1, int((elapsed - intro) / duration))
 	var local_time := elapsed - intro - target_index * duration
-	var first_index := target_index * RULES.PULSES
+	var first_index := target_index * RepeatedSpecialRules.PULSES
 	var active := first_index
 	var impact_shown := emitted > first_index
-	if impact_shown: active = mini(first_index + RULES.PULSES - 1, emitted - 1)
+	if impact_shown: active = mini(first_index + RepeatedSpecialRules.PULSES - 1, emitted - 1)
 	var part: Dictionary = segments[active]
 	var defender: Dictionary = clip["participants"][part["defender_id"]].duplicate(true)
 	defender.merge(part["defender_before"], true)

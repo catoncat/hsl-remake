@@ -1755,7 +1755,7 @@ func _run_level_57_ending_routes() -> void:
 		return
 	_assert_true(coordinator.story_finished, "STORY057 reaches its card")
 	var storage: Array = coordinator.summary().get("story_records", []).filter(func(record): return str(record.get("kind", "")) == "storage_window_enter")
-	_assert_eq(storage.map(func(record): return str(record.get("status", ""))), ["skipped_unknown_source_scenario"], "actEnterStorageWindow with the sweep's source-less carry closes the 整理裝備 screen again and records why (the hosted-screen path is tests/run_party_equipment_tests.gd)")
+	_assert_eq(storage.map(func(record): return str(record.get("status", ""))), ["skipped_unknown_source_scenario"], "actEnterStorageWindow with the sweep's source-less carry closes the 整理裝備 screen again and records why")
 	var options: Array = coordinator.summary().get("end_card_options", [])
 	var ids: Array = options.map(func(option): return str(option.get("id", "")))
 	_assert_eq(ids, ["end_route", "world_map"], "the card offers the dispatched finale then the plain return")

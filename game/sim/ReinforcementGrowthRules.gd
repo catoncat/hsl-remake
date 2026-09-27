@@ -1,16 +1,14 @@
 extends RefCounted
 ## Explicit adapter for a newly created script reinforcement. Not a turn effect.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_auto_growth.md; static-derived docs/evidence_packets/static_reverse/original_ai_navigation.md; static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_auto_growth.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_navigation.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 const Entry = preload("res://game/sim/EntryGrowthRules.gd")
-const Growth = preload("res://game/sim/ProgressionRules.gd")
-const Reward = preload("res://game/sim/BattleRewardRules.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
+const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
-const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 
 static func prepare(loop: Dictionary, actor: Dictionary, insertion: Dictionary, origin_kind: String = "") -> Dictionary:
 	var source: Variant = loop.get("entry_growth_data",{}).get("actors",{}).get(str(actor.get("actor_id","")))
@@ -27,7 +25,7 @@ static func prepare(loop: Dictionary, actor: Dictionary, insertion: Dictionary, 
 	if parameters is Array: parameters=parameters.map(func(value):return int(value) if str(value).is_valid_int() else value)
 	var error := Entry.parameters_error(parameters)
 	if error != "": return {"ok":false,"reason":error}
-	error=Growth.refresh_input_error(actor,loop["equipment_items"])
+	error=ProgressionRules.refresh_input_error(actor,loop["equipment_items"])
 	if error != "": return {"ok":false,"reason":error}
 	if actor.has("entry_growth") or int(actor.get("pending_stat_points",0)) != 0: return {"ok":false,"reason":"reused_reinforcement_growth"}
 	# 0x40e7a0 averages the players registered in 0x4c34c0 when the object first ticks. At
@@ -43,7 +41,7 @@ static func prepare(loop: Dictionary, actor: Dictionary, insertion: Dictionary, 
 	for key in Entry.KEYS:attrs[key]=int(actor["combat_profile"][key])
 	var input := {"attributes":attrs,"caps":actor["growth_profile"]["caps"].duplicate(true),"job":int(actor["growth_profile"]["job_code"]),
 		"level":int(actor["level"]),"exp":int(actor["exp"]),"stamina":int(actor["stamina"]),"kill_exp":int(actor["kill_exp"]),
-		"gold":Reward.kill_gold(actor,int(source["gold"])),"object_kind":int(actor.get("source_object_kind",2)),"parameters":parameters,"party_levels":party["levels"]}
+		"gold":BattleRewardRules.kill_gold(actor,int(source["gold"])),"object_kind":int(actor.get("source_object_kind",2)),"parameters":parameters,"party_levels":party["levels"]}
 	return _apply(loop,actor,input,"entry_growth",origin,party["ids"])
 
 ## Opcode 73 (actAdjustAllPlayerLevel, only STORY006) sets 0x4c1d48 for one tick and every
@@ -56,7 +54,7 @@ static func readjust(loop: Dictionary, actor: Dictionary) -> Dictionary:
 	if not birth is Dictionary or birth.get("origin") != "initial_roster" or actor.has("entry_readjust"): return {"ok":false,"reason":"invalid_entry_readjust_boundary"}
 	var error:=Entry.input_error(actor)
 	if error != "":return {"ok":false,"reason":error}
-	error=Growth.refresh_input_error(actor,loop["equipment_items"])
+	error=ProgressionRules.refresh_input_error(actor,loop["equipment_items"])
 	if error != "": return {"ok":false,"reason":error}
 	var party := _party(loop,func(other): return bool(other.get("opening_birth",{}).get("adjust_all_level",false)))
 	var attrs := {}
@@ -78,11 +76,11 @@ static func _party(loop: Dictionary, visible: Callable) -> Dictionary:
 
 static func _apply(loop: Dictionary, actor: Dictionary, input: Dictionary, record_key: String, origin: String, party_ids: Array) -> Dictionary:
 	# 0x40e870 draws rand(n) 0x458c80 on the global stream; the caller commits the words.
-	if not GlobalRandom.valid(loop.get(GlobalRandom.LOOP_KEY)): return {"ok":false,"reason":"invalid_global_rng"}
-	var before:Array=(loop[GlobalRandom.LOOP_KEY] as Array).duplicate()
+	if not GlobalRandomStream.valid(loop.get(GlobalRandomStream.LOOP_KEY)): return {"ok":false,"reason":"invalid_global_rng"}
+	var before:Array=(loop[GlobalRandomStream.LOOP_KEY] as Array).duplicate()
 	var state := [before]
 	var proposal:=Entry.propose(input,func(bound):
-		var draw:=GlobalRandom.rand(state[0],bound);state[0]=draw["state"];return draw["value"])
+		var draw:=GlobalRandomStream.rand(state[0],bound);state[0]=draw["state"];return draw["value"])
 	if not proposal["ok"]:return proposal
 	var next:=actor.duplicate(true)
 	var result:Dictionary=proposal["result"]
@@ -94,13 +92,13 @@ static func _apply(loop: Dictionary, actor: Dictionary, input: Dictionary, recor
 		if int(next["growth_profile"]["source"][key])+Entry.source_gain(next,key) > 65535:return {"ok":false,"reason":"entry_source_word_domain_exceeded"}
 	var error:=Entry.input_error(next)
 	if error != "":return {"ok":false,"reason":error}
-	next=Growth.refresh_growth_stats(next,loop["equipment_items"])
+	next=ProgressionRules.refresh_growth_stats(next,loop["equipment_items"])
 	next["hp"]=next["max_hp"];next["mp"]=next["max_mp"]
 	return {"ok":true,"actor":next,"rng":state[0]}
 
 static func state_error(loop: Dictionary) -> String:
 	if loop.get("entry_growth_data",{}).get("schema") != "hsl_entry_growth_sources.v1":return "invalid_entry_growth_data"
-	if not GlobalRandom.valid(loop.get(GlobalRandom.LOOP_KEY)):return "invalid_global_rng"
+	if not GlobalRandomStream.valid(loop.get(GlobalRandomStream.LOOP_KEY)):return "invalid_global_rng"
 	var adjusted := {}
 	for actor in loop["units"]:
 		var error:=Entry.input_error(actor)

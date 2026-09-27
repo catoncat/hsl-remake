@@ -7,14 +7,16 @@ extends RefCounted
 ## this module holds no combat state and no visibility truth of its own.
 ## The available command set is still `BattlePlayLoop.IMPLEMENTED_COMMANDS`.
 ## provenance:
-##   rules: n/a
 ##   layout: remake-invented (panel draw order and menu anchoring rules)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_growth_window.md; provisional (that ordering is a static reading; a lost battle offers no window — the conservative choice); remake-invented (per-member offered level; Status 成長點, a load and the next battle's first quiet moment reopen points left by an old save or the harness skip)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
+##   timing: provisional (that ordering is a static reading; a lost battle offers no window — the conservative choice)
+##   timing: remake-invented
+##     (per-member offered level; Status 成長點, a load and the next battle's first quiet moment reopen points left by an
+##     old save or the harness skip)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 
 const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const PanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
+const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
@@ -68,7 +70,7 @@ func build_panels() -> void:
 	# One open／close motion for every battle panel (BattlePanelMotion; the loot window attaches
 	# in BattleSettlementController).
 	for panel in runtime.modal_panels:
-		PanelMotion.attach(panel)
+		BattlePanelMotion.attach(panel)
 
 
 func configure_action_menu() -> void:

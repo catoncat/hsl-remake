@@ -8,11 +8,8 @@ extends RefCounted
 ## A state is [word0, word1], two unsigned 32-bit ints (JSON-exact). Shifts never see a
 ## negative operand (Godot debug builds reject them), so the arithmetic shift is spelled out.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md; remake-invented (loop_source Callable plumbing; bound < 0 requests the raw 0x42c720 draw)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
+##   rules: remake-invented (loop_source Callable plumbing; bound < 0 requests the raw 0x42c720 draw)
 const MASK := 0xffffffff
 const LOOP_KEY := "damage_rng"
 

@@ -5,11 +5,13 @@ extends Node2D
 ## NUM513 MISS (level 16 for 16 ticks, then fading to tick 46, rising 1 px every other tick),
 ## both through ResultNumberFloat. Bar collision avoidance is remake presentation.
 ## provenance:
-##   rules: n/a
-##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V08; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md; remake-invented (42×7 bar, bar collision avoidance)
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V08
+##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+##   layout: remake-invented (42×7 bar, bar collision avoidance)
 ##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
-##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; remake-invented (0.45 s receiver bar before the number — kept remake beat, the original shows the number at once)
-##   audio: n/a
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: remake-invented
+##     (0.45 s receiver bar before the number — kept remake beat, the original shows the number at once)
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")

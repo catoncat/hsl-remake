@@ -3,11 +3,7 @@ extends RefCounted
 ## Shared PlayLoop owns every actor, queue, resource and outcome mutation.
 ## provenance:
 ##   rules: remake-invented (authored training objectives for development trials)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 ## The shared defeat outcome (WinfailScenarioRules.DEFEAT_OUTCOME): the controlled player fell.
 const DEFEAT_OUTCOME := BattleOutcome.DEFEAT_FALLEN
@@ -31,7 +27,7 @@ static func training_book(scenario: Dictionary, source: Dictionary) -> Dictionar
 
 
 static func initialize(loop: Dictionary, scenario: Dictionary, rules: Dictionary) -> Dictionary:
-	var next := LoopConfig.copy(loop)
+	var next := BattleLoopConfig.copy(loop)
 	var player_id := str(scenario.get("player_unit_id", ""))
 	if rules.get("schema") != "hsl_development_objectives.v1" or player_id == "" or not next["units"].any(func(a):return a["id"] == player_id):
 		next.merge({"scenario_ok":false,"interaction":"scenario_error","scenario_error":"invalid_development_objectives"},true)

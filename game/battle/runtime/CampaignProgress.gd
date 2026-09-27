@@ -4,16 +4,18 @@ extends Node
 ## the next scene its scenario path plus carry-over. Holds no battle state; the
 ## pending hand-off is a process-local static consumed once by the next runtime.
 ## provenance:
-##   rules: resource-derived content/battles/campaign.json; static-derived docs/evidence_packets/static_reverse/original_check_targets.md#R8; remake-invented (one-shot hand-off, resume prompt, play-time counter, not-remade chapter end returns to the title; the carry stands in for the original registered-slot table)
+##   rules: resource-derived content/battles/campaign.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md#R8
+##   rules: remake-invented
+##     (one-shot hand-off, resume prompt, play-time counter, not-remade chapter end returns to the title; the carry
+##     stands in for the original registered-slot table)
 ##   layout: remake-invented (resume prompt placement)
 ##   strings: remake-invented (「繼續」／「從第一戰重新開始」)
-##   timing: n/a
-##   audio: n/a
 
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
@@ -225,7 +227,7 @@ static func level_is_map_point(campaign_data: Dictionary, level: int) -> bool:
 
 
 ## Where a finished scene goes, from its next_level_event [level, event] — the
-## original scripts' reading (tools/hsl_big_map_flow.py): `event` is the level
+## original scripts' reading (tools/hsltools/data/big_map_flow.py): `event` is the level
 ## whose script set runs next (WINFAIL002 "2,55" → STORY055 "2,56" → STORY056
 ## "2,gameBigMapLevel"), and event == gameBigMapLevel returns to the big map
 ## standing at point `level`. A battle whose script sets no next level at all
@@ -337,18 +339,18 @@ func _show_resume_prompt(saved: Dictionary, title: String) -> void:
 	dim.size = Vector2(640, 480)
 	dim.color = Color(0, 0, 0, 0.72)
 	resume_layer.add_child(dim)
-	UISkin.board(resume_layer, "WINDOW50", Vector2(150, 150)).size = Vector2(340, 190)
-	var heading := UISkin.label(resume_layer, Vector2(0, 168), 20)
+	BattleUISkin.board(resume_layer, "WINDOW50", Vector2(150, 150)).size = Vector2(340, 190)
+	var heading := BattleUISkin.label(resume_layer, Vector2(0, 168), 20)
 	heading.size = Vector2(640, 30)
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	heading.text = "偵測到戰役進度"
-	var info := UISkin.label(resume_layer, Vector2(0, 204))
+	var info := BattleUISkin.label(resume_layer, Vector2(0, 204))
 	info.size = Vector2(640, 26)
 	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	info.text = "上次進行到：%s" % title
-	resume_button = UISkin.button(resume_layer, "繼續 · %s" % title, Vector2(190, 246), Vector2(260, 36))
+	resume_button = BattleUISkin.button(resume_layer, "繼續 · %s" % title, Vector2(190, 246), Vector2(260, 36))
 	resume_button.pressed.connect(resume_saved_progress.bind(saved))
-	restart_button = UISkin.button(resume_layer, "從第一戰重新開始", Vector2(190, 290), Vector2(260, 36))
+	restart_button = BattleUISkin.button(resume_layer, "從第一戰重新開始", Vector2(190, 290), Vector2(260, 36))
 	restart_button.pressed.connect(decline_saved_progress)
 	runtime.get_tree().paused = true
 

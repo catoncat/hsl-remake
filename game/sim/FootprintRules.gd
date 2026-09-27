@@ -2,10 +2,6 @@ extends RefCounted
 ## Original center or eight-cell ring. Every cell derives from the same actor.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_large_actor.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 
 static func radius(actor: Dictionary) -> int:

@@ -3,11 +3,7 @@ extends RefCounted
 ## Original cleanup:0x4542a7 (map -> queue -> actor registration -> object unlink).
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_departure.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Queue = preload("res://game/sim/CoreTurnQueue.gd")
+const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const POLICY := "script_departure_v1"
 
 
@@ -38,12 +34,12 @@ static func prepare(loop: Dictionary, ids: Array, source: String, status_key: St
 		proposals.append({"id": actor["id"], "changes": {"departed": true, "action_ready": false,
 			"ai_call_target_id": "", "ai_target_id": "", "departure": {"sequence": sequence, "source": source, "status_key": status_key}}})
 	if removed.is_empty(): return {"ok": true, "changed": false}
-	var old_current := str(Queue.current(loop["turn_queue"]).get("id", ""))
-	var queue := Queue.remove_actors(loop["turn_queue"], removed, survivors)
+	var old_current := str(CoreTurnQueue.current(loop["turn_queue"]).get("id", ""))
+	var queue := CoreTurnQueue.remove_actors(loop["turn_queue"], removed, survivors)
 	if not queue["ok"]: return queue
 	return {"ok": true, "changed": true, "units": proposals, "queue": queue["queue"],
 		"receipt": {"sequence": sequence, "unit_ids": removed, "source": source, "status_key": status_key,
-			"current_before": old_current, "current_after": Queue.current(queue["queue"]).get("id", ""),
+			"current_before": old_current, "current_after": CoreTurnQueue.current(queue["queue"]).get("id", ""),
 			"round_before": loop["turn_queue"]["round"], "round_after": queue["queue"]["round"]}}
 
 

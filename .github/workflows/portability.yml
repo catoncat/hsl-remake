@@ -1,4 +1,4 @@
-# Portability check for the public repository (docs/OPEN_SOURCE_PLAN.md「Windows／Linux 可移植性」): the
+# Portability check for the public repository (docs/internal/OPEN_SOURCE_PLAN.md「Windows／Linux 可移植性」): the
 # checkout has no original-derived content, so nothing here needs the original game. Every OS proves:
 #   - the Python entry points run without bash (Windows steps use PowerShell);
 #   - `hsl check --all` passes with the original-derived tasks reported as SKIP original-absent;

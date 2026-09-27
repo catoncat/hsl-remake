@@ -61,4 +61,4 @@ python3 -m unittest discover -s tools -p 'test_hsl_campaign_actors.py'
 bash tools/godot.sh --headless --path . --script res://tests/run_campaign_actor_tests.gd
 ```
 
-定向 Python 4 项＋既有角色资源4项通过；Godot **10,524 检查通过**，覆盖独立原返回、所有模板初始化及008明确拒绝、不可变输入、cap／出生随机边界和学技 mask。未作 GUI 人工验收；本片无布局／动效变更，正式组装仍由 presentation 线独立验收。完整门禁和提交回执见[本线协作记录](../../collaboration/source-research.md)。
+定向 Python 4 项＋既有角色资源4项通过；Godot **10,524 检查通过**，覆盖独立原返回、所有模板初始化及008明确拒绝、不可变输入、cap／出生随机边界和学技 mask。未作 GUI 人工验收；本片无布局／动效变更，正式组装仍由 presentation 线独立验收。完整门禁和提交回执见本线协作记录（已删，见 Git 历史）。

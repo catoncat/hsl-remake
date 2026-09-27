@@ -15,11 +15,15 @@ extends Node
 ## the panel's place steps back down 9→2 one level per 3 ticks and then vanishes (24 ticks),
 ## renderer or not.
 ## provenance:
-##   rules: n/a
-##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (status page: right window enters from the right, left from the left, top strip from above; leaves alike); remake-invented (the side of a part is read from its rect: centre above y 170 → top, centre left of x 246 → left, else right; bottom boxes slide with their side instead of appearing last)
-##   strings: n/a
-##   timing: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md (open ≈0.62 s at remaining×7/8 per frame, left +0.05 s, top +0.17 s; close ≈0.23 s; shade 8 luma steps); provisional (the per-tick formula is a fit of the frames, the EXE helper is unread); static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   audio: n/a
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (status page: right window enters from the right, left from the left, top strip from above; leaves alike)
+##   layout: remake-invented
+##     (the side of a part is read from its rect: centre above y 170 → top, centre left of x 246 → left, else right;
+##     bottom boxes slide with their side instead of appearing last)
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (open ≈0.62 s at remaining×7/8 per frame, left +0.05 s, top +0.17 s; close ≈0.23 s; shade 8 luma steps)
+##   timing: provisional (the per-tick formula is a fit of the frames, the EXE helper is unread)
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const VIEW := Vector2(640, 480)
@@ -28,7 +32,7 @@ const LEFT_LIMIT_X := 246.0
 const OPEN_DELAY_TICKS := {"right": 0, "left": 3, "top": 9}
 const OPEN_MIN_STEP := 2.0
 const CLOSE_STEP := 20.0
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const SHADE_TICKS_PER_LEVEL := 3
 const SHADE_FIRST_LEVEL := 2
 
@@ -153,7 +157,7 @@ static func shade_step(level: int, direction: int) -> int:
 	var next := level + direction
 	if direction < 0 and next < SHADE_FIRST_LEVEL:
 		return 0
-	return clampi(next, 0, UISkin.PANEL_SHADE_LEVEL)
+	return clampi(next, 0, BattleUISkin.PANEL_SHADE_LEVEL)
 
 
 static func _screen_wide(rect: Rect2) -> bool:
@@ -200,7 +204,7 @@ func _begin_shade_in() -> void:
 		_shade_direction = 0
 		return
 	shade_level = maxi(shade_level, SHADE_FIRST_LEVEL)
-	_shade_direction = 1 if shade_level < UISkin.PANEL_SHADE_LEVEL else 0
+	_shade_direction = 1 if shade_level < BattleUISkin.PANEL_SHADE_LEVEL else 0
 	_shade_wait = SHADE_TICKS_PER_LEVEL
 	_apply_shade()
 	if shading():
@@ -315,14 +319,14 @@ func _tick() -> void:
 			_shade_wait = SHADE_TICKS_PER_LEVEL
 			shade_level = shade_step(shade_level, _shade_direction)
 			_apply_shade()
-			if shade_level <= 0 or shade_level >= UISkin.PANEL_SHADE_LEVEL:
+			if shade_level <= 0 or shade_level >= BattleUISkin.PANEL_SHADE_LEVEL:
 				_shade_direction = 0
 				if shade_level <= 0:
 					_free_shade_ghost()
 
 
 func _apply_shade() -> void:
-	var colour := Color(0, 0, 0, shade_level / UISkin.SHADE_LEVEL_SCALE)
+	var colour := Color(0, 0, 0, shade_level / BattleUISkin.SHADE_LEVEL_SCALE)
 	for shade in _shades:
 		if is_instance_valid(shade):
 			shade.color = colour
@@ -373,6 +377,6 @@ func finish() -> void:
 	_free_ghost()
 	_free_shade_ghost()
 	_shade_direction = 0
-	shade_level = UISkin.PANEL_SHADE_LEVEL if panel != null and panel.visible and not _shades.is_empty() else 0
+	shade_level = BattleUISkin.PANEL_SHADE_LEVEL if panel != null and panel.visible and not _shades.is_empty() else 0
 	_apply_shade()
 	set_process(false)

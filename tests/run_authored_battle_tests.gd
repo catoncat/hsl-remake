@@ -1,7 +1,7 @@
 extends SceneTree
 ## The battle-scenario contract (content/schema/battle.schema.json) end to end on a
 ## minimal hand-written battle (tests/support/authored_minimal_battle.json — the text
-## docs/EXTENDING.md shows an author): only the required keys and the shared tables,
+## docs/MODDING_LEVELS.md shows an author): only the required keys and the shared tables,
 ## no evidence ledgers. BattleScenario.load_file validates it and fills the defaults,
 ## BattlePlayLoop.create accepts it, the runtime boots it at first control and the
 ## fixture-free Autoplay driver plays rounds of it; a scenario missing a required key

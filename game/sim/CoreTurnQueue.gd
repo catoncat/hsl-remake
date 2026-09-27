@@ -6,11 +6,12 @@ extends RefCounted
 ## Separate from engine process dispatch (0x45f5f7). Sort key is live_speed (+0xb8).
 ## Live queue model; original roster/control and full status lifecycle remain partial.
 ## provenance:
-##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json; static-derived docs/evidence_packets/static_reverse/initial_battle_initiative.md; runtime-measured docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md (Leonard before equal-speed friendly 023); runtime-measured docs/evidence_packets/static_reverse/initial_battle_initiative.md (start-of-round snapshot, wrap rebuild, round++ after last turn end, unregister holes)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json
+##   rules: static-derived docs/evidence_packets/static_reverse/initial_battle_initiative.md
+##   rules: runtime-measured docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md
+##     (Leonard before equal-speed friendly 023)
+##   rules: runtime-measured docs/evidence_packets/static_reverse/initial_battle_initiative.md
+##     (start-of-round snapshot, wrap rebuild, round++ after last turn end, unregister holes)
 
 const PACKET_PATH := "res://content/generated/hsl/static/hsl01/core_logic.json"
 const EVIDENCE_DOC := "docs/first_battle_core_logic_evidence.md" # repository document, never loaded at runtime
@@ -19,7 +20,6 @@ const CURRENT_ADDR := "0x407540"
 const ADVANCE_ADDR := "0x407510"
 const STATUS_TICK_ADDR := "0x40b910"
 const MENU_BUILDER_ADDR := "0x43ea30"
-const REGISTRATION_ADDR := "0x407660"
 ## Sort key for a registered player without a PLAYERS number: after slots 0..19.
 const REGISTERED_UNNUMBERED := 20
 

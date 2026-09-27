@@ -19,13 +19,15 @@ extends RefCounted
 ## event started per scan, one rescan after an actExecWinFailProcess chain — is
 ## static-derived (original_round_display.md «Scan shape»).
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H; static-derived docs/evidence_packets/static_reverse/original_check_targets.md; static-derived docs/evidence_packets/static_reverse/original_round_display.md; provisional (one-shot status consumption, section-order event walk, MAX_PASSES bound — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md); remake-invented (party_wiped defeat rule — negative-evidence in original_check_targets.md §R8)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
+##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
+##   rules: provisional
+##     (one-shot status consumption, section-order event walk, MAX_PASSES bound — ids in
+##     docs/evidence_packets/static_reverse/winfail_claim_limits.md)
+##   rules: remake-invented (party_wiped defeat rule — negative-evidence in original_check_targets.md §R8)
 
-const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
+const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
 const WinfailActions = preload("res://game/sim/WinfailActions.gd")
@@ -54,7 +56,7 @@ const PARTY_WIPE_POLICY := "remake_party_wipe_defeat_v1"
 ## Loop state
 
 static func initialize_script_state(battle: Dictionary, scenario: Dictionary, seed: Dictionary) -> Dictionary:
-	var next := LoopConfig.copy(battle)
+	var next := BattleLoopConfig.copy(battle)
 	if not WinfailCompiler.seed_has_winfail(seed):
 		# A battle level without a winfail script cannot run this module; fail
 		# explicitly instead of quietly running another rule set.
@@ -77,7 +79,7 @@ static func initialize_script_state(battle: Dictionary, scenario: Dictionary, se
 	next["script_presentation_source"] = {"policy":"script_cursor_v1", "playable_keys":playable,
 		"digest":var_to_bytes([timelines, opening]).hex_encode().sha256_text()}
 	next["script_rule_source"] = "battle%03d_seed" % int(rules.get("source_level", 0))
-	# Both tables live in scenario_rules (tools/hsl_level_battle.py LEVELS job_up_targets);
+	# Both tables live in scenario_rules (tools/hsltools/levels/battle.py LEVELS job_up_targets);
 	# reading the templates from the scenario root left level 37 without a target.
 	next["job_up_templates"] = (config.get("job_up_templates", {}) as Dictionary).duplicate(true)
 	next["job_up_targets"] = (config.get("job_up_targets", {}) as Dictionary).duplicate(true)
@@ -189,7 +191,7 @@ static func select_event_status(battle: Dictionary, event_code: int) -> Dictiona
 	## inserted into the same loop before its unconditional chain is evaluated;
 	## presentation marks the resulting fired entry as inlined because the
 	## coordinator splices that status timeline into the open choice cutscene.
-	var next := LoopConfig.copy(battle)
+	var next := BattleLoopConfig.copy(battle)
 	var rules: Dictionary = next.get("winfail_script_rules", {})
 	var runtime: Dictionary = next.get("winfail_runtime", {})
 	var key := "event_%d" % event_code
@@ -291,7 +293,7 @@ static func commit_outcome(battle: Dictionary) -> Dictionary:
 	## Optional mutation seam for the PlayLoop's outcome resolution: records the
 	## deciding status and applies its result actions (next level event, deleted
 	## player code, world flags, messages) once. victory_state stays pure.
-	var next := LoopConfig.copy(battle)
+	var next := BattleLoopConfig.copy(battle)
 	var runtime: Dictionary = next.get("winfail_runtime", {})
 	if runtime.is_empty() or not (runtime.get("resolved", {}) as Dictionary).is_empty():
 		return next
@@ -387,7 +389,7 @@ static func result_message_id(battle: Dictionary, outcome: Dictionary) -> String
 ## Evaluation
 
 static func _evaluate(battle: Dictionary, context: String) -> Dictionary:
-	var next := LoopConfig.copy(battle)
+	var next := BattleLoopConfig.copy(battle)
 	var rules: Dictionary = next.get("winfail_script_rules", {})
 	var runtime: Dictionary = next.get("winfail_runtime", {})
 	if rules.is_empty() or runtime.is_empty() or BattleOutcome.decided(next):

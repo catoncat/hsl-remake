@@ -5,11 +5,10 @@ extends RefCounted
 ## remake keeps one unit per piece and folds the HP each settled action wrote back into a
 ## pool shared by every living piece of the group (units carrying the same `shared_record`).
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md; provisional (only HP is pooled — status, side word and stats stay per unit; a piece left at 0 stays down, the others keep the last positive pool)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
+##   rules: provisional
+##     (only HP is pooled — status, side word and stats stay per unit; a piece left at 0 stays down, the others keep the
+##     last positive pool)
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 
 

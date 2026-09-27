@@ -4,11 +4,11 @@ extends RefCounted
 ## that decide who may target whom and who the win/fail counters count.
 ## Explicit roles win; fixture/team fallbacks follow.
 ## provenance:
-##   rules: resource-derived content/battles/first_battle.json; resource-derived content/imported/hsl/global/tables/TYPE.H; static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md; user-confirmed (Leonard player-controlled, 023／024 friendly, 021／026 enemy); provisional (fixture／team fallbacks, role-implied side for units without player_mode)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: resource-derived content/battles/first_battle.json
+##   rules: resource-derived content/imported/hsl/global/tables/TYPE.H
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
+##   rules: user-confirmed (Leonard player-controlled, 023／024 friendly, 021／026 enemy)
+##   rules: provisional (fixture／team fallbacks, role-implied side for units without player_mode)
 
 ## pmALL: the three side bits of the live +0x28 player mode (pmPlayer 0x10000, pmEnemy
 ## 0x20000, pmNPC 0x40000). Bit 0x800000 (pmNPCPlayerNoMagic) is not a side and is dropped.

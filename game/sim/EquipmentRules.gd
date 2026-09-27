@@ -1,13 +1,10 @@
 extends RefCounted
 ## Pure equipment rules. Callers supply the immutable generated item catalog.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_inventory_equipment.md; resource-derived content/generated/hsl/roles/job_formulas.json
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Inventory = preload("res://game/sim/InventoryRules.gd")
-const JobStats = preload("res://game/sim/JobStatsRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_inventory_equipment.md
+##   rules: resource-derived content/generated/hsl/roles/job_formulas.json
+const InventoryRules = preload("res://game/sim/InventoryRules.gd")
+const JobStatsRules = preload("res://game/sim/JobStatsRules.gd")
 const SLOTS := ["weapon", "head", "armor", "foot", "accessory1", "accessory2"]
 const TYPES := [2, 3, 4, 5, 6, 6]
 
@@ -62,7 +59,7 @@ static func effect_delta(equipment: Array, catalog: Dictionary) -> Dictionary:
 
 static func replace(unit: Dictionary, slot: String, inventory_index: int, expected_code: int, catalog: Dictionary) -> Dictionary:
 	var index := SLOTS.find(slot)
-	if index < 0 or not Inventory.valid(unit.get("inventory")) or not unit.get("equipment") is Array:
+	if index < 0 or not InventoryRules.valid(unit.get("inventory")) or not unit.get("equipment") is Array:
 		return {"ok": false, "reason": "invalid_equipment_input"}
 	var equipment: Array = unit["equipment"]
 	var previous_effects := effect_delta(equipment, catalog)
@@ -81,18 +78,18 @@ static func replace(unit: Dictionary, slot: String, inventory_index: int, expect
 		if item.is_empty() or not bool(item.get("supported", false)):
 			return {"ok": false, "reason": "unsupported_equipment"}
 		var job := int(unit.get("growth_profile", {}).get("job_code", -1))
-		if job != 1000 and (not JobStats.has_job(job) or (int(item["job_mask"]) & JobStats.job_mask_bit(job)) == 0):
+		if job != 1000 and (not JobStatsRules.has_job(job) or (int(item["job_mask"]) & JobStatsRules.job_mask_bit(job)) == 0):
 			return {"ok": false, "reason": "wrong_job"}
 		if int(item["type_code"]) != TYPES[index]:
 			return {"ok": false, "reason": "wrong_equipment_slot"}
-		var removed := Inventory.remove(bag, inventory_index, expected_code)
+		var removed := InventoryRules.remove(bag, inventory_index, expected_code)
 		if not removed["ok"]:
 			return removed
 		bag = removed["inventory"]
 	elif expected_code < 0 or inventory_index != -1:
 		return {"ok": false, "reason": "invalid_equipment_input"}
 	if old_code > 0:
-		var returned := Inventory.insert(bag, old_code)
+		var returned := InventoryRules.insert(bag, old_code)
 		if not returned["ok"]:
 			return returned
 		bag = returned["inventory"]

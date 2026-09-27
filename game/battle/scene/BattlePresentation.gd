@@ -1,11 +1,28 @@
 extends Node2D
 ## Read-only presentation of the PlayLoop objective and the finished-battle flag; never owns battle state.
 ## provenance:
-##   rules: n/a
-##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#17 (objective text on the map); runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured (bottom identity strip on pointer-over a unit in move selection, not while the action ring is open); provisional (the same strip for any living unit under the cursor in weapon／magic／special selection, legal target or not — user request 2026-09-23, the original's per-state rule is unread); static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md; remake-invented (caption placement above the numbers)
-##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md; remake-invented (objective board, status／cure captions beside the numbers, the magic／support 「N 個目標」 targeting line); remake-invented docs/OPTIONS.md (OPT-INFO=公開 only: 命中 N%／2擊 line, 反擊／連擊／暴擊／閃避／擊倒 and HP／MP words over the numbers, strips never masked)
-##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md; static-derived docs/evidence_packets/static_reverse/original_map_strike.md; provisional (a caster without an m_shape lead poses at clip start beside the Cast_Star ring)
-##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json; resource-derived content/imported/hsl/chapter01/actor_audio.json
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#17
+##     (objective text on the map)
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured
+##     (bottom identity strip on pointer-over a unit in move selection, not while the action ring is open)
+##   layout: provisional
+##     (the same strip for any living unit under the cursor in weapon／magic／special selection, legal target or not —
+##     user request 2026-09-23, the original's per-state rule is unread)
+##   layout: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+##   layout: remake-invented (caption placement above the numbers)
+##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
+##   strings: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+##   strings: remake-invented
+##     (objective board, status／cure captions beside the numbers, the magic／support 「N 個目標」 targeting line)
+##   strings: remake-invented docs/OPTIONS.md
+##     (OPT-INFO=公開 only: 命中 N%／2擊 line, 反擊／連擊／暴擊／閃避／擊倒 and HP／MP words over the numbers, strips never masked)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_map_strike.md
+##   timing: provisional (a caster without an m_shape lead poses at clip start beside the Cast_Star ring)
+##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
+##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 signal experience_presented(growth: Dictionary)
@@ -28,8 +45,8 @@ var combat_label: Label
 ## autoplay read this instead of a visible page.
 var battle_finished := false
 var actors_root: Node2D
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const Combat = preload("res://game/sim/CoreCombatRules.gd")
+const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")
 const RuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
@@ -41,6 +58,7 @@ const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const DamageNumberFloat = preload("res://game/battle/scene/DamageNumberFloat.gd")
 const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
 const MapHitState = preload("res://game/battle/scene/MapHitState.gd")
+const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 ## Where the original spawns a unit's numbers from its object (x, y), the cell centre: the magic
 ## channel (0x40aba0／0x40ac24) at y − 0x34, item use (0x444b2f) at y − 0x30.
 const MAGIC_NUMBER_OFFSET := Vector2(0, -0x34)
@@ -233,10 +251,10 @@ func _pose_unit(unit_id: String) -> void:
 static func _strike_area_at(loop: Dictionary, strike: Dictionary, origin: Vector2i) -> Callable:
 	if not strike.has("skill_id"):
 		return Callable()
-	var fields: Dictionary = Loop.skill_fields(loop, str(strike["skill_id"]))
+	var fields: Dictionary = BattlePlayLoop.skill_fields(loop, str(strike["skill_id"]))
 	var data: Dictionary = loop[LoopKeys.SKILL_TARGET_DATA]
 	var map_size: Vector2i = loop[LoopKeys.MAP_SIZE]
-	return func(cell: Vector2i) -> Array: return Loop.SkillTargetRules.effect_cells(cell, fields, data, map_size, origin)
+	return func(cell: Vector2i) -> Array: return BattlePlayLoop.SkillTargetRules.effect_cells(cell, fields, data, map_size, origin)
 
 
 func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_ready: bool = true, delta: float = 0.0) -> void:
@@ -247,16 +265,16 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 	movement_preview.hide()
 	status_label.visible = playable and debug_hud
 	var terminal_growth := _terminal_growth_pending()
-	battle_finished = playable and combat_ready and not combat_busy(loop) and not Loop.loot_waiting(loop) and BattleOutcome.decided(loop) and not terminal_growth
+	battle_finished = playable and combat_ready and not combat_busy(loop) and not BattlePlayLoop.loot_waiting(loop) and BattleOutcome.decided(loop) and not terminal_growth
 	var latest: Dictionary = loop.get(LoopKeys.LAST_COMBAT, {})
 	var sequence := int(latest.get("sequence", 0))
 	if playable and combat_ready and sequence > _shown_combat_sequence:
 		aftermath.prepare(latest, loop.get(LoopKeys.UNITS, []), dialogue_manifest.get("messages", {}))
 		if attack_cue.sequence != sequence:
-			var attacker: Dictionary = Loop.unit(loop, str(latest["attacker_id"]))
-			var defender: Dictionary = Loop.unit(loop, str(latest["defender_id"]))
+			var attacker: Dictionary = BattlePlayLoop.unit(loop, str(latest["attacker_id"]))
+			var defender: Dictionary = BattlePlayLoop.unit(loop, str(latest["defender_id"]))
 			if attack_cue.leads(latest, attacker):
-				attack_cue.begin(sequence, latest, Loop.strike_range_cells(loop, latest), attacker["coord"], latest.get("cast_center", defender["coord"]), map_config, get_parent().get("camera_controller"), _strike_area_at(loop, latest, attacker["coord"]))
+				attack_cue.begin(sequence, latest, BattlePlayLoop.strike_range_cells(loop, latest), attacker["coord"], latest.get("cast_center", defender["coord"]), map_config, get_parent().get("camera_controller"), _strike_area_at(loop, latest, attacker["coord"]))
 			else:
 				attack_cue.skip(sequence)
 		else:
@@ -264,7 +282,7 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 		if attack_cue.stage() == "complete":
 			attack_cue.hide()
 			_shown_combat_sequence = sequence
-			var strikes: Array = Loop.CombatSequence.strikes(latest)
+			var strikes: Array = BattlePlayLoop.CombatSequence.strikes(latest)
 			for index in range(strikes.size()):
 				var strike: Dictionary = strikes[index]
 				_show_strike(strike, loop, map_config, bool(strike.get("is_counter", false)), index == 0, index == strikes.size() - 1, latest.get("strip_known_ids"))
@@ -289,7 +307,7 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 	_sync_closeup_words()
 	if playable and combat_ready and not cutin.busy() and not magic_impact.busy() and not has_pending_combat(loop):
 		aftermath.advance(delta, get_parent())
-		if not aftermath.busy() and not Loop.loot_waiting(loop) and not turn_end_cue.busy(loop) and not item_feedback_busy() and not terminal_growth:
+		if not aftermath.busy() and not BattlePlayLoop.loot_waiting(loop) and not turn_end_cue.busy(loop) and not item_feedback_busy() and not terminal_growth:
 			_queue_story_dialogue(loop)
 	_update_dialogue_page()
 	var runtime := get_parent()
@@ -298,9 +316,9 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 	var ai_action: Dictionary = loop.get(LoopKeys.LAST_AI_ACTION, {})
 	if playable and combat_ready and ai_action.get("kind") == "move_then_item":
 		runtime.present_item_effect(ai_action["item_use"])
-	var extra_owner := Loop.unit(loop, str(loop.get("extra_action", {}).get("owner_id", "")))
+	var extra_owner := BattlePlayLoop.unit(loop, str(loop.get("extra_action", {}).get("owner_id", "")))
 	var extra_point: Vector2 = runtime.grid_cell_center_to_logical_position(extra_owner["coord"]) if not extra_owner.is_empty() else Vector2.ZERO
-	var quiet: bool = playable and combat_ready and not has_pending_combat(loop) and not cutin.busy() and not magic_impact.busy() and not aftermath.busy() and not navigation_cue.busy() and not item_feedback_busy() and not dialogue_active() and not Loop.loot_waiting(loop)
+	var quiet: bool = playable and combat_ready and not has_pending_combat(loop) and not cutin.busy() and not magic_impact.busy() and not aftermath.busy() and not navigation_cue.busy() and not item_feedback_busy() and not dialogue_active() and not BattlePlayLoop.loot_waiting(loop)
 	if runtime.has_method("modal_open"):
 		quiet = quiet and not runtime.modal_open()
 	var tail: Dictionary = loop.get("last_action_end", {})
@@ -309,7 +327,7 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 	var tail_was_busy: bool = turn_end_cue.busy(loop)
 	turn_end_cue.refresh(loop, tail_point, quiet, delta)
 	if tail_was_busy and not turn_end_cue.busy(loop) and loop.get(LoopKeys.INTERACTION) == Interaction.ACTION_MENU:
-		var successor := Loop.unit(loop, str(loop.get(LoopKeys.SELECTED_UNIT_ID, "")))
+		var successor := BattlePlayLoop.unit(loop, str(loop.get(LoopKeys.SELECTED_UNIT_ID, "")))
 		if not successor.is_empty(): runtime.focus_camera_on_grid(successor["coord"])
 	var menu_bounds := Rect2()
 	if loop.get(LoopKeys.INTERACTION) == Interaction.ACTION_MENU and runtime.get("action_menu") != null:
@@ -375,31 +393,31 @@ func preview_target(loop: Dictionary, target_id: String, center_coord: Variant =
 ## The legal weapon／skill target preview (strip + hit or effect line). Returns the id whose
 ## strip it showed, "" when the cell holds no legal target.
 func _preview_attack_target(loop: Dictionary, target_id: String, center_coord: Variant) -> String:
-	var attacker: Dictionary = Loop.unit(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))
-	var fields := Loop.skill_fields(loop, str(loop.get(LoopKeys.SELECTED_SKILL_ID, "")))
-	var self_special: bool = loop.get(LoopKeys.SELECTED_ATTACK) == "special" and Loop.SkillTargetRules.self_centered(fields)
+	var attacker: Dictionary = BattlePlayLoop.unit(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))
+	var fields := BattlePlayLoop.skill_fields(loop, str(loop.get(LoopKeys.SELECTED_SKILL_ID, "")))
+	var self_special: bool = loop.get(LoopKeys.SELECTED_ATTACK) == "special" and BattlePlayLoop.SkillTargetRules.self_centered(fields)
 	# Support specials (heal / cure / buff) preview like spells: allies and the caster are legal targets.
-	var support_special: bool = loop.get(LoopKeys.SELECTED_ATTACK) == "special" and Loop.SkillTargetRules.is_support(fields, loop[LoopKeys.SKILL_TARGET_DATA])
+	var support_special: bool = loop.get(LoopKeys.SELECTED_ATTACK) == "special" and BattlePlayLoop.SkillTargetRules.is_support(fields, loop[LoopKeys.SKILL_TARGET_DATA])
 	if (loop.get(LoopKeys.SELECTED_ATTACK) == "magic" or self_special or support_special) and center_coord is Vector2i:
-		target_id = Loop.magic_target_id_at_coord(loop, center_coord)
-	var target: Dictionary = Loop.unit(loop, target_id)
+		target_id = BattlePlayLoop.magic_target_id_at_coord(loop, center_coord)
+	var target: Dictionary = BattlePlayLoop.unit(loop, target_id)
 	if target.is_empty() or int(target["hp"]) <= 0:
 		return ""
-	if loop.get(LoopKeys.SELECTED_ATTACK) != "magic" and not support_special and not Loop.ActorRoleRules.player_range_selectable(attacker, target, loop.get(LoopKeys.SELECTED_ATTACK) == "special"): return ""
-	var target_cell: Variant = center_coord if center_coord is Vector2i else Loop.Footprint.contact(target, Loop.attack_cells(loop))
-	if not target_cell is Vector2i or not Loop.attack_cells(loop).has(target_cell):
+	if loop.get(LoopKeys.SELECTED_ATTACK) != "magic" and not support_special and not BattlePlayLoop.ActorRoleRules.player_range_selectable(attacker, target, loop.get(LoopKeys.SELECTED_ATTACK) == "special"): return ""
+	var target_cell: Variant = center_coord if center_coord is Vector2i else BattlePlayLoop.Footprint.contact(target, BattlePlayLoop.attack_cells(loop))
+	if not target_cell is Vector2i or not BattlePlayLoop.attack_cells(loop).has(target_cell):
 		return ""
-	if loop.get(LoopKeys.SELECTED_ATTACK) != "magic" and not self_special and not Loop.Footprint.contains(target, target_cell):
+	if loop.get(LoopKeys.SELECTED_ATTACK) != "magic" and not self_special and not BattlePlayLoop.Footprint.contains(target, target_cell):
 		return ""
 	var special := str(loop[LoopKeys.SELECTED_ATTACK]) == "special"
 	var rate := 0
 	if special:
-		var prepared := Loop.SkillResolutionRules.Special.prepare(attacker, target, fields, loop[LoopKeys.SKILL_BOOK], loop["equipment_items"])
+		var prepared := BattlePlayLoop.SkillResolutionRules.Special.prepare(attacker, target, fields, loop[LoopKeys.SKILL_BOOK], loop["equipment_items"])
 		if not prepared["ok"]: return ""
 		rate = 100 if prepared["input"]["no_attack"] else mini(100, int(prepared["input"]["hit_ratio"]) + int(prepared["input"]["hit_bonus"]))
 	if loop.get(LoopKeys.SELECTED_ATTACK) == "magic" or self_special or support_special:
 		var id: String = loop.get(LoopKeys.SELECTED_SKILL_ID, "")
-		var prepared := Loop.SkillResolutionRules.prepare_cast(attacker, target, loop[LoopKeys.UNITS], id, fields, loop[LoopKeys.SKILL_BOOK], loop[LoopKeys.SKILL_TARGET_DATA], loop["equipment_items"], attacker["coord"], loop[LoopKeys.MAP_SIZE], center_coord, {"range_terrain": Loop.skill_terrain(loop)})
+		var prepared := BattlePlayLoop.SkillResolutionRules.prepare_cast(attacker, target, loop[LoopKeys.UNITS], id, fields, loop[LoopKeys.SKILL_BOOK], loop[LoopKeys.SKILL_TARGET_DATA], loop["equipment_items"], attacker["coord"], loop[LoopKeys.MAP_SIZE], center_coord, {"range_terrain": BattlePlayLoop.skill_terrain(loop)})
 		if not prepared["ok"]: return ""
 		target_vitals.show_unit(target, -1, _strip_known(loop, target_id))
 		target_vitals.show()
@@ -425,8 +443,8 @@ func _preview_attack_target(loop: Dictionary, target_id: String, center_coord: V
 	# OPT-INFO=公開 restores the remake's line from before UI6: 命中 N% (· 2擊 for a double attack).
 	if info_public:
 		combat_label.position = Vector2(390, 297)
-		combat_label.text = "命中 %d%%" % (rate if special else int(Combat.attack_accuracy(attacker, target)["hit_rate"]))
-		var count := Loop.attack_count(loop, attacker) if not special else {}
+		combat_label.text = "命中 %d%%" % (rate if special else int(CoreCombatRules.attack_accuracy(attacker, target)["hit_rate"]))
+		var count := BattlePlayLoop.attack_count(loop, attacker) if not special else {}
 		if count.get("ok", false) and int(count["count"]) > 1: combat_label.text += " · 2擊"
 		combat_label.show()
 	return target_id
@@ -435,7 +453,7 @@ func _preview_attack_target(loop: Dictionary, target_id: String, center_coord: V
 ## The known flag an identity strip masks by (BattleVitals.mask): OPT-INFO=公開 shows every unit
 ## as known; the original path reads the known byte (BattlePlayLoop.unit_known).
 func _strip_known(loop: Dictionary, unit_id: String) -> bool:
-	return info_public or Loop.unit_known(loop, unit_id)
+	return info_public or BattlePlayLoop.unit_known(loop, unit_id)
 
 
 ## The original identity strip while the pointer rests on a unit's body cell during move
@@ -444,7 +462,7 @@ func _strip_known(loop: Dictionary, unit_id: String) -> bool:
 func preview_hovered_unit(loop: Dictionary, unit_id: String) -> void:
 	if unit_id == "":
 		return
-	var hovered: Dictionary = Loop.unit(loop, unit_id)
+	var hovered: Dictionary = BattlePlayLoop.unit(loop, unit_id)
 	if hovered.is_empty() or int(hovered["hp"]) <= 0:
 		return
 	target_vitals.show_unit(hovered, -1, _strip_known(loop, unit_id))
@@ -464,35 +482,35 @@ func show_selection(loop: Dictionary, coord: Vector2i, logical_center: Vector2, 
 	var in_range := false
 	var body_rect := Rect2()
 	if loop[LoopKeys.INTERACTION] == Interaction.MOVE_SELECT:
-		var envelope := Loop._movement_envelope(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))
+		var envelope := BattlePlayLoop._movement_envelope(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))
 		in_range = envelope.get("reachable_by_coord", {}).has(coord)
 		var route: Dictionary = envelope.get("reachable_by_coord", {}).get(coord, envelope.get("transit_by_coord", {}).get(coord, {}))
-		var actor := Loop.unit(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))
-		if Loop.Footprint.radius(actor) == 1:
+		var actor := BattlePlayLoop.unit(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))
+		if BattlePlayLoop.Footprint.radius(actor) == 1:
 			body_rect = Rect2(logical_center - cell_size * 1.5, cell_size * 3)
 		if not route.is_empty():
 			text = "%s %d / %d" % ["飛行" if actor["traversal"]["flying"] else "移動", route["cost"], actor["move_point"]]
 			if not in_range: text += " · 可通過，不能停留"
-			elif not Loop.magic_options(loop, str(actor["id"])).is_empty() and Loop.PositionCapabilities.cast_error(actor, loop[LoopKeys.SKILL_BOOK], loop["equipment_items"], "magic", true) == "magic_unavailable_after_movement":
+			elif not BattlePlayLoop.magic_options(loop, str(actor["id"])).is_empty() and BattlePlayLoop.PositionCapabilities.cast_error(actor, loop[LoopKeys.SKILL_BOOK], loop["equipment_items"], "magic", true) == "magic_unavailable_after_movement":
 				text += "\n移動後不能施法；取消可返回原位"
-			if move_hints: movement_preview.present(route, _map_config, in_range, Loop.Footprint.radius(actor))
+			if move_hints: movement_preview.present(route, _map_config, in_range, BattlePlayLoop.Footprint.radius(actor))
 		elif coord != actor["coord"]:
-			text = "需要3×3通行空間／足夠移動力" if Loop.Footprint.radius(actor) == 1 else "無法到達"
+			text = "需要3×3通行空間／足夠移動力" if BattlePlayLoop.Footprint.radius(actor) == 1 else "無法到達"
 	else:
-		in_range = Loop.attack_cells(loop).has(coord)
-		var target := Loop.unit(loop, Loop.unit_id_at_coord(loop, coord))
-		if not target.is_empty() and Loop.Footprint.radius(target) == 1:
+		in_range = BattlePlayLoop.attack_cells(loop).has(coord)
+		var target := BattlePlayLoop.unit(loop, BattlePlayLoop.unit_id_at_coord(loop, coord))
+		if not target.is_empty() and BattlePlayLoop.Footprint.radius(target) == 1:
 			var body_center: Vector2 = get_parent().grid_cell_center_to_logical_position(target["coord"])
 			body_rect = Rect2(body_center - cell_size * 1.5, cell_size * 3)
 		match str(loop[LoopKeys.SELECTED_ATTACK]):
 			"special":
 				text = str(loop[LoopKeys.SKILL_BOOK]["skills"][loop[LoopKeys.SELECTED_SKILL_ID]]["name"])
-				var effect_pattern: Variant = loop[LoopKeys.SKILL_TARGET_DATA]["ranges"].get(Loop.skill_fields(loop, loop[LoopKeys.SELECTED_SKILL_ID]).get("effect_range"))
-				if Loop.SkillTargetRules.is_line(effect_pattern):
+				var effect_pattern: Variant = loop[LoopKeys.SKILL_TARGET_DATA]["ranges"].get(BattlePlayLoop.skill_fields(loop, loop[LoopKeys.SELECTED_SKILL_ID]).get("effect_range"))
+				if BattlePlayLoop.SkillTargetRules.is_line(effect_pattern):
 					text += "\n直線 %d 格，從目標格向外貫穿" % int(effect_pattern["size"])
-				if Loop.SkillTargetRules.self_centered(Loop.skill_fields(loop, loop[LoopKeys.SELECTED_SKILL_ID])):
+				if BattlePlayLoop.SkillTargetRules.self_centered(BattlePlayLoop.skill_fields(loop, loop[LoopKeys.SELECTED_SKILL_ID])):
 					text += "\n選擇自身，攻擊周圍敵人"
-					if in_range and Loop.magic_target_id_at_coord(loop,coord)=="":
+					if in_range and BattlePlayLoop.magic_target_id_at_coord(loop,coord)=="":
 						text = "周圍沒有可攻擊的敵人"
 						in_range = false
 			"magic": text = str(loop[LoopKeys.SKILL_BOOK]["skills"][loop[LoopKeys.SELECTED_SKILL_ID]]["name"])
@@ -555,7 +573,7 @@ func _show_strike(strike: Dictionary, loop: Dictionary, map_config: RefCounted, 
 	var public := not GameOptions.is_original("OPT-INFO")
 	var known := {}
 	for unit in [attacker, defender] + (units if strike.has("special_segments") else []):
-		known[str(unit["id"])] = public or Loop.unit_known(loop, str(unit["id"]), known_ids)
+		known[str(unit["id"])] = public or BattlePlayLoop.unit_known(loop, str(unit["id"]), known_ids)
 	cutin.play(strike, attacker, defender, counter, get_parent().world_to_logical_position(target_world), get_parent().world_to_logical_position(caster_world), affected_positions, units if strike.has("special_segments") else [], known, first_shot, last_shot)
 
 
@@ -777,7 +795,7 @@ func _present_status_effects(strike: Dictionary, public: bool = false) -> void:
 				if amounts["mp"] > 0: parts.push_front({"text": "MP", "kind": "mp"})
 				if amounts["heal"] > 0: parts.push_front({"text": "HP", "kind": "heal"})
 			for effect in result.get("status_effects", []):
-				if effect["applied"]: parts.append({"text": {"poison": "中毒", "no_magic": "禁魔", "paralysis": "麻痺", "weaken": "衰弱"}[effect["status"]], "kind": "caption"})
+				if effect["applied"]: parts.append({"text": StatusCatalog.name_of(effect["status"]), "kind": "caption"})
 				elif effect["reason"] != "target_defeated": parts.append({"text": "免疫" if effect["reason"] == "immune" else "未生效", "kind": "caption"})
 			for number in ResultNumberFloat.spawn_all(status_feedback, ResultNumberFloat.spawns(amounts["damage"], amounts["heal"], amounts["mp"], false), point + MAGIC_NUMBER_OFFSET):
 				number.finished.connect(number.queue_free)
@@ -872,7 +890,7 @@ func _story_speaker_actor(loop: Dictionary, token: String, speaker_id: String) -
 	for key in bindings:
 		if str(key).split("/")[0] != token:
 			continue
-		var unit := Loop.unit(loop, str(bindings[key]))
+		var unit := BattlePlayLoop.unit(loop, str(bindings[key]))
 		if not unit.is_empty():
 			return ActorSpriteKey.row_key(unit, dialogue_view.portrait_rows())
 	if token.begins_with("SID_ENEMY") and token.trim_prefix("SID_ENEMY").is_valid_int():
@@ -884,7 +902,7 @@ func _story_speaker_actor(loop: Dictionary, token: String, speaker_id: String) -
 func _story_speaker_unit(loop: Dictionary, token: String) -> String:
 	var bindings: Dictionary = (loop.get(LoopKeys.WINFAIL_RUNTIME, {}) as Dictionary).get("actor_bindings", {})
 	for key in bindings:
-		if str(key).split("/")[0] == token and not Loop.unit(loop, str(bindings[key])).is_empty():
+		if str(key).split("/")[0] == token and not BattlePlayLoop.unit(loop, str(bindings[key])).is_empty():
 			return str(bindings[key])
 	return ""
 

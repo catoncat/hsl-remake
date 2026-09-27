@@ -1,11 +1,11 @@
 extends Sprite2D
 ## SHP frame playback at a fixed source anchor. No battle state.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json; static-derived docs/evidence_packets/static_reverse/gate_fire_animation.md
-##   strings: n/a
-##   timing: resource-derived content/imported/hsl/chapter01/map_objects.json; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; provisional (additive colour cycle)
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
+##   layout: static-derived docs/evidence_packets/static_reverse/gate_fire_animation.md
+##   timing: resource-derived content/imported/hsl/chapter01/map_objects.json
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: provisional (additive colour cycle)
 
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 

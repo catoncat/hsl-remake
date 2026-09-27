@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_game_clear_review.gd, capture_story_scene_review.gd · updated: 2026-09-19
 
-2026-09-19，presentation 线。数据链由子线 ch3（`773015b`／`b9f8d6d`，[P-049](../../../collaboration/presentation.md)）建成并由本线合并注册；
+2026-09-19，presentation 线。数据链由子线 ch3（`773015b`／`b9f8d6d`，P-049（已删，见 Git 历史））建成并由本线合并注册；
 窗口化 `tests/capture_story_scene_review.gd -- --level=73|82` 与 headless 套件的实际运行回执。
 
 ## 玩家结果

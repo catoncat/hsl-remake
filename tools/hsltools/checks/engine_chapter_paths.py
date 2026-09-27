@@ -23,7 +23,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from hsltools.checks import CheckTask
-from hsltools.checks.provenance import DIMENSION_LINE, HEADER_LINE, TERM, split_terms
+from hsltools.checks.provenance import CONTINUATION_LINE, DIMENSION_LINE, HEADER_LINE, TERM, split_terms
 from hsltools.registry import CheckFailed, Context
 
 ENGINE = Path("game")
@@ -38,14 +38,16 @@ def engine_files(root: Path) -> list[Path]:
 
 
 def provenance_lines(lines: list[str]) -> set[int]:
-    """Indices of the `##   <dimension>: …` lines of the module's provenance header."""
+    """Indices of the `##   <dimension>: …` lines of the module's provenance header (a `##     `
+    continuation line only carries note text, so it is walked past but not counted as a citation line)."""
     found: set[int] = set()
     for start, line in enumerate(lines):
         if line.rstrip() != HEADER_LINE:
             continue
         index = start + 1
-        while index < len(lines) and DIMENSION_LINE.match(lines[index]):
-            found.add(index)
+        while index < len(lines) and (DIMENSION_LINE.match(lines[index]) or CONTINUATION_LINE.match(lines[index])):
+            if DIMENSION_LINE.match(lines[index]):
+                found.add(index)
             index += 1
     return found
 

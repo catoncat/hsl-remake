@@ -1,6 +1,6 @@
 extends CanvasLayer
 ## Plays one film of the original movie.pak — the intro start.ani or the ending end.ani —
-## from the import manifest (content/imported/hsl/movie/manifest.json, tools/hsl_movie_import.py):
+## from the import manifest (content/imported/hsl/movie/manifest.json, tools/hsltools/assets/movie_import.py):
 ## WebP sprite sheets of 320×240 frames in row-major order at the manifest frame rate, with
 ## the decoded .snd soundtrack. Frames are pixel-doubled onto the 640×480 screen (the
 ## original played the 320×240 FLI on its 640×480 mode; the doubling filter is a remake
@@ -11,10 +11,12 @@ extends CanvasLayer
 ## node draws on its own canvas layer above the scene's UI and frees nothing itself; the
 ## caller removes it.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/resource_inventory/original_movies.md; remake-invented (any-key skip; original skip behaviour not located)
-##   layout: resource-derived content/imported/hsl/movie/manifest.json; remake-invented (nearest-neighbour doubling to 640×480)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/resource_inventory/original_movies.md; resource-derived content/imported/hsl/movie/manifest.json
+##   rules: static-derived docs/evidence_packets/resource_inventory/original_movies.md
+##   rules: remake-invented (any-key skip; original skip behaviour not located)
+##   layout: resource-derived content/imported/hsl/movie/manifest.json
+##   layout: remake-invented (nearest-neighbour doubling to 640×480)
+##   timing: static-derived docs/evidence_packets/resource_inventory/original_movies.md
+##   timing: resource-derived content/imported/hsl/movie/manifest.json
 ##   audio: resource-derived content/imported/hsl/movie/manifest.json
 
 signal finished(reason: String)

@@ -3,11 +3,7 @@ extends RefCounted
 ## packed temporary statuses. Every derived refresh consumes this same model.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_permanent_items.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Number = preload("res://game/sim/SkillResourceRules.gd")
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const KEYS := ["attack_power","magic_attack_power","defense","speed","resist_0","resist_1","resist_2","resist_3","resist_4"]
 const LABELS := {"attack_power":"攻擊","magic_attack_power":"魔擊","defense":"防禦","speed":"敏捷度",
 	"resist_0":"地抗性","resist_1":"水抗性","resist_2":"風抗性","resist_3":"火抗性","resist_4":"心抗性"}
@@ -24,14 +20,14 @@ static func base_value(actor: Dictionary, key: String) -> int:
 	var source: Dictionary = growth["source"]
 	if key.begins_with("resist_"):
 		if not source.get("base_resist_by_type") is Dictionary: return -1
-		return Number._integer(source["base_resist_by_type"].get(key.trim_prefix("resist_")))
-	return Number._integer(source.get(key))
+		return SkillResourceRules._integer(source["base_resist_by_type"].get(key.trim_prefix("resist_")))
+	return SkillResourceRules._integer(source.get(key))
 
 static func input_error(actor: Dictionary) -> String:
 	var gains: Variant = actor.get("permanent_gains")
 	if not gains is Dictionary or gains.size() != KEYS.size(): return "missing_permanent_capability_state"
 	for key in KEYS:
-		var amount := Number._integer(gains.get(key))
+		var amount := SkillResourceRules._integer(gains.get(key))
 		if amount < 0 or amount > MAX_GAIN: return "invalid_permanent_capability"
 		# Existing actors without a supported growth model may fight, but they
 		# cannot hold acquired offsets whose original source is unknown.
@@ -58,7 +54,7 @@ static func definition_error(item: Dictionary) -> String:
 		if key not in KEYS: return "invalid_permanent_item_definition"
 		var bounds: Variant = effects[key]
 		if not bounds is Array or bounds.size() != 2: return "invalid_permanent_item_definition"
-		var lo := Number._integer(bounds[0]); var hi := Number._integer(bounds[1])
+		var lo := SkillResourceRules._integer(bounds[0]); var hi := SkillResourceRules._integer(bounds[1])
 		if lo < 1 or hi < lo or hi > (1 if key.begins_with("resist_") else 5): return "invalid_permanent_item_definition"
 	return ""
 

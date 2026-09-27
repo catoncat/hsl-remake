@@ -12,11 +12,13 @@ extends RefCounted
 ## install() is the OPT-FONT read point: the default theme font is this font (original value) or
 ## the system font (improved value).
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/generated/hsl/fonts/original_fonts.json (glyph bitmaps, cells and the character → glyph slot table); static-derived tools/hsltools/assets/original_bitmap_font.py (advances = cell widths, zero extra gap, half-glyph drop 2 px in FONT.15: hsl01.exe 0x42f230／0x42f308／0x4608e4); remake-invented (small line 16 px = 15 px cell + 1; the face per remake font size, SMALL_SIZES／BODY_SIZES; aliases ・ − ▶ › drawn as ‧ - → >)
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   layout: resource-derived content/generated/hsl/fonts/original_fonts.json
+##     (glyph bitmaps, cells and the character → glyph slot table)
+##   layout: static-derived tools/hsltools/assets/original_bitmap_font.py
+##     (advances = cell widths, zero extra gap, half-glyph drop 2 px in FONT.15: hsl01.exe 0x42f230／0x42f308／0x4608e4)
+##   layout: remake-invented
+##     (small line 16 px = 15 px cell + 1; the face per remake font size, SMALL_SIZES／BODY_SIZES; aliases ・ − ▶ › drawn
+##     as ‧ - → >)
 
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const TABLE_PATH := "res://content/generated/hsl/fonts/original_fonts.json"

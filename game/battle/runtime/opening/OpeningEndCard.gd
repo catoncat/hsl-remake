@@ -6,13 +6,12 @@ extends RefCounted
 ## `end_card_selected` / `end_route_decision`, reported by summary()) and
 ## `_finish_story`; this module owns only the card controls. Layout is a remake reading.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_ending_dispatch.md; remake-invented (skip-battle-as-victory and not-remade rows)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ending_dispatch.md
+##   rules: remake-invented (skip-battle-as-victory and not-remade rows)
 ##   layout: remake-invented (card layout)
 ##   strings: remake-invented (「第一章　完」card, skip／route／world-map row texts)
-##   timing: n/a
-##   audio: n/a
 
-const EndingDispatch = preload("res://game/sim/EndingDispatchRules.gd")
+const EndingDispatchRules = preload("res://game/sim/EndingDispatchRules.gd")
 
 const END_CARD_ROW_TOP := 296.0
 const END_CARD_ROW_PITCH := 34.0
@@ -123,9 +122,9 @@ func _end_route_choices() -> Array[Dictionary]:
 	if progress == null or routes.is_empty():
 		return choices
 	var world: Dictionary = progress.world_after_story(coordinator.story_records)
-	var decision := EndingDispatch.route(world.get("over_score", {}), int(world.get("over_flag", 0)))
+	var decision := EndingDispatchRules.route(world.get("over_score", {}), int(world.get("over_flag", 0)))
 	coordinator.end_route_decision = decision
-	var next_event := EndingDispatch.next_level_event(decision)
+	var next_event := EndingDispatchRules.next_level_event(decision)
 	for route_value in routes:
 		if typeof(route_value) != TYPE_DICTIONARY:
 			continue

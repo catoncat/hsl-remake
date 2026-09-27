@@ -1,12 +1,33 @@
 extends Control
 ## Shared source artwork and pagination; callers own story progression.
 ## provenance:
-##   rules: n/a
-##   layout: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md (the speaking map actor is lit while its message is up — ActorRuntime speaker highlight); resource-derived content/imported/hsl/shared/panels/manifest.json; resource-derived content/imported/hsl/chapter01/battle001/portraits/manifest.json; resource-derived content/generated/hsl/roles/actor_portraits.json; runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V01 (board bottom edge y≈320, portrait／name／text zones); static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md; runtime-measured docs/evidence_packets/static_reverse/original_dialogue_board.md (message 369 on the 2026-09-24 recording: rows at y 342／370／398／426, 19 glyphs a row, the name scrolled away); static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md; runtime-measured docs/evidence_packets/static_reverse/original_dialogue_marker.md (the □ ink: a 20×20 one-pixel outline at (605,438) on the bottom board); remake-invented (protected_words.json names kept whole where the original's 38-byte break cuts them (user playtest); system font on the 24 px glyph rows; full-width colon, original half-width)
-##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json; static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
-##   timing: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md; runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md (dissolves 0.29／0.32 s on the 19.4 ms host); runtime-measured docs/evidence_packets/static_reverse/original_dialogue_board.md (wipe 15 px in 0.1 s, a four-row scroll 0.80 s on the recording); static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md; remake-invented (a confirm during the wipe or the scroll acts at once — the original reads no confirm until the page is still)
-##   audio: n/a
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##     (the speaking map actor is lit while its message is up — ActorRuntime speaker highlight)
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: resource-derived content/imported/hsl/chapter01/battle001/portraits/manifest.json
+##   layout: resource-derived content/generated/hsl/roles/actor_portraits.json
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V01
+##     (board bottom edge y≈320, portrait／name／text zones)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_dialogue_board.md
+##     (message 369 on the 2026-09-24 recording: rows at y 342／370／398／426, 19 glyphs a row, the name scrolled away)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_dialogue_marker.md
+##     (the □ ink: a 20×20 one-pixel outline at (605,438) on the bottom board)
+##   layout: remake-invented
+##     (protected_words.json names kept whole where the original's 38-byte break cuts them (user playtest); system font
+##     on the 24 px glyph rows; full-width colon, original half-width)
+##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
+##   strings: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##     (dissolves 0.29／0.32 s on the 19.4 ms host)
+##   timing: runtime-measured docs/evidence_packets/static_reverse/original_dialogue_board.md
+##     (wipe 15 px in 0.1 s, a four-row scroll 0.80 s on the recording)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
+##   timing: remake-invented
+##     (a confirm during the wipe or the scroll acts at once — the original reads no confirm until the page is still)
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## Text window (0x4142aa, 0x414360): rows start 17 px inside the board's top-left corner, 28 px
@@ -95,7 +116,7 @@ func _ready() -> void:
 	size = Vector2(640, 160)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# BOARD02 matches the complete dialogue frame, not the legacy detail crop.
-	UISkin.board(self, "BOARD02", BOARD_AT)
+	BattleUISkin.board(self, "BOARD02", BOARD_AT)
 	portrait = TextureRect.new()
 	portrait.position = Vector2(12, 0)
 	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -112,17 +133,17 @@ func _ready() -> void:
 	text_rows.name = "TextRows"
 	text_rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text_window.add_child(text_rows)
-	speaker_label = UISkin.label(text_rows, Vector2.ZERO, UISkin.FONT_BODY)
-	speaker_label.add_theme_color_override("font_color", UISkin.TEXT_GREEN)
-	body_label = UISkin.label(text_rows, Vector2.ZERO, UISkin.FONT_BODY)
-	body_label.add_theme_color_override("font_color", UISkin.TEXT_WHITE)
+	speaker_label = BattleUISkin.label(text_rows, Vector2.ZERO, BattleUISkin.FONT_BODY)
+	speaker_label.add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
+	body_label = BattleUISkin.label(text_rows, Vector2.ZERO, BattleUISkin.FONT_BODY)
+	body_label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
 	for label in [speaker_label, body_label]:
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		label.autowrap_mode = TextServer.AUTOWRAP_OFF
-		label.add_theme_color_override("font_shadow_color", UISkin.TEXT_SHADOW)
+		label.add_theme_color_override("font_shadow_color", BattleUISkin.TEXT_SHADOW)
 		# One 28 px row per line, the system font centred on the original 24 px glyph row.
 		label.add_theme_constant_override("line_spacing", int(ROW_PITCH) - _font_height(label))
-	continue_label = UISkin.text(self, MARKER_CELL, UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(24, 24))
+	continue_label = BattleUISkin.text(self, MARKER_CELL, BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(24, 24))
 	end_marker = Control.new()
 	end_marker.name = "EndMarker"
 	end_marker.position = MARKER_CELL + END_MARKER_INK_OFFSET
@@ -167,8 +188,8 @@ func _place_rows() -> void:
 ## The □ glyph as the original draws text: once in the shadow colour at (+1,+1), then white.
 func _draw_end_marker() -> void:
 	var square := Rect2(Vector2(0.5, 0.5), Vector2.ONE * (END_MARKER_SIZE - 1.0))
-	end_marker.draw_rect(Rect2(square.position + Vector2.ONE, square.size), UISkin.TEXT_SHADOW, false, 1.0)
-	end_marker.draw_rect(square, UISkin.TEXT_WHITE, false, 1.0)
+	end_marker.draw_rect(Rect2(square.position + Vector2.ONE, square.size), BattleUISkin.TEXT_SHADOW, false, 1.0)
+	end_marker.draw_rect(square, BattleUISkin.TEXT_WHITE, false, 1.0)
 
 
 ## Whether the page marker is in its shown half `since` seconds after the page finished
@@ -295,14 +316,14 @@ func show_message(message_key: String, speaker: String, body: String, actor_id: 
 	_show_body(message_key, body, true)
 	speaker_label.text = speaker + "："
 	if _portraits.has(actor_id):
-		UISkin.show_shape(portrait, load(str(_portraits[actor_id]["res_path"])))
+		BattleUISkin.show_shape(portrait, load(str(_portraits[actor_id]["res_path"])))
 		portrait.show()
 	elif _roster_faces.has(actor_id):
-		UISkin.show_shape(portrait, load(str(_roster_faces[actor_id]["res_path"])))
+		BattleUISkin.show_shape(portrait, load(str(_roster_faces[actor_id]["res_path"])))
 		portrait.show()
 	else:
 		push_error("Missing dialogue portrait: " + actor_id)
-		UISkin.show_shape(portrait, null)
+		BattleUISkin.show_shape(portrait, null)
 		portrait.hide()
 	_update_continue()
 	show()
@@ -317,10 +338,10 @@ func show_face_message(message_key: String, speaker: String, body: String, shape
 	_show_body(message_key, body, true)
 	speaker_label.text = speaker + "："
 	if _faces.has(shape_member):
-		UISkin.show_shape(portrait, load(str((_faces[shape_member] as Dictionary)["res_path"])))
+		BattleUISkin.show_shape(portrait, load(str((_faces[shape_member] as Dictionary)["res_path"])))
 		portrait.show()
 	else:
-		UISkin.show_shape(portrait, null)
+		BattleUISkin.show_shape(portrait, null)
 		portrait.hide()
 	_update_continue()
 	show()
@@ -333,14 +354,14 @@ func show_narration(message_key: String, body: String, centred: bool = true) -> 
 	position = Vector2(NARRATION_BOARD_X - BOARD_AT.x if centred else 0.0, PANEL_TOP_BOTTOM_SLOT)
 	_show_body(message_key, body, false)
 	speaker_label.text = ""
-	UISkin.show_shape(portrait, null)
+	BattleUISkin.show_shape(portrait, null)
 	portrait.hide()
 	_update_continue()
 	show()
 
 
 ## Lays the rows out: the name as row 0 when `name_row`, the body broken into rows by
-## UISkin.message_rows (0x413960's 38-byte rule) below it. A per-frame refresh of the same
+## BattleUISkin.message_rows (0x413960's 38-byte rule) below it. A per-frame refresh of the same
 ## message keeps the reader's page.
 func _show_body(message_key: String, body: String, name_row: bool) -> void:
 	var changed := message_key != _message_key or body != _body_source
@@ -349,7 +370,7 @@ func _show_body(message_key: String, body: String, name_row: bool) -> void:
 		top_row = 0
 	if changed or name_row != _name_row:
 		_name_row = name_row
-		body_label.text = "\n".join(UISkin.message_rows(body))
+		body_label.text = "\n".join(BattleUISkin.message_rows(body))
 		_body_source = body
 		var body_row := 1 if name_row else 0
 		speaker_label.visible = name_row

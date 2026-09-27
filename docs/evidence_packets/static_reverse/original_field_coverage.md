@@ -1,6 +1,6 @@
 # 原版数据字段覆盖：重制消费了哪些、漏了哪些
 
-> evidence: resource-derived: 列、行数、单位数、出现次数; static-derived: 0x45dc5c OBS loader 与 0x407ec0 演员构造的字段读法、0x42bd50 EVEF 分支; negative-evidence: 命中／伤害公式无地形项; provisional: 阵营位覆盖的玩家可见后果 · status: record-only · functions: 0x407ec0, 0x409a60, 0x409be0, 0x42bd50, 0x43ea30, 0x442a90, 0x452197, 0x45dc5c · tools: hsltools/checks/field_coverage.py · updated: 2026-09-26
+> evidence: resource-derived: 列、行数、单位数、出现次数; static-derived: 0x45dc5c OBS loader 与 0x407ec0 演员构造的字段读法、0x42bd50 EVEF 分支; negative-evidence: 命中／伤害公式无地形项; provisional: 阵营位覆盖的玩家可见后果 · status: record-only · functions: 0x407ec0, 0x409a60, 0x409be0, 0x42bd50, 0x43ea30, 0x442a90, 0x452197, 0x45dc5c · tools: hsltools/checks/field_coverage.py · updated: 2026-09-27
 
 _本文件由 `hsl generate field_coverage` 逐字节生成；改 [`field_coverage.py`](../../../tools/hsltools/checks/field_coverage.py) 的 `FIELD_NOTES`／`SUSPECTS`，不要手改这里。机读版 [field_coverage.json](../../../content/generated/hsl/development/field_coverage.json)。_
 
@@ -560,7 +560,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `TYPE.H class*` | unconsumed | UNCONSUMED | define 8 | 种族／类别码 | 见 PLAYERS.class |
 | `TYPE.H AI_*／AIF_*` | consumed | `game/sim/AIDecisionRules.gd:select_target` | define 13 | find_type／find_flag 常量 | — |
 | `TYPE.H itemType*／itemIcon*` | consumed | `tools/hsltools/data/equipment.py:build` | define 20 | 物品类型与图标 | — |
-| `TYPE.H bm*／gameBM*` | consumed | `game/sim/TownEventRules.gd:_apply_world_token` | define 3 | 大地图点／线模式 | — |
+| `TYPE.H bm*／gameBM*` | consumed | `game/sim/TownEventRules.gd:_world_bm_set_mode` | define 3 | 大地图点／线模式 | — |
 | `TYPE.H eng*` | consumed | `tools/hsltools/levels/map_objects.py:build` | define 0 | 显示模式（engADDCOLOR…） | — |
 | `TYPE.H objattr*` | unconsumed | UNCONSUMED | define 0 | obj_Attribute 旗 | 见 obj.obj_Attribute |
 | `TYPE.H other` | unconsumed | UNCONSUMED | define 127 | 其余 #define（gameBigMapLevel／gameTempResourceID／plane*…） | 按需消费，未逐一登记 |
@@ -589,7 +589,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `actChangePlayerID` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 2；op 90 | player_id_change | — |
 | `actChangePosObjectProcCode` | dead | — | 关 0；出现 0；op 103 | position_object_proc_code_change | — |
 | `actChangePrevInsertObjectID` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 4；op 32 | inserted_object_id_change | — |
-| `actChangeShape` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 1；op 13 | actor_shape_change | — |
+| `actChangeShape` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_shape_change` | 关 1；出现 1；op 13 | actor_shape_change | — |
 | `actChangeShapeWait` | dead | — | 关 0；出现 0；op 14 | actor_shape_change_wait | — |
 | `actCheckAnyPlayerArrivePos` | dead | — | 关 0；出现 0；op 126 | \[x1]\[y1]\[x2]\[y2] | — |
 | `actCheckEnemy` | dead | — | 关 0；出现 0；op 35 | \[num]\[id1]\[id2]\[...] | — |
@@ -608,69 +608,69 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `actCheckRoundNumber` | dead | — | 关 0；出现 0；op 40 | \[num] | — |
 | `actCheckSerialPlayerAttacked` | dead | — | 关 0；出现 0；op 110 | \[attacked player id]\[serial] | — |
 | `actDEMO` | dead | — | 关 0；出现 0；op 44 | demo | — |
-| `actDarkScreen` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 1；op 48 | screen_darken | — |
-| `actDelay` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 152；出现 1481；op 1 | opening_delay | — |
-| `actDeleteDarkScreen` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 0；出现 0；op 49 | screen_darken_clear | — |
+| `actDarkScreen` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_screen_darken` | 关 1；出现 1；op 48 | screen_darken | — |
+| `actDelay` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_opening_delay` | 关 152；出现 1481；op 1 | opening_delay | — |
+| `actDeleteDarkScreen` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_screen_darken_clear` | 关 0；出现 0；op 49 | screen_darken_clear | — |
 | `actDeleteEventStatus` | dead | — | 关 0；出现 0；op 27 | event_status_disable | — |
 | `actDeleteFailStatus` | dead | — | 关 0；出现 0；op 26 | fail_status_disable | — |
-| `actDeleteObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 5；出现 5；op 16 | actor_delete | — |
+| `actDeleteObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_delete` | 关 5；出现 5；op 16 | actor_delete | — |
 | `actDeletePlayerCode` | dead | — | 关 0；出现 0；op 71 | player_code_delete | — |
-| `actDeletePosObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 4；出现 4；op 77 | position_object_delete | — |
+| `actDeletePosObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_position_object_delete` | 关 4；出现 4；op 77 | position_object_delete | — |
 | `actDeletePosPlayerXRange` | dead | — | 关 0；出现 0；op 104 | position_actor_delete_x_range | — |
-| `actDeleteRandomPosObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 5；op 112 | random_position_object_delete | — |
-| `actDeleteShowPosObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 7；出现 7；op 59 | show_position_marker_clear | — |
+| `actDeleteRandomPosObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_random_position_object_delete` | 关 1；出现 5；op 112 | random_position_object_delete | — |
+| `actDeleteShowPosObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_show_position_marker_clear` | 关 7；出现 7；op 59 | show_position_marker_clear | — |
 | `actDeleteTE` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 1；op 81 | town_event_delete | — |
 | `actDeleteWinStatus` | dead | — | 关 0；出现 0；op 25 | win_status_disable | — |
 | `actDetectRoundDispDisp` | dead | — | 关 0；出现 0；op 124 | round_disp_detect | — |
 | `actEarthQuake` | dead | — | 关 0；出现 0；op 102 | earthquake | — |
-| `actEnterStorageWindow` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 2；出现 2；op 139 | storage_window_enter | — |
+| `actEnterStorageWindow` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_storage_window_enter` | 关 2；出现 2；op 139 | storage_window_enter | — |
 | `actExecWinFailProcess` | dead | — | 关 0；出现 0；op 68 | winfail_process_exec | — |
 | `actFALSE` | dead | — | 关 0；出现 0；op 113 | — | — |
 | `actGetItem` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 1；op 85 | item_grant | — |
-| `actInsertEventStatus` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 50；出现 160；op 24 | event_status_enable | — |
-| `actInsertFailStatus` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 128；出现 142；op 23 | fail_status_enable | — |
-| `actInsertLevelUpStar` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 0；出现 0；op 123 | level_up_star_insert | — |
-| `actInsertObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 7；出现 34；op 18 | object_insert | — |
-| `actInsertObjectRandomPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 10；op 107 | object_insert_random_position | — |
+| `actInsertEventStatus` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_event_status_enable` | 关 50；出现 160；op 24 | event_status_enable | — |
+| `actInsertFailStatus` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_fail_status_enable` | 关 128；出现 142；op 23 | fail_status_enable | — |
+| `actInsertLevelUpStar` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_level_up_star_insert` | 关 0；出现 0；op 123 | level_up_star_insert | — |
+| `actInsertObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_object_insert` | 关 7；出现 34；op 18 | object_insert | — |
+| `actInsertObjectRandomPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_object_insert_random_position` | 关 1；出现 10；op 107 | object_insert_random_position | — |
 | `actInsertRandomObject` | dead | — | 关 0；出现 0；op 121 | random_object_insert | — |
-| `actInsertShowPosObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 7；出现 40；op 58 | show_position_marker | — |
-| `actInsertStoryObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 11；出现 65；op 47 | story_object_insert | — |
-| `actInsertStoryObjectRandomPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 5；op 108 | story_object_insert_random_position | — |
+| `actInsertShowPosObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_show_position_marker` | 关 7；出现 40；op 58 | show_position_marker | — |
+| `actInsertStoryObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_story_object_insert` | 关 11；出现 65；op 47 | story_object_insert | — |
+| `actInsertStoryObjectRandomPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_story_object_insert_random_position` | 关 1；出现 5；op 108 | story_object_insert_random_position | — |
 | `actInsertStoryObjectWait` | dead | — | 关 0；出现 0；op 78 | story_object_insert_wait | — |
 | `actInsertStoryObjectWaitPos` | dead | — | 关 0；出现 0；op 99 | story_object_insert_wait_position | — |
 | `actInsertStoryObjectXRange` | dead | — | 关 0；出现 0；op 105 | story_object_insert_x_range | — |
-| `actInsertWinStatus` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 97；出现 99；op 22 | win_status_enable | — |
+| `actInsertWinStatus` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_win_status_enable` | 关 97；出现 99；op 22 | win_status_enable | — |
 | `actKeepPlayerST` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 2；出现 2；op 69 | player_stamina_keep | — |
-| `actMessage` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 74；出现 918；op 10 | dialogue_message_id | — |
-| `actMessageIfExist` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 2；出现 2；op 11 | dialogue_message_if_exist | — |
+| `actMessage` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_dialogue_message_id` | 关 74；出现 918；op 10 | dialogue_message_id | — |
+| `actMessageIfExist` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_dialogue_message_if_exist` | 关 2；出现 2；op 11 | dialogue_message_if_exist | — |
 | `actMove` | dead | — | 关 0；出现 0；op 52 | actor_move | — |
 | `actMoveDisp` | dead | — | 关 0；出现 0；op 54 | actor_move_disp | — |
-| `actMoveDispWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 1；op 55 | actor_move_disp_wait | — |
+| `actMoveDispWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_move_disp_wait` | 关 1；出现 1；op 55 | actor_move_disp_wait | — |
 | `actMoveWait` | dead | — | 关 0；出现 0；op 53 | actor_move_wait | — |
 | `actOver` | dead | — | 关 0；出现 0；op 0 | script_over | — |
-| `actPlayDefaultLevelMusic` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 78；出现 78；op 63 | default_level_music | — |
-| `actPlayLevelMusic` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 50；出现 50；op 45 | opening_music | — |
-| `actPlayMovie` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 0；出现 0；op 120 | movie_play | — |
-| `actPlayMusic` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 40；出现 40；op 46 | music_track | — |
-| `actPlaySound` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 10；出现 21；op 15 | sound_effect | — |
+| `actPlayDefaultLevelMusic` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_music` | 关 78；出现 78；op 63 | default_level_music | — |
+| `actPlayLevelMusic` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_music` | 关 50；出现 50；op 45 | opening_music | — |
+| `actPlayMovie` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_movie_play` | 关 0；出现 0；op 120 | movie_play | — |
+| `actPlayMusic` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_music` | 关 40；出现 40；op 46 | music_track | — |
+| `actPlaySound` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_sound_effect` | 关 10；出现 21；op 15 | sound_effect | — |
 | `actPlayerJobUpProcess` | dead | — | 关 0；出现 0；op 118 | player_job_up_process | — |
 | `actRandomSetSysArrivePos` | dead | — | 关 0；出现 0；op 86 | system_arrive_position_random | — |
 | `actReplaceEventStatus` | dead | — | 关 0；出现 0；op 30 | event_status_replace | — |
 | `actReplaceFailStatus` | dead | — | 关 0；出现 0；op 29 | fail_status_replace | — |
 | `actReplaceWinStatus` | dead | — | 关 0；出现 0；op 28 | win_status_replace | — |
-| `actRestoreShape` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 1；op 17 | actor_shape_restore | — |
-| `actScrollBGToObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 11；出现 15；op 20 | camera_object_target | — |
-| `actScrollBGToPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 28；出现 51；op 19 | camera_position_target | — |
-| `actScrollBGToPosSpeed` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 17；出现 19；op 75 | camera_position_target_speed | — |
-| `actScrollBGToRandomPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 5；op 111 | camera_random_position_target | — |
-| `actSelectInsertEvent` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 2；出现 2；op 79 | event_select_insert | — |
-| `actSetBGToObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 5；出现 5；op 21 | background_object_target | — |
-| `actSetBGToPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 26；出现 26；op 97 | camera_position_set | — |
+| `actRestoreShape` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_shape_restore` | 关 1；出现 1；op 17 | actor_shape_restore | — |
+| `actScrollBGToObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_camera_object_target` | 关 11；出现 15；op 20 | camera_object_target | — |
+| `actScrollBGToPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_camera_position_target` | 关 28；出现 51；op 19 | camera_position_target | — |
+| `actScrollBGToPosSpeed` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_camera_position_target_speed` | 关 17；出现 19；op 75 | camera_position_target_speed | — |
+| `actScrollBGToRandomPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_camera_random_position_target` | 关 1；出现 5；op 111 | camera_random_position_target | — |
+| `actSelectInsertEvent` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_event_select_insert` | 关 2；出现 2；op 79 | event_select_insert | — |
+| `actSetBGToObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_camera_object_target` | 关 5；出现 5；op 21 | background_object_target | — |
+| `actSetBGToPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_camera_position_set` | 关 26；出现 26；op 97 | camera_position_set | — |
 | `actSetBMWalkToPoint` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 1；op 95 | bigmap_walk_to_point | — |
 | `actSetBMWalkerPlayerID` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 1；op 96 | bigmap_walker_player_id | — |
-| `actSetDeadMessage` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 129；出现 381；op 60 | dead_message_registration | — |
+| `actSetDeadMessage` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_dead_message_registration` | 关 129；出现 381；op 60 | dead_message_registration | — |
 | `actSetDoublePageMode` | dead | — | 关 0；出现 0；op 122 | double_page_mode | — |
-| `actSetNextPlayLevelEvent` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 20；出现 20；op 43 | next_level_event | — |
+| `actSetNextPlayLevelEvent` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_next_level_event` | 关 20；出现 20；op 43 | next_level_event | — |
 | `actSetNextPlayLevelGetOverEvent` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 1；op 129 | next_level_get_over_event | — |
 | `actSetOverFlag` | dead | — | 关 0；出现 0；op 127 | game_over_flag | — |
 | `actSetPlayerExecMode` | dead | — | 关 0；出现 0；op 83 | player_exec_mode | — |
@@ -687,32 +687,32 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `actSetPrevInsertObjectFly` | dead | — | 关 0；出现 0；op 91 | inserted_object_fly_flag | — |
 | `actSetPrevInsertObjectRandomID` | dead | — | 关 0；出现 0；op 109 | \[id]			(......... NOT USE .......) | — |
 | `actSetPrevInsertObjectST` | dead | — | 关 0；出现 0；op 82 | inserted_object_stamina | — |
-| `actSetPrevInsertObjectWaitRound` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 4；出现 12；op 33 | inserted_object_wait_round | — |
-| `actSetRandomPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 1；op 106 | random_position_set | — |
+| `actSetPrevInsertObjectWaitRound` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_inserted_object_wait_round` | 关 4；出现 12；op 33 | inserted_object_wait_round | — |
+| `actSetRandomPos` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_random_position_set` | 关 1；出现 1；op 106 | random_position_set | — |
 | `actSetTownExecEvent` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 1；op 70 | town_exec_event | — |
 | `actSetTownExitExecEvent` | dead | — | 关 0；出现 0；op 98 | town_exit_exec_event | — |
 | `actSetUseShapeWait` | dead | — | 关 0；出现 0；op 57 | actor_use_shape_wait | — |
 | `actSetWaitRound` | dead | — | 关 0；出现 0；op 34 | actor_wait_round | — |
 | `actSetWalkSoundMode` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 2；op 76 | walk_sound_mode | — |
-| `actShapeMessage` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 2；出现 9；op 74 | shape_message | — |
-| `actShowSectionName` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 50；出现 50；op 12 | section_title_resource | — |
-| `actShowWinFailStatus` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 128；出现 128；op 31 | winfail_board_refresh | — |
+| `actShapeMessage` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_shape_message` | 关 2；出现 9；op 74 | shape_message | — |
+| `actShowSectionName` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_section_title_resource` | 关 50；出现 50；op 12 | section_title_resource | — |
+| `actShowWinFailStatus` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_winfail_board_refresh` | 关 128；出现 128；op 31 | winfail_board_refresh | — |
 | `actTRUE` | dead | — | 关 0；出现 0；op 67 | — | — |
 | `actUseItem` | dead | — | 关 0；出现 0；op 93 | item_use | — |
-| `actWaitPlayer` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 19；出现 21；op 88 | actor_action_wait | — |
+| `actWaitPlayer` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_action_wait` | 关 19；出现 21；op 88 | actor_action_wait | — |
 | `actWaitPrevInsertPlayer` | dead | — | 关 0；出现 0；op 119 | inserted_player_wait | — |
-| `actWalk` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 27；出现 159；op 2 | actor_walk | — |
-| `actWalkAndDelete` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 5；出现 13；op 4 | actor_walk_and_delete | — |
-| `actWalkAndDeleteWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 5；出现 7；op 5 | actor_walk_and_delete_wait | — |
-| `actWalkDisp` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 30；出现 328；op 6 | actor_walk_disp | — |
-| `actWalkDispWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 26；出现 103；op 7 | actor_walk_disp_wait | — |
-| `actWalkFollow` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 2；出现 2；op 50 | actor_walk_follow | — |
-| `actWalkFollowWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 2；出现 2；op 51 | actor_walk_follow_wait | — |
-| `actWalkPrevInsertObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 1；出现 4；op 8 | inserted_object_walk_disp | — |
-| `actWalkPrevInsertObjectWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 3；出现 12；op 9 | inserted_object_walk_disp_wait | — |
+| `actWalk` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_walk` | 关 27；出现 159；op 2 | actor_walk | — |
+| `actWalkAndDelete` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_walk_and_delete` | 关 5；出现 13；op 4 | actor_walk_and_delete | — |
+| `actWalkAndDeleteWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_walk_and_delete_wait` | 关 5；出现 7；op 5 | actor_walk_and_delete_wait | — |
+| `actWalkDisp` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_walk_disp` | 关 30；出现 328；op 6 | actor_walk_disp | — |
+| `actWalkDispWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_walk_disp_wait` | 关 26；出现 103；op 7 | actor_walk_disp_wait | — |
+| `actWalkFollow` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_walk_follow` | 关 2；出现 2；op 50 | actor_walk_follow | — |
+| `actWalkFollowWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_walk_follow_wait` | 关 2；出现 2；op 51 | actor_walk_follow_wait | — |
+| `actWalkPrevInsertObject` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_inserted_object_walk_disp` | 关 1；出现 4；op 8 | inserted_object_walk_disp | — |
+| `actWalkPrevInsertObjectWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_inserted_object_walk_disp_wait` | 关 3；出现 12；op 9 | inserted_object_walk_disp_wait | — |
 | `actWalkToPlayerDisp` | dead | — | 关 0；出现 0；op 61 | actor_walk_to_actor_disp | — |
 | `actWalkToPlayerDispWait` | dead | — | 关 0；出现 0；op 62 | actor_walk_to_actor_disp_wait | — |
-| `actWalkWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_apply_event` | 关 35；出现 95；op 3 | actor_walk_wait | — |
+| `actWalkWait` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_actor_walk_wait` | 关 35；出现 95；op 3 | actor_walk_wait | — |
 
 ### winfail
 
@@ -723,28 +723,28 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | 字段 | 状态 | 消费点 | 量 | 语义 | 备注 |
 | --- | --- | --- | --- | --- | --- |
 | `actDelay` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1191 | — | — |
-| `actMessage` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 580 | — | — |
-| `actInsertObject` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 372 | — | — |
-| `actInsertEventStatus` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 211 | — | — |
-| `actExecWinFailProcess` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 180 | — | — |
-| `actWalkPrevInsertObject` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 154 | — | — |
+| `actMessage` | consumed | `game/sim/WinfailActions.gd:_act_message` | 出现 580 | — | — |
+| `actInsertObject` | consumed | `game/sim/WinfailActions.gd:_act_insert_object` | 出现 372 | — | — |
+| `actInsertEventStatus` | consumed | `game/sim/WinfailActions.gd:_act_insert_status` | 出现 211 | — | — |
+| `actExecWinFailProcess` | consumed | `game/sim/WinfailActions.gd:_act_exec_win_fail_process` | 出现 180 | — | — |
+| `actWalkPrevInsertObject` | consumed | `game/sim/WinfailActions.gd:_act_folded_into_insert` | 出现 154 | — | — |
 | `actCheckPlayer` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 153 | — | — |
-| `actWalkPrevInsertObjectWait` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 148 | — | — |
-| `actDeleteEventStatus` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 141 | — | — |
-| `actSetNextPlayLevelEvent` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 133 | — | — |
+| `actWalkPrevInsertObjectWait` | consumed | `game/sim/WinfailActions.gd:_act_folded_into_insert` | 出现 148 | — | — |
+| `actDeleteEventStatus` | consumed | `game/sim/WinfailActions.gd:_act_delete_status` | 出现 141 | — | — |
+| `actSetNextPlayLevelEvent` | consumed | `game/sim/WinfailActions.gd:_act_set_next_play_level_event` | 出现 133 | — | — |
 | `actInsertStoryObject` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 127 | — | — |
 | `actCheckEnemyTotalNumber` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 109 | — | — |
-| `actDeleteObject` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 91 | — | — |
+| `actDeleteObject` | consumed | `game/sim/WinfailActions.gd:_act_delete_object` | 出现 91 | — | — |
 | `actInsertShowPosObject` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 76 | — | — |
-| `actSetPlayerMode` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 69 | — | — |
+| `actSetPlayerMode` | consumed | `game/sim/WinfailActions.gd:_act_set_player_mode` | 出现 69 | — | — |
 | `actCheckRoundNumber` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 68 | — | — |
-| `actWalkAndDelete` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 68 | — | — |
+| `actWalkAndDelete` | consumed | `game/sim/WinfailActions.gd:_act_delete_object` | 出现 68 | — | — |
 | `actScrollBGToPos` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 59 | — | — |
 | `actPlaySound` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 57 | — | — |
-| `actSetPrevInsertObjectWaitRound` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 55 | — | — |
+| `actSetPrevInsertObjectWaitRound` | consumed | `game/sim/WinfailActions.gd:_act_set_prev_insert_object_wait_round` | 出现 55 | — | — |
 | `actCheckPlayerArrivePos` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 54 | — | — |
 | `actTRUE` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 50 | — | — |
-| `actInsertWinStatus` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 44 | — | — |
+| `actInsertWinStatus` | consumed | `game/sim/WinfailActions.gd:_act_insert_status` | 出现 44 | — | — |
 | `actBMSetPointEvent` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 43 | — | — |
 | `actRestoreShape` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 42 | — | — |
 | `actScrollBGToObject` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 40 | — | — |
@@ -752,82 +752,82 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `actBMSetPointEncounterRatio` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 37 | — | — |
 | `actWalk` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 35 | — | — |
 | `actCheckPlayerAttacked` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 34 | — | — |
-| `actSetPlayerFixPos` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 34 | — | — |
+| `actSetPlayerFixPos` | consumed | `game/sim/WinfailActions.gd:_act_set_player_fix_pos` | 出现 34 | — | — |
 | `actCheckEventNotExist` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 32 | — | — |
 | `actCheckSerialPlayerAttacked` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 30 | — | — |
-| `actSetPlayerWalkShape` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 30 | — | — |
-| `actWalkAndDeleteWait` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 27 | — | — |
+| `actSetPlayerWalkShape` | consumed | `game/sim/WinfailActions.gd:_act_set_player_walk_shape` | 出现 30 | — | — |
+| `actWalkAndDeleteWait` | consumed | `game/sim/WinfailActions.gd:_act_delete_object` | 出现 27 | — | — |
 | `actWalkDisp` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 26 | — | — |
 | `actCheckEnemy` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 25 | — | — |
 | `actShowWinFailStatus` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 25 | — | — |
 | `actWalkDispWait` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 24 | — | — |
 | `actCheckPlayerHPLow` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 23 | — | — |
-| `actWaitPlayer` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 22 | — | — |
-| `actMessageIfExist` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 21 | — | — |
-| `actSetDeadMessage` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 21 | — | — |
-| `actSetPlayerUndead` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 21 | — | — |
+| `actWaitPlayer` | consumed | `game/sim/WinfailActions.gd:_act_wait_player` | 出现 22 | — | — |
+| `actMessageIfExist` | consumed | `game/sim/WinfailActions.gd:_act_message_if_exist` | 出现 21 | — | — |
+| `actSetDeadMessage` | consumed | `game/sim/WinfailActions.gd:_act_set_dead_message` | 出现 21 | — | — |
+| `actSetPlayerUndead` | consumed | `game/sim/WinfailActions.gd:_act_set_player_undead` | 出现 21 | — | — |
 | `actCheckEnemyNumber` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 20 | — | — |
-| `actDeletePosPlayerXRange` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 20 | — | — |
-| `actSetPrevInsertObjectFly` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 20 | — | — |
-| `actDeleteFailStatus` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 15 | — | — |
+| `actDeletePosPlayerXRange` | consumed | `game/sim/WinfailActions.gd:_act_delete_pos_player_x_range` | 出现 20 | — | — |
+| `actSetPrevInsertObjectFly` | consumed | `game/sim/WinfailActions.gd:_act_folded_into_insert` | 出现 20 | — | — |
+| `actDeleteFailStatus` | consumed | `game/sim/WinfailActions.gd:_act_delete_status` | 出现 15 | — | — |
 | `actDeleteTE` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 15 | — | — |
-| `actSetPlayerPosToRandom0` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 13 | — | — |
+| `actSetPlayerPosToRandom0` | consumed | `game/sim/WinfailActions.gd:_act_set_player_pos_to_random0` | 出现 13 | — | — |
 | `actWalkWait` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 13 | — | — |
-| `actDeletePosObject` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 12 | — | — |
-| `actInsertFailStatus` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 12 | — | — |
-| `actSetWaitRound` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 12 | — | — |
-| `actUseItem` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 11 | — | — |
+| `actDeletePosObject` | consumed | `game/sim/WinfailActions.gd:_act_delete_object` | 出现 12 | — | — |
+| `actInsertFailStatus` | consumed | `game/sim/WinfailActions.gd:_act_insert_status` | 出现 12 | — | — |
+| `actSetWaitRound` | consumed | `game/sim/WinfailActions.gd:_act_set_wait_round` | 出现 12 | — | — |
+| `actUseItem` | consumed | `game/sim/WinfailActions.gd:_act_use_item` | 出现 11 | — | — |
 | `actAddOverScore` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 10 | — | — |
-| `actGetItem` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 10 | — | — |
-| `actInsertRandomObject` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 10 | — | — |
-| `actInsertStoryObjectXRange` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 10 | — | — |
-| `actSetPrevInsertObjectAdjustLevel` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 10 | — | — |
+| `actGetItem` | consumed | `game/sim/WinfailActions.gd:_act_get_item` | 出现 10 | — | — |
+| `actInsertRandomObject` | consumed | `game/sim/WinfailActions.gd:_act_insert_random_object` | 出现 10 | — | — |
+| `actInsertStoryObjectXRange` | consumed | `game/sim/WinfailActions.gd:_act_insert_story_object_x_range` | 出现 10 | — | — |
+| `actSetPrevInsertObjectAdjustLevel` | consumed | `game/sim/WinfailActions.gd:_act_folded_into_insert` | 出现 10 | — | — |
 | `actSetTownExecEvent` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 10 | — | — |
 | `actBMClearPointFlag` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 9 | — | — |
 | `actInsertLevelUpStar` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 9 | — | — |
 | `actBMClearTrackFlag` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 8 | — | — |
 | `actDeleteShowPosObject` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 8 | — | — |
-| `actSetPlayerFly` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 8 | — | — |
+| `actSetPlayerFly` | consumed | `game/sim/WinfailActions.gd:_act_set_player_fly` | 出现 8 | — | — |
 | `actWaitPrevInsertPlayer` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 8 | — | — |
-| `actChangePrevInsertObjectID` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 7 | — | — |
+| `actChangePrevInsertObjectID` | consumed | `game/sim/WinfailActions.gd:_act_change_prev_insert_object_id` | 出现 7 | — | — |
 | `actBMSetPointFlag` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 6 | — | — |
 | `actEarthQuake` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 6 | — | — |
 | `actCheckPlayerArriveSysPos` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 5 | — | — |
 | `actCheckPlayerTotalNumber` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 5 | — | — |
-| `actKeepPlayerST` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 5 | — | — |
+| `actKeepPlayerST` | consumed | `game/sim/WinfailActions.gd:_act_keep_player_st` | 出现 5 | — | — |
 | `actBMSetTrackFlag` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 4 | — | — |
-| `actInsertStoryObjectRandomPos` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 4 | — | — |
+| `actInsertStoryObjectRandomPos` | consumed | `game/sim/WinfailActions.gd:_act_insert_object` | 出现 4 | — | — |
 | `actSetBMWalkToPoint` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 4 | — | — |
-| `actSetPlayerExecMode` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 4 | — | — |
+| `actSetPlayerExecMode` | consumed | `game/sim/WinfailActions.gd:_act_set_player_exec_mode` | 出现 4 | — | — |
 | `actSetWalkSoundMode` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 4 | — | — |
 | `actCheckAnyPlayerArrivePos` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 3 | — | — |
 | `actDarkScreen` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 3 | — | — |
 | `actScrollBGToPosSpeed` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 3 | — | — |
-| `actSetPrevInsertObjectST` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 3 | — | — |
+| `actSetPrevInsertObjectST` | consumed | `game/sim/WinfailActions.gd:_act_folded_into_insert` | 出现 3 | — | — |
 | `actWalkToPlayerDispWait` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 3 | — | — |
 | `actChangeShape` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 2 | — | — |
 | `actCheckRoundDisp` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 2 | — | — |
-| `actDeletePlayerCode` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 2 | — | — |
+| `actDeletePlayerCode` | consumed | `game/sim/WinfailActions.gd:_act_delete_player_code` | 出现 2 | — | — |
 | `actEnterStorageWindow` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 2 | — | — |
 | `actSetDoublePageMode` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 2 | — | — |
 | `actSetOverFlag` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 2 | — | — |
-| `actSetPlayerNoAttack` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 2 | — | — |
+| `actSetPlayerNoAttack` | consumed | `game/sim/WinfailActions.gd:_act_set_player_no_attack` | 出现 2 | — | — |
 | `actBMSetShowTrackPoint` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 1 | — | — |
 | `actCheckNextSerialNumber` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 1 | — | — |
 | `actCheckNotPlayerAttacker` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 1 | — | — |
-| `actDeleteRandomPosObject` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 1 | — | — |
-| `actDeleteWinStatus` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 1 | — | — |
+| `actDeleteRandomPosObject` | consumed | `game/sim/WinfailActions.gd:_act_delete_random_pos_object` | 出现 1 | — | — |
+| `actDeleteWinStatus` | consumed | `game/sim/WinfailActions.gd:_act_delete_status` | 出现 1 | — | — |
 | `actDetectRoundDispDisp` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 1 | — | — |
 | `actFALSE` | consumed | `game/sim/WinfailConditions.gd:condition_holds` | 出现 1 | — | — |
-| `actInsertObjectRandomPos` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 1 | — | — |
+| `actInsertObjectRandomPos` | consumed | `game/sim/WinfailActions.gd:_act_insert_object` | 出现 1 | — | — |
 | `actInsertStoryObjectWait` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
-| `actInsertStoryObjectWaitPos` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 1 | — | — |
+| `actInsertStoryObjectWaitPos` | consumed | `game/sim/WinfailActions.gd:_act_insert_story_object_wait_pos` | 出现 1 | — | — |
 | `actMEssage` | unconsumed | UNCONSUMED | 出现 1 | — | — |
 | `actMoveDispWait` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
 | `actPlayLevelMusic` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
 | `actPlayMovie` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
-| `actPlayerJobUpProcess` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 1 | — | — |
-| `actRandomSetSysArrivePos` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 1 | — | — |
+| `actPlayerJobUpProcess` | consumed | `game/sim/WinfailActions.gd:_act_player_job_up_process` | 出现 1 | — | — |
+| `actRandomSetSysArrivePos` | consumed | `game/sim/WinfailActions.gd:_act_random_set_sys_arrive_pos` | 出现 1 | — | — |
 | `actSelectInsertEvent` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
 | `actSetBMWalkerPlayerID` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 1 | — | — |
 | `actSetTownExitExecEvent` | recorded | `game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS` | 出现 1 | — | — |
@@ -840,7 +840,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `actPlayMusic` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 0 | — | — |
 | `actSetBGToObject` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 0 | — | — |
 | `actSetBGToPos` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 0 | — | — |
-| `actSetPrevInsertObjectEquip` | consumed | `game/sim/WinfailActions.gd:apply_actions` | 出现 0 | — | — |
+| `actSetPrevInsertObjectEquip` | consumed | `game/sim/WinfailActions.gd:_act_folded_into_insert` | 出现 0 | — | — |
 | `actWalkToPlayerDisp` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 0 | — | — |
 
 ### town_event
@@ -851,50 +851,50 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 
 | 字段 | 状态 | 消费点 | 量 | 语义 | 备注 |
 | --- | --- | --- | --- | --- | --- |
-| `teAddSelfTE` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 16；op 1 | — | — |
-| `teDeleteSelfTE` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 23；op 2 | — | — |
-| `teAddTE` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 21；op 3 | — | — |
-| `teDeleteTE` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 11；op 4 | — | — |
-| `tePlayerMessage` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 184；op 5 | — | — |
-| `teDeletePlayerMessage` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 0；op 6 | — | — |
-| `teShapeMessage` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 269；op 7 | — | — |
-| `teDeleteShapeMessage` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 0；op 8 | — | — |
-| `teCreateShop` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 31；op 9 | — | — |
-| `teCreateSubEventMenu` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 13；op 10 | — | — |
-| `teSetExecEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 14；op 11 | — | — |
-| `teGetGold` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 2；op 12 | — | — |
-| `teSetNextPlayLevelEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 6；op 13 | — | — |
-| `teDelay` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 171；op 14 | — | — |
-| `teSelectInsertEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 18；op 15 | — | — |
-| `teCheckMoney` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 2；op 16 | — | — |
-| `teExecEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 19；op 17 | — | — |
-| `teCheckPlayerExist` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 0；op 18 | — | — |
-| `teCheckItemExist` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 0；op 19 | — | — |
-| `teBMSetPointFlag` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 0；op 20 | — | — |
-| `teBMSetTrackFlag` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 3；op 21 | — | — |
-| `teBMClearPointFlag` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 12；op 22 | — | — |
-| `teBMClearTrackFlag` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 12；op 23 | — | — |
-| `teBMSetShowTrackPoint` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 8；op 24 | — | — |
-| `teBMSetPointEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 1；op 25 | — | — |
-| `teSetTownExecEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 2；op 26 | — | — |
-| `teBMSetPointMode` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 1；op 27 | — | — |
-| `tePlaySound` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 6；op 28 | — | — |
-| `teCheckItemExecEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 8；op 29 | — | — |
-| `tePlayerSelectInsertEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 2；op 30 | — | — |
-| `teCheckJobUp` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 8；op 31 | — | — |
-| `teCheckJobUp2` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 2；op 32 | — | — |
-| `teCheckTEExist` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 4；op 33 | — | — |
-| `teBMSetPointEventNotVisit` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 1；op 34 | — | — |
-| `teGetItem` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 23；op 35 | — | — |
-| `teAppearSecretMan` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 7；op 36 | — | — |
-| `teDeleteSecretMan` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 8；op 37 | — | — |
-| `teSetSecretAppearRatio` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 1；op 38 | — | — |
-| `teSecretManBuyThing` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 1；op 39 | — | — |
-| `teMenuMoveOut` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 1；op 40 | — | — |
-| `teSetBMWalkToPoint` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 2；op 41 | — | — |
-| `teBMSetTrackMode` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 4；op 42 | — | — |
-| `teSetTownExitExecEvent` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 1；op 43 | — | — |
-| `teAddOverScore` | consumed | `game/sim/TownEventRules.gd:_step` | 出现 5；op 44 | — | — |
+| `teAddSelfTE` | consumed | `game/sim/TownEventRules.gd:_world_tree_edit` | 出现 16；op 1 | — | — |
+| `teDeleteSelfTE` | consumed | `game/sim/TownEventRules.gd:_world_tree_edit` | 出现 23；op 2 | — | — |
+| `teAddTE` | consumed | `game/sim/TownEventRules.gd:_world_tree_edit` | 出现 21；op 3 | — | — |
+| `teDeleteTE` | consumed | `game/sim/TownEventRules.gd:_world_tree_edit` | 出现 11；op 4 | — | — |
+| `tePlayerMessage` | consumed | `game/sim/TownEventRules.gd:_te_player_message` | 出现 184；op 5 | — | — |
+| `teDeletePlayerMessage` | consumed | `game/sim/TownEventRules.gd:_te_delete_player_message` | 出现 0；op 6 | — | — |
+| `teShapeMessage` | consumed | `game/sim/TownEventRules.gd:_te_shape_message` | 出现 269；op 7 | — | — |
+| `teDeleteShapeMessage` | consumed | `game/sim/TownEventRules.gd:_te_delete_shape_message` | 出现 0；op 8 | — | — |
+| `teCreateShop` | consumed | `game/sim/TownEventRules.gd:_te_create_shop` | 出现 31；op 9 | — | — |
+| `teCreateSubEventMenu` | consumed | `game/sim/TownEventRules.gd:_te_create_sub_event_menu` | 出现 13；op 10 | — | — |
+| `teSetExecEvent` | consumed | `game/sim/TownEventRules.gd:_world_set_exec_event` | 出现 14；op 11 | — | — |
+| `teGetGold` | consumed | `game/sim/TownEventRules.gd:_te_get_gold` | 出现 2；op 12 | — | — |
+| `teSetNextPlayLevelEvent` | consumed | `game/sim/TownEventRules.gd:_te_set_next_play_level_event` | 出现 6；op 13 | — | — |
+| `teDelay` | consumed | `game/sim/TownEventRules.gd:_te_delay` | 出现 171；op 14 | — | — |
+| `teSelectInsertEvent` | consumed | `game/sim/TownEventRules.gd:_te_select_insert_event` | 出现 18；op 15 | — | — |
+| `teCheckMoney` | consumed | `game/sim/TownEventRules.gd:_te_check_money` | 出现 2；op 16 | — | — |
+| `teExecEvent` | consumed | `game/sim/TownEventRules.gd:_te_exec_event` | 出现 19；op 17 | — | — |
+| `teCheckPlayerExist` | consumed | `game/sim/TownEventRules.gd:_te_check_exist_noop` | 出现 0；op 18 | — | — |
+| `teCheckItemExist` | consumed | `game/sim/TownEventRules.gd:_te_check_exist_noop` | 出现 0；op 19 | — | — |
+| `teBMSetPointFlag` | consumed | `game/sim/TownEventRules.gd:_world_bm_flag` | 出现 0；op 20 | — | — |
+| `teBMSetTrackFlag` | consumed | `game/sim/TownEventRules.gd:_world_bm_flag` | 出现 3；op 21 | — | — |
+| `teBMClearPointFlag` | consumed | `game/sim/TownEventRules.gd:_world_bm_flag` | 出现 12；op 22 | — | — |
+| `teBMClearTrackFlag` | consumed | `game/sim/TownEventRules.gd:_world_bm_flag` | 出现 12；op 23 | — | — |
+| `teBMSetShowTrackPoint` | consumed | `game/sim/TownEventRules.gd:_world_bm_set_show_track_point` | 出现 8；op 24 | — | — |
+| `teBMSetPointEvent` | consumed | `game/sim/TownEventRules.gd:_world_bm_set_point_event` | 出现 1；op 25 | — | — |
+| `teSetTownExecEvent` | consumed | `game/sim/TownEventRules.gd:_world_set_exec_event` | 出现 2；op 26 | — | — |
+| `teBMSetPointMode` | consumed | `game/sim/TownEventRules.gd:_world_bm_set_mode` | 出现 1；op 27 | — | — |
+| `tePlaySound` | consumed | `game/sim/TownEventRules.gd:_te_play_sound` | 出现 6；op 28 | — | — |
+| `teCheckItemExecEvent` | consumed | `game/sim/TownEventRules.gd:_te_check_item_exec_event` | 出现 8；op 29 | — | — |
+| `tePlayerSelectInsertEvent` | consumed | `game/sim/TownEventRules.gd:_te_player_select_insert_event` | 出现 2；op 30 | — | — |
+| `teCheckJobUp` | consumed | `game/sim/TownEventRules.gd:_te_check_job_up` | 出现 8；op 31 | — | — |
+| `teCheckJobUp2` | consumed | `game/sim/TownEventRules.gd:_te_check_job_up` | 出现 2；op 32 | — | — |
+| `teCheckTEExist` | consumed | `game/sim/TownEventRules.gd:_te_check_te_exist` | 出现 4；op 33 | — | — |
+| `teBMSetPointEventNotVisit` | consumed | `game/sim/TownEventRules.gd:_world_bm_set_point_event` | 出现 1；op 34 | — | — |
+| `teGetItem` | consumed | `game/sim/TownEventRules.gd:_te_get_item` | 出现 23；op 35 | — | — |
+| `teAppearSecretMan` | consumed | `game/sim/TownEventRules.gd:_world_appear_secret_man` | 出现 7；op 36 | — | — |
+| `teDeleteSecretMan` | consumed | `game/sim/TownEventRules.gd:_world_delete_secret_man` | 出现 8；op 37 | — | — |
+| `teSetSecretAppearRatio` | consumed | `game/sim/TownEventRules.gd:_world_set_secret_appear_ratio` | 出现 1；op 38 | — | — |
+| `teSecretManBuyThing` | consumed | `game/sim/TownEventRules.gd:_te_secret_man_buy_thing` | 出现 1；op 39 | — | — |
+| `teMenuMoveOut` | consumed | `game/sim/TownEventRules.gd:_te_menu_move_out` | 出现 1；op 40 | — | — |
+| `teSetBMWalkToPoint` | consumed | `game/sim/TownEventRules.gd:_world_set_bm_walk_to_point` | 出现 2；op 41 | — | — |
+| `teBMSetTrackMode` | consumed | `game/sim/TownEventRules.gd:_world_bm_set_mode` | 出现 4；op 42 | — | — |
+| `teSetTownExitExecEvent` | consumed | `game/sim/TownEventRules.gd:_world_set_town_exit_exec_event` | 出现 1；op 43 | — | — |
+| `teAddOverScore` | consumed | `game/sim/TownEventRules.gd:_world_add_over_score` | 出现 5；op 44 | — | — |
 | `teCheckJobUpDeny` | dead | — | 出现 0；op 100 | — | — |
 | `teCheckMoney2` | dead | — | 出现 0；op 101 | — | — |
 

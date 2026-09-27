@@ -6,11 +6,15 @@ extends Node2D
 ## shows ("KILL 3", "EXP 40", "$ 100", "LEVEL UP"); a learning notice (remake-invented, no
 ## original glyphs) is the one text float.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json; static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md; runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md (EXP, $ and LEVEL UP centred on x 320 with the recipient centred; KILL digit 35 px clear of the word); remake-invented (the learning notice's text and colour)
-##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json; remake-invented (learning notice)
-##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
+##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##     (EXP, $ and LEVEL UP centred on x 320 with the recipient centred; KILL digit 35 px clear of the word)
+##   layout: remake-invented (the learning notice's text and colour)
+##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
+##   strings: remake-invented (learning notice)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const MANIFEST_PATH := "res://content/imported/hsl/shared/reward_floats/manifest.json"
 ## defProcShowNumber (kinds 1–6): level 16 for 16 ticks, then one level down every 2 ticks;

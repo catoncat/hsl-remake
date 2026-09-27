@@ -12,11 +12,9 @@ extends RefCounted
 ## 3..6 and WINFAIL080 event 3 open with actInsertStoryObject. Edits the opening applies
 ## before first control stay in the generator's terrain_overrides (WrdTerrainTiles).
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_story_object_terrain.md; resource-derived content/imported/hsl/chapter01/battle039/source_texts/winfail039.txt; remake-invented (edits kept as a loop state list over the shared map, memoised edited copy)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_story_object_terrain.md
+##   rules: resource-derived content/imported/hsl/chapter01/battle039/source_texts/winfail039.txt
+##   rules: remake-invented (edits kept as a loop state list over the shared map, memoised edited copy)
 
 ## obj_Data9 kinds whose install edits the map word, as edit fields (the same fields as
 ## the scenario's terrain_overrides): mapobjBlock sets the height byte to 0xff,

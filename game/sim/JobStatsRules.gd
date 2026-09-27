@@ -4,11 +4,12 @@ extends RefCounted
 ## No job has a branch here: a new job is a table row. Equipment and current vitals are
 ## applied by the shared ProgressionRules refresh; no mutable actor lives here.
 ## provenance:
-##   rules: resource-derived content/generated/hsl/roles/job_formulas.json; static-derived docs/evidence_packets/static_reverse/original_job_stats.md; static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md; runtime-measured docs/evidence_packets/runtime_observations/battle_053/README.md (swapped L1 023 = 28 HP); static-derived docs/evidence_packets/static_reverse/original_job_stats_91_99.md; static-derived docs/evidence_packets/static_reverse/original_mobile_jobs.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: resource-derived content/generated/hsl/roles/job_formulas.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_job_stats.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
+##   rules: runtime-measured docs/evidence_packets/runtime_observations/battle_053/README.md (swapped L1 023 = 28 HP)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_job_stats_91_99.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_mobile_jobs.md
 const MODEL := "native_job_stats_v1"
 const FORMULAS_PATH := "res://content/generated/hsl/roles/job_formulas.json"
 const FORMULAS_SCHEMA := "hsl_job_formulas.v1"

@@ -2,11 +2,9 @@ extends Node
 ## Read-only departure of retained sprites. Original phase 53/54 holds the actor 16 logical
 ## ticks and then unregisters it; the remake spends those 16 ticks (256 ms) on an alpha fade.
 ## provenance:
-##   rules: n/a
-##   layout: n/a
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_script_departure.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; remake-invented (alpha ramp over the removal ticks)
-##   audio: n/a
+##   timing: static-derived docs/evidence_packets/static_reverse/original_script_departure.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: remake-invented (alpha ramp over the removal ticks)
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const DEPARTURE_TICKS := 16
 const FADE_SECONDS := OriginalTick.TICK_SECONDS * DEPARTURE_TICKS

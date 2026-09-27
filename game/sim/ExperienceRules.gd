@@ -2,21 +2,18 @@ extends RefCounted
 ## Original contribution -> per-target EXP (0x40a5d0), not raw damage as EXP.
 ## The caller accumulates a cast, applies final doubling, then grows once.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_experience.md; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Number = preload("res://game/sim/SkillResourceRules.gd")
-const Combat = preload("res://game/sim/CoreCombatRules.gd")
-const Progression = preload("res://game/sim/ProgressionRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_experience.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const KILL_MARK := 0x10000
 const MAX_VALUE := 1000000
 
 
 static func actor_error(actor: Dictionary) -> String:
 	for key in ["exp", "level", "kill_exp", "kill_count", "kill_chain_word", "pending_stat_points"]:
-		var value := Number._integer(actor.get(key))
+		var value := SkillResourceRules._integer(actor.get(key))
 		if value < 0 or value > MAX_VALUE or (key == "level" and (value == 0 or value > 1000)):
 			return "invalid_experience_" + key
 	if int(actor["kill_chain_word"]) > 0x1ffff: return "invalid_experience_kill_chain_word"
@@ -29,7 +26,7 @@ static func actor_error(actor: Dictionary) -> String:
 ## `_resource_input_error`), so it is not run again.
 static func input_error(loop: Dictionary, actor: Dictionary, enhancement_checked: bool = false) -> String:
 	if not enhancement_checked:
-		var stat_error := Progression.enhancement_profile_error(actor, loop["equipment_items"])
+		var stat_error := ProgressionRules.enhancement_profile_error(actor, loop["equipment_items"])
 		if stat_error != "": return stat_error
 	var error := actor_error(actor)
 	if error != "": return error
@@ -38,15 +35,15 @@ static func input_error(loop: Dictionary, actor: Dictionary, enhancement_checked
 	# A roster without an implemented growth model retains its computed basis but
 	# cannot manufacture level-ups. A present, malformed model must fail closed. An empty
 	# enhancement check that read the growth has already found the refresh input empty.
-	if not actor.has("growth_profile") or Progression.enhancement_reads_growth(actor): return ""
-	return Progression.refresh_input_error(actor, loop["equipment_items"])
+	if not actor.has("growth_profile") or ProgressionRules.enhancement_reads_growth(actor): return ""
+	return ProgressionRules.refresh_input_error(actor, loop["equipment_items"])
 
 
 static func multiplier(actor: Dictionary, equipment: Dictionary) -> Dictionary:
 	if not actor.get("equipment") is Array: return {"ok": false, "reason": "missing_experience_equipment"}
 	var double_exp := false
 	for slot in actor["equipment"]:
-		if not slot is Dictionary or Number._integer(slot.get("item_code")) <= 0:
+		if not slot is Dictionary or SkillResourceRules._integer(slot.get("item_code")) <= 0:
 			return {"ok": false, "reason": "invalid_experience_equipment"}
 		var item: Variant = equipment.get(str(int(slot["item_code"])))
 		if not item is Dictionary or not item.get("experience_double") is bool:
@@ -117,6 +114,6 @@ static func _draw(bound: int, rng: Variant, draws: Array) -> int:
 	if bound == 0:
 		if rng is Callable: rng.call(0)
 	else:
-		value = Combat._rand_range(bound, rng)
+		value = CoreCombatRules._rand_range(bound, rng)
 	draws.append({"bound": bound, "value": value})
 	return value

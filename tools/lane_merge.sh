@@ -191,12 +191,18 @@ case "${cmd}" in
       git -C "$(worktree_of "${b}")" merge -q --ff-only "${source_ref}" || { echo "LANE_PUBLISH_FAIL merge target=${b}" >&2; exit 1; }
     done
     echo "LANE_PUBLISH_OK ${head} targets=${ready# }"
+    # User 2026-09-27: push as we commit. Every published branch goes to origin at once; a push failure is
+    # reported but does not undo the local publish.
+    if [ "${LANE_PUBLISH_PUSH:-1}" = 1 ]; then
+      if git push -q origin ${ready} "${source_ref}" 2>/tmp/lane-push.err; then echo "LANE_PUSH_OK origin ${ready# } ${source_ref}"; else echo "LANE_PUSH_FAIL origin $(tail -1 /tmp/lane-push.err)" >&2; fi
+    fi
     ;;
   cleanup)
     for wt in "$@"; do
       br="$(git -C "${wt}" branch --show-current)"
       git merge-base --is-ancestor "${br}" main || { echo "LANE_CLEANUP_SKIP ${br} not in main"; continue; }
       git worktree remove --force "${wt}" && git branch -D "${br}" >/dev/null
+      git ls-remote --exit-code --heads origin "${br}" >/dev/null 2>&1 && git push -q origin --delete "${br}" 2>/dev/null
       echo "LANE_CLEANUP_OK ${br}"
     done
     ;;

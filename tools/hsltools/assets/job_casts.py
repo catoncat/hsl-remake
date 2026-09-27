@@ -9,7 +9,7 @@ composite check_* functions (walk manifest + the three shared checks + the cast'
 are kept for the tools/hsl_*_assets.py --check entry points; the registry tasks run only the
 cast's own piece (its walk-manifest check and PASS line) because combat_animation /
 actor_portraits / panel_assets are already tasks of the same check set — this removes the
-nine duplicated shared PASS lines the gate used to print (docs/CONSOLIDATION.md §6, P1).
+nine duplicated shared PASS lines the gate used to print (docs/internal/CONSOLIDATION.md §6, P1).
 build() appends the cast exactly as the former scripts' non-check path did. Statement-for-statement
 from the former hsl_ohm_assets.py / hsl_priest_assets.py / hsl_mobile_jobs_assets.py.
 """

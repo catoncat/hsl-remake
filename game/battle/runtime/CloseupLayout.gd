@@ -14,11 +14,13 @@ extends RefCounted
 ## aniKRight／aniKLeft at init (0x4044be..0x4044f1) before the shift, so the shift, the
 ## knock-back and the dodge all run the other way (`swapped`).
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md; static-derived docs/evidence_packets/static_reverse/original_effect_motion.md#4b-普通切入的换边镜像cutin-mirror; resource-derived content/imported/hsl/chapter01/combat_animation/ANIMAL.TXT; resource-derived content/imported/hsl/global/tables/ANIMAL.H; runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md (recording 2026-09-24: attacker anchor (320,330), aniKLeft victim 350 → 245 after the hit, all on y 330)
-##   strings: n/a
+##   layout: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md#4b-普通切入的换边镜像cutin-mirror
+##   layout: resource-derived content/imported/hsl/chapter01/combat_animation/ANIMAL.TXT
+##   layout: resource-derived content/imported/hsl/global/tables/ANIMAL.H
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##     (recording 2026-09-24: attacker anchor (320,330), aniKLeft victim 350 → 245 after the hit, all on y 330)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
-##   audio: n/a
 
 ## The shot line: viewport + (0x140, 0x14a) for both close-up objects (the recording's
 ## attacker and victim anchors stand on y 330 too).

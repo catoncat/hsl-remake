@@ -30,10 +30,13 @@ extends Node
 ## wings stop; shown again, the shape restarts at CURSOR01 with a fresh delay (0x4304ee..0x430502).
 ## provenance:
 ##   rules: remake-invented docs/OPTIONS.md (OPT-CURSOR=系統硬體游標 only: the OS pointer shows the sceptre)
-##   layout: resource-derived content/imported/hsl/shared/game_cursor/manifest.json; static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md (hidden during magic effects, combat close-ups and while an item is held)
-##   strings: n/a
-##   timing: resource-derived content/imported/hsl/shared/game_cursor/manifest.json; static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md; runtime-measured docs/evidence_packets/runtime_observations/game_cursor/README.md (CURSOR10 returns every 1.151 s in the 2026-09-24 recording = 60 ticks of 19.2 ms)
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/game_cursor/manifest.json
+##   layout: static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md
+##     (hidden during magic effects, combat close-ups and while an item is held)
+##   timing: resource-derived content/imported/hsl/shared/game_cursor/manifest.json
+##   timing: static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/game_cursor/README.md
+##     (CURSOR10 returns every 1.151 s in the 2026-09-24 recording = 60 ticks of 19.2 ms)
 
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")

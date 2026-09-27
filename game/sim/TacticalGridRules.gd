@@ -5,15 +5,13 @@ extends RefCounted
 ## Original normal-mode four-neighbor costs are checked against full native
 ## floods. Map flags/occupancy adaptation and equal-cost path ties are separate.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_movement.md; resource-derived content/generated/hsl/chapter01/attack_ranges.json; provisional (equal-cost path ties, occupancy adaptation)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_movement.md
+##   rules: resource-derived content/generated/hsl/chapter01/attack_ranges.json
+##   rules: provisional (equal-cost path ties, occupancy adaptation)
 const OBSTACLE_MASK := 0x74000
 const DIRECTIONS := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 const Traversal = preload("res://game/sim/ActorTraversalRules.gd")
-const Roles = preload("res://game/sim/ActorRoleRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 
 
 static func movement_range(unit: Dictionary, units: Array, tiles: Dictionary, map_size: Vector2i) -> Array:
@@ -256,7 +254,7 @@ static func attack_pattern_cells(origin: Vector2i, offsets: Array, map_size: Vec
 static func _move_target_blockers(occupant: Dictionary, coord: Vector2i, tiles: Dictionary) -> Array:
 	var blockers := []
 	if not occupant.is_empty():
-		var role := Roles.battle_actor_role(occupant)
+		var role := ActorRoleRules.battle_actor_role(occupant)
 		blockers.append({
 			"schema": "hsl_move_target_blocker.v1",
 			"blocker_type": "map_object" if role == "map_object" else "unit",

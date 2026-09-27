@@ -2,13 +2,10 @@ extends RefCounted
 ## Pure selectors. Native branches and RNG consumption are independently replayed.
 ## No movement, spell settlement, queue or scene mutation belongs here.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_decisions.md; provisional (stable-id adapter)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Combat = preload("res://game/sim/CoreCombatRules.gd")
-const Number = preload("res://game/sim/SkillResourceRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_decisions.md
+##   rules: provisional (stable-id adapter)
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 ## 0x43ff3a: cmp eax, 0xa; jg 0x440041 — the side walk is taken on rand(100) <= 10.
 const SIDE_WALK_AT_MOST := 10
 const JOB_GROUPS := {
@@ -19,13 +16,13 @@ const JOB_GROUPS := {
 
 static func profile_error(profile: Dictionary) -> String:
 	for key in ["find_type", "find_flag", "find_range", "ai_att_special", "ai_att_magic", "ai_call_range", "ai_fixed", "job"]:
-		if Number._integer(profile.get(key)) < 0: return "missing_ai_profile_" + key
+		if SkillResourceRules._integer(profile.get(key)) < 0: return "missing_ai_profile_" + key
 	if int(profile["find_type"]) > 6 or int(profile["find_flag"]) > 6 or int(profile["find_range"]) > 512 or int(profile["ai_call_range"]) > 512 or int(profile["ai_fixed"]) > 512:
 		return "unsupported_ai_profile"
 	if int(profile["ai_att_special"]) > 100 or int(profile["ai_att_magic"]) > 100:
 		return "invalid_ai_probability"
 	var excluded: Variant = profile.get("find_no_id")
-	if excluded != -1 and (Number._integer(excluded) < 0 or Number._integer(excluded) > 32767):
+	if excluded != -1 and (SkillResourceRules._integer(excluded) < 0 or SkillResourceRules._integer(excluded) > 32767):
 		return "invalid_ai_exclusion"
 	return ""
 
@@ -72,7 +69,7 @@ static func rows_error(units: Array, owner_index: int) -> String:
 		if unit["coord"].x < 0 or unit["coord"].y < 0 or unit["coord"].x > 512 or unit["coord"].y > 512:
 			return "unsupported_ai_coordinates"
 		for key in ["hp", "level", "job", "side", "sid"]:
-			if Number._integer(unit.get(key)) < 0: return "invalid_ai_actor_" + key
+			if SkillResourceRules._integer(unit.get(key)) < 0: return "invalid_ai_actor_" + key
 	return ""
 
 
@@ -154,6 +151,6 @@ static func _squared_distance(a: Vector2i, b: Vector2i) -> int:
 
 
 static func _draw(bound: int, rng: Variant, draws: Array) -> int:
-	var value := Combat._rand_range(bound, rng)
+	var value := CoreCombatRules._rand_range(bound, rng)
 	draws.append({"bound": bound, "value": value})
 	return value

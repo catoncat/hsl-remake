@@ -9,11 +9,9 @@ extends RefCounted
 ## (unit.py PROVENANCE_KEYS: <ledger>_evidence_tier／<ledger>_source, …) are optional
 ## pass-through, and a unit that carries none is authored content.
 ## provenance:
-##   rules: remake-invented (unit dictionary contract derived from remake data by tools/hsltools/schema/unit.py — content/schema/unit.schema.json)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: remake-invented
+##     (unit dictionary contract derived from remake data by tools/hsltools/schema/unit.py —
+##     content/schema/unit.schema.json)
 
 const PATH := "res://content/schema/unit.schema.json"
 ## Evidence tier of a unit ledger nobody wrote a tier for: content authored for the

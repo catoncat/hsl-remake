@@ -2,7 +2,7 @@
 
 Registry task original_tables (family data): writes content/imported/hsl/global/tables/ (16 `@:\\data\\`
 members + carry_items.json) and the four chapter01 source texts every chain reads first. What the import
-does to each member (docs/OPEN_SOURCE_PLAN.md §8, measured against the tracked files):
+does to each member (docs/internal/OPEN_SOURCE_PLAN.md §8, measured against the tracked files):
 
   raw   ACTION.H ANIMAL.H extras.h SHAPEDEF.TXT RESOURCE.TXT — the member bytes (CRLF kept)
   text  every other member — CRLF -> LF, trailing spaces / tabs of each line dropped, trailing blank

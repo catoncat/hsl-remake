@@ -1,7 +1,7 @@
 extends Node2D
 ## Title screen — the product entry. Draws the original Title*.SHP shapes at the layout
 ## measured from the reference recording (content/imported/hsl/global/title/manifest.json,
-## tools/hsl_title_assets.py) and runs the three-item ring menu:
+## tools/hsltools/assets/title_assets.py) and runs the three-item ring menu:
 ##   開始新故事 -> fresh campaign (clears the saved position) -> intro film -> BattleSceneRuntime
 ##                 on campaign.json start_level (the film is campaign.json start_movie; chapter 1
 ##                 names movie.pak start.ani: the original's level-entry routine 0x42da60 plays it on
@@ -23,15 +23,34 @@ extends Node2D
 ## starts with the title); like every level exit it stops at once on the scene change or when the
 ## intro film starts, and holds its volume through the fade to black.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/resource_inventory/original_movies.md; provisional (0x4c1ae4 read as a re-entry marker); remake-invented (戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene)
-##   layout: resource-derived content/imported/hsl/global/title/manifest.json; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (V1.06 ink box (3,459)–(41,467), 8 px glyph advance, white; not baked into Title001); runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#01 (background／logo／ring／statue corners and first-item gem＋book measured on 01/frame_001); runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md (gem and book stay beside item 1 whatever is selected; vertical travel −2…+8 px); remake-invented (lit shape on the keyboard-selected item)
-##   strings: resource-derived content/imported/hsl/global/title/manifest.json; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (「V1.06」; negative-evidence: not an ASCII／UTF-16 string of hsl01.exe); remake-invented (「沒有戰場記錄」hint)
-##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md (gem／book bob period ≈1.65 s, amplitude ≈5 px, no fixed phase relation); runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (開始新故事 click: lit shape from 13.52 s, fade 14.27→14.82 s — 0.75 s hold, 0.55 s fade); provisional (period and amplitude are fits to 4–5 fps samples; random start phases; the same hold／fade for 戰場記錄, 1.6 s hint, hover lit rule)
-##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md; resource-derived content/imported/hsl/music/manifest.json
+##   rules: static-derived docs/evidence_packets/resource_inventory/original_movies.md
+##   rules: provisional (0x4c1ae4 read as a re-entry marker)
+##   rules: remake-invented (戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene)
+##   layout: resource-derived content/imported/hsl/global/title/manifest.json
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (V1.06 ink box (3,459)–(41,467), 8 px glyph advance, white; not baked into Title001)
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#01
+##     (background／logo／ring／statue corners and first-item gem＋book measured on 01/frame_001)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
+##     (gem and book stay beside item 1 whatever is selected; vertical travel −2…+8 px)
+##   layout: remake-invented (lit shape on the keyboard-selected item)
+##   strings: resource-derived content/imported/hsl/global/title/manifest.json
+##   strings: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (「V1.06」; negative-evidence: not an ASCII／UTF-16 string of hsl01.exe)
+##   strings: remake-invented (「沒有戰場記錄」hint)
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
+##     (gem／book bob period ≈1.65 s, amplitude ≈5 px, no fixed phase relation)
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (開始新故事 click: lit shape from 13.52 s, fade 14.27→14.82 s — 0.75 s hold, 0.55 s fade)
+##   timing: provisional
+##     (period and amplitude are fits to 4–5 fps samples; random start phases; the same hold／fade for 戰場記錄, 1.6 s hint,
+##     hover lit rule)
+##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
+##   audio: resource-derived content/imported/hsl/music/manifest.json
 
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
@@ -118,7 +137,7 @@ func _build_scene() -> void:
 	overlay.name = "Overlay"
 	overlay.layer = 10
 	add_child(overlay)
-	_hint = UISkin.label(overlay, Vector2(0, 442), 18)
+	_hint = BattleUISkin.label(overlay, Vector2(0, 442), 18)
 	_hint.size = Vector2(640, 28)
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint.text = ""
@@ -129,7 +148,7 @@ func _build_scene() -> void:
 	_version.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	overlay.add_child(_version)
 	for index in VERSION_TEXT.length():
-		var glyph := UISkin.text(_version, Vector2(VERSION_ADVANCE * index, 0), Color.WHITE, VERSION_FONT_SIZE, Vector2(VERSION_ADVANCE, VERSION_BOX.size.y))
+		var glyph := BattleUISkin.text(_version, Vector2(VERSION_ADVANCE * index, 0), Color.WHITE, VERSION_FONT_SIZE, Vector2(VERSION_ADVANCE, VERSION_BOX.size.y))
 		glyph.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		glyph.add_theme_constant_override("shadow_offset_x", 0)
 		glyph.add_theme_constant_override("shadow_offset_y", 0)

@@ -1,10 +1,7 @@
 extends RefCounted
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/actor_placement_initialization.md; provisional (world size from the decoded map texture)
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   layout: static-derived docs/evidence_packets/static_reverse/actor_placement_initialization.md
+##   layout: provisional (world size from the decoded map texture)
 
 const SCHEMA := "hsl_map_scene_config.v1"
 

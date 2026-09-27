@@ -2,11 +2,8 @@ extends RefCounted
 ## Read-only rendering of already-committed script actor transactions. No game
 ## actor, reward, resource, learned skill or random stream is initialized here.
 ## provenance:
-##   rules: n/a
 ##   layout: remake-invented (spawned actors appear at the committed cell; original entry paths not restored)
-##   strings: n/a
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_script_wait.md
-##   audio: n/a
 
 
 static func attach(runtime: Node, events: Array, firing: int) -> Array:

@@ -6,12 +6,11 @@ extends RefCounted
 ## controls. Prompt layout and pacing are remake readings.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_select_insert_event.md
-##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; remake-invented (rows beside the dialogue board, shared with the town select)
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: remake-invented (rows beside the dialogue board, shared with the town select)
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
-##   timing: n/a
-##   audio: n/a
 
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
 
 ## Remake layout shared with the town select: WINDOW50 rows at the right of the dialogue board.
@@ -36,7 +35,7 @@ static func create(opening_coordinator: Node) -> RefCounted:
 ## actSelectInsertEvent,<id>,<serial>,<num>,(<choice message id>,<event code>)*num: the
 ## speaker's choice between winfail event chains (STORY900: 選擇一 kicks the soldier and
 ## leaves, 選擇二 fights). The prompt lists the choice messages beside the dialogue
-## board; the chosen chain, precompiled by tools/hsl_story_scene.py into
+## board; the chosen chain, precompiled by tools/hsltools/levels/story_scene.py into
 ## opening.select_event_timelines["event_<code>"], is spliced into the timeline right
 ## after this token and plays on. Without a compiled chain the choice is recorded only.
 func _show_select_prompt(event: Dictionary) -> void:
@@ -69,7 +68,7 @@ func _show_select_prompt(event: Dictionary) -> void:
 	_select_buttons = []
 	var y := SELECT_CHOICE_ORIGIN.y
 	for index in range(coordinator.select_options.size()):
-		var button := UISkin.button(_select_root, str(coordinator.select_options[index]["text"]), Vector2(SELECT_CHOICE_ORIGIN.x, y), SELECT_CHOICE_SIZE)
+		var button := BattleUISkin.button(_select_root, str(coordinator.select_options[index]["text"]), Vector2(SELECT_CHOICE_ORIGIN.x, y), SELECT_CHOICE_SIZE)
 		button.name = "Choice%d" % index
 		button.pressed.connect(choose_select_option.bind(index))
 		_select_buttons.append(button)

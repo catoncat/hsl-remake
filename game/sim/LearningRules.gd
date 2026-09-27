@@ -3,12 +3,8 @@ extends RefCounted
 ## Records are immutable acquisitions; source declarations and gear are not edited.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_growth_lifecycle.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 const POLICY := "source_growth_lifecycle_v1"
-const Number = preload("res://game/sim/SkillResourceRules.gd")
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const ATTRIBUTES := ["str", "dex", "mind", "con"]
 
 
@@ -18,10 +14,10 @@ static func basic_error(actor: Dictionary) -> String:
 	var seen := {}
 	for record in records:
 		if not record is Dictionary or record.get("policy") != POLICY or not record.get("id") is String or seen.has(record["id"]): return "invalid_skill_acquisition"
-		if record.get("actor_id") != actor.get("actor_id") or not source_jobs(actor).has(Number._integer(record.get("job"))): return "learned_skill_source_mismatch"
-		if Number._integer(record.get("level")) < 1 or int(record["level"]) > int(actor.get("level", 0)) or not record.get("attributes") is Dictionary: return "learned_skill_level_rollback"
+		if record.get("actor_id") != actor.get("actor_id") or not source_jobs(actor).has(SkillResourceRules._integer(record.get("job"))): return "learned_skill_source_mismatch"
+		if SkillResourceRules._integer(record.get("level")) < 1 or int(record["level"]) > int(actor.get("level", 0)) or not record.get("attributes") is Dictionary: return "learned_skill_level_rollback"
 		for key in ATTRIBUTES:
-			if Number._integer(record["attributes"].get(key)) < 1 or int(record["attributes"][key]) > int(actor.get("combat_profile", {}).get(key, 0)): return "learned_skill_attribute_rollback"
+			if SkillResourceRules._integer(record["attributes"].get(key)) < 1 or int(record["attributes"][key]) > int(actor.get("combat_profile", {}).get(key, 0)): return "learned_skill_attribute_rollback"
 		seen[record["id"]] = true
 	return ""
 
@@ -46,10 +42,10 @@ static func input_error(actor: Dictionary, data: Dictionary) -> String:
 ## The current job plus every job the member held before a town job-up
 ## (JobUpRules.merge_source_template records from_job_code per step).
 static func source_jobs(actor: Dictionary) -> Array:
-	var jobs: Array = [Number._integer(actor.get("growth_profile", {}).get("job_code"))]
+	var jobs: Array = [SkillResourceRules._integer(actor.get("growth_profile", {}).get("job_code"))]
 	for step in actor.get("job_up_history", []):
 		if step is Dictionary and step.has("from_job_code"):
-			jobs.append(Number._integer(step["from_job_code"]))
+			jobs.append(SkillResourceRules._integer(step["from_job_code"]))
 	return jobs
 
 

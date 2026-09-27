@@ -3,11 +3,13 @@ extends Control
 ## selection (attack／magic／special) an eligible cell carries the original's yellow I_RECT01
 ## cell frame; move selection keeps the remake's breathing corner brackets.
 ## provenance:
-##   rules: n/a
-##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#04 (cell cursor exists in recording 04; drawn square and info bar are remake); runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (target selection: the I_RECT01 yellow frame on the cursor cell, user recording 178.0 s at (320,220)); resource-derived content/imported/hsl/shared/shape_previews/battle_ui/I_RECT01.SHP.png; remake-invented (move-selection corner brackets, cost／budget caption bar)
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#04
+##     (cell cursor exists in recording 04; drawn square and info bar are remake)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (target selection: the I_RECT01 yellow frame on the cursor cell, user recording 178.0 s at (320,220))
+##   layout: resource-derived content/imported/hsl/shared/shape_previews/battle_ui/I_RECT01.SHP.png
+##   layout: remake-invented (move-selection corner brackets, cost／budget caption bar)
 ##   strings: remake-invented (「飛行」／「可通過，不能停留」)
-##   timing: n/a
-##   audio: n/a
 ## The original's target-cell frame (I_RECT01.SHP, 32×32, yellow ramp 238,222,0 → 139,121,0).
 ## I_RECT02..08 recolour the same outline; the remake draws frame 01 only (provisional).
 const TARGET_FRAME: Texture2D = preload("res://content/imported/hsl/shared/shape_previews/battle_ui/I_RECT01.SHP.png")

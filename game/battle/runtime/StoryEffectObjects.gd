@@ -15,10 +15,12 @@ extends RefCounted
 ##   defProcObjectMove + engADDCOLOR* -> additive glow that swells and fades (光環)
 ## Anything else keeps the coordinator's plain sprite path.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json; remake-invented (rain emitter, zoom flash, glow readings of those fields)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; provisional (obj_Data7 read as a flash lifetime, glow swell, rain drop frame cadence and spawn band — the mapobjDropRain／defProcObjectMove processes are unread)
+##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
+##   layout: remake-invented (rain emitter, zoom flash, glow readings of those fields)
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: provisional
+##     (obj_Data7 read as a flash lifetime, glow swell, rain drop frame cadence and spawn band — the
+##     mapobjDropRain／defProcObjectMove processes are unread)
 ##   audio: resource-derived content/imported/hsl/chapter01/scripts
 
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")

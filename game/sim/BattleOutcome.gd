@@ -5,11 +5,9 @@ extends RefCounted
 ## reason) instead of parsing a key; `describe` is the report-line spelling
 ## (`victory/escape`) and is never parsed back.
 ## provenance:
-##   rules: remake-invented (result／reason vocabulary of the remake's loop; a reason names the head condition of the deciding winfail status (WinfailScenarioRules.outcome_for) or the dev-battle objective)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: remake-invented
+##     (result／reason vocabulary of the remake's loop; a reason names the head condition of the deciding winfail status
+##     (WinfailScenarioRules.outcome_for) or the dev-battle objective)
 
 const VICTORY := "victory"
 const DEFEAT := "defeat"

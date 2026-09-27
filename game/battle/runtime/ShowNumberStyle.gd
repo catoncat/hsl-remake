@@ -6,11 +6,8 @@ extends RefCounted
 ## kind takes one representative palette entry of its digit set; captions the original has
 ## no glyph for (status names, cure results) stay white.
 ## provenance:
-##   rules: n/a
 ##   layout: resource-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
-##   timing: n/a
-##   audio: n/a
 
 ## NUM1xx: (255,182,180) light, (255,125,123) shade — the shade reads as red on the map.
 const DAMAGE := Color8(255, 125, 123)

@@ -6,16 +6,23 @@ what the remake itself decided:
 
     ## provenance:
     ##   rules: static-derived docs/evidence_packets/static_reverse/original_growth_lifecycle.md
+    ##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json
     ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#16
-    ##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
-    ##   timing: remake-invented (menu fade lengths chosen for the remake)
-    ##   audio: n/a
+    ##   timing: remake-invented
+    ##     (menu fade lengths chosen for the remake; a note too long for its line continues
+    ##     on `##     ` lines, joined with one space)
 
   dimensions  rules (rule semantics), layout (positions, sizes, window art), strings (text),
-              timing (sequencing, animation), audio — all five, in this order, one line each;
-              a dimension the module does not touch is `n/a`; at least one is not n/a
-  value       one or more terms separated by ";" (outside parentheses): `<tag> [<path>[#<anchor>]] [(<note>)]`;
-              the same tag may recur with different paths, never twice for one path
+              timing (sequencing, animation), audio — in this order; a dimension the module does
+              not touch is omitted (it counts as n/a); at least one line names a source
+  line        one term per line, `##   <dimension>: <term>`; a dimension repeats on as many lines
+              as it has terms; a line starting `##     ` continues the term above (joined with one
+              space); every line is at most MAX_LINE_CHARS (120) characters
+  term        `<tag> [<path>[#<anchor>]] [(<note>)]`; the same tag may recur with different paths,
+              never twice for one path
+  legacy      the pre-09-27 form still parses (a dimension line whose value is `n/a`, or several
+              terms on one line separated by ";" outside parentheses, such a line exempt from the
+              line width) so older fixtures load; game/ headers use the form above
   tag         resource-derived / static-derived / runtime-measured / user-confirmed /
               user-hypothesis / provisional / negative-evidence (AGENTS.md tiers), plus
               runtime-reference (recreated by eye from original frames, no measurement) and
@@ -73,10 +80,12 @@ TAGS = EVIDENCE_TIERS + REMAKE_TAGS
 PATH_REQUIRED = frozenset({"resource-derived", "static-derived", "runtime-measured", "runtime-reference"})
 NOT_APPLICABLE = "n/a"
 MAX_TERM_CHARS = 200
+MAX_LINE_CHARS = 120
 
 GENERIC_NAMES = frozenset({"manifest.json", "README.md"})
 HEADER_LINE = "## provenance:"
 DIMENSION_LINE = re.compile(r"^##   ([a-z]+): (.*)$")
+CONTINUATION_LINE = re.compile(r"^##     (\S.*)$")
 TERM = re.compile(r"^(?P<tag>[a-z-]+)(?:\s+(?P<path>[^\s()]+))?(?:\s*\((?P<note>.*)\))?$")
 # The header region ends at the first member definition; preload consts may precede the block.
 BODY_START = re.compile(r"^(?:static\s+func|func|signal|var|enum|@export|@onready)\b")
@@ -167,21 +176,42 @@ def parse_module(root: Path, path: Path) -> dict:
     body_start = next((index for index, line in enumerate(lines) if BODY_START.match(line)), len(lines))
     if start > body_start:
         raise HeaderError(f"{HEADER_LINE!r} at line {start + 1} must precede the first member (line {body_start + 1})")
-    dimensions: dict[str, list[dict]] = {}
+    entries: list[list] = []  # [first line index, dimension, value, line indices]
     index = start + 1
-    while index < len(lines) and (match := DIMENSION_LINE.match(lines[index])):
-        name, value = match.groups()
-        if name not in DIMENSIONS:
-            raise HeaderError(f"line {index + 1}: dimension {name!r} is not one of {', '.join(DIMENSIONS)}")
-        if name in dimensions:
-            raise HeaderError(f"line {index + 1}: dimension {name!r} repeated")
-        try:
-            dimensions[name] = parse_value(value, root)
-        except HeaderError as error:
-            raise HeaderError(f"line {index + 1} ({name}): {error}") from None
+    while index < len(lines):
+        if match := DIMENSION_LINE.match(lines[index]):
+            entries.append([index, match[1], match[2], [index]])
+        elif entries and (match := CONTINUATION_LINE.match(lines[index])):
+            entries[-1][2] += " " + match[1]
+            entries[-1][3].append(index)
+        else:
+            break
         index += 1
-    if list(dimensions) != list(DIMENSIONS):
-        raise HeaderError(f"dimensions must be exactly {', '.join(DIMENSIONS)} in that order, got {', '.join(dimensions) or 'none'}")
+    dimensions: dict[str, list[dict]] = {name: [] for name in DIMENSIONS}
+    seen: list[str] = []
+    for first, name, value, indices in entries:
+        if name not in DIMENSIONS:
+            raise HeaderError(f"line {first + 1}: dimension {name!r} is not one of {', '.join(DIMENSIONS)}")
+        if seen and name != seen[-1] and (name in seen or DIMENSIONS.index(name) < DIMENSIONS.index(seen[-1])):
+            raise HeaderError(f"line {first + 1}: dimensions must be {', '.join(DIMENSIONS)} in that order, "
+                              f"each dimension's lines together; {name!r} comes after {seen[-1]!r}")
+        if not seen or seen[-1] != name:
+            seen.append(name)
+        legacy = len(split_terms(value)) > 1
+        for line_index in indices:
+            if not legacy and len(lines[line_index]) > MAX_LINE_CHARS:
+                raise HeaderError(f"line {line_index + 1}: {len(lines[line_index])} characters, over {MAX_LINE_CHARS}"
+                                  " — continue the note on a `##     ` line")
+        try:
+            terms = parse_value(value, root)
+        except HeaderError as error:
+            raise HeaderError(f"line {first + 1} ({name}): {error}") from None
+        for term in terms:
+            if any((known["tag"], known["path"]) == (term["tag"], term["path"]) for known in dimensions[name]):
+                raise HeaderError(f"line {first + 1} ({name}): tag listed twice for the same path")
+            dimensions[name].append(term)
+    if not entries:
+        raise HeaderError(f"no dimension line under {HEADER_LINE!r}")
     if all(not terms for terms in dimensions.values()):
         raise HeaderError("every dimension is n/a; at least one must name a source")
     return {"path": path.as_posix(), "dimensions": dimensions}

@@ -6,10 +6,6 @@ extends RefCounted
 ## off-map, unit without a mirrored cell); (0,0) is a legal cell and never means "none".
 ## provenance:
 ##   rules: remake-invented (state vocabulary of the remake's turn loop; the original's mode words are not recovered)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 
 const IDLE := "idle"
 const ACTION_MENU := "action_menu"

@@ -5,11 +5,10 @@ extends RefCounted
 ## target template; this rule never loads a second source or guesses a replacement
 ## when the target is missing.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_town_job_up.md; static-derived docs/evidence_packets/static_reverse/original_level37_tokens.md; resource-derived content/imported/hsl/global/tables/OBJ-ALL.H; negative-evidence (018 has no SHAPEDEF row)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_town_job_up.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_level37_tokens.md
+##   rules: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
+##   rules: negative-evidence (018 has no SHAPEDEF row)
 
 const NATIVE_JOB_UP_FLAG := 0x80000000
 ## 0x454e20 case 0x20 (teCheckJobUp2) writes this second-tier flag instead

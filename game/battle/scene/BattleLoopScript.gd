@@ -11,31 +11,34 @@ extends RefCounted
 ## (WinfailScenarioRules and its three modules) is reached only through
 ## BattleScenarioRuleAdapter.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_script_departure.md; static-derived docs/evidence_packets/static_reverse/original_script_wait.md; static-derived docs/evidence_packets/static_reverse/original_player_install.md; static-derived docs/evidence_packets/static_reverse/original_auto_growth.md; provisional (reinforcement spawn-cell fill order and nearest-legal landing, outcome commit ordering — docs/architecture/BATTLE_SYSTEMS.md#winfailscenariorulesgd); remake-invented (one-transaction materialization: a failed proposal leaves no partial actors)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_departure.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_wait.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_install.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_auto_growth.md
+##   rules: provisional
+##     (reinforcement spawn-cell fill order and nearest-legal landing, outcome commit ordering —
+##     docs/architecture/BATTLE_SYSTEMS.md#winfailscenariorulesgd)
+##   rules: remake-invented (one-transaction materialization: a failed proposal leaves no partial actors)
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const Rewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
-const AI = preload("res://game/battle/scene/BattleLoopAI.gd")
+const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattleLoopRewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
+const BattleLoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
 const BattleScenarioRuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const TraversalRules = preload("res://game/sim/ActorTraversalRules.gd")
-const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 const ScriptWait = preload("res://game/sim/ScriptWaitRules.gd")
 const ReinforcementGrowth = preload("res://game/sim/ReinforcementGrowthRules.gd")
-const ScriptActors = preload("res://game/sim/ScriptActorCreationRules.gd")
+const ScriptActorCreationRules = preload("res://game/sim/ScriptActorCreationRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const SharedRecord = preload("res://game/sim/SharedRecordRules.gd")
+const SharedRecordRules = preload("res://game/sim/SharedRecordRules.gd")
 
 
 static func _resolve_outcome(next: Dictionary) -> Dictionary:
 	# Pieces sharing one live record (level 12／26 hulls) settle the action's HP into one pool.
-	SharedRecord.sync(next)
+	SharedRecordRules.sync(next)
 	if BattleOutcome.decided(next):
 		return next
 	_consume_script_actors(next)
@@ -53,7 +56,7 @@ static func _resolve_outcome(next: Dictionary) -> Dictionary:
 		if not next["scenario_ok"]: return next
 	var result := BattleScenarioRuleAdapter.victory_state(next, next.get("escape_zone", []))
 	if not result.is_empty():
-		Loop._clear_extra_action(next)
+		BattlePlayLoop._clear_extra_action(next)
 		# Scenario rules record the deciding status and apply its result chain once
 		# (next level event, hand-off carry, dialogue) before the loop freezes.
 		var committed := BattleScenarioRuleAdapter.commit_outcome(next)
@@ -73,15 +76,15 @@ static func _resolve_outcome(next: Dictionary) -> Dictionary:
 		next["command_menu"] = {"commands": []}
 		if BattleOutcome.is_victory(result) and not next.get("settlement", {}).get("pending", []).is_empty():
 			next["settlement"]["closed"] = false
-		AI._prune_ai_calls(next)
+		BattleLoopAI._prune_ai_calls(next)
 	elif old_current != str(CoreTurnQueue.current(next["turn_queue"]).get("id", "")):
-		return Loop._finish_ai_or_continue(next)
+		return BattlePlayLoop._finish_ai_or_continue(next)
 	return next
 
 
 static func _consume_script_actors(loop: Dictionary) -> void:
-	if not ScriptActors.pending(loop): return
-	var result := ScriptActors.prepare(loop)
+	if not ScriptActorCreationRules.pending(loop): return
+	var result := ScriptActorCreationRules.prepare(loop)
 	if not result["ok"]:
 		loop.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": result["reason"]}, true)
 		return
@@ -94,7 +97,7 @@ static func _consume_script_waits(loop: Dictionary) -> void:
 	if not proposal["ok"]:
 		loop.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": proposal["reason"]}, true)
 		return
-	for id in proposal["values"]: Loop._unit(loop, id)["ai_wait_remaining"] = proposal["values"][id]
+	for id in proposal["values"]: BattlePlayLoop._unit(loop, id)["ai_wait_remaining"] = proposal["values"][id]
 	loop["script_wait_cursor"] = proposal["cursor"]
 	loop["last_script_wait"] = proposal["receipt"]
 
@@ -105,15 +108,15 @@ static func _commit_departures(loop: Dictionary, ids: Array, source: String, key
 		loop.merge({"scenario_ok": false, "scenario_error": proposal["reason"], "interaction": "scenario_error"}, true)
 		return false
 	if not proposal["changed"]: return false
-	for change in proposal["units"]: Loop._unit(loop, change["id"]).merge(change["changes"], true)
+	for change in proposal["units"]: BattlePlayLoop._unit(loop, change["id"]).merge(change["changes"], true)
 	loop["turn_queue"] = proposal["queue"]
 	loop["last_departure"] = proposal["receipt"]
 	loop["departure_sequence"] = proposal["receipt"]["sequence"]
-	if proposal["receipt"]["unit_ids"].has(loop["extra_action"]["owner_id"]): Loop._clear_extra_action(loop)
+	if proposal["receipt"]["unit_ids"].has(loop["extra_action"]["owner_id"]): BattlePlayLoop._clear_extra_action(loop)
 	if proposal["receipt"]["unit_ids"].has(loop.get("selected_unit_id", "")):
 		loop.merge({"selected_unit_id": "", "interaction": "ai_resolving", "pending_move": false,
 			"moved_this_action": false, "attacked_this_action": false, "command_menu": {"commands": []}, "give_session": {}}, true)
-	AI._prune_ai_calls(loop)
+	BattleLoopAI._prune_ai_calls(loop)
 	return true
 
 
@@ -134,7 +137,7 @@ static func _consume_script_departures(loop: Dictionary) -> void:
 static func _maintain_script_pressure(loop: Dictionary) -> void:
 	if BattleOutcome.decided(loop) or not loop.get("scenario_ok", false): return
 	if BattleScenarioRuleAdapter.reinforcement_deficits(loop).is_empty(): return
-	var proposed := Loop.copy(loop)
+	var proposed := BattlePlayLoop.copy(loop)
 	_materialize_script_pressure(proposed)
 	if not proposed["scenario_ok"]:
 		loop.merge({"scenario_ok":false,"interaction":"scenario_error","scenario_error":proposed["scenario_error"]},true)
@@ -150,7 +153,7 @@ static func _materialize_script_pressure(loop: Dictionary) -> void:
 		for coord in loop.get("reinforcement_spawn_cells", []):
 			if remaining <= 0:
 				break
-			if Loop.unit_id_at_coord(loop, coord) != "" or bool(TerrainEdits.tiles(loop).get(coord, {}).get("blocks_movement", false)):
+			if BattlePlayLoop.unit_id_at_coord(loop, coord) != "" or bool(TerrainEditRules.tiles(loop).get(coord, {}).get("blocks_movement", false)):
 				continue
 			var size: Vector2i = loop["map_size"]
 			if coord.x < 0 or coord.y < 0 or coord.x >= size.x or coord.y >= size.y:
@@ -161,14 +164,14 @@ static func _materialize_script_pressure(loop: Dictionary) -> void:
 			recruit["grid_coord"] = coord
 			recruit["hp"] = int(recruit["max_hp"])
 			recruit["defeated"] = false
-			if TraversalRules.placement_error(recruit, loop["units"], TerrainEdits.tiles(loop), size) != "":
+			if TraversalRules.placement_error(recruit, loop["units"], TerrainEditRules.tiles(loop), size) != "":
 				continue
 			recruit["hit_bonus_accum"] = 0
 			recruit["ai_call_target_id"] = ""
 			AINavigationRules.initialize(recruit, loop["ai_profiles"]["actors"][recruit["actor_id"]]["profile"])
 			# The birth 0x407cc0 rolls a pmEnemy's carry (0x407c40) before its level adjustment 0x40e870.
 			recruit["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
-			Rewards._initial_carry(loop, recruit)
+			BattleLoopRewards._initial_carry(loop, recruit)
 			var insertion := ScriptWait.next_insert(loop, class_id)
 			if insertion >= 0:
 				var request: Dictionary = loop["winfail_runtime"]["inserts"][insertion]
@@ -182,7 +185,7 @@ static func _materialize_script_pressure(loop: Dictionary) -> void:
 					loop.merge({"scenario_ok":false,"interaction":"scenario_error","scenario_error":growth["reason"]},true)
 					return
 				recruit = growth["actor"]
-				loop[ReinforcementGrowth.GlobalRandom.LOOP_KEY] = growth["rng"]
+				loop[ReinforcementGrowth.GlobalRandomStream.LOOP_KEY] = growth["rng"]
 				request["unit_id"] = recruit["id"]
 			loop["units"].append(recruit)
 			remaining -= 1

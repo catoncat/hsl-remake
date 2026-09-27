@@ -19,11 +19,26 @@ extends Control
 ## Under the untouched Title039 panel a 重製選項 entry (remake) opens RemakeOptionsPage, the
 ## second page of the remake's own options (docs/OPTIONS.md); Down past 音樂音量 reaches it.
 ## provenance:
-##   rules: provisional (讀取回憶錄 read as resume-campaign-position; input handler not located — docs/evidence_packets/static_reverse/original_storage_window.md covers only the storage window)
-##   layout: resource-derived content/imported/hsl/global/title/manifest.json; runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#05 (scroll rests at (190,67)); remake-invented content/authored/options/remake_options.json (重製選項 entry under Title039); runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (Title061 at (256,217), no shade; save notice on BOARD02 at (75,320), no portrait; 任務說明 = WINDOW60 at (136,108)); provisional (memoir list position); remake-invented (the confirm question line under the scroll)
-##   strings: resource-derived content/imported/hsl/global/title/manifest.json; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (「進度儲存完成」); remake-invented (memoir labels, confirm questions)
-##   timing: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#05 (scrolls in from the bottom); runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (save notice ≈0.24 s in, ≈1 s held, ≈0.14 s out; 任務說明 board dissolves ≈0.4 s each way (32／34 ticks)); provisional (0.25 s scroll until the scroll object's 0x45e80d step per tick is read); remake-invented (1.6 s 沒有戰場記錄 hint — deliberately kept remake beat)
-##   audio: n/a
+##   rules: provisional
+##     (讀取回憶錄 read as resume-campaign-position; input handler not located —
+##     docs/evidence_packets/static_reverse/original_storage_window.md covers only the storage window)
+##   layout: resource-derived content/imported/hsl/global/title/manifest.json
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#05
+##     (scroll rests at (190,67))
+##   layout: remake-invented content/authored/options/remake_options.json (重製選項 entry under Title039)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (Title061 at (256,217), no shade; save notice on BOARD02 at (75,320), no portrait; 任務說明 = WINDOW60 at (136,108))
+##   layout: provisional (memoir list position)
+##   layout: remake-invented (the confirm question line under the scroll)
+##   strings: resource-derived content/imported/hsl/global/title/manifest.json
+##   strings: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (「進度儲存完成」)
+##   strings: remake-invented (memoir labels, confirm questions)
+##   timing: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#05
+##     (scrolls in from the bottom)
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (save notice ≈0.24 s in, ≈1 s held, ≈0.14 s out; 任務說明 board dissolves ≈0.4 s each way (32／34 ticks))
+##   timing: provisional (0.25 s scroll until the scroll object's 0x45e80d step per tick is read)
+##   timing: remake-invented (1.6 s 沒有戰場記錄 hint — deliberately kept remake beat)
 
 ## World variant 整理裝備: the host opens the between-battle party equipment screen
 ## (game/world/PartyEquipmentScreen) with the carried party; the scroll itself closes.
@@ -31,7 +46,7 @@ signal arrange_equipment_requested
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const TITLE_SCENE_PATH := "res://game/title/TitleScreen.tscn"
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
@@ -64,7 +79,7 @@ const SAVE_NOTICE_HOLD_SECONDS := 0.95
 const SAVE_NOTICE_OUT_SECONDS := 0.15
 ## The confirm question under the scroll (remake-invented; the original shows none).
 const CONFIRM_QUESTION_Y := 446.0
-const WinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
+const BattleWinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
 const MEMOIR_HINTS := {"empty": "空的回憶錄", "saved": "回憶錄已儲存", "no_record": "沒有可儲存的進度"}
 
 var runtime: Node
@@ -129,12 +144,6 @@ func _ready() -> void:
 	confirm_items = manifest.get("confirm_items", [])
 	memoir_layout = manifest.get("memoir_list", {})
 	options_rows = (manifest.get("options_rows", []) as Array).duplicate(true)
-	for row in options_rows:
-		# 預備動作 is remade as the GameSettings toggle `ready_action` ([0x477c14] bit1); the
-		# generated Title039 manifest (title_assets.py OPTIONS_ROWS) still lists it not_remade.
-		if str(row.get("id", "")) == "ready_motion":
-			row["id"] = "ready_action"
-			row["kind"] = "toggle"
 	options_groove = manifest.get("options_groove", {})
 	var layout: Dictionary = manifest.get("layout", {})
 	var panel_layout: Dictionary = layout.get(panel_role, {})
@@ -156,7 +165,7 @@ func _ready() -> void:
 	_confirm_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_confirm_box.visible = false
 	add_child(_confirm_box)
-	_confirm_question = UISkin.label(_confirm_box, Vector2(0, CONFIRM_QUESTION_Y), 20)
+	_confirm_question = BattleUISkin.label(_confirm_box, Vector2(0, CONFIRM_QUESTION_Y), 20)
 	_confirm_question.size = Vector2(640, 32)
 	_confirm_question.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_confirm_question.add_theme_color_override("font_color", Color(0.97, 0.9, 0.7))
@@ -176,7 +185,7 @@ func _ready() -> void:
 	_mission_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mission_box.visible = false
 	add_child(_mission_box)
-	_mission_board = WinFailBoard.new()
+	_mission_board = BattleWinFailBoard.new()
 	_mission_board.hold_ticks = 0
 	_mission_box.add_child(_mission_board)
 	# 進度儲存完成 notice after 儲存戰場記錄.
@@ -185,8 +194,8 @@ func _ready() -> void:
 	_save_notice.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_save_notice.visible = false
 	add_child(_save_notice)
-	UISkin.board(_save_notice, "BOARD02", SAVE_NOTICE_AT)
-	var notice_text := UISkin.text(_save_notice, SAVE_NOTICE_AT + Vector2(0, SAVE_NOTICE_TEXT_Y), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(489, 24))
+	BattleUISkin.board(_save_notice, "BOARD02", SAVE_NOTICE_AT)
+	var notice_text := BattleUISkin.text(_save_notice, SAVE_NOTICE_AT + Vector2(0, SAVE_NOTICE_TEXT_Y), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(489, 24))
 	notice_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	notice_text.text = SAVE_NOTICE_TEXT
 	# 回憶錄 list (Title031) with the mode heading (Title032 讀取／Title033 儲存) over its title.
@@ -214,7 +223,7 @@ func _ready() -> void:
 	_memoir_cursor.size = Vector2(float(band[1] - band[0]), float(memoir_layout.get("slot_height", 28)))
 	memoir_list.add_child(_memoir_cursor)
 	for slot in range(int(memoir_layout.get("slots", 8))):
-		var row := UISkin.label(memoir_list, Vector2(float(band[0]) + 12.0, _slot_top(slot) + 4.0), 16)
+		var row := BattleUISkin.label(memoir_list, Vector2(float(band[0]) + 12.0, _slot_top(slot) + 4.0), 16)
 		row.size = Vector2(float(band[1] - band[0]) - 24.0, float(memoir_layout.get("slot_height", 28)) - 6.0)
 		row.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
 		_memoir_rows.append(row)
@@ -250,7 +259,7 @@ func _ready() -> void:
 	var entry_rect: Array = entry.get("rect", [230, 396, 180, 28])
 	_remake_entry_rect = Rect2(float(entry_rect[0]), float(entry_rect[1]), float(entry_rect[2]), float(entry_rect[3]))
 	RemakeOptionsPage.band(_options_box, _remake_entry_rect).name = "RemakeOptionsEntry"
-	var entry_label := UISkin.label(_options_box, _remake_entry_rect.position, int(entry.get("font", 16)))
+	var entry_label := BattleUISkin.label(_options_box, _remake_entry_rect.position, int(entry.get("font", 16)))
 	entry_label.text = str(entry.get("label", ""))
 	entry_label.size = _remake_entry_rect.size
 	entry_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -261,7 +270,7 @@ func _ready() -> void:
 	_remake_page.visible = false
 	add_child(_remake_page)
 	_remake_page.back_requested.connect(_close_remake_options)
-	_hint = UISkin.label(self, Vector2(0, 430), 18)
+	_hint = BattleUISkin.label(self, Vector2(0, 430), 18)
 	_hint.size = Vector2(640, 28)
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint.add_theme_color_override("font_color", Color(1.0, 0.9, 0.6))
@@ -361,7 +370,7 @@ func _show_lit(index: int) -> void:
 		return
 	var item: Dictionary = items[index]
 	var entry: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(str(item.get("lit", "")), {})
-	UISkin.show_shape(_lit, load(str(entry.get("texture", ""))))
+	BattleUISkin.show_shape(_lit, load(str(entry.get("texture", ""))))
 	var offset: Array = item.get("lit_offset_in_panel", [0, 0])
 	_lit.position = Vector2(float(offset[0]), float(offset[1]))
 	_lit.visible = true
@@ -370,7 +379,7 @@ func _show_lit(index: int) -> void:
 func _show_confirm_lit(index: int) -> void:
 	var item: Dictionary = confirm_items[index]
 	var entry: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(str(item.get("lit", "")), {})
-	UISkin.show_shape(_confirm_lit, load(str(entry.get("texture", ""))))
+	BattleUISkin.show_shape(_confirm_lit, load(str(entry.get("texture", ""))))
 	var offset: Array = item.get("lit_offset_in_buttons", [0, 0])
 	_confirm_lit.position = Vector2(float(offset[0]), float(offset[1]))
 
@@ -570,7 +579,7 @@ func _show_memoir_list(mode: String) -> void:
 	memoir_mode = mode
 	var heading_role := "memoir_heading_save" if mode == "save" else "memoir_heading_load"
 	var entry: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(heading_role, {})
-	UISkin.show_shape(_memoir_heading, load(str(entry.get("texture", ""))))
+	BattleUISkin.show_shape(_memoir_heading, load(str(entry.get("texture", ""))))
 	var entries: Array = CampaignProgress.memoir_entries()
 	for slot in range(_memoir_rows.size()):
 		var record: Dictionary = entries[slot] if slot < entries.size() else {"empty": true}
@@ -740,7 +749,7 @@ func _perform(action: String) -> Dictionary:
 	match action:
 		"mission":
 			var view = runtime.get_node("BattlePresentation")
-			var rows: Dictionary = WinFailBoard.rows_for(runtime.play_loop, {}, view._board_label)
+			var rows: Dictionary = BattleWinFailBoard.rows_for(runtime.play_loop, {}, view._board_label)
 			if (rows["win"] as Array).is_empty() and (rows["fail"] as Array).is_empty():
 				rows["win"] = [str(view.status_label.text)]
 			_mission_board.show_rows(rows)

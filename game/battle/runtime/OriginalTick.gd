@@ -8,11 +8,9 @@ extends RefCounted
 ## Every presentation module expresses a tick-based duration through this file; a
 ## remake-invented beat that has no tick count stays in its own module, labelled so.
 ## provenance:
-##   rules: n/a
-##   layout: n/a
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md (period register 16; 19.4 ms host pacing explained by GetTickCount granularity)
-##   audio: n/a
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##     (period register 16; 19.4 ms host pacing explained by GetTickCount granularity)
 
 ## 1000 / 60 with the original's unsigned integer division — 0.016, not 1/60.
 const TICK_SECONDS := 0.016

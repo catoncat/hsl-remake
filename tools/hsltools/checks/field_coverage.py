@@ -50,7 +50,7 @@ from hsltools.sources.tables import blocks
 OUTPUT_JSON = 'content/generated/hsl/development/field_coverage.json'
 OUTPUT_DOC = 'docs/evidence_packets/static_reverse/original_field_coverage.md'
 SCHEMA = 'hsl_original_field_coverage.v1'
-PACKET_UPDATED = '2026-09-26'  # bump when FIELD_NOTES / SUSPECTS / the static readings change
+PACKET_UPDATED = '2026-09-27'  # bump when FIELD_NOTES / SUSPECTS / the static readings change
 
 SEEDS = 'content/generated/hsl/chapter01/'
 TERRAIN = 'content/generated/hsl/static/hsl01/'
@@ -63,6 +63,7 @@ SPECIAL_EFFECTS = 'content/generated/hsl/skills/special_effect_scripts.json'
 EFFECTS_TXT = 'content/imported/hsl/shared/first_skill/effects.txt'
 OPENING_COORDINATOR = 'game/battle/runtime/BattleOpeningCoordinator.gd'
 TOWN_RULES = 'game/sim/TownEventRules.gd'
+WINFAIL_ACTIONS = 'game/sim/WinfailActions.gd'
 EFFECT_PLAYER = 'game/battle/scene/SkillEffectScriptPlayer.gd'
 CAST_LEAD = 'game/battle/scene/AnimalCastLead.gd'
 COMBAT_ANIMATION = 'tools/hsltools/assets/combat_animation.py'
@@ -511,7 +512,7 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'TYPE.H class*': ('unconsumed', None, '种族／类别码', '见 PLAYERS.class'),
         'TYPE.H AI_*／AIF_*': ('consumed', 'game/sim/AIDecisionRules.gd:select_target', 'find_type／find_flag 常量', None),
         'TYPE.H itemType*／itemIcon*': ('consumed', EQ, '物品类型与图标', None),
-        'TYPE.H bm*／gameBM*': ('consumed', 'game/sim/TownEventRules.gd:_apply_world_token', '大地图点／线模式', None),
+        'TYPE.H bm*／gameBM*': ('consumed', 'game/sim/TownEventRules.gd:_world_bm_set_mode', '大地图点／线模式', None),
         'TYPE.H eng*': ('consumed', 'tools/hsltools/levels/map_objects.py:build', '显示模式（engADDCOLOR…）', None),
         'TYPE.H objattr*': ('unconsumed', None, 'obj_Attribute 旗', '见 obj.obj_Attribute'),
         'TYPE.H other': ('unconsumed', None, '其余 #define（gameBigMapLevel／gameTempResourceID／plane*…）', '按需消费，未逐一登记'),
@@ -685,10 +686,20 @@ def gd_string_list(source: str, name: str) -> list[str]:
     return re.findall(r'"([^"]+)"', re.sub(r'#[^\n]*', '', match.group(1)))
 
 
+def gd_handler_table(source: str, name: str) -> dict[str, str]:
+    """Token → handler function of a GDScript dispatch table: `static var NAME := {"tok": _fn}`
+    (Callables) or `const NAME := {"tok": &"_fn"}` (method names)."""
+    match = re.search(r'^(?:const|static var) %s\b[^=\n]*=\s*\{(.*?)^\}' % re.escape(name), source, re.S | re.M)
+    if match is None:
+        raise ValueError(f'handler table {name} not found')
+    return dict(re.findall(r'"([^"]+)":\s*&?"?(\w+)"?', re.sub(r'#[^\n]*', '', match.group(1))))
+
+
 def story_opcodes(root: Path) -> dict[str, dict]:
     coverage = _read_json(root, STORY_COVERAGE)
     source = (root / OPENING_COORDINATOR).read_text(encoding='utf-8')
     record_only = set(gd_string_list(source, 'RECORD_ONLY_KINDS'))
+    handlers = gd_handler_table(source, 'EVENT_HANDLERS')
     quoted = set(re.findall(r'"([a-z_0-9]+)"', source))
     fields = {}
     for token, info in coverage['tokens'].items():
@@ -705,7 +716,7 @@ def story_opcodes(root: Path) -> dict[str, dict]:
             status = 'unconsumed'
         fields[token] = {'opcode': info['opcode'], 'arg_doc': info.get('arg_doc', ''), 'occurrences': info['story_occurrences'],
                          'levels': info['story_level_count'], 'compiler_kind': kind, 'status': status,
-                         'consumer': f'{OPENING_COORDINATOR}:_apply_event' if status == 'consumed' else (f'{OPENING_COORDINATOR}:RECORD_ONLY_KINDS' if status == 'recorded' else None)}
+                         'consumer': f'{OPENING_COORDINATOR}:{handlers.get(kind, "_apply_event")}' if status == 'consumed' else (f'{OPENING_COORDINATOR}:RECORD_ONLY_KINDS' if status == 'recorded' else None)}
     return fields
 
 
@@ -717,13 +728,14 @@ def winfail_opcodes(root: Path) -> dict[str, dict]:
     world_flags = set(sets['WORLD_FLAG_ACTIONS'])
     recorded = world_flags | set(sets['PRESENTATION_ACTIONS'])
     totals = coverage['totals']['token_totals']
+    handlers = gd_handler_table((root / WINFAIL_ACTIONS).read_text(encoding='utf-8'), 'ACTION_HANDLERS')
     fields = {}
     for token in sorted(set(totals) | applied | recorded, key=lambda name: (-totals.get(name, 0), name)):
         status = 'consumed' if token in applied else 'recorded' if token in recorded else 'unconsumed'
         if token in conditions:
             consumer = 'game/sim/WinfailConditions.gd:condition_holds'
         elif token in applied:
-            consumer = 'game/sim/WinfailActions.gd:apply_actions'
+            consumer = f'{WINFAIL_ACTIONS}:{handlers.get(token, "apply_actions")}'
         elif token in world_flags:
             consumer = 'game/sim/WinfailCompiler.gd:WORLD_FLAG_ACTIONS'
         elif token in recorded:
@@ -739,6 +751,7 @@ def town_opcodes(root: Path) -> dict[str, dict]:
     source = (root / TOWN_RULES).read_text(encoding='utf-8')
     supported = set(gd_string_list(source, 'SUPPORTED_TOKENS'))
     recorded = set(gd_string_list(source, 'RECORDED_ONLY_TOKENS'))
+    handlers = gd_handler_table(source, 'WORLD_TOKEN_HANDLERS') | gd_handler_table(source, 'STEP_HANDLERS')
     usage = towndef['statistics']['token_usage']
     fields = {}
     for token, opcode in towndef['token_ids'].items():
@@ -746,7 +759,7 @@ def town_opcodes(root: Path) -> dict[str, dict]:
         if usage.get(token, 0) == 0 and status != 'consumed':
             status = 'dead'
         fields[token] = {'opcode': opcode, 'occurrences': usage.get(token, 0), 'status': status,
-                         'consumer': f'{TOWN_RULES}:_step' if status == 'consumed' else (f'{TOWN_RULES}:RECORDED_ONLY_TOKENS' if status == 'recorded' else None)}
+                         'consumer': f'{TOWN_RULES}:{handlers.get(token, "_step")}' if status == 'consumed' else (f'{TOWN_RULES}:RECORDED_ONLY_TOKENS' if status == 'recorded' else None)}
     return fields
 
 

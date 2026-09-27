@@ -2,12 +2,11 @@ extends RefCounted
 ## Source single-cell/3x3 ground/flying traversal and whole-body stopping.
 ## Only proposals/geometry; PlayLoop owns traits, coordinates and equipment.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_actor_traversal.md; static-derived docs/evidence_packets/static_reverse/original_large_actor.md; static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md; static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Number = preload("res://game/sim/SkillResourceRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_actor_traversal.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_large_actor.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
 const HARD_BLOCK := 0x4000
 const NO_STOP := 0x100000
@@ -16,14 +15,14 @@ const MASKS := {2: 0x64000, 3: 0x54000, 6: HARD_BLOCK, 7: 0x34000}
 ## Side bits and the 0x40bab0 ground mode come from the unit's installed player_mode
 ## (ActorRoleRules.side_mask); a "npc" role is the development fixture for a pmNPC
 ## occupant without player_mode.
-const Sides = preload("res://game/sim/ActorRoleRules.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const FIXTURE_SIDES := {"npc": 0x40000}
 
 
 static func trait_error(value: Variant) -> String:
 	if not value is Dictionary or not value.get("flying") is bool or not value.get("no_block") is bool:
 		return "missing_actor_traversal"
-	var size := Number._integer(value.get("size_type"))
+	var size := SkillResourceRules._integer(value.get("size_type"))
 	if size < 0: return "invalid_actor_size"
 	if size not in [0,1]: return "unsupported_actor_size"
 	return ""
@@ -45,7 +44,7 @@ static func actor_error(actor: Dictionary, book: Dictionary) -> String:
 
 
 static func _side(unit: Dictionary) -> int:
-	var side := Sides.side_mask(unit)
+	var side := ActorRoleRules.side_mask(unit)
 	return side if side != 0 else int(FIXTURE_SIDES.get(str(unit.get("battle_actor_role", "")), 0))
 
 
@@ -62,11 +61,11 @@ static func mode(actor: Dictionary) -> int:
 
 static func tile_error(tile: Variant) -> String:
 	if not tile is Dictionary: return "invalid_traversal_tile"
-	var cost := Number._integer(tile.get("move_cost", 1))
+	var cost := SkillResourceRules._integer(tile.get("move_cost", 1))
 	if cost <= 0 or cost > 100: return "invalid_ai_move_cost"
-	var flags := Number._integer(tile.get("movement_flags", 0))
+	var flags := SkillResourceRules._integer(tile.get("movement_flags", 0))
 	if flags < 0 or (flags & ~MAP_FLAGS) != 0: return "invalid_ai_movement_flags"
-	var elevation := Number._integer(tile.get("elevation", 0))
+	var elevation := SkillResourceRules._integer(tile.get("elevation", 0))
 	if elevation < 0 or elevation > 255: return "invalid_traversal_height"
 	if tile.has("blocks_movement") and not tile["blocks_movement"] is bool: return "invalid_traversal_blocker"
 	return ""

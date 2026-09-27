@@ -2,22 +2,20 @@ extends RefCounted
 ## Read-only self-preservation plans. Source buckets/rates and selector kernels
 ## are reused; the supported-effect dispatcher is explicitly a remake adapter.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_priority.md; static-derived docs/evidence_packets/static_reverse/original_support_magic.md; provisional (supported-effect dispatcher is a remake adapter; MAGIC-then-SPECIAL cure order)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Resolution = preload("res://game/sim/SkillResolutionRules.gd")
-const Decisions = preload("res://game/sim/AISkillDecisionRules.gd")
-const Actions = preload("res://game/sim/AIDecisionRules.gd")
-const Costs = preload("res://game/sim/SkillResourceRules.gd")
-const Targets = preload("res://game/sim/SkillTargetRules.gd")
-const Status = preload("res://game/sim/StatusEffectRules.gd")
-const Items = preload("res://game/sim/ItemUseRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_priority.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_support_magic.md
+##   rules: provisional (supported-effect dispatcher is a remake adapter; MAGIC-then-SPECIAL cure order)
+const SkillResolutionRules = preload("res://game/sim/SkillResolutionRules.gd")
+const AISkillDecisionRules = preload("res://game/sim/AISkillDecisionRules.gd")
+const AIDecisionRules = preload("res://game/sim/AIDecisionRules.gd")
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
 
 
 static func prepare(loop: Dictionary, actor: Dictionary) -> Dictionary:
-	var item := Items.first_status_slot(actor["inventory"],loop["consumables"],int(actor["status_flags"]))
+	var item := ItemUseRules.first_status_slot(actor["inventory"],loop["consumables"],int(actor["status_flags"]))
 	if not item["ok"]: return item
 	var healing: Array = []
 	var curing: Array = []
@@ -26,34 +24,34 @@ static func prepare(loop: Dictionary, actor: Dictionary) -> Dictionary:
 	# heal buckets; the SPECIAL rows come from the same 0x40c620 bucket fill (expend*20 <= stamina).
 	for id in book["skills"]:
 		var entry: Dictionary = book["skills"][id]
-		if entry["damage_policy"] not in ["native_magic_support", "native_special_support"] or Resolution.ownership_error(actor, id, book) != "": continue
+		if entry["damage_policy"] not in ["native_magic_support", "native_special_support"] or SkillResolutionRules.ownership_error(actor, id, book) != "": continue
 		var fields: Dictionary = entry["fields"]
-		var rate := Costs._integer(fields.get("use_ratio"), true)
-		var order := Costs._integer(entry.get("source_order"))
+		var rate := SkillResourceRules._integer(fields.get("use_ratio"), true)
+		var order := SkillResourceRules._integer(entry.get("source_order"))
 		if rate < 0 or rate > 100 or order < 0 or order > 223: return {"ok": false, "reason": "invalid_support_ai_definition"}
-		var ready := Resolution.prepare_cast(actor, actor, loop["units"], id, fields, book, loop["skill_target_data"], loop["equipment_items"], actor["coord"], loop["map_size"])
+		var ready := SkillResolutionRules.prepare_cast(actor, actor, loop["units"], id, fields, book, loop["skill_target_data"], loop["equipment_items"], actor["coord"], loop["map_size"])
 		if not ready["ok"]:
 			if ready["reason"] in ["insufficient_mp", "insufficient_stamina", "magic_disabled_by_status", "caster_unavailable", "skill_has_no_effect"]: continue
 			return ready
-		var bucket := Decisions.buckets(Targets.function_mask(fields["function"], loop["skill_target_data"]["function_bits"]), int(loop["skill_target_data"]["ranges"][fields["effect_range"]]["size"]) > 1)
+		var bucket := AISkillDecisionRules.buckets(SkillTargetRules.function_mask(fields["function"], loop["skill_target_data"]["function_bits"]), int(loop["skill_target_data"]["ranges"][fields["effect_range"]]["size"]) > 1)
 		if bucket.is_empty(): continue # 0x407010 gives pure HealMP (萬息降靈法) no bucket
 		var candidate := {"skill_id": id, "source_order": order, "use_ratio": rate, "bucket": bucket[0], "channel": entry["channel"]}
 		if bucket[0] in [1, 2] and int(actor["hp"]) < int(actor["max_hp"]): healing.append(candidate)
-		elif bucket[0] == 7 and Status.poisoned(actor): curing.append(candidate)
+		elif bucket[0] == 7 and StatusEffectRules.poisoned(actor): curing.append(candidate)
 	for group in [healing, curing]: group.sort_custom(func(a, b): return int(a["source_order"]) > int(b["source_order"]))
 	return {"ok": true, "healing": healing, "curing": curing, "curing_slot":item["index"]}
 
 
 static func choose_healing(plan: Dictionary, actor: Dictionary, profile: Dictionary, item_slot: int, rng: Variant) -> Dictionary:
 	if plan["healing"].is_empty(): return {"kind": "use_item", "item_slot": item_slot} if item_slot >= 0 else {"kind": "ordinary"}
-	var order := Actions.select_action(profile, int(actor["status_flags"]), _has_channel(plan["healing"], "magic"), _has_channel(plan["healing"], "special"), rng)
+	var order := AIDecisionRules.select_action(profile, int(actor["status_flags"]), _has_channel(plan["healing"], "magic"), _has_channel(plan["healing"], "special"), rng)
 	var decision := {"action_selection": order, "composition_evidence": "provisional", "attempts": []}
 	for kind in order["order"]:
 		if kind == 0 and item_slot >= 0: return {"kind": "use_item", "item_slot": item_slot, "self_skill_decision": decision}
 		if kind == 0: continue
 		var channel := "special" if kind == 2 else "magic"
 		if not _has_channel(plan["healing"], channel): continue
-		var area := Decisions.area_order(int(profile["ai_magic_multi_first"]), rng)
+		var area := AISkillDecisionRules.area_order(int(profile["ai_magic_multi_first"]), rng)
 		decision["area_order"] = area
 		for offensive_bucket in area["order"]:
 			var bucket := int(offensive_bucket) - 2
@@ -84,7 +82,7 @@ static func _has_channel(rows: Array, channel: String) -> bool:
 
 static func _choose(members: Array, actor: Dictionary, rng: Variant, channel: String = "magic") -> Dictionary:
 	var bucket := int(members[0]["bucket"]) if not members.is_empty() else -1
-	var selection := Decisions.select_index(members.map(func(row): return int(row["use_ratio"])), rng, channel, bucket)
+	var selection := AISkillDecisionRules.select_index(members.map(func(row): return int(row["use_ratio"])), rng, channel, bucket)
 	selection["skill_ids"] = members.map(func(row): return str(row["skill_id"]))
 	var result := {"selection": selection}
 	if int(selection["index"]) >= 0:

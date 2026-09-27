@@ -1,6 +1,6 @@
 # 参与贡献
 
-先读 [NOTICE](NOTICE.md)：本仓库不含原版资源，也不接受原版资源。工作规则以 [AGENTS.md](AGENTS.md) 为准，项目现状只看 [docs/PROJECT.md](docs/PROJECT.md)。
+先读 [NOTICE](NOTICE.md)：本仓库不含原版资源，也不接受原版资源。本页写给人；用代理（Claude Code、Codex 等）干活时，代理照 [AGENTS.md](AGENTS.md) 这份工作手册做。项目现状只看 [docs/PROJECT.md](docs/PROJECT.md)。
 
 ## 1. 准备正版文件
 
@@ -26,7 +26,7 @@
 | 合并前 | `tools/verify.sh` | 快门：全部检查＋Godot 套件，热导入缓存 |
 | 阶段收口 | `tools/verify.sh --full`／`--deep` | 冷导入／加跑剧情 explorer 与整章自动对局 |
 
-没有原版文件时，读原版的检查应当显式跳过并标明原因，不能静默通过；公开 CI（`.github/workflows/portability.yml`，Windows／Linux／macOS）就按这个口径跑 doctor、`hsl check --all` 与 Python 单测。测试只在两种情形下写：守住一条已照原版落地的规则，或复现一个真实回归（[AGENTS 测试政策](AGENTS.md)）。
+没有原版文件时，读原版的检查应当显式跳过并标明原因，不能静默通过；公开 CI（`.github/workflows/portability.yml`，Windows／Linux／macOS）就按这个口径跑 doctor、`hsl check --all` 与 Python 单测。`hsl check --all` 等于 `--profile=maintainer`，改动涉及原版等价或证据流程时以它为准；只动自己游戏数据时可先跑 `--profile=modder`（它会打印一行被跳过的 parity／maintainer 任务数）。测试只在两种情形下写：守住一条已照原版落地的规则，或复现一个真实回归（[AGENTS 测试政策](AGENTS.md)）。
 
 ## 3. 证据与用语
 
@@ -35,12 +35,12 @@
 - `game/` 模块头部的来源字段由 `hsl check provenance` 强制，汇总在 [PROVENANCE](docs/PROVENANCE.md)。
 - 截图、录像帧不进公开仓库；需要画面时用重制版截图（`python3 tools/oss_screenshots.py`），原版帧只写文字描述并注明"原版帧见私有档案"。
 
-## 4. 协作（lane）规则要点
+## 4. 提交与 PR
 
-- 一项任务一条 lane，在独立 git worktree 里做；先写明玩家结果、写集（负责的文件）与验收条件，写集以外的文件不动。
-- 任务书与报告按 [lane 任务书模板](docs/templates/lane_brief.md)：报告写提交号、验收结果行原样、边界与时间账。
-- 每步单独提交，提交说明用中文写清"为什么"；不 push，不 destructive reset，不改他人正在认领的文件。
-- 开工记 `date`，每步记起止时间；门禁只在收尾跑一次。
+- 一个 PR 做一件事：开头写清玩家能看到什么变化、改了哪些文件、怎么验收；和原版有关的改动附证据（§3）。
+- 提交说明写清"为什么"，每个可独立验证的步骤单独提交；附上 §2 门禁的结果行原样（例如 `LANE_AFFECTED_PASS …`）。
+- 只改和这件事有关的文件；顺手发现的问题另开 issue 或 PR。
+- 测试按 [AGENTS 测试政策](AGENTS.md)：只在守住原版事实或复现真实回归时写。
 
 ## 5. 不提交原版派生物
 
@@ -63,4 +63,4 @@ git diff --cached --name-only --diff-filter=AM \
 - **符号链接**：选中的包不叫 `hsl.pak`（Steam 目录默认选 `hsl-cn.pak`）时，工具在 `ignored\original-view\hsl\` 建视图；没有符号链接权限时自动改用 junction／硬链接（跨盘则复制）。
 - **仍要 bash 的**：`tools/verify.sh`、`tools/lane_verify.sh`、`tools/lane_merge.sh` 等维护者门禁（Git Bash 或 WSL 下跑），以及只在 macOS 上有意义的原作采样（`hsl_capture.sh`、Swift helper）。
 - **换行与大小写**：`.gitattributes` 统一 LF，不要用 `core.autocrlf` 覆盖；新增文件名不要只靠大小写区分（`hsl check case_collisions` 会拦）。
-- 这些入口还没有 Windows 真机验证，遇到问题请附 `python tools\hsl.py doctor` 的输出；清单见 [开源计划 §9](docs/OPEN_SOURCE_PLAN.md)。
+- 这些入口还没有 Windows 真机验证，遇到问题请附 `python tools\hsl.py doctor` 的输出。

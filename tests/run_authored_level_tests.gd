@@ -1,5 +1,5 @@
 extends SceneTree
-## The authored level end to end (docs/AUTHORING.md tracer): content/authored/level200/ and the
+## The authored level end to end (docs/MODDING_LEVELS.md tracer): content/authored/level200/ and the
 ## authored character 102 (content/authored/roles/characters.json) reach the player through the
 ## generated battle_200.json only. Title 戰場記錄 with a saved position at level 200 boots the
 ## runtime on it through the campaign hand-off; the authored STORY opening plays every line

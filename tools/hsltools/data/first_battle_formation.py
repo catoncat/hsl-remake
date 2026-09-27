@@ -7,7 +7,7 @@ commandability, class, weapon code, attack-range note — with the imported fiel
 order is kept) plus the source formation (playable_units and grid projection), and writes its development
 objective (content/generated/hsl/development/first_battle_objectives.json); check is byte-for-byte
 against the tracked files. The generator never reads its own output, so the public repository builds it
-from an empty content tree (docs/OPEN_SOURCE_PLAN.md §8). first_battle.json is the
+from an empty content tree (docs/internal/OPEN_SOURCE_PLAN.md §8). first_battle.json is the
 reviewed template roster the trial generators and the pure-loop mechanics tests build on (rule_adapter
 development_battle); the playable first battle is content/battles/battle_051.json (level_battle:51).
 actor_templates is shared by the trial generators. Bodies moved verbatim from the former hsl_first_battle_formation.py.

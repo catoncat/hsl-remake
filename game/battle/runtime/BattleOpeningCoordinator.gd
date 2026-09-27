@@ -12,11 +12,25 @@ extends Node
 ## the outcome (start_cutscene; scenario_rules.status_timelines): the runtime pauses
 ## while the cutscene runs and resumes turn presentation afterwards.
 ## provenance:
-##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H; static-derived docs/evidence_packets/static_reverse/second_battle_opening_script.md; static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md; remake-invented (confirm outside dialogue fast-forwards walks and scrolls under OPT-PACE 快／極快 only — the original has no skip); provisional (actMoveDispWait speed unit read as px per tick, cutscene resume semantics)
-##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json; static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
+##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
+##   rules: static-derived docs/evidence_packets/static_reverse/second_battle_opening_script.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
+##   rules: remake-invented
+##     (confirm outside dialogue fast-forwards walks and scrolls under OPT-PACE 快／極快 only — the original has no skip)
+##   rules: provisional (actMoveDispWait speed unit read as px per tick, cutscene resume semantics)
+##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
-##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md; static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md; runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md (4 px per tick default walk); provisional (actMoveDispWait speed read as px per tick — its state 0x37 path is unread)
-##   audio: resource-derived content/imported/hsl/chapter01/scripts; static-derived docs/evidence_packets/static_reverse/original_music.md (PlayMusic restarts the track from the top, −1 keeps the current one; the track is resolved at generation)
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
+##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##     (4 px per tick default walk)
+##   timing: provisional (actMoveDispWait speed read as px per tick — its state 0x37 path is unread)
+##   audio: resource-derived content/imported/hsl/chapter01/scripts
+##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
+##     (PlayMusic restarts the track from the top, −1 keeps the current one; the track is resolved at generation)
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
@@ -24,7 +38,7 @@ const OpeningSelectPrompt = preload("res://game/battle/runtime/opening/OpeningSe
 const OpeningEndCard = preload("res://game/battle/runtime/opening/OpeningEndCard.gd")
 const OpeningStoryObjects = preload("res://game/battle/runtime/opening/OpeningStoryObjects.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
-const WinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
+const BattleWinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
 
 const SUMMARY_SCHEMA := "hsl_battle_opening_coordinator.v1"
 ## Pacing in original ticks (16 ms). Tests may shorten these before start(); the product
@@ -120,7 +134,7 @@ var cutscene_mode := false
 var cutscene_key := ""
 var cutscene_records: Array[Dictionary] = []
 var _cutscene_finishing := false
-## Extended STORY tokens that tools/hsl_opening_timeline_compile.py names but the
+## Extended STORY tokens that tools/hsltools/levels/timeline.py names but the
 ## remake does not act on yet (unit state, win/fail edits, town/big-map tables, random
 ## inserts, flow flags...) or that level assembly pre-bakes into the roster
 ## (player_mode_set → battle.py role_overrides; inserted_object_adjust_level →
@@ -154,6 +168,67 @@ const RECORD_ONLY_KINDS: Array[String] = [
 	"bigmap_point_event", "bigmap_point_encounter_ratio", "bigmap_show_track_point",
 ]
 
+## Compiled STORY kind → handler method of _apply_event (each takes event, kind, args). A kind
+## missing here is recorded when it is in RECORD_ONLY_KINDS, otherwise skipped (skipped_records).
+## BattleScriptCoordinator overrides _apply_event and _wait_bound_actor; handlers are called by
+## name, so overrides still apply.
+const EVENT_HANDLERS := {
+	"background_object_target": &"_ev_camera_object_target",
+	"camera_object_target": &"_ev_camera_object_target",
+	"opening_music": &"_ev_music",
+	"music_track": &"_ev_music",
+	"default_level_music": &"_ev_music",
+	"opening_delay": &"_ev_opening_delay",
+	"dialogue_message_id": &"_ev_dialogue_message_id",
+	"actor_walk_disp_wait": &"_ev_actor_walk_disp_wait",
+	"sound_effect": &"_ev_sound_effect",
+	"object_insert": &"_ev_object_insert",
+	"inserted_object_wait_round": &"_ev_inserted_object_wait_round",
+	"inserted_object_walk_disp_wait": &"_ev_inserted_object_walk_disp_wait",
+	"inserted_object_walk_disp": &"_ev_inserted_object_walk_disp",
+	"dead_message_registration": &"_ev_dead_message_registration",
+	"section_title_resource": &"_ev_section_title_resource",
+	"win_status_enable": &"_ev_win_status_enable",
+	"fail_status_enable": &"_ev_fail_status_enable",
+	"event_status_enable": &"_ev_event_status_enable",
+	"winfail_board_refresh": &"_ev_winfail_board_refresh",
+	"actor_walk_wait": &"_ev_actor_walk_wait",
+	"actor_walk": &"_ev_actor_walk",
+	"actor_walk_and_delete": &"_ev_actor_walk_and_delete",
+	"actor_walk_and_delete_wait": &"_ev_actor_walk_and_delete_wait",
+	"actor_walk_disp": &"_ev_actor_walk_disp",
+	"actor_walk_follow": &"_ev_actor_walk_follow",
+	"actor_walk_follow_wait": &"_ev_actor_walk_follow_wait",
+	"story_object_insert": &"_ev_story_object_insert",
+	"screen_darken": &"_ev_screen_darken",
+	"next_level_event": &"_ev_next_level_event",
+	"camera_position_target": &"_ev_camera_position_target",
+	"actor_shape_change": &"_ev_actor_shape_change",
+	"actor_shape_restore": &"_ev_actor_shape_restore",
+	"actor_move_disp_wait": &"_ev_actor_move_disp_wait",
+	"show_position_marker": &"_ev_show_position_marker",
+	"show_position_marker_clear": &"_ev_show_position_marker_clear",
+	# Extended opening/presentation tokens (see EXTENDED_TOKENS in the compiler).
+	"camera_position_set": &"_ev_camera_position_set",
+	"camera_position_target_speed": &"_ev_camera_position_target_speed",
+	"actor_delete": &"_ev_actor_delete",
+	"position_object_delete": &"_ev_position_object_delete",
+	# actSetRandomPos family (STORY037's guardian beats): slots in table order.
+	"random_position_set": &"_ev_random_position_set",
+	"camera_random_position_target": &"_ev_camera_random_position_target",
+	"random_position_object_delete": &"_ev_random_position_object_delete",
+	"story_object_insert_random_position": &"_ev_story_object_insert_random_position",
+	"object_insert_random_position": &"_ev_object_insert_random_position",
+	"dialogue_message_if_exist": &"_ev_dialogue_message_if_exist",
+	"shape_message": &"_ev_shape_message",
+	"event_select_insert": &"_ev_event_select_insert",
+	"actor_action_wait": &"_ev_actor_action_wait",
+	"screen_darken_clear": &"_ev_screen_darken_clear",
+	"movie_play": &"_ev_movie_play",
+	"storage_window_enter": &"_ev_storage_window_enter",
+	"level_up_star_insert": &"_ev_level_up_star_insert",
+}
+
 
 func _ready() -> void:
 	_load_script_sounds()
@@ -161,7 +236,7 @@ func _ready() -> void:
 
 
 func _load_script_sounds() -> void:
-	## Decoded actPlaySound resources (tools/hsl_level_sounds.py). Missing manifests
+	## Decoded actPlaySound resources (tools/hsltools/levels/sounds.py). Missing manifests
 	## keep the explicit not_imported_skipped record instead of failing the opening.
 	_script_sounds = {}
 	if runtime == null:
@@ -444,133 +519,232 @@ func _apply_event(event: Dictionary) -> void:
 		story_records.append({"kind": kind, "source_event_id": str(event.get("id", "")), "status": "applied_by_winfail_interpreter"})
 		wait_remaining = 0.0
 		return
-	match kind:
-		"background_object_target", "camera_object_target":
-			cinematics._focus_camera_on_token(event, kind == "camera_object_target")
-		"opening_music", "music_track", "default_level_music":
-			story_records.append({"kind": kind, "source_event_id": str(event.get("id", "")), "track": int(event.get("track", -1)),
-				"status": play_music_stream(runtime.get_node("BattleMusic"), str(event.get("stream", "")))})
-		"opening_delay":
-			wait_remaining = float(str(args[0]).to_int()) * delay_token_seconds if not args.is_empty() else default_step_seconds
-		"dialogue_message_id":
-			_show_dialogue(event)
-		"actor_walk_disp_wait":
-			story_objects._start_walk(event)
-		"sound_effect":
-			var resource_token := str(args[0]) if not args.is_empty() else ""
-			sound_records.append({
-				"source_event_id": str(event.get("id", "")),
-				"resource": resource_token,
-				"status": _play_script_sound(resource_token),
-			})
-		"object_insert":
-			story_objects._insert_object(event)
-		"inserted_object_wait_round":
-			if not story_objects._pending_insert.is_empty() and not args.is_empty():
-				story_objects._pending_insert["wait_round"] = str(args[0]).to_int()
-		"inserted_object_walk_disp_wait":
-			story_objects._walk_inserted_object(event, true)
-		"inserted_object_walk_disp":
-			story_objects._walk_inserted_object(event, false)
-		"dead_message_registration":
-			status_tokens["dead_message"] = {
-				"actor_token": str(args[0]) if args.size() > 0 else "",
-				"message_id": str(args[2]) if args.size() > 2 else "",
-				"source_event_id": str(event.get("id", "")),
-			}
-		"section_title_resource":
-			wait_remaining = title_seconds
-		"win_status_enable":
-			_append_token(status_tokens["win"], args)
-		"fail_status_enable":
-			_append_token(status_tokens["fail"], args)
-		"event_status_enable":
-			_append_token(status_tokens["event"], args)
-		"winfail_board_refresh":
-			status_tokens["board_visible"] = true
-			_show_winfail_board(event)
-		"actor_walk_wait":
-			story_objects._walk_absolute(event, true, false)
-		"actor_walk":
-			story_objects._walk_absolute(event, false, false)
-		"actor_walk_and_delete":
-			story_objects._walk_absolute(event, false, true)
-		"actor_walk_and_delete_wait":
-			story_objects._walk_absolute(event, true, true)
-		"actor_walk_disp":
-			story_objects._walk_relative(event, false)
-		"actor_walk_follow":
-			story_objects._walk_follow(event, false)
-		"actor_walk_follow_wait":
-			story_objects._walk_follow(event, true)
-		"story_object_insert":
-			story_objects._insert_story_object(event)
-		"screen_darken":
-			cinematics._darken_screen(event)
-		"next_level_event":
-			next_level_event = []
-			for value in args.slice(0, 2):
-				# TYPE.H gameBigMapLevel: "N,gameBigMapLevel" returns to the big map at point N.
-				next_level_event.append(WorldMapRules.BIG_MAP_LEVEL if str(value) == "gameBigMapLevel" else str(value).to_int())
-			story_records.append({"kind": kind, "source_event_id": str(event.get("id", "")), "next_level_event": next_level_event.duplicate()})
-		"camera_position_target":
-			cinematics._scroll_camera_to_position(event)
-		"actor_shape_change":
-			story_objects._change_shape(event)
-		"actor_shape_restore":
-			story_objects._restore_shape(event)
-		"actor_move_disp_wait":
-			story_objects._move_disp(event)
-		"show_position_marker":
-			story_objects._show_position_marker(event)
-		"show_position_marker_clear":
-			story_objects._clear_position_markers(event)
-		# Extended opening/presentation tokens (see EXTENDED_TOKENS in the compiler).
-		"camera_position_set":
-			cinematics._set_camera_to_position(event)
-		"camera_position_target_speed":
-			cinematics._scroll_camera_to_position_speed(event)
-		"actor_delete":
-			story_objects._delete_bound_actor(event)
-		"position_object_delete":
-			story_objects._delete_position_objects(event)
-		# actSetRandomPos family (STORY037's guardian beats): slots in table order.
-		"random_position_set":
-			story_objects._set_random_slots(event)
-		"camera_random_position_target":
-			var slot_event: Dictionary = story_objects.random_slot_event(event, false)
-			if not slot_event.is_empty():
-				cinematics._scroll_camera_to_position(slot_event)
-		"random_position_object_delete":
-			var delete_event: Dictionary = story_objects.random_slot_event(event, false)
-			if not delete_event.is_empty():
-				story_objects._delete_position_objects(delete_event)
-		"story_object_insert_random_position":
-			var story_event: Dictionary = story_objects.random_slot_event(event, true)
-			if not story_event.is_empty():
-				story_objects._insert_story_object(story_event)
-		"object_insert_random_position":
-			story_objects._insert_random_object(event)
-		"dialogue_message_if_exist":
-			_show_dialogue_if_exist(event)
-		"shape_message":
-			_show_shape_message(event)
-		"event_select_insert":
-			select_prompt._show_select_prompt(event)
-		"actor_action_wait":
-			_wait_bound_actor(event)
-		"screen_darken_clear":
-			cinematics._clear_dark_screen(event)
-		"movie_play":
-			cinematics._play_movie(event)
-		"storage_window_enter":
-			_enter_storage_window(event)
-		"level_up_star_insert":
-			_record_level_up_star(event)
-		var recorded_kind when recorded_kind in RECORD_ONLY_KINDS:
-			story_records.append({"kind": recorded_kind, "source_event_id": str(event.get("id", "")), "args": args.duplicate(), "params": (event.get("params", {}) as Dictionary).duplicate(true), "status": "recorded_no_handler"})
-		_:
-			skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": kind})
+	if EVENT_HANDLERS.has(kind):
+		call(EVENT_HANDLERS[kind], event, kind, args)
+	elif kind in RECORD_ONLY_KINDS:
+		story_records.append({"kind": kind, "source_event_id": str(event.get("id", "")), "args": args.duplicate(), "params": (event.get("params", {}) as Dictionary).duplicate(true), "status": "recorded_no_handler"})
+	else:
+		skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": kind})
+
+
+## background_object_target／camera_object_target.
+func _ev_camera_object_target(event: Dictionary, kind: String, _args: Array) -> void:
+	cinematics._focus_camera_on_token(event, kind == "camera_object_target")
+
+
+## opening_music／music_track／default_level_music.
+func _ev_music(event: Dictionary, kind: String, _args: Array) -> void:
+	story_records.append({"kind": kind, "source_event_id": str(event.get("id", "")), "track": int(event.get("track", -1)),
+		"status": play_music_stream(runtime.get_node("BattleMusic"), str(event.get("stream", "")))})
+
+
+func _ev_opening_delay(_event: Dictionary, _kind: String, args: Array) -> void:
+	wait_remaining = float(str(args[0]).to_int()) * delay_token_seconds if not args.is_empty() else default_step_seconds
+
+
+func _ev_dialogue_message_id(event: Dictionary, _kind: String, _args: Array) -> void:
+	_show_dialogue(event)
+
+
+func _ev_actor_walk_disp_wait(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._start_walk(event)
+
+
+func _ev_sound_effect(event: Dictionary, _kind: String, args: Array) -> void:
+	var resource_token := str(args[0]) if not args.is_empty() else ""
+	sound_records.append({
+		"source_event_id": str(event.get("id", "")),
+		"resource": resource_token,
+		"status": _play_script_sound(resource_token),
+	})
+
+
+func _ev_object_insert(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._insert_object(event)
+
+
+func _ev_inserted_object_wait_round(_event: Dictionary, _kind: String, args: Array) -> void:
+	if not story_objects._pending_insert.is_empty() and not args.is_empty():
+		story_objects._pending_insert["wait_round"] = str(args[0]).to_int()
+
+
+func _ev_inserted_object_walk_disp_wait(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_inserted_object(event, true)
+
+
+func _ev_inserted_object_walk_disp(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_inserted_object(event, false)
+
+
+func _ev_dead_message_registration(event: Dictionary, _kind: String, args: Array) -> void:
+	status_tokens["dead_message"] = {
+		"actor_token": str(args[0]) if args.size() > 0 else "",
+		"message_id": str(args[2]) if args.size() > 2 else "",
+		"source_event_id": str(event.get("id", "")),
+	}
+
+
+func _ev_section_title_resource(_event: Dictionary, _kind: String, _args: Array) -> void:
+	wait_remaining = title_seconds
+
+
+func _ev_win_status_enable(_event: Dictionary, _kind: String, args: Array) -> void:
+	_append_token(status_tokens["win"], args)
+
+
+func _ev_fail_status_enable(_event: Dictionary, _kind: String, args: Array) -> void:
+	_append_token(status_tokens["fail"], args)
+
+
+func _ev_event_status_enable(_event: Dictionary, _kind: String, args: Array) -> void:
+	_append_token(status_tokens["event"], args)
+
+
+func _ev_winfail_board_refresh(event: Dictionary, _kind: String, _args: Array) -> void:
+	status_tokens["board_visible"] = true
+	_show_winfail_board(event)
+
+
+func _ev_actor_walk_wait(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_absolute(event, true, false)
+
+
+func _ev_actor_walk(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_absolute(event, false, false)
+
+
+func _ev_actor_walk_and_delete(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_absolute(event, false, true)
+
+
+func _ev_actor_walk_and_delete_wait(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_absolute(event, true, true)
+
+
+func _ev_actor_walk_disp(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_relative(event, false)
+
+
+func _ev_actor_walk_follow(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_follow(event, false)
+
+
+func _ev_actor_walk_follow_wait(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._walk_follow(event, true)
+
+
+func _ev_story_object_insert(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._insert_story_object(event)
+
+
+func _ev_screen_darken(event: Dictionary, _kind: String, _args: Array) -> void:
+	cinematics._darken_screen(event)
+
+
+func _ev_next_level_event(event: Dictionary, kind: String, args: Array) -> void:
+	next_level_event = []
+	for value in args.slice(0, 2):
+		# TYPE.H gameBigMapLevel: "N,gameBigMapLevel" returns to the big map at point N.
+		next_level_event.append(WorldMapRules.BIG_MAP_LEVEL if str(value) == "gameBigMapLevel" else str(value).to_int())
+	story_records.append({"kind": kind, "source_event_id": str(event.get("id", "")), "next_level_event": next_level_event.duplicate()})
+
+
+func _ev_camera_position_target(event: Dictionary, _kind: String, _args: Array) -> void:
+	cinematics._scroll_camera_to_position(event)
+
+
+func _ev_actor_shape_change(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._change_shape(event)
+
+
+func _ev_actor_shape_restore(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._restore_shape(event)
+
+
+func _ev_actor_move_disp_wait(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._move_disp(event)
+
+
+func _ev_show_position_marker(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._show_position_marker(event)
+
+
+func _ev_show_position_marker_clear(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._clear_position_markers(event)
+
+
+func _ev_camera_position_set(event: Dictionary, _kind: String, _args: Array) -> void:
+	cinematics._set_camera_to_position(event)
+
+
+func _ev_camera_position_target_speed(event: Dictionary, _kind: String, _args: Array) -> void:
+	cinematics._scroll_camera_to_position_speed(event)
+
+
+func _ev_actor_delete(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._delete_bound_actor(event)
+
+
+func _ev_position_object_delete(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._delete_position_objects(event)
+
+
+func _ev_random_position_set(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._set_random_slots(event)
+
+
+func _ev_camera_random_position_target(event: Dictionary, _kind: String, _args: Array) -> void:
+	var slot_event: Dictionary = story_objects.random_slot_event(event, false)
+	if not slot_event.is_empty():
+		cinematics._scroll_camera_to_position(slot_event)
+
+
+func _ev_random_position_object_delete(event: Dictionary, _kind: String, _args: Array) -> void:
+	var delete_event: Dictionary = story_objects.random_slot_event(event, false)
+	if not delete_event.is_empty():
+		story_objects._delete_position_objects(delete_event)
+
+
+func _ev_story_object_insert_random_position(event: Dictionary, _kind: String, _args: Array) -> void:
+	var story_event: Dictionary = story_objects.random_slot_event(event, true)
+	if not story_event.is_empty():
+		story_objects._insert_story_object(story_event)
+
+
+func _ev_object_insert_random_position(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._insert_random_object(event)
+
+
+func _ev_dialogue_message_if_exist(event: Dictionary, _kind: String, _args: Array) -> void:
+	_show_dialogue_if_exist(event)
+
+
+func _ev_shape_message(event: Dictionary, _kind: String, _args: Array) -> void:
+	_show_shape_message(event)
+
+
+func _ev_event_select_insert(event: Dictionary, _kind: String, _args: Array) -> void:
+	select_prompt._show_select_prompt(event)
+
+
+func _ev_actor_action_wait(event: Dictionary, _kind: String, _args: Array) -> void:
+	_wait_bound_actor(event)
+
+
+func _ev_screen_darken_clear(event: Dictionary, _kind: String, _args: Array) -> void:
+	cinematics._clear_dark_screen(event)
+
+
+func _ev_movie_play(event: Dictionary, _kind: String, _args: Array) -> void:
+	cinematics._play_movie(event)
+
+
+func _ev_storage_window_enter(event: Dictionary, _kind: String, _args: Array) -> void:
+	_enter_storage_window(event)
+
+
+func _ev_level_up_star_insert(event: Dictionary, _kind: String, _args: Array) -> void:
+	_record_level_up_star(event)
 
 
 ## Opens the win／fail board over the scene: in an opening with the labels of the statuses the
@@ -580,12 +754,12 @@ func _show_winfail_board(event: Dictionary) -> void:
 		story_records.append({"kind": "winfail_board", "source_event_id": str(event.get("id", "")), "status": "no_battle"})
 		return
 	if winfail_board == null:
-		winfail_board = WinFailBoard.new()
-		winfail_board.hold_ticks = WinFailBoard.automation_hold_ticks()
+		winfail_board = BattleWinFailBoard.new()
+		winfail_board.hold_ticks = BattleWinFailBoard.automation_hold_ticks()
 		runtime.get_node("UI").add_child(winfail_board)
 	var tokens: Dictionary = {} if cutscene_mode else status_tokens
 	var view = runtime.get_node("BattlePresentation")
-	var rows: Dictionary = WinFailBoard.rows_for(runtime.play_loop, tokens, view._board_label)
+	var rows: Dictionary = BattleWinFailBoard.rows_for(runtime.play_loop, tokens, view._board_label)
 	winfail_board.show_rows(rows)
 	story_records.append({"kind": "winfail_board", "source_event_id": str(event.get("id", "")), "status": "shown", "rows": rows.duplicate(true)})
 

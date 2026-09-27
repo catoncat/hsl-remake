@@ -3,11 +3,9 @@ extends RefCounted
 ## Sources: original_action_state_machine.md, original_offense_completion.md,
 ## original_give_exchange.md. Call only after operation-specific validation.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_action_state_machine.md; static-derived docs/evidence_packets/static_reverse/original_offense_completion.md; static-derived docs/evidence_packets/static_reverse/original_give_exchange.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_action_state_machine.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_offense_completion.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_give_exchange.md
 
 
 static func command_available(operation: String, moved: bool, offense_completed: bool) -> bool:

@@ -11,11 +11,8 @@ extends RefCounted
 ## When the target is walled off the walker ends on the reachable cell nearest to it, as
 ## the original's retry at the path end (0x4111d0 returning 0) stops the walk.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md; provisional (breadth-first tie order up／down／left／right, nearest-reachable fallback metric)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
+##   rules: provisional (breadth-first tie order up／down／left／right, nearest-reachable fallback metric)
 
 const HARD_BLOCK := 0x4000
 const MAX_HEIGHT_STEP := 2

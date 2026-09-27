@@ -14,12 +14,18 @@ extends RefCounted
 ## defProcShadowLeft 0x4010c0) and mirrors for an actor installed side-swapped (0x446be0).
 ## Nothing here owns combat truth.
 ## provenance:
-##   rules: n/a
-##   layout: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释; resource-derived content/generated/hsl/animation/animal_programs.json; static-derived docs/evidence_packets/static_reverse/original_effect_motion.md; provisional (shadow background = the dimmed map; the afterimage draw order against the live panels)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释; static-derived docs/evidence_packets/runtime_observations/system_menu/README.md (預備動作 off); resource-derived content/generated/hsl/animation/animal_programs.json; static-derived docs/evidence_packets/static_reverse/original_effect_motion.md; provisional (phase 102 sub-state 4 fade／hold cadence and its wait on release 0x4c1408 read in outline — the remake ends after fade＋hold; ±1 call where the afterimage order differs)
-##   audio: n/a
-const PresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
+##   layout: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
+##   layout: resource-derived content/generated/hsl/animation/animal_programs.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
+##   layout: provisional (shadow background = the dimmed map; the afterimage draw order against the live panels)
+##   timing: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
+##   timing: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md (預備動作 off)
+##   timing: resource-derived content/generated/hsl/animation/animal_programs.json
+##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
+##   timing: provisional
+##     (phase 102 sub-state 4 fade／hold cadence and its wait on release 0x4c1408 read in outline — the remake ends after
+##     fade＋hold; ±1 call where the afterimage order differs)
+const CommandPresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
 ## The same spelling as the importer's cast-program validation (combat_animation.CAST_OPCODES).
 const CAST_OPCODES := ["aniSetXYDisp", "aniShadowBG", "aniMoveToCenter", "aniInsertCastObject"]
 ## 0x401ce1／0x402771: the caster object starts at and slides to base + (0x140, 0xf0).
@@ -123,7 +129,7 @@ static func compile(program: Array, panels: Array, mirrored: bool = false) -> Di
 				# 0x4024c1 enters phase 13 (one call); 0x402771 steps toward the centre per call.
 				_emit(states, state, 1)
 				while state["banner"] != CENTRE:
-					state["banner"] = PresentationRules.opening_step(state["banner"], CENTRE, SLIDE_TOLERANCE, SLIDE_STEP)
+					state["banner"] = CommandPresentationRules.opening_step(state["banner"], CENTRE, SLIDE_TOLERANCE, SLIDE_STEP)
 					_emit(states, state, 1)
 			"aniInsertCastObject":
 				_cast_object(states, state, panels, int(args[0]) < 0, int(args[2]), int(args[3]), int(args[4]))
@@ -177,7 +183,7 @@ static func _cast_object(states: Array, state: Dictionary, panels: Array, from_l
 static func _slide(states: Array, state: Dictionary, key: String, target: Vector2i) -> void:
 	while true:
 		_emit(states, state, 1)
-		state[key] = PresentationRules.opening_step(state[key], target, SLIDE_TOLERANCE, SLIDE_STEP)
+		state[key] = CommandPresentationRules.opening_step(state[key], target, SLIDE_TOLERANCE, SLIDE_STEP)
 		if state[key] == target:
 			return
 

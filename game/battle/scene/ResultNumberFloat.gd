@@ -10,13 +10,13 @@ extends Node2D
 ## cut-in, the magic receiver) turns `clocked` off and calls `draw_at`; otherwise the node
 ## advances itself on the tick clock and emits `finished` once the object would be deleted.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
-##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md; static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
-##   audio: n/a
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 const DamageNumberFloat = preload("res://game/battle/scene/DamageNumberFloat.gd")
-const RewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
+const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 ## Result number kinds with an original glyph set (ShowNumberStyle kinds).
 const KINDS := ["damage", "heal", "mp", "miss"]
@@ -97,7 +97,7 @@ func present(number_kind: String, value: int = 0, hold_ticks: int = 0) -> void:
 			text = MISS_WORD
 		else:
 			# 0x408580: first glyph at x − ((digits − 1) + prefix units) × pitch／2; kinds 2／3 carry no prefix.
-			var layout: Dictionary = RewardFloat.manifest()["layout"]["show_number"]
+			var layout: Dictionary = BattleRewardFloat.manifest()["layout"]["show_number"]
 			var pitch := int(layout["pitch"])
 			text = str(amount)
 			var x := -((text.length() - 1) + int(layout["prefix_units"][kind])) * (pitch / 2)
@@ -109,7 +109,7 @@ func present(number_kind: String, value: int = 0, hold_ticks: int = 0) -> void:
 
 
 func _glyph(key: String, x: int) -> void:
-	var record: Dictionary = RewardFloat.manifest()["assets"][key]
+	var record: Dictionary = BattleRewardFloat.manifest()["assets"][key]
 	var sprite := Sprite2D.new()
 	sprite.texture = load(record["res_path"])
 	sprite.centered = false
@@ -121,7 +121,7 @@ func _glyph(key: String, x: int) -> void:
 
 ## The glyphs' rectangle at 1× in the parent's coordinates, at the spawn point (before any rise).
 func bounds() -> Rect2:
-	var assets: Dictionary = RewardFloat.manifest()["assets"]
+	var assets: Dictionary = BattleRewardFloat.manifest()["assets"]
 	var keys: Array[String] = []
 	var xs: Array[int] = []
 	if kind == "miss":
@@ -151,7 +151,7 @@ static func hidden_ticks(hold_ticks: int) -> int:
 static func life_of(number_kind: String, digits: int, hold_ticks: int = 0) -> int:
 	if number_kind == "damage":
 		return hidden_ticks(hold_ticks) - DamageNumberFloat.HOLD_TICKS + DamageNumberFloat.life_ticks(digits)
-	return hidden_ticks(hold_ticks) + RewardFloat.SHOW_NUMBER_TICKS
+	return hidden_ticks(hold_ticks) + BattleRewardFloat.SHOW_NUMBER_TICKS
 
 
 func life_ticks() -> int:
@@ -170,7 +170,7 @@ func draw_at(tick: float) -> bool:
 		var age := ticks - float(hidden_ticks(hold))
 		number.visible = alive and age >= 0.0
 		if number.visible:
-			number.modulate.a = RewardFloat.level(age) / float(DamageNumberFloat.LEVELS)
+			number.modulate.a = BattleRewardFloat.level(age) / float(DamageNumberFloat.LEVELS)
 			number.position.y = -floorf(age / 2.0)
 	visible = alive
 	if alive:

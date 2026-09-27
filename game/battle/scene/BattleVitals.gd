@@ -5,24 +5,37 @@ extends Control
 ## exp／HP／MP／name／state／resists; a no_attack unit prints the same except HP; a level
 ## above 99 prints ?? for the level alone. 稱號 and 種族 always stay readable.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; static-derived docs/evidence_packets/static_reverse/original_growth_window.md; runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05 (frame_006 value x positions); runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md (resist row: gems at (138 + 48·i, 450) in the close-up, value glyphs from x 149 + 48·i); resource-derived content/imported/hsl/chapter01/portraits/manifest.json; static-derived docs/evidence_packets/static_reverse/original_stamina.md; static-derived docs/evidence_packets/static_reverse/original_identity_bar.md; runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured (a known unit's HP bar is proportional (19/29, 10/29 frames); unknown hover frames carry the bar object)
-##   strings: resource-derived content/imported/hsl/shared/panels/manifest.json; static-derived docs/evidence_packets/static_reverse/original_field_coverage.md; static-derived docs/evidence_packets/static_reverse/original_identity_bar.md; runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured (拉爾斯帝國兵 hover frame); resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
-##   timing: n/a
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05
+##     (frame_006 value x positions)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/closeup_floaters/README.md
+##     (resist row: gems at (138 + 48·i, 450) in the close-up, value glyphs from x 149 + 48·i)
+##   layout: resource-derived content/imported/hsl/chapter01/portraits/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_stamina.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_identity_bar.md
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured
+##     (a known unit's HP bar is proportional (19/29, 10/29 frames); unknown hover frames carry the bar object)
+##   strings: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   strings: static-derived docs/evidence_packets/static_reverse/original_field_coverage.md
+##   strings: static-derived docs/evidence_packets/static_reverse/original_identity_bar.md
+##   strings: runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured
+##     (拉爾斯帝國兵 hover frame)
+##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
 const UI_ROOT := preload("res://game/sim/ContentPaths.gd").BATTLE_UI_PREVIEWS
 var portrait: TextureRect
 var values: Dictionary = {}
 var hp_bar: TextureProgressBar
 var mp_bar: TextureProgressBar
-var st_bar: StaminaBar
+var st_bar: BattleStaminaBar
 var resist_values: Array[Label] = []
 var portraits: Dictionary
 const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const StaminaBar = preload("res://game/battle/scene/BattleStaminaBar.gd")
+const BattleStaminaBar = preload("res://game/battle/scene/BattleStaminaBar.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
-const Stamina = preload("res://game/sim/StaminaRules.gd")
+const StaminaRules = preload("res://game/sim/StaminaRules.gd")
+const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 
 
 ## Layout of the strip in its own frame (the root sits at screen (0,14): portrait (12,14)).
@@ -73,7 +86,7 @@ func _ready() -> void:
 	add_child(portrait)
 	hp_bar = _bar("bar_hp1", "bar_hp2", HP_BAR_AT)
 	mp_bar = _bar("bar_hp1", "bar_hp3", MP_BAR_AT)
-	st_bar = StaminaBar.new()
+	st_bar = BattleStaminaBar.new()
 	st_bar.position = ST_BAR_AT
 	add_child(st_bar)
 	# The baked labels draw over the bars' left ends (frame_006: of the bar pixels under a
@@ -154,7 +167,7 @@ func show_unit(unit: Dictionary, visible_hp: int = -1, known: bool = true) -> vo
 	values["hp"].text = "%d / %d" % [hp, int(unit["max_hp"])]
 	values["mp"].text = "%d / %d" % [mp, max_mp]
 	values["st"].text = str(int(unit.get("stamina", 0)))
-	st_bar.value = clampf(float(unit.get("stamina", 0)), 0, Stamina.CAP)
+	st_bar.value = clampf(float(unit.get("stamina", 0)), 0, StaminaRules.CAP)
 	# 0x434d10 prints the live +0x04 name id's RESOURCE text verbatim (0x4477b0(+4)): a
 	# placed object's obj_Data5 installs the unit's own (unit `display_name`), every other
 	# unit shows its PLAYERS row's (UISkin actors `name`). Nameless rows (306) print 「???」
@@ -174,8 +187,19 @@ func show_unit(unit: Dictionary, visible_hp: int = -1, known: bool = true) -> vo
 ## otherwise the one-character word of every set bit, in bit order and run together —
 ## 1 毒 (125), 2 封 (126), 4 痲 (127), 8 弱 (128), 0x10 攻 (129), 0x20 防 (130). Nothing else:
 ## no counters, no 抗 (0x40 has no word), no 戰鬥不能 for a fallen unit.
+## The status words are StatusCatalog state_word; the enhancement words follow here.
 const STATE_NORMAL := "正常"
-const STATE_WORDS := [[1, "毒"], [2, "封"], [4, "痲"], [8, "弱"], [0x10, "攻"], [0x20, "防"]]
+const ENHANCEMENT_WORDS := [[0x10, "攻"], [0x20, "防"]]
+static var STATE_WORDS: Array = _state_words()
+
+
+static func _state_words() -> Array:
+	var words: Array = ENHANCEMENT_WORDS.duplicate(true)
+	for key in StatusCatalog.ENTRIES:
+		words.append([int(StatusCatalog.ENTRIES[key]["flag"]), str(StatusCatalog.ENTRIES[key]["state_word"])])
+	words.sort_custom(func(a: Array, b: Array) -> bool: return int(a[0]) < int(b[0]))
+	words.make_read_only()
+	return words
 
 
 static func state_text(flags: int) -> String:

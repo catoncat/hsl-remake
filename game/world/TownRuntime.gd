@@ -25,18 +25,35 @@ extends Control
 ## imported); gold and item grants show as narration lines (remake). Shop prices and
 ## refusals follow the original code (static-derived, original_shop_transaction.md).
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md; runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md (right click／Esc close the shop and leave the town, frames 13–14); static-derived docs/evidence_packets/static_reverse/town_event_semantics.md (messages wait for their board to close; teDelay／teMenuMoveOut holds); provisional (tePlaySound recorded only; a scripted confirm() cuts a hold)
-##   layout: resource-derived content/imported/hsl/global/world_map/town_portraits.json; resource-derived content/imported/hsl/shared/panels/manifest.json; runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md (no dimming; TownBG (158,148), WINDOW70 (60,60); rows x 72 from y 72, 32 px pitch; two boards); provisional (the top／bottom split generalised from 7 lines; job-up and narration lines on the bottom board); resource-derived content/generated/hsl/text/protected_words.json; remake-invented (choice rows in the board, hover colour; the shop window is TownShopScreen)
-##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json; resource-derived content/imported/hsl/global/world_map/towndef.json; static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md; remake-invented (narration lines for gold／item grants)
-##   timing: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md (teDelay N → N + 1 ticks, teMenuMoveOut → 20 ticks, through OriginalTick); provisional (the menus have no clock of their own)
-##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md; resource-derived content/imported/hsl/music/manifest.json
+##   rules: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
+##   rules: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
+##     (right click／Esc close the shop and leave the town, frames 13–14)
+##   rules: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
+##     (messages wait for their board to close; teDelay／teMenuMoveOut holds)
+##   rules: provisional (tePlaySound recorded only; a scripted confirm() cuts a hold)
+##   layout: resource-derived content/imported/hsl/global/world_map/town_portraits.json
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
+##     (no dimming; TownBG (158,148), WINDOW70 (60,60); rows x 72 from y 72, 32 px pitch; two boards)
+##   layout: provisional (the top／bottom split generalised from 7 lines; job-up and narration lines on the bottom board)
+##   layout: resource-derived content/generated/hsl/text/protected_words.json
+##   layout: remake-invented (choice rows in the board, hover colour; the shop window is TownShopScreen)
+##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
+##   strings: resource-derived content/imported/hsl/global/world_map/towndef.json
+##   strings: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
+##   strings: remake-invented (narration lines for gold／item grants)
+##   timing: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
+##     (teDelay N → N + 1 ticks, teMenuMoveOut → 20 ticks, through OriginalTick)
+##   timing: provisional (the menus have no clock of their own)
+##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
+##   audio: resource-derived content/imported/hsl/music/manifest.json
 
 const Rules = preload("res://game/sim/TownEventRules.gd")
-const PartyRules = preload("res://game/world/WorldPartyRules.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const Dialogue = preload("res://game/battle/scene/BattleDialogue.gd")
+const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleDialogue = preload("res://game/battle/scene/BattleDialogue.gd")
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
-const ShopScreen = preload("res://game/world/TownShopScreen.gd")
+const TownShopScreen = preload("res://game/world/TownShopScreen.gd")
 const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
@@ -109,11 +126,11 @@ func open() -> void:
 		_picture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		_picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(_picture)
-	_board = UISkin.asset(self, MENU_BOARD, MENU_BOARD_AT)
+	_board = BattleUISkin.asset(self, MENU_BOARD, MENU_BOARD_AT)
 	_board.name = "MenuBoard"
 	_board.hide()
-	_dialogue = Dialogue.new()
-	_dialogue.position = Vector2(0, Dialogue.PANEL_TOP_BOTTOM_SLOT)
+	_dialogue = BattleDialogue.new()
+	_dialogue.position = Vector2(0, BattleDialogue.PANEL_TOP_BOTTOM_SLOT)
 	add_child(_dialogue)
 	if portraits_path != "":
 		_dialogue.configure_portraits(portraits_path)
@@ -168,13 +185,13 @@ func _menu_row(parent: Control, index: int, text: String, node_name: String) -> 
 	row.clip_text = true
 	for style in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
 		row.add_theme_stylebox_override(style, StyleBoxEmpty.new())
-	row.add_theme_font_size_override("font_size", UISkin.FONT_BODY)
-	row.add_theme_color_override("font_color", UISkin.TEXT_WHITE)
-	row.add_theme_color_override("font_hover_color", UISkin.TEXT_YELLOW)
-	row.add_theme_color_override("font_pressed_color", UISkin.TEXT_YELLOW)
-	row.add_theme_color_override("font_hover_pressed_color", UISkin.TEXT_YELLOW)
+	row.add_theme_font_size_override("font_size", BattleUISkin.FONT_BODY)
+	row.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
+	row.add_theme_color_override("font_hover_color", BattleUISkin.TEXT_YELLOW)
+	row.add_theme_color_override("font_pressed_color", BattleUISkin.TEXT_YELLOW)
+	row.add_theme_color_override("font_hover_pressed_color", BattleUISkin.TEXT_YELLOW)
 	row.add_theme_color_override("font_disabled_color", Color(0.62, 0.6, 0.56))
-	row.add_theme_color_override("font_shadow_color", UISkin.TEXT_SHADOW)
+	row.add_theme_color_override("font_shadow_color", BattleUISkin.TEXT_SHADOW)
 	row.add_theme_constant_override("shadow_offset_x", 1)
 	row.add_theme_constant_override("shadow_offset_y", 1)
 	parent.add_child(row)
@@ -231,7 +248,7 @@ func _start_run(event_code: int, trigger: String) -> void:
 	_clear(_menu_root)
 	_clear(_choice_root)
 	_board.hide()
-	_party_before = PartyRules.party_from_carry(carry, speakers)
+	_party_before = WorldPartyRules.party_from_carry(carry, speakers)
 	run = Rules.begin_event(state, _party_before, towndef, town_id, event_code)
 	_consumed_effects = 0
 	records.append({"kind": "run", "event": event_code, "trigger": trigger, "error": str(run.get("error", ""))})
@@ -335,7 +352,7 @@ func _show_narration(key: String, body: String) -> void:
 
 func _place_dialogue(top: bool) -> void:
 	dialogue_slot = "top" if top else "bottom"
-	_dialogue.position.y = DIALOGUE_TOP_Y if top else Dialogue.PANEL_TOP_BOTTOM_SLOT
+	_dialogue.position.y = DIALOGUE_TOP_Y if top else BattleDialogue.PANEL_TOP_BOTTOM_SLOT
 
 
 ## teDelay N (0x454e20 case 0xe): the VM stores N in 0x4c1d54, each later process call
@@ -467,7 +484,7 @@ func _finish_run() -> void:
 	var next_level: Array = run.get("next_level_event", [])
 	if not run.is_empty():
 		state = (run.get("state", state) as Dictionary).duplicate(true)
-		var applied := PartyRules.apply_party(carry, _party_before, run.get("party", _party_before))
+		var applied := WorldPartyRules.apply_party(carry, _party_before, run.get("party", _party_before))
 		carry = applied["carry"]
 		records.append({"kind": "run_finished", "error": str(run.get("error", "")), "receipt": applied["receipt"], "next_level_event": next_level.duplicate()})
 		if not (applied["receipt"] as Dictionary).get("dropped", []).is_empty():
@@ -494,7 +511,7 @@ func _open_shop(pending: Dictionary) -> void:
 	shop_message = ""
 	run["_shop"] = pending.duplicate(true)
 	_set_town_view_visible(false)
-	shop_screen = ShopScreen.new()
+	shop_screen = TownShopScreen.new()
 	shop_screen.buy_requested.connect(func(item_id: int, unit_id: String): shop_buy(item_id, unit_id))
 	shop_screen.sell_requested.connect(func(unit_id: String, slot: int): shop_sell(unit_id, slot))
 	shop_screen.close_requested.connect(shop_close)
@@ -533,12 +550,12 @@ func shop_buy(item_id: int, unit_id: String) -> Dictionary:
 	if not shop_goods().has(item_id):
 		return {"ok": false, "reason": "not_for_sale"}
 	var entry: Dictionary = shop_catalog.get(str(item_id), {})
-	var result := PartyRules.buy(carry, unit_id, item_id, int(entry.get("cost", 0)))
+	var result := WorldPartyRules.buy(carry, unit_id, item_id, int(entry.get("cost", 0)))
 	records.append({"kind": "shop_buy", "item_id": item_id, "unit_id": unit_id, "result": result.duplicate(true)})
 	var board := ""
 	if bool(result.get("ok", false)):
 		carry = result["carry"]
-		shop_message = "%s 買下 %s（%d）" % [PartyRules.member_name(speakers, str((carry["units"][unit_id] as Dictionary).get("actor_id", "")), unit_id), item_name(item_id), int(result.get("cost", 0))]
+		shop_message = "%s 買下 %s（%d）" % [WorldPartyRules.member_name(speakers, str((carry["units"][unit_id] as Dictionary).get("actor_id", "")), unit_id), item_name(item_id), int(result.get("cost", 0))]
 		party_changed.emit(state, carry)
 	else:
 		shop_message = _reason_text(str(result.get("reason", "")))
@@ -558,7 +575,7 @@ func shop_sell(unit_id: String, slot: int) -> Dictionary:
 		return {"ok": false, "reason": "empty_slot"}
 	var item_id := int(inventory[slot])
 	var entry: Dictionary = shop_catalog.get(str(item_id), {})
-	var result := PartyRules.sell(carry, unit_id, slot, item_id, PartyRules.sell_price(int(entry.get("cost", 0))), shop_catalog)
+	var result := WorldPartyRules.sell(carry, unit_id, slot, item_id, WorldPartyRules.sell_price(int(entry.get("cost", 0))), shop_catalog)
 	records.append({"kind": "shop_sell", "item_id": item_id, "unit_id": unit_id, "slot": slot, "result": result.duplicate(true)})
 	var board := ""
 	if bool(result.get("ok", false)):
@@ -577,7 +594,7 @@ func shop_sell(unit_id: String, slot: int) -> Dictionary:
 func _show_shop_carry(board: String, reason: String) -> void:
 	if shop_screen == null:
 		return
-	var color: Color = {"insufficient_gold": UISkin.TEXT_RED, "important_item": UISkin.TEXT_YELLOW}.get(reason, UISkin.TEXT_WHITE)
+	var color: Color = {"insufficient_gold": BattleUISkin.TEXT_RED, "important_item": BattleUISkin.TEXT_YELLOW}.get(reason, BattleUISkin.TEXT_WHITE)
 	shop_screen.show_carry(carry, board, color)
 
 
@@ -591,7 +608,7 @@ func shop_close() -> void:
 		shop_screen = null
 	_set_town_view_visible(true)
 	run.erase("_shop")
-	_party_before = PartyRules.party_from_carry(carry, speakers)
+	_party_before = WorldPartyRules.party_from_carry(carry, speakers)
 	run["party"] = _party_before.duplicate(true)
 	records.append({"kind": "shop_close"})
 	_resume(null)
@@ -654,7 +671,7 @@ func _town_state() -> Dictionary:
 ## Title (稱號) of a PLAYERS template row from the shared panel manifest (job_show_name
 ## or the TYPE.H job name, the same texts 0x4348a0 / 0x434830 resolve).
 static func _job_title(actor_id: String) -> String:
-	var entry: Variant = (UISkin.data().get("actors", {}) as Dictionary).get(actor_id)
+	var entry: Variant = (BattleUISkin.data().get("actors", {}) as Dictionary).get(actor_id)
 	if typeof(entry) == TYPE_DICTIONARY and (entry as Dictionary).has("title"):
 		return str((entry as Dictionary)["title"])
 	return "〔稱號 %s〕" % actor_id

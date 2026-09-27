@@ -1,11 +1,11 @@
 extends RefCounted
 ## Native integer tables and frame order. Availability remains in PlayLoop.
 ## provenance:
-##   rules: static-derived content/imported/hsl/shared/command_menu/native_layout.json; static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md
+##   rules: static-derived content/imported/hsl/shared/command_menu/native_layout.json
+##   rules: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md
 ##   layout: static-derived content/imported/hsl/shared/command_menu/native_layout.json
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md; static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   audio: n/a
+##   timing: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 const SOURCE := "res://content/imported/hsl/shared/command_menu/native_layout.json"
 static var _source: Dictionary = {}
 

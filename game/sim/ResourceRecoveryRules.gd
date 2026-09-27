@@ -3,13 +3,10 @@ extends RefCounted
 ## Sampling draws from the loop's one saved damage stream (DamageRandomStream), as
 ## 0x40e430／0x406fe0 draw through 0x42c780.
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_resource_recovery.md; static-derived docs/evidence_packets/static_reverse/original_damage_random.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Number = preload("res://game/sim/SkillResourceRules.gd")
-const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_resource_recovery.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 const KEYS := ["mp_use_half", "hp_auto_restore", "mp_auto_restore", "hp_transfer_mp"]
 
 
@@ -24,7 +21,7 @@ static func effects(actor: Dictionary, catalog: Dictionary) -> Dictionary:
 	if not actor.get("equipment") is Array: return {"ok": false, "reason": "missing_recovery_equipment"}
 	var result := {"mp_use_half": false, "hp_auto_restore": false, "mp_auto_restore": false, "hp_transfer_mp": false}
 	for slot in actor["equipment"]:
-		if not slot is Dictionary or Number._integer(slot.get("item_code")) <= 0: return {"ok": false, "reason": "invalid_recovery_equipment"}
+		if not slot is Dictionary or SkillResourceRules._integer(slot.get("item_code")) <= 0: return {"ok": false, "reason": "invalid_recovery_equipment"}
 		var item: Variant = catalog.get(str(int(slot["item_code"])))
 		var error := effect_error(item)
 		if error != "": return {"ok": false, "reason": error}
@@ -34,7 +31,7 @@ static func effects(actor: Dictionary, catalog: Dictionary) -> Dictionary:
 
 static func health_error(actor: Dictionary) -> String:
 	for key in ["hp", "max_hp", "mp", "max_mp"]:
-		var number := Number._integer(actor.get(key))
+		var number := SkillResourceRules._integer(actor.get(key))
 		if number < 0 or number > 1000000: return "invalid_recovery_" + key
 	if actor["max_hp"] <= 0 or actor["hp"] > actor["max_hp"] or actor["mp"] > actor["max_mp"]: return "inconsistent_recovery_vitals"
 	return ""
@@ -64,14 +61,14 @@ static func prepare(actor: Dictionary, capabilities: Dictionary, random_state: A
 	var error := health_error(actor)
 	if error == "": error = effect_error(capabilities)
 	if error != "": return {"ok": false, "reason": error}
-	if not DamageRandom.valid(random_state): return {"ok": false, "reason": "invalid_recovery_rng"}
+	if not DamageRandomStream.valid(random_state): return {"ok": false, "reason": "invalid_recovery_rng"}
 	if actor["hp"] <= 0 or actor.get("defeated", false): return {"ok": false, "reason": "recovery_actor_unavailable"}
 	var changes := {"hp": int(actor["hp"]), "mp": int(actor["mp"])}
 	var events: Array = []
 	var draws: Array = []
 	for key in ["hp", "mp"]:
 		if not capabilities[key + "_auto_restore"] or actor[key] >= actor["max_" + key]: continue
-		var draw := DamageRandom.rand(random_state, 6)
+		var draw := DamageRandomStream.rand(random_state, 6)
 		random_state = draw["state"]
 		var gain := amount(key, int(actor["max_" + key]), int(actor[key]), int(draw["value"]))
 		draws.append({"resource": key, "bound": 6, "value": draw["value"]})
@@ -81,8 +78,8 @@ static func prepare(actor: Dictionary, capabilities: Dictionary, random_state: A
 		# 0x4094c0 follows both auto restores. It still samples at1HP and spends
 		# HP when MP is full or the job has no MP. Only actual HP loss transfers.
 		var bounds := transfer_bounds(int(actor["max_hp"]))
-		var first := DamageRandom.rand(random_state, int(bounds["bound"]))
-		var second := DamageRandom.rand(first["state"], int(bounds["bound"]))
+		var first := DamageRandomStream.rand(random_state, int(bounds["bound"]))
+		var second := DamageRandomStream.rand(first["state"], int(bounds["bound"]))
 		random_state = second["state"]
 		for roll in [first, second]: draws.append({"resource": "hp_transfer_mp", "bound": bounds["bound"], "value": roll["value"]})
 		var transfer := transfer_values(int(actor["max_hp"]), int(changes["hp"]), int(actor["max_mp"]), int(changes["mp"]), int(first["value"]), int(second["value"]))

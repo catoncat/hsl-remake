@@ -1,6 +1,6 @@
-# 参数与选项系统（设计稿）
+# 参数与选项系统
 
-> 状态：**设计稿，待负责人与用户确认后实现**（2026-09-26，lane OPTIONS-DESIGN）。本页只定口径和首批清单，不代表已经实现。文中 `id` 指 [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md) 的条目。
+> 状态：**现行**。2026-09-26 起草（lane OPTIONS-DESIGN），§5 三件事用户 09-26 按推荐拍板；底座与八张选项卡已实现（OPTIONS-B1、S1–S4，见 §9），注册表在 `content/authored/options/remake_options.json`。§5、§9 保留当时的设计与实施记录。文中 `id` 指 [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md) 的条目。
 
 一句话：玩家可以在"照原版"和"少量讲得清的改良"之间选；门禁和裁判永远只看原版。
 
@@ -49,7 +49,7 @@
 | OPT-RETRY ★ | 败北后重来 | 原版败北 → GAME OVER → 回标题，没有重新挑战 → GAME OVER 画面加「重新挑战本战」，用进入本战时的队伍重进 | 没存档就得从回憶錄重走；这相当于原版在首次行动时存一份戰場記錄，不给新能力 | 演出 | S | [原版胜负收尾](evidence_packets/static_reverse/original_battle_end_flow.md)、`game-over-screen`、RESULTPAGE `a6963e2c` |
 | OPT-CURSOR | 光标 | 原版红宝石权杖画进 640×480 画面，跟着窗口放大 → 用系统硬件光标显示同一支权杖（不放大、不晚一帧） | 软件画的光标比鼠标晚至少一帧，大窗口下权杖被放大发糊 | 外观 | S | [游戏光标](evidence_packets/runtime_observations/game_cursor/README.md)、`cursor-hide-item-icon`、CURSOR `84eb5465` |
 | OPT-FONT | 字体 | 原版 FONT.24／FONT.15 位图字 → 系统字 | 高分屏下系统字更清楚。**已接**（lane FONT）：读点 `OriginalBitmapFont.install`（自动加载 SimplifiedDisplay 启动时、重製選項页关闭且有值变了再读）换默认主题字体，新开的界面用新字体 | 外观 | S（字体导入本身 L，另算） | `bitmap-font` |
-| OPT-DEV | 开发开关（③层，不进设置页） | 保留环境变量和命令行：`HSL_RNG_SEED`、`HSL_AUTOPLAY_BRAIN`、`HSL_CUTIN_PLAYBACK_SPEED`、`HSL_AI_PREP_CACHE`、`--debug-hud`、`tests/diagnostics/export_enemy_turns.gd`；新增 `HSL_OPTIONS_PRESET` 供冒烟用；**P 停格／N 单步现在是常驻 autoload，谁都能按**：用户 09-24 为实玩验收要的，改成开发开关、由 `tools/play.sh` 默认打开 | 正式玩家不该误触调试功能，实玩验收照常可用 | — | S | `debug-pause` |
+| OPT-DEV | 开发开关（③层，不进设置页） | 保留环境变量和命令行：`HSL_RNG_SEED`、`HSL_AUTOPLAY_BRAIN`、`HSL_CUTIN_PLAYBACK_SPEED`、`--debug-hud`、`tests/diagnostics/export_enemy_turns.gd`；新增 `HSL_OPTIONS_PRESET` 供冒烟用；**P 停格／N 单步现在是常驻 autoload，谁都能按**：用户 09-24 为实玩验收要的，改成开发开关、由 `tools/play.sh` 默认打开 | 正式玩家不该误触调试功能，实玩验收照常可用 | — | S | `debug-pause` |
 
 ## 4. 不做成选项的
 
@@ -69,6 +69,8 @@
 | 玩家技能脚印的洋红样式、悬停身份栏规则 | 原版画法／规则还没读完，先查（`footprint-preview-style`、`hover-strip-rule`） |
 
 ## 5. 需要用户拍板的三件事
+
+（已拍板：用户 2026-09-26 三件都按推荐。）
 
 1. **默认改成原版后，下面这些今天默认开着的重制行为会默认关掉**（选「舒适」一键找回）：飘字里的状态说明字（UI6 暂留的那部分）、行动环说明、移动路径与费用栏、待機／再次行動提示、法术命中血条、对白擦出中按键立即整屏、剧情走位快进、一次升多级合成一个窗。推荐：同意，理由是和"默认原版"一致；差异清单对应条目随之改为已做（原版成为默认），改良记为 OPT-XXX。
 2. **开场气力**：已决，不做成选项。原版裁判实测后（STAMINA-MEASURE）负责人按"查清原版就照原版"定为直接照原版（STAMINA-RULE，见 §4），规则类选项与 B2 底座因此暂无用户。

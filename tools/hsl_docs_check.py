@@ -20,6 +20,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from hsltools import original_content  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
+# Docs that tools/oss_export.sh leaves out of the public tree (its DROPPED_PREFIXES: process docs and the
+# third-party TypeSafe mirror): a link to them from any exported document would break there, so only private
+# docs may link private docs.
+PRIVATE_DOCS = ('docs/internal/', 'docs/audits/', 'docs/external/typesafe/')
 DESTINATION = r'(<[^>\n]+>|(?:[^()\s]|\\[()]|\([^()\n]*\))+)'
 TITLE = r'''(?:\s+(?:"[^"\n]*"|'[^'\n]*'|\([^()\n]*\)))?'''
 INLINE_LINK = re.compile(r'!?\[[^\]\n]*\]\(\s*' + DESTINATION + TITLE + r'\s*\)')
@@ -133,6 +137,9 @@ def check_files(root: Path, files: list[Path], absent: list[str] | None = None) 
                           else source.parent / path if path else source).resolve()
                 if not target.is_relative_to(root):
                     errors.append(f"{label}:{line}: link leaves repository: {raw}")
+                elif (not label.startswith(PRIVATE_DOCS)
+                      and target.relative_to(root).as_posix().startswith(PRIVATE_DOCS)):
+                    errors.append(f"{label}:{line}: exported document links a private doc: {raw}")
                 elif not target.exists() and original_content.stands_in(target.relative_to(root).as_posix()):
                     absent.append(f"{label}:{line}: {raw}")
                 elif not target.exists():

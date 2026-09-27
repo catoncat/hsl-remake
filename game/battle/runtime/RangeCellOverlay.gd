@@ -7,11 +7,14 @@ extends Node2D
 ## projection are not touched here (spatial contract). The static fill_color／border_sheet／
 ## border_region give the same look to BattleAttackCue, which draws the AI lead-in's cells.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/range_cells/manifest.json; static-derived docs/evidence_packets/static_reverse/original_range_cells.md; runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured (border pixels and averaged fill match the sampled original frame); remake-invented (add_marked_cells: the caller-styled outlined cells of the skill footprint preview)
-##   strings: n/a
-##   timing: static-derived docs/evidence_packets/static_reverse/original_range_cells.md; runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured (pulse counter 0x4c1a7c walks the 17-value triangle live)
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/range_cells/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured
+##     (border pixels and averaged fill match the sampled original frame)
+##   layout: remake-invented (add_marked_cells: the caller-styled outlined cells of the skill footprint preview)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##   timing: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured
+##     (pulse counter 0x4c1a7c walks the 17-value triangle live)
 
 const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
 

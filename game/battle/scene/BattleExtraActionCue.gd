@@ -1,11 +1,11 @@
 extends CanvasLayer
 ## Read-only second-action cue; the PlayLoop owns the grant and saved latch.
 ## provenance:
-##   rules: n/a
 ##   layout: remake-invented (caption outside the menu footprint)
 ##   strings: remake-invented (「再次行動」)
-##   timing: remake-invented (0.55 s input block before the second action — deliberately kept remake beat; the original has no 再次行動 cue. Ablation: with 0 only its own assertion fails, the flow does not need it)
-##   audio: n/a
+##   timing: remake-invented
+##     (0.55 s input block before the second action — deliberately kept remake beat; the original has no 再次行動 cue.
+##     Ablation: with 0 only its own assertion fails, the flow does not need it)
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

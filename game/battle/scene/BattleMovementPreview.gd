@@ -2,11 +2,7 @@ extends Node2D
 ## Only draws the route supplied by the same envelope used for confirmation.
 ## Never stores a unit, spends movement, or decides a path independently.
 ## provenance:
-##   rules: n/a
 ##   layout: remake-invented (route line drawn over the shared grid projection)
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 var points := PackedVector2Array()
 var stopping := false
 var body_extent := Vector2(24,24)

@@ -15,11 +15,9 @@ extends RefCounted
 ## Development seam: HSL_OPTIONS_PRESET=original|comfort replaces the player's choice in
 ## windowless runs (the comfort smoke); a windowed run ignores it and says so.
 ## provenance:
-##   rules: remake-invented docs/OPTIONS.md (option registry, value order code default < campaign option_defaults < player choice, presets, HSL_OPTIONS_PRESET seam)
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
+##   rules: remake-invented docs/OPTIONS.md
+##     (option registry, value order code default < campaign option_defaults < player choice, presets,
+##     HSL_OPTIONS_PRESET seam)
 
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")

@@ -5,12 +5,9 @@ extends RefCounted
 ## that strength to all five live resistances (cap 80); 0x40b910 expires it with a refresh.
 ## 退魔 (0x4000) clears only the 0x10/0x20 words, never this one (static-derived).
 ## provenance:
-##   rules: static-derived docs/evidence_packets/static_reverse/original_stat_magic.md; static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
-const Number = preload("res://game/sim/SkillResourceRules.gd")
+##   rules: static-derived docs/evidence_packets/static_reverse/original_stat_magic.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
+const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const FLAGS := {"attack_up": 0x10, "defense_up": 0x20, "resist_up": 0x40}
 const LABELS := {"attack_up": "攻擊", "defense_up": "防禦", "resist_up": "抗性"}
 const RESIST_MIN := 7
@@ -19,10 +16,10 @@ const RESIST_MAX := 20
 static func input_error(actor: Dictionary) -> String:
 	var words: Variant = actor.get("status_counters")
 	if not words is Dictionary: return "missing_stat_enhancement_state"
-	var flags := Number._integer(actor.get("status_flags"))
+	var flags := SkillResourceRules._integer(actor.get("status_flags"))
 	if flags < 0: return "invalid_stat_enhancement_flags"
 	for key in FLAGS:
-		var value := Number._integer(words.get(key, 0))
+		var value := SkillResourceRules._integer(words.get(key, 0))
 		if value < 0 or value > 0xffffffff: return "invalid_" + key + "_counter"
 		if ((flags & FLAGS[key]) != 0) != (value != 0): return "inconsistent_" + key + "_state"
 		if value != 0:

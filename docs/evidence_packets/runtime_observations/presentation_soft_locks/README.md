@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured; resource-derived · status: live · tools: hsltools/assets/combat_animation.py, hsltools/data/combat_aftermath.py, hsltools/levels/actors.py, hsltools/levels/battle.py, run_autoplay_sweep_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-21
 
-R1 的无夹具自动对局（127 场，[PLAYABILITY R1／R2](../../../PLAYABILITY.md#2-目标与-oracle)）日志里 17,982 行 SCRIPT ERROR 全部来自产品表现层。lane R2-presentation 在 pipeline-line `3861f6af` 上先复现，再把每一处改成**数据层声明＋运行时明确失败但不软锁**。本包只记录量得的事实、合同与回执；规则语义与测试断言未改。
+R1 的无夹具自动对局（127 场，PLAYABILITY R1／R2（内部文档 `docs/internal/PLAYABILITY.md`））日志里 17,982 行 SCRIPT ERROR 全部来自产品表现层。lane R2-presentation 在 pipeline-line `3861f6af` 上先复现，再把每一处改成**数据层声明＋运行时明确失败但不软锁**。本包只记录量得的事实、合同与回执；规则语义与测试断言未改。
 
 ## 基线复现（3861f6af，`HSL_AUTOPLAY_LEVELS=36,39,552,33,34,44`）
 
@@ -101,7 +101,7 @@ PLAYERS `special_*` 非空的 23 行。manifest 现在对 57 个演员行都写 
 - 基线：`HSL_AUTOPLAY_LEVELS=36,39,552,33,34,44` → 4 SCRIPT ERROR，39 `result_page=false`。
 - 第 2 步后：39／552 `result_page=true`，剩 `Missing dialogue portrait: 023`（552）。
 - 第 4 步后：`HSL_AUTOPLAY_LEVELS=36,39,552,33,34,44,554,575,30,45` → 0 ERROR，除已知规则 dead_end 575 外全部 `result_page=true`。
-- 全量 sweep 与快门见 lane 报告（`docs/PLAYABILITY.md` 进度表由负责人记）。
+- 全量 sweep 与快门见 lane 报告（`docs/internal/PLAYABILITY.md` 进度表由负责人记）。
 
 ## 边界
 

@@ -20,10 +20,6 @@ extends RefCounted
 ## out; nothing here touches scene state.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_ending_dispatch.md
-##   layout: n/a
-##   strings: n/a
-##   timing: n/a
-##   audio: n/a
 
 const SCHEMA := "hsl_ending_dispatch.v1"
 const FLAG_FREE_ENEMY := 1

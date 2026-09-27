@@ -1,14 +1,16 @@
 extends Control
 ## Shared equipment view; optional slot requests never mutate battle state.
 ## provenance:
-##   rules: n/a
-##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05 (frame_006 name start after the colon and per-column icon anchors); resource-derived content/generated/hsl/text/protected_words.json; remake-invented (355×70 detail and 330×125 confirm scroll areas)
-##   strings: resource-derived content/generated/hsl/equipment/items.json; remake-invented (detail／confirm captions)
-##   timing: n/a
-##   audio: n/a
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
+##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05
+##     (frame_006 name start after the colon and per-column icon anchors)
+##   layout: resource-derived content/generated/hsl/text/protected_words.json
+##   layout: remake-invented (355×70 detail and 330×125 confirm scroll areas)
+##   strings: resource-derived content/generated/hsl/equipment/items.json
+##   strings: remake-invented (detail／confirm captions)
 signal slot_requested(slot: String)
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const Catalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
+const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const EquipmentCatalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
 var interactive := false
 var slot_controls: Dictionary = {}
 var labels: Dictionary = {}
@@ -35,21 +37,21 @@ const SLOT_LEFTS := [4, 184]
 const SLOT_SIZE := Vector2(176, 44)
 ## Detail scroll area under WINDOW50; the description keeps one fixed width (the area less a
 ## vertical scroll bar) so its wrap is known before layout and never moves when a long
-## description brings the bar in — UISkin.set_wrapped_text keeps every name on one line.
+## description brings the bar in — BattleUISkin.set_wrapped_text keeps every name on one line.
 const DETAIL_AT := Vector2(262, 359)
 const DETAIL_SIZE := Vector2(355, 70)
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UISkin.board(self, "WINDOW30", BOARD_AT)
-	UISkin.board(self, "WINDOW50", Vector2(252, 350))
+	BattleUISkin.board(self, "WINDOW30", BOARD_AT)
+	BattleUISkin.board(self, "WINDOW50", Vector2(252, 350))
 	var scroll := ScrollContainer.new()
 	scroll.position = DETAIL_AT
 	scroll.size = DETAIL_SIZE
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
-	description = UISkin.label(scroll, Vector2.ZERO, 15)
+	description = BattleUISkin.label(scroll, Vector2.ZERO, 15)
 	description.custom_minimum_size.x = DETAIL_SIZE.x - scroll.get_v_scroll_bar().get_combined_minimum_size().x
 	description.size = Vector2(description.custom_minimum_size.x, 0)
 	description.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
@@ -78,7 +80,7 @@ func _ready() -> void:
 		icon.set_meta("anchor", BOARD_AT + ICON_ANCHORS[column] + Vector2(0, ICON_ROW_PITCH * row) - at)
 		area.add_child(icon)
 		icons[slot] = icon
-		var label := UISkin.label(area, Vector2(COLON_ENDS[column] + NAME_GAP - SLOT_LEFTS[column], 0), 17)
+		var label := BattleUISkin.label(area, Vector2(COLON_ENDS[column] + NAME_GAP - SLOT_LEFTS[column], 0), 17)
 		label.size = Vector2(0, SLOT_SIZE.y)
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -86,11 +88,11 @@ func _ready() -> void:
 
 
 ## Places an item icon by its SHP draw origin on the slot's anchor (the engine's 0x4607f9
-## anchor convention, as UISkin.anchored_asset).
+## anchor convention, as BattleUISkin.anchored_asset).
 func _show_icon(slot: String, key: String) -> void:
 	var icon: TextureRect = icons[slot]
-	UISkin.show_shape(icon, UISkin.texture(key))
-	var origin: Array = UISkin.data()["assets"][key]["draw_origin"]
+	BattleUISkin.show_shape(icon, BattleUISkin.texture(key))
+	var origin: Array = BattleUISkin.data()["assets"][key]["draw_origin"]
 	icon.position = Vector2(icon.get_meta("anchor")) - Vector2(float(origin[0]), float(origin[1]))
 
 
@@ -99,8 +101,8 @@ func show_unit(unit: Dictionary) -> void:
 	slot_items.clear()
 	for slot in SLOTS:
 		labels[slot].text = ""
-		UISkin.show_shape(icons[slot], null)
-	var catalog := Catalog.items()
+		BattleUISkin.show_shape(icons[slot], null)
+	var catalog := EquipmentCatalog.items()
 	for item in unit["equipment"]:
 		var slot: String = item["slot"]
 		var details: Dictionary = catalog[str(int(item["item_code"]))]
@@ -125,7 +127,7 @@ static func description_text(item: Dictionary) -> String:
 
 
 func show_description(item: Dictionary) -> void:
-	UISkin.set_wrapped_text(description, description_text(item))
+	BattleUISkin.set_wrapped_text(description, description_text(item))
 
 
 ## Equipment effect lines shared by the status equipment box and the loot window's description box.
