@@ -3,26 +3,26 @@
   "updated": "2026-09-27",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 104,
-    "sources": 539,
+    "items": 102,
+    "sources": 537,
     "sources_by_kind": {
-      "provenance": 224,
-      "sentence": 143,
+      "provenance": 223,
+      "sentence": 142,
       "scope": 74,
       "matrix": 85,
       "video": 13
     },
     "layout_timing_modules": 61,
     "items_by_original_status": {
-      "read_complete": 15,
+      "read_complete": 14,
       "read_partial": 60,
-      "unread": 12,
+      "unread": 11,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 23,
+      "every_battle": 22,
       "some_levels": 37,
-      "rare": 39,
+      "rare": 38,
       "invisible": 5
     },
     "items_by_category": {
@@ -40,20 +40,19 @@
       "特写与施法演出": 10,
       "重制新增（原版没有）": 16,
       "镜头": 2,
-      "面板与界面": 13,
+      "面板与界面": 11,
       "音频": 3,
       "飘字与数字": 5
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 53,
-    "resolved_sources": 15
+    "no_visible_effect_sources": 54,
+    "resolved_sources": 16
   },
   "top": [
     "dialogue-timing",
     "hit-pose-other",
     "map-strike-effects",
     "special-skill-page",
-    "winfail-board-dissolve",
     "status-left-column",
     "cursor-hide-item-icon",
     "drop-lightning-presentation",
@@ -68,7 +67,8 @@
     "magic-impact-bar",
     "map-death-blend",
     "move-path-overlay",
-    "panel-captions"
+    "panel-captions",
+    "status-page-extras"
   ],
   "items": [
     {
@@ -156,27 +156,6 @@
       "decision": "照原版；SKILLPAGE 重做布局，SKILLPAGE2（2026-09-26）补原版实拍核对、滚动条、列表顺序、悬停脉冲；FONT.24 点阵待导入",
       "sources": [
         "video:4"
-      ]
-    },
-    {
-      "id": "winfail-board-dissolve",
-      "difference": "胜负条件面板的溶解用整体透明度近似；等按键已照原版不超时（UI6）",
-      "original": "WINDOW60 32 tick 溶解淡入、等按键（无超时）、34 tick 淡出；溶解是逐帧增加像素比例",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
-      ],
-      "remake": "整体 alpha 渐变；等按键不超时，只有 --script 驱动（测试／自动对局／capture）另设 112 tick 自动淡出",
-      "remake_code": [
-        "game/battle/scene/BattleWinFailBoard.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "面板与界面",
-      "decision": "照原版一直等按键（UI6 已做）；溶解的像素比例近似暂留",
-      "sources": [
-        "provenance:game/battle/scene/BattleWinFailBoard.gd|rules|remake-invented|",
-        "video:3"
       ]
     },
     {
@@ -840,7 +819,7 @@
         "provenance:game/battle/runtime/MapObjectAnimation.gd|timing|provisional|",
         "provenance:game/battle/runtime/MapObjectFlash.gd|timing|provisional|content/imported/hsl/global/tables/TYPE.H",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#c5e5888398",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#89dbd9c4c5"
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#04de56f50b"
       ]
     },
     {
@@ -1891,7 +1870,7 @@
         "provenance:game/battle/scene/BattleSystemMenu.gd|layout|provisional|",
         "provenance:game/battle/scene/BattleSystemMenu.gd|rules|provisional|",
         "provenance:game/battle/scene/BattleSystemMenu.gd|timing|remake-invented|",
-        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）"
+        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）"
       ]
     },
     {
@@ -2121,7 +2100,7 @@
       "sources": [
         "provenance:game/title/TitleScreen.gd|layout|remake-invented|",
         "provenance:game/title/TitleScreen.gd|timing|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）",
+        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）",
         "scope:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md|provisional|采样只有 4–5 帧／秒，周期与振幅是拟合值",
         "sentence:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md#7f6d6880bb"
       ]
@@ -2414,29 +2393,6 @@
       ]
     },
     {
-      "id": "system-scroll-speed",
-      "difference": "系统卷轴（Esc）展开 0.25 s 是估值；原版卷轴每 tick 步进未读",
-      "original": "0x45e80d 的卷轴消费者未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md",
-        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
-      ],
-      "remake": "BattleSystemMenu 固定 0.25 s 卷出",
-      "remake_code": [
-        "game/battle/scene/BattleSystemMenu.gd:_slide"
-      ],
-      "original_status": "unread",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "面板与界面",
-      "sources": [
-        "provenance:game/battle/scene/BattleSystemMenu.gd|timing|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）",
-        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#39ff07b5ae",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#89dbd9c4c5"
-      ]
-    },
-    {
       "id": "game-clear-layout",
       "difference": "通关谢幕的版式、各段时长、滚动速度与跳过是重制读法，运行时制作群字串没有重制",
       "original": "defProcClearBOSS 脚本已读；谢幕画面无原版录像",
@@ -2485,7 +2441,7 @@
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f2b15754a0",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f854695a12",
         "sentence:docs/evidence_packets/static_reverse/original_extra_action.md#dd086872a0",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#af0114ce30"
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#d0f8d68007"
       ]
     },
     {
@@ -2508,7 +2464,7 @@
         "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#1151c8fef7",
         "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9",
         "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#89dbd9c4c5"
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#04de56f50b"
       ]
     },
     {
@@ -2634,7 +2590,7 @@
       "category": "特写与施法演出",
       "sources": [
         "provenance:game/battle/scene/BattleCombatCutin.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#89dbd9c4c5"
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#04de56f50b"
       ]
     }
   ],
@@ -2649,7 +2605,7 @@
     },
     "3": {
       "title": "胜负条件面板",
-      "summary": "原版开场／目标变化／第 52 战弹胜负面板（R6-P2 已做），等按键不超时（UI6 已做）；剩溶解用整体透明度近似"
+      "summary": "原版开场／目标变化／第 52 战弹胜负面板（R6-P2 已做），等按键不超时（UI6 已做）；溶解照原版 16 级交叉淡化（PANELTIME 已做）"
     },
     "4": {
       "title": "特殊技页",
@@ -2745,6 +2701,10 @@
       {
         "source": "provenance:game/battle/scene/BattleSceneRuntime.gd|rules|remake-invented|",
         "reason": "场景编排、开发接缝与输入门控，是重制内部结构"
+      },
+      {
+        "source": "provenance:game/battle/scene/BattleWinFailBoard.gd|rules|remake-invented|",
+        "reason": "只剩 --script 驱动（测试／自动对局／capture）下开场面板 112 tick 自行淡出与任務說明中途离开从当前层级淡出；游戏本身照原版等按键"
       },
       {
         "source": "provenance:game/battle/scene/EffectObjectMotion.gd|timing|provisional|",
@@ -2955,6 +2915,10 @@
       {
         "source": "video:13",
         "reason": "施法抬手（R7-POSE map_pose_floaters）与幻火的落光／火团／光球爆散（R7-SPELL e95f9bbe 原生 effProc 轨迹）都已复刻"
+      },
+      {
+        "source": "video:3",
+        "reason": "胜负面板照原版：含字面板整体 16 级交叉淡化（0x413a80 模式 0x20000000 → 0x46b691 种类 4 0x4699fd），重制 CanvasGroup 合成后按层级/16 淡化（PANELTIME，camera_panel_motion §3）"
       },
       {
         "source": "video:6",

@@ -8,9 +8,11 @@ extends Control
 ## existing owners (settlement controller checkpoint, CampaignProgress, scene change) and never
 ## touches the PlayLoop or world state directly.
 ##
-## Original evidence: the recording 05_system_scroll_menu shows the panel scrolling in
-## from the bottom edge to the frame centre and back; its input handler, scroll speed and
-## keyboard selection are not located, so those are remake readings (provisional). The user
+## Original evidence: the scroll processes (battle 0x4253f0, big map 0x425a90) start the
+## panel 400 px below its rest (battle, 0x42549b) or 600 px above it (big map, 0x425b3b),
+## step it in with 0x45e882 (each tick min(40, distance >> 3) px, at least 2, snapping inside
+## 1 px) and back out to the start with 0x45e91e(…, 40, 0) (40 px a tick). Keyboard selection
+## is a remake reading (provisional). The user
 ## recording 2026-09-24 (docs/evidence_packets/runtime_observations/menus_ui/README.md) shows
 ## 儲存戰場記錄 and 回主選單 asking 確定／取消 with Title061 over the centre of the open scroll,
 ## 「進度儲存完成」 on the BOARD02 message board (no portrait, centred) at the bottom while the scroll stays open, and 任務說明
@@ -34,11 +36,10 @@ extends Control
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (「進度儲存完成」)
 ##   strings: remake-invented (memoir labels, confirm questions)
-##   timing: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#05
-##     (scrolls in from the bottom)
+##   timing: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (scroll steps 0x45e882／0x45e91e from 0x4253f0 case 0／4 and 0x425a90)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (save notice ≈0.24 s in, ≈1 s held, ≈0.14 s out; 任務說明 board dissolves ≈0.4 s each way (32／34 ticks))
-##   timing: provisional (0.25 s scroll until the scroll object's 0x45e80d step per tick is read)
 ##   timing: remake-invented (1.6 s 沒有戰場記錄 hint — deliberately kept remake beat)
 
 ## World variant 整理裝備: the host opens the between-battle party equipment screen
@@ -56,7 +57,16 @@ const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const SLIDER_STEP := 0.1
-const SCROLL_SECONDS := 0.25
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
+## Scroll start offsets from the rest position: battle +400 px (0x42549b), big map −600 px
+## (0x425b3b); the close returns there.
+const SCROLL_START_OFFSET := {"battle": 400.0, "world": -600.0}
+## 0x45e882 speed cap and shift (open), 0x45e91e speed with shift 0 (close).
+const SCROLL_STEP_CAP := 40
+const SCROLL_OPEN_SHIFT := 3
+const SCROLL_MIN_STEP := 2
+## Upper bound of an open: the big map's 600 px take 40 ticks (battle 400 px: 35).
+const SCROLL_SECONDS := 40 * OriginalTick.TICK_SECONDS
 const HINT_SECONDS := 1.6
 ## Battle scroll items that ask 確定／取消 first. The 2026-09-24 recording shows the prompt for
 ## 儲存戰場記錄 (581.0 s) and 回主選單 (592.5 s); the others share it (provisional). The
@@ -128,7 +138,10 @@ var _hint: Label
 var _hint_timer: Timer
 var _panel_open_position := Vector2(190, 67)
 var _panel_closed_position := Vector2(190, 480)
-var _tween: Tween
+var _slide_target := Vector2.ZERO
+var _slide_shift := -1
+var _slide_done: Callable
+var _slide_clock := 0.0
 
 
 func _ready() -> void:
@@ -150,7 +163,7 @@ func _ready() -> void:
 	var panel_layout: Dictionary = layout.get(panel_role, {})
 	var top_left: Array = panel_layout.get("top_left", [190, 67])
 	_panel_open_position = Vector2(float(top_left[0]), float(top_left[1]))
-	_panel_closed_position = Vector2(_panel_open_position.x, 480.0)
+	_panel_closed_position = _panel_open_position + Vector2(0.0, float(SCROLL_START_OFFSET.get(variant, 400.0)))
 	_panel = _texture_rect(panel_role)
 	_panel.position = _panel_closed_position
 	add_child(_panel)
@@ -345,7 +358,7 @@ func open() -> Dictionary:
 	selected = 0
 	_panel.position = _panel_closed_position
 	_show_lit(selected)
-	_slide(_panel_open_position, func() -> void: phase = "menu")
+	_slide(_panel_open_position, SCROLL_OPEN_SHIFT, func() -> void: phase = "menu")
 	return {"ok": true}
 
 
@@ -362,7 +375,7 @@ func close() -> Dictionary:
 	pending_action = ""
 	pending_slot = -1
 	phase = "closing"
-	_slide(_panel_closed_position, func() -> void:
+	_slide(_panel_closed_position, 0, func() -> void:
 		phase = "closed"
 		visible = false)
 	return {"ok": true}
@@ -372,8 +385,7 @@ func close() -> Dictionary:
 ## (no slide) while the window is up; reopen_now brings the scroll back as it was when the
 ## window closes (original frame 17 → right click → the scroll, runtime-measured).
 func hide_now() -> void:
-	if _tween != null and _tween.is_valid():
-		_tween.kill()
+	_slide_shift = -1
 	_confirm_box.visible = false
 	pending_action = ""
 	pending_slot = -1
@@ -391,12 +403,37 @@ func reopen_now() -> void:
 	_show_lit(selected)
 
 
-func _slide(target: Vector2, on_done: Callable) -> void:
-	if _tween != null and _tween.is_valid():
-		_tween.kill()
-	_tween = create_tween()
-	_tween.tween_property(_panel, "position", target, SCROLL_SECONDS).set_trans(Tween.TRANS_SINE)
-	_tween.finished.connect(on_done)
+## Moves the panel toward `target` one original tick at a time: `shift` 3 is the open
+## (0x45e882), 0 the close (0x45e91e with shift 0).
+func _slide(target: Vector2, shift: int, on_done: Callable) -> void:
+	_slide_target = target
+	_slide_shift = shift
+	_slide_done = on_done
+	_slide_clock = 0.0
+
+
+func _process(delta: float) -> void:
+	if _slide_shift < 0:
+		return
+	_slide_clock += maxf(delta, 0.0)
+	while _slide_clock >= OriginalTick.TICK_SECONDS and _slide_shift >= 0:
+		_slide_clock -= OriginalTick.TICK_SECONDS
+		if _slide_tick():
+			_slide_shift = -1
+			_slide_done.call()
+
+
+## One tick of 0x45e882／0x45e91e: within 1 px snap and report arrival; otherwise step
+## min(40, distance >> shift) px (at least 2) toward the target.
+func _slide_tick() -> bool:
+	var offset := _slide_target - _panel.position
+	var distance := int(sqrt(offset.length_squared()))
+	if distance <= 1:
+		_panel.position = _slide_target
+		return true
+	var step := clampi(distance >> _slide_shift, SCROLL_MIN_STEP, SCROLL_STEP_CAP)
+	_panel.position = (_panel.position + offset / float(distance) * float(step)).round()
+	return false
 
 
 func _show_lit(index: int) -> void:

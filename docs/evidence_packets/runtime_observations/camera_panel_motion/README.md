@@ -1,13 +1,13 @@
 # 镜头滑动、面板开合、胜负条件面板、敌方移动预告与切入白光：原版三路测量
 
-> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（镜头每帧步长、走路跟随、面板位移轨迹、胜负面板淡入淡出、蓝色移动范围时长、切入光球外框与亮度）; static-derived: 0x43bf30／0x45e80d 镜头步进与 (320,192) 对准落点、0x442720 结算前对准受益者、走路跟随请求 0x4411cb／0x443f5a／0x453fbd 与 0x46bede 应用、0x413a80 defProcWinFailBoard 状态机; resource-derived: OBJ-ALL obj_WinFailBoard=4 → SHAPE\WINDOW60.SHP、RESOURCE 120／123 · status: live · functions: 0x407320, 0x413a80, 0x42dc50, 0x43bf30, 0x43ede0, 0x442720, 0x443330, 0x450840, 0x453b90, 0x45e80d, 0x46bb02, 0x46bb65, 0x46bede · tools: hsl_video_events.py, run_camera_panel_motion_tests.gd, run_walk_camera_follow_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（镜头每帧步长、走路跟随、面板位移轨迹、胜负面板淡入淡出、蓝色移动范围时长、切入光球外框与亮度）; static-derived: 0x43bf30／0x45e80d 镜头步进与 (320,192) 对准落点、0x442720 结算前对准受益者、走路跟随请求 0x4411cb／0x443f5a／0x453fbd 与 0x46bede 应用、0x413a80 defProcWinFailBoard 状态机与 0x4699fd 层级交叉淡化; resource-derived: OBJ-ALL obj_WinFailBoard=4 → SHAPE\WINDOW60.SHP、RESOURCE 120／123 · status: live · functions: 0x407320, 0x413a80, 0x42dc50, 0x43bf30, 0x43ede0, 0x442720, 0x443330, 0x450840, 0x453b90, 0x45e80d, 0x4699fd, 0x46bb02, 0x46bb65, 0x46bede · tools: hsl_video_events.py, run_camera_panel_motion_tests.gd, run_walk_camera_follow_tests.gd · updated: 2026-09-27
 
 ## 结论
 
 - 原版镜头每 tick 每轴走剩余距离的一半（战斗上限 32 px、剧情 16 px），被对准的点落在画面 (320,192)；结算前先滑到受益者；走路时镜头与走路的人同步平移、不追终点（runtime-measured＋static-derived）。
-- 原版面板按所在一侧滑入、每帧去剩余约 1/8（约 0.62 s），关闭原路约 20 px／帧滑出（约 0.23 s），压暗并行淡入淡出；胜负条件面板 WINDOW60 32 tick 溶解淡入、等按键、34 tick 淡出；敌方移动前先铺蓝色移动范围 0.20–0.48 s；普攻切入的白光球在地图之上放大（runtime-measured；static-derived：`0x413a80`）。
+- 原版面板按所在一侧滑入、每帧去剩余约 1/8（约 0.62 s），关闭原路约 20 px／帧滑出（约 0.23 s），压暗并行淡入淡出；胜负条件面板 WINDOW60 32 tick 溶解淡入、等按键、34 tick 淡出，溶解是含字面板整体 16 级交叉淡化（`0x4699fd`）；敌方移动前先铺蓝色移动范围 0.20–0.48 s；普攻切入的白光球在地图之上放大（runtime-measured；static-derived：`0x413a80`）。
 - 重制 `BattleCameraController`、`BattlePanelMotion`、`BattleWinFailBoard`、`BattleAiMovePreview`、`BattleCombatCutin._show_opening` 按这些量值实现（static-derived／runtime-measured）。
-- 差异：面板滑动曲线与压暗层级是录屏拟合（provisional，差异清单 `panel-slide-formula`）；移动预告用一个 16 tick 固定值（provisional，`ai-move-preview-timing`）；胜负面板的逐像素溶解用整体透明度近似、面板部件按矩形分侧（remake-invented）；部分脚本行走变体的镜头规则未读（`cam-script-walk-variants`）。
+- 差异：面板滑动曲线与压暗层级是录屏拟合（provisional，差异清单 `panel-slide-formula`）；移动预告用一个 16 tick 固定值（provisional，`ai-move-preview-timing`）；面板部件按矩形分侧（remake-invented）；部分脚本行走变体的镜头规则未读（`cam-script-walk-variants`）。
 
 ## 证据
 
@@ -100,11 +100,13 @@
 | 中计剧情之后（WINFAIL051 event 3） | 402.25 起 | — | —405.1 | 2.85 s |
 | 第 52 战开场 | 558.0 起 | — | —560.5 | 2.5 s |
 
-面板外框 (136,108)–(502,370)，即 368×264 居中；内容「勝利條件」（绿）／「等待援軍到來」／「失敗條件」（绿）／「雷歐納德 死亡」。溶解是逐帧增加的像素比例，不是整体透明度渐变。
+面板外框 (136,108)–(502,370)，即 368×264 居中；内容「勝利條件」（绿）／「等待援軍到來」／「失敗條件」（绿）／「雷歐納德 死亡」。录屏的"一致率"随帧上升，是 16 级交叉淡化的量法结果，不是像素图案：见下方"画法"。
 
 **资源**：`OBJ-ALL.H` `obj_WinFailBoard = 4`；对象表该行 `defProcWinFailBoard`、`SHAPE\WINDOW60.SHP`（368×264，与像素外框一致）。`PROCESS.DEF` `defProcWinFailBoard = 12` → 进程表 `0x477c2c[12] = 0x413a80`。标题是 RESOURCE item 120「勝利條件」、item 123「失敗條件」，前缀颜色码 @3（`0x476c50`）。
 
 **静态**（`0x413a80`）：`actShowWinFailStatus` 是剧情 VM case 0x1f，经 `0x407320` 创建对象 4 并把 VM 的等待指针存进 `+0xa4`——脚本等面板结束。状态机：0 排版（位置 `((640−w)/2, (480−h)/2)`＋镜头，行 x+20、宽 336，标题 y+17，胜利行 y+51 起、失败标题 y+145、失败行 y+179 起，行距 28）；1 每 2 tick 层级 +1 到 16（**32 tick 淡入**）；2 **等 `[0x4c6390] & 0x600010` 或 `[0x4c6398] & 0x10002`（按键／点击）**，无超时；3 每 2 tick 层级 −1 到 <0（**34 tick 淡出**）；4 清 `+0xa4`（放行脚本）、删对象。按 19.4 ms 实测 tick，32 tick ≈ 0.62 s、34 tick ≈ 0.66 s；按 16 ms 是 0.51／0.54 s，与像素的 0.54／0.57 s 同量级。
+
+**画法**（static-derived）：状态 0 把各行字经 `0x4477b0`／`0x44e5b0` 系列写进面板自己的 WINDOW60 面（`0x460058(shape, 1)` 取可写副本），对象模式字 `[ebp] = 0x20000000`（`0x413bfd`）；状态 1 到层级 16 时模式清 0（`0x414144`，普通不透明绘制），状态 2 收到按键时再置 `0x20000000`（`0x414179`）。显示表 `0x46b691` 把 `0x20000000` 派到种类 4 `0x4699fd`：每像素按 RGB565 低 11 位／高 5+ 位查层级表 `[0x4bfbf0 + 层级×4]` 与 `[0x4bfbf0 + (16−层级)×4]` 相加（`0x469ae3`–`0x469b4c`），即 `src×层级/16 ＋ dst×(16−层级)/16`，全面板同一比例，没有按坐标取像素的表或图案。所以原版"溶解"＝面板（含字）整体 16 级交叉淡化，每 2 tick 一级。
 
 **声音**：三次面板期间音轨无起音（面板本身不放声）。
 
@@ -170,7 +172,7 @@ Godot Movie Maker 640×480、60 fps，第 51 战产品开场 → 首控 → 状�
 - `game/common/BattleCameraController.gd`：`scroll_to`／`advance` 按 16 ms tick 复现 `0x45e80d`——战斗焦点（选人、移动后、取消移动、AI 行动、回合交接、行动尾部反馈、宝箱）step 32，剧情 `actScrollBGToPos`／`ToObject` 与插入演员的「拉进画面」step 16，`actScrollBGToPosSpeed` 步长＝脚本速度、容差 1（缺速度或 ≤0 报错不回退）；首帧、Home 回中与读档瞬切。`FOCUS_VIEW_POINT = (320,192)`、`focus_centre(点) = 点 + (0,48)`：战斗对准、结算对准、剧情位置 token（`script_position_camera_centre`）、`actScrollBGToObject`（先取格心）、`actSetBGToObject`、对白对准说话人与走前对准都经它，地图边夹紧照旧。`follow_walk(起点, 路径点, 每 tick 步长)` 用 `walk_follow_trace`／`walk_follow_request` 按走前位置与四个边界逐 tick 预算，再按 `0x46bede` 夹取；`finish_scroll` 直接落终点，新的聚焦／瞬切取代它。接入 `BattleAiMovePreview.finish`、`BattleSceneRuntime.move_selected_actor_to_grid`、`OpeningStoryObjects` 的 Wait 变体行走（`_start_walk`／`_walk_absolute`／`_walk_inserted_object`）。provenance timing：战斗对准逐帧 32→24→12→6→2 px；110.74–111.30 s AI 走路时镜头随路径约 4 px／tick 拐弯。
 - `BattleAftermath.prepare` 给每位受益者的第一个奖励格（EXP，或只有 $ 时的 $）标 `focus`；`advance` 进该格前 `scroll_to(focus_centre(格心), 32)`，滑动落位（或超预算直接落位）才出浮字；无经验无金钱不开轮、不动镜头。
 - `game/battle/scene/BattlePanelMotion.gd`：五个面板（`BattleSceneMenus` 的 `modal_panels` 逐个 `attach`，`BattleSettlementController` 的领取窗）共用；部件按矩形所在一侧（中心 y < 170 且宽过半 → 顶；中心 x < 246 → 左；否则右）滑入，每 tick 去剩余 1/8（至少 2 px），右先、左晚 3 tick、顶晚 9 tick；关闭抓上一帧按部件切片、原路 20 px／tick 滑出（headless 不抓）；只改 RenderingServer 绘制变换，不改 Control 位置与命中。压暗 `BattleUISkin.PANEL_SHADE_LEVEL = 9`，打开 2→9、关闭 9→2→0，每 3 tick 一级。remake-invented：部件分侧读矩形、右下框随其一侧滑入而非最后出现、加点窗关闭按侧滑出（原版向下）。provenance timing：打开约 0.62 s（260→230→202→178→156→136→120→104…，约剩余×7/8 每帧，末段 2 px），右、左 +0.05 s、顶 +0.17 s；关闭约 0.23 s、约 20 px／帧；压暗每边 8 个亮度台阶、间隔 57–60 ms（状态页 58.215–58.615／65.437–65.837 s，升级面板 340.261–340.678／350.753–351.138 s）。
-- `game/battle/scene/BattleWinFailBoard.gd`：32 tick 淡入（期间点击无效）、等按键或点击（不设超时）、34 tick 淡出；`BattleOpeningCoordinator` 在它忙时不推进时间线（开场与 winfail 事件链同一处理）；内容取当前已武装的 Win Board 标签，与 任務說明 同一 `_board_label`。remake-invented：整体透明度近似溶解；`--script` SceneTree（测试、自动对局、capture）下开场面板等 112 tick 自行淡出（录像最长一次 2.85 s 减两段淡入淡出），游戏本身无超时。
+- `game/battle/scene/BattleWinFailBoard.gd`：32 tick 淡入（期间点击无效）、等按键或点击（不设超时）、34 tick 淡出；`BattleOpeningCoordinator` 在它忙时不推进时间线（开场与 winfail 事件链同一处理）；内容取当前已武装的 Win Board 标签，与 任務說明 同一 `_board_label`。面板与行字放进同一 `CanvasGroup`（`_blend`）先合成、再以 `self_modulate.a = 层级/16` 淡化，对应原版字在面板面里一起混合。remake-invented：`--script` SceneTree（测试、自动对局、capture）下开场面板等 112 tick 自行淡出（录像最长一次 2.85 s 减两段淡入淡出），游戏本身无超时。
 - `game/battle/scene/BattleAiMovePreview.gd`：AI 的 move／move_then_attack／move_then_item 先把镜头滑到单位原位，滑动 tick 过后用 move 调色板画 `BattlePlayLoop.movement_cells`（读步进前的 loop），停 16 tick（0.256 s），再清范围开走（镜头随走路的人跟随）；预告期间演员停在原位、算作 actor motion；`advance_ai_playback`／`flush_ai_playback` 直接开走。provenance layout：蓝色范围以移动者为中心，110.37–503.6 s 共 24 次，颜色约 RGB(70,75,170)，然后走。
 - `BattleCombatCutin._show_opening`：缩放段隐藏底色与特写底图，光球加法画在地图之上；叠层段恢复特写底图与身份栏；只有普攻首镜走光球。
 - provenance 写法：`runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md`。

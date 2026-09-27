@@ -6,9 +6,15 @@ extends Control
 ## opening coordinator holds its timeline while `busy()`. It waits for input only, with no
 ## timeout, as state 2 does (UI6, user 2026-09-25 照原版); the one exception is the automation
 ## seam `automation_hold_ticks` for `--script` drivers. The system scroll's 任務說明 shows the
-## same board.
+## same board. The "dissolve" is the display list's cross-fade: the rows are drawn into the
+## WINDOW60 surface and the object drawn with mode 0x20000000 (0x413bfd, 0x414179) at level
+## +0x28 0→16 (state 1, a level every 2 ticks) and 16→−1 (state 3); 0x46b691 kind 4
+## (0x4699fd) blends every pixel src × level/16 + dst × (16 − level)/16 through the level
+## tables at 0x4bfbf0, with no pixel pattern; level 16 draws mode 0 (0x414144). The remake
+## composites board and rows in one CanvasGroup and fades it by level/16.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
+##     (cross-fade kind 4 0x4699fd at level/16 over the composited board)
 ##   rules: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (the system scroll's 任務說明 shows this board over the scroll)
 ##   rules: remake-invented
@@ -63,6 +69,8 @@ var hold_ticks := 0
 var row_labels: Array[Label] = []
 var last_rows := {"win": [], "fail": []}
 var _rows_root: Control
+## Board and rows composited first, then faded as one (the rows live in the WINDOW60 surface).
+var _blend: CanvasGroup
 
 
 func _ready() -> void:
@@ -70,10 +78,14 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	position = ((Vector2(640, 480) - BOARD_SIZE) * 0.5).floor()
 	size = BOARD_SIZE
-	BattleUISkin.board(self, "WINDOW60", Vector2.ZERO)
+	_blend = CanvasGroup.new()
+	_blend.name = "Blend"
+	add_child(_blend)
+	BattleUISkin.board(_blend, "WINDOW60", Vector2.ZERO)
 	_rows_root = Control.new()
 	_rows_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_rows_root)
+	_rows_root.size = BOARD_SIZE
+	_blend.add_child(_rows_root)
 	visible = false
 
 
@@ -110,7 +122,7 @@ func show_rows(rows: Dictionary) -> void:
 	_stage_ticks = 0
 	_clock = 0.0
 	shown_count += 1
-	modulate.a = 0.0
+	_blend.self_modulate.a = 0.0
 	visible = true
 
 
@@ -174,7 +186,7 @@ func advance(delta: float) -> void:
 				level = LEVELS - _stage_ticks / LEVEL_TICKS
 				if _stage_ticks >= FADE_OUT_TICKS:
 					finish()
-	modulate.a = clampf(float(level) / float(LEVELS), 0.0, 1.0)
+	_blend.self_modulate.a = clampf(float(level) / float(LEVELS), 0.0, 1.0)
 
 
 ## The board's rows: the win (and labelled event) and fail labels of the statuses armed in

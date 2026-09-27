@@ -10,27 +10,27 @@
 
 ## 总数
 
-共 **104** 条差异（其中 0 条本轮有 lane 进行中），来自 539 个来源条目：provenance 224、sentence 143、scope 74、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 61 个全部归类。另有 53 个来源判为玩家看不到、15 个已做掉（句子是旧状态）。
+共 **102** 条差异（其中 0 条本轮有 lane 进行中），来自 537 个来源条目：provenance 223、sentence 142、scope 74、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 61 个全部归类。另有 54 个来源判为玩家看不到、16 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 15 |
+| 已读完只差照做 | 14 |
 | 读了一部分 | 60 |
-| 未读 | 12 |
+| 未读 | 11 |
 | 原版无对应代码 | 17 |
 
 | 可见度 | 条数 |
 | --- | --- |
-| 每场都看得到 | 23 |
+| 每场都看得到 | 22 |
 | 部分关卡 | 37 |
-| 少见 | 39 |
+| 少见 | 38 |
 | 看不见 | 5 |
 
 | 建议归入的类 | 条数 |
 | --- | --- |
 | 重制新增（原版没有） | 16 |
 | 战斗规则 | 13 |
-| 面板与界面 | 13 |
+| 面板与界面 | 11 |
 | 地图人物演出 | 10 |
 | 特写与施法演出 | 10 |
 | 地图与物件 | 7 |
@@ -56,22 +56,22 @@
 | 2 | 受击（非阵亡）换 hit 帧并抖 60 tick 已照原版接到地图法术；落雷／喷气的抖动仍只抖不换帧（文件属别的 lane） （`hit-pose-other`） | 已读完只差照做 | 每场都看得到 | S | 地图人物演出 | — |
 | 3 | 地图上普攻的挥击轨迹、法术受击染色 0.18 s、落空音延后 0.12 s 已删除照原版（STRIKEFX） （`map-strike-effects`） | 已读完只差照做 | 每场都看得到 | S | 地图人物演出 | — |
 | 4 | 特殊技／魔法页照原版状态页布局（SKILLPAGE、SKILLPAGE2）：四块板、行、宝石、红行、说明框与 2026-09-26 Wine 实拍一致；九行以上画原版滚动条（箭头、翻页、拖动、↑↓／PgUp PgDn，无滚轮）；列表照 0x434d10 按类型、magicCode 位排；悬停名是 0x42c130 脉冲绿。名字换原版 FONT.24 点阵后墨迹与 Wine 帧一致（水剎 x 45–91 y 187–202，氣刃斬 宽 71）。剩：滚动条只有静态读法，本机存档里没有十个以上技能的角色可拍 （`special-skill-page`） | 已读完只差照做 | 每场都看得到 | S | 面板与界面 | 照原版；SKILLPAGE 重做布局，SKILLPAGE2（2026-09-26）补原版实拍核对、滚动条、列表顺序、悬停脉冲；FONT.24 点阵待导入 |
-| 5 | 胜负条件面板的溶解用整体透明度近似；等按键已照原版不超时（UI6） （`winfail-board-dissolve`） | 已读完只差照做 | 每场都看得到 | S | 面板与界面 | 照原版一直等按键（UI6 已做）；溶解的像素比例近似暂留 |
-| 6 | 状态页原版底部是一排页按钮（狀態／道具／魔法／特殊技，行动环 狀態 页另有上一位／下一位），说明框只在悬停装备／道具时盖在按钮排上；重制已照做，剩魔法／特殊技页超过九行时的滚动条 （`status-left-column`） | 已读完只差照做 | 每场都看得到 | M | 面板与界面 | STATUSPAGE（2026-09-27）：证据冲突已解——左栏默认就是属性页；UI7（2026-09-27）照做页按钮排与悬停说明框；剩技能页滚动条 |
-| 7 | 原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标点道具当帧出现、确认后多留一 tick 已照原版（ITEMFX2） （`cursor-hide-item-icon`） | 已读完只差照做 | 部分关卡 | S | 光标与字体 | — |
-| 8 | 打人閃電（LEVEL010）落雷的规则与演出已照原版（镜头滚到雷点、AIR14 两帧之一 2 倍加色画 11 帧再淡出 15 帧、FireBomb 162／165 在雷点、第 27 tick 受击者浮红色伤害数字并左右抖 60 tick、停 80／20 tick 后剧本往下走）；闪电画在 FireBomb 之上是按平面号推定 （`drop-lightning-presentation`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
-| 9 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
-| 10 | 当前行动者在自己行动里阵亡（反击击杀）时原版队列连走两步，紧随其后的单位失去本轮行动；重制只走一步。待机、轮中改速度、阵亡空洞、中途插入、回合计数已与原版一致 （`turn-queue-semantics`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | AI-PRIO-2 0ef32183（BattlePlayLoop._step_past_dead_actor）已按原版补上，未并入 pipeline-line；合并后本条改 resolved |
-| 11 | 加色对象按层级淡出的像素混合（升级星光、伤害数字 NUM510 闪光）按「加色 × 层级/16」近似，原 RGB565 例程未逐条读；绿／蓝／MISS 数字的层级淡出同样按 alpha＝层级/16 （`additive-level-blend`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
-| 12 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值；技能页名字墨迹对 Wine 帧偏移 0／0、宽 71＝原版）。AI 施法名字幕也换 FONT.24（lane UIFIX：0x43e110／0x43e1c0 的字体是 [0x4c1ae0]，对录像 14 源帧 9987 逐像素一致）。剩：重制各处字号归到原版两面（≤16→FONT.15、≥17→FONT.24）是重制定的，个别界面的字行位置未逐一对原版 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
-| 13 | 施法引导的阴影底用压暗 0.35 的地图近似；引导残影与活动面板的先后、16 级交叉淡化用普通透明近似 （`cast-lead-compositing`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 14 | 地图法术特效原点：Local 已与原版同为目标格中心（录屏"高 14 px"是量到脚下）；Global 原版是光标格中心、重制取屏幕中心 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 15 | 玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替 （`footprint-preview-style`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | 照原版（RANGECOLOR） |
-| 16 | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 （`growth-window-timing`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
-| 17 | 法术命中时原版先在受者旁画 HP／MP 两条再出数字（原录像 V08 14_tactical_map_magic_aoe frame_041 画 HP 24/43、MP 0/0，frame_046 才出数字 19）；重制同样先亮血条，只有 0.45 s 时长是重制估值、多目标血条互相避让是重制自加。数字本身已是原版字形与出现点（目标 (x, y−0x34)，lane DIGITS） （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
-| 18 | 阵亡灵魂的混合按叠加处理（原混合未读实），灵魂时长保留静态 16 tick（录屏 0.27–0.32 s） （`map-death-blend`） | 读了一部分 | 每场都看得到 | S | 地图人物演出 | — |
-| 19 | 移动选格显示路径线、角括号、「移動 3/5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示，原版没有 （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 20 | 各面板的说明文字、提示（tooltip）、确认问句、拒绝理由都是重制写的 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 5 | 状态页原版底部是一排页按钮（狀態／道具／魔法／特殊技，行动环 狀態 页另有上一位／下一位），说明框只在悬停装备／道具时盖在按钮排上；重制已照做，剩魔法／特殊技页超过九行时的滚动条 （`status-left-column`） | 已读完只差照做 | 每场都看得到 | M | 面板与界面 | STATUSPAGE（2026-09-27）：证据冲突已解——左栏默认就是属性页；UI7（2026-09-27）照做页按钮排与悬停说明框；剩技能页滚动条 |
+| 6 | 原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标点道具当帧出现、确认后多留一 tick 已照原版（ITEMFX2） （`cursor-hide-item-icon`） | 已读完只差照做 | 部分关卡 | S | 光标与字体 | — |
+| 7 | 打人閃電（LEVEL010）落雷的规则与演出已照原版（镜头滚到雷点、AIR14 两帧之一 2 倍加色画 11 帧再淡出 15 帧、FireBomb 162／165 在雷点、第 27 tick 受击者浮红色伤害数字并左右抖 60 tick、停 80／20 tick 后剧本往下走）；闪电画在 FireBomb 之上是按平面号推定 （`drop-lightning-presentation`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
+| 8 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
+| 9 | 当前行动者在自己行动里阵亡（反击击杀）时原版队列连走两步，紧随其后的单位失去本轮行动；重制只走一步。待机、轮中改速度、阵亡空洞、中途插入、回合计数已与原版一致 （`turn-queue-semantics`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | AI-PRIO-2 0ef32183（BattlePlayLoop._step_past_dead_actor）已按原版补上，未并入 pipeline-line；合并后本条改 resolved |
+| 10 | 加色对象按层级淡出的像素混合（升级星光、伤害数字 NUM510 闪光）按「加色 × 层级/16」近似，原 RGB565 例程未逐条读；绿／蓝／MISS 数字的层级淡出同样按 alpha＝层级/16 （`additive-level-blend`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
+| 11 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值；技能页名字墨迹对 Wine 帧偏移 0／0、宽 71＝原版）。AI 施法名字幕也换 FONT.24（lane UIFIX：0x43e110／0x43e1c0 的字体是 [0x4c1ae0]，对录像 14 源帧 9987 逐像素一致）。剩：重制各处字号归到原版两面（≤16→FONT.15、≥17→FONT.24）是重制定的，个别界面的字行位置未逐一对原版 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
+| 12 | 施法引导的阴影底用压暗 0.35 的地图近似；引导残影与活动面板的先后、16 级交叉淡化用普通透明近似 （`cast-lead-compositing`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 13 | 地图法术特效原点：Local 已与原版同为目标格中心（录屏"高 14 px"是量到脚下）；Global 原版是光标格中心、重制取屏幕中心 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 14 | 玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替 （`footprint-preview-style`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | 照原版（RANGECOLOR） |
+| 15 | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 （`growth-window-timing`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
+| 16 | 法术命中时原版先在受者旁画 HP／MP 两条再出数字（原录像 V08 14_tactical_map_magic_aoe frame_041 画 HP 24/43、MP 0/0，frame_046 才出数字 19）；重制同样先亮血条，只有 0.45 s 时长是重制估值、多目标血条互相避让是重制自加。数字本身已是原版字形与出现点（目标 (x, y−0x34)，lane DIGITS） （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
+| 17 | 阵亡灵魂的混合按叠加处理（原混合未读实），灵魂时长保留静态 16 tick（录屏 0.27–0.32 s） （`map-death-blend`） | 读了一部分 | 每场都看得到 | S | 地图人物演出 | — |
+| 18 | 移动选格显示路径线、角括号、「移動 3/5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示，原版没有 （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 19 | 各面板的说明文字、提示（tooltip）、确认问句、拒绝理由都是重制写的 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 20 | 状态页的永久加值行、属性／抗性悬停说明、「保存／讀取／待領物品／返回」按钮条是重制补充；原版点未交手单位不开页 （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
 
 ## 全量（按类）
 
@@ -114,12 +114,11 @@
 | `undead-counter-kill` | 不死受击者被致死一击站回 1 HP 后，重制在同一次交换里仍让它反击；原版致死分支是否跳过反击未追完<br>待定：反击门未读完，按最保守不改（REWARD） | 致死一击先按击杀结算——EXP、击杀金钱 0x40e390 每次致死都发（0x4415bc／0x4446d3／0x442e5c／0x443130 读 +0xd8<=0），0x44f580 不掷不死者的包——受击者自己的 tick（0x43ee66／0x4433b6）才复活；不死攻击者被反击打死复活后 0x407510 结束行动，双方都不发；+0xd8>0 时 0x4415b5／0x4446cc 跳往 0x441fa4／0x443b19，致死分支后的反击门未读<br>[original_player_mode.md](../../../docs/evidence_packets/static_reverse/original_player_mode.md) | REWARD 已对齐结算：不死攻击者被反击打死不发 EXP／金钱，不死受击者每次致死都发击杀金钱、不掷掉落、不记阵亡；BattleLoopCombat 在打击内当场复活，交换随后照常判反击<br>[BattleLoopCombat.gd](../../../game/sim/loop/BattleLoopCombat.gd)、[BattleRewardRules.gd](../../../game/sim/BattleRewardRules.gd) | 读了一部分 | 少见 | S | scope 1、matrix 1 |
 | `winfail-readings` | 胜负脚本的条件极性、AND 前缀、插入生命周期、一次性状态消费与事件顺序是读法 | 20 条解释器声明边界<br>[winfail_claim_limits.md](../../../docs/evidence_packets/static_reverse/winfail_claim_limits.md) | Winfail* 解释器<br>[WinfailScenarioRules.gd](../../../game/sim/WinfailScenarioRules.gd)、[WinfailConditions.gd](../../../game/sim/WinfailConditions.gd)、[WinfailActions.gd](../../../game/sim/WinfailActions.gd)、[WinfailCompiler.gd](../../../game/sim/WinfailCompiler.gd) | 读了一部分 | 少见 | L | provenance 5、sentence 17、scope 8、matrix 2 |
 
-### 面板与界面（13）
+### 面板与界面（11）
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `special-skill-page` | 特殊技／魔法页照原版状态页布局（SKILLPAGE、SKILLPAGE2）：四块板、行、宝石、红行、说明框与 2026-09-26 Wine 实拍一致；九行以上画原版滚动条（箭头、翻页、拖动、↑↓／PgUp PgDn，无滚轮）；列表照 0x434d10 按类型、magicCode 位排；悬停名是 0x42c130 脉冲绿。名字换原版 FONT.24 点阵后墨迹与 Wine 帧一致（水剎 x 45–91 y 187–202，氣刃斬 宽 71）。剩：滚动条只有静态读法，本机存档里没有十个以上技能的角色可拍<br>待定：照原版；SKILLPAGE 重做布局，SKILLPAGE2（2026-09-26）补原版实拍核对、滚动条、列表顺序、悬停脉冲；FONT.24 点阵待导入 | Wine 2026-09-26 三帧（緹娜 魔法页、琥 特殊技页红行与悬停）：WINDOW10 (133,14)、WINDOW20 (12,174)、WINDOW40 (416,440)、说明框 (252,349)，名字墨迹 x 45 起 y 187–202，宝石 (27, 行+2)，红行 (248,80,80)，悬停绿 G 236／244（0x42c130：255−2·\|p\|，p 每 tick −16..16）；0x434d10 类型外层、位内层；滚动条 0x446060 对象 150–153，0x445d70 H＝⌊⌊9·65536/n⌋·220/65536⌋、顶 196＋⌊220·pos/n⌋，箭头松开 ±1、底槽 ±9、拖动、↑↓ ±1／PgUp PgDn ±9，WndProc 无 WM_MOUSEWHEEL；每次开页 pos 从 0 起（0x43add0 +0xa0＝2）<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5`、[original_getitem_window.md](../../../docs/evidence_packets/static_reverse/original_getitem_window.md)、[original_tick_rate/README.md](../../../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | BattleMagicPanel：四块板对 Wine 帧模板匹配偏移全 0（WINDOW10 (133,14)、WINDOW20 (12,174)、WINDOW40 (416,440)、WINDOW50 (252,349)），宝石 (27,184) 偏移 0；名字墨迹 水剎 x 45–91 y 187–202、治癒之水 x 46–139 y 215–230、氣刃斬 x 45–115（FONT.24 点阵，偏移 0；系统字时 x+1 y−3 宽 63）；0x446060 滚动条照读法画与操作，12 行窗口截图滑块顶 196／214／232／251、高 165、拖动中 236 松开吸附 232，与公式一致；list_order＝类型×32＋位；hover_colour 按 16 ms tick 走同一三角波<br>[BattleMagicPanel.gd](../../../game/battle/scene/BattleMagicPanel.gd) `show_spells`、[BattleMagicPanel.gd](../../../game/battle/scene/BattleMagicPanel.gd) `scroll_to`、[BattleMagicPanel.gd](../../../game/battle/scene/BattleMagicPanel.gd) `list_order`、[BattleMagicPanel.gd](../../../game/battle/scene/BattleMagicPanel.gd) `hover_colour`、[BattleMagicPanel.gd](../../../game/battle/scene/BattleMagicPanel.gd) `description_lines` | 已读完只差照做 | 每场都看得到 | S | video 1 |
-| `winfail-board-dissolve` | 胜负条件面板的溶解用整体透明度近似；等按键已照原版不超时（UI6）<br>待定：照原版一直等按键（UI6 已做）；溶解的像素比例近似暂留 | WINDOW60 32 tick 溶解淡入、等按键（无超时）、34 tick 淡出；溶解是逐帧增加像素比例<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | 整体 alpha 渐变；等按键不超时，只有 --script 驱动（测试／自动对局／capture）另设 112 tick 自动淡出<br>[BattleWinFailBoard.gd](../../../game/battle/scene/BattleWinFailBoard.gd) | 已读完只差照做 | 每场都看得到 | S | provenance 1、video 1 |
 | `status-left-column` | 状态页原版底部是一排页按钮（狀態／道具／魔法／特殊技，行动环 狀態 页另有上一位／下一位），说明框只在悬停装备／道具时盖在按钮排上；重制已照做，剩魔法／特殊技页超过九行时的滚动条<br>待定：STATUSPAGE（2026-09-27）：证据冲突已解——左栏默认就是属性页；UI7（2026-09-27）照做页按钮排与悬停说明框；剩技能页滚动条 | 0x43ac10 根对象 +0x94=4：开页总是属性页（WINDOW21），只有页按钮 0x43a640 改页；钮停靠 y 387（0x43b0a0..0x43b230），frame_028 红框行 366–406 吻合；录屏 77.5／84.0 s 的道具列表是物品／交换窗（0x4000 下 WINDOW30 过程改页），不是状态页<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_growth_window.md](../../../docs/evidence_packets/static_reverse/original_growth_window.md) | 左栏 WINDOW21 九项属性＝原版默认页；钱框按 mode 0／1 照做；页按钮排按 0x43b0a0..0x43b230 的钮心 x 与 y 387 照做，道具／魔法／特殊技页只读、悬停出说明；装备与行的说明框只在悬停时出现；技能页不画滚动条（最多九行）<br>[BattleStatusPanel.gd](../../../game/battle/scene/BattleStatusPanel.gd) `show_unit`、[BattleEquipmentView.gd](../../../game/battle/scene/BattleEquipmentView.gd) | 已读完只差照做 | 每场都看得到 | M | provenance 1、video 1 |
 | `footprint-preview-style` | 玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替<br>待定：照原版（RANGECOLOR） | 0x444eb7／0x445075 → 0x40fa80 写射程、0x444f08／0x4450e0 → 0x4100e0 写脚印；每 tick 0x411480 红格后 0x4116a0（魔法 0／绝技 1）<br>[original_cast_overlays.md](../../../docs/evidence_packets/static_reverse/original_cast_overlays.md)、[original_range_cells.md](../../../docs/evidence_packets/static_reverse/original_range_cells.md) | BattleSceneOverlays 射程 attack 调色板、refresh_skill_footprint 用 magic／special 调色板<br>[BattleSceneOverlays.gd](../../../game/battle/scene/BattleSceneOverlays.gd)、[RangeCellOverlay.gd](../../../game/battle/runtime/RangeCellOverlay.gd) | 读了一部分 | 每场都看得到 | S | provenance 1 |
 | `growth-window-timing` | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 | 原升级窗时机 static-derived；录像无升級窗原帧（negative-evidence），原版是否等窗关闭未实机核实<br>[original_growth_window.md](../../../docs/evidence_packets/static_reverse/original_growth_window.md) | BattleSceneMenus 按成员弹窗；自动对局跳过缝、旧存档或 OPT-GROWTH=合成一窗，可暫緩 时暂缓留下的点数随 carry，读档后／下一场首个安静时刻再弹<br>[BattleSceneMenus.gd](../../../game/battle/scene/BattleSceneMenus.gd) `offer_pending_growth` | 读了一部分 | 每场都看得到 | S | provenance 2、sentence 2 |
@@ -130,7 +129,6 @@
 | `identity-bar-bits` | 身份栏：位 0x100（印数字）的置位者未读，未知单位在切入栏是否印数字不确定；气力条是重制自创 | 0x434d10 的 ??? 规则与已知字节写入者已读；位 0x100 置位者、条的画法未读<br>[original_identity_bar.md](../../../docs/evidence_packets/static_reverse/original_identity_bar.md) | 按悬停样本处理未知单位，气力条未知时留空；未交手的敌人原版路径照原版印 ???，OPT-INFO=公開 时恢复改良：悬停／选目标／切入栏／状态页一律视为已知、数值始终可见（OPTIONS-S2）<br>[BattleVitals.gd](../../../game/battle/scene/BattleVitals.gd)、[BattlePresentation.gd](../../../game/battle/scene/BattlePresentation.gd) `_strip_known`、[BattleStatusPanel.gd](../../../game/battle/scene/BattleStatusPanel.gd) `show_unit` | 读了一部分 | 少见 | S | provenance 2、sentence 4、scope 2、matrix 1 |
 | `memoir-list` | 回憶錄列表（战斗卷轴与大地图卷轴共用）的位置、槽标签与「空的回憶錄」提示是重制值；战斗卷轴 儲存戰場記錄 以外各项与选格读取前的確定／取消是重制读法 | 战斗卷轴过程 0x4253f0 项 2 调 0x423bd0(…, 0) 开 Title031 读取列表（与大地图卷轴项 2 同一调用），Wine 帧已拍；列表过程的逐槽布局与标签格式未读<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_storage_window.md](../../../docs/evidence_packets/static_reverse/original_storage_window.md) | BattleSystemMenu 的读法<br>[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `_show_memoir_list` | 读了一部分 | 少见 | S | provenance 3、scope 1 |
 | `panel-slide-formula` | 面板滑入的减速曲线是按录屏拟合的（每 tick 去 1/8），部件左／右／上的分边是按矩形位置猜的；面板底下的压暗层级 9／16 与每 3 tick 一级的淡入淡出也是按录屏亮度拟合的 | 未找到面板滑动的 EXE 常数（系统卷轴 0x45e80d 消费者未读）；压暗过程也未读，录屏每边 8 个亮度台阶、终态亮度比 0.46<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattlePanelMotion 按拟合公式与分边规则滑动，压暗按拟合层级淡入淡出<br>[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `side_of`、[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `open_step`、[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `shade_step` | 读了一部分 | 少见 | S | provenance 2、sentence 2、video 1 |
-| `system-scroll-speed` | 系统卷轴（Esc）展开 0.25 s 是估值；原版卷轴每 tick 步进未读 | 0x45e80d 的卷轴消费者未读<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md)、[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | BattleSystemMenu 固定 0.25 s 卷出<br>[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `_slide` | 未读 | 少见 | S | provenance 1、sentence 2、scope 1 |
 
 ### 地图人物演出（10）
 
@@ -270,7 +268,7 @@
 | --- | --- | --- | --- |
 | 1 | 镜头滚动 | 原版减速滚动、重制跳切（R6-P2 已按 0x45e80d 做逐 tick 滑动）；走路跟随 R7-CAM 已做 | 已做掉：镜头滑动（R6-P2）与走路逐 tick 跟随（R7-CAM 37f2bbc8，camera_panel_motion） |
 | 2 | 面板开合动画 | 原版面板滑入滑出（R6-P2 已做五个面板）与底下压暗的逐级淡入淡出（R7-UI 已做）；剩拟合公式 | `panel-slide-formula` |
-| 3 | 胜负条件面板 | 原版开场／目标变化／第 52 战弹胜负面板（R6-P2 已做），等按键不超时（UI6 已做）；剩溶解用整体透明度近似 | `winfail-board-dissolve` |
+| 3 | 胜负条件面板 | 原版开场／目标变化／第 52 战弹胜负面板（R6-P2 已做），等按键不超时（UI6 已做）；溶解照原版 16 级交叉淡化（PANELTIME 已做） | 已做掉：胜负面板照原版：含字面板整体 16 级交叉淡化（0x413a80 模式 0x20000000 → 0x46b691 种类 4 0x4699fd），重制 CanvasGroup 合成后按层级/16 淡化（PANELTIME，camera_panel_motion §3） |
 | 4 | 特殊技页 | 原版特殊技总先开技能页、气力不足也能打开（UI6 已做）；页面照状态页式布局重做（SKILLPAGE：左栏 WINDOW20 列名、身份条、金钱框、说明框，四块板与 238.8 s 帧零偏移）；剩九行以上的滚动条美术与 FONT.24 字形 | `special-skill-page` |
 | 5 | AI 回合预告 | 原版敌兵移动前先铺蓝色移动范围（R6-P2 已做 16 tick）；剩两簇时长成因 | `ai-move-preview-timing` |
 | 6 | 地图人物姿势 | 原版 hit 跪姿（R6-P1 已做于阵亡）与 use_magic 施法抬手（R7-POSE 已做） | 已做掉：use_magic 施法抬手（R7-POSE：ActorRuntime.play_use_magic，法术引导末／用道具／升级；map_pose_floaters）与 hit 跪姿（R6-P1） |
@@ -298,8 +296,9 @@
 | `video:10` | 章节标题卡横幅减色、纵向 8→1 缩放、章节名淡入淡出（R7-TITLE 589524ea） |
 | `video:12` | 原版红宝石权杖光标 10 帧、热点在宝石尖（R7-CAM 37f2bbc8，game_cursor） |
 | `video:13` | 施法抬手（R7-POSE map_pose_floaters）与幻火的落光／火团／光球爆散（R7-SPELL e95f9bbe 原生 effProc 轨迹）都已复刻 |
+| `video:3` | 胜负面板照原版：含字面板整体 16 级交叉淡化（0x413a80 模式 0x20000000 → 0x46b691 种类 4 0x4699fd），重制 CanvasGroup 合成后按层级/16 淡化（PANELTIME，camera_panel_motion §3） |
 | `video:6` | use_magic 施法抬手（R7-POSE：ActorRuntime.play_use_magic，法术引导末／用道具／升级；map_pose_floaters）与 hit 跪姿（R6-P1） |
 | `video:7` | 单位高亮照原版：阵营色、脉动字与 engGLASS＋10/16 加色画法（0x43dcb9，HIGHLIGHT 2026-09-28 Wine 帧，dialogue_death §5） |
 | `video:8` | 对白框顶槽照原版：只有 actShapeMessage／城镇 shape 台词（旗标 0x4000，0x414220）在 y 20，其余在底部，旁白框居中 x 75（R7-DLG 框位提交，original_dialogue_board） |
 
-玩家看不到的来源 53 个（重制内部结构、原版调度顺序等），理由逐条在 JSON 的 `dispositions.no_visible_effect`。
+玩家看不到的来源 54 个（重制内部结构、原版调度顺序等），理由逐条在 JSON 的 `dispositions.no_visible_effect`。

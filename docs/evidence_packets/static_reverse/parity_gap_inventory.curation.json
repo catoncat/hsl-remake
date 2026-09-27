@@ -11,7 +11,7 @@
     },
     "3": {
       "title": "胜负条件面板",
-      "summary": "原版开场／目标变化／第 52 战弹胜负面板（R6-P2 已做），等按键不超时（UI6 已做）；剩溶解用整体透明度近似"
+      "summary": "原版开场／目标变化／第 52 战弹胜负面板（R6-P2 已做），等按键不超时（UI6 已做）；溶解照原版 16 级交叉淡化（PANELTIME 已做）"
     },
     "4": {
       "title": "特殊技页",
@@ -88,40 +88,6 @@
       "visibility": "rare",
       "effort": "S",
       "category": "面板与界面"
-    },
-    {
-      "id": "system-scroll-speed",
-      "difference": "系统卷轴（Esc）展开 0.25 s 是估值；原版卷轴每 tick 步进未读",
-      "original": "0x45e80d 的卷轴消费者未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md",
-        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
-      ],
-      "remake": "BattleSystemMenu 固定 0.25 s 卷出",
-      "remake_code": [
-        "game/battle/scene/BattleSystemMenu.gd:_slide"
-      ],
-      "original_status": "unread",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "面板与界面"
-    },
-    {
-      "id": "winfail-board-dissolve",
-      "difference": "胜负条件面板的溶解用整体透明度近似；等按键已照原版不超时（UI6）",
-      "original": "WINDOW60 32 tick 溶解淡入、等按键（无超时）、34 tick 淡出；溶解是逐帧增加像素比例",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
-      ],
-      "remake": "整体 alpha 渐变；等按键不超时，只有 --script 驱动（测试／自动对局／capture）另设 112 tick 自动淡出",
-      "remake_code": [
-        "game/battle/scene/BattleWinFailBoard.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "面板与界面",
-      "decision": "照原版一直等按键（UI6 已做）；溶解的像素比例近似暂留"
     },
     {
       "id": "special-skill-page",
@@ -2479,9 +2445,6 @@
     "provenance:game/battle/scene/BattleSystemMenu.gd|strings|remake-invented|": {
       "item": "panel-captions"
     },
-    "provenance:game/battle/scene/BattleSystemMenu.gd|timing|provisional|": {
-      "item": "system-scroll-speed"
-    },
     "provenance:game/battle/scene/BattleSystemMenu.gd|timing|remake-invented|": {
       "item": "memoir-list"
     },
@@ -2514,7 +2477,7 @@
       "item": "bitmap-font"
     },
     "provenance:game/battle/scene/BattleWinFailBoard.gd|rules|remake-invented|": {
-      "item": "winfail-board-dissolve"
+      "no_visible_effect": "只剩 --script 驱动（测试／自动对局／capture）下开场面板 112 tick 自行淡出与任務說明中途离开从当前层级淡出；游戏本身照原版等按键"
     },
     "provenance:game/battle/scene/MagicImpactPresentation.gd|layout|remake-invented|": {
       "item": [
@@ -2975,10 +2938,6 @@
       "item": "timing-estimates",
       "text": "这些是「已知以 tick 计但计数未读」，见 [映射表](tick_mapping.md)。"
     },
-    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#39ff07b5ae": {
-      "item": "system-scroll-speed",
-      "text": "SCROLL provisional（0x45e80d 消费者未读）；"
-    },
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#3b94795095": {
       "resolved": "章节标题进出与停留已按 0x452f32 八段子状态播放（R7-TITLE 589524ea，original_tick_counts §2）",
       "text": "标题淡入淡出与音乐淡出无原版对应，原章节标题停留未读；"
@@ -3123,15 +3082,6 @@
       "no_visible_effect": "数字对象与守方对象同 tick 处理顺序，差异 ±1 tick（16 ms）",
       "text": "±1 tick：数字对象与守方对象在同一 tick 内的处理顺序未读。"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#89dbd9c4c5": {
-      "item": [
-        "map-object-flash",
-        "system-scroll-speed",
-        "attack-flash-hold",
-        "cast-lead-phase"
-      ],
-      "text": "未读（保留 provisional）：`mapobjFlash` 亮度步进（TYPE.H：`objsScore = level, objsHitPoint = delay`，字段尚未导出到 map_objects）、系统卷轴展开步进（`0x45e80d` 消费者）、击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#b9d95de4eb": {
       "item": "script-walk-speed",
       "text": "`actMoveDispWait`（opcode 55，状态 case 0x37）的 speed 语义未读，重制仍按 px/tick 读（provisional）。"
@@ -3166,7 +3116,7 @@
       "item": "panel-slide-formula"
     },
     "video:3": {
-      "item": "winfail-board-dissolve"
+      "resolved": "胜负面板照原版：含字面板整体 16 级交叉淡化（0x413a80 模式 0x20000000 → 0x46b691 种类 4 0x4699fd），重制 CanvasGroup 合成后按层级/16 淡化（PANELTIME，camera_panel_motion §3）"
     },
     "video:4": {
       "item": "special-skill-page"
@@ -3512,10 +3462,9 @@
       "item": "town-event-timing",
       "text": "点 16 命運的神殿没有 track，进入方式（脚本 `teSetBMWalkToPoint` 或直接进入）未读。"
     },
-    "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）": {
+    "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）": {
       "item": [
         "title-ornaments",
-        "system-scroll-speed",
         "memoir-list"
       ]
     },
@@ -3628,10 +3577,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91": {
       "item": "cam-random-scroll",
       "text": "actScrollBGToRandomPos 未读。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#af0114ce30": {
-      "item": "timing-estimates",
-      "text": "差异：对象 700 渐暗、`mapobjFlash`、系统卷轴展开、击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional；"
     },
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#d003b16b63": {
       "item": "closeup-object-timing",
@@ -3769,6 +3714,18 @@
     },
     "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|": {
       "no_visible_effect": "用药三类效果星点的位置、延迟、速度与张由重制按本次用药种子抽取，分布与数量照 0x401390／effProcFlyUp2／effProcCollectFadeShape，只是逐颗落点与原版全局随机流不同"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#04de56f50b": {
+      "item": [
+        "map-object-flash",
+        "attack-flash-hold",
+        "cast-lead-phase"
+      ],
+      "text": "未读（保留 provisional）：`mapobjFlash` 亮度步进（TYPE.H：`objsScore = level, objsHitPoint = delay`，字段尚未导出到 map_objects）、击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#d0f8d68007": {
+      "item": "timing-estimates",
+      "text": "差异：对象 700 渐暗、`mapobjFlash`、击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional；"
     }
   }
 }

@@ -1,12 +1,12 @@
 # 菜单与界面：标题、目标光标、系统卷轴、状态页与技能页的原版测量
 
-> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）的逐帧像素、SHP 模板匹配与音轨互相关，2026-09-26 Wine 原版实拍技能页三帧（§5，cnc-ddraw 游戏窗截图），2026-09-28 Wine 战斗卷轴开启与回憶錄列表四帧及 `0x4c1b00` 读数（§3）; resource-derived: I_RECT01.SHP、BOARD02.SHP、WINDOW60.SHP、Title039／Title061、WAV 表; static-derived: 状态窗 mode 10 与 WINDOW20／21 的既有读法（static_reverse/original_growth_window.md）、状态页 mode 0／1 板与页按钮 `0x43ac10`／`0x43a640`／`0x443cfa`（§4）、技能页 `0x43b4e0`／`0x438160`／`0x434d10`／`0x433a90`／`0x4331b0`、滚动条 `0x446060`／`0x445860`／`0x445d70`、悬停脉冲 `0x42c110`／`0x42c130` 的读法（§5）、預備動作 开关 `0x424590`／`0x401e74`（§預備動作）、战斗卷轴开启条件 `0x4082ab` 与 讀取回憶錄 去向 `0x425842`（§3）; provisional: 只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6） · status: live · functions: 0x401c20, 0x401e74, 0x4030f7, 0x403199, 0x4031c7, 0x4081c0, 0x423c10, 0x424560, 0x424590, 0x424680, 0x4253f0 · tools: hsl_original_control.py, hsl_video_events.py, run_battle_scene_runtime_tests.gd, run_presentation_contract_tests.gd, run_skill_resolution_tests.gd, run_system_menu_tests.gd, run_title_screen_tests.gd · updated: 2026-09-28
+> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）的逐帧像素、SHP 模板匹配与音轨互相关，2026-09-26 Wine 原版实拍技能页三帧（§5，cnc-ddraw 游戏窗截图），2026-09-28 Wine 战斗卷轴开启与回憶錄列表四帧及 `0x4c1b00` 读数（§3）; resource-derived: I_RECT01.SHP、BOARD02.SHP、WINDOW60.SHP、Title039／Title061、WAV 表; static-derived: 状态窗 mode 10 与 WINDOW20／21 的既有读法（static_reverse/original_growth_window.md）、状态页 mode 0／1 板与页按钮 `0x43ac10`／`0x43a640`／`0x443cfa`（§4）、技能页 `0x43b4e0`／`0x438160`／`0x434d10`／`0x433a90`／`0x4331b0`、滚动条 `0x446060`／`0x445860`／`0x445d70`、悬停脉冲 `0x42c110`／`0x42c130` 的读法（§5）、預備動作 开关 `0x424590`／`0x401e74`（§預備動作）、战斗卷轴开启条件 `0x4082ab` 与 讀取回憶錄 去向 `0x425842`（§3）、卷轴卷动 `0x4253f0`／`0x425a90` 起点与 `0x45e882`／`0x45e91e` 逐 tick 步进（§6）; provisional: 只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6） · status: live · functions: 0x401c20, 0x401e74, 0x4030f7, 0x403199, 0x4031c7, 0x4081c0, 0x423c10, 0x424560, 0x424590, 0x424680, 0x4253f0, 0x425a90, 0x45e882, 0x45e91e · tools: hsl_original_control.py, hsl_video_events.py, run_battle_scene_runtime_tests.gd, run_presentation_contract_tests.gd, run_skill_resolution_tests.gd, run_system_menu_tests.gd, run_title_screen_tests.gd · updated: 2026-09-28
 
 ## 结论
 
-- 原版：标题版本号「V1.06」常驻左下，確認「開始新故事」亮起停 0.75 s 再 0.55 s 淡黑；目标格光标（玩家选目标与敌方预告）都是 `I_RECT01.SHP` 黄框；系统卷轴的確定／取消压在卷轴中央 (256,217)、不压暗，存档完成提示在 BOARD02 (75,320)；战斗卷轴只在刚打开的玩家行动环上按 Esc／右键才开（选格、移动后的环、敌方回合、首个行动环之前、额外行动都不开），其 讀取回憶錄 开 Title031 八格读取列表；状态页开页总是属性页，状态页页按钮排在 y 387；技能页是状态窗 root mode 8／9，十行起才有滚动条（runtime-measured；static-derived）。
+- 原版：标题版本号「V1.06」常驻左下，確認「開始新故事」亮起停 0.75 s 再 0.55 s 淡黑；目标格光标（玩家选目标与敌方预告）都是 `I_RECT01.SHP` 黄框；系统卷轴的確定／取消压在卷轴中央 (256,217)、不压暗，存档完成提示在 BOARD02 (75,320)；战斗卷轴只在刚打开的玩家行动环上按 Esc／右键才开（选格、移动后的环、敌方回合、首个行动环之前、额外行动都不开），其 讀取回憶錄 开 Title031 八格读取列表；状态页开页总是属性页，状态页页按钮排在 y 387；技能页是状态窗 root mode 8／9，十行起才有滚动条；系统卷轴战斗版自静止位下方 400 px、大地图版自上方 600 px 卷入，展开每 tick 走剩余距离的 1/8（封顶 40、至少 2 px），收起 40 px/tick 回起点（runtime-measured；static-derived）。
 - 重制：`BattleSelectionCursor`／`BattleAttackCue` 画 I_RECT01，`BattleSystemMenu` 照原版位置与时长出確定／取消与完成提示，`BattleStatusPanel`／`BattleMagicPanel` 按 mode 0／1 与技能页读法落地；預備動作 开关做在 設定選項 第二行（`GameSettings.ready_action`）（runtime-measured）。
-- 差异：状态页页按钮排未做（差异清单 `status-left-column`）；卷轴卷动、回憶錄列表、標題语义与 GAME OVER 位置时长是重制读法；只有一份录屏样本的时长与未命中的声音保持 provisional（provisional）。
+- 差异：状态页页按钮排未做（差异清单 `status-left-column`）；回憶錄列表、標題语义与 GAME OVER 位置时长是重制读法；只有一份录屏样本的时长与未命中的声音保持 provisional（provisional）。
 
 ## 证据
 
@@ -94,7 +94,8 @@
 | 宝珠与书 | 周期 1.646 s、振幅 5 px 的正弦，围绕参考位下方 3 px 往返，起始相位随机，不随选择移动（[original_title_ornaments](../original_title_ornaments/README.md)） | provisional（拟合值） |
 | 标题菜单语义 | 「戰場記錄」先恢复最近一份战斗检查点，否则接单槽战役进度；「開始新故事」清空进度，不清回憶錄与检查点；无存档时底部提示「沒有戰場記錄」约 1.6 s | provisional |
 | GAME OVER | 原版败北无结果页（`0x42cbd0`），160 tick 无输入自回标题（`0x42aea0`）；重制败北约 0.2 s 淡黑后显示 Title011＋Title012（居中）、淡入 0.9 s、任意键淡出 0.6 s 回标题；原版败北画面无录像 | static-derived；provisional：位置与时长 |
-| 系统卷轴 | Esc 后自底边卷入停在 (190,67)（对原版 `05_system_scroll_menu` 帧 003 模板差 10.6）；亮起框中心对齐字行中心 (128,56)；卷动 0.25 s、键盘选择也亮起、確定／取消预选取消 | runtime-measured；provisional：卷动与预选 |
+| 系统卷轴 | 停在 (190,67)（对原版 `05_system_scroll_menu` 帧 003 模板差 10.6）；亮起框中心对齐字行中心 (128,56)；键盘选择也亮起、確定／取消预选取消 | runtime-measured；provisional：预选 |
+| 系统卷轴卷动 | 战斗卷轴过程 `0x4253f0`：起点 y＝静止 y＋400（`0x42549b`），状态 0 每 tick `0x45e882(当前, 静止, 40)`，到达后把起点抄成目标（`0x42569b`）；状态 4 `0x45e91e(当前, 起点, 40, 0)` 收起后删对象（`0x425969`）。大地图卷轴 `0x425a90` 起点 y＝静止 y−600（`0x425b3b`），同一对步进（`0x425d22`／`0x425fbf`）。`0x45e882`：距离＝isqrt(dx²+dy²)，≤1 即对齐并返回 0，否则步长＝min(40, 距离>>3)、至少 2；`0x45e91e` 同式、右移位数取参数（此处 0），即 40 px/tick。战斗版展开 35 tick、收起 11 tick；大地图版 40／16 tick | static-derived |
 | 战间卷轴 | Title051 位置沿用 (190,67)；讀取戰場記錄 恢复修改时间最新的战斗检查点 | provisional |
 | 回憶錄列表 | Title031 居中 (87,44)，Title033 抬头，八条槽带 x 63–407、首带 y 80、间距 33，存 `user://memoir_NN.json`（槽数依 Title031，文件布局与标签为重制值）；战斗与大地图卷轴共用（§3 有原版帧，未逐像素对位） | provisional |
 | 設定選項 | Title039 居中 (142,90)，宝珠 Title027 作旋钮；場景效果＝剧情特效物件（雨／闪电／火焰／光环）是否绘制，音效音量＝Master，音樂音量＝Music 总线；原混音器未定位 | provisional：行语义 |
@@ -119,7 +120,7 @@ static-derived（hsl01.exe v1.06）。預備動作 是原版的施法／绝技�
 
 - 标题：`game/title/TitleScreen.gd`（版本号、`CONFIRM_HOLD_SECONDS`／`FADE_TO_BLACK_SECONDS`、宝珠与书浮动）；布局来自 `content/imported/hsl/global/title/manifest.json`。
 - 目标格光标：`game/battle/scene/BattleSelectionCursor.gd`、`BattleAttackCue.gd`。
-- 系统卷轴：`game/battle/scene/BattleSystemMenu.gd`——timing：save notice 582.53–582.77 s in, held to 583.73 s, out by 583.87 s；任務說明 board dissolves in 577.55–577.95 s and out 579.08–579.48 s（`BattleWinFailBoard` 的 32／34 tick 溶入溶出）。
+- 系统卷轴：`game/battle/scene/BattleSystemMenu.gd`——timing：save notice 582.53–582.77 s in, held to 583.73 s, out by 583.87 s；任務說明 board dissolves in 577.55–577.95 s and out 579.08–579.48 s（`BattleWinFailBoard` 的 32／34 tick 溶入溶出）；卷动 `_slide`／`_slide_tick` 逐原版 tick 复现 `0x45e882`／`0x45e91e`，起点取 `SCROLL_START_OFFSET`。
 - 状态页与技能页：`BattleStatusPanel`、`BattleMagicPanel`、`BattleSceneMenus`、`BattleSceneInput`；provenance 头写 `runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5` 等。
 - 預備動作：`game/settings/GameSettings.gd`（`ready_action`）、`game/battle/scene/AnimalCastLead.gd`（关掉时的 call 数）。
 - 重制补充（原版没有）挂在选项上，原版值下不显示：见 `content/authored/options/remake_options.json` 的 `read_points`。

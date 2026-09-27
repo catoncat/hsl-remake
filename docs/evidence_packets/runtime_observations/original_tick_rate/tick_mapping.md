@@ -32,7 +32,7 @@
 | 10 | [BattleScriptActorPresentation](../../../../game/battle/scene/BattleScriptActorPresentation.gd) | 揭示 `coordinator.default_step_seconds 0.04` | A | 原 STORY VM（`0x450840`）连续执行非等待 token，到等待类 opcode 才让出（[original_script_wait](../../static_reverse/original_script_wait.md)、[original_auto_growth](../../static_reverse/original_auto_growth.md) 的 opcode56 序列） | `0`（同 tick）；重制若要可见节拍取 1 tick = `0.016 s` |
 | 11 | [BattleScriptCoordinator](../../../../game/battle/scene/BattleScriptCoordinator.gd) | 继承开场协调器（行 28） | A | 同 28 | 同 28 |
 | 12 | ~~FirstBattleStoryStage~~（已删除，信使走 [BattleOpeningCoordinator](../../../../game/battle/runtime/BattleOpeningCoordinator.gd) 的脚本走位） | 信使斜走 `0.5 s`／段；离场沿 `MOVE_CELL_PRESENTATION_SECONDS` | A／B | 玩家行走实测 4 px/tick（32 px = 8 tick）；脚本 `actWalk*` 的 speed 参数已读（[剧情镜头读法](../../static_reverse/original_script_camera_scroll.md)，`0x453b90` 状态 0x32 sub 2）：1→1、2／3→2、0／4→4、8→8 px/tick，每格 32/步长 tick | 玩家格 `0.128 s`；信使若同速 45 px ≈ 11 tick = `0.18 s`；确认 speed 参数后落 A |
-| 13 | [BattleSystemMenu](../../../../game/battle/scene/BattleSystemMenu.gd) | `SCROLL_SECONDS 0.25`、`HINT_SECONDS 1.6` | B／C | 卷轴展开若沿用 `0x45e80d`（距离右移一位、步进 ≤8/tick）可算；提示 1.6 s 无原版对应 | 读系统卷轴对象过程的展开路径；`HINT` 为 C |
+| 13 | [BattleSystemMenu](../../../../game/battle/scene/BattleSystemMenu.gd) | 卷轴逐 tick 步进、`HINT_SECONDS 1.6` | A／C | 卷轴 `0x4253f0`／`0x425a90`：展开 `0x45e882` 每 tick min(40, 距离>>3)、至少 2，收起 `0x45e91e` 40 px/tick（[menus_ui](../menus_ui/README.md) §6）；提示 1.6 s 无原版对应 | `HINT` 为 C |
 | 14 | [BattleTreasurePresentation](../../../../game/battle/scene/BattleTreasurePresentation.gd) | `DURATION 0.45` 淡出 | C | 原版宝箱领取后直接处置，无淡出（[original_treasure](../../static_reverse/original_treasure.md)） | — |
 | 15 | [BattleTurnEndCue](../../../../game/battle/scene/BattleTurnEndCue.gd) | `EVENT_SECONDS 0.7`／事件 | A（间隔）／B（寿命） | HP 数字后 MP 数字延迟 **40 tick**（[original_resource_recovery](../../static_reverse/original_resource_recovery.md)）；数字寿命见 9 | 事件间隔 **0.64 s**；数字停留读 `0x408580` |
 | 16 | [BattlePlayLoop](../../../../game/sim/loop/BattlePlayLoop.gd) | `MOVE_CELL_PRESENTATION_SECONDS 0.20`／格 | A | 实测 4 px/tick → 32 px = 8 tick | **0.128 s**／格（本机体验 0.155 s） |
@@ -76,7 +76,7 @@
 | 10 | BattleScriptActorPresentation | 换算 | 揭示步 0.04 s → 1 tick = 0.016 s |
 | 11 | BattleScriptCoordinator | 随 28 | 同 28 |
 | 12 | ~~FirstBattleStoryStage~~ | **已删除**：第一战信使改为 WINFAIL051 event 3 的脚本对象 10000，由 `BattleOpeningCoordinator` 按 8 号（`actWalkDispWait`／`actWalkAndDeleteWait` speed 表 px/tick）走位 | 不再有独立时序常数 |
-| 13 | BattleSystemMenu | SCROLL provisional（0x45e80d 消费者未读）；HINT **有意保留** | 0.25 s／1.6 s 不变 |
+| 13 | BattleSystemMenu | 卷轴照 0x45e882／0x45e91e 逐 tick 步进（战斗 35／11 tick，大地图 40／16 tick）；HINT **有意保留** | 卷轴已改；1.6 s 不变 |
 | 14 | BattleTreasurePresentation | **有意保留**（原版直接处置，重制字幕需要可读节拍） | 0.45 s 不变 |
 | 15 | BattleTurnEndCue | 换算 | 事件间隔 0.7 s → 40 tick = 0.64 s；末事件停留 46 tick = 0.736 s；上浮 16 px/事件 → 0.5 px/tick |
 | 16 | BattlePlayLoop | 常数实际在 BattleSceneRuntime；PlayLoop timing 改 n/a | 行走一格 0.20 s → 8 tick = 0.128 s（`ActorRuntime.WALK_CELL_SECONDS`） |
