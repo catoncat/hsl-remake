@@ -390,8 +390,7 @@ func prepare_handoff() -> Dictionary:
 	loop["scenario_id"] = str(runtime.first_battle_scenario.get("id", ""))
 	var carry: Dictionary = CarryRules.capture(loop, campaign.get("carry_policy", CarryRules.DEFAULT_POLICY))
 	if separate_party(campaign, str(runtime.scenario_path)):
-		carry = CarryRules.pass_level_entry(runtime.campaign_handoff.get("carry", {}), CarryRules.keeps_stamina(loop))
-		CarryRules.keep_damage_stream(carry, loop)
+		carry = CarryRules.separate_party_carry(runtime.campaign_handoff.get("carry", {}), loop)
 	# The script's town / big-map writes (actSetTownExecEvent, actBMSetPointEvent, ...)
 	# land in the shared world state here; a first write seeds the state.
 	var flow := WorldScriptActions.apply_pending(_world_of(runtime.campaign_handoff), loop, campaign)

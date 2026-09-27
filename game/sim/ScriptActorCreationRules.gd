@@ -3,6 +3,8 @@ extends RefCounted
 ## Templates are immutable configuration; only PlayLoop commits the result.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_player_install.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_campaign_actors.md
+##     (a reserve member's re-install keeps its live record, 0x407ec0)
 ##   rules: remake-invented (atomic whole-event install, nearest legal landing when blocked)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 ##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
@@ -21,6 +23,7 @@ const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
+const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const MOVE_ABSOLUTE := ["actWalk", "actWalkWait"]
 const MOVE_RELATIVE := ["actWalkDisp", "actWalkDispWait"]
 const MOVE_TO_ACTOR := ["actWalkToPlayerDisp", "actWalkToPlayerDispWait"]
@@ -260,6 +263,12 @@ static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, fi
 		# A carried member is already registered: no template stamina (CampaignCarryRules).
 		var carried: Dictionary = loop.get("campaign_carry_receipt", {}).get("unfielded_stamina", {})
 		if carried.has(id): actor["stamina"] = int(carried[id])
+		# A reserve member (registration removed, live record kept) re-installs with its record.
+		var reserve: Dictionary = loop.get("campaign_carry_receipt", {}).get(CampaignCarryRules.RESERVE, {})
+		if reserve.has(id):
+			var reserve_error := CampaignCarryRules.apply_reserve_record(loop, actor, reserve[id])
+			if reserve_error != "": return {"ok": false, "reason": "reserve_record_" + reserve_error}
+			record["reserve_record"] = true
 	else:
 		if request.is_empty(): return {"ok": false, "reason": "missing_npc_script_insert"}
 		# The birth 0x407cc0 rolls a pmEnemy's carry (0x407c40) on the global stream before the

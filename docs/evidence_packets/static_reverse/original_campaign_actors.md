@@ -1,11 +1,12 @@
 # 职业：主线角色模板、四种新增职业刷新与学习来源
 
-> evidence: static-derived; resource-derived: PLAYERS／OBJ 源字段 · status: live · functions: 0x42c700, 0x42caa0, 0x42cac0, 0x4373f0, 0x437970, 0x437a40, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived: PLAYERS／OBJ 源字段 · status: live · functions: 0x407ec0, 0x42c700, 0x42caa0, 0x42cac0, 0x42caf0, 0x4373f0, 0x437970, 0x437a40, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_growth_lifecycle_tests.gd, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-09-27
 
 ## 结论
 
 - 原版 34 个未放置角色模板（含最终章 059／060、第 37／80 关 066／067／068）经 `0x448840` 刷新的结果、推级／配额／出生调整与学习调用已完整执行；新增职业 93／95／96／98 各有独立刷新分支、上限行与学习归属，源 HP 半字按有符号读（static-derived）。
 - 重制由 `tools/hsltools/data/campaign_actors.py` 生成 `content/generated/hsl/actors/0NN.json` 与 `roles/profiles.json`，职业公式入 `content/authored/roles/job_formulas.json`、学习表入 `roles/growth_lifecycle.json`，`game/sim/JobStatsRules.gd`／`LearningRules.gd` 消费（static-derived）。
+- 注册移除不清记录：WINFAIL053 win 0 `actDeletePlayerCode SID_PLAYER1, 0` 只清槽 1 的注册码，緹娜 的 live 记录（索引 2）连同 53 关的等级、经验与学会的魔法留着；第 2 关 `obj_Story_Player2` 重装槽 1 时构造器不复制模板，沿用该记录。重制以 carry 的 `reserve_units` 承接，第 2 关重装与之后各关保留（static-derived）。
 - 已知差异：008 源装备 32 的 `range3CellCircle` 攻击范围未支持，原样初始化返回 `unsupported_equipment`；模板坐标 `[0,0]` 是未放置标记（provisional）。
 
 ## 证据
@@ -23,6 +24,8 @@
 - 学习：`0x4373f0` 以存储等级+1 查魔法；`0x437a40` 选职业特殊表，`0x437970` 返回第一项未持有且满足基础属性／tier 的技能。初始 mask 来自 PLAYERS 与 mag-spc.h。
 - 066（第 37 关守卫，`jobCrazyWarrior`、pmEnemy、`hit_point -10000`）与 067（柱子寶石，`jobCrazyWarrior`、pmMagicAttack、`no_attack 1`、`hit_point -10000`）：源 HP 半字 `+0x1b6` 按有符号读，公式值加 −10000 后公共收尾夹到 **最大 HP 1**；再由 STORY037 `actSetPlayerUndead` 设不死身，普通攻击「毫無效果」（WINFAIL037 2096）。`0x40e870` 同样按有符号 16 位读该半字。
 - 068（第 80 关怨念體，`jobPriestMaster` 86、pmEnemy、`size_type 1`、1200 HP、move 0）：1 级最大 HP 1293、MP 92；源魔法 8 种都是已支持技能 id。
+- 注册移除（opcode 71）：跳表项 `0x450dd0` 以脚本两参数 `(slot, clear)` 调 `0x42caf0`；`0x42cafa` 无条件把 `0x4c4360[slot]` 写 0，`0x42cb05` 在 `clear == 0` 时直接返回，否则 `0x42cb09..0x42cb21` 把 `*0x4c1bc8 + (slot+1)×0x1fc` 的 127 个双字清零。全部剧本只有两处：WINFAIL053 win 0（`SID_PLAYER1, 0`，记录保留）与 WINFAIL015 event 4（`SID_咕嚕, 1`，记录清零）（resource-derived，`content/imported/hsl/story_corpus/scripts/`）。
+- 重装：构造器 `0x407ec0` 对玩家对象只在 live 工作属性 `+0x4c..+0x58` 全零时走模板复制 `0x44cb10(slot, 1)`，否则只写本次安装参数并 `0x448840` 刷新（[original_level37_tokens.md](original_level37_tokens.md)）；魔法位在记录里，随记录保留。第 2 关 STORY002 event0 的 OBJ-002（`defProcPlayerInstall`、`obj_Data9=1`，[original_player_install.md](original_player_install.md)）经 `0x42cb30` 重新注册空槽 1（801）后进构造器。
 - 玩家 005／007／008／009 的槽 4／6／7／8 经 `0x42c700`、`0x42caa0`、`0x42cac0` 与完整 `0x44cb10` 复制核对；工厂 `0x407eff→0x407f14` 只作有界前段。
 
 **resource-derived**
@@ -40,6 +43,7 @@
 - `tools/hsltools/levels/battle.py`：对预览带 `source_actor_code` 的 EVEF 敌人按该行建（第 30 关克羅蒂为 `actor053_1`）。
 - `tools/hsltools/sources/actor_walk_frames.py` `_shape_fields`：先认演员自己的 `SID_ENEMYnnn` 块再按造型编号猜；`actor_hit_poses` 同理。
 - 未声明的 level1／EXP0 只作出生前核对输入；实际战斗等级由 `InitialRosterGrowthRules`／`EntryGrowthRules` 产生（[original_auto_growth.md](original_auto_growth.md)）。
+- `game/sim/CampaignCarryRules.gd`：`RESERVE`（`reserve_units`）＝注册被移除、记录保留的成员；`separate_party_carry` 把 separate party（53 关）的成员记为 reserve，`capture` 把未上场的 reserve 原样传下，`apply` 对预置单位套用；`game/sim/ScriptActorCreationRules.gd` 的 `registered_player` 插入对 reserve 成员套用记录（`script_creation.reserve_record`）。reserve 不进城镇名单、不参与条件安装。`tests/run_growth_lifecycle_tests.gd` `reserve_member_learning` 钉 53 学会 水剎 → 1 关 → 2 关重装保留。
 - `hsltools/probes/auto_growth.py` 的回读与期望模型按有符号 16 位回绕。
 
 ## 复现
@@ -51,4 +55,5 @@
 - 008 源装备 32 的 `range3CellCircle` 未支持，`source.runtime_blockers` 保留；替换证据是原范围 builder／矩阵及玩家、AI、反击的共同范围测试。Godot 只以无装备数值夹具对拍其 96 分支。
 - 模板坐标 `[0,0]` 须由组装方用本关 EVEF／脚本锚点替换（provisional）。
 - 敌方过程均为 `defProcEnemy`、玩家 `defProcPlayer`，不代表整个原 dispatcher 的行为。
+- reserve 成员重装时 ST 记 0、HP／MP 回满：原版 live 记录的 ST／HP 在 53 关结束到第 2 关重装之间是否被关卡入口改写未追（provisional）；53 关的金钱与战利品仍按 separate party 不带走（重制策略）。
 - 转职事务、原完整 parser／constructor、全局随机流、负属性／溢出区间不在本包。

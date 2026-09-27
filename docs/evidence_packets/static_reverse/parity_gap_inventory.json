@@ -1020,16 +1020,18 @@
     },
     {
       "id": "carry-model",
-      "difference": "跨关承接用\"上一战上场的受控单位\"代替原注册槽表：HP／MP 回满、「(有才產生)」条件成员不安装、未上场不算阵亡",
+      "difference": "跨关承接用\"上一战上场的受控单位\"代替原注册槽表：HP／MP 回满、「(有才產生)」条件成员不安装、未上场不算阵亡；注册被移除但记录保留的成员（53 关 緹娜）以 reserve_units 承接，重装沿用记录（照原版 0x42caf0／0x407ec0）",
       "original": "原注册表 0x4c4360 装人；「已注册未上场」在原作不可达",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_check_targets.md",
-        "docs/evidence_packets/runtime_observations/campaign_handoff/README.md"
+        "docs/evidence_packets/runtime_observations/campaign_handoff/README.md",
+        "docs/evidence_packets/static_reverse/original_campaign_actors.md"
       ],
       "remake": "CampaignCarryRules／ConditionalPartyRules",
       "remake_code": [
         "game/sim/CampaignCarryRules.gd",
-        "game/sim/ConditionalPartyRules.gd"
+        "game/sim/ConditionalPartyRules.gd",
+        "game/sim/ScriptActorCreationRules.gd"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",

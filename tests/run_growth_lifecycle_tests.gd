@@ -66,10 +66,32 @@ func run() -> void:
 	actual_acquisition()
 	job_up_learning()
 	initial_rosters()
+	reserve_member_learning()
 	await separate_party_stream()
 	failures.append_array(await TestSuite.settle_audio_before_quit(self, 0.3))
 	print("GROWTH_LIFECYCLE_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
 	call_deferred("quit",0 if failures.is_empty() else 1)
+
+
+func reserve_member_learning() -> void:
+	# 緹娜 learns 水剎 at level 4 in level 53; WINFAIL053 removes her registration but not her
+	# live record (0x42caf0(1, 0)), level 1 does not field her, and level 2's obj_Story_Player2
+	# re-installs her with that record (0x407ec0 copies no template over it).
+	var start := func(path: String) -> Dictionary: return BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file(path)))
+	var level53: Dictionary = start.call("res://content/battles/battle_053.json")
+	var tina := BattlePlayLoop.unit_ref(level53, "tina")
+	var need := 0
+	for level in range(int(tina["level"]), 4): need += BattlePlayLoop.ProgressionRules.exp_to_next(level)
+	tina.merge(BattlePlayLoop.ProgressionRules.resolve_experience(tina, need - int(tina["exp"]), level53["equipment_items"]), true)
+	tina.merge(LearningRules.acquire(tina, level53["skill_book"], "magic")["actor"], true)
+	var water := "magic:magicWATER:magicCode01"
+	check(int(tina["level"]) == 4 and LearningRules.owns(tina, water), "level53 緹娜 learns 水剎 at level 4")
+	var carry := BattlePlayLoop.CampaignCarryRules.separate_party_carry(BattlePlayLoop.CampaignCarryRules.capture(start.call("res://content/battles/battle_052.json")), level53)
+	var level1 := BattlePlayLoop.apply_campaign_carry(start.call("res://content/battles/ohm_village_battle.json"), carry)
+	var level2 := BattlePlayLoop.apply_campaign_carry(start.call("res://content/battles/gol_road_battle.json"), BattlePlayLoop.CampaignCarryRules.capture(level1))
+	var inserted := BattlePlayLoop.ScriptActors.install_actor(level2, level2["script_actor_source"]["templates"]["obj_Story_Player2"], "obj_Story_Player2", 0, 0, {})
+	var rejoined := BattlePlayLoop.unit(level2, "tina")
+	check(inserted["ok"] and int(rejoined["level"]) == 4 and LearningRules.owns(rejoined, water), "level2 re-install keeps 緹娜's level53 level and 水剎")
 
 
 func separate_party_stream() -> void:

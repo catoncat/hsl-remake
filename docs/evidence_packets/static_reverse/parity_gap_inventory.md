@@ -265,7 +265,7 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `carry-model` | 跨关承接用"上一战上场的受控单位"代替原注册槽表：HP／MP 回满、「(有才產生)」条件成员不安装、未上场不算阵亡 | 原注册表 0x4c4360 装人；「已注册未上场」在原作不可达<br>[original_check_targets.md](../../../docs/evidence_packets/static_reverse/original_check_targets.md)、[campaign_handoff/README.md](../../../docs/evidence_packets/runtime_observations/campaign_handoff/README.md) | CampaignCarryRules／ConditionalPartyRules<br>[CampaignCarryRules.gd](../../../game/sim/CampaignCarryRules.gd)、[ConditionalPartyRules.gd](../../../game/sim/ConditionalPartyRules.gd) | 读了一部分 | 部分关卡 | M | provenance 2、sentence 3、scope 3、matrix 1 |
+| `carry-model` | 跨关承接用"上一战上场的受控单位"代替原注册槽表：HP／MP 回满、「(有才產生)」条件成员不安装、未上场不算阵亡；注册被移除但记录保留的成员（53 关 緹娜）以 reserve_units 承接，重装沿用记录（照原版 0x42caf0／0x407ec0） | 原注册表 0x4c4360 装人；「已注册未上场」在原作不可达<br>[original_check_targets.md](../../../docs/evidence_packets/static_reverse/original_check_targets.md)、[campaign_handoff/README.md](../../../docs/evidence_packets/runtime_observations/campaign_handoff/README.md)、[original_campaign_actors.md](../../../docs/evidence_packets/static_reverse/original_campaign_actors.md) | CampaignCarryRules／ConditionalPartyRules<br>[CampaignCarryRules.gd](../../../game/sim/CampaignCarryRules.gd)、[ConditionalPartyRules.gd](../../../game/sim/ConditionalPartyRules.gd)、[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd) | 读了一部分 | 部分关卡 | M | provenance 2、sentence 3、scope 3、matrix 1 |
 
 ## R6-V2 录屏对账 13 类的去向
 

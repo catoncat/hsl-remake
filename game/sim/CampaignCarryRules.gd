@@ -11,6 +11,8 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 ##   rules: runtime-measured docs/evidence_packets/static_reverse/original_stamina.md
 ##     (carried ST 0 at 0x407632, kept after actKeepPlayerST)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_campaign_actors.md
+##     (reserve records: 0x42caf0, 0x407ec0)
 
 const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
@@ -33,6 +35,13 @@ const SCHEMA := "hsl_campaign_carry.v1"
 ## Present (true) only when the finished level's script ran actKeepPlayerST; each unit record
 ## then holds its `stamina`. Without it (every older carry too) a carried member enters at 0.
 const KEEP_STAMINA := "keep_stamina"
+## Live records of members whose registration a script removed without clearing the record
+## (level 53: WINFAIL053 win 0 `actDeletePlayerCode SID_PLAYER1, 0` -> 0x42caf0(1, 0) zeroes only
+## the slot code; the record at live index 2 is zeroed only when the second argument is non-zero).
+## They are not party members (no town, no conditional installs), but the next install of the
+## same member -- a scenario unit or a script `registered_player` insert -- takes the record,
+## as 0x407ec0 copies no template over a record whose working attributes are non-zero.
+const RESERVE := "reserve_units"
 const DEFAULT_POLICY := {
 	"roles": ["player_controlled"],
 	"unit_keys": ["level", "exp", "pending_stat_points", "equipment", "weapon_code", "inventory", "kill_count", "permanent_gains", "learned_skills", "job_up_flags", "job_up_target_actor_id", "job_up_history"],
@@ -76,10 +85,43 @@ static func capture(loop: Dictionary, policy: Dictionary = DEFAULT_POLICY) -> Di
 		"claim_limit": "Remake campaign policy; original inter-level persistence is not proven.",
 	}
 	keep_damage_stream(carry, loop)
+	var reserve := _reserve_forward(loop)
+	if not reserve.is_empty(): carry[RESERVE] = reserve
 	if keep:
 		carry[KEEP_STAMINA] = true
 	var pending := BattleRewardRules.carry_pending(loop)
 	if not pending.is_empty(): carry["pending_rewards"] = pending
+	return carry
+
+
+## Reserve records this battle received and did not install go on unchanged.
+static func _reserve_forward(loop: Dictionary) -> Dictionary:
+	var reserve: Variant = loop.get("campaign_carry_receipt", {}).get(RESERVE, {})
+	if not reserve is Dictionary: return {}
+	var present := {}
+	for unit in loop.get("units", []):
+		if unit is Dictionary: present[str(unit.get("id", ""))] = true
+	var forward := {}
+	for unit_id in reserve:
+		if not present.has(str(unit_id)): forward[str(unit_id)] = _copy(reserve[unit_id])
+	return forward
+
+
+## A separate party's battle (level 53, 緹娜 alone) hands the incoming party on unchanged
+## (pass_level_entry) and leaves its own members behind as reserve records: the script removes
+## their registration, not their live records (RESERVE).
+static func separate_party_carry(incoming: Dictionary, loop: Dictionary) -> Dictionary:
+	var carry := pass_level_entry(incoming, keeps_stamina(loop)) if not incoming.is_empty() else {}
+	if carry.get("schema") != SCHEMA: carry = {"schema": SCHEMA, "units": {}, "loop": {}, "restore_vitals": true}
+	keep_damage_stream(carry, loop)
+	var reserve: Dictionary = (carry[RESERVE] as Dictionary).duplicate(true) if carry.get(RESERVE) is Dictionary else {}
+	var own: Dictionary = capture(loop)["units"]
+	for unit_id in own:
+		if (carry.get("units", {}) as Dictionary).has(unit_id): continue
+		var record: Dictionary = own[unit_id]
+		record.erase("stamina")
+		reserve[unit_id] = record
+	if not reserve.is_empty(): carry[RESERVE] = reserve
 	return carry
 
 
@@ -141,11 +183,20 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 	for unit_id in carried_units:
 		var value: Variant = carried_units[unit_id].get("stamina", 0) if kept and carried_units[unit_id] is Dictionary else 0
 		unfielded[str(unit_id)] = Values.non_negative_int(value)
+	var reserve: Dictionary = carry[RESERVE] if carry.get(RESERVE) is Dictionary else {}
+	var reserve_left := {}
+	for unit_id in reserve:
+		if not carried_units.has(unit_id) and reserve[unit_id] is Dictionary: reserve_left[str(unit_id)] = _copy(reserve[unit_id])
 	for unit_value in next.get("units", []):
 		if typeof(unit_value) != TYPE_DICTIONARY:
 			continue
 		var unit: Dictionary = unit_value
 		var unit_id := str(unit.get("id", ""))
+		if reserve_left.has(unit_id):
+			# A pre-placed install of a reserve member takes its record (ST 0, provisional).
+			_apply_carried_unit(next, carry, unit, unit_id, reserve_left[unit_id], 0, equipment_items, receipt)
+			reserve_left.erase(unit_id)
+			continue
 		if not carried_units.has(unit_id):
 			continue
 		var stamina: int = unfielded[unit_id]
@@ -166,6 +217,7 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 			unfielded.erase(unit_id)
 			receipt["errors"].append("invalid_carry_stamina:" + unit_id)
 	if not unfielded.is_empty(): receipt["unfielded_stamina"] = unfielded
+	if not reserve_left.is_empty(): receipt[RESERVE] = reserve_left
 	if not pending.is_empty():
 		var retained: Array = pending["items"].duplicate(true)
 		for item in retained:
@@ -179,6 +231,14 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 ## One carried member onto its scenario unit: the job-up replay, carried keys and
 ## attributes, stamina, inventory and a growth refresh written into `unit`; a record that
 ## fails a check skips the unit with its error in `receipt`.
+## A script `registered_player` insert of a reserve member: its record onto the new unit
+## (ST 0, vitals full). Returns the first check error, or "".
+static func apply_reserve_record(loop: Dictionary, unit: Dictionary, record: Dictionary) -> String:
+	var receipt := {"applied_unit_ids": [], "skipped_unit_ids": [], "errors": []}
+	_apply_carried_unit(loop, {"restore_vitals": true}, unit, str(unit.get("id", "")), record, 0, loop.get("equipment_items", {}), receipt)
+	return "" if receipt["errors"].is_empty() else str(receipt["errors"][0])
+
+
 static func _apply_carried_unit(next: Dictionary, carry: Dictionary, unit: Dictionary, unit_id: String, record: Dictionary, stamina: int, equipment_items: Dictionary, receipt: Dictionary) -> void:
 	if str(record.get("actor_id", "")) != str(unit.get("actor_id", "")):
 		receipt["skipped_unit_ids"].append(unit_id)
