@@ -1,10 +1,10 @@
 # OSS export report
 
-Source: private repository `main` = `77a55a78276d94bf0ec579d0c264f9c1b7b5e506` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `40436e3e893d26d4258e2be4705fcd43d8857e73` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
 - written: **1776 files, 54.5 MB**
-- dropped: **19271 files, 733.4 MB**
+- dropped: **19272 files, 733.5 MB**
 - processed (home path / author e-mail / public .gitignore rules): 20 files
 - residual home paths or author e-mails in the written tree: 0
 
@@ -24,7 +24,7 @@ No git history or author metadata is carried; the first commit of the public rep
 | A: content/battles assembled level data | 210 | 18.8 |
 | A: content/authored placeholder art (recoloured original frames) | 73 | 0.9 |
 | excluded directory docs/internal/ | 8 | 0.2 |
-| excluded directory docs/audits/ | 3 | 0.1 |
+| excluded directory docs/audits/ | 4 | 0.2 |
 | A: original saves / runtime memory dumps | 12 | 0.1 |
 | A: content/generated README / report (migrate) | 5 | 0.0 |
 | excluded directory docs/external/typesafe/ | 1 | 0.0 |
@@ -38,6 +38,7 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `asset-dumps/README.md`
 - `docs/audits/CODE_AUDIT_2026-09-27.md`
 - `docs/audits/DOCS_AUDIT_2026-09-27.md`
+- `docs/audits/EVIDENCE_AUDIT_2026-09-27.md`
 - `docs/audits/TOOLS_AUDIT_2026-09-27.md`
 - `docs/external/typesafe/README.md`
 - `docs/internal/CONSOLIDATION.md`
