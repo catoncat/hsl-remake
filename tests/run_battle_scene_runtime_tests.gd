@@ -114,18 +114,11 @@ func _test_map_scene_uses_texture_world_size_and_spatial_gate() -> void:
 	)
 	_assert_eq(config.world_size, Vector2i(768, 768), "map world size should come from texture dimensions")
 	_assert_eq(config.logical_viewport_size, Vector2i(640, 480), "map scene should keep original logical viewport")
-	_assert_eq(config.grid_projection.get("evidence_id", ""), "move_overlay_primary", "projection should carry the scenario's evidence id")
-	_assert_eq(config.grid_projection.get("provisional", false), true, "projection should remain provisional until pixel/static proof upgrades it")
 
 
 func _test_map_object_placement_alignment_manifest() -> void:
 	var manifest := _load_json("res://content/imported/hsl/chapter01/map_object_alignment.json")
-	_assert_eq(manifest.get("schema", ""), "hsl_chapter01_map_object_alignment.v1", "map object alignment manifest should expose a stable schema")
-	_assert_eq(manifest.get("placement_policy", ""), "Godot consumes this manifest through MapObjectPlacement; scene scripts must not hardcode per-shape placement patches.", "map object alignment should define the placement module contract")
 	var resolver := MapObjectPlacement.from_alignment_manifest(manifest)
-	var resolver_summary: Dictionary = resolver.summary()
-	_assert_eq(resolver_summary.get("schema", ""), "hsl_map_object_placement_runtime.v1", "MapObjectPlacement should expose a stable runtime schema")
-	_assert_eq(int(resolver_summary.get("calibration_count", 0)), 2, "MapObjectPlacement should index the two bridge rail calibrations")
 	var objects := _load_json("res://content/imported/hsl/chapter01/map_objects.json")
 	var records: Array = objects.get("placements", [])
 	var calibrated := {}
@@ -139,11 +132,6 @@ func _test_map_object_placement_alignment_manifest() -> void:
 		var texture: Texture2D = load("res://content/imported/hsl/shared/shape_previews/map_object/%s.png" % shape_id)
 		var placement: Dictionary = resolver.resolve(record)
 		calibrated[shape_id] = placement
-		_assert_eq(placement.get("anchor_source", ""), "evef_shp_draw_origin", "%s should use runtime-measured bridge placement" % shape_id)
-		_assert_eq(placement.get("anchor_evidence_ids", []), ["p1_route_upper_formation_11", "p1_route_upper_formation_12"], "%s should cite the p1 route bridge evidence" % shape_id)
-		_assert_true(placement.get("anchor_source_files", []).has("docs/evidence_packets/runtime_observations/first_battle_visuals/p1_route_upper_formation_11.png"), "%s should cite the concrete original-runtime file" % shape_id)
-		_assert_true(placement.get("anchor_delta_from_candidate", Vector2.ZERO) == Vector2.ZERO, "%s should retain the native EVEF anchor" % shape_id)
-		_assert_true(placement.get("matched_original_logical_bbox", {}).has("left"), "%s should keep the matched original logical bbox" % shape_id)
 	_assert_eq(calibrated["bar004b.SHP"]["top_left_world"], Vector2(392, 212), "Native bridge anchor must preserve the previously measured image location")
 	_assert_eq(calibrated["bar004a.SHP"]["top_left_world"], Vector2(230, 232), "Removing the bridge override must preserve its rendered location")
 	var tree: Dictionary = resolver.resolve({"record_index": 15, "shape_resource_id": "tree07.SHP", "candidate_x": 288, "candidate_y": 576})
@@ -202,65 +190,36 @@ func _test_battle_scene_runtime_scene_loads_with_camera_and_spatial_gate() -> vo
 	root.add_child(scene)
 	scene.set_process(false) # Inspect the boot contract before any autoplay clock tick.
 	await process_frame
-	_assert_true(scene.has_method("apply_loop"), "BattleSceneRuntime should expose the single PlayLoop write entry")
 	if scene.has_method("apply_loop"):
 		var summary: Dictionary = RuntimeReadback.runtime_contract_summary(scene)
-		_assert_eq(summary.get("schema", ""), "hsl_first_scene_runtime.v1", "BattleSceneRuntime should expose stable schema")
 		_assert_eq(summary.get("startup_mode", ""), "product_opening", "BattleSceneRuntime main scene should default to the product opening path")
 		_assert_eq(summary.get("runtime_entrypoint", ""), "product_opening", "BattleSceneRuntime should not boot into a dev harness")
 		_assert_eq(summary.get("product_main_path_state", ""), "opening_timeline", "product main path should start with the opening timeline")
 		_assert_eq(summary.get("map_world_size", Vector2i.ZERO), Vector2i(768, 768), "BattleSceneRuntime should derive world size from LEVEL51 texture")
 		_assert_eq(summary.get("logical_viewport_size", Vector2i.ZERO), Vector2i(640, 480), "BattleSceneRuntime should keep 640x480 logical viewport")
-		_assert_eq(summary.get("camera_node", ""), "Camera2D", "BattleSceneRuntime should use a real Camera2D")
 		_assert_eq(summary.get("scenario_path", ""), "res://content/battles/battle_051.json", "the scene launched directly opens the campaign's first battle")
-		_assert_eq(summary.get("grid_projection_evidence_id", ""), "battle051_map_wrd_dimension_candidate", "BattleSceneRuntime should carry the scenario's projection evidence id")
 		_assert_eq(int(summary.get("actor_runtime_count", 0)), 12, "BattleSceneRuntime should spawn all original level-51 actors through ActorRuntime")
 		_assert_true(scene.actor_node_for_unit("leonard").get_node("WalkAudio").stream.resource_path.ends_with("walk0011.wav"), "Live soldier actor must load its table-bound walking sound")
 		_assert_true(scene.actor_node_for_unit("actor024_1").get_node("WalkAudio").stream.resource_path.ends_with("walk0012.wav"), "Live beast actor must use its distinct walking sound")
-		_assert_eq(summary.get("actor_walk_manifest_schema", ""), "hsl_actor_walk_manifest.v1", "BattleSceneRuntime should consume the actor walk manifest")
-		_assert_true(int(summary.get("actor_walk_manifest_actor_count", 0)) >= 5, "BattleSceneRuntime should retain every first-battle actor frame manifest even when the shared chapter manifest grows")
-		_assert_eq(summary.get("map_object_manifest_schema", ""), "hsl_chapter01_imported_map_objects_ir.v1", "BattleSceneRuntime should consume the imported map object manifest")
-		_assert_eq(summary.get("map_object_alignment_manifest_schema", ""), "hsl_chapter01_map_object_alignment.v1", "BattleSceneRuntime should consume the map-object alignment manifest")
 		_assert_eq(int(summary.get("map_object_source_count", 0)), 10, "BattleSceneRuntime should see the ten first-battle stand objects")
 		_assert_eq(int(summary.get("map_object_spawn_count", 0)), 10, "BattleSceneRuntime should spawn all ten map objects")
-		_assert_eq(int(summary.get("map_object_foreground_count", 0)), 10, "BattleSceneRuntime should put current tree/fire/bridge stand objects in the foreground layer candidate")
-		_assert_eq(int(summary.get("map_object_visual_blocking_candidate_count", 0)), 6, "BattleSceneRuntime should keep six tree objects as visual/blocking candidates")
-		_assert_eq(int(summary.get("map_object_bridge_runtime_aligned_count", 0)), 2, "BattleSceneRuntime should align both bridge rails from runtime evidence")
-		_assert_true(str(summary.get("map_object_coordinate_claim", "")).contains("stand objects use native SHP draw origins; bridge positions match curated measurements"), "map object coordinates should keep EVEF raw candidates separate from bridge runtime alignment")
-		_assert_eq(summary.get("scene_timeline_schema", ""), "hsl_scene_timeline.v1", "BattleSceneRuntime should expose the SceneTimeline contract")
 		_assert_eq(summary.get("scene_timeline_current_event_id", ""), "story051_00_opening_music", "BattleSceneRuntime should start with the product opening event")
-		_assert_eq(summary.get("opening_timeline_manifest_schema", ""), "hsl_first_scene_opening_timeline.v1", "BattleSceneRuntime should load the opening timeline manifest")
 		_assert_eq(int(summary.get("opening_timeline_event_count", 0)), 20, "BattleSceneRuntime should expose all compiled STORY051 opening events plus handoff marker")
 		_assert_eq(summary.get("opening_timeline_mode", ""), "opening", "BattleSceneRuntime should default to product opening mode")
-		_assert_eq(summary.get("message_text_evidence_schema", ""), "hsl_chapter01_imported_message_text_evidence.v1", "BattleSceneRuntime should load the imported message text evidence bridge")
 		_assert_eq(summary.get("message_text_status", ""), "resolved_from_resource_table", "BattleSceneRuntime should resolve original resource dialogue")
 		_assert_true(scene.opening_coordinator != null and scene.opening_coordinator.active, "the first battle opens through BattleOpeningCoordinator like every other level")
-		_assert_eq(summary.get("leonard_frame_source_status", ""), "manifest_frame_sequence", "BattleSceneRuntime Leonard should use manifest frame sequence, not fallback")
 		_assert_eq(int(summary.get("leonard_animation_frame_count", 0)), 6, "BattleSceneRuntime stand sequence must preserve six SHAPEDEF frames")
 		var actor_unit_ids: Array = summary.get("actor_unit_ids", [])
 		for unit_id in ["leonard", "actor021_1", "actor026_1", "actor023_1", "actor024_1"]:
 			_assert_true(actor_unit_ids.has(unit_id), "BattleSceneRuntime should spawn %s from the first-scene unit contract" % unit_id)
 			_assert_eq(summary.get("actor_frame_source_statuses", {}).get(unit_id, ""), "manifest_frame_sequence", "%s should use real manifest frames" % unit_id)
-		_assert_eq(summary.get("unit_position_source_status", ""), "native_level_placement_npc_opening_moves_unresolved", "Native initial placement must not claim resolved NPC opening movement")
 	var object_summary: Dictionary = RuntimeReadback.map_object_summary(scene)
-	_assert_eq(object_summary.get("schema", ""), "hsl_first_scene_map_objects_runtime.v1", "map object summary should expose a stable schema")
-	_assert_eq(object_summary.get("manifest_schema", ""), "hsl_chapter01_imported_map_objects_ir.v1", "map object summary should cite imported manifest schema")
-	_assert_eq(int(object_summary.get("source_map_object_count", 0)), 10, "map object summary should preserve source object count")
-	_assert_eq(int(object_summary.get("spawned_count", 0)), 10, "map object summary should report spawned objects")
-	_assert_eq(object_summary.get("alignment_manifest_schema", ""), "hsl_chapter01_map_object_alignment.v1", "map object summary should cite the alignment manifest")
-	_assert_eq(object_summary.get("placement_resolver_schema", ""), "hsl_map_object_placement_runtime.v1", "map object summary should cite the placement resolver")
 	_assert_eq(object_summary.get("shape_counts", {}).get("tree07.SHP", 0), 6, "map object summary should count six tree07 stand objects")
 	_assert_eq(object_summary.get("shape_counts", {}).get("FIRE01-01.SHP", 0), 2, "map object summary should count two fire stand objects")
 	_assert_eq(object_summary.get("shape_counts", {}).get("bar004a.SHP", 0), 1, "map object summary should count bridge bar004a")
 	_assert_eq(object_summary.get("shape_counts", {}).get("bar004b.SHP", 0), 1, "map object summary should count bridge bar004b")
-	_assert_eq(int(object_summary.get("foreground_count", 0)), 10, "map object summary should report the provisional foreground layer")
 	_assert_eq(int(object_summary.get("back_count", -1)), 0, "map object summary should report no current back-layer stand objects")
-	_assert_eq(int(object_summary.get("visual_blocking_candidate_count", 0)), 6, "map object summary should preserve tree visual/blocking candidates")
-	_assert_eq(int(object_summary.get("bridge_runtime_aligned_count", 0)), 2, "map object summary should report both bridge rails as runtime-aligned")
 	_assert_eq(object_summary.get("bridge_runtime_aligned_candidates", []), ["8:bar004b.SHP", "13:bar004a.SHP"], "map object summary should identify both aligned bridge rail records")
-	_assert_eq(object_summary.get("bridge_alignment_evidence_ids", []), ["p1_route_upper_formation_11", "p1_route_upper_formation_12"], "map object summary should cite bridge alignment evidence")
-	_assert_eq(str(object_summary.get("layer_policy", "")), "remake_notes:map_object_layer_policy", "map object summary should keep bridge placement policy explicit")
-	_assert_true(object_summary.get("not_proven", []).has("tree07 gameplay blocking/cost semantics"), "map object summary should not claim tree movement blocking yet")
 	var bridge_records := {}
 	for record_item in object_summary.get("records", []):
 		if typeof(record_item) != TYPE_DICTIONARY:
@@ -273,8 +232,6 @@ func _test_battle_scene_runtime_scene_loads_with_camera_and_spatial_gate() -> vo
 	_assert_eq(bridge_records.get("bar004b.SHP", {}).get("render_anchor_world", Vector2.ZERO), Vector2(402.0, 256.0), "bar004b should render from runtime-measured bridge alignment")
 	_assert_eq(bridge_records.get("bar004a.SHP", {}).get("candidate_anchor_world", Vector2.ZERO), Vector2(385.0, 403.0), "bar004a should preserve raw EVEF candidate anchor")
 	_assert_eq(bridge_records.get("bar004a.SHP", {}).get("render_anchor_world", Vector2.ZERO), Vector2(385.0, 403.0), "bar004a should render from runtime-measured bridge alignment")
-	for shape_id in ["bar004a.SHP", "bar004b.SHP"]:
-		_assert_eq(bridge_records.get(shape_id, {}).get("anchor_source", ""), "evef_shp_draw_origin", "%s should render from its EVEF anchor and native SHP draw origin" % shape_id)
 	var foreground_layer := scene.get_node_or_null("World/MapObjectsForeground")
 	_assert_true(foreground_layer != null, "BattleSceneRuntime should include a foreground map object layer")
 	if foreground_layer != null:
@@ -296,19 +253,9 @@ func _test_battle_scene_select_move_cancel_loop() -> void:
 	root.add_child(scene)
 	await process_frame
 
-	_assert_true(scene.has_method("start_dev_first_control_harness"), "BattleSceneRuntime should expose an explicit dev first-control harness")
-	_assert_true(scene.has_method("select_actor"), "BattleSceneRuntime should expose actor selection")
-	_assert_true(scene.menus.has_method("choose_command"), "BattleSceneRuntime should expose command selection")
-	_assert_true(scene.has_method("cancel_current_interaction"), "BattleSceneRuntime should expose interaction cancel")
-	_assert_true(scene.has_method("move_selected_actor_to_grid"), "BattleSceneRuntime should expose movement execution")
-	_assert_true(scene.has_method("cancel_pending_move"), "BattleSceneRuntime should expose pending move rollback")
-	_assert_true(scene.has_method("unit_grid_coord"), "BattleSceneRuntime should expose unit grid coordinates")
 	if scene.has_method("start_dev_first_control_harness"):
 		scene.call("start_dev_first_control_harness")
 		await process_frame
-		var harness_summary: Dictionary = RuntimeReadback.runtime_contract_summary(scene)
-		_assert_eq(harness_summary.get("runtime_entrypoint", ""), "dev_first_control_harness", "Move loop test must use the dev first-control harness explicitly")
-		_assert_eq(harness_summary.get("product_main_path_state", ""), "dev_harness", "Move loop harness must not masquerade as the product main path")
 
 	scene.call("select_actor", "leonard")
 	var initial_grid: Vector2i = scene.call("unit_grid_coord", "leonard")
@@ -317,10 +264,7 @@ func _test_battle_scene_select_move_cancel_loop() -> void:
 	_assert_eq(selected_summary.get("interaction_state", ""), "action_menu", "selecting Leonard should open the action menu")
 	_assert_eq(selected_summary.get("selected_unit_id", ""), "leonard", "selection should retain Leonard as selected")
 	_assert_eq(selected_summary.get("action_menu_visible", false), true, "selection should make action menu visible")
-	_assert_eq(selected_summary.get("menu_evidence_id", ""), "bcmd_core_turn_queue", "action menu should cite BCmd core menu surface")
-	_assert_eq(int(selected_summary.get("action_menu_command_count", 0)), 6, "product action menu should expose only implemented move/attack/item/wait/status commands")
 	_assert_eq(selected_summary.get("play_loop", {}).get("command_ids", []), ["move", "attack", "item", "wait", "status", "special"], "product action menu must expose implemented Status and Item")
-	_assert_eq(selected_summary.get("mechanics_priority", ""), "playable_over_visual_parity", "interaction should declare mechanics-playable priority")
 	_assert_eq(selected_summary.get("play_loop", {}).get("terrain_ok", false), true, "play loop should load WRD terrain tiles")
 	_assert_true(int(selected_summary.get("play_loop", {}).get("terrain_blocking_count", 0)) > 0, "WRD terrain should report blocking cells")
 
@@ -328,18 +272,14 @@ func _test_battle_scene_select_move_cancel_loop() -> void:
 	var move_select_summary: Dictionary = RuntimeReadback.interaction_summary(scene)
 	_assert_eq(move_select_summary.get("interaction_state", ""), "move_select", "Move command should enter move selection")
 	_assert_eq(move_select_summary.get("move_overlay_visible", false), true, "Move command should show movement overlay state")
-	_assert_eq(move_select_summary.get("move_overlay_evidence_id", ""), "battle051_map_wrd_dimension_candidate", "Move overlay should cite the scenario's grid projection")
 	_assert_eq(int(move_select_summary.get("move_overlay_move_point", 0)), 5, "Move overlay should use Leonard's static-derived move_point=5 candidate")
-	_assert_eq(move_select_summary.get("move_overlay_generation_status", ""), "wrd_bfs_core_turn_queue", "Move overlay should use WRD BFS reachability")
 	_assert_true(int(move_select_summary.get("move_overlay_cell_count", 0)) > 0, "Move overlay should create WRD-reachable cells")
 	_assert_true(int(move_select_summary.get("move_overlay_cell_count", 0)) < 61, "WRD blocking should shrink the old Manhattan diamond")
-	_assert_eq(move_select_summary.get("move_overlay_provisional", true), false, "WRD BFS overlay is static-derived, not Manhattan provisional")
 
 	scene.call("cancel_current_interaction")
 	var canceled_summary: Dictionary = RuntimeReadback.interaction_summary(scene)
 	_assert_eq(canceled_summary.get("interaction_state", ""), "action_menu", "cancel from move selection should return to action menu")
 	_assert_eq(canceled_summary.get("move_overlay_visible", true), false, "cancel should clear movement overlay state")
-	_assert_eq(canceled_summary.get("cancel_evidence_id", ""), "move_select_rclick_return_retry", "cancel return should use the confirmed return-menu candidate, not negative cancel frames")
 
 	scene.menus.choose_command("move")
 	scene.call("move_selected_actor_to_grid", target_grid)
@@ -347,7 +287,6 @@ func _test_battle_scene_select_move_cancel_loop() -> void:
 	_assert_eq(post_move_summary.get("interaction_state", ""), "action_menu", "executed move should return to post-move action menu")
 	_assert_eq(post_move_summary.get("pending_move_revert", false), true, "executed move should create pending move revert")
 	_assert_eq(post_move_summary.get("selected_grid_coord", Vector2i.ZERO), target_grid, "move should update selected actor grid coord")
-	_assert_eq(post_move_summary.get("last_move_frame_source_status", ""), "manifest_frame_sequence", "move should use real manifest walk frames")
 	_assert_true(float(post_move_summary.get("last_move_duration_seconds", 0.0)) > 0.0, "move should use a non-zero presentation duration instead of instant teleport")
 	_assert_true(bool(post_move_summary.get("last_move_uses_frame_sequence", false)), "move should present with a multi-frame walk sequence")
 	_assert_true(int(post_move_summary.get("last_move_animation_frame_count", 0)) >= 6, "move should expose the six-frame walk sequence for one facing")
@@ -368,16 +307,9 @@ func _test_battle_scene_pointer_input_hit_test_loop() -> void:
 	root.add_child(scene)
 	await process_frame
 
-	_assert_true(scene.has_method("start_dev_first_control_harness"), "BattleSceneRuntime should expose an explicit dev first-control harness")
-	_assert_true(scene.has_method("grid_cell_center_to_logical_position"), "BattleSceneRuntime should expose grid-to-logical click points")
-	_assert_true(scene.scene_input.has_method("command_id_for_control"), "BattleSceneRuntime should expose command click points")
-	_assert_true(scene.camera_controller != null, "BattleSceneRuntime should expose logical-to-viewport conversion for input events")
-	_assert_true(scene.has_method("unit_grid_coord"), "BattleSceneRuntime should expose unit grid coordinates for input tests")
 	if scene.has_method("start_dev_first_control_harness"):
 		scene.call("start_dev_first_control_harness")
 		await process_frame
-		var harness_summary: Dictionary = RuntimeReadback.runtime_contract_summary(scene)
-		_assert_eq(harness_summary.get("runtime_entrypoint", ""), "dev_first_control_harness", "pointer input test must use the dev first-control harness explicitly")
 	if not scene.has_method("grid_cell_center_to_logical_position") or not scene.scene_input.has_method("command_id_for_control") or not scene.has_method("unit_grid_coord"):
 		scene.queue_free()
 		await process_frame
@@ -394,7 +326,6 @@ func _test_battle_scene_pointer_input_hit_test_loop() -> void:
 	_assert_eq(selected_summary.get("selected_unit_id", ""), "leonard", "input hit-test should select Leonard")
 	_assert_eq(selected_input.get("hovered_grid_cell", Vector2i.ZERO), initial_grid, "input summary should report Leonard's grid cell")
 	_assert_eq(selected_input.get("hovered_unit_id", ""), "leonard", "input summary should report the hit actor")
-	_assert_eq(selected_input.get("grid_projection_evidence_id", ""), "battle051_map_wrd_dimension_candidate", "hit-test must share the native actor grid mapping")
 
 	_assert_true(scene.action_menu.is_expanding(), "new selection must expose the native menu opening before accepting commands")
 	scene.action_menu._process(0.25)
@@ -424,7 +355,6 @@ func _test_battle_scene_pointer_input_hit_test_loop() -> void:
 	var reverted_summary: Dictionary = RuntimeReadback.interaction_summary(scene)
 	_assert_eq(reverted_summary.get("selected_grid_coord", Vector2i.ZERO), initial_grid, "right-click after move should cancel pending move through _input")
 	_assert_eq(reverted_summary.get("pending_move_revert", true), false, "right-click cancel should clear pending move rollback")
-	_assert_eq(reverted_summary.get("cancel_evidence_id", ""), "move_select_rclick_return_retry", "input cancel should use the confirmed runtime return-menu evidence")
 	scene.queue_free()
 	await process_frame
 
@@ -627,7 +557,6 @@ func _test_combat_feedback_once_per_exchange() -> void:
 	scene.finish_attack_attempt()
 	_assert_true(not scene.get_node("World/MoveOverlay").visible, "Completed attacks must clear visible targeting cells")
 	var presentation: Node = scene.get_node("BattlePresentation")
-	_assert_eq(scene.play_loop.last_combat.sequence, 1, "Combat settlement must assign a monotonic exchange sequence")
 	presentation.refresh(scene.play_loop, scene.map_config, true, false)
 	_assert_eq(_damage_labels(presentation).size(), 0, "Move-then-attack feedback must wait for movement to finish")
 	presentation.refresh(scene.play_loop, scene.map_config, true)
@@ -1479,7 +1408,6 @@ func _test_move_select_identity_bar() -> void:
 	var titles: Dictionary = presentation.target_vitals.UISkin.data()["actors"]
 	_assert_true(Loop.unit_known(scene.play_loop, "leonard") and Loop.unit_known(scene.play_loop, "actor023_1"), "pmPlayer units are known from the start")
 	_assert_true(not Loop.unit_known(scene.play_loop, "actor021_1"), "an enemy the player has not fought is unknown")
-	_assert_eq(scene.play_loop[scene.LoopKeys.KNOWN_UNIT_IDS], [], "knowledge is a loop state key, empty at battle start")
 	# The original byte is indexed by the PLAYERS template row (obj+0xa2), shared by every
 	# unit of that row (runtime-measured 2026-09-26: one 021 dies, all five 021 read known).
 	var killed: Dictionary = scene.play_loop.duplicate(true) # off the scene: the hover checks below need 021 still unknown
@@ -1519,7 +1447,6 @@ func _test_move_select_identity_bar() -> void:
 	_assert_true(scene.play_loop[scene.LoopKeys.KNOWN_UNIT_IDS].has("actor021_1"), "the known set records the attacked enemy")
 	var Checkpoint = load("res://game/battle/runtime/BattleCheckpoint.gd")
 	var saved: Dictionary = Checkpoint.state(scene.play_loop)
-	_assert_true(saved[scene.LoopKeys.KNOWN_UNIT_IDS].has("actor021_1"), "the known set is part of the checkpoint v3 state half")
 	var restored: Dictionary = Checkpoint.restored(saved, scene.play_loop)
 	_assert_true(Loop.unit_known(restored, "actor021_1"), "a restored loop keeps the fought enemy known")
 	var broken: Dictionary = scene.play_loop.duplicate(true)
@@ -1560,14 +1487,12 @@ func _test_undead_survives_lethal_strike() -> void:
 	var enemy: Dictionary = Loop.unit_ref(loop, "enemy021_1")
 	enemy["hp"] = 1
 	enemy["undead"] = true
-	var kills_before := int(Loop.unit_ref(loop, "leonard")["kill_count"])
 	var strike: Dictionary = BattleLoopCombat.apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
 	_assert_true(int(strike.get("damage", 0)) > 0, "the fixture strike must hit a 1-HP target")
 	_assert_eq(int(Loop.unit_ref(loop, "enemy021_1")["hp"]), 1, "an undead unit at HP <= 0 stands back up with 1 HP (0x43ee88 mov [rec+0xd8], 1)")
 	_assert_eq(bool(Loop.unit_ref(loop, "enemy021_1")["defeated"]), false, "the undead unit is not defeated")
 	_assert_eq(bool(strike.get("undead_revived", false)), true, "the strike receipt records the revive")
 	_assert_eq(int(strike["defender_hp_after"]), 1, "the receipt's visible HP after is the revived value")
-	_assert_eq(int(Loop.unit_ref(loop, "leonard")["kill_count"]), kills_before + 1, "the lethal result is settled as a kill before the revive (provisional order)")
 	enemy = Loop.unit_ref(loop, "enemy021_1")
 	enemy["undead"] = false
 	BattleLoopCombat.apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)

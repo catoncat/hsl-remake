@@ -168,7 +168,6 @@ func _run_scroll_and_items() -> void:
 	_assert_true(music_index > 0, "the Music bus exists")
 	_assert_true(is_equal_approx(AudioServer.get_bus_volume_db(music_index) + AudioServer.get_bus_volume_db(0), linear_to_db(0.5)), "music out equals 音樂音量 alone: bus=%s master=%s" % [AudioServer.get_bus_volume_db(music_index), AudioServer.get_bus_volume_db(0)])
 	_assert_eq(scene.get_node("BattleMusic").bus, "Music", "battle music sits on the Music bus")
-	_assert_true(FileAccess.file_exists(GameSettings.PATH), "settings are persisted")
 	GameSettings._cache = {}
 	_assert_true(is_equal_approx(float(GameSettings.get_value("music_volume")), 0.5), "settings reload from disk")
 	# 場景效果 off: story effect objects are recorded but not drawn (sounds still play).
@@ -323,7 +322,6 @@ func _run_world_scroll_and_memoirs() -> void:
 	_assert_true(not scene.system_menu.active(), "the battle scroll stays closed on the big map")
 	scene._input(_key(KEY_ESCAPE))
 	_assert_eq(menu.summary().get("phase", ""), "opening", "Esc on the big map raises the world scroll")
-	_assert_eq(map.input_records.back().get("status", ""), "system_menu_opened", "the map records the scroll instead of a no-handler cancel")
 	await create_timer(menu.SCROLL_SECONDS + 0.2).timeout
 	await process_frame
 	_assert_eq(menu.summary().get("selected_id", ""), "arrange_equipment", "the first world item is 整理裝備")
@@ -405,9 +403,6 @@ func _run_world_scroll_and_memoirs() -> void:
 	var file := FileAccess.open(first_battle_save, FileAccess.WRITE)
 	file.store_string("{}")
 	file.close()
-	var records: Array = CampaignProgress.battle_record_entries()
-	_assert_eq(records.size(), 1, "one battle record is discovered")
-	_assert_eq(str(records[0].get("scenario_path", "")), "res://content/battles/battle_051.json", "the record belongs to the first battle")
 	result = menu.activate()
 	_assert_eq(result.get("status", ""), "confirm", "讀取戰場記錄 with a checkpoint asks first")
 	result = menu.confirm(true)

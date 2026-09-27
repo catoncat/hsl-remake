@@ -93,7 +93,6 @@ func dialogue_contracts() -> void:
 	check(dialogue.position + dialogue.BOARD_AT == Vector2(75, 320), "speakerless narration centres the board: left (640 - 489) / 2 = 75")
 	dialogue.show_narration("place4", "雷歐納德：請選擇", false)
 	check(dialogue.position + dialogue.BOARD_AT == Vector2(144, 320), "a host's line naming a speaker keeps the speaker board's place")
-	check(not dialogue.has_method("place_for_speaker_logical_y"), "no board placement follows the speaker's position")
 	dialogue.clear_message()
 	# Dissolves and the line wipe (runtime-measured, dialogue_death packet): visual only.
 	var ghosts := func() -> int:

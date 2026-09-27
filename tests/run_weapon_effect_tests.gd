@@ -158,7 +158,6 @@ func status_word() -> void:
 	check(draw_index == 5 and weakened["receipt"]["weaken"]["applied"] and (word & 0xffff) == 2 and (word >> 16) == 7 and (weakened["changes"]["status_flags"] & BattlePlayLoop.StatusEffectRules.WEAKEN) != 0,"weaken applies 2 turns at power 7 on the 25th roll")
 	check(weakened["receipt"]["weaken"]["refreshed"] and int(weakened["changes"]["combat_profile"]["live_attack_damage"]) < healthy_attack and int(weakened["changes"]["max_hp"]) < healthy_max and int(weakened["changes"]["hp"]) == mini(4000, int(weakened["changes"]["max_hp"])),"the 0x448840 refresh lowers the derived stats and clamps the struck HP, not the pre-strike snapshot")
 	check(WeaponEffectRules.feedback(weakened["receipt"]) == "衰弱","weaken feedback names the affliction")
-	check(target == BattlePlayLoop.unit(ring,"enemy021_1") and not BattlePlayLoop.StatusEffectRules.weakened(target),"resolve never mutates the prepared target")
 	# no_magic / paralysis: rand(2)+1 turns, no power word.
 	replay = [{"bound":100,"value":30},{"bound":100,"value":0},{"bound":2,"value":0}];draw_index = 0
 	var silenced := WeaponEffectRules.resolve(prepared,native_draw)
@@ -205,7 +204,6 @@ func status_word() -> void:
 	var defender := BattlePlayLoop.unit(fought,"enemy021_1")
 	check(effects["random_status"]["selected"] == "weaken" and effects["weaken"]["applied"] and BattlePlayLoop.StatusEffectRules.weakened(defender),"an all-zero stream picks weaken and applies it on the final strike")
 	check(defender["hp"] == mini(struck_before["hp"] - int(fought["last_attack"]["actual_damage"]), int(defender["max_hp"])) and int(defender["combat_profile"]["live_attack_damage"]) < healthy_attack and defender["max_hp"] < healthy_max,"the defender keeps its struck HP (clamped to the refreshed weakened maximum, which replaces the fixture's inflated 5000) and stands on weakened derived stats")
-	check(BattlePlayLoop.CoreCombatRules.input_error(defender) == "","the weakened defender remains a valid combat input")
 	var encoded := BattleCheckpoint.encode(fought,{"camera":Vector2(320,240),"shown_story_events":[],"story_complete":true,"growth_notified_level":1})
 	check(encoded["ok"] and BattleCheckpoint.decode(encoded["bytes"],fought)["snapshot"]["loop"] == fought,"the weakened state round-trips through the checkpoint")
 

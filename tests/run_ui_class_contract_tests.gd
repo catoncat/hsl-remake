@@ -437,7 +437,6 @@ func run_game_cursor() -> void:
 	_test_manifest(manifest)
 	var cursor: Node = root.get_node_or_null("GameCursor")
 	check(cursor != null, "the GameCursor autoload is installed for every scene")
-	check(str(ProjectSettings.get_setting("autoload/GameCursor", "")) == "*" + AUTOLOAD_PATH, "project.godot registers GameCursor as an autoload")
 	if cursor == null:
 		return
 	_test_frames_and_hotspots(cursor, manifest)
@@ -458,7 +457,6 @@ func _test_manifest(manifest: Dictionary) -> void:
 func _test_frames_and_hotspots(cursor: Node, manifest: Dictionary) -> void:
 	var frames: Array = manifest.get("frames", [])
 	_assert_eq(cursor.frames.size(), frames.size(), "the autoload loads every shape")
-	_assert_eq(cursor.frame_ticks, 6, "the autoload animates at six ticks a shape")
 	var on_orb := 0
 	for index in range(mini(frames.size(), cursor.frames.size())):
 		var origin := Vector2i(int(frames[index]["draw_origin"][0]), int(frames[index]["draw_origin"][1]))

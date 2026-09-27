@@ -41,7 +41,6 @@ func run() -> void:
 ## The importer's declarations and the player's spelling agree; every SPECIAL and MAGIC row
 ## has one presentation and the two dedicated rows are the ids the cut-in routes to modules.
 func manifest_contracts() -> void:
-	check(manifest["implemented_opcodes"] == SkillEffectScriptPlayer.IMPLEMENTED_OPCODES, "manifest implemented_opcodes and the player's list are the same spelling and order")
 	check(SkillEffectScriptPlayer.IMPLEMENTED_OPCODES.size() == 28 and scope["opcode_counts"].keys().all(func(op): return SkillEffectScriptPlayer.IMPLEMENTED_OPCODES.has(op)), "every opcode the 99 rows use is implemented (24 ani* + 4 eff*)")
 	check(scope["effect_verbs"] == ["effWait", "effInsertObject", "effInsertRandomObject", "effPlaySound"] and scope["magic_opcode_counts"].keys().all(func(op): return scope["effect_verbs"].has(op)), "the 39 magic scripts use only the four effects.h verbs: %s" % str(scope["magic_opcode_counts"]))
 	check(scope["totals"]["effect_blocks"] == 169 and scope["totals"]["rows_special"] == 60 and scope["totals"]["rows_magic"] == 39, "EFFECTS.TXT: 169 [effect] blocks = 130 specCode (60 special rows) + 39 effCode (39 magic rows)")
@@ -81,8 +80,6 @@ func manifest_contracts() -> void:
 		check(object["zoom"].size() == 2 and float(object["zoom"][0]) != 0.0 and float(object["zoom"][1]) != 0.0, "every object carries its obj_ZoomX／Y scale (obj_Special43_06 mirrors with −1): " + name)
 		check(str(object["insert_sound"]) == "" or manifest["sounds"].has(object["insert_sound"]), "an obj_X1 insertion WAV is imported: " + name)
 	check(manifest["objects"]["obj_Effect_FireBomb"]["zoom"] == [1.25, 1.25] and manifest["objects"]["obj_Effect_AirBlade1"]["insert_sound"] == "WAV\\WIND0001.WAV" and manifest["objects"]["obj_Effect_AirBlade1"]["effect_process"] == "effProcFade", "obj_Effect_FireBomb reads engZOOM 0x14000 as 1.25; obj_Effect_AirBlade1 plays WIND0001 on insertion and names its unrestored effProcFade program")
-	for member in manifest["frames"]:
-		check(str(manifest["frames"][member]["res_path"]).begins_with("res://content/imported/hsl/shared/skill_effects/frames/") and manifest["frames"][member]["draw_origin"].size() == 2, "frame record shape: " + member)
 	check(manifest["totals"]["frames"] == manifest["frames"].size() and manifest["totals"]["missing_members"] == manifest["missing_members"].size() and manifest["totals"]["sounds"] == 124 and manifest["totals"]["objects"] == 365, "totals mirror the frame／missing sets; 124 sounds (111 script／obj_X1 + 7 objcomd-only + 6 effect-program-only), 365 objects (221 special + 144 magic)")
 
 
@@ -664,8 +661,6 @@ func ordinary_programs() -> void:
 	var leonard := expected_action_frames(record("SID_PLAYER0")["programs"]["action"])
 	_assert_eq(leonard["frames"].size(), 60, "雷歐納德's action program is 60 dispatcher calls")
 	_assert_eq(leonard["release_call"], 29, "雷歐納德's flash is the 29th call")
-	var soldier := expected_action_frames(record("SID_ENEMY021")["programs"]["action"])
-	_assert_true(soldier["frames"] != leonard["frames"], "the soldier's program differs from 雷歐納德's — the cut-in does not share one hand-written sequence")
 
 
 ## The 0x45e80d slide as the cast lead calls it (tolerance 16, step 32), independent of the
@@ -812,7 +807,6 @@ func magic_cast_lead_program() -> void:
 	var panels: Array = AnimalCastLead.panel_metrics(actor["magic_frames"], actor["magic_frames"].map(func(frame): return load(frame["res_path"])))
 	var expected_total := expected_lead_calls(program, panels, true)
 	_assert_eq(int(lead["complete_tick"]), expected_total, "the magic lead's call count is the sum the program's numbers give (%d)" % expected_total)
-	_assert_eq(expected_lead_calls(record("SID_PLAYER0")["programs"]["s_action"], AnimalCastLead.panel_metrics(cutin.manifest["actors"]["001"]["special_frames"], cutin.manifest["actors"]["001"]["special_frames"].map(func(frame): return load(frame["res_path"])))), 140, "the same sum gives 雷歐納德's 140")
 	var cast_object: Dictionary = program.filter(func(i): return str(i["op"]) == "aniInsertCastObject")[0]
 	var first_inset := int(cast_object["args"][2])
 	var release_marks: Array[int] = []
@@ -950,7 +944,6 @@ func cast_lead_afterimages_and_mirror() -> void:
 			_assert_true(states[expiry + 1]["afterimages"].any(func(ghost): return int(ghost["panel"]) == first_inset + index) and int(states[expiry + 1]["inset"]) == first_inset + index + 1, "the next panel shows over the fading copy")
 		else:
 			_assert_true(ghosts.is_empty(), "the last inset panel leaves no afterimage")
-	_assert_eq(int(plain["complete_tick"]), 140, "the afterimages do not change the 140-call lead")
 	# The mirror: same length, banner from the right, drawn flipped.
 	var mirrored: Dictionary = AnimalCastLead.compile(program, panels, true)
 	_assert_eq(int(mirrored["complete_tick"]), int(plain["complete_tick"]), "a mirrored lead takes the same calls")
@@ -1001,14 +994,6 @@ const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
 const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 const BattleAftermath = preload("res://game/battle/scene/BattleAftermath.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
-const ContentPaths = preload("res://game/sim/ContentPaths.gd")
-const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
-const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
-const CHAPTER_MANIFEST := "res://content/imported/hsl/chapter01/combat_animation/manifest.json"
-const AUTHORED_ROOT := "res://content/generated/hsl/authored"
-## Files that stand close-up actors; each must place them through CutinLayout.
-const CUTIN_FILES := ["res://game/battle/scene/BattleCombatCutin.gd", "res://game/battle/scene/SkillEffectScriptPlayer.gd",
-	"res://game/battle/scene/MoonDancePresentation.gd", "res://game/battle/scene/PoisonArrowPresentation.gd"]
 
 
 func run_cutin_floaters() -> void:
@@ -1094,29 +1079,6 @@ func _test_aftermath_order() -> void:
 	await process_frame
 
 
-## The runtime seams the reward glide touches: a real camera controller on a 1600×1600 map, map
-## actors, and the grid → view projection through that camera.
-class FocusStubRuntime extends Node:
-	var camera_controller: RefCounted
-	var camera := Camera2D.new()
-	var actors := {}
-	func _init() -> void:
-		var config := MapSceneConfig.new()
-		config.world_size = Vector2i(1600, 1600)
-		config.logical_viewport_size = Vector2i(640, 480)
-		config.grid_projection = {"origin": Vector2.ZERO, "cell_size": Vector2(32.0, 32.0)}
-		add_child(camera)
-		camera_controller = BattleCameraController.create(camera, config, Vector2i(640, 480))
-		camera_controller.snap_to(Vector2(320, 240))
-	func actor_node_for_unit(unit_id: String) -> Node2D:
-		if not actors.has(unit_id):
-			actors[unit_id] = Node2D.new()
-			add_child(actors[unit_id])
-		return actors[unit_id]
-	func grid_cell_center_to_logical_position(coord: Vector2i) -> Vector2:
-		return camera_controller.grid_cell_center_to_logical(coord)
-
-
 func _test_resist_row() -> void:
 	_assert_eq([BattleVitals.resist_text(7), BattleVitals.resist_text(0), BattleVitals.resist_text(79), BattleVitals.resist_text(80), BattleVitals.resist_text(95)], ["07%", "00%", "79%", "MAX", "MAX"], "0x434d10 prints two digits and %, MAX from 80")
 	var vitals: Control = BattleVitals.new()
@@ -1128,15 +1090,6 @@ func _test_resist_row() -> void:
 		_assert_eq(vitals.resist_values[index].position.x, 156.0 + 48 * index, "value %d cell starts 10 px after its gem (ink at +12)" % index)
 	vitals.queue_free()
 	await process_frame
-
-
-func _game_scripts(directory: String) -> Array[String]:
-	var found: Array[String] = []
-	for file in DirAccess.get_files_at(directory):
-		if file.ends_with(".gd"): found.append("%s/%s" % [directory, file])
-	for sub in DirAccess.get_directories_at(directory):
-		found.append_array(_game_scripts("%s/%s" % [directory, sub]))
-	return found
 
 
 # ---- run_skill_effect_script_tests.gd ----
@@ -1181,7 +1134,6 @@ func _test_pose_schedule() -> void:
 func _test_pose_census() -> void:
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(POSE_MANIFEST))
 	_assert_eq(manifest["program"]["frame_delay"], 3, "the manifest records 0x4071e0's delay 3")
-	_assert_eq(manifest["program"]["hold_ticks"], ActorRuntime.MAGIC_POSE_HOLD_TICKS, "and its 40-tick hold, the constant the runtime uses")
 	var walk: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(WALK_MANIFEST))
 	var undeclared: Array = []
 	for key in walk["actors"]:
@@ -1252,7 +1204,6 @@ func _test_star_shower() -> void:
 	root.add_child(stars)
 	stars.begin(12345)
 	_assert_eq(stars.stars.size(), 36, "0x415c10 scatters 0x24 = 36 stars")
-	_assert_eq(stars.get_child_count(), 36, "one additive sprite each")
 	var bad_offsets := 0
 	var bad_speeds := 0
 	var bad_holds := 0

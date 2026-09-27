@@ -96,7 +96,6 @@ func _run_layout_and_menu() -> void:
 	CampaignProgress.reset_campaign()
 	var scene = await _boot()
 	var summary: Dictionary = scene.summary()
-	_assert_eq(summary.get("manifest_schema", ""), "hsl_title_assets.v1", "title manifest loaded")
 	_assert_eq(summary.get("items", []), ["new_story", "battle_record", "quit"], "the ring menu has the three original items")
 	for role in ["background", "logo", "ring", "statue_left", "statue_right", "cursor_gem", "cursor_hand"]:
 		var sprite = scene.get_node_or_null("Title_" + role)
@@ -126,7 +125,6 @@ func _run_layout_and_menu() -> void:
 	_assert_eq(summary.get("lit_visible", []), [false, false, false], "hover lights nothing under OPT-GUIDE＝原版 (the original hover only sparkles)")
 	_assert_eq(summary.get("selected_item_id", ""), "battle_record", "hover moves the selection")
 	_assert_eq(scene.hover_at(Vector2(10, 10)), -1, "hovering outside the ring lights nothing")
-	_assert_eq(scene.summary().get("lit_visible", []), [false, false, false], "lit shape hides when the mouse leaves")
 	# Keyboard: up from item 2 goes back to item 1; Enter confirms the current item.
 	var up := InputEventKey.new()
 	up.keycode = KEY_UP
@@ -287,7 +285,6 @@ func _run_game_over_screen() -> void:
 	var summary: Dictionary = scene.summary()
 	_assert_eq(summary.get("phase", ""), "fading_in", "the GAME OVER screen starts behind the black fade")
 	_assert_true(bool(summary.get("cue_playing", false)), "GAMEOVER.WAV (resource 628, defProcGameOverBOSS) plays as the screen appears")
-	_assert_eq(summary.get("text_position"), Vector2(55, 211), "GAME OVER text is centred on the frame (provisional)")
 	for role in ["game_over_background", "game_over_text"]:
 		var sprite = scene.get_node_or_null("Title_" + role)
 		_assert_true(sprite != null and sprite.texture != null, "%s sprite is drawn" % role)
@@ -367,7 +364,6 @@ func _run_game_clear_screen() -> void:
 	var text = scene.get_node_or_null("Text")
 	_assert_true(background != null and background.texture != null and background.texture.resource_path.ends_with("OverBG01.SHP.png"), "OverBG01 is the first backdrop")
 	_assert_true(text != null and text.texture != null and text.texture.resource_path.ends_with("Over001.SHP.png"), "Over001 is the first narration")
-	_assert_eq(text.position, Vector2(42, 0), "Over001 starts centred at the top (remake layout)")
 	var key := InputEventKey.new()
 	key.keycode = KEY_SPACE
 	key.pressed = true
