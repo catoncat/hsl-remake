@@ -1614,17 +1614,18 @@
     },
     {
       "id": "cam-script-walk-variants",
-      "difference": "剧情行走镜头已全部照原版（不带 Wait 不动、Wait 先缓动居中再开走并跟随，含 actWalkFollowWait）；剩 actWalkFollow(Wait) 的走法：原版复制领队路径缓冲同形平移，重制按目的格自算路径",
-      "original": "0x44ff50 置 +0x8c = 0x320001（状态 0x32 sub 1）、复制领队 +0x4c 路径缓冲、+0x50 = Wait 时 VM；sub 1 居中（0x453de6）与跟随（0x454039）都查 +0x50",
+      "difference": "剧情行走镜头与 actWalkFollow(Wait) 的走法已照原版（跟随者复制领队首段路径缓冲、按基准像素偏移、不足处再算路）；剩跟随者目的格重制仍经落点修正（原版 0x44ff50 不调 0x44fbd0）、领队未开走即跟随时原版复制旧缓冲",
+      "original": "0x44ff50 置 +0x8c = 0x320001（状态 0x32 sub 1）、复制领队 +0x4c 路径缓冲（0x65 dword 方向码，1 上 2 下 3 左 4 右，0 结束）、目的 = 领队目的 + (跟随者 − 领队) +4／+8、+0x50 = Wait 时 VM；sub 3／6 从 +0x9c 索引 0 逐格取码，码 0 未到目的格再调 0x4111d0（0x45412d）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_camera_scroll.md"
       ],
-      "remake": "OpeningStoryObjects._walk_follow：Wait 形式先居中到跟随者再开走并跟随；路径由 ScriptWalkPath.route 自算",
+      "remake": "OpeningStoryObjects._walk_follow：Wait 形式先居中到跟随者再开走并跟随；_copied_route 按领队首段步序从跟随者格逐格平移（不查地形），终点不在目的格时 ScriptWalkPath.route 续算",
       "remake_code": [
-        "game/battle/runtime/opening/OpeningStoryObjects.gd:_walk_follow"
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_walk_follow",
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_copied_route"
       ],
       "original_status": "read_complete",
-      "visibility": "some_levels",
+      "visibility": "rare",
       "effort": "S",
       "category": "镜头"
     },

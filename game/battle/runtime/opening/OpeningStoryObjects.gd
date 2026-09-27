@@ -56,6 +56,9 @@ var runtime: Node:
 var _pending_insert: Dictionary = {}
 ## The last walk _move_actor started: {start, points, pixels_per_tick} (the camera follow's input).
 var _last_walk: Dictionary = {}
+## Each walker's path buffer (+0x4c) as the cell steps of its first 0x4111d0 segment, by
+## unit id: what 0x44ff50 copies into a follower.
+var _path_buffers: Dictionary = {}
 var _story_objects: Dictionary = {}
 ## Effect readings of inserted objects (rain, flashes, fire runs...); see StoryEffectObjects.
 var _effects: RefCounted = StoryEffectObjects.new()
@@ -447,9 +450,11 @@ func _walk_relative(event: Dictionary, blocking: bool) -> void:
 
 
 func _walk_follow(event: Dictionary, blocking: bool) -> void:
-	## actWalkFollow(follower, inst, leader, inst, speed): the follower walks to the
-	## leader's destination keeping its offset from the leader (0x44ff50; the remake routes
-	## its own path where the original copies the leader's path buffer). The Wait form
+	## actWalkFollow(follower, inst, leader, inst, speed): the follower's destination is the
+	## leader's plus (follower − leader) base pixel (0x44ff50 reads +4／+8; a walker's base
+	## stays at its walk start while the steps go to +0xa8／+0xac), and it copies the leader's
+	## path buffer (0x65 dwords of direction codes, replayed from index 0 with no terrain
+	## check), routing on only if the codes end off its destination (0x45412d). The Wait form
 	## enters 0x453b90 state 0x32 at sub 1 (+0x8c = 0x320001) with +0x50 = VM: 0x43bf30
 	## centres on the follower first (0x453de6) and sub 3／6 follow the walk (0x454039),
 	## the camera of actWalkWait; the plain form (+0x50 = 0) leaves the camera alone.
@@ -466,7 +471,7 @@ func _walk_follow(event: Dictionary, blocking: bool) -> void:
 	var target: Vector2 = _motion_end(leader_actor) + offset
 	var unit_id := str(follower[0])
 	var start_walk := func() -> void:
-		_move_actor(follower_actor, unit_id, _motion_end(follower_actor), target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4))
+		_move_actor(follower_actor, unit_id, _motion_end(follower_actor), target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4), 0, _path_buffers.get(str(leader[0]), []))
 		if blocking:
 			_camera_follows_last_walk()
 			coordinator._block_on(unit_id)
@@ -699,11 +704,14 @@ func _camera_follows_last_walk() -> void:
 ## the coordinator's walk_pixels_per_second is the speed-4 rate. The actor steps cell by
 ## cell along ScriptWalkPath.route over the scene terrain (the original path buffer),
 ## never straight through walls; the duration follows the walked length.
-func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, source_event_id: String, source_token: String, speed_arg: float = 0.0, keep_pose_frame_ticks: int = 0) -> void:
+## `copied_steps` (actWalkFollow) replays a leader's path buffer from `start` first.
+func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, source_event_id: String, source_token: String, speed_arg: float = 0.0, keep_pose_frame_ticks: int = 0, copied_steps: Array = []) -> void:
 	var speed: float = coordinator.walk_pixels_per_tick(int(speed_arg))
 	var terrain := _walk_terrain()
 	target = _fixed_destination(unit_id, target, terrain["cell_size"])
-	var route: Dictionary = ScriptWalkPath.route(terrain["tiles"], terrain["map_size"], start, target, terrain["cell_size"], _unit_flies(unit_id))
+	var flies := _unit_flies(unit_id)
+	var route: Dictionary = _copied_route(terrain, start, target, copied_steps, flies) if not copied_steps.is_empty() else ScriptWalkPath.route(terrain["tiles"], terrain["map_size"], start, target, terrain["cell_size"], flies)
+	_path_buffers[unit_id] = copied_steps if not copied_steps.is_empty() else _first_segment_steps(terrain, start, target, flies)
 	var points: Array = route["points"]
 	var seconds: float = ScriptWalkPath.length(start, points) / (coordinator.walk_pixels_per_second * speed / coordinator.DEFAULT_WALK_SPEED)
 	var result: Dictionary = actor.move_along([start] + points, seconds, true, keep_pose_frame_ticks)
@@ -726,6 +734,42 @@ func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, 
 		"path_point_count": result.get("path_point_count", 0),
 		"uses_frame_sequence": result.get("uses_frame_sequence", false),
 	})
+
+
+## The cell steps of the first 0x4111d0 segment (0x453b90 sub 0 copies 0x4c63c0 into +0x4c).
+func _first_segment_steps(terrain: Dictionary, start: Vector2, target: Vector2, flies: bool) -> Array:
+	var cell_size: Vector2 = terrain["cell_size"]
+	var previous := ScriptWalkPath.cell_of(start, cell_size)
+	var to := ScriptWalkPath.cell_of(target, cell_size)
+	if (terrain["tiles"] as Dictionary).is_empty() or previous == to:
+		return []
+	var steps: Array = []
+	for cell in ScriptWalkPath._segment(terrain["tiles"], terrain["map_size"], previous, to, flies):
+		steps.append(cell - previous)
+		previous = cell
+	return steps
+
+
+## The follower's walk (0x453b90 from sub 1): the copied direction codes step cell by cell
+## from its own cell with no terrain check; when they end off the destination cell,
+## 0x4111d0 routes on from there (0x45412d).
+func _copied_route(terrain: Dictionary, start: Vector2, target: Vector2, steps: Array, flies: bool) -> Dictionary:
+	var cell_size: Vector2 = terrain["cell_size"]
+	var cells: Array = [ScriptWalkPath.cell_of(start, cell_size)]
+	for step in steps:
+		cells.append(cells.back() + step)
+	var target_cell := ScriptWalkPath.cell_of(target, cell_size)
+	var status := "copied_path"
+	if cells.back() != target_cell:
+		var rest: Dictionary = ScriptWalkPath.route(terrain["tiles"], terrain["map_size"], ScriptWalkPath.cell_centre(cells.back(), cell_size), target, cell_size, flies)
+		cells.append_array((rest["cells"] as Array).slice(1))
+		status = "copied_path+" + str(rest["status"])
+	var points: Array = []
+	for index in range(1, cells.size()):
+		points.append(ScriptWalkPath.cell_centre(cells[index], cell_size))
+	if cells.back() == target_cell and not points.is_empty():
+		points[points.size() - 1] = target
+	return {"status": status, "cells": cells, "points": points}
 
 
 ## The terrain script walks route over: the PlayLoop's map (with mid-battle edits) in a battle, the scenario's

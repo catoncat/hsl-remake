@@ -59,9 +59,14 @@ case 0x61（actSetBGToPos）用原值、case 0x15（actSetBGToObject）`0x43bf30
 | 置位 | `0x44ff50` 找跟随者与领队（`0x44fad0`）；跟随者 `+0x8c != 0`（正忙）则什么也不做返回 0。否则目的 `+0x4a／+0x48` = 领队目的 + (跟随者像素 − 领队像素)，`+0x8c = 0x320001`（行走状态 0x32、**sub 1**），分配 0x194 字节并复制领队的路径缓冲 `+0x4c`（不另算路径），`word[+0x98]` = 第 5 参（速度，0 → 4 px／tick），`+0x50` = 第 6 参 |
 | 镜头分支 | 与 actWalkDispWait 只差入口 sub：跳过 sub 0 的算路径，sub 1（`0x453ddf`）同样 `cmp [ebx+0x50], 0` → Wait 时 `0x453de6 call 0x43bf30(跟随者, 0)` 居中到位才往下走；sub 3／6 越界跟随同查 `+0x50`（`0x454039`）。不带 Wait 时两处都跳过，镜头不动 |
 | 等待条件 | 非 Wait：`0x450a3c` 调完即 `jmp 0x4511e9` 放行 VM。Wait：`0x452c14` 起 `0x44ff50` 返回对象且第 6 参非零时 VM 停在状态 0x33，由行走过程到达后放行；返回 0（找不到或跟随者正忙）则直接前进 |
-| 样本关 | STORY058（沃斯菲塔王座廳，LEVEL058 剧情场）与 STORY060（王座廳・俘虜，LEVEL060 剧情场）各一对：`actWalkFollow SID_ENEMY024 4 SID_PLAYER0 1 0` 紧接 `actWalkFollowWait SID_ENEMY024 3 SID_PLAYER0 1 0`（速度 0 → 4 px／tick）；两名士兵随主角走，第二名的 Wait 让镜头先缓动到它身上再跟 |
+| 路径缓冲 | `+0x4c` 指向 0x194 字节（0x65 dword）的方向码表：sub 0 调 `0x4111d0` 成功后把全局缓冲 `0x4c63c0` 整段复制进来（`0x453da1`）；`0x410730` 在第 depth 项写方向码（1 上、2 下、3 左、4 右），`0x410a50` 先清零，码 0 即段尾。一次 `0x4111d0` 只取一段（末级洪泛半径 12），表里只有这一段的步序 |
+| 复制与偏移 | `0x44ff50` 在 `0x45000c` `rep movsd` 复制领队 `+0x4c` 整表，不查地形、不另算；目的 `+0x4a／+0x48` = 领队目的 + (跟随者 `+4／+8` − 领队 `+4／+8`)。行走中 `+4／+8` 不随步推进，每 tick 的位移记在 `+0xa8／+0xac`（`0x453fad`／`0x453fdb`／`0x453ffc`／`0x454021`），所以领队已开走时取到的是它本次行走的起点像素。复制后同 sub 0 撤掉跟随者起点格登记（`0x407940` 为 0 时 `0x411b90`） |
+| 消费 | 跟随者从 sub 1 进 sub 2／3，`+0x9c` 低字是表索引（`0x44ff50` 不写它，上一次走完 `0x45417d` 已清零），每 `0x20／步长` tick 取下一码（`0x4540b4`）：从跟随者自己的格按领队的步序同形平移，途中不查地形与单位。码 0 时所在格 ≠ 目的格就 `0x4111d0` 从所在格续算（`0x45412d`），与普通走位同 |
+| 样本关 | 沃斯菲塔王座廳（LEVEL058）：`actWalk,SID_PLAYER0,1,384,640,0,actDelay,1` 后 `actWalkFollow,SID_ENEMY024,4,SID_PLAYER0,1,0` 紧接 `actWalkFollowWait,SID_ENEMY024,3,SID_PLAYER0,1,0`；王座廳・俘虜（LEVEL060）：`actWalk,SID_ENEMY029,1,288,448,0,actDelay,1` 后 `actWalkFollow,SID_ENEMY023,3,SID_ENEMY029,1,0` 紧接 `actWalkFollowWait,SID_ENEMY023,2,SID_ENEMY029,1,0`（速度 0 → 4 px／tick）。`actDelay,1` 让领队先过 sub 0 取路，跟随者复制的是领队本次的首段；第二名的 Wait 让镜头先缓动到它身上再跟 |
 
-重制 `OpeningStoryObjects._walk_follow`：Wait 形式经 `_start_story_walk` 先居中到跟随者、到位开走并 `_camera_follows_last_walk`，非 Wait 不请求镜头；速度取第 5 参。目的格同上式（领队起点代领队像素），路径由 `ScriptWalkPath.route` 自算而非复制领队路径缓冲（差异见边界）。
+重制 `OpeningStoryObjects._walk_follow`：Wait 形式经 `_start_story_walk` 先居中到跟随者、到位开走并 `_camera_follows_last_walk`，非 Wait 不请求镜头；速度取第 5 参。目的格同上式（领队在走时取其本次起点）。`_move_actor` 按走位者记下首段步序（`_first_segment_steps`，即 `ScriptWalkPath._segment` 一次），跟随者经 `_copied_route` 从自己的格逐格平移这些步、不查地形，终点不在目的格时 `ScriptWalkPath.route` 续算；motion 记录的 `route_status` 为 `copied_path` 或 `copied_path+…`。
+
+两场样本的跟随者格序列（改前自算、改后复制，同一 headless 开场）：沃斯菲塔王座廳（LEVEL058）actor024_4 (8,11)→(8,20)→(11,20)、actor024_3 (10,11)→(10,20)→(13,20)，全程复制（领队 12 步一段）；王座廳・俘虜（LEVEL060）actor023_3 (13,27)→(13,15)→(10,15)、actor023_2 (11,27)→(11,15)→(8,15)，前 12 步复制领队首段、最后 3 步续算。四条格序列改前改后相同——王座廳的走廊里自算路径恰与平移同形，差别只在地形不同形时出现。
 
 第一战开场（static-derived 读法，未原执行）：雷歐納德 的 `actWalkDispWait(…, 0, −96, 2)` 先让镜头按 16 px／tick 上限＋半程缓出居中到他身上，再以 2 px／tick 向北走 3 格（48 tick），镜头只在他要越过上边界 `*0x4c096c` 时同步上移 2 px／tick。静帧锚点即 雷歐納德 的居中目标 (x−320, y−192) 夹取后的值，不需要从录像猜。
 
@@ -92,6 +97,6 @@ provenance 写法：`static-derived docs/evidence_packets/static_reverse/origina
 
 - 秒数取 16 ms 设计值，本机 19.4 ms 的体验时长不作目标（provisional）。
 - 居中到位与开走之间原版可能差 1 tick（sub 0 到位当 tick 算路径，sub 2 起步），重制到位即开走。
-- actWalkFollow(Wait) 的原版复制领队路径缓冲（同形平移），重制按目的格自算路径；领队已走出几步时原版取领队当前像素、重制取领队起点——镜头规则不受影响。actWalkAndDeleteWait 到达后原版再停 16 tick 才删（sub 7／8），重制的删除时机不在本读法内。
+- actWalkFollow(Wait)：`+0xa8／+0xac` 何处并回 `+4／+8` 不在本读法内（领队走完后再跟随时的基准按其终点处理）；领队尚未过 sub 0 就被跟随时原版复制的是它上一段的旧表，重制按本次首段；跟随者目的格原版不经 `0x44fbd0`，重制仍走 `_fixed_destination`。actWalkAndDeleteWait 到达后原版再停 16 tick 才删（sub 7／8），重制的删除时机不在本读法内。
 - `*0x4c1b1c` 对 `0x43bf30` 负 flag 的语义、actScrollBGToRandomPos、非剧情阶段（战斗中玩家光标）的镜头路径不在本读法内。
 - 不支持的结论：旧的 0.6 s tween／160 px／s 与原版秒数一致。
