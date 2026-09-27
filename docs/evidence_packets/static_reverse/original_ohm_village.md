@@ -69,7 +69,7 @@ Speed = floor(94*D/100)
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [ohm_village](../runtime_observations/ohm_village/receipt.json) | opening、natural、mixed、silence、limited、retreat、defeat、villagers、clear、insert61、insert62、double、ai_current、ai_paralysis、campaign53_to_ohm_to_world | `capture_ohm_campaign_review.gd`、`capture_ohm_village_review.gd`、`run_ohm_village_tests.gd` |
+| [ohm_village](../runtime_observations/ohm_village/receipt.json) | opening、natural、mixed、silence、limited、retreat、defeat、villagers、clear、insert61、insert62、double、ai_current、ai_paralysis、campaign53_to_ohm_to_world | `run_ohm_village_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

@@ -1,6 +1,6 @@
 # 成长：NPC 交锋升级、玩家学魔法与学绝技的独立入口
 
-> evidence: static-derived · status: live · functions: 0x40e870, 0x4348f0, 0x437080, 0x4373f0, 0x437970, 0x437a40, 0x439f80, 0x442720, 0x450840 · tools: capture_growth_lifecycle_review.gd, hsltools/data/growth_lifecycle.py, hsltools/data/growth_lifecycle_trial.py, hsltools/probes/growth_lifecycle.py, hsltools/probes/job_up_learning.py, run_growth_lifecycle_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x40e870, 0x4348f0, 0x437080, 0x4373f0, 0x437970, 0x437a40, 0x439f80, 0x442720, 0x450840 · tools: hsltools/data/growth_lifecycle.py, hsltools/data/growth_lifecycle_trial.py, hsltools/probes/growth_lifecycle.py, hsltools/probes/job_up_learning.py, run_growth_lifecycle_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -61,7 +61,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [growth_lifecycle](../runtime_observations/growth_lifecycle/receipt.json) | public、initial、initial_dev、unlock、below、multilevel、special、npc、ai_learn、mobile、limited、paralyzed、permanent、carry、victory、defeat、escape | `capture_growth_lifecycle_review.gd`、`run_growth_lifecycle_tests.gd` |
+| [growth_lifecycle](../runtime_observations/growth_lifecycle/receipt.json) | public、initial、initial_dev、unlock、below、multilevel、special、npc、ai_learn、mobile、limited、paralyzed、permanent、carry、victory、defeat、escape | `run_growth_lifecycle_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

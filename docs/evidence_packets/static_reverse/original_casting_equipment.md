@@ -1,6 +1,6 @@
 # 装备：生命转魔力、状态防护与魔法命中
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x406fe0, 0x4094c0, 0x40e210, 0x40e430, 0x439f80, 0x448420, 0x448840 · tools: capture_casting_equipment_review.gd, hsltools/probes/casting_equipment.py, run_position_equipment_tests.gd · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: live · functions: 0x406fe0, 0x4094c0, 0x40e210, 0x40e430, 0x439f80, 0x448420, 0x448840 · tools: hsltools/probes/casting_equipment.py, run_position_equipment_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -51,7 +51,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [casting_equipment](../runtime_observations/casting_equipment/receipt.json) | poison_tail、full_mp、one_hp、remove_restore、accuracy、blood_growth、blood_support、blood_item、poison_guard、silence_guard、detour、ai_blood、ai_silence、victory、defeat、escape | `capture_casting_equipment_review.gd`、`run_position_equipment_tests.gd` |
+| [casting_equipment](../runtime_observations/casting_equipment/receipt.json) | poison_tail、full_mp、one_hp、remove_restore、accuracy、blood_growth、blood_support、blood_item、poison_guard、silence_guard、detour、ai_blood、ai_silence、victory、defeat、escape | `run_position_equipment_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

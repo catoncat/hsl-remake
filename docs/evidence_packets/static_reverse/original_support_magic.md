@@ -93,7 +93,7 @@ value = (clamp(level,1,80) + mind' + sampled) * 魔击力 / 100;  value<3 时补
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [support_magic](../runtime_observations/support_magic/receipt.json) | 治癒之水→自己，先取消后确认、治癒之水→友军，先取消后确认、生命之水→友军、滚轮找到女神之淚→友军、驅毒→相邻友军，覆盖自己、Wait→残血AI自身治疗、Wait→满血中毒AI自身驱毒、Wait→无MP的残血AI | `capture_ai_skill_review.gd`、`capture_support_magic_review.gd`、`run_support_magic_tests.gd` |
+| [support_magic](../runtime_observations/support_magic/receipt.json) | 治癒之水→自己，先取消后确认、治癒之水→友军，先取消后确认、生命之水→友军、滚轮找到女神之淚→友军、驅毒→相邻友军，覆盖自己、Wait→残血AI自身治疗、Wait→满血中毒AI自身驱毒、Wait→无MP的残血AI | `run_support_magic_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

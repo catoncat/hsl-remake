@@ -1,6 +1,6 @@
 # 脚本等待、守备唤醒与指定对象同步
 
-> evidence: static-derived · status: live · functions: 0x450840 · tools: capture_script_wait_review.gd, hsltools/probes/script_wait.py, run_script_wait_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x450840 · tools: hsltools/probes/script_wait.py, run_script_wait_tests.gd · updated: 2026-09-27
 
 由`ACTION.H`、已有VM／AI符号和原指令确定性定位，没有调用Jev。原EXE保持只读；[机器回执](original_script_wait.json)由`tools/hsltools/probes/script_wait.py`实际执行生成，离线检查固定原指令哈希、来源哈希、逐例结果与停止边界。
 
@@ -42,4 +42,4 @@ AI仍共用已有导航和优先级。设置等待不强行清除已锁定目标
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [script_wait](../runtime_observations/script_wait/receipt.json) | opening、guard、double_guard、wounded、silenced、paralyzed、ai_chain、event、mage、support、sync、depart、kill、victory、defeat、escape、carry | `capture_script_wait_review.gd`、`run_script_wait_tests.gd` |
+| [script_wait](../runtime_observations/script_wait/receipt.json) | opening、guard、double_guard、wounded、silenced、paralyzed、ai_chain、event、mage、support、sync、depart、kill、victory、defeat、escape、carry | `run_script_wait_tests.gd`；截图驱动已退役，回执为历史记录 |

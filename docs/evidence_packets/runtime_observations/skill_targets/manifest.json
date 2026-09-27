@@ -1,9 +1,0 @@
-{
-  "schema": "hsl_skill_targets_render.v1",
-  "fixture": true,
-  "files_sha256": {
-    "target-special-source-cross.png": "1dcdec935e1328aaba0287d96a9c7a7fb8625dbf52bd906403ef4932597b8e56",
-    "target-valid-special-successor.png": "54984a8271e94ff94b32d1d369fdec1ccc688d594c9d7169c9e4fdcbaa58f737",
-    "skill-target-receipt.json": "45c9d5b4176dffe112268b30b1a0fdf9103ff2f8ef4807a543161b38ab0fc64b"
-  }
-}

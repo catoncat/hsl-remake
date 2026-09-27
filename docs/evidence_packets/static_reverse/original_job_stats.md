@@ -54,7 +54,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [role_resources](../runtime_observations/role_resources/receipt.json) | mage_growth、heavy_growth、sword_double、poison_recovery、second_remove_restore、support_recovery、detour、ai_half_cast、ai_mp_return、ai_item_restore、victory、defeat、escape | `capture_role_resources_review.gd`、`run_job_stats_tests.gd`、`run_resource_recovery_tests.gd` |
+| [role_resources](../runtime_observations/role_resources/receipt.json) | mage_growth、heavy_growth、sword_double、poison_recovery、second_remove_restore、support_recovery、detour、ai_half_cast、ai_mp_return、ai_item_restore、victory、defeat、escape | `run_job_stats_tests.gd`、`run_resource_recovery_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

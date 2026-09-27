@@ -75,7 +75,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [treasure](../runtime_observations/treasure/receipt.json) | natural_pickup、full、duplicates、attack、defeat、victory、campaign、resume_pool | `capture_treasure_review.gd`、`run_treasure_tests.gd` |
+| [treasure](../runtime_observations/treasure/receipt.json) | natural_pickup、full、duplicates、attack、defeat、victory、campaign、resume_pool | `run_treasure_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

@@ -1,56 +1,70 @@
-# 中毒／禁魔施加与公共结算
+# 状态：中毒／禁魔的字段、施加、行动末毒伤与计时
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x40a7b0, 0x40aa80, 0x40b910, 0x40e240, 0x40e2f0, 0x42c780 · tools: hsltools/probes/status_lifecycle.py, hsltools/probes/status_roll.py, run_status_application_tests.gd · updated: 2026-09-14
+> evidence: resource-derived; static-derived · status: live · functions: 0x40a7b0, 0x40aa80, 0x40b910, 0x40e240, 0x40e2f0, 0x42c780 · tools: hsltools/evidence/status.py, hsltools/probes/status_lifecycle.py, hsltools/probes/status_roll.py, run_status_application_tests.gd · updated: 2026-09-27
 
-Checked 2026-09-14。接续 [已有状态生命周期](original_status_effects.md) 和 [共同技能结算](shared_skill_resolution.md)。新增机器证据为 [original_status_rolls.json](original_status_rolls.json) 与 [original_status_application.json](original_status_application.json)。证据等级为 `resource-derived`／`static-derived`；这里的原指令执行使用独立合成内存，不是原作自然游玩记录。
+## 结论
 
-## 已接入的来源与规则
+- 原版：中毒是 actor+0x24 bit1（+0x30 低 16 次数、高 16 强度），禁魔 bit2（+0x34），麻痺 bit4（+0x3c）；`0x40aa80` 按技能 function（Poison=8、NoMagic=16）施加，各自抽成功、次数加 2+rand(2) 封顶 9，毒强度按 `max(old, floor((old+new)/2))` 合并；主伤害致死则不施加状态（static-derived；22＋10 组 helper 完整返回、30 组施加前段、12 组计时完整返回）。
+- 行动结束先以强度扣 HP（最低 1），再 `0x40b910` 递减所有计时、到期清 flag 与整个 DWORD；禁魔只禁魔法，不禁特殊技；解毒（ITEM `cure_poison`）清毒位与整个毒 DWORD（static-derived）。
+- 重制：`StatusApplicationRules`、`NativeMagicRollRules`、`StatusEffectRules`（唯一合并规则）、`ItemUseRules`；PlayLoop 在唯一交接出口合并状态提案（static-derived）。
+- 差异：原 flags／counter 不一致、负值等异常输入重制明确拒绝；状态短演出为重制表现（provisional）。
 
-`MAGIC.TXT` 的 `magicAIR/magicCode05`（酸蝕幻霧，function=Poison）与 `magicMIND/magicCode02`（封魔相关复合技能，function=Attack+NoMagic）加入原有三技能注册表。身份、名称、拥有权分别来自 MAGIC、RESOURCE 与 PLAYERS/MAG-SPC 的精确声明和位；025 的酸蝕幻霧以及测试使用的045技能仍要通过同一拥有权校验。正常第一战名单和起始技能没有被改成状态演示夹具。第二战025模板补齐精神、魔击力、MP及命中补偿初值，保持当前未调整模板基线的既有边界。
+## 证据
 
-| 来源 | 恢复行为 | 产品落点 |
+**static-derived**（EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；结果见 [original_status_rolls.json](original_status_rolls.json)、[original_status_application.json](original_status_application.json)、[original_status_effects.json](original_status_effects.json)）
+
+字段与已有状态：
+
+| 来源／入口 | 行为 |
+| --- | --- |
+| TYPE.H `magicFun_Poison=8`；`0x40ad49`／`0x40ad71`／`0x40ae1c` | actor+0x24 bit1；+0x30 低 16 持续、高 16（+0x32）强度 |
+| `magicFun_NoMagic=16`；`0x40ae82`／`0x40aeaa` | bit2；+0x34 低 16 持续 |
+| `magicFun_Paralysis=4`；`0x40ac97`／`0x40acc0` | bit4；+0x3c 持续（旧 `action_ready_gate` 名称错误） |
+| `0x43eaf0`；`0x40c5bc`／`0x40c5d9` | 玩家菜单与 AI 都用 bit2 排除魔法，特殊技不受此位 |
+| ITEM code246 解毒草 `cure_poison=1`；loader `0x447f70`／`0x447f85` → ITEM+0xa0 bit31 | 与 take_off、important、no_magic 被动不同 |
+| `0x40a2e6..0x40a2f9` | 清毒 flag1 与整个 DWORD+0x30，其他状态保留 |
+| 玩家 `0x443ad1`，`0x443ade..0x443b02` | 行动末按强度扣 HP，最低 1 |
+| AI `0x441f50`，`0x441f69..0x441f8d` | 另查 flag1，同样数值 |
+| `0x40b910` | 非零 DWORD 低 16 递减（signed word），到 0 清整个 DWORD 与状态位；也处理麻痺、弱化、增益，部分过期调属性 refresh |
+| `0x443c1a→0x443c22`、`0x443c38→0x443c40` | 先 tick 再队列 advance |
+
+`core_logic.json` 的历史 `turn_tick` 键把 `0x40aa80` 写成每回合处理；它实际按 function 施加效果，计时递减是 `0x40b910`（键名保留兼容）。
+
+施加：
+
+| 来源 | 行为 | 执行范围 |
 | --- | --- | --- |
-| `0x40aa80`，函数读取 `0x409868` | Magic record+0x24 function；Poison=8、NoMagic=16，不是 actor 位序 | `SkillTargetRules` 校验支持的1/8/17组合；其余明确拒绝 |
-| `0x40a7b0`，随机函数 `0x42c780` | 成功率、双次三角采样、等级／精神／魔击力、元素抗性与命中补偿 | `NativeMagicRollRules`；22组完整原 helper 返回逐项比较 |
-| `0x40e2f0→0x40e240` | 目标装备效果并集；keep_status_good=0x80 与特定免疫位 | 10组原 helper 返回；`StatusApplicationRules.prepare` 检查当前装备 |
-| `0x448709..0x448783` | 装备效果 OR；非空装备应用后 source no_poison/no_disablemagic 映射免疫 | 显式元数据；能力位和已应用装备效果不混用 |
-| `0x40ac34` | 先处理主伤害；目标HP为0跳过后续状态施加 | 复合技能致死时不消耗状态随机数，也不留下新状态 |
-| `0x40ad2c..0x40ae1c` | 施毒成功抽签；加2+rand(2)次，累计上限9；另抽强度并合并 | `StatusApplicationRules` 采样，`StatusEffectRules.apply` 唯一状态合并规则 |
-| `0x40ae3d..0x40aeaa` | 禁魔免疫／成功抽签；同样累计2～3次并封顶9；设置actor bit2 | 仅阻止魔法；普通动作和特殊技保留各自资格 |
-| `0x40b910` | 低16持续时间递减；到期清完整DWORD和对应状态位 | 12组原函数正常返回，与公共行动收尾规则对照 |
+| `0x40aa80` 读 `0x409868` | Magic record+0x24 function | — |
+| `0x40a7b0`，随机 `0x42c780` | 成功率、双次三角采样、等级／精神／魔击力、元素抗性、命中补偿 | 22 组 helper 完整返回 |
+| `0x40e2f0` → `0x40e240` | 目标装备效果并集；keep_status_good=0x80 与特定免疫位 | 10 组完整返回 |
+| `0x448709..0x448783` | 装备效果 OR；非空装备应用后 no_poison／no_disablemagic 映射免疫 | 静态 |
+| `0x40ac34` | 主伤害后目标 HP 为 0 跳过状态施加，不耗状态随机数 | 静态 |
+| `0x40ad2c..0x40ae1c` | 施毒成功抽签；次数加 2+rand(2) 封顶 9；强度抽样高于 50 按 10 折回 41..50，低于 5 按 5 折回 5..9；旧强度 0 取新值，否则 `max(old, floor((old+incoming)/2))` | 30 组前段停在 `0x40b831` |
+| `0x40ae3d..0x40aeaa` | 禁魔免疫／成功抽签，次数同样累计封顶 9 | 同上 |
+| `0x40b910` | 计时 | 12 组从入口到 return |
 
-毒强度抽样先把高于50的值按10折回41～50，把低于5的值按5折回5～9。重复施毒时，旧强度为0则采用新强度；否则取 `max(old, floor((old+incoming)/2))`，不会因较弱新毒降低旧强度。低16的次数单独相加并封顶9。计时是该角色完成的行动次数，不是帧数或全队轮次。已有规则先扣毒伤且最低1HP，再递减并清到期状态；解毒清毒位和完整毒word，保留其他状态。
+例：HP30、中毒强度 7／剩 2 次、禁魔剩 1 次，行动结束后 HP23、中毒 7／剩 1、禁魔解除；HP3／强度 7 降到 1。先用解毒草则无毒伤，禁魔仍递减一次。Drop、Equip、查看、取消、未结束的 Give 会话不触发；Give 成功关闭、Use、Wait、攻击／特殊技演出完成与 AI 完成共用唯一交接入口。原 UI 选目标不查中毒（`0x44492a..0x4449b6`），无毒目标照样用药并消耗（`0x444aba`）。
 
-## 原执行边界
+**resource-derived**：`MAGIC.TXT` magicAIR／magicCode05 酸蝕幻霧（function=Poison）、magicMIND／magicCode02（Attack+NoMagic）；拥有权来自 PLAYERS／MAG-SPC 声明（025 拥有酸蝕幻霧）；第二战 025 模板补齐精神、魔击力、MP 与命中补偿初值。
 
-`hsltools/probes/status_roll.py` 的22组数值和10组免疫查询均完整执行原 helper 并正常返回。`hsltools/probes/status_lifecycle.py` 的30组施加样例执行 `0x40aa80` 的纯施毒或纯禁魔分支，**停在0x40b831，未执行表现／经验回调，也不是完整施法函数正常返回**。另外12组仅中毒／禁魔计时样例从 `0x40b910` 执行到真实 return，其余计时字段为0；该 helper 不负责毒伤扣HP，毒伤来自前包已读的玩家／AI调用者。
+**runtime-measured**（重制侧 Control 回执，已随回执目录删除）：025 施酸蝕幻霧，两敌各自施毒，MP 100→90 只扣一次；法师完成普通行动后 HP 1000→976、中毒 2→1 且强度 24 不变、禁魔 1→0。Leonard 中毒 7／2、禁魔 2 时用解毒草：中毒字段清零、禁魔只递减一次、只消耗一件，健康目标被拒。
 
-每组记录原RNG调用上界／结果、读写字段、实际停止地址、指令数和正常返回标记。执行校验原EXE SHA-256、限制已读代码范围并在4096条指令内结束；没有替换callee、Wine进程、OS输入或全场自动游玩。保存结果由独立整数预期重算，Godot再消费相同原RNG序列比较，不能通过篡改返回标记把片段升级成完整函数。
+## 重制接线
 
-此前 PLAYERS 原包对照差异仍未解决；本包没有重做或宣称通过该对照。新 helper 证据只支持各自字段／数值／边界，不升级来源名单到实际关卡初始化完全等价。
+- `game/sim/StatusApplicationRules.gd`：`prepare` 查当前装备免疫并采样；`game/sim/NativeMagicRollRules.gd` 按原数值；`game/sim/StatusEffectRules.gd` `apply` 是唯一合并规则，三个 counter 只接受 0..9，flag／counter 不一致或未支持高位明确失败。
+- `SkillTargetRules` 只接受 function 1／8／17 组合；`SkillResolutionRules.prepare_cast` 先验证施法者、拥有权、费用、范围与每个受影响存活敌人，全部通过才抽样；`resolve_cast` 返回一次扣费与每目标提案，PlayLoop 一次提交；免疫／落空仍按接受的施法扣费。
+- PlayLoop `_advance_current_actor` 在唯一队列出口合并状态提案；`ItemUseRules` 生成用药效果，收据负责文案；`SkillResolutionRules.available` 在扣费与 RNG 前查禁魔。
+- 死亡目标不接受新状态；已结束战斗不再计时（provisional：不是原版全局清状态的证据）。`StatusMagicPresentation` 只读收据显示成功／免疫／未生效（provisional）。
 
-## 原子性与界面
+## 复现
 
-`SkillResolutionRules.prepare_cast` 先验证当前施法者、精确拥有权、费用、范围和范围内每一个可受影响的存活敌人，全部通过才调用随机数。随后 `resolve_cast` 返回一份扣费、每目标状态／HP提案和不可变收据；PlayLoop一次提交。错误不会先扣MP、移动角色、改部分目标或推进队列。免疫／落空是合法已执行结果，按接受的施法一次扣费；重复目标输入不能再结算。
+`python3 tools/hsl.py check status_roll`；`python3 tools/hsl.py check status_lifecycle`；`python3 tools/hsl.py check status_evidence`；重制侧 `tools/godot.sh --headless --script tests/run_status_application_tests.gd`。施加与解毒的 Control 回执已随回执目录删除；解毒截图驱动 `tests/capture_status_review.gd` 保留（`tools/oss_screenshots.py` 使用）。
 
-玩家通过来源BCMD09魔法入口选择真实拥有的法术，再点击地图目标。取消和旧／关闭／禁用控件回调不改战斗状态；选法术时同步地图输入阶段，取消时恢复可见行动菜单。AI沿相同资格和效果路径；缺少状态数值明确报场景数据错误，不吞掉错误改用普通攻击。AI目前的目标排序、无益施毒过滤和动作倾向仍是另一个待恢复的决策层。
+## 边界
 
-酸蝕幻霧范围使用来源矩阵；存活敌我适配与稳定roster遍历是当前重制合同。只扣一次费、各目标独立抽签已验证，尚未把原单格覆盖探针扩大声称为完整原多格枚举／阻挡传播等价。复合伤害与状态先后顺序有静态和分组件证据，未执行整个复合原施法入口。
-
-场景与 `StatusMagicPresentation` 只读收据显示技能、状态成功／免疫／未生效及生命变化。该短效果为明确重制表现。真实Control／地图点击、范围施法、取消重开、下一角色和AI毒伤／禁魔解除的图证见 [status_application](../runtime_observations/status_application/README.md)。
-
-## 失败、死亡和终局
-
-非法／缺失字段在RNG之前拒绝。死亡目标不接受新状态；已有死亡槽跳过，不以毒伤的1HP下限复活。已结束战斗不再接受动作或计时，保留最终快照；重新创建场景采用显式健康初值。**这不是原版死亡／战斗结束时全局清状态的证据**，相关原调用者尚未完整恢复。麻痺的wake/skip、弱化／增益refresh、动态学习、原EXP和其他被动依然独立列为缺口。
-
-## 复跑
-
-```sh
-python3 tools/hsl.py check status_roll
-python3 tools/hsl.py check status_lifecycle
-godot --headless --path . --script res://tests/run_status_application_tests.gd
-uv run --with unicorn==2.1.4 python3 tools/hsl.py generate status_lifecycle --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-tools/verify.sh
-```
-
-纯规则回归包含原数值／计时对照、重复施加、免疫、落空、死亡、终局、满血解毒、封魔前后资格、范围原子失败、一次扣费、重复输入和玩家／AI交接。完整非GUI门禁最终结果写入本批提交说明；自动测试不替代图证的人工检查。
+- 30 组施加是 `0x40aa80` 纯施毒或纯禁魔分支前段，未执行表现／经验回调，也不是完整施法函数返回。
+- 复合伤害与状态的先后只有静态与分组件证据，整个复合施法入口未执行。
+- 原单格覆盖探针不扩大为多格枚举与阻挡传播等价。
+- 原版死亡与战斗结束时的全局状态清理调用者未读。
+- PLAYERS 原包对照差异未解决，拥有权只按导入表。
+- 麻痺的入口跳过与解除见 [original_paralysis.md](original_paralysis.md)；弱化／增益 refresh 见 [original_stat_magic.md](original_stat_magic.md)。

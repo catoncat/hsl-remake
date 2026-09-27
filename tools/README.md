@@ -253,11 +253,11 @@ P-027原作世界／城镇证据：`hsltools/probes/world_town.py`离线校验�
 
 永久能力：`hsltools/probes/permanent_items.py`离线核对82组来源、164道具前段和328完整刷新；`--execute`才重取原指令。`python3 tools/hsl.py check permanent_items_data`验证公开演练及实际角色库存。原始抗性80和最终抗性80分开，详见[来源合同](../docs/evidence_packets/static_reverse/original_permanent_items.md)。
 
-战役JSON的永久字段经`run_permanent_items_tests.gd`（`carry_cases`）与两进程`capture_permanent_carry_review.gd`验收，完整门禁已注册前者。后者只在自己的`ignored/permanent-carry-review`写战役与单战记录；原作存档／跨关handler等价不在这组范围。
+战役JSON的永久字段经`run_permanent_items_tests.gd`（`carry_cases`）验收（完整门禁已注册）；原作存档／跨关handler等价不在这组范围。
 
 战斗道具入口：`hsltools/probes/tactical_items.py`（97前段——含 R32 解衰弱 28、18采样／72扫描返回）、`hsltools/probes/item_cure_route.py`（24AI路由前段）、`hsltools/probes/item_magic.py`（6低强度混合前段／4到期返回）、`python3 tools/hsl.py check tactical_items_data`（公开演练／库存）。前三项默认离线校验，显式`--execute`才重新执行原EXE；[来源与完整体验](../docs/evidence_packets/static_reverse/original_tactical_items.md)。
 
-原宝箱使用`hsltools/probes/treasure.py`（默认离线，`--execute <原EXE> --write`才执行）与`python3 tools/hsl.py check treasure_data`：14次实例复制、14领取调用及14重复守卫、6初始化、7接触前段各保留真实停止边界；源EVEF三箱内容加入正式1／2的可选资源，不改地图／剧情。`run_treasure_tests.gd`及`capture_treasure_review.gd`覆盖实际领取、满包交换、独立行动、F9与保留物品跨营地，见[源合同](../docs/evidence_packets/static_reverse/original_treasure.md)和[完整控件路线](../docs/evidence_packets/runtime_observations/treasure/README.md)。
+原宝箱使用`hsltools/probes/treasure.py`（默认离线，`--execute <原EXE> --write`才执行）与`python3 tools/hsl.py check treasure_data`：14次实例复制、14领取调用及14重复守卫、6初始化、7接触前段各保留真实停止边界；源EVEF三箱内容加入正式1／2的可选资源，不改地图／剧情。`run_treasure_tests.gd`覆盖实际领取、满包交换、独立行动、F9与保留物品跨营地，见[源合同](../docs/evidence_packets/static_reverse/original_treasure.md)和[完整控件路线](../docs/evidence_packets/runtime_observations/treasure/README.md)。
 原宝箱整段生命周期使用`hsltools/probes/_treasure_reentry.py`（诊断，不注册任务；`… python3 tools/hsltools/probes/_treasure_reentry.py --level N [--out FILE]`）：借`_enemy_level.round_sort_machine`经`0x42da60`进关停在首个`0x407340`，列出全部 process 41 对象（隐藏／已开位／八字内容），整段执行`0x4156d0`并在`0x458c10`计抽取、列映像改动，再同进程进同一关重读箱表，打印`TREASURE_REENTRY`；每只箱另列对象码、按像素连回的 EVEF 记录与模板 `+0x80`（obj_Attribute）。`--census 1,2,28,…` 只读各关首回合箱表，每关一行`TREASURE_HIDDEN`（隐藏／可见记录、模板 bit `0x10000` 是否决定可见性）。结果见[源合同「进关、再进关与读档」「隐藏宝物」](../docs/evidence_packets/static_reverse/original_treasure.md)。
 地图物件云漂移／移動背景视差使用`hsltools/probes/_map_object_drift.py`（诊断，不注册任务；`uv run --no-project --with unicorn==2.1.4 --python /opt/homebrew/bin/python3 python3 tools/hsltools/probes/_map_object_drift.py --level N [--ticks 250] [--out FILE]`）：借`_enemy_level.round_sort_machine`进关停在首个`0x407340`，列出 process 2 且 obj_Data9 为 mapobjCloud（3）／mapobjMoveBG（6）的对象；云按原帧循环再跑 N 帧逐帧取坐标（`MAP_OBJECT_DRIFT`），再放到出界边缘直接调 `0x43ccf0` 看回绕（`MAP_OBJECT_WRAP`；机器的形状装载是桩，先按 SHP 头装入帧描述）；移動背景把镜头 `0x4c091c／0x4c0920` 放到四角与中点各调一次过程（`MAP_OBJECT_PARALLAX`）。读法见[地图物件漂移](../docs/evidence_packets/static_reverse/original_map_object_drift.md)。
 噴人沼氣（defProcPoisonGas）追踪使用`hsltools/probes/_poison_gas.py`（诊断，不注册任务；`uv run --no-project --with unicorn==2.1.4 --python /opt/homebrew/bin/python3 python3 tools/hsltools/probes/_poison_gas.py --level 32 --seed S1 S2 [--damage-seed D1 D2] --turns N --out FILE`）：借`_enemy_level.run_level`进关、玩家待机，记每次喷气的剧本位置／中心像素／交接计数`0x4c1ad4`与截止字`0x4c1ad6`、每次`0x409140`的调用者与状态字前后及抽前随机字。[读法与结果](../docs/evidence_packets/static_reverse/original_poison_gas.md)。
@@ -278,7 +278,7 @@ P-027原作世界／城镇证据：`hsltools/probes/world_town.py`离线校验�
 
 脚本条件目标计数与全灭使用`hsltools/probes/check_player.py`（`python3 tools/hsl.py check check_player`；复跑 `uv run --no-project --with 'unicorn>=2,<3' --python /opt/homebrew/bin/python3 python3 tools/hsl.py generate check_player --exe $HSL_ORIGINAL_DIR/hsl01.exe`）：11 次 `0x44fad0` 查找、7 次 `0x450840` case 0x26（actCheckPlayer）完整返回、6 次 winfail fail 扫描 `0x44ecb0`（止于状态执行器 `0x453ac0` 入口）、20 个 anchor 字节段；回执 `original_check_player_native.json`，结论见[目标计数读法 §R8](../docs/evidence_packets/static_reverse/original_check_targets.md)。它替代不了任何台账命令（`replaces=()`）。
 
-脚本等待使用`hsltools/probes/script_wait.py`：opcode33／34／88共120组，含busy→idle重入的129次完整单步返回，另有28段AI等待入口。默认离线固定指令和来源哈希检查；[源合同](../docs/evidence_packets/static_reverse/original_script_wait.md)区分赋值、AI倒数、指定对象演出同步。`tests/run_script_wait_tests.gd`和`capture_script_wait_review.gd`分别覆盖事务及隔离存档的实际输入，不修改世界／城镇数据或其协调器。
+脚本等待使用`hsltools/probes/script_wait.py`：opcode33／34／88共120组，含busy→idle重入的129次完整单步返回，另有28段AI等待入口。默认离线固定指令和来源哈希检查；[源合同](../docs/evidence_packets/static_reverse/original_script_wait.md)区分赋值、AI倒数、指定对象演出同步。`tests/run_script_wait_tests.gd`覆盖事务，不修改世界／城镇数据或其协调器。
 
 入场成长使用`hsltools/probes/auto_growth.py`：128次完整数值函数与16段真实VM序列，包括原RNG／refresh／职业分配；opcode56继续运行到下一条缺失对象wait88才正常让出。`hsltools/data/entry_growth.py`连接已验证角色的源参数（缺失保持null），[源合同](../docs/evidence_packets/static_reverse/original_auto_growth.md)与[窗口验收](../docs/evidence_packets/runtime_observations/entry_growth/README.md)区分原函数、当前新援入口和未覆盖的初始／NPC升级分派。没有模型路由或被替换的原callee。
 
@@ -298,9 +298,9 @@ P-027原作世界／城镇证据：`hsltools/probes/world_town.py`离线校验�
 
 当前三职业／资源装备使用 `hsltools/probes/job_stats.py`、`hsltools/probes/recovery.py` 离线核对固定源字节、原返回及字段；显式`--execute`才调用原指令。源包通过后依次生成 `hsltools/data/equipment.py`、`hsltools/data/role_profiles.py`、`hsltools/data/first_battle_formation.py`、`hsltools/data/emperor.py`（025 皇帝模板 `actors/025.json`），所有`--check`进入完整门禁。216职业完整返回与582资源前段／6无效果完整返回的范围见[三职业](../docs/evidence_packets/static_reverse/original_job_stats.md)、[资源尾部](../docs/evidence_packets/static_reverse/original_resource_recovery.md)，不能互称完整原引擎执行。
 
-大型角色用`hsltools/probes/large_actor.py`离线核对命中、整块四邻flood、占格与去重、039刷新和缺失AI字段前段；`--execute <hsl01.exe> --write`才执行固定原字节。`python3 tools/hsl.py check large_actor_data`对照039源模板及独立开发场景，普通第一／第二战编队保持。可玩入口`tools/godot.sh --screen <内建屏索引> res://game/battle/development/LargeActorTrial.tscn`；实际输入`--script res://tests/capture_large_actor_review.gd`可按mode选择路线，详情见[大型角色合同](../docs/evidence_packets/static_reverse/original_large_actor.md)。
+大型角色用`hsltools/probes/large_actor.py`离线核对命中、整块四邻flood、占格与去重、039刷新和缺失AI字段前段；`--execute <hsl01.exe> --write`才执行固定原字节。`python3 tools/hsl.py check large_actor_data`对照039源模板及独立开发场景，普通第一／第二战编队保持。可玩入口`tools/godot.sh --screen <内建屏索引> res://game/battle/development/LargeActorTrial.tscn`，详情见[大型角色合同](../docs/evidence_packets/static_reverse/original_large_actor.md)。
 
-武器尾部由`hsltools/probes/weapon_effect.py`离线核对158完整效果、15完整队列取消、24真实EXP caller分支、36完整装备刷新、12＋16字段OR前段和176组`0x409310`状态字（衰弱／禁魔／麻痺／随机异常，完整PLAYERS目标上真实`0x448840`刷新）；偷窃加成字与金之手槽循环由`hsltools/probes/steal_ratio.py`核对（21次`0x448840`刷新、5次`0x4348f0`转职、67次`0x40b8f0→0x40aa80`完整返回；`hsl check steal_ratio`）；默认不运行原EXE，只有`--execute <hsl01.exe> --write`才重新执行并写回。`python3 tools/hsl.py check weapon_effect_trial`校验独立可玩演练的数据：`tools/godot.sh --screen <内建屏索引> res://game/battle/development/WeaponEffectsTrial.tscn`；真实控件回归用`--script res://tests/capture_weapon_effect_review.gd -- <mode>`。原10%／25%概率不为截图调高，有限合法轮次的重试次数进入回执；[证据和边界](../docs/evidence_packets/static_reverse/original_weapon_effects.md)。
+武器尾部由`hsltools/probes/weapon_effect.py`离线核对158完整效果、15完整队列取消、24真实EXP caller分支、36完整装备刷新、12＋16字段OR前段和176组`0x409310`状态字（衰弱／禁魔／麻痺／随机异常，完整PLAYERS目标上真实`0x448840`刷新）；偷窃加成字与金之手槽循环由`hsltools/probes/steal_ratio.py`核对（21次`0x448840`刷新、5次`0x4348f0`转职、67次`0x40b8f0→0x40aa80`完整返回；`hsl check steal_ratio`）；默认不运行原EXE，只有`--execute <hsl01.exe> --write`才重新执行并写回。`python3 tools/hsl.py check weapon_effect_trial`校验独立可玩演练的数据：`tools/godot.sh --screen <内建屏索引> res://game/battle/development/WeaponEffectsTrial.tscn`。原10%／25%概率不为截图调高，有限合法轮次的重试次数进入回执；[证据和边界](../docs/evidence_packets/static_reverse/original_weapon_effects.md)。
 
 麻痺链用`hsltools/probes/paralysis.py`默认离线校验、显式`--execute`核对原指令，区分入口／施加／解除前段与计时／道具扫描／装备刷新正常返回。`hsltools/assets/paralysis_assets.py`通过既有PAK importer导出地靈縛8帧2声音，`--check`核对原成员、SHP解码和声音哈希；不替代实玩或完整高位dispatcher证据。入口见[麻痺规则](../docs/evidence_packets/static_reverse/original_paralysis.md)。
 
@@ -308,7 +308,7 @@ P-027原作世界／城镇证据：`hsltools/probes/world_town.py`离线校验�
 
 `hsltools/probes/movement.py`普通运行检查58份完整四邻扩展和80份邻格代价返回；`--execute <EXE>`才重新执行原字节，`--write`必须同时执行。[移动证据](../docs/evidence_packets/static_reverse/original_movement.md)区分0xff地形墙和低位对象flags，实际预算／路径／失效重选进入`run_ai_navigation_tests.gd`及完整门禁。
 
-原风火／最终经验使用`hsltools/probes/magic_damage.py`与`hsltools/probes/experience.py`；默认只核保存的原输出，`--execute <原EXE>`才实际隔离执行，完整返回和应用／发放后缀分别标注。实际输入见`tests/capture_magic_experience_review.gd`及[魔法经验包](../docs/evidence_packets/runtime_observations/magic_experience/README.md)，测试存档只写ignored，不覆盖玩家存档。
+原风火／最终经验使用`hsltools/probes/magic_damage.py`与`hsltools/probes/experience.py`；默认只核保存的原输出，`--execute <原EXE>`才实际隔离执行，完整返回和应用／发放后缀分别标注。实际输入回执（驱动已退役）见[魔法经验包](../docs/evidence_packets/runtime_observations/magic_experience/README.md)，测试存档只写ignored，不覆盖玩家存档。
 
 伤害／命中随机流使用`hsltools/evidence/damage_random.py`（任务`damage_random`，族`evidence`）：`python3 tools/hsl.py check damage_random`不需EXE，用独立模型逐值复算4组状态×1000次原生返回；`generate`在unicorn里重跑原`0x458c10`／`0x458c80`／`0x42c720`／`0x42c780`并按字节钉住播种与存档读写。Godot侧`run_tests.gd`拿同一机器包逐值对拍`DamageRandomStream`，见[伤害随机流](../docs/evidence_packets/static_reverse/original_damage_random.md)。
 
@@ -432,35 +432,17 @@ tools/hsl_capture.sh --no-launch tools/routes/p2_action_menu_move_select_cancel.
 
 ### Godot capture harness
 
-`tests/capture_actor_traversal_review.gd`默认13条实际控件路线，可按名字选择`ally_attack ally_cast ally_support restore flying ai_cutoff ai_cast ai_support ai_no_mp ai_silence victory defeat escape`。使用原WRD与已声明遭遇夹具，未改变正常首战授予；[图证](../docs/evidence_packets/runtime_observations/actor_traversal/README.md)记录早期失败与最终通过范围。`hsltools/probes/traversal.py`离线核对原函数／落点前段，`hsltools/data/terrain_heights.py`重建两张源WRD完整哈希；只有前者`--execute`或后者`--pak`读取原本体。先查内建屏后显式传`--screen`，不得与verify清缓存并行。
-
-`tests/capture_equipment_mobility_review.gd`覆盖源移动装备预览／取消／确认、叠加／升级、待移动保存与取消、同遭遇AI可达性以及胜利／败北／撤离。默认七条，可显式选择`equip_growth pending_restore ai_without ai_boots victory defeat escape`；先查当前内建屏并传`--screen`。`hsltools/probes/mobility.py`检查78次已保存完整刷新返回，只有`--execute <原EXE>`重新执行。来源和实玩范围见[装备移动链](../docs/evidence_packets/static_reverse/original_equipment_mobility.md)。
-
-`tests/capture_extra_attack_review.gd`默认十条实际控件／正常时钟路线：`equip_move double_counter early_kill late_kill counter_defeat ai_move miss special final_kill escape`，参数可选择其中部分。包括極光之劍换装取消／确认、移动后攻击、四击交锋、早／晚击杀、AI移动后连击、逐击落空、禁魔下绝技和三种终态保存／重开；所有数据调整显式为夹具，默认第一战不添加该装备。查询当前内建屏后通过`--screen`指定；[图证与回执](../docs/evidence_packets/runtime_observations/extra_attack/README.md)记录实际通过范围。
-
-`tests/capture_ordinary_special_review.gd`默认九条实际控件／正常时钟路线，覆盖普通暴击、反击、两组来源换装及滚动预览、氣刃斬／禁魔／19ST和最终击杀保存恢复。它明确设置HP／概率等夹具，保留真实WRD和原素材、不覆盖RNG；默认整场另用playthrough。参数可指定各mode，图证及夹具边界见[普通／绝技验收](../docs/evidence_packets/runtime_observations/ordinary_special/README.md)。查询当前内建屏索引后通过`--screen`指定。
-
 `tests/capture_*.gd` 生成当前 Godot 的可见截图/manifest，输出到 `ignored/`。它们是人工视觉审查输入，不是自动 parity 证明。
 
-`tests/capture_second_battle_opening_review.gd` 以 `second_battle.json` 的 `product_opening` 正常节奏播放 STORY052 开场：每句对白、队伍上行、标题与首次控制各截一帧，输出 `ignored/second-battle-opening-review/`；只用合成空格确认对白，不覆盖数值。图证见 [第二战开场回执](../docs/evidence_packets/runtime_observations/second_battle_opening/README.md)。`tests/capture_second_battle_reinforcement_review.gd` 以 `dev_first_control` 进入 level 52，击破 021 至剩一名让解释器触发 WINFAIL052 event1，截取四名 script actor 增援在插入像素显形、走入与到位三帧到 `ignored/second-battle-reinforcement-review/`；图证见 [增援入场回执](../docs/evidence_packets/runtime_observations/second_battle_opening/README.md)。
+原先随截图驱动一起说明的离线核对：`hsltools/probes/traversal.py`离线核对原函数／落点前段，`hsltools/data/terrain_heights.py`重建两张源WRD完整哈希；只有前者`--execute`或后者`--pak`读取原本体。`hsltools/probes/mobility.py`检查78次已保存完整刷新返回，只有`--execute <原EXE>`重新执行。`hsltools/probes/ai_navigation.py`普通运行检查118组保存的原结果，`--execute <hsl01.exe>`才重新执行。回复／驱毒资源用 `python3 tools/hsl.py check support_magic`，原数值／应用前段回执用 `hsltools/probes/support.py`；加 `--execute` 才执行本机SHA锁定EXE。成长原函数复跑使用 `uv run --with unicorn==2.1.4 python tools/hsl_native_growth_refresh_probe.py --check`；普通产品和 full verify 不依赖 Unicorn。
 
 `tests/capture_campaign_handoff_review.gd` 在第一战 dev seam 上显式设定胜利结果与 Leonard 等级／金币夹具，确认结局台词后（原版无结果页，脚本置 `hold_finished_battle` 后直接调 `start_next_battle`），记录重新加载进入第二战开场；输出 `ignored/campaign-handoff-review/`，图证见 [承接回执](../docs/evidence_packets/runtime_observations/campaign_handoff/README.md)。
-
-`tests/capture_ai_skill_review.gd`用实际Wait控件连续检查风刃／幻火／源025范围毒雾的移动、施法、费用和下一角色菜单，保留正式WRD阻挡，位置／HP／概率明确为夹具。图证与普通数值整场验收见 [ai_skills](../docs/evidence_packets/runtime_observations/ai_skills/README.md)；启动前查询内建屏索引并通过 `--screen` 指定，不假定内建屏永远为0。
-
-`tests/capture_stamina_review.gd`实际点击Wait、装备／取消、状态和绝技目标，验证受击积气、凝氣之環／鬼面、20气力就绪与一次扣费交接；[stamina图证](../docs/evidence_packets/runtime_observations/stamina/README.md)区分隔离夹具和默认完整第一战。屏幕数量可能在运行间变化，每次布局变更后重新查询内建索引。
-
-`tests/capture_ai_navigation_review.gd`用真实控件及正常时钟检查目标续追、实际WRD绕障碍／不可达目标、击败后重选、待机、MP／禁魔退路、空格范围施法及玩家预览／取消。参数为`detour unreachable target_death wait empty_center cure_center empty_mp silenced no_action player_center moving_cast defeat`。`hsltools/probes/ai_navigation.py`普通运行检查118组保存的原结果，`--execute <hsl01.exe>`才重新执行。原语义、重制边界及图证见[导航证据](../docs/evidence_packets/static_reverse/original_ai_navigation.md)。
 
 奖励与存档使用 `tests/capture_battle_reward_review.gd -- prepare` 和后续独立进程 `-- resume`，完整命令见 [奖励验收](../docs/evidence_packets/runtime_observations/battle_rewards/README.md)。只写 `ignored/battle-reward-review/partial.save`；来源字段用 `python3 tools/hsl.py check battle_rewards`，13段原字节合同用 `hsltools/evidence/reward.py`，加 `--exe` 才读取 SHA 锁定的本机 hsl01.exe。
 
 `tests/capture_first_battle_review.gd` 专用于本轮地图预告、原尺寸攻击/受击、地图法术、状态与成长 UI 的渲染夹具，并用真实 Godot 鼠标事件确认加点。它会改夹具数据，不能冒充自然游玩；正常路线仍使用下方 `run_first_battle_playthrough.gd`，其中附带存活演员可见性检查与少量关键帧截图。
 
 地图死亡与升级的当前验收使用 `tests/capture_combat_aftermath_review.gd`：正常时钟、实际鼠标选命令／目标及鼠标／键盘确认，逐帧读取遗言、淡出、EXP、成长与下一角色。它明确设定邻接1HP敌人、99EXP／60ST和玩家／下一队友速度与控制资格，不覆盖 RNG 或攻击结果；输出 `ignored/combat-aftermath-review/`，不能算自然获取经验或完整通关。`python3 tools/hsl.py check combat_aftermath_data` 与 `tests/run_combat_aftermath_tests.gd` 已进入完整门禁；前者只检查 tracked 源表，不冒称新原包或 EXE 验证。复跑图证见 `docs/evidence_packets/runtime_observations/combat_aftermath/README.md`。
-
-回复／驱毒用 `tests/capture_support_magic_review.gd`，默认八条正常时钟实际鼠标／滚轮／取消路线；参数可选择 `heal_self heal_ally greater_heal life_heal cure_area ai_heal ai_cure ai_empty_mp` 中的部分。它明确授予测试角色源技能和调整遭遇数据，不是默认第一战获得治疗术。资源用 `python3 tools/hsl.py check support_magic`，原数值／应用前段回执用 `hsltools/probes/support.py`；加 `--execute` 才执行本机SHA锁定EXE。命令与图证见 [support_magic](../docs/evidence_packets/runtime_observations/support_magic/README.md)。
-
-友军援助用 `tests/capture_ally_support_review.gd`，正常时钟、实际Wait／魔法／状态／成长操作；默认十条，参数可选 `heal_move greater_move life_move cure_move next_patient enemy_heal no_mp silence item_move item_no_mp`。角色技能、三格移动、患者HP与药品夹具明确记录，保留实际WRD；默认整场仍另跑 `run_first_battle_playthrough.gd`。必须查询当前内建屏索引后传`--screen`，顺序运行；[图证和回执](../docs/evidence_packets/runtime_observations/ally_support/README.md)不能当作默认授予或原全职业能力证明。
 
 ```sh
 # 真实渲染窗口，正常时钟，自动发送 Godot 鼠标/键盘事件；不修改战斗数值
@@ -481,7 +463,6 @@ Coverage list: `docs/evidence_packets/runtime_observations/presentation_referenc
 - `hsltools/assets/command_frames.py`: imports/checks every declared BCMD frame, including the five-frame Status icon.
 - `hsl_record_window.swift`: explicit Wine/Godot window recording, built-in display guard, 1–60 seconds, application audio but no microphone/whole-desktop capture; `--list` reports eligible windows; `--no-audio` records video only. Known limit (2026-09-22): against the original's Wine window ScreenCaptureKit delivered only the first ~0.9 s of frames in every attempt (Godot windows record normally); measure original timing through `hsl_win32_memread.exe --repeat` instead.
 - `PYTHONPATH=tools python3 -m hsltools.evidence.presentation_reference record/check/report`: records raw receipts, validates audio/video/actual duration, checks curated media hashes and event coverage, and builds `ignored/presentation-reference/compare.html`. Incomplete reference cases remain visible; `check --require-complete` currently fails intentionally on missing original states.
-- `capture_presentation_reference.gd -- menu|attack|magic movie`: use with Godot `--write-movie` and `--fixed-fps 60` for deterministic rendering. These are controlled fixtures, not native-original or natural-playthrough proof. Actual elapsed capture frames, not CPU wall time, determine Movie Maker event timestamps.
 
 The Win32 control helper accepts explicit `--focus` before an input action; the Python wrapper exposes the same flag. Focus and input injection do not prove the game accepted an action. Keep original sampling bounded and inspect its output before the next step. Do not attempt to unlock a screen through the automation.
 
@@ -503,5 +484,3 @@ uv run --no-project --with 'unicorn>=2,<3' --python /opt/homebrew/bin/python3 \
 ```
 
 Godot 只读取 compact 资源/合同，不执行原 EXE。普通动作仅绑定当前明确支持的三类 opcode，未知指令拒绝接入，不静默降级。源派发调用次数、映射秒数和整体画面一致分别记录。
-
-`capture_presentation_reference.gd` 支持 menu/attack/magic/status/items/growth 六种 Movie Maker 夹具；items/growth 走真实 Control 输入，growth 当前按五点 str/dex/mind/con 路径确认。成长原函数复跑使用 `uv run --with unicorn==2.1.4 python tools/hsl_native_growth_refresh_probe.py --check`；普通产品和 full verify 不依赖 Unicorn。生成器与 full verify 会处理缓存，GUI 启动继续使用 `tools/play.sh`。双对话协作时不要互相清共享导入缓存（原根目录 `PARALLEL_WORK.md` 已删，见 Git 历史）。

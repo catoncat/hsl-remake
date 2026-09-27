@@ -2902,9 +2902,6 @@
     "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|": {
       "item": "timing-estimates"
     },
-    "scope:docs/evidence_packets/static_reverse/first_battle_initial_skill.md|provisional|": {
-      "resolved": "20×expend 换算已由 original_skill_resources.md 证实（本包后继段）"
-    },
     "scope:docs/evidence_packets/static_reverse/original_ai_navigation.md|provisional|固定点逐格路线": {
       "item": "ai-first-battle-moves"
     },
@@ -3156,10 +3153,6 @@
       "item": "item-use-rules",
       "text": "剧情 `actUseItem` 只调 `0x409e40`，是否删除库存未读。"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#f110cffde5": {
-      "item": "item-use-rules",
-      "text": "**边界**：大体型使用者的 range2 泛洪（体型 `0x40ecc0`／邻接 `0x40eb80`）只读到入口参数，逐格结果未读。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#35c5395ff4": {
       "item": "cam-random-scroll",
       "text": "脚本语料（`content/imported/hsl/story_corpus/scripts/`，resource-derived）：actScrollBGToPos 出现于 56 个脚本、actScrollBGToObject 22、actScrollBGToPosSpeed 18、actScrollBGToRandomPos 1（STORY037，未读）、actWalkDisp／DispWait 34／33。"
@@ -3167,10 +3160,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_script_walk_path.md#da860f002b": {
       "item": "script-walk-path",
       "text": "洪泛缓冲 `*0x4c1a64`／`*0x4c1a68` 的具体尺寸（地图外能走多远）未读；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#5ddfc97c1a": {
-      "item": "special-object-motion",
-      "text": "② 对象寿命 `shape_number × (shape_delay+1)` tick、舞台外（x∉[0,640] 或 y∉[0,320]）插入的对象直线飞向目标中心 (320,160) 并在同阶段下一个命中标记落地（无则 30 tick）、其余静止——`defProcObjectMove` 与 `obj_Data7` 运动程序未读；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#17b232e51f": {
       "item": "dark-screen-fade",
@@ -3765,6 +3754,66 @@
     "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f": {
       "item": "winfail-readings",
       "text": "原版查找在注销后失败，但扫描是否早于 `0x43ef36` 注销未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_give_exchange.md#48cb1c629f": {
+      "item": "item-use-rules",
+      "text": "死亡／隐藏对象的格字映射未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#85289aa8c5": {
+      "item": "item-use-rules",
+      "text": "`0x4406af` 的触发上下文、`0x40c570` 无法术时是否抽随机数未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#daf932bb60": {
+      "item": "item-use-rules",
+      "text": "大体型使用者的 range2 泛洪（体型 `0x40ecc0`／邻接 `0x40eb80`）只读到入口参数，逐格结果未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_item_use_presentation.md#b4d171bb0c": {
+      "item": "ai-item-use-presentation",
+      "text": "`0x401390` 发射器（气力／永久／临时加成画面）未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#1c89d9216a": {
+      "item": "party-equipment-screen",
+      "text": "未读：页 2／3 列表的形状表项 5／10 对应哪张板、魔法／特殊技悬停描述的逐行格式。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#88ed916591": {
+      "item": "party-equipment-screen",
+      "text": "狀態页黄字与裝備页红字的着色条件未读，重制未做。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#be57cdaf93": {
+      "item": "party-equipment-screen",
+      "text": "`0x426ce0` 返回值在模式 0 的用途未读（`0x42ab40` 的 param_2 反编译里未被读）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#792c820ee1": {
+      "item": "unimplemented-abilities",
+      "text": "动态学习、升级解锁、转职、禁用状态与角色模式对拥有权的影响未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ordinary_special.md#8018317ded": {
+      "item": "floater-extra-words",
+      "text": "暴击事件 0x302 的完整画面／音效含义未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_skill_targets.md#e70a1b321e": {
+      "item": "skill-area-policies",
+      "text": "大体型与全部地图标志的生命周期未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_poison_arrow.md#f6aa67864e": {
+      "item": "skill-area-policies",
+      "text": "原全区对象遍历顺序未读，不由单目标前段推论。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_status_application.md#3e0e306c9d": {
+      "item": "unimplemented-abilities",
+      "text": "原版死亡与战斗结束时的全局状态清理调用者未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/battle_reward_inputs.md#0533437cf8": {
+      "item": "loot-panel",
+      "text": "原遗言随机选择、完整死亡 handler、原取物暂持／取消 handler 与跨关经济未读；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_weapon_ranges.md#d25c396c21": {
+      "item": "weapon-range-semantics",
+      "text": "`0x44cb10` 敌方槽表满返回 0 的调用方处理未读；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d": {
+      "item": "special-object-motion",
+      "text": "对象寿命与舞台外对象的飞行按 `shape_number × (shape_delay+1)` 推读，`defProcObjectMove` 与 `obj_Data7` 运动程序未读。"
     }
   }
 }

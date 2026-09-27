@@ -4,11 +4,11 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 107,
-    "sources": 529,
+    "sources": 541,
     "sources_by_kind": {
       "provenance": 227,
-      "sentence": 129,
-      "scope": 75,
+      "sentence": 142,
+      "scope": 74,
       "matrix": 85,
       "video": 13
     },
@@ -46,7 +46,7 @@
     },
     "in_progress": 0,
     "no_visible_effect_sources": 51,
-    "resolved_sources": 14
+    "resolved_sources": 13
   },
   "top": [
     "damage-digit-bounce",
@@ -775,7 +775,7 @@
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
         "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#02cf79451c",
-        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#5ddfc97c1a"
+        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d"
       ]
     },
     {
@@ -796,7 +796,8 @@
       "category": "地图人物演出",
       "sources": [
         "provenance:game/battle/scene/BattleItemUsePresentation.gd|layout|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 发射器（气力／永久／临时加成三类效果的画面）未读，重制只按它们的等待时长；0x43b3f0 小条的 cur/max 文字（位 0x100，0x411d70）未画；AI 引导的射程格按\"自身格＋四邻无敌对占位\"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高"
+        "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 发射器（气力／永久／临时加成三类效果的画面）未读，重制只按它们的等待时长；0x43b3f0 小条的 cur/max 文字（位 0x100，0x411d70）未画；AI 引导的射程格按\"自身格＋四邻无敌对占位\"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高",
+        "sentence:docs/evidence_packets/static_reverse/original_item_use_presentation.md#b4d171bb0c"
       ]
     },
     {
@@ -854,6 +855,7 @@
         "provenance:game/battle/scene/BattleTurnEndCue.gd|strings|remake-invented|",
         "provenance:game/battle/scene/BattleTurnEndCue.gd|strings|remake-invented|docs/OPTIONS.md",
         "provenance:game/sim/StatusCatalog.gd|strings|remake-invented|",
+        "sentence:docs/evidence_packets/static_reverse/original_ordinary_special.md#8018317ded",
         "video:9"
       ]
     },
@@ -1173,7 +1175,8 @@
         "provenance:game/battle/scene/BattleLootPanel.gd|layout|remake-invented|",
         "provenance:game/battle/scene/BattleLootPanel.gd|strings|remake-invented|",
         "provenance:game/sim/BattleRewardRules.gd|rules|remake-invented|",
-        "provenance:game/sim/loop/BattleLoopRewards.gd|rules|remake-invented|"
+        "provenance:game/sim/loop/BattleLoopRewards.gd|rules|remake-invented|",
+        "sentence:docs/evidence_packets/static_reverse/battle_reward_inputs.md#0533437cf8"
       ]
     },
     {
@@ -1311,7 +1314,9 @@
         "provenance:game/sim/SkillTargetRules.gd|rules|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|效果区域接线",
         "scope:docs/evidence_packets/static_reverse/original_skill_function_bits.md|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_weapon_ranges.md|provisional|AI 技能规划与 AI 施放仍平铺、大型角色锚点"
+        "scope:docs/evidence_packets/static_reverse/original_weapon_ranges.md|provisional|AI 技能规划与 AI 施放仍平铺、大型角色锚点",
+        "sentence:docs/evidence_packets/static_reverse/original_poison_arrow.md#f6aa67864e",
+        "sentence:docs/evidence_packets/static_reverse/original_skill_targets.md#e70a1b321e"
       ]
     },
     {
@@ -1370,7 +1375,8 @@
         "matrix:攻击范围",
         "provenance:game/sim/RangePropagationRules.gd|rules|remake-invented|",
         "provenance:game/sim/TacticalGridRules.gd|rules|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_weapon_ranges.md|provisional|AI 技能规划与 AI 施放仍平铺、大型角色锚点"
+        "scope:docs/evidence_packets/static_reverse/original_weapon_ranges.md|provisional|AI 技能规划与 AI 施放仍平铺、大型角色锚点",
+        "sentence:docs/evidence_packets/static_reverse/original_weapon_ranges.md#d25c396c21"
       ]
     },
     {
@@ -1464,7 +1470,9 @@
         "matrix:主线25角色来源模板与十一职业",
         "matrix:初始阵容、自动升级与动态学习",
         "matrix:当前技能共同结算／初始与后天拥有权",
-        "provenance:game/sim/SkillTargetRules.gd|rules|provisional|"
+        "provenance:game/sim/SkillTargetRules.gd|rules|provisional|",
+        "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#792c820ee1",
+        "sentence:docs/evidence_packets/static_reverse/original_status_application.md#3e0e306c9d"
       ]
     },
     {
@@ -1851,8 +1859,10 @@
         "provenance:game/sim/ItemUseRules.gd|rules|provisional|",
         "provenance:game/sim/loop/BattleLoopInventory.gd|rules|provisional|",
         "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#2fcd53a808",
+        "sentence:docs/evidence_packets/static_reverse/original_give_exchange.md#48cb1c629f",
+        "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#85289aa8c5",
         "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#90a588b6d5",
-        "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#f110cffde5"
+        "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#daf932bb60"
       ]
     },
     {
@@ -2232,7 +2242,10 @@
       "sources": [
         "provenance:game/sim/PartyEquipmentRules.gd|rules|remake-invented|",
         "provenance:game/world/PartyEquipmentScreen.gd|strings|remake-invented|",
-        "provenance:game/world/TownShopScreen.gd|layout|remake-invented|"
+        "provenance:game/world/TownShopScreen.gd|layout|remake-invented|",
+        "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#1c89d9216a",
+        "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#88ed916591",
+        "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#be57cdaf93"
       ]
     },
     {
@@ -2954,10 +2967,6 @@
       {
         "source": "scope:docs/evidence_packets/resource_inventory/steam_classic_edition.md|negative-evidence|本机原作目录与 hsl.pak 没有 music 文件",
         "reason": "原版 18 首已从 Steam 經典版 music\\02–19.wav 导入 content/imported/hsl/music（music_import），标题 03、大地图 06、城镇 05、通关尾声 07／04／02 照 original_music.md §3 放原曲，音樂音量 默认满值（MUSIC-SHELL）"
-      },
-      {
-        "source": "scope:docs/evidence_packets/static_reverse/first_battle_initial_skill.md|provisional|",
-        "reason": "20×expend 换算已由 original_skill_resources.md 证实（本包后继段）"
       },
       {
         "source": "scope:docs/evidence_packets/static_reverse/original_dialogue_board.md|negative-evidence|无方框 SHP",

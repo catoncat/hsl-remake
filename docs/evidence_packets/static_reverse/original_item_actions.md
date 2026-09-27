@@ -1,106 +1,78 @@
-# 物品命令入口、取消归还与重要物品保护
+# 物品命令：入口状态、取消归还、重要物品保护与用药目标
 
-> evidence: static-derived · status: live · functions: 0x4097d0, 0x409830, 0x409e40, 0x40e690, 0x40f440, 0x40f560, 0x411c40, 0x436e30, 0x43ac10, 0x43b4e0, 0x443330, 0x4466d0, 0x446b00 · tools: hsltools/evidence/item_action.py, run_inventory_equipment_tests.gd · updated: 2026-09-26
+> evidence: static-derived · status: live · functions: 0x4097d0, 0x409830, 0x409e40, 0x40e690, 0x40f440, 0x40f560, 0x411c40, 0x436e30, 0x43ac10, 0x43b4e0, 0x443330, 0x4466d0, 0x446b00 · tools: hsltools/evidence/item_action.py, run_inventory_equipment_tests.gd · updated: 2026-09-27
 
-Checked: 2026-09-13。这是 [八槽库存／装备](original_inventory_equipment.md) 的后续，机器证据为 [original_item_actions.json](original_item_actions.json)。新工具 `tools/hsltools/evidence/item_action.py` 直接核对原 PAK 成员和 EXE 指令，不运行或仿真原游戏。
+## 结论
 
-后续状态：本包最初保留的连续 Give、目标满包交换和同 code 消耗现已在 [original_give_exchange.md](original_give_exchange.md) 查明并接入；该包也核对 Use 完成后的 state4 公共结束入口。下方“给予仍一次成功结束”和机器包的对应 unresolved 是旧 slice 边界，当前合同以该后续行动矩阵及 PROJECT 为准。原有36段锚点保持不变。
+- 原版：Use／Give／Equip／Drop 是玩家 state5／6／7／8（原 `obj-051.obs` 的 obj_Data8，不按菜单字符串 `rtus` 顺序）；Equip／Drop 走 Object130 根窗口，关窗后父 state76→77→3 回物品子菜单，不结束行动；Use 完成走 state4 公共结束；ITEM `important`（+0xa0 bit27）禁丢，与禁卸的 `take_off`（+0xa4 bit1）无关（static-derived）。
+- 原版用药：模式4 从使用者格泛洪一格（大体型两格），可对自己用，敌方／NPC 格被挡；无 HP／MP／状态资格检查，满值照用并消耗一件，回复量夹到 0 浮出 0；AI 用药只看阈值与状态 mask（static-derived）。
+- 重制：`InventoryRules.discard_error/discard`、`ItemUseRules`、`ItemResolutionRules`、`game/sim/loop/BattleLoopInventory.gd`；丢弃免费并保留当前行动、确认前不取物、取消保持原槽序（provisional：确认式交互）。
+- 差异：原版暂持物首空归还可能改变槽序，重制不改；重要物品不附加给予限制；差异清单 `item-use-rules`（static-derived）。
 
-## 更正菜单顺序与状态编号的混淆
+## 证据
 
-旧交接和前一包首版从菜单字符串 `rtus` 的展示顺序推导 Use/Equip/Drop/Give 对应 state7/8/9/10，推导错误。`rtus` 只决定对象排列；点击处理读取每个对象自己的 `obj_Data8`。
+**static-derived**（EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；PAK 成员 `@:\data\obj-051.obs` SHA-256 `f6621854fdf4a50677877744da09015f429d2d1a627d7c8490e2bd420d5428a8`；36 段锚点见 [original_item_actions.json](original_item_actions.json)）
 
-原 PAK 成员 `@:\data\obj-051.obs` SHA-256 为 `f6621854fdf4a50677877744da09015f429d2d1a627d7c8490e2bd420d5428a8`，与已有 `shared/command_menu/source_objects.json` 保存的来源相等。本轮直接读原成员，重新解析 Object blocks，核对以下 Data8；没有重建／覆盖原菜单资源。
-
-`defProcBattleCommandString` 在 `0x43e887` 从命令对象 `+0xa8` 读取 Data8，在 `0x43e891` 写父对象 `+0x8c` 的玩家状态。玩家状态经 `0x445758` byte-index 表和 `0x445694` 目标表分派：
-
-| 操作 | 对象 code | Data8 / 玩家 state | 分派入口 | 物品 UI mode / 等待 |
+| 操作 | 对象 code | Data8／玩家 state | 分派入口 | 物品 UI mode／等待 |
 | --- | --- | --- | --- | --- |
 | 使用 | 114 | 5 | `0x444a8b` | state102→`0x4448ba` 构造 mode6 |
 | 给予 | 115 | 6 | `0x444d6a` | state110→`0x444b8a` 构造 mode7 |
 | 装备 | 116 | 7 | `0x444185` | mode4，等待 state76 |
 | 丢弃 | 117 | 8 | `0x4441ac` | mode5，等待 state76 |
 
-原装备／丢弃都可经 state77→`0x444c19` 返回 state3 物品子菜单。仅该返回入口不足以判断所有子流程有没有修改行动 flags。此前把 state9/10 中 `0x4097d0/0x409830` 当丢弃／给予逻辑的方向作废，不再从那些技能选择分支推物品规则。
+`0x43e887` 读命令对象 +0xa8 的 Data8，`0x43e891` 写父对象 +0x8c；分派经 `0x445758` byte 表与 `0x445694` 目标表。state9／10 中 `0x4097d0`／`0x409830` 是技能选择分支，不是物品规则。
 
-该更正已同步前一包的 MD/JSON。八槽布局、装备 setter、take_off 与六槽 refresh 各有独立来源，仍然有效；产品没有通过这个错误编号分派，所以无须回退上一批换装实现。
-
-## important 的真实丢弃限制
-
-ITEM loader 在 `0x447da1` 查找 `important`（字符串 `0x478a54`），通过 `0x4466d0` 读取数值；非零在 `0x447dba` 加入 `0x08000000`，最终 `0x4481b1` 存到 ITEM **+0xa0**。
-
-原 predicate `0x40e690` 按 code×176 查 ITEM，测试 +0xa0 的 bit27，有则返回1、无则0。两条独立 UI 丢弃分支使用相同合同：
-
-- `0x43aacb..0x43aae6`：读取暂持 code，调用 predicate；重要物品直接跳过清零，普通物品才清 `0x4c1ce4`。
-- `0x42a7e2..0x42a805`：另一物品 UI 做同样判断，重要物品保留，普通物品清除。
-
-该位与阻止卸装的 `take_off`（ITEM **+0xa4** bit1）完全不同。不能因为一个对象“不可卸”就附加未证明的丢弃限制，也不能由 important 推断禁止给予。当前源表 important 非零的是 code281..285：通行證、殘忍的情書、劍之魂、福音之書、聖水晶。
-
-已接入：纯 `InventoryRules.discard_error/discard` 读取明确的 catalog important 布尔值；缺记录／字段也拒绝。PlayLoop 的丢弃分支在任何库存或行动 mutation 前调用它。面板保留重要物品行但置灰、提示不可丢弃；旧回调／直接调用不能绕过规则。普通物品确认后删除，当前已改为保留角色行动；重要物品允许给予仍沿用既有转移策略，未新增禁止条件。
-
-## 已追到的取消与行动交接证据
-
-使用目标选择取消 `0x444a5c..0x444a94`：若 `0x4c1ce4` 非零，调用首空插入 `0x436e30(owner,held)`，清暂持 code，返回 state102。给予目标选择取消 `0x444d3b..0x444d73` 做相同归还，返回 state110。原归还采用首空插入，不保证恢复物品之前的中间槽序；重制面板在确认前不取物，取消保持完整原顺序，是明确的交互策略。
-
-给予对方库存 UI 返回 `0x444def` 比较当前暂持 code 与进入对方界面前的 `0x4c2c88`；变化时在 `0x444e04` 将 EBX（该玩家函数中为0x10000）并入 owner+0x80。剩余暂持物在 `0x444e1b` 归还后再次回 state110。以后关闭给予界面，`0x444bff..0x444c22` 检查0x10000：有则清位并去公共结束入口 `0x4454a5`，无则返回物品子菜单state3。
-
-使用完成 state118→`0x444e3b` 关闭相应 UI，并进入玩家 state4。当前还没有把这些分支扩展为完整的多次给予会话、同 code 交换及所有移动标志的等价模型。使用／给予仍采用一次成功后交接行动的现有策略；以下新证据已足以单独修正丢弃的行动消耗。
-
-## Equip／Drop 子界面关闭与免费丢弃
-
-原 PAK 的 Object130 为 `defProcStatusWindow`、`obj_Data9=0`。既有原过程表将该过程映射到 `0x438160`。`0x43b4e0` 的 mode4/5 表项都指向 `0x43b7fd`，调用 `0x43ac10` 构造 Object130；构造器 `0x43ac51` 将调用者保存在根对象 `+0x9c`。根对象获得 `0x40004000` 标记，mode5 另外创建丢弃按钮。这里的父对象就是等待 state76 的玩家对象，不能把根窗口自己的动画状态与玩家状态混为一谈。
-
-Data9=0 的根处理由 `0x439ed8` 分派到 `0x4385d3`，两条帧数分支均将 EDI 清零。根状态表 `0x439ef8` 为：0 打开、1 输入、2 关闭动画、3 通知父对象。
-
-| 输入条件 | 原指令路径 | 结果 |
+| 条目 | 锚点 | 行为 |
 | --- | --- | --- |
-| 取消，手上无暂持物 | `0x438811` 输入门禁 → `0x4388be` 关闭标志 | 根状态1→2，开始关闭动画 |
-| 取消，暂持物可放回背包 | `0x438868` 首空插入成功 → `0x438882` 清暂持 → `0x4388bd` 返回 | 物品归还，本次调用仍保留窗口；再次取消才关闭 |
-| 取消，背包已满 | `0x438868` 插入失败 → `0x438872` 跳到返回 | 暂持 code 和打开状态均保留，没有丢物或通知父对象 |
-| 关闭动画结束 | `0x43896b` 返回完成 → 根状态3 → `0x4389ce` | 读取 `+0x9c`，将父 state76 加一到77，释放界面组 |
+| important loader | `0x447da1`（字符串 `0x478a54`）→ `0x447dba` → `0x4481b1` | 非零置 `0x08000000`，存 ITEM +0xa0；源表非零为 code281..285（通行證、殘忍的情書、劍之魂、福音之書、聖水晶） |
+| important predicate | `0x40e690` | code×176 查 ITEM +0xa0 bit27 |
+| 丢弃分支 | `0x43aacb..0x43aae6`、`0x42a7e2..0x42a805` | 重要物品不清暂持位，普通物品清 `0x4c1ce4` |
+| 用药取消 | `0x444a5c..0x444a94` | 暂持物首空插入 `0x436e30` 归还，回 state102 |
+| 给予取消 | `0x444d3b..0x444d73` | 同样归还，回 state110 |
+| Object130 构造 | `0x43b4e0` mode4／5 → `0x43b7fd` → `0x43ac10`；`0x43ac51` 存调用者到根 +0x9c | 根标 `0x40004000`；mode5 另建丢弃按钮；过程 `defProcStatusWindow` = `0x438160`，Data9=0 分派 `0x439ed8`→`0x4385d3` |
+| 根状态表 `0x439ef8` | 0 打开、1 输入、2 关闭动画、3 通知父对象 | — |
+| 取消，手上无暂持 | `0x438811` → `0x4388be` | 1→2 关闭动画 |
+| 取消，可放回 | `0x438868` 插入成功 → `0x438882` 清暂持 → `0x4388bd` | 归还，窗口保留；再取消才关 |
+| 取消，背包满 | `0x438868` 失败 → `0x438872` | 暂持与窗口都保留 |
+| 关窗完成 | `0x43896b` → 根 3 → `0x4389ce` | 读 +0x9c，父 state76→77；`0x444c19` 设回 3，`0x44416c` 重开物品子菜单 |
+| 使用完成 | state118 → `0x444e3b` | 关 UI，玩家 state4 → 公共结束 `0x4454a5` |
 
-父 state77 的真实两级分派也加入 checker：`0x444c19` 将玩家状态设回3；state3 在 `0x44416c` 重新打开物品子菜单。结合前面普通丢弃仅清除暂持物的分支，**所追到的正常装备／丢弃过程返回物品菜单，不结束角色行动**。这一结论来自入口、子界面 mutation、关闭和父返回的组合，范围不包含未恢复的所有脚本或移动状态。
+用药目标（state102 确认后 `0x4448f4`）：
 
-产品已将成功丢弃改为仅提交库存，后续从原混合 `transfer_inventory_item` 提取为 `BattlePlayLoop.discard_item`；Runtime 同步后重建玩家菜单，不再调用会结束回合的 `_begin_ai_playback`。给予的后续会话实现见上方链接。确认后直接关闭重制面板、确认前不拿出物品、保留可撤销移动的原顺序属于当前交互策略；没有新增 UI-owned held-item 或第二份库存。
+| 条目 | 锚点 | 行为 |
+| --- | --- | --- |
+| 范围 | `0x40f440(user, 2 或 1, 4)`，按使用者 +0x2c 大体型；`0x444be4` 开选格 | 模式4 经 `0x40ed50` 泛洪，中心格保留；不进 `0x24000`（pmEnemy／pmNPC）格，no_block 例外；物品无射程字段参与 |
+| 给予范围 | `0x444bc7`：`0x40f440(user,1,4)` 后 `0x40f520(0)` 清中心 | 不能给自己 |
+| 选取 | `0x44492a..0x4449b6` | 格须标记（`0x40f560`）且格字 `0x411c40` 含 `0x10000`（EBX 在 `0x443955` 设定）；`0x407800` 取对象写 `0x4c1cec`；`0x446b00` 排除 no_attack（PLAYER+0xa0 bit2）；给予从 `0x444c27` 同样检查但不调 `0x446b00` |
+| 生效与消耗 | `0x444ab2` 调 `0x409e40(target, code, user, 0)`；`0x444aba` 无条件清暂持 | 一次一件、一个目标；`0x409e40` 先把 `0x4c1a44`／`0x4c1a48` 置 -1，HP（`0x40a1b9..0x40a218`）／MP 按上限夹紧写实际增量 |
+| 数字 | state108 `0x444ac9` | 不为 -1 的各浮一个数，满血喝药浮 0 |
 
-当前接入验证覆盖：普通丢弃前后的完整状态只差所选库存槽；有／无移动时均保留当前行动；旧回调无法再删掉压紧后同位置的第二件同类物品；丢弃后可以移动或选攻击；撤销移动不会让已丢物品重新出现。原版连续给予会话、同 code 交换与整理仍未据此宣称恢复。
-
-## 用药目标范围、满值使用与一次消耗
-
-Checked: 2026-09-26，r2 静态读同一原 EXE（SHA 见下节），未运行原游戏。
-
-**范围。** state102 确认物品后进入 `0x4448f4`：暂持 code `0x4c1ce4` 为0就回物品子菜单；否则按使用者记录 `+0x2c`（大体型）调用 `0x40f440(user, 2, 4)`，普通体型调用 `0x40f440(user, 1, 4)`，再在 `0x444be4` 开启选格。`0x40f440` 以模式4经 `0x40ed50` 从使用者所在格泛洪，中心格保留标记，所以可以对自己用。模式4 不进入带 `0x24000`（pmEnemy／pmNPC）位的格，使用者 no_block 时例外。物品记录没有射程字段参与这段。给予在 `0x444bc7` 调用 `0x40f440(user, 1, 4)` 后用 `0x40f520(0)` 清掉中心格，不能给自己。
-
-**选取。** 使用点击 `0x44492a..0x4449b6`：格须带标记（`0x40f560`），格字 `0x411c40` 须含 EBX=`0x10000`（pmPlayer；EBX 在 `0x443955` 设定），`0x407800` 取格上对象写 `0x4c1cec`，再用 `0x446b00` 排除 no_attack（PLAYER+0xa0 bit2）对象。这里没有 HP、MP、状态或药效检查。pmPlayerEnemy（`0x30000`）格被模式4 挡住。给予点击从 `0x444c27` 起做同样的标记与 `0x10000` 检查，但不调用 `0x446b00`。
-
-**满值仍用、仍消耗一件。** 确认后 `0x444ab2` 调 `0x409e40(target, code, user, 0)`，`0x444aba` 无条件把暂持 code 清零。物品在选目标前已从格子取到暂持位（取消时 `0x444a5c` 才归还），所以一次使用恰好消耗一件、只作用于 `0x4c1cec` 一个目标。`0x409e40` 开头把 `0x4c1a44`／`0x4c1a48` 置 -1，HP／MP 回复按上限夹紧后写入实际增量，满值时写0（HP `0x40a1b9..0x40a218`，MP 同型）。state108 `0x444ac9` 对不为 -1 的数字各浮一个数，满血喝药浮出 0。永久道具在原始抗性已到80时同样抽样、再夹回80（[original_permanent_items.json](original_permanent_items.json) 的上限行）。
-
-**结束行动。** state118→`0x444e3b` 关闭 UI、转玩家 state4，走公共结束入口 `0x4454a5`；一次使用后没有第二次行动。
-
-**AI 用药路径。**
+AI 用药：
 
 | 原入口 | 条件 | 目标与位置 |
 | --- | --- | --- |
-| `0x43fa29..0x43fac1` 自救 | `0x40c110` 自身阈值命中；`0x40c570` 选起始类别后循环三类，普通类 `0x40c1d0` 取首件回血药（type1、add_hp≠0） | 直接跳 `0x4406d7` 写 state `0xc0000`：原地对自己用，不移动 |
-| `0x44075b..0x44080c` 友军回复 | `0x40c2f0(actor, 8, 1)` 方域找同侧非自身、过 `0x40c110` 阈值的友军；`0x40c570` 类别循环，普通类 `0x40c1d0` 首件回血药 | `0x40d530(actor, ally, 1)` 规划走到距离1，写 `0x4c2c70`／`0x4c2c74` 与 state `0xe0000`（先移动后用药） |
-| `0x44086e..0x4408dd` 对症药 | 所选桶为7；`0x40c1b0` 取 `0x4c1cec` 状态 mask，`0x40c230` 找首件对症药；这段不经类别选择 | 目标是自己取自身坐标原地用，否则 `0x40d530(actor, target, 1)`；state `0x100000`。找不到转 `0x4408e2` 的友军状态扫描 `0x40c3a0(actor, 8, 1)` |
-| `0x4406af` | `0x44060e` 在 `0x40df70` 返回0后进入；`0x4c2c50==1` 时查 `0x40c1d0` | `0x4c1cec` 是自己则原地，否则 `0x40d530` 距离1 |
+| `0x43fa29..0x43fac1` 自救 | `0x40c110` 自身阈值；`0x40c570` 选起始类别循环三类，普通类 `0x40c1d0` 取首件回血药（type1、add_hp≠0） | 跳 `0x4406d7` 写 state `0xc0000`，原地对自己 |
+| `0x44075b..0x44080c` 友军回复 | `0x40c2f0(actor, 8, 1)` 找同侧非自身过阈值友军；同上取药 | `0x40d530(actor, ally, 1)` 走到距离 1，写 `0x4c2c70`／`0x4c2c74`，state `0xe0000` |
+| `0x44086e..0x4408dd` 对症药 | 桶 7；`0x40c1b0` 取状态 mask，`0x40c230` 找首件对症药 | 自己原地，否则 `0x40d530` 距离 1；state `0x100000`；找不到转 `0x4408e2` 的 `0x40c3a0(actor, 8, 1)` |
+| `0x4406af` | `0x44060e` 在 `0x40df70` 返回 0 后进入；`0x4c2c50==1` 时查 `0x40c1d0` | 自己原地，否则距离 1 |
 
-AI 用药条件只有阈值和状态 mask，没有满值判断；`0x40c110` 要求缺血至少10，所以回血药不会用在满血目标上。
+`0x40c110` 要求缺血至少 10，AI 不对满血目标用回血药。`0x40d530` 落点见 [original_ai_support.md](original_ai_support.md#证据)。
 
-**边界**：大体型使用者的 range2 泛洪（体型 `0x40ecc0`／邻接 `0x40eb80`）只读到入口参数，逐格结果未读。`0x40d530` 移动搜索的落点读法与裁判实测见[友军用药与模板背包](original_ai_support.md#证据)（`0x413390` 站位，自身格不算）；`0x4406af` 的触发上下文和 `0x40c570` 在没有法术时是否抽随机数没有读完。剧情 `actUseItem` 只调 `0x409e40`，是否删除库存未读。
+## 重制接线
 
-## 重跑与已验证内容
+- `game/sim/InventoryRules.gd`：`discard_error`／`discard` 读 catalog important 布尔，缺记录或字段拒绝；provenance 头 `rules: static-derived docs/evidence_packets/static_reverse/original_item_actions.md`。
+- `game/sim/loop/BattleLoopInventory.gd` 的 `discard_item`：只提交库存，保留行动与可撤销移动；面板对重要物品置灰并说明，旧回调被版本检查拒绝。
+- `game/sim/ItemUseRules.gd`、`game/sim/ItemResolutionRules.gd`：用药目标与夹紧；`game/battle/scene/BattleItemText.gd` 浮 0。
+- 确认前不取物、取消保持原槽序、确认后直接关面板为重制交互（provisional；替换点是原暂持物 UI）。
 
-```sh
-PYTHONPATH=tools python3 -m hsltools.evidence.item_action \
-  --exe $HSL_ORIGINAL_DIR/hsl01.exe \
-  --pak $HSL_ORIGINAL_DIR/hsl.pak
-godot --headless --path . --script res://tests/run_inventory_equipment_tests.gd
-```
+## 复现
 
-本轮 EXE SHA-256 为 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。工具核对36段人工审阅的指令／数据以及命令和父返回状态分派；原 PAK 字节、四命令 Data8、Object130 定义和原 EXE 字节全部通过。它不会把静态核对称为新原函数执行。
+`python3 tools/hsl.py check item_action_evidence`；重制侧 `tests/run_inventory_equipment_tests.gd`。丢弃与重要物品的旧 Control 回执（`capture_equipment_review.gd` 的 discard／important 路线）驱动已退役，回执为历史记录。
 
-源证据测试会拒绝把 Equip 改回 state8、篡改原分派目的地、篡改 important mask。游戏回归逐一检查五种重要物品、普通丢弃、取消、重复请求、缺 metadata、take_off 不混用，以及禁止丢弃不会意外禁止给予。扩展库存／装备套件实际通过394项检查。首次手动测试发现本轮新断言误用不存在的 wait_resolving 状态，并且前次完整门禁已清导入缓存；改为核对实际队列交接、完成导入后全部通过，没有把缺 loader 当成产品逻辑缺陷。
+## 边界
 
-重要物品原先的 Control 验收见 [item_rules/README.md](../runtime_observations/item_rules/README.md)，其中当时普通丢弃结束行动的记录为历史行为。当前丢弃后继续移动、第二次丢弃、撤销移动并继续选攻击的内建屏鼠标验收见 [discard_action/README.md](../runtime_observations/discard_action/README.md)。新增源测试还拒绝满包分支或父返回分派被篡改。完整门禁实际结果保存在本次提交说明。
+- 大体型使用者的 range2 泛洪（体型 `0x40ecc0`／邻接 `0x40eb80`）只读到入口参数，逐格结果未读。
+- `0x4406af` 的触发上下文、`0x40c570` 无法术时是否抽随机数未读。
+- 剧情 `actUseItem` 只调 `0x409e40`，是否删除库存未读。
+- 连续给予与交换见 [original_give_exchange.md](original_give_exchange.md)；库存结构与换装见 [original_inventory_equipment.md](original_inventory_equipment.md)。
+- 整理、全部脚本组合与移动标志不由本包概括。

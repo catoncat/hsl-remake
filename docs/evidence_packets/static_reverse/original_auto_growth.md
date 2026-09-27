@@ -1,6 +1,6 @@
 # 成长：入场调级、自动属性分配与脚本增援
 
-> evidence: static-derived; runtime-measured: 第一战录屏 023_2 L3 41/41、模拟器 129 关玩家出生对拍 · status: live · functions: 0x407cc0, 0x40e7a0, 0x40e800, 0x40e870, 0x439f80, 0x43eed1, 0x43f3a5, 0x4438d4, 0x44ca5c, 0x450840, 0x452408, 0x45f5f7 · tools: capture_entry_growth_review.gd, hsl_native_level_probe.py, hsltools/data/entry_growth.py, hsltools/probes/auto_growth.py, run_entry_growth_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 第一战录屏 023_2 L3 41/41、模拟器 129 关玩家出生对拍 · status: live · functions: 0x407cc0, 0x40e7a0, 0x40e800, 0x40e870, 0x439f80, 0x43eed1, 0x43f3a5, 0x4438d4, 0x44ca5c, 0x450840, 0x452408, 0x45f5f7 · tools: hsl_native_level_probe.py, hsltools/data/entry_growth.py, hsltools/probes/auto_growth.py, run_entry_growth_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -79,7 +79,7 @@ low = max(1, center - min(D, 4));  high = max(low+1, center + D);  W = high - lo
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [entry_growth](../runtime_observations/entry_growth/receipt.json) | mage、thief、wing、large、zero、repeat、blocked、support、states、paralysis、victory、defeat、escape、carry、class_blocked | `capture_entry_growth_review.gd`、`run_entry_growth_tests.gd` |
+| [entry_growth](../runtime_observations/entry_growth/receipt.json) | mage、thief、wing、large、zero、repeat、blocked、support、states、paralysis、victory、defeat、escape、carry、class_blocked | `run_entry_growth_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

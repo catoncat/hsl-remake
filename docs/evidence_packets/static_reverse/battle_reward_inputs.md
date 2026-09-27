@@ -1,63 +1,62 @@
-# 战斗奖励来源输入
+# 战斗奖励：携带选择、掉落、击杀金与地图收尾
 
-> evidence: resource-derived; static-derived; runtime-measured: 携带 0x407c86 与掉落 0x44f5d3 的抽样都在全局流 0x458c10（整镜像模拟器） · status: live · functions: 0x407c40, 0x407cc0, 0x40ba20, 0x43ede0, 0x44e100, 0x44f580, 0x458c10 · tools: hsltools/data/battle_rewards.py, hsltools/evidence/reward.py, hsltools/probes/_reward_rng_trace.py · updated: 2026-09-26
+> evidence: resource-derived; static-derived; runtime-measured: 携带 0x407c86 与掉落 0x44f5d3 的抽样都在全局流 0x458c10（整镜像模拟器） · status: live · functions: 0x407c40, 0x407cc0, 0x40ba20, 0x43ede0, 0x44e100, 0x44f580, 0x458c10 · tools: hsltools/data/battle_rewards.py, hsltools/data/combat_aftermath.py, hsltools/evidence/reward.py, hsltools/probes/_reward_rng_trace.py, run_battle_reward_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-27
 
-Checked: 2026-09-19
+## 结论
 
-本包保存 `resource-derived` 来源字段及后来核对的 `static-derived` 携带／掉落分支。当前已由 BattleRewardRules、PlayLoop 和领取／存档界面消费；来源、重制选择和产品验收分别记录。此前地图遗言／经验见 [战斗收尾验收](../runtime_observations/combat_aftermath/README.md)，领取与恢复见 [奖励验收](../runtime_observations/battle_rewards/README.md)。
+- 原版：任何在首次过程 tick 时已是 pmEnemy 的演员出生时按 PLAYERS `carry_item` 取 TOWNDEF 候选表，从阈值 24 起逐项 `rand(101)` 选首个接受项放进背包；击杀时扫描受害者八槽，重要物品不抽，普通物品 `rand(100)+1 < get_ratio` 才掉一件；两处都抽全局流 `0x458c10`，不经伤害流（static-derived；runtime-measured）。
+- 击杀金：可控方击杀付进队伍金钱（封顶 `0x3b9ac9ff`，黃金的聖杯翻倍），非可控击杀者加到自己记录 +0x98，其收集进自己背包（static-derived）。
+- 重制：`BattleRewardRules` 与 PlayLoop 在初始化与增援时执行携带选择、击杀时生成带 sequence 的奖励收据与待领实例；地图收尾为遗言→淡出→地图 EXP→金币→領取→成长→后继（static-derived；收尾时长 provisional）。
+- 差异：玩家奖励资格与初始余额 0 是重制策略；领取为确认／延期交互，单战 F5／F9 存档是重制功能（provisional）。
 
-## 来源与可复跑产物
+## 证据
 
-- `content/imported/hsl/global/tables/PLAYERS.TXT`：全部 66 个 `[character]` 行的 `gold`、`carry_item` 和原始 `status` 值（2026-09-19 起不再限于第一章六类模板；一场战斗只消费其名单内演员的行，`BattleRewardRules.data_error` 仍拒绝缺行或 `status` 非零的演员）。
-- `content/imported/hsl/global/tables/ITEM.TXT`：239 个物品的 `get_ratio` 与 `important` 字段。
-- 原包 `@:\data\TOWNDEF.TXT`：提取上述角色行引用的全部 27 个携带候选表（26–36、38–46、48–52、55、56、58；此前只有第一章模板引用的 26、28、29、30、31、35），保存在 `content/imported/hsl/global/tables/carry_items.json`，保留成员 SHA-256。
-- `content/generated/hsl/combat/rewards.json`：上述来源的关联结果及三个输入文件的 SHA-256；当前标记 `live: true` 仅表示已被产品消费，不表示原完整结算等价。
+**static-derived**（13 段原字节锚点见 [battle_reward_branches.json](battle_reward_branches.json)）
 
-第一战相关模板 021／023 的 `gold` 字段为 100，024／026 为 120；已有第二战开发模板 025 为 500，001 为 0；后续正式战斗与遭遇战的怪物行如 036 为 10、037／038 为 80、049 为 700（携带表 46）。这只是表值，不能据此推断所有击杀都发放金币，也不能推断金币接收者、发放时机或跨关余额。保留 025 不表示第二战产品路线已完成。
+| 条目 | 锚点 | 行为 |
+| --- | --- | --- |
+| 调用位置 | 全 EXE 唯一调用者：敌方对象过程 `0x43ede0` 初始化分支 `0x43eef6` → `0x407cc0` | 站位取整、`0x458c80(0x18)` 加到对象 +0x7c 张延迟、`0x407660`；仅当 `0x40ba20(actor) == 0x20000` 时调 `0x407c40` |
+| 携带选择 | `0x407c40` | 读 shape record +0x2e（PLAYERS `carry_item`）→ `0x44e100` 取候选表；阈值 24 起，`rand(101)` ≤ 阈值接受，未接受且阈值 ≥10 时减 6；`-1` 不抽样但降阈值，0 结束；首个接受项经 `0x436e30` 进背包 |
+| 覆盖对象 | — | 剧情插入后被 `0x407ec0` 按 obj_Data9 换成 pmEnemy 的 023／024 也掷；不在安装路径 `0x407ec0`／`0x4080b0`，也不是 EVEF 显式携带 |
+| 掉落 | `0x44f580` | 先查排除（不死记录 `0x446bb0` 整包跳过），扫描八槽；重要物品不抽；普通 `rand(100)+1 < get_ratio` 加一件；重复 code 按槽分别处理；`get_ratio=100` 不是必掉 |
+| 击杀金 | `0x442720` 状态 2：`0x40ba20` 恰为 `0x10000` 时付进队伍金钱（`0x442837..0x44284a`），否则加到击杀者 +0x98；`0x442819..0x442825` 装备 230（`gold_x2`）先翻倍 | 状态 4 对非玩家进程 `0x44f600` 把收集收进自己背包（见 [original_player_mode.md](original_player_mode.md)） |
 
-候选表保留原顺序和重复值。例如 29 的条目是 `241,241,247,248,201`，不能去重成集合。001 没有声明 `carry_item`；产物用 `carry_list_declared: false` 区分未声明与显式列表，空列表不证明原版初始化分支。`status_raw` 保留源整数，不把尚未验证的位解释写成运行时掉落资格。
+不死受击者每次致死照发击杀金、不掷掉落、不记阵亡；不死攻击者被反击打死整次交换不发。
 
-PLAYERS 的 tracked 表与此前原包核对存在的差异仍未解决。本次 `--pak` 只核对 TOWNDEF 成员和五份候选表，不会把它升级成 PLAYERS 全表原包一致性证明。`--check` 不需要原作安装；加 `--pak` 才读取本机原包，且不启动 Wine。
+**runtime-measured**（`tools/hsltools/probes/_reward_rng_trace.py`，整镜像模拟器）
 
-```sh
-# 从当前已跟踪输入重建并检查生成数据。
-python3 tools/hsl.py generate battle_rewards
-python3 tools/hsl.py check battle_rewards
+| 场景 | 读数 |
+| --- | --- |
+| 出生内次序 | 每个对象出生依次抽 `0x407dba` 的 `rand(24)`（玩家方也抽）→ 仅 pmEnemy 在 `0x407c86` 逐项 `rand(101)` → 等级调整 `0x40e870`（首抽 `0x40e92c`）；三处经 `0x458c80` 抽全局流（字 `0x4795d4`／`0x4795d8`），不经 `0x42c780` |
+| 51 关开局 | 12 次出生逐个按此次序 |
+| 53 关 enemy023_1（表 28 `[246, 241, 247, 248, 249]`） | 32 个全局流种子 `[s, s^0xe54a231c]`，抽值个数、接受项、抽后全局字都等于阈值序列的结果；三名 023 携带 246／249／249 都属表 28 |
+| 51 关 actor021_1 背包 `[241, 246, 1, 281, 210, 227, 32, 249]` | 32 个种子下 281（重要）不抽，其余七项各抽一次 |
+| 51 关第 2 回合 actor023_2 自然击杀，背包 `[1, 2, 3, 227]` | 连抽四次 92／75／10／65，一件不掉 |
 
-# 原包对照只读；不重写 carry_items.json 或 rewards.json。
-python3 tools/hsl.py check battle_rewards
+原版录像：普通致死接触表（原版帧见私有档案：`runtime_observations/original_gameplay_reference/12_leonard_normal_attack/contact_sheet.jpg`） 显示受击、回到地图及遗言；地图 EXP 原帧（原版帧见私有档案：`runtime_observations/original_gameplay_reference/15_post_attack_settlement_floats/frame_006.png`） 经验提示在地图上。
 
-# 仅在明确更新原始携带表时使用，不能与 --check 合用。
-PYTHONPATH=tools python3 -m hsltools.data.battle_rewards --import-carry \
-  --pak "$HSL_ORIGINAL_DIR/hsl.pak"
+**resource-derived**（`content/generated/hsl/combat/rewards.json` 记录三份输入 SHA-256）
 
-tools/verify.sh
-```
+- `PLAYERS.TXT` 66 个 `[character]` 行的 `gold`、`carry_item`、原始 `status`；021／023 gold 100，024／026 120，025 500，001 0，036 10，037／038 80，049 700（携带表 46）。001 未声明 `carry_item`（`carry_list_declared: false`）。
+- `ITEM.TXT` 239 个物品的 `get_ratio` 与 `important`。
+- 原包 `@:\data\TOWNDEF.TXT` 的 27 个候选表（26–36、38–46、48–52、55、56、58），存 `content/imported/hsl/global/tables/carry_items.json`，保留顺序与重复（例：29 为 `241,241,247,248,201`）。
+- 遗言与称号：`hsltools/data/combat_aftermath.py` 联接 PLAYERS `dead_message`／`job_show_name` 与 RESOURCE，保留非零变体，缺引用明确失败。
 
-## 已检查的边界
+## 重制接线
 
-生成器拒绝重复角色、缺少第一章模板（`REQUIRED_ACTORS`）的表、重复物品 code、重复或缺失携带表、损坏的列表和不存在的物品引用。来源解析和数据检查保留列表顺序；陈旧产物、原包候选表不一致均明确失败，`--check` 不自动修复文件。八项 Python 回归覆盖这些路径，普通数据检查已进入完整门禁。
+- `game/sim/BattleRewardRules.gd`：`data_error` 拒绝缺行或 `status` 非零的演员；初始化与增援为敌方执行携带选择；可控角色击败敌方（含反击）获得共享金币与掉落；剧情离场与主角失败不发奖。
+- PlayLoop：一次完整交锋生成奖励收据、死亡去重与待领实例；范围伤害累计实际扣血与 kill_exp，一次扣费；死亡清异常、命中补偿、气力、行动与呼叫状态，掉落生成后清空死者背包。
+- 领取：sequence／revision／实例 ID 与接收者真实槽位校验；满包显式交换，换出物留池；普通剩余物二次确认放弃，重要物品不能放弃；「稍後領取」保留跨交锋，可从状态页或结果页重开（provisional）。
+- 地图收尾：不可变收据驱动遗言（BOARD02／肖像／分页，取第一条非零遗言，不耗战斗 RNG）→ 淡出 0.45 秒 → 地图 EXP 1 秒（紫色上浮）→ 金币 → 領取 → 成长 → 后继；终局台词与结果页等待（provisional：时长、颜色、字体）。
+- F5／F9：安静行动、领取、结果边界的单战存档，校验和原子替换，恢复不重放发奖；配置不同或损坏拒绝（provisional，不是原版存档兼容）。
 
-最初来源检查点没有游戏布局或动画改动；其 `d5f455c` 死亡／经验图证不追溯覆盖后来新增的领取。后续奖励实现及独立图证见下文；最终完整门禁 exit 和提交号以对应提交说明为准。
+## 复现
 
-本次首次完整门禁的 Python／来源检查通过，Godot 冷导入阶段收到 `SIGKILL`，没有脚本错误诊断；不能据此断言具体终止原因。日志同时显示正在导入 `ignored/` 的临时截图，这些不是产品资源。门禁现仅在缺失时创建本地 `ignored/.gdignore`，保留原输出文件及已有标记，随后仍冷导入全部产品资源并执行所有套件；最终通过结果记录在提交说明中。
+`python3 tools/hsl.py check battle_rewards`；`python3 tools/hsl.py check reward_evidence`；`python3 tools/hsl.py check combat_aftermath_data`；重制侧 `tools/godot.sh --headless --script tests/run_battle_reward_tests.gd` 与 `tests/run_combat_aftermath_tests.gd`。截图驱动 `tests/capture_battle_reward_review.gd`、`tests/capture_combat_aftermath_review.gd` 保留（`tools/oss_screenshots.py` 使用），旧回执在 `runtime_observations/battle_rewards/`、`combat_aftermath/`。
 
-## 已核对的原指令分支
+## 边界
 
-`battle_reward_branches.json` 保存 13 段原字节锚点。`PYTHONPATH=tools python3 -m hsltools.evidence.reward --exe "$HSL_ORIGINAL_DIR/hsl01.exe"` 已核对已知 SHA-256 的原 EXE；默认只检查紧凑证据包，不运行 Wine 或原函数。
-
-- 携带选择 `0x407c40` 从阈值24开始；原 `rand(101)` 样本小于等于阈值时接受，未接受后阈值在不低于10时减6；`-1` 不抽样但继续降低阈值，0结束，首个接受项进入背包。**调用位置（lane P4，2026-09-26，static-derived）**：全 EXE 唯一调用者是敌方对象过程 `0x43ede0` 初始化分支 `0x43eef6` → `0x407cc0`（站位取整、`0x458c80(0x18)` 加到对象 `+0x7c` 张延迟计数、`0x407660`）→ 仅当 live 模式 `0x40ba20(actor) == 0x20000`（pmEnemy）时 `0x407c40(actor)`：读该演员 shape record `+0x2e`（PLAYERS `carry_item`）→ `0x44e100` 取 TOWNDEF 候选表 → 首个接受项经 `0x436e30` 进背包。因此**任何在首次过程 tick 时已是敌方的演员**都掷一次，包括剧情插入后被 `0x407ec0` 按 obj_Data9 换成 pmEnemy 的 023／024（R33 在 53 关看到的三名 023 携带 246／249／249 都是 023 `carry_item = 28` 表 `[246, 241, 247, 248, 249]` 的成员；模板背包本身为空）。它不在安装路径 `0x407ec0`／`0x4080b0`，也不是 EVEF 或 PLAYERS 的显式携带表。**抽样流与出生内次序（lane RNGC，2026-09-26，runtime-measured，`tools/hsltools/probes/_reward_rng_trace.py`）**：整镜像模拟器里每个对象的出生 `0x407cc0` 依次抽 `0x407dba` 的 `rand(24)`（张延迟，玩家方对象也抽）→ 仅 pmEnemy 在 `0x407c86` 逐项 `rand(101)` 到接受为止 → 等级调整 `0x40e870`（首抽 `0x40e92c`）；三处都经 `0x458c80` 抽全局流 `0x458c10`（字 `0x4795d4／0x4795d8`），不经伤害流换入 `0x42c780`。51 关开局 12 次出生逐个按此次序；53 关 enemy023_1（表 28 `[246, 241, 247, 248, 249]`）固定其余局面、换 32 个全局流种子 `[s, s^0xe54a231c]`，每次的抽值个数、接受项和抽后全局字都等于上面阈值序列在同一状态上的结果。
-- 掉落 `0x44f580` 先检查排除条件（不死记录 `0x446bb0` 整包跳过），再扫描当前背包八槽；重要物品不抽样，普通物品仅当 `rand(100)+1 < get_ratio` 才加入一件。不能把 `get_ratio=100` 写成一定掉落。重复 code 按实际槽位分别处理。**抽样流（lane RNGC，runtime-measured）**：`rand(100)` 在 `0x44f5d3`，同样经 `0x458c80` 抽全局流 `0x458c10`。51 关 actor021_1 背包 `[241, 246, 1, 281, 210, 227, 32, 249]` 换 32 个全局流种子，281（重要）不抽、其余七项各抽一次；另一局自然击杀（51 关第 2 回合 actor023_2，背包 `[1, 2, 3, 227]`）在击杀结算里连抽四次 92／75／10／65，一件不掉。
-- 携带与掉落的抽样流、抽样点已实测；完整奖励／经验／取物状态机仍不是隔离执行。源 status 非零模板当前明确拒绝，不用未解位值猜资格。
-
-## 当前提交与恢复合同
-
-PlayLoop 初始化及增援时为敌方执行携带选择；当前可控角色击败敌方获得共享金币与其现有背包掉落，含反击。非可控击杀者照原版 `0x442720`：状态 2 在 `0x40ba20` 恰为 `0x10000` 时把击杀金付进队伍金钱（`0x442837..0x44284a`，封顶 `0x3b9ac9ff`），否则加到它自己的记录 `+0x98`；状态 4 对非玩家进程由 `0x44f600` 把本次收集（受害者掉落、它的金之手所得）收进它自己的包，不进玩家获得物品窗（[player mode](original_player_mode.md)）。装备 230 黃金的聖杯（ITEM `gold_x2`）时付款先翻倍（`0x442819..0x442825`）。不死受击者每次致死都照发击杀金、不掷掉落、不记阵亡；不死攻击者被反击打死整次交换不发。剧情离场和主角失败不凭空发玩家奖励。这些资格与初始余额0是明确重制策略；携带与掉落的抽样流是原版全局流（见上）。
-
-一次完整交锋生成带 sequence 的奖励收据、死亡去重记录和待领取实例。范围状态伤害对所有唯一目标累计实际扣血及来源 kill_exp，一次扣费；成长刷新仍会夹紧 HP/MP。死亡清除异常、命中补偿、气力、行动与呼叫状态，掉落生成后清空死者背包；战斗数值、库存、余额和领取进度全部由唯一 PlayLoop 提交。
-
-领取使用 sequence/revision/实例ID 与接收者真实槽位校验；满包显式交换，换出物留在待领池。取消不移动物品，普通剩余物可以二次确认放弃，重要物品不能放弃；“稍後領取”保留它们跨后续交锋，并可从状态页或结果页重新打开。UI 另校验实际控件和显示 epoch，读档后同编号旧按钮也不能重复提交。
-
-F5 在安静行动／领取／结果边界保存，F9 从这些边界或新启动开场恢复。同一版本的校验和存档原子替换，恢复完整单位、队列、库存／成长、余额与领取状态；已结算交锋直接标记为已展示，不重放初始化、攻击、死亡或发奖。配置不同／损坏拒绝且保留当前游戏。它是单战手动存档，不能据此声称原版存档兼容、跨关承接或任意动画中途恢复。
-
-原完整 EXP 公式、掉落资格、原取物暂持／取消 handler、原 UI 排版和跨关经济仍为独立未恢复边界。替换当前策略需对应 caller／连续原片段或原函数执行证据，不能仅根据录像中的一次 `$100` 修改全局规则。
+- 完整奖励／经验／取物状态机没有隔离执行。
+- 源 `status` 非零模板的掉落资格未解，重制明确拒绝。
+- PLAYERS tracked 表与原包差异未解决；`--pak` 只核对 TOWNDEF 与候选表。
+- 原遗言随机选择、完整死亡 handler、原取物暂持／取消 handler 与跨关经济未读；獲得物品窗见 [original_getitem_window.md](original_getitem_window.md)。

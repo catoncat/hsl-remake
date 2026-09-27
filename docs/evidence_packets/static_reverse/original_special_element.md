@@ -1,6 +1,6 @@
 # 绝技通道的元素抗性（0x40a7b0 channel 1 / proc 0）
 
-> evidence: static-derived · status: live · functions: 0x409be0, 0x40a7b0, 0x40aa80 · tools: hsltools/probes/special_damage.py · updated: 2026-09-20
+> evidence: static-derived · status: live · functions: 0x409be0, 0x40a7b0, 0x40aa80 · tools: hsltools/probes/special_damage.py · updated: 2026-09-27
 
 Checked: 2026-09-20。接续 [普通交锋、武器附加与氣刃斬](original_ordinary_special.md)。该包只回答一个问题：非 magicOTHER 的绝技（SPECIAL type 0..4）是否乘目标元素抗性、是否读魔击力。机器证据仍是 [original_special_damage.json](original_special_damage.json)（探针 [hsltools/probes/special_damage.py](../../../tools/hsltools/probes/special_damage.py)，本次新增 8 组元素行，全部原指令正常返回）。
 
@@ -63,3 +63,7 @@ Checked: 2026-09-20（static-derived）。SPECIAL.TXT 的敌方独立行（`; en
 - 抗性槽 `+0x104..+0x114` 的来源填充（装备／职业刷新）沿既有 profile 合同，本包不重推。
 - 滅／裁 与两条 Global 风魔法未做原指令探针（channel 0 的 type 5 分支只有指令读法；探针 `hsl_native_status_probe`／`original_status_rolls.json` 的 type 0..4 行是既有覆盖）。
 - `effCode35／36／18／19` 的原特效、`obj_Effect_OtherWord` 施法者演出与 eff_proc_Global 全屏演出均未恢复。
+
+## 复现
+
+`python3 tools/hsl.py check special_damage`；重制侧 `tools/godot.sh --headless --script tests/run_ordinary_special_tests.gd`。

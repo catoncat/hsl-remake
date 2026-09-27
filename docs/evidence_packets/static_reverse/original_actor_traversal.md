@@ -67,7 +67,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [actor_traversal](../runtime_observations/actor_traversal/receipt.json) | ally_attack、ally_cast、ally_support、restore、flying、ai_cutoff、ai_cast、ai_support、ai_no_mp、ai_silence、victory、defeat、escape | `capture_actor_traversal_review.gd`、`run_actor_traversal_tests.gd` |
+| [actor_traversal](../runtime_observations/actor_traversal/receipt.json) | ally_attack、ally_cast、ally_support、restore、flying、ai_cutoff、ai_cast、ai_support、ai_no_mp、ai_silence、victory、defeat、escape | `run_actor_traversal_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 `tests/run_actor_traversal_tests.gd` 的 `blocked_start_cases` 核对第 6 关四名单位只在各自 0xff 格群移动（061_1 23 格、咕嚕 10 格、actor032_3 13 格、actor031_8 3 格）。
 

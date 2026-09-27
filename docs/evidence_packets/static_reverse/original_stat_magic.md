@@ -50,7 +50,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [stat_magic](../runtime_observations/stat_magic/receipt.json) | manual、repeat、expiry、dispel、movement、melee、growth、empty_mp、silence、paralysis、ai_buff、ai_dispel、ai_blocked、victory、defeat、escape | `capture_stat_magic_review.gd`、`run_support_magic_tests.gd` |
+| [stat_magic](../runtime_observations/stat_magic/receipt.json) | manual、repeat、expiry、dispel、movement、melee、growth、empty_mp、silence、paralysis、ai_buff、ai_dispel、ai_blocked、victory、defeat、escape | `run_support_magic_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

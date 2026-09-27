@@ -1,6 +1,6 @@
 # 普通交锋尾部：武器附毒、状态字、未来行动取消与防护
 
-> evidence: static-derived · status: live · functions: 0x406fe0, 0x407550, 0x409110, 0x4091b0, 0x409210, 0x409240, 0x4092d0, 0x409310, 0x409460, 0x4095e0, 0x40e240, 0x40e2f0, 0x4423c0, 0x448420, 0x448840 · tools: capture_weapon_effect_review.gd, hsltools/data/weapon_effect_trial.py, hsltools/probes/weapon_effect.py, run_weapon_effect_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x406fe0, 0x407550, 0x409110, 0x4091b0, 0x409210, 0x409240, 0x4092d0, 0x409310, 0x409460, 0x4095e0, 0x40e240, 0x40e2f0, 0x4423c0, 0x448420, 0x448840 · tools: hsltools/data/weapon_effect_trial.py, hsltools/probes/weapon_effect.py, run_weapon_effect_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -69,7 +69,7 @@ ITEM 状态字非零行：51（attack_weaken）、66（attack_nomagic）、71／
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| `weapon_effects/`（目录已删，见 Git 历史） | poison_series、cancel_queue、protected_poison、guard_cure、growth_swap、ai_poison、ai_fallback、ai_silence、ai_wait、ai_cure、phase_cancel、trial、victory、defeat、escape | `capture_weapon_effect_review.gd`、`hsltools/data/weapon_effect_trial.py`、`run_weapon_effect_tests.gd` |
+| `weapon_effects/`（目录已删，见 Git 历史） | poison_series、cancel_queue、protected_poison、guard_cure、growth_swap、ai_poison、ai_fallback、ai_silence、ai_wait、ai_cure、phase_cancel、trial、victory、defeat、escape | `hsltools/data/weapon_effect_trial.py`、`run_weapon_effect_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

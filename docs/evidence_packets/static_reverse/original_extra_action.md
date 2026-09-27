@@ -52,7 +52,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [extra_action](../runtime_observations/extra_action/receipt.json) | wait_status、equip_restore、move_attack_cast、double_series、growth_kill、support_cure、ai_cast、ai_support、ai_no_mp、ai_silence、victory、defeat、escape | `capture_extra_action_review.gd`、`run_extra_attack_tests.gd`、`run_first_battle_playthrough.gd` |
+| [extra_action](../runtime_observations/extra_action/receipt.json) | wait_status、equip_restore、move_attack_cast、double_series、growth_kill、support_cure、ai_cast、ai_support、ai_no_mp、ai_silence、victory、defeat、escape | `run_extra_attack_tests.gd`、`run_first_battle_playthrough.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

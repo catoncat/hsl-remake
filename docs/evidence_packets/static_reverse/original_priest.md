@@ -64,4 +64,4 @@ MP = 110*m/100 + c/4
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [priest](../runtime_observations/priest/receipt.json) | manual、healing_growth、mana_extra、phase_mobility、melee_series、ai_heal、ai_silence、ai_paralysis、victory、defeat、escape | `capture_priest_review.gd`、`run_support_magic_tests.gd` |
+| [priest](../runtime_observations/priest/receipt.json) | manual、healing_growth、mana_extra、phase_mobility、melee_series、ai_heal、ai_silence、ai_paralysis、victory、defeat、escape | `run_support_magic_tests.gd`；截图驱动已退役，回执为历史记录 |

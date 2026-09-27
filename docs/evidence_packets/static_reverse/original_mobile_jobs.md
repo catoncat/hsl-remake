@@ -1,6 +1,6 @@
 # 职业：盗贼 88／翼战士 92 的独立刷新与宿魔刀末击削魔
 
-> evidence: static-derived · status: live · functions: 0x409460, 0x448840, 0x46de70 · tools: capture_mobile_jobs_review.gd, hsltools/assets/job_casts.py, hsltools/data/mobile_jobs.py, hsltools/probes/mana_strike.py, hsltools/probes/mobile_jobs.py, hsltools/probes/mobile_motion.py, hsltools/probes/mobile_source.py, run_mobile_jobs_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x409460, 0x448840, 0x46de70 · tools: hsltools/assets/job_casts.py, hsltools/data/mobile_jobs.py, hsltools/probes/mana_strike.py, hsltools/probes/mobile_jobs.py, hsltools/probes/mobile_motion.py, hsltools/probes/mobile_source.py, run_mobile_jobs_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -42,7 +42,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [mobile_jobs](../runtime_observations/mobile_jobs/receipt.json) | manual、single、double、counter、miss、low_mp、zero_mp、late_kill、growth、wing_growth、wing_move、support、mixed、paralysis、ai_drain、ai_wing、victory、defeat、escape、carry | `capture_mobile_jobs_review.gd`、`run_mobile_jobs_tests.gd` |
+| [mobile_jobs](../runtime_observations/mobile_jobs/receipt.json) | manual、single、double、counter、miss、low_mp、zero_mp、late_kill、growth、wing_growth、wing_move、support、mixed、paralysis、ai_drain、ai_wing、victory、defeat、escape、carry | `run_mobile_jobs_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

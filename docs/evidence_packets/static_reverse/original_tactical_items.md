@@ -87,4 +87,4 @@ AI自救保留现有HP／濒死／解除的适配次序，在已拥有的驱毒�
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [tactical_items](../runtime_observations/tactical_items/receipt.json) | manual、repeat、expiry、mixed、dispel、cure、stamina、melee、growth、movement、ai_self、ai_ally、paralysis、invalid、victory、defeat、escape | `capture_tactical_items_review.gd`、`run_tactical_items_tests.gd` |
+| [tactical_items](../runtime_observations/tactical_items/receipt.json) | manual、repeat、expiry、mixed、dispel、cure、stamina、melee、growth、movement、ai_self、ai_ally、paralysis、invalid、victory、defeat、escape | `run_tactical_items_tests.gd`；截图驱动已退役，回执为历史记录 |

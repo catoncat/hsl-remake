@@ -48,7 +48,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| `large_actor/`（目录已删，见 Git 历史） | trial、movement、edge_series、giant_combat、empty_area、support、cure_item、skip_resume、ai_resource、ai_retarget、victory、defeat、escape | `capture_large_actor_review.gd`、`run_large_actor_tests.gd` |
+| `large_actor/`（目录已删，见 Git 历史） | trial、movement、edge_series、giant_combat、empty_area、support、cure_item、skip_resume、ai_resource、ai_retarget、victory、defeat、escape | `run_large_actor_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

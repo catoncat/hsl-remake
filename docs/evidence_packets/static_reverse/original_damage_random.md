@@ -1,6 +1,6 @@
 # 伤害／命中随机流：原版生成器、单一状态、随存档保存
 
-> evidence: static-derived · status: live · functions: 0x403860, 0x406fe0, 0x409be0, 0x40a5d0, 0x40aa80, 0x40e430, 0x42c720, 0x42c780, 0x42c7e0, 0x42e070, 0x42e640, 0x4414a0, 0x4423c0, 0x4445cf, 0x457410, 0x458bb0, 0x458c10, 0x458c80 · tools: export_exchanges.gd, hsltools/evidence/damage_random.py, hsltools/probes/_exchange_check.py, run_tests.gd · updated: 2026-09-26
+> evidence: static-derived · status: live · functions: 0x403860, 0x406fe0, 0x409be0, 0x40a5d0, 0x40aa80, 0x40e430, 0x42c720, 0x42c780, 0x42c7e0, 0x42e070, 0x42e640, 0x4414a0, 0x4423c0, 0x4445cf, 0x457410, 0x458bb0, 0x458c10, 0x458c80 · tools: export_exchanges.gd, hsltools/evidence/damage_random.py, hsltools/probes/_exchange_check.py, run_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -28,7 +28,7 @@
 
 `hsltools/probes/_exchange_check.py record`借`_enemy_level.run_level`的观察者钩子，在原版敌人回合里逐次记下每次交锋`0x4423c0`的数据：开场的两个伤害字、双方活记录（HP `+0xd8`、EXP `+0x88`、命中加成 `+0xb0`、连杀字 `+0xa8`、战斗字）、每次伤害流抽取及其调用点、每一下的命中／暴击／伤害（`0x403860`）和发放（`0x442720`）。`tests/export_exchanges.gd`从同一开场状态（格位与 HP、双方活记录、`damage_rng`＝原版两个字）走重制`BattleLoopCombat._resolve_exchange`。`compare`逐列对照：命中／伤害／暴击／反击／反击伤害／经验、每次抽取的上界与值、交锋末双方活记录与伤害字。
 
-局面有两个。第 51 关用首控局面`first_control`，注入 026_1／026_2／021_1 与我方相邻，12 个伤害种子，每种子 3 回合。第 53 关用原版开局，250 个伤害种子，每种子 8 回合。`growth` 为 false 时原版只把成长字 `+0x1f8`／`+0x1fa` 清零，玩家出生 `0x44346e` 照样调 `0x40e870`：先由 `0x40e800` 按四项基础属性推等级，kind3 在 `0x40e89d` 跳到 `0x40eb18` 刷新并回满。第 53 关剧情插入的緹娜因此由模板 L1、HP 35/35、攻击 37 变成 L2、36/36、38（模拟器实测，成长字 0,0 与 20,3 结果相同）。重放的玩家也先走同一推断（`InitialRosterGrowthRules.prepare_player`），两关都没有覆盖。lane TINA53 于 2026-09-26 两关重录重放：结果行与下面一字不差，`overrides` 为 0 行；此前的 989 行覆盖都是重放漏了这一步。
+局面有两个。第 51 关用首控局面`first_control`，注入 026_1／026_2／021_1 与我方相邻，12 个伤害种子，每种子 3 回合。第 53 关用原版开局，250 个伤害种子，每种子 8 回合。`growth` 为 false 时原版只把成长字 `+0x1f8`／`+0x1fa` 清零，玩家出生 `0x44346e` 照样调 `0x40e870`：先由 `0x40e800` 按四项基础属性推等级，kind3 在 `0x40e89d` 跳到 `0x40eb18` 刷新并回满。第 53 关剧情插入的緹娜因此由模板 L1、HP 35/35、攻击 37 变成 L2、36/36、38（模拟器实测，成长字 0,0 与 20,3 结果相同）。重放的玩家也先走同一推断（`InitialRosterGrowthRules.prepare_player`），两关都没有覆盖。两关重录重放：结果行与下面一字不差，`overrides` 为 0 行；此前的 989 行覆盖都是重放漏了这一步。
 
 结果行：
 
@@ -139,7 +139,7 @@ mode 由调用进程压入：
 - `run_tests.gd`的`damage_order_cases`：用影子流逐次比对一次交锋的抽取上界`[100, 5|base+4, eff*30/100, half, half, (-1), 100, (100)]`。
 - `save_load_cases`：在一场小战里先存档，连打三回合，再跑AI回合；然后读档，重复同样操作。逐次比对伤害、命中、暴击、状态和最终状态，并确认流确实推进过，而且换一个起始状态结果就不同。
 
-## 复跑
+## 复现
 
 ```sh
 python3 tools/hsl.py check damage_random
@@ -159,7 +159,7 @@ $U compare ignored/dmgcheck/L51_12.json ignored/dmgcheck/L51_12_remake.json igno
 
 ## 仍未支持
 
-原版时钟播种分支`0x457830`没有执行，只是字节钉住；重制的`t`是产品时钟或`HSL_RNG_SEED`，不会和某次原版开局的具体数值相同。全局流由lane RNG-A接入`GlobalRandomStream`（同一生成器，状态对应`0x4795d4`／`0x4795d8`，不入存档）：AI决策、出生调级、新援、开局随机槽、opcode 86／99的随机位置已改抽它；掉落（`0x44f5d3`）、出生随机携带（`0x407c86`）与opcode 121（`0x450fe6`／`0x451012`／`0x451075`）原版也抽全局流（lane RNGC 实测／静态），opcode 107／108原版不抽随机数，见[差异清单](parity_gap_inventory.md)的`rng-streams`。
+原版时钟播种分支`0x457830`没有执行，只是字节钉住；重制的`t`是产品时钟或`HSL_RNG_SEED`，不会和某次原版开局的具体数值相同。全局流接入`GlobalRandomStream`（同一生成器，状态对应`0x4795d4`／`0x4795d8`，不入存档）：AI决策、出生调级、新援、开局随机槽、opcode 86／99的随机位置已改抽它；掉落（`0x44f5d3`）、出生随机携带（`0x407c86`）与opcode 121（`0x450fe6`／`0x451012`／`0x451075`）原版也抽全局流（实测／静态，见 [battle_reward_inputs.md](battle_reward_inputs.md)），opcode 107／108原版不抽随机数，见[差异清单](parity_gap_inventory.md)的`rng-streams`。
 
 - **AI决策**：产品里AI每回合新建一个随机源来做决策。读档后，AI的选择可能和存档前那次不同，伤害流的消耗顺序也会随之不同。存档一致性测试固定了决策随机源，所以不受影响。
 - **交锋内抽取顺序**：由`order_cases`对照原版的静态顺序。整段普通交锋已在原程序里逐值对拍，但只限敌人回合，见[整段交锋对拍](#整段交锋对拍)。武器效果（`0x409110`–`0x409310`）、元素加成、偷窃等分支各自抽几次，仍只在各自的规则测试里对照过原版，本批局面没有触发它们。

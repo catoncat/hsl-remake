@@ -48,7 +48,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [equipment_mobility](../runtime_observations/equipment_mobility/receipt.json) | equip_growth、pending_restore、ai_without、ai_boots、victory、defeat、escape | `capture_equipment_mobility_review.gd`、`run_position_equipment_tests.gd` |
+| [equipment_mobility](../runtime_observations/equipment_mobility/receipt.json) | equip_growth、pending_restore、ai_without、ai_boots、victory、defeat、escape | `run_position_equipment_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

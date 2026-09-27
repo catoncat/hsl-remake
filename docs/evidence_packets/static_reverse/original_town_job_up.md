@@ -103,7 +103,7 @@ EvilMonster numeric branch: `max_hp = str/3 + 170·hp_level/100 + 240·con/100`,
 
 - 原作对 018（克羅蒂 首个稱號）画什么——SHAPEDEF.TXT 无该行（negative-evidence）；重制保留 009 帧是表现回退（provisional 表现选择）。替换证据：原生 回憶錄 把槽 8 code 写成 817（`obj_Player9Up1`）并进入任意战斗观察行走帧／缺帧行为；实现不支持的结论：原作 018 有任何可见形态。
 - `teCheckJobUp2` 的失败路径（fail message／fail event）与城镇内首次 `teCheckJobUp` 未原生观察，只有 `0x454e20` case 0x1f／0x20 的读法。
-- `steal_ratio` 的字相加已接入（`JobUpRules.merge_source_template` 相加 `combat_profile.base_steal_ratio`，偷窃规则消费刷新后的 `steal_ratio` 工作值；读法见 [技能功能位「偷窃加成字」](original_skill_function_bits.md#偷窃加成字-0x1940x1962026-09-22-lane-r27-读法lane-r32-有界原生执行static-derivednative-receipt)）。
+- `steal_ratio` 的字相加已接入（`JobUpRules.merge_source_template` 相加 `combat_profile.base_steal_ratio`，偷窃规则消费刷新后的 `steal_ratio` 工作值；读法见 [技能功能位「偷窃加成字」](original_skill_function_bits.md#证据)）。
 
 ## Limits
 

@@ -1,6 +1,6 @@
 # 装备：移动后施法资格与普通攻击范围
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x409090, 0x4097d0, 0x40d340, 0x40e240, 0x40e270, 0x43ea30, 0x448840 · tools: capture_position_equipment_review.gd, hsltools/probes/position_equipment.py, run_position_equipment_tests.gd · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: live · functions: 0x409090, 0x4097d0, 0x40d340, 0x40e240, 0x40e270, 0x43ea30, 0x448840 · tools: hsltools/probes/position_equipment.py, run_position_equipment_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -50,7 +50,7 @@ RANGE.H 普通索引 1／2／3；源武器只用 1／2，加成后可到 3。RAN
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [position_equipment](../runtime_observations/position_equipment/receipt.json) | cancel_equip、remove_restore、double_growth、counter_range、support_cure、no_mp_item、silence_special、detour、ai_stationary、ai_mobile、ai_silence、ai_wait、ai_support、ai_retarget、victory、defeat、escape | `capture_position_equipment_review.gd`、`run_position_equipment_tests.gd` |
+| [position_equipment](../runtime_observations/position_equipment/receipt.json) | cancel_equip、remove_restore、double_growth、counter_range、support_cure、no_mp_item、silence_special、detour、ai_stationary、ai_mobile、ai_silence、ai_wait、ai_support、ai_retarget、victory、defeat、escape | `run_position_equipment_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

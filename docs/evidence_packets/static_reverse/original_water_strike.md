@@ -47,7 +47,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [water_strike](../runtime_observations/water_strike/receipt.json) | public、mixed、mobile、limited、silence、ai、victory、defeat、escape | `capture_water_strike_review.gd`、`run_water_strike_tests.gd` |
+| [water_strike](../runtime_observations/water_strike/receipt.json) | public、mixed、mobile、limited、silence、ai、victory、defeat、escape | `run_water_strike_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

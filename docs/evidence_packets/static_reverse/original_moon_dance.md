@@ -44,7 +44,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| `moon_dance/`（目录已删，见 Git 历史） | manual、multi_kill、misses、phase_extra、ordinary_then_moon、aid_after_moon、large_target、ai_multi、ai_empty、ai_paralysis、victory、defeat、escape | `capture_moon_dance_review.gd`、`run_moon_dance_tests.gd` |
+| `moon_dance/`（目录已删，见 Git 历史） | manual、multi_kill、misses、phase_extra、ordinary_then_moon、aid_after_moon、large_target、ai_multi、ai_empty、ai_paralysis、victory、defeat、escape | `run_moon_dance_tests.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

@@ -38,7 +38,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [extra_attack](../runtime_observations/extra_attack/receipt.json) | equip_move、double_counter、early_kill、late_kill、counter_defeat、ai_move、miss、special、final_kill、escape | `capture_extra_attack_review.gd`、`run_extra_attack_tests.gd`、`run_first_battle_playthrough.gd` |
+| [extra_attack](../runtime_observations/extra_attack/receipt.json) | equip_move、double_counter、early_kill、late_kill、counter_defeat、ai_move、miss、special、final_kill、escape | `run_extra_attack_tests.gd`、`run_first_battle_playthrough.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

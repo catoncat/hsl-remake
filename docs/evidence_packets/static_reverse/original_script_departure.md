@@ -1,6 +1,6 @@
 # 脚本离场、角色在场资格与演出游标
 
-> evidence: static-derived · status: live · functions: 0x407720, 0x411b90, 0x44cb90, 0x44fad0, 0x44fbd0, 0x450410, 0x450450, 0x453b90, 0x45e3ed · tools: capture_departure_review.gd, hsltools/probes/departure.py, run_departure_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x407720, 0x411b90, 0x44cb90, 0x44fad0, 0x44fbd0, 0x450410, 0x450450, 0x453b90, 0x45e3ed · tools: hsltools/probes/departure.py, run_departure_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -39,7 +39,7 @@
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [script_departure](../runtime_observations/script_departure/receipt.json) | walk、delete、giant、second、blocked、mage、support、ai、paralysis、kill、victory、defeat、escape、carry、rearm | `capture_departure_review.gd`、`run_departure_tests.gd`、`run_first_battle_playthrough.gd` |
+| [script_departure](../runtime_observations/script_departure/receipt.json) | walk、delete、giant、second、blocked、mage、support、ai、paralysis、kill、victory、defeat、escape、carry、rearm | `run_departure_tests.gd`、`run_first_battle_playthrough.gd`；截图驱动已退役，回执为历史记录 |
 
 ## 边界
 

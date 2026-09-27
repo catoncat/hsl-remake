@@ -55,7 +55,7 @@
 
 | 项 | 理由 |
 | --- | --- |
-| OPT-STAMINA 开场气力 | 不做成选项——原版规则已照做（STAMINA-RULE）：原版裁判实测首次登记取 PLAYERS 气力（第 51 关雷歐納德 20、雷特首次登记那场 8，其余 0），携带进关清 0，上一段脚本执行过 actKeepPlayerST 才保留余气；"每场从 0 开始"随之取消（[开场实测](evidence_packets/static_reverse/original_stamina.md#开场实测)） |
+| OPT-STAMINA 开场气力 | 不做成选项——原版规则已照做（STAMINA-RULE）：原版裁判实测首次登记取 PLAYERS 气力（第 51 关雷歐納德 20、雷特首次登记那场 8，其余 0），携带进关清 0，上一段脚本执行过 actKeepPlayerST 才保留余气；"每场从 0 开始"随之取消（[开场实测](evidence_packets/static_reverse/original_stamina.md#证据)） |
 | AI 集火／AI 难度 | 规则改动。目标定义是 AI「规则等价＋分布等价」；再开一档 AI 就是第二套规则，裁判管不到。自动对局胜率低是原版难度，不是回归（PROJECT 第八轮）。嫌难的玩家用 OPT-INFO／OPT-RETRY，不改规则 |
 | 伤害／经验／金钱倍率、敌人等级 | 平衡滑杆，非目标 |
 | 战斗结果页 | 原版没有（RESULTPAGE 已删）；战绩页不帮玩家做任何决定，真正有用的"重来"由 OPT-RETRY 提供 |

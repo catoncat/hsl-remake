@@ -1,67 +1,46 @@
-# 麻痺：新行动入口、解除与恢复链
+# 麻痺：施加、新行动入口跳过、解除与防护
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c230, 0x448840 · tools: capture_paralysis_review.gd, hsltools/assets/paralysis_assets.py, hsltools/probes/paralysis.py, run_support_magic_tests.gd · updated: 2026-09-18
+> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c230, 0x448840 · tools: hsltools/assets/paralysis_assets.py, hsltools/probes/paralysis.py, run_support_magic_tests.gd · updated: 2026-09-27
 
-本批在SR-058移动施法／范围装备、既有双击／两次行动与最终资源尾部之上，接通麻痺的完整行动资格。来源分为`resource-derived`的角色／魔法／道具／对象表，以及`static-derived`的[原指令回执](original_paralysis.json)。Unicorn使用合成内存，原EXE只读、callee不替换；前段在显示／完整dispatcher之前停止，不能称原作自然游玩或整引擎执行。
+## 结论
 
-## 系统对照与选择
+- 原版：麻痺（flags 含 4）者在 phase 0 的新行动入口被跳过（玩家 `0x443996`、AI `0x43f47b`）；地靈縛施加 2 或 3 次、累计上限 9，每次实际增加的计时 ×10 作为贡献；`0x40b910` 按行动递减到期清除；精靈石（item 效果 `0x20000000`）清麻痺；装备 `avoid_paralysis` 与固有 `no_paralyze` 防止后续麻痺但不治疗已有（static-derived）。
+- 重制：`ActionEntryRules` 只读判定入口资格，麻痺时产生一次 `paralysis_skip` 收据并只走一次现有行动尾部，绕过白光之翼额外行动查询；`StatusEffectRules` 管三类 counter（static-derived）。
+- 差异：高位状态机其余分支、wake 回调与死亡 handler 未恢复；施法粒子、混色与显示时钟是重制编排（provisional）。
 
-原单格通行、阶段资格、装备和状态尾部已经成立。大型角色仍需要占用／经过／停留、目标范围、脚点和保存的完整空间合同；本轮现有确定性符号能直接定位麻痺的玩家／AI入口、计时、解除和当前防护，且可组成“施加→失去行动→友军解围或到期→恢复正常操作”的完整体验链。因此优先实现高位状态机这一组，不为进度放宽体型检查，也不将未知状态分支推定为已恢复。
+## 证据
 
-定位使用已有`0x40aa80`、`0x40b910`和额外行动caller、ITEM／PLAYERS字段及已存反汇编。Jev没有被调用重新判定；新确认的`0x40c230`登记为`first_matching_status_cure_slot`并离线挂回目录。候选标签与原字节／有界执行分别记录。
+**static-derived**（Unicorn 合成内存，EXE 只读、callee 不替换；结果见 [original_paralysis.json](original_paralysis.json)）
 
-## 原指令范围
-
-| 入口／字段 | 本次可支持的行为 | 执行边界 |
+| 入口／字段 | 行为 | 执行范围 |
 | --- | --- | --- |
-| 玩家`0x443996`、AI`0x43f47b` | 引擎启用、当前flags含4且对象phase为0时跳过新行动；其它phase不被这条分支截断 | 96组合前段；玩家跳往phase`0x10003`，AI跳往`0x640001`，停止在下游尾部之前 |
-| `0x40aa80`地系05施加 | 独立状态命中、2或3次剩余行动、叠加上限9；每次实际增加的计时×10作为贡献 | 72前段到`0x40b831`，尚未显示或最终发EXP；数值／随机callee真实执行 |
-| `0x40b910` | 毒、麻痺、禁魔分别递减低字，到期清flag及完整counter | 36正常返回；未知状态字段保持零，不能概括全部高位状态机 |
-| `0x40a30c` | item效果`0x20000000`清麻痺flag4和actor+0x3c | 12解除前段，停止`0x40a31f`；其它资源及毒／禁魔不变 |
-| `0x40c230` | 按八槽顺序找第一个匹配异常的恢复道具，返回1-based位置；非药品跳过 | 30正常返回，无RNG、无actor写入；原全状态药251仅在源扫描样例中出现，不因此开放它 |
-| `0x448840`及装备应用 | 清旧working值，当前装备／非空槽映射的固有能力合并防麻痺；不清已有麻痺 | 24组合×两次=48正常返回，覆盖剑士／重装职业字段、31／211／重复来源、无防护普通武器2与固有能力独立映射、预置脏值；不是职业穿戴资格证明 |
+| 玩家 `0x443996`、AI `0x43f47b` | 引擎启用、flags 含 4 且对象 phase 为 0 时跳过新行动；玩家跳 phase `0x10003`，AI 跳 `0x640001`；其他 phase 不截断 | 96 组前段，止于下游尾部前 |
+| `0x40aa80` 地系 05 | 独立状态命中、2 或 3 次、上限 9；增加的计时 ×10 为贡献 | 72 组前段到 `0x40b831` |
+| `0x40b910` | 毒、麻痺、禁魔分别递减低字，到期清 flag 与 counter | 36 组正常返回 |
+| `0x40a30c` | item 效果 `0x20000000` 清 flag4 与 actor+0x3c | 12 组前段止于 `0x40a31f` |
+| `0x40c230` | 按八槽顺序找第一个匹配异常的恢复道具，返回 1-based 位置，非药品跳过 | 30 组正常返回，无 RNG、无写入 |
+| `0x448840` 与装备应用 | 清旧 working 值，当前装备与非空槽映射的固有能力合并防麻痺，不清已有麻痺 | 24 组 ×2 = 48 正常返回 |
 
-所有前段／返回有独立`normal_return`、停止地址／指令上限；精确输入序列、来源哈希和锚点哈希由工具离线重算。入口前段只改变对象phase，**没有执行**毒伤、资源恢复、队列推进，也没有改额外行动latch；已知下游caller说明它绕过额外行动查询，Godot将跳过与现有一次尾部组合，不能把整条组合写成一次完整原dispatcher返回。
+入口前段只改对象 phase，没有执行毒伤、资源恢复、队列推进或额外行动 latch；已知下游 caller 说明它绕过额外行动查询。
 
-## 来源身份与当前规则
+**resource-derived**：地靈縛 `magic:magicEARTH:magicCode05`，主／状态命中 40、MP16、数值 12..36、`magicFun_Paralysis=4`，施法 `range3CellCircle`、效果 `range1Cell`；状态施加用独立 proc6，魔法主命中饰品不提高状态成功率；免疫 `0x4000000` 或全状态保护 `0x80` 时不抽样、不扣 HP、无贡献。源角色 052／056／060 声明该技能。精靈石 248 只解麻痺；虹之首飾 211 与霸邪天煌 31 防麻痺（31 受重装职业限制）；`avoid_paralysis` 是装备主效果 `0x4000000`，固有 `no_paralyze` 先映射 capability `0x800`。全状态药 251 只在源扫描样例出现。`hsltools/assets/paralysis_assets.py` 导出地系对象 8 帧与 UPGROUND01／BOMB0006 两个声音。
 
-地靈縛为`magic:magicEARTH:magicCode05`，原主／状态命中40、MP16、源数值12..36、`magicFun_Paralysis=4`，施法范围`range3CellCircle`、效果`range1Cell`。实际施加使用独立proc6状态检查，魔法主命中饰品不提高状态成功率。成功增加2或3，实际累计不超过9；已满9没有新增贡献。免疫`0x4000000`或原全状态保护`0x80`时不抽样，不扣HP，不虚构经验贡献。
+## 重制接线
 
-源角色052／056／060声明该技能。当前正式第一战不新增授予；范围／空格中心与单次付款使用共享SkillResolution，玩家／AI同一入口，逐目标免疫和贡献后才按既有原EXP转换／装备加倍／成长结算。
+- `game/sim/ActionEntryRules.gd`：只读入口资格，先做完整数据校验与终态检查；当前可控角色麻痺时不开菜单，转入有界自动动作入口，毒伤→HP／MP 回复→血转 MP→到期反馈各一次；到期不赠送当前槽的新行动。
+- `StatusEffectRules`：麻痺 counter 0..9，JSON 初始化先验证再转整数；独立存档配置由 `source_resource_tail_v3` 等识别。
+- 反击门禁拒绝麻痺者反击；受支持的伤害不自行清麻痺，死亡清状态并释放单格占用。
+- AI 以同侧异常目标扫描、类别选择与首个匹配道具槽组合可达相邻位置用药；旧意图在移动、扣物或 RNG 前拒绝（provisional：地图收益与路径组合为重制适配）。
+- 到达／败北条件已满足时在状态与资源尾部之前冻结结果。
+- `ParalysisMagicPresentation`：前摇、脚点投影、释放／命中各一次；入场显示「麻痺 · 無法行動」，到期／用药显示「麻痺解除」；无资源尾部的用药数字也纳入输入阻塞（provisional：粒子、烟雾、100 tick/s 换算）。
 
-精靈石248只解除麻痺；虹之首飾211和霸邪天煌31防止后续麻痺。31仍按原职业限制只允许当前受支持的重装职业等合法职业，法师不能穿戴。`avoid_paralysis`是装备主效果`0x4000000`；固有`no_paralyze`先映射capability`0x800`，由非空装备应用映射。装卸和升级读取当前来源，重复防护OR，不叠计时；防护不能治疗已存在异常。原全状态防护道具的其它效果仍未完成，本批没有顺带开放。
+## 复现
 
-## 可玩状态与事务
+`python3 tools/hsl.py check paralysis`；`python3 tools/hsl.py check paralysis_assets`；重制侧 `tools/godot.sh --headless --script tests/run_support_magic_tests.gd`。14 条实际输入回执（`runtime_observations/paralysis/receipt.json`）驱动已退役，回执为历史记录。
 
-`StatusEffectRules`保存明确的三个counter，新增麻痺只接受0..9；缺字段、flag／counter不一致或未支持高位数据明确失败。JSON初始化先验证再转成整数，避免未变化的0.0与后来整数应用在完整状态比较中不同；增援复用规范化模板。独立存档配置由源book／装备／消耗品及`source_resource_tail_v3`共同识别，旧配置不静默迁移。
+## 边界
 
-`ActionEntryRules`只做只读入口资格；PlayLoop仍是唯一状态所有者。当前可控角色麻痺时不打开菜单，转入现有有界自动动作入口；与AI同样产生一次`paralysis_skip`收据。跳过在完整数据校验和终态检查之后，只进入一次现有末次尾部，绕过白光之翼额外行动查询。毒伤→HP／MP回复→血转MP→到期反馈依次显示，状态递减／连杀清理／队列推进仍各一次。不能用两个Wait替代跳过，也不能在自己麻痺时使用解药。
-
-当全部活角色都剩一次麻痺时，逐槽完成后正常进入下一回合并恢复控制，没有递归跳过整队或后台无限等待。到期只解除限制，不在当前已消耗的槽末尾赠送新行动；下次正常入场重新使用当前移动／技能资源、装备与两次行动规则。
-
-普通／追加攻击的目标可处于麻痺；既有原反击门禁拒绝麻痺者反击。当前受支持的普通／魔法伤害不自行清麻痺，死亡则清状态并释放原单格占用。这里不宣称原所有命中附带状态、wake回调或死亡handler全部恢复。
-
-物品仍走原子库存／目标事务。可控队友可移动到相邻位置用精靈石；AI以原同侧异常目标扫描、类别选择和首个匹配道具槽组合实际可达相邻位置，缺MP／禁魔不阻止道具援助。完整地图收益／路径组合仍是已有明示重制适配，不能称完整原辅助dispatcher等价。目标已死／已解除、库存改变、路径阻挡或施用者被麻痺，旧意图在任何移动、扣物或RNG之前拒绝；下次真实决策读取新状态。
-
-原关卡到达条件读取已提交的位置，不能凭界面“待機撤離”文字另造“只有Wait才可胜利”的规则。入口已满足到达／败北条件时，在状态与资源尾部之前冻结；普通移动仍由现有待确认动作和提交控制。胜利、败北、撤离后不补跳过／回复／EXP，恢复不重放过去的显示或事务，重开回默认健康配置。
-
-## 资源与表现
-
-`hsltools/assets/paralysis_assets.py`复用现有支持法术的PAK解析和校验，只导出源地系对象依赖的8帧、UPGROUND01／BOMB0006两声音。`ParalysisMagicPresentation`是独立只读局部表现组件，借用现有施法前摇、脚点投影、真实受影响者列表，释放／命中各一次。源对象的图像、锚点、采样帧和音效存在有资源依据；粒子分布、烟雾混合和100tick/s的显示换算是明确重制编排。不得据此声称逐帧原版等价。
-
-角色入场跳过显示“麻痺 · 無法行動”，到期／用药显示“麻痺解除”，状态栏显示剩余计时；不显示虚构的0HP回复。战斗／移动／经验／领取先结束，再播放跳过或资源尾部，后继菜单最后开放。装备预览说明“防止麻痺，不解除已有麻痺”。[14条实际输入](../runtime_observations/paralysis/README.md)与最终完整门禁另按回执记录，测试通过不升级以上证据等级。
-
-精靈石实玩补拍发现：当用药后没有资源尾部时，原共用busy条件遗漏了用药数字，导致下一角色菜单提前开放。现将有限的物品反馈纳入同一输入／结果阻塞，并让剧情排队等待它结束；没有另加延时结算或改变道具事务。真实补拍和“无资源尾部也阻塞、结束自动释放、旧sequence不重放”的回归独立验证该修复。
-
-```sh
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate paralysis --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-python3 tools/hsl.py check paralysis
-python3 tools/hsl.py check paralysis_assets
-tools/godot.sh --headless --script res://tests/run_support_magic_tests.gd
-tools/godot.sh --screen 0 --script res://tests/capture_paralysis_review.gd
-tools/verify.sh
-```
-
-> TESTCUT2（2026-09-27）备注：`tests/capture_paralysis_review.gd` 已退役——它读的 `view._item_feedback` 已从 BattlePresentation 删除，驱动已失效（ITEMFX 记录）；上面的截图回执为历史，复跑需先按当前节点修好驱动，原文见 `git show 84d8b3d6:tests/capture_paralysis_review.gd`。
-
-下一关键缺口仍是大型占地的全空间合同、伙伴自动成长／动态学技，以及弱化／增益、复活、命中附带状态和高位状态机其余分支。需要各自原输入初始化、完整调用边界与可玩事务证据；本批不以名字、模型候选或异常入口一段代码替代它们。
+- 完整高位状态 dispatcher、全部 wake／死亡回调未恢复。
+- 命中附带状态的其他来源、弱化／增益与复活不在本包。
+- 全状态防护道具的其他效果未开放。
+- 大型占地的全空间合同见 [original_large_actor.md](original_large_actor.md)。

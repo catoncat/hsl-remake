@@ -1,23 +1,23 @@
 # OSS export report
 
-Source: private repository `main` = `703986da02fd43765638749ec3156f8333d7f435` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `3d8f479302ee60c69632aad10306c3a0b847e045` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
-- written: **1601 files, 50.3 MB**
-- dropped: **19018 files, 621.7 MB**
-- processed (home path / author e-mail / public .gitignore rules): 18 files
+- written: **1469 files, 49.4 MB**
+- dropped: **18992 files, 609.4 MB**
+- processed (home path / author e-mail / public .gitignore rules): 17 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1205 | 19.3 |
-| C | 396 | 31.0 |
+| B | 1097 | 18.6 |
+| C | 372 | 30.8 |
 
 ## Dropped (by reason)
 
 | reason | files | MB |
 | --- | ---: | ---: |
-| A: evidence screenshots / recordings / renders of the original | 619 | 285.9 |
+| A: evidence screenshots / recordings / renders of the original | 593 | 273.6 |
 | A: content/imported decoded media | 16140 | 255.3 |
 | A: content/imported text/source/json | 1519 | 35.1 |
 | A: content/generated tables (EXE / PAK derived) | 422 | 25.2 |
@@ -61,7 +61,6 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/evidence_packets/runtime_observations/battle_005/README.md`
 - `docs/evidence_packets/runtime_observations/battle_006/README.md`
 - `docs/evidence_packets/runtime_observations/battle_053/README.md`
-- `docs/evidence_packets/runtime_observations/combat_aftermath/README.md`
 - `docs/evidence_packets/runtime_observations/effect_motion/README.md`
 - `docs/evidence_packets/runtime_observations/menus_ui/README.md`
 - `docs/evidence_packets/runtime_observations/original_control/README.md`
@@ -69,5 +68,5 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/evidence_packets/runtime_observations/original_level17_escort/README.md`
 - `docs/evidence_packets/runtime_observations/original_title_ornaments/README.md`
 - `docs/evidence_packets/runtime_observations/original_world_town/README.md`
+- `docs/evidence_packets/static_reverse/battle_reward_inputs.md`
 - `docs/evidence_packets/static_reverse/original_cast_overlays.md`
-- `docs/evidence_packets/static_reverse/original_getitem_window.md`

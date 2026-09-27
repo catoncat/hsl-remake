@@ -52,4 +52,4 @@ GUI与原指令证据分开，见[永久道具实际输入与截图](#复现)。
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [permanent_items](../runtime_observations/permanent_items/receipt.json) | manual、repeat、magic、melee、growth、movement、resistance、cap、details、mixed、paralysis、ai、speed、victory、defeat、escape | `capture_permanent_carry_review.gd`、`capture_permanent_items_review.gd`、`run_permanent_items_tests.gd`；`run_permanent_carry_tests.gd` 驱动已退役，回执为历史记录 |
+| [permanent_items](../runtime_observations/permanent_items/receipt.json) | manual、repeat、magic、melee、growth、movement、resistance、cap、details、mixed、paralysis、ai、speed、victory、defeat、escape | `run_permanent_items_tests.gd`；`run_permanent_carry_tests.gd` 与截图驱动已退役，回执为历史记录 |

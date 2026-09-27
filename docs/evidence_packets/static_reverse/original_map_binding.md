@@ -49,4 +49,4 @@ negative-evidence只针对已检查对象：000／998／999无该类记录，49�
 
 | 重制回执 | 路线 | 驱动 |
 | --- | --- | --- |
-| [map_binding](../runtime_observations/map_binding/receipt.json) | 61 营地报告、56 晨间营地、60 王座厅 | `capture_map_binding_review.gd`、`hsltools/checks/source_map_binding.py` |
+| [map_binding](../runtime_observations/map_binding/receipt.json) | 61 营地报告、56 晨间营地、60 王座厅 | `hsltools/checks/source_map_binding.py`；截图驱动已退役，回执为历史记录 |
