@@ -157,9 +157,10 @@ static func _prepare(loop: Dictionary, unit_id: String, slot: String, inventory_
 	return {"ok": true, "loop": next}
 
 
-## The window's hand (0x4c1ce4): a bag item still in its slot ({unit_id, slot, code} — the
-## original lifts it out with 0x436e80; here it leaves the bag only when it lands) or a loose
-## item ({loose: true, code} — taken from the storage or swapped out of a full bag). 上一位／
+## The window's hand (0x4c1ce4): a loose item ({loose: true, code} — lifted out of a bag
+## (0x436e80), taken off (0x437020／0x436f30), bought (0x41553c), taken from the storage or
+## swapped out of a full bag) or, for callers that hold a bag item in place, {unit_id, slot,
+## code}. 上一位／
 ## 下一位 keep it (0x4282c0 never writes 0x4c1ce4). remove_hand takes the hand's item out of its
 ## bag (a loose item has none). {ok, loop, code, reason}.
 static func remove_hand(loop: Dictionary, hand: Dictionary) -> Dictionary:
@@ -209,7 +210,9 @@ static func place_hand(loop: Dictionary, hand: Dictionary, unit_id: String, slot
 ##   retrieve {index}       empty hand takes one of list row `index`; important rows stay (0x4154cd)
 ##   drop                   丟棄: a non-important hand is thrown away (0x42a7e2)
 ##   use {unit_id}          使用: 0x409e40(member, hand, 0, 1) — spends the hand on the member
-##   equip {unit_id, slot}  the hand onto an equipment slot (0x436f30 via change())
+##   equip {unit_id, slot}  the hand onto an equipment slot (0x436f30 via change()); the old piece onto the hand
+##   lift {unit_id, slot}   empty hand takes a bag item out, the bag closes up (0x436e80)
+##   unequip {unit_id, slot} empty hand takes a worn piece off onto the hand (0x437020; a full bag refuses — change())
 ##   back {unit_id}         right click: the hand into the member's first empty slot (0x436e30)
 ## Returns {ok, loop, storage, hand, reason}; a refusal returns the inputs unchanged.
 static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary, action: String, args: Dictionary, catalog: Dictionary) -> Dictionary:
@@ -268,9 +271,39 @@ static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary,
 					return refused
 				working = placed["loop"]
 				index = int(placed["slot"])
+			var old := EquipmentRules.equipped_code(_live_unit(working, unit_id).get("equipment", []), str(args.get("slot", "")))
 			var changed := change(working, unit_id, str(args.get("slot", "")), index, code)
 			refused["reason"] = changed["error"]
-			return {"ok": true, "loop": changed["loop"], "storage": storage, "hand": {}, "reason": ""} if changed["ok"] else refused
+			if not changed["ok"]:
+				return refused
+			# 0x436f30: the old piece goes onto the hand, not into the bag.
+			var swapped := _lift_last(changed["loop"], unit_id, old)
+			return {"ok": true, "loop": swapped["loop"], "storage": storage, "hand": swapped["hand"], "reason": ""}
+		"lift":
+			# 0x436e80: an empty hand takes the bag item out; the slots after it close up.
+			if code > 0:
+				refused["reason"] = "hand_full"
+				return refused
+			var unit := _live_unit(loop, str(args.get("unit_id", "")))
+			var inventory: Array = unit.get("inventory", [])
+			var index := int(args.get("slot", -1))
+			var picked := int(inventory[index]) if index >= 0 and index < inventory.size() else 0
+			var lifted := remove_hand(loop, {"unit_id": str(args.get("unit_id", "")), "slot": index, "code": picked})
+			refused["reason"] = lifted["reason"]
+			return {"ok": true, "loop": lifted["loop"], "storage": storage, "hand": {"loose": true, "code": picked}, "reason": ""} if lifted["ok"] else refused
+		"unequip":
+			# 0x437020: an empty hand takes the worn piece off onto the hand (399).
+			if code > 0:
+				refused["reason"] = "hand_full"
+				return refused
+			var unit_id := str(args.get("unit_id", ""))
+			var old := EquipmentRules.equipped_code(_live_unit(loop, unit_id).get("equipment", []), str(args.get("slot", "")))
+			var changed := change(loop, unit_id, str(args.get("slot", "")), -1, 0)
+			refused["reason"] = changed["error"]
+			if not changed["ok"]:
+				return refused
+			var taken := _lift_last(changed["loop"], unit_id, old)
+			return {"ok": true, "loop": taken["loop"], "storage": storage, "hand": taken["hand"], "reason": ""}
 		"back":
 			var unit_id := str(args.get("unit_id", ""))
 			if code <= 0 or (not bool(hand.get("loose", false)) and str(hand.get("unit_id", "")) == unit_id):
@@ -284,6 +317,20 @@ static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary,
 			return {"ok": true, "loop": loop, "storage": storage, "hand": {}, "reason": ""}
 	refused["reason"] = "unknown_action"
 	return refused
+
+
+## change() returns a taken-off piece to the bag's first empty slot (the last occupied one of the
+## packed bag); the window puts it on the hand instead. {loop, hand}.
+static func _lift_last(loop: Dictionary, unit_id: String, code: int) -> Dictionary:
+	if code <= 0:
+		return {"loop": loop, "hand": {}}
+	var inventory: Array = _live_unit(loop, unit_id).get("inventory", [])
+	var last := -1
+	for index in range(inventory.size()):
+		if int(inventory[index]) > 0:
+			last = index
+	var lifted := remove_hand(loop, {"unit_id": unit_id, "slot": last, "code": code})
+	return {"loop": lifted["loop"], "hand": {"loose": true, "code": code}} if lifted["ok"] else {"loop": loop, "hand": {}}
 
 
 ## In-place lookup by unit id ({} when absent); callers duplicate when they must not mutate.

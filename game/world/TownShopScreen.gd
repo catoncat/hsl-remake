@@ -17,9 +17,10 @@ extends Control
 ## bag item. The vitals strip reads a sandbox PlayLoop built from the carry (the
 ## PartyEquipmentScreen path); without one the strip stays hidden and `vitals_error` says why.
 ##
-## Remake readings: a goods click buys straight into the shown member's first empty slot (the
-## original puts the paid item on the cursor for the player to place — WorldPartyRules'
-## remake policy); selling follows the original gesture (pick a bag item up, click the goods
+## An empty-handed goods click pays and puts the item on the hand (TownRuntime.shop_pick,
+## 0x415519-0x41553c: gold at once, 0x4c1ce4 = code, no message); the player puts it down on a
+## bag slot (0x42923b) or right click puts it into the shown member's first empty slot
+## (0x436e30). Selling follows the original gesture (pick a bag item up, click the goods
 ## list). 裝備 (page 10) shows the member's six slots and takes the hand like mode 0; 倉庫
 ## (page 7) shows the party storage; 丟棄 throws a non-important held item away; as in the
 ## original the window has no 離開 button — right click／Esc leave it (frame 13). The ↓ mark the original draws after some goods names is not drawn —
@@ -35,9 +36,9 @@ extends Control
 ## PartyEquipmentRules.hand_action; unequip_requested → change) and comes back through
 ## show_loop／show_state. The hand survives 上一位／下一位 (0x4282c0 never writes 0x4c1ce4) and
 ## page changes; on the 倉庫 page (7) the right board is the storage list (WINDOW90「倉庫」,
-## rows with counts) and 丟棄／使用 act on the hand. Remake readings: a taken-off item goes to
-## the bag (the rules' unequip) instead of the hand; a held bag item stays in its slot until it
-## lands; a refused item stays in the hand silently as in the original (0x436f30 returns −1)
+## rows with counts) and 丟棄／使用 act on the hand. A picked-up bag item leaves the bag
+## (0x436e80) and a taken-off piece goes onto the hand (0x437020; the old piece of an equip too,
+## 0x436f30). A refused item stays in the hand silently as in the original (0x436f30 returns −1)
 ## and the reason is only kept for summary(). Original frames of the 狀態／裝備／倉庫 pages:
 ## docs/evidence_packets/runtime_observations/original_world_town/README.md (15–17).
 ## provenance:
@@ -54,6 +55,8 @@ extends Control
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
 signal buy_requested(item_id: int, unit_id: String)
 signal sell_requested(unit_id: String, slot: int)
+## Shop: the hand dropped on the goods list (0x4153b1: important → 607, else half price, 2563).
+signal sell_hand_requested(code: int)
 signal close_requested
 ## Mode 0: the host runs PartyEquipmentRules.change and answers with show_loop or refuse.
 signal unequip_requested(unit_id: String, slot: String)
@@ -194,11 +197,12 @@ func open(shop_title: String, shop_goods: Array[int], next_carry: Dictionary, sh
 
 ## Redraws for a new carry (after every transaction); `next_message` is the board line to show
 ## in `next_color` (the host's: RESOURCE 606 is coded @2 red, 607 @5 yellow).
-func show_carry(next_carry: Dictionary, next_message: String, next_color: Color = BattleUISkin.TEXT_WHITE) -> void:
+func show_carry(next_carry: Dictionary, next_message: String, next_color: Color = BattleUISkin.TEXT_WHITE, keep_hand: bool = false) -> void:
 	carry = next_carry.duplicate(true)
 	message = next_message
 	message_color = next_color
-	_hand = {}
+	if not keep_hand:
+		_hand = {}
 	storage = PartyStorageRules.of_carry(carry)
 	_refresh_shop_loop()
 	var ids := member_ids()
@@ -289,7 +293,8 @@ func click_equipment(slot: String) -> void:
 	if holding():
 		hand_requested.emit("equip", {"unit_id": unit_id, "slot": _slot_for_hand(slot)}, _hand.duplicate())
 	elif _worn_code(slot) > 0:
-		unequip_requested.emit(unit_id, slot)
+		# 0x437020: the piece comes off onto the hand.
+		hand_requested.emit("unequip", {"unit_id": unit_id, "slot": slot}, {})
 
 
 ## Mode 0: the host refused the held item; it stays in the hand (no board, no sound).
@@ -372,19 +377,20 @@ func put_back() -> void:
 	_rebuild()
 
 
-## Picks the bag item in `slot` of the shown member up (the original's first half of a sale).
+## Picks the bag item in `slot` of the shown member up: it leaves the bag and the slots after it
+## close up (0x436e80, sound 399) — the host's lift.
 func pick_up(slot: int) -> void:
 	var inventory: Array = _member().get("inventory", [])
-	if message_visible() or slot < 0 or slot >= inventory.size() or int(inventory[slot]) <= 0:
+	if message_visible() or holding() or slot < 0 or slot >= inventory.size() or int(inventory[slot]) <= 0:
 		return
-	_hand = {"unit_id": unit_id, "slot": slot, "code": int(inventory[slot])}
-	_rebuild()
+	hand_requested.emit("lift", {"unit_id": unit_id, "slot": slot}, {})
 
 
-## Dropping the held item on the goods list sells it (0x414c00 shop branch); a loose item
-## (from the storage or a full bag) goes back to the storage first — the remake sells bag items.
+## Dropping the held item on the goods list sells it (0x414c00 shop branch, 0x4153b1); whatever
+## is on the hand sells — lifted, taken off, bought or from the storage.
 func drop_on_list() -> void:
 	if holding() and bool(_hand.get("loose", false)):
+		sell_hand_requested.emit(int(_hand["code"]))
 		return
 	if holding():
 		var hand := _hand

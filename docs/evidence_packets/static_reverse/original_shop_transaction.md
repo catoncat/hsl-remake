@@ -1,40 +1,59 @@
-# 原作商店交易：买入价、卖出价与拒收
+# 原作商店交易：买入进手持、放下、卖出价与拒收
 
-> evidence: static-derived; negative-evidence · status: live · functions: 0x40e690, 0x414ab0, 0x414c00 · tools: hsltools/assets/town_assets.py, hsltools/checks/function_catalog.py, hsltools/checks/static_index.py · updated: 2026-09-27
-
-**static-derived**（r2 反汇编＋ r2ghidra 反编译阅读 `hsl01.exe`，sha256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；无有界执行、无 Wine）。回答 [原作大地图与城镇](original_world_town.md) 中「买入／卖出 handler」的 negative-evidence 项；消息输入时钟、teDelay 墙钟与入包放置流程不在本包范围。
+> evidence: static-derived; runtime-measured: 原版 v1.06 席達鎮 道具店买入后手持与放下两帧（2026-09-28）; negative-evidence · status: live · functions: 0x40e690, 0x414ab0, 0x414c00, 0x42923b, 0x436e30, 0x436e80, 0x436f30, 0x437020 · tools: hsl_original_control.py, hsltools/assets/town_assets.py, hsltools/checks/function_catalog.py, hsltools/checks/static_index.py · updated: 2026-09-28
 
 ## 结论
 
-背包／商店窗口 handler 是 `0x414c00`（目录角色 ui_menu_input；每帧绘制 5 行物品、以手持槽 `0x4c1ce4` 做拾起／放下）。商店分支只在窗口标志 `(*0x4c1cbc & 2) != 0` 且窗口子模式 `word [win+0xa2] != 6` 时执行；金币全局为 `0x4c1bcc`（与 `teCheckMoney` 同址）。
+- 原版商店是共用状态窗 `0x414c00` 的商店分支（窗口标志 `*0x4c1cbc & 2`、子模式 `word [win+0xa2] != 6`）。空手点货行：够钱即扣款、物品写进手持槽 `0x4c1ce4`（音 399），不弹消息、不减货表；玩家再点背包格，物品进首空格（满包时与所点格互换）；右键放回所显示成员首空格（static-derived；runtime-measured）。
+- 手上有物点货表即卖出：重要物拒收（607），否则半价入账（static-derived）。手上的物品不论来自背包拿起、卸下、买入还是倉庫，都在同一个手持槽里，都能卖。
+- 拿起背包物即离包，其后各格前移（`0x436e80`）；裝備页空手点槽卸下进手（`0x437020`），手持点槽装上时旧装备进手（`0x436f30`）（static-derived）。
+- 重制照做：`TownShopScreen` 点货行走 `TownRuntime.shop_pick`（只扣款、手持散件），点背包格走 `shop_hand place`，右键 `back`；拿起走 `hand_action lift`，卸下走 `unequip`，装上后旧件进手；散件点货表走 `shop_sell_hand`。不弹「買下」消息。
+- 差异：商店里买入／卖出／拿起的音效（399／400／2563）重制未放；满包时空手卸下仍被拒（原版卸下进手不需背包空位）；脚本购物 `TownRuntime.shop_buy` 一步入首空格（autoplay 用，不经窗口）（provisional）。
 
-| 项 | 原实现（地址） | 重制现状 |
+## 证据
+
+| 项 | 原实现（地址） |
+| --- | --- |
+| 买入 | 空手点行 `0x415498`：`0x44f3f0` 读行；`0x4154d2 call 0x40e690` 重要行不动；商店分支 `0x415519` 读 ITEM `+0x9c` 价（记录步长 0xb0，表基址 `0x4c1b40`）、`0x415526 cmp gold, price`、`0x41552c jl 0x415611` 不足；`0x415532 sub`、`0x415534` 写回金币 `0x4c1bcc`；`0x41553c mov [0x4c1ce4], code`；商店模式跳过 `0x44f430`（不减货表）；`0x415559 push 0x18f` 音 399；无消息调用 |
+| 金钱不足 | `0x415611-0x415624`：`fcn.004072b0(win+0x50, -1, 0x25e, 1)` 消息 606「抱歉, 您的金錢不足無法購買。」，不扣款 |
+| 放下 | `0x42923b` 背包格点击（手持）：`0x436ed0` 第 8 格有物 → 所点格与手持互换；否则 `0x436e30` 手持物进首空格 |
+| 拿起 | `0x436e80(成员, 格)`：`rep movsd` 把 格+1..7 前移一格，`[+0x154]`（第 8 格）清零 |
+| 卸下／装上 | `0x437020` 空手点槽卸下进手（音 399）；`0x436f30` 手持点槽装上、旧装备进手，返回 −1 时不能装、手持不变 |
+| 卖出价 | `fcn.00414ab0(code) = ITEM[+0x9c] * 0x32 / 100`（`0x414ac9-0x414ae2`，有符号除法；价格非负即 floor(price/2)）；`0x41541a call`、`0x415428 add`、`0x41542f` 写回金币，音 2563 |
+| 拒收 | `0x4153b1 call 0x40e690`：`(ITEM[+0xa0] & 0x08000000) != 0`（`important` 置位）→ `0x4153c2` 消息 607「抱歉, 本店不收購此物品。」，不成交 |
+| 货表 | 来自 town_event 的 `item_code` 对应 `[item]` 表（`teCreateShop`，见 [城镇事件语义](town_event_semantics.md)） |
+
+runtime-measured（`level06_pre_battle` 回憶錄只读进 席達鎮 道具店，雷歐納德，存档 sha1 前后一致）：
+
+| 帧 | 画面 | 读数 |
 | --- | --- | --- |
-| 买入价 | ITEM 记录 `+0x9c`（ITEM.TXT price 列，记录步长 0xb0，表基址 `0x4c1b40`）：`0x415519` 读价、`0x415526 cmp gold, price`、`0x41552c jl` → 不足；足够时 `0x415532 sub` 立即扣款，`0x41553c` 把物品 code 放入手持槽 `0x4c1ce4`，随后播放 399 `WAV\TAKEUP01.WAV` | 按 ITEM.TXT price 扣款一致；物品直接入商店窗所显示成员的首空格（重制交互改写，见边界） |
-| 金钱不足 | `0x415611-0x415624`：`fcn.004072b0(win+0x50, -1, 0x25e, 1)` 弹出消息 606「抱歉, 您的金錢不足無法購買。」，不扣款 | 原消息 606 文本（`TownRuntime._reason_text`） |
-| 卖出价 | `fcn.00414ab0(code) = ITEM[+0x9c] * 0x32 / 100`（`0x414ac9-0x414ae2`，magic 0x51eb851f 有符号除法；价格非负即 floor(price/2)）；`0x41541a call`、`0x415428 add`、`0x41542f` 写回金币，播放 2563 `WAV\GOLD001.WAV` | `WorldPartyRules.sell_price` 同式 `(cost * 50) / 100` |
-| 拒收 | `0x4153b1 call 0x40e690`：`fcn.0040e690(code) = (ITEM[+0xa0] & 0x08000000) != 0`，即 ITEM loader 由 `important` 非零置位的标志（见 [原道具行为](original_item_actions.md)）；置位时 `0x4153c2` 弹出消息 607「抱歉, 本店不收購此物品。」，不成交 | 同：拿起重要物品放到货表时拒收，BOARD02 弹原消息 607（`TownShopScreen`） |
-| 货表 | 买入不减少货表；货表来自 town_event 的 `item_code` 对应 `[item]` 表（`teCreateShop`，见 [城镇事件语义](town_event_semantics.md)） | 一致 |
+| A 买下后 | 卖掉 回復藥（70→120）后空手点货行 回復藥 $100 | 金钱 120→20；物品贴在鼠标上；背包空；无消息板 |
+| B 放下后 | 手持点背包第 3 格 | 回復藥 落在第 1 格（首空格）；金钱仍 20；手空 |
 
-非商店模式下同一手势是背包内拾起／放下（声音 399／400 `WAV\PUT00003.WAV`），不涉及金币。
+帧在仓库外 `ignored/shophand/`（原版帧见私有档案）；同一买入手势的早先记录见 [原版大地图／城镇实录](../runtime_observations/original_world_town/README.md) 帧 11。
 
-## 边界
+## 重制接线
 
-- 静态阅读；未执行窗口 handler，不证明排版、滚动、鼠标热区与消息框的关闭输入。
-- 原作买入后物品进入手持槽再由玩家放到成员背包格；重制改为「点货行→所显示成员首空格入包」——这是重制交互改写，不声称原流程等价。卖出照原手势：拿起背包物、点货表（[原版大地图／城镇实录](../runtime_observations/original_world_town/README.md) 帧 09／10）。
-- 消息 606／607 由引擎代码引用而非 TOWNDEF 脚本，`tools/hsltools/assets/town_assets.py` 以 `ENGINE_MESSAGE_IDS` 显式加入城镇消息表。
-- `0x414ab0` 用有符号除法；ITEM.TXT 现有价格均非负，负价格行为不建模。
+- `game/world/TownShopScreen.gd`：点货行 `buy_requested` → `TownRuntime.shop_pick` → `WorldPartyRules.pay_for_hand`，回 `show_state(…, {loose, code})`；拿起 `hand_requested("lift")`；空手点槽 `hand_requested("unequip")`；散件点货表 `sell_hand_requested` → `TownRuntime.shop_sell_hand` → `WorldPartyRules.sell_hand`（607 时保留手持）。
+- `game/sim/PartyEquipmentRules.hand_action`：`lift`、`unequip`，`equip` 把旧件取到手持（`_lift_last`）；整理裝備（`PartyEquipmentScreen`）同走。
+- provenance：`TownShopScreen` 头注释 static-derived 本包与 [original_storage_window](original_storage_window.md)。
 
-## 复跑
+## 复现
 
 ```sh
 EXE="$HSL_ORIGINAL_DIR/hsl01.exe"
-r2 -q -e scr.color=0 -c "s 0x414ab0; pd 17" "$EXE"   # 卖出价 price*50/100
-r2 -q -e scr.color=0 -c "s 0x40e690; pd 6" "$EXE"    # important 位 0x08000000
-r2 -q -e scr.color=0 -c "s 0x415510; pd 14" "$EXE"   # 买入：读价／比较／扣款／手持槽
+r2 -q -e scr.color=0 -c "s 0x415498; pd 60" "$EXE"   # 空手点行：读行／重要／读价／扣款／手持槽／音 399
 r2 -q -e scr.color=0 -c "s 0x415611; pd 8" "$EXE"    # 消息 606
+r2 -q -e scr.color=0 -c "s 0x436e80; pd 20" "$EXE"   # 拿起：其后格前移、第 8 格清零
+r2 -q -e scr.color=0 -c "s 0x414ab0; pd 17" "$EXE"   # 卖出价 price*50/100
 r2 -q -e scr.color=0 -c "s 0x4153a2; pd 16" "$EXE"   # 拒收：0x40e690 → 消息 607
-r2 -q -e scr.color=0 -c "s 0x41540a; pd 12" "$EXE"   # 卖出：0x414ab0 → 金币加、音 2563
-python3 tools/hsl.py check function_catalog
-python3 tools/hsl.py check static_index_check
 ```
+
+运行帧：不可再生为逐字节同图（手动单步会话）；步骤见上表，工具 `tools/hsl_original_control.py`。
+
+## 边界
+
+- 静态阅读＋一次两帧实测；未拍拿起后前移与卸下进手（静态读法），未核对满包互换与商店里的音效。
+- 消息 606／607 由引擎代码引用而非 TOWNDEF 脚本，`tools/hsltools/assets/town_assets.py` 以 `ENGINE_MESSAGE_IDS` 显式加入城镇消息表。
+- `0x414ab0` 用有符号除法；ITEM.TXT 现有价格均非负，负价格行为不建模。
+- 手持槽不进存档：重制扣款后物品只在窗口手上，离店／关窗前右键或 Esc 先放回（满包时散件进倉庫，重制读法）。

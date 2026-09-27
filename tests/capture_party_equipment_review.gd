@@ -78,6 +78,9 @@ func run() -> void:
 	check(str(screen.last_result.get("status", "")) == "changed", "銀劍 equipped")
 	await process_frame
 	await shot("05-after-equip")
+	# The old weapon is on the hand (0x436f30): the first Esc puts it back, the second closes.
+	scene._input(_key(KEY_ESCAPE))
+	await process_frame
 	scene._input(_key(KEY_ESCAPE))
 	await process_frame
 	check(not screen.active, "Esc closed the screen")

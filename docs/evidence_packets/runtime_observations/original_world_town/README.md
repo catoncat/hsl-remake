@@ -6,7 +6,7 @@
 
 - 原版进城不压暗大地图，TownBG 约在 (160,148)，石纹菜单板叠在其左上，菜单无「離開」项、画面无金钱／同伴栏，右键／Esc 离城；shape 台词在上、队员台词在下；商店窗是战后「獲得物品」窗的商店分支，買賣 钮暗着（runtime-measured；negative-evidence）。
 - 重制 `game/world/TownRuntime.gd`、`TownShopScreen.gd`、`WorldMapRuntime.gd`、`BattleSystemMenu.gd` 按下表对齐；对白板上下分工由 [original_dialogue_board](../../static_reverse/original_dialogue_board.md) 的 `0x414220` 顶槽位静态确认（static-derived）。
-- 差异：买入后物品直接入所显示成员首空格（原版先到手上）、不画红色 ↓；差异清单 `town-layout-extras`（provisional）。
+- 差异：不画红色 ↓（买入进手持再放下已照原版，[original_shop_transaction](../../static_reverse/original_shop_transaction.md)）；差异清单 `town-layout-extras`（provisional）。
 
 ## 证据
 

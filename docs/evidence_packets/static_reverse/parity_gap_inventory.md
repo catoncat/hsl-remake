@@ -1,6 +1,6 @@
 # 原版与重制差异总清单（parity gap inventory）
 
-> evidence: provisional: 归类、可见度与工作量是人工判断，原版证据在每条的链接里 · status: record-only · tools: hsltools/checks/parity_inventory.py · updated: 2026-09-27
+> evidence: provisional: 归类、可见度与工作量是人工判断，原版证据在每条的链接里 · status: record-only · tools: hsltools/checks/parity_inventory.py · updated: 2026-09-28
 
 本页由 `python3 tools/hsl.py generate parity_inventory` 生成（lane R7-INV），全量数据在同名 [parity_gap_inventory.json](parity_gap_inventory.json)，人工归类在 [parity_gap_inventory.curation.json](parity_gap_inventory.curation.json)。汇报"还剩多少"按本页的总数。
 
@@ -14,8 +14,8 @@
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 14 |
-| 读了一部分 | 60 |
+| 已读完只差照做 | 15 |
+| 读了一部分 | 59 |
 | 未读 | 9 |
 | 原版无对应代码 | 17 |
 
@@ -61,17 +61,17 @@
 | 7 | 打人閃電（LEVEL010）落雷的规则与演出已照原版（镜头滚到雷点、AIR14 两帧之一 2 倍加色画 11 帧再淡出 15 帧、FireBomb 162／165 在雷点、第 27 tick 受击者浮红色伤害数字并左右抖 60 tick、停 80／20 tick 后剧本往下走）；闪电画在 FireBomb 之上是按平面号推定 （`drop-lightning-presentation`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
 | 8 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
 | 9 | 当前行动者在自己行动里阵亡（反击击杀）时原版队列连走两步，紧随其后的单位失去本轮行动；重制只走一步。待机、轮中改速度、阵亡空洞、中途插入、回合计数已与原版一致 （`turn-queue-semantics`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | AI-PRIO-2 0ef32183（BattlePlayLoop._step_past_dead_actor）已按原版补上，未并入 pipeline-line；合并后本条改 resolved |
-| 10 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值；技能页名字墨迹对 Wine 帧偏移 0／0、宽 71＝原版）。AI 施法名字幕也换 FONT.24（lane UIFIX：0x43e110／0x43e1c0 的字体是 [0x4c1ae0]，对录像 14 源帧 9987 逐像素一致）。剩：重制各处字号归到原版两面（≤16→FONT.15、≥17→FONT.24）是重制定的，个别界面的字行位置未逐一对原版 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
-| 11 | 施法引导的阴影底用压暗 0.35 的地图近似；引导残影与活动面板的先后、16 级交叉淡化用普通透明近似 （`cast-lead-compositing`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 12 | 地图法术特效原点：Local 已与原版同为目标格中心（录屏"高 14 px"是量到脚下）；Global 原版是光标格中心、重制取屏幕中心 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 13 | 玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替 （`footprint-preview-style`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | 照原版（RANGECOLOR） |
-| 14 | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 （`growth-window-timing`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
-| 15 | 法术命中时原版先在受者旁画 HP／MP 两条再出数字（原录像 V08 14_tactical_map_magic_aoe frame_041 画 HP 24/43、MP 0/0，frame_046 才出数字 19）；重制同样先亮血条，只有 0.45 s 时长是重制估值、多目标血条互相避让是重制自加。数字本身已是原版字形与出现点（目标 (x, y−0x34)，lane DIGITS） （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
-| 16 | 移动选格显示路径线、角括号、「移動 3/5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示，原版没有 （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 17 | 各面板的说明文字、提示（tooltip）、确认问句、拒绝理由都是重制写的 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 18 | 状态页的永久加值行、属性／抗性悬停说明、「保存／讀取／待領物品／返回」按钮条是重制补充；原版点未交手单位不开页 （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 19 | AI 待机／守候时重制显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」提示并停 0.55 s，原版没有 （`wait-cue`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 20 | 多个面板的尺寸、排列与样式是重制读法：按钮与标签样式、面板绘制顺序与锚定、装备页说明／确认滚动区、道具目标列表 （`ui-layout-readings`） | 读了一部分 | 每场都看得到 | M | 面板与界面 | — |
+| 10 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
+| 11 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值；技能页名字墨迹对 Wine 帧偏移 0／0、宽 71＝原版）。AI 施法名字幕也换 FONT.24（lane UIFIX：0x43e110／0x43e1c0 的字体是 [0x4c1ae0]，对录像 14 源帧 9987 逐像素一致）。剩：重制各处字号归到原版两面（≤16→FONT.15、≥17→FONT.24）是重制定的，个别界面的字行位置未逐一对原版 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
+| 12 | 施法引导的阴影底用压暗 0.35 的地图近似；引导残影与活动面板的先后、16 级交叉淡化用普通透明近似 （`cast-lead-compositing`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 13 | 地图法术特效原点：Local 已与原版同为目标格中心（录屏"高 14 px"是量到脚下）；Global 原版是光标格中心、重制取屏幕中心 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 14 | 玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替 （`footprint-preview-style`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | 照原版（RANGECOLOR） |
+| 15 | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 （`growth-window-timing`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
+| 16 | 法术命中时原版先在受者旁画 HP／MP 两条再出数字（原录像 V08 14_tactical_map_magic_aoe frame_041 画 HP 24/43、MP 0/0，frame_046 才出数字 19）；重制同样先亮血条，只有 0.45 s 时长是重制估值、多目标血条互相避让是重制自加。数字本身已是原版字形与出现点（目标 (x, y−0x34)，lane DIGITS） （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
+| 17 | 移动选格显示路径线、角括号、「移動 3/5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示，原版没有 （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 18 | 各面板的说明文字、提示（tooltip）、确认问句、拒绝理由都是重制写的 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 19 | 状态页的永久加值行、属性／抗性悬停说明、「保存／讀取／待領物品／返回」按钮条是重制补充；原版点未交手单位不开页 （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 20 | AI 待机／守候时重制显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」提示并停 0.55 s，原版没有 （`wait-cue`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
 
 ## 全量（按类）
 
@@ -175,12 +175,12 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| `shop-hand-cursor` | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持 | 0x414c00 商店分支空手点行 0x415519 读价、0x415532 扣款、0x41553c 写手持槽 0x4c1ce4、音 399、无消息；放下 0x42923b／0x436e30；卖出 0x4153b1／0x414ab0；窗口是 0x42ab40 模式 1；原版帧：买下后手持、点第 3 格落第 1 格（2026-09-28）<br>[original_shop_transaction.md](../../../docs/evidence_packets/static_reverse/original_shop_transaction.md)、[original_world_town/README.md](../../../docs/evidence_packets/runtime_observations/original_world_town/README.md) | TownShopScreen 与 WorldPartyRules 的入包规则<br>[TownShopScreen.gd](../../../game/world/TownShopScreen.gd)、[WorldPartyRules.gd](../../../game/world/WorldPartyRules.gd) | 已读完只差照做 | 部分关卡 | M | provenance 2、scope 1 |
 | `town-layout-extras` | 城镇根画面已照原版去掉城名、金钱／同伴条与「離開城鎮／返回／取消」按钮（lane TOWNMAP；右键／Esc 离城、退子菜单、取消选人）；剩 select 选项做成石纹板文字行与悬停色是重制读法，上下对白板分工仍由 7 帧归纳 | 城镇根画面没有金钱显示与离开项（帧 03／04／14）；上下对白板：0x454e20 teShapeMessage 以 1、tePlayerMessage 以 0 调 0x414220，给消息对象置 0x4000 位，读该位的摆放代码未读<br>[original_world_town/README.md](../../../docs/evidence_packets/runtime_observations/original_world_town/README.md) | TownRuntime 的重制补充<br>[TownRuntime.gd](../../../game/world/TownRuntime.gd) | 读了一部分 | 部分关卡 | S | provenance 4、scope 1 |
-| `shop-hand-cursor` | 商店里买入直接进背包首空格（原版是手形光标持物、再点背包格放下）；商店 裝備 页（10，右板六槽换装）、倉庫 页（7，与整理裝備同一份存储）、丟棄 已照原版可用（lane EQUIPSCREEN，帧 18–23），手上的散件（取自倉庫）不能卖；重制加的「離開」按钮已照原版去掉（lane TOWNMAP，右键／Esc 退店） | 原版商店分支、买卖价格已读；窗口是 0x42ab40 模式 1（六钮参数与帧 08 逐个相同）；裝備／倉庫／丟棄 在商店里的按页行为已读（0x42a330 case 6／7／10，帧 18–23）；持物放置未拍<br>[original_shop_transaction.md](../../../docs/evidence_packets/static_reverse/original_shop_transaction.md)、[original_world_town/README.md](../../../docs/evidence_packets/runtime_observations/original_world_town/README.md) | TownShopScreen 与 WorldPartyRules 的入包规则<br>[TownShopScreen.gd](../../../game/world/TownShopScreen.gd)、[WorldPartyRules.gd](../../../game/world/WorldPartyRules.gd) | 读了一部分 | 部分关卡 | M | provenance 2、scope 1 |
 | `town-event-timing` | 城镇事件的消息与延时已照原版（lane TOWNMAP）：每句等关板、teDelay N 无对白板停 N+1 tick、teMenuMoveOut 停 20 tick；剩 tePlaySound 只记录（三个 WAV 未导入）、if_wait 位的作用未读、选择／子菜单的菜单读法暂定 | 0x454e20 已读：消息阶段 5／7 等消息标志清零、teDelay 阶段 0xe 每调用减一、teMenuMoveOut 20、tePlaySound 调 0x42c180 即播不等；消息对象 0x2000 位与子菜单重开未读<br>[town_event_semantics.md](../../../docs/evidence_packets/static_reverse/town_event_semantics.md) | TownRuntime／TownEventRules／WorldScriptActions 的读法<br>[TownRuntime.gd](../../../game/world/TownRuntime.gd)、[TownEventRules.gd](../../../game/sim/TownEventRules.gd)、[WorldScriptActions.gd](../../../game/world/WorldScriptActions.gd) | 读了一部分 | 部分关卡 | M | provenance 4、sentence 7、scope 3 |
 | `world-map-presentation` | 大地图路线揭示已照原版逐 tick 正方形裁剪、队伍标记已按帧 01 改回战斗尺寸（lane TOWNMAP）；剩点名文字是重制补的（原版帧 01／03／04 没有，悬停是否显示未采）、未重制关卡卡（重制缺关卡的替代）、端点 mode1 的点揭示演出（0x427df0）与行走者用哪名角色未读 | 0x4280d0 已读：子状态 0 取 0x4606a9 边界算计数 max(\|w−ox\|,\|ox\|,\|h−oy\|,\|oy\|)，子状态 1 每 tick 半边 +1，0x428280 写锚点 ± 半边裁剪；点过程 0x427df0 mode1 与行走者形体未读<br>[world_map_data.md](../../../docs/evidence_packets/static_reverse/world_map_data.md)、[bigmap_performances.md](../../../docs/evidence_packets/resource_inventory/bigmap_performances.md) | WorldMapRuntime 的读法<br>[WorldMapRuntime.gd](../../../game/world/WorldMapRuntime.gd) | 读了一部分 | 部分关卡 | M | provenance 2、scope 1 |
 | `world-map-rules` | 大地图揭示顺序已照原版（lane TOWNMAP：先揭示脚下路线并等完，再镜头滚到 teBMSetShowTrackPoint 的点揭示、等完、滚回，期间丢弃点击）；点远端点按 0x427070 最短路多跳行走、途中每点跑到达分派已照原版（lane WORLDPATH）；剩脚本行走仍只走直连路线、遭遇骰子的比较方向与请求后的 Visit 写入是暂定读法、镜头滑行步长取战斗的 32 | 设 mode 1 的写者已定位：0x426e40 由行走者 0x427420 子状态 0／1 调用（显示请求 0x4c1bb0、镜头 0x43bf30、点击目标 0x4c1ab8 作废）；遭遇抽样比较方向、请求后的 Visit 写入未执行<br>[world_map_data.md](../../../docs/evidence_packets/static_reverse/world_map_data.md)、[original_world_town.md](../../../docs/evidence_packets/static_reverse/original_world_town.md) | WorldMapRules／WorldMapRuntime<br>[WorldMapRules.gd](../../../game/world/WorldMapRules.gd)、[WorldMapRuntime.gd](../../../game/world/WorldMapRuntime.gd) | 读了一部分 | 部分关卡 | M | provenance 2、scope 1 |
-| `party-equipment-screen` | 「整理裝備」已照原版换成共用状态窗模式 0（lane PARTYEQUIP：同一套板、九钮位置与按页显隐、当前页钮画暗、初始页 狀態、只有裝備页可换装、关窗回卷轴；原版帧 15–17 版面偏移 0）；倉庫 页、丟棄／使用、换人保留手持已照原版（lane EQUIPSCREEN：队伍存储 carry.loop.party_storage 两表叠数、重要物取不出，帧 18–24）；剩重制读法：拿起的背包物落地前仍占原格；空手卸下的装备进背包而不是手上；使用 只结算 HP／MP／状态、永久与属性类拒用；列表即时按重要在前排序（原版关窗才分表）；战后獲得物品窗的 倉庫 仍进待领池；魔法／特殊技列表用普通 WINDOW20 板、无悬停说明与滚动条；裝備页手持移入装备板时左板暂显狀態（0x40a）没做；狀態页黄字属性与裝備页背包红字未做 | 系统卷轴项 0＝defProcBigMapMenu 0x425a90 调 0x42ab40(0,…)（0x425e89），与 actEnterStorageWindow（0x450840 case 0x8b）同一入口；九钮模板 724–735 字样、flags、行为（0x42a330）、子窗落点（0x428410）、各页内容（0x4289e0）已读，倉庫两表 0x44ef70／0x44f100／0x44efe0／0x44f170／0x44f670、开关窗 0x42aa50／0x42aad0、列表点击 0x414c00、存读档 0x44f720／0x44f8a0 已读，原版帧 15–24 核对；魔法／特殊技页板（形状表项 5／10）、悬停描述格式、属性黄字与背包红字的条件未读<br>[original_storage_window.md](../../../docs/evidence_packets/static_reverse/original_storage_window.md)、[original_world_town/README.md](../../../docs/evidence_packets/runtime_observations/original_world_town/README.md)、[party_equipment/README.md](../../../docs/evidence_packets/runtime_observations/party_equipment/README.md) | PartyEquipmentScreen（宿主、沙盒、规则调用）＋TownShopScreen 的共用窗体；规则 PartyEquipmentRules.hand_action，存储 PartyStorageRules；商店经 TownRuntime.shop_hand<br>[PartyEquipmentScreen.gd](../../../game/world/PartyEquipmentScreen.gd)、[TownShopScreen.gd](../../../game/world/TownShopScreen.gd)、[TownRuntime.gd](../../../game/world/TownRuntime.gd)、[PartyEquipmentRules.gd](../../../game/sim/PartyEquipmentRules.gd)、[PartyStorageRules.gd](../../../game/sim/PartyStorageRules.gd) | 读了一部分 | 少见 | M | provenance 3、sentence 3 |
+| `party-equipment-screen` | 「整理裝備」已照原版换成共用状态窗模式 0（lane PARTYEQUIP：同一套板、九钮位置与按页显隐、当前页钮画暗、初始页 狀態、只有裝備页可换装、关窗回卷轴；原版帧 15–17 版面偏移 0）；倉庫 页、丟棄／使用、换人保留手持已照原版（lane EQUIPSCREEN：队伍存储 carry.loop.party_storage 两表叠数、重要物取不出，帧 18–24）；拿起即离包（0x436e80）、空手卸下与换下的旧件进手（0x437020／0x436f30）已照原版（lane SHOPHAND）；剩重制读法：满包时空手卸下被拒（原版进手不需空位）；使用 只结算 HP／MP／状态、永久与属性类拒用；列表即时按重要在前排序（原版关窗才分表）；战后獲得物品窗的 倉庫 仍进待领池；魔法／特殊技列表用普通 WINDOW20 板、无悬停说明与滚动条；裝備页手持移入装备板时左板暂显狀態（0x40a）没做；狀態页黄字属性与裝備页背包红字未做 | 系统卷轴项 0＝defProcBigMapMenu 0x425a90 调 0x42ab40(0,…)（0x425e89），与 actEnterStorageWindow（0x450840 case 0x8b）同一入口；九钮模板 724–735 字样、flags、行为（0x42a330）、子窗落点（0x428410）、各页内容（0x4289e0）已读，倉庫两表 0x44ef70／0x44f100／0x44efe0／0x44f170／0x44f670、开关窗 0x42aa50／0x42aad0、列表点击 0x414c00、存读档 0x44f720／0x44f8a0 已读，原版帧 15–24 核对；魔法／特殊技页板（形状表项 5／10）、悬停描述格式、属性黄字与背包红字的条件未读<br>[original_storage_window.md](../../../docs/evidence_packets/static_reverse/original_storage_window.md)、[original_world_town/README.md](../../../docs/evidence_packets/runtime_observations/original_world_town/README.md)、[party_equipment/README.md](../../../docs/evidence_packets/runtime_observations/party_equipment/README.md) | PartyEquipmentScreen（宿主、沙盒、规则调用）＋TownShopScreen 的共用窗体；规则 PartyEquipmentRules.hand_action，存储 PartyStorageRules；商店经 TownRuntime.shop_hand<br>[PartyEquipmentScreen.gd](../../../game/world/PartyEquipmentScreen.gd)、[TownShopScreen.gd](../../../game/world/TownShopScreen.gd)、[TownRuntime.gd](../../../game/world/TownRuntime.gd)、[PartyEquipmentRules.gd](../../../game/sim/PartyEquipmentRules.gd)、[PartyStorageRules.gd](../../../game/sim/PartyStorageRules.gd) | 读了一部分 | 少见 | M | provenance 3、sentence 3 |
 
 ### 剧情走位（4）
 

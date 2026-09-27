@@ -9,7 +9,8 @@
 - 原版换人保留手持：上一位／下一位（`0x42a330` case 0／5）只调 `0x4282c0` 换成员并以 `0x434d10` 重载，二者都不写手持 `0x4c1ce4`；商店（帧 18）与整理裝備（帧 24）换人后物品仍在光标上（static-derived；runtime-measured）。
 - 原版倉庫是一份存档里的队伍存储：重要 `0x4c1d10`／普通 `0x4c1d1c` 两张 (code, qty) 表，初容量 5、满了加 5、无上限，同 code 叠数；手持点列表放入一件，空手点行取出一件（重要物品取不出）；丟棄 清掉非重要手持物，使用 ＝`0x409e40(成员, 物, 0, 1)`；商店 倉庫 页（7）与整理裝備 倉庫 页是同一份（帧 20–23）；商店 裝備 页（10）在右板显示六槽并可换装（帧 19）（static-derived；runtime-measured）。
 - 重制：`game/world/PartyEquipmentScreen.gd` 宿主＋`game/world/TownShopScreen.gd` 的 MODE_ARRANGE 窗体，规则 `game/sim/PartyEquipmentRules.gd` `hand_action`、存储 `game/sim/PartyStorageRules.gd`（carry.loop.party_storage）；商店同一窗体经 `TownRuntime.shop_hand`（static-derived）。
-- 差异：拿起的背包物落地前仍占原格；空手卸下进背包而非手上；使用 只结算 HP／MP／状态、拒永久加成类；列表即时按重要在前排序（原版开窗时并入一张池、关窗才分表）；商店里手上的散件（取自倉庫）不能卖；魔法／特殊技页无悬停说明与滚动条；裝備页手持移入装备板暂显狀態未做；差异清单 `party-equipment-screen`（provisional）。
+- 拿起背包物即离包（`0x436e80`）、空手卸下与装上换下的旧件进手（`0x437020`／`0x436f30`）、商店买入进手持再放下（[original_shop_transaction](original_shop_transaction.md)）已照原版（lane SHOPHAND）。
+- 差异：使用 只结算 HP／MP／状态、拒永久加成类；列表即时按重要在前排序（原版开窗时并入一张池、关窗才分表）；魔法／特殊技页无悬停说明与滚动条；裝備页手持移入装备板暂显狀態未做；差异清单 `party-equipment-screen`（provisional）。
 
 ## 证据
 
@@ -85,8 +86,8 @@ flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`fl
 - `game/world/PartyEquipmentScreen.gd`：`open` 是大地图卷轴「整理裝備」与剧情 57／81、winfail 045／078 的 `actEnterStorageWindow` 共同入口；关窗把新队伍写回 hand-off carry 与 `user://campaign_progress.json`，其余顶层字段（金币、`pending_rewards`、`initialization_rng`）原样保留；来源场景缺失时 `unknown_source_scenario` 只可关闭，无 carry 时 `no_party`。
 - `game/world/TownShopScreen.gd` MODE_ARRANGE：窗体、按钮条与按页显隐；左板 狀態＝WINDOW21 九行、裝備＝背包 8 格、魔法／特殊技＝WINDOW20 列表；右板六槽每页都显示，悬停出 WINDOW50 说明 (252,390)。
 - `game/sim/PartyStorageRules.gd`：`hsl_party_storage.v1` 两表（important／normal，[{code, qty}]），`put` 同 code 叠数、`take` 拒重要物；存在 carry.loop.party_storage，`CampaignCarryRules` 的 loop 键让它随 carry 跨场与存档，旧 carry 读作空。
-- `PartyEquipmentRules.hand_action`：place（满包互换，换出物成散件手持）／store／retrieve（须空手）／drop（拒重要）／use（`ItemUseRules.prepare`，拒永久与属性类）／equip（外来或散件先放进该成员背包再 `change`）／back（放回当前成员首空格；满包时散件回倉庫）。
-- `TownShopScreen.gd`：换人不清手持；商店六钮都可按，当前页画暗；裝備 页（10）右板六槽、倉庫 页（7）WINDOW90 列表（数量右对齐）；手势发 `hand_requested`，整理裝備由 `PartyEquipmentScreen` 结算、商店由 `TownRuntime.shop_hand`／`shop_unequip` 结算后写回 carry。
+- `PartyEquipmentRules.hand_action`：place（满包互换，换出物成散件手持）／store／retrieve（须空手）／drop（拒重要）／use（`ItemUseRules.prepare`，拒永久与属性类）／equip（外来或散件先放进该成员背包再 `change`，换下的旧件进手）／lift（拿起即离包，`0x436e80`）／unequip（空手卸下进手，`0x437020`；满包仍按 `change` 拒）／back（放回当前成员首空格；满包时散件回倉庫）。
+- `TownShopScreen.gd`：换人不清手持；商店六钮都可按，当前页画暗；裝備 页（10）右板六槽、倉庫 页（7）WINDOW90 列表（数量右对齐）；手势发 `hand_requested`，整理裝備由 `PartyEquipmentScreen` 结算、商店由 `TownRuntime.shop_hand` 结算后写回 carry；商店散件点货表由 `TownRuntime.shop_sell_hand` 卖出。
 - `game/sim/PartyEquipmentRules.gd` `change`：与 `BattlePlayLoop.change_equipment` 同序，去掉战斗阶段门与行动结算；被拒物留在手上、无消息；右键／Esc 先放回手上物再关窗。
 - 队员来源＝carry.units；城镇 Esc 是离开城镇，无系统卷轴入口。
 

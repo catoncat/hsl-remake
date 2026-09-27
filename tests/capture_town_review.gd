@@ -1,7 +1,8 @@
 extends SceneTree
 ## Windowed review of the menu-style town screen at normal remake pacing: 歐姆村
 ## opened from the big map with Leonard's carried party, the root menu, the
-## weapon-shop greeting and the original-composition shop window (buy by a goods click, sell by
+## weapon-shop greeting and the original-composition shop window (buy onto the hand by a goods
+## click and put down on a bag slot, sell by
 ## picking a bag item up and dropping it on the goods list, right click out), the armed exec-event
 ## dialogue (event 10 with the villager portrait and the 2000-gold grant), and
 ## the return to the map. Output: ignored/town-review/*.png + manifest.json
@@ -75,10 +76,15 @@ func run() -> void:
 	await wait_for(func(): return str(town.mode) == "shop")
 	check(str(town.mode) == "shop", "confirm opens the shop window")
 	await shot("03-shop-window")
-	# 長劍 is the first goods row: a click buys it into Leonard's bag.
+	# 長劍 is the first goods row: a click pays and puts it on the hand; a bag click puts it down.
 	await click_until(ui(Vector2(360, 235)), func(): return int(town.party_gold()) == 75)
-	check(int(town.party_gold()) == 75, "buying 長劍 leaves 75 gold")
-	await shot("04-shop-after-buying")
+	check(int(town.party_gold()) == 75 and town.shop_screen.holding(), "buying 長劍 leaves 75 gold and puts it on the hand")
+	await move_mouse(ui(Vector2(120, 268)))
+	await shot("04-shop-bought-in-hand")
+	await click_until(ui(Vector2(120, 268)), func(): return not town.shop_screen.holding())
+	check(not town.shop_screen.holding(), "clicking bag slot 3 puts the bought 長劍 down")
+	await move_mouse(ui(Vector2(600, 60)))
+	await shot("04b-shop-placed")
 	# Selling: pick the bought 長劍 (bag slot 2) up, then drop it on the goods list.
 	await click_until(ui(Vector2(120, 224)), func(): return town.shop_screen != null and town.shop_screen.holding())
 	check(town.shop_screen != null and town.shop_screen.holding(), "clicking the bag item picks it up")

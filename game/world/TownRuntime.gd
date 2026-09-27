@@ -518,8 +518,9 @@ func _open_shop(pending: Dictionary) -> void:
 	run["_shop"] = pending.duplicate(true)
 	_set_town_view_visible(false)
 	shop_screen = TownShopScreen.new()
-	shop_screen.buy_requested.connect(func(item_id: int, unit_id: String): shop_buy(item_id, unit_id))
+	shop_screen.buy_requested.connect(func(item_id: int, _unit_id: String): shop_pick(item_id))
 	shop_screen.sell_requested.connect(func(unit_id: String, slot: int): shop_sell(unit_id, slot))
+	shop_screen.sell_hand_requested.connect(func(code: int): shop_sell_hand(code))
 	shop_screen.close_requested.connect(shop_close)
 	shop_screen.hand_requested.connect(func(action: String, args: Dictionary, held: Dictionary): shop_hand(action, args, held))
 	shop_screen.unequip_requested.connect(func(unit_id: String, slot: String): shop_unequip(unit_id, slot))
@@ -551,7 +552,32 @@ func shop_goods() -> Array[int]:
 	return result
 
 
-## Buys `item_id` into `unit_id`'s first empty slot (the shop window's shown member).
+## The window's goods click (0x414c00 shop branch, empty hand): the price comes off the gold at
+## once and the item goes onto the hand (0x41553c writes 0x4c1ce4), no message; the player puts
+## it down on a bag slot (shop_hand place) or right click puts it into the shown member's first
+## empty slot (0x436e30). Only a refusal (606) raises a board.
+func shop_pick(item_id: int) -> Dictionary:
+	if mode != "shop":
+		return {"ok": false, "reason": "not_in_shop"}
+	if not shop_goods().has(item_id):
+		return {"ok": false, "reason": "not_for_sale"}
+	var entry: Dictionary = shop_catalog.get(str(item_id), {})
+	var result := WorldPartyRules.pay_for_hand(carry, item_id, int(entry.get("cost", 0)))
+	records.append({"kind": "shop_pick", "item_id": item_id, "result": result.duplicate(true)})
+	if not bool(result.get("ok", false)):
+		shop_message = _reason_text(str(result.get("reason", "")))
+		_show_shop_carry(shop_message, str(result.get("reason", "")))
+		return result
+	carry = result["carry"]
+	shop_message = ""
+	party_changed.emit(state, carry)
+	if shop_screen != null:
+		shop_screen.show_state(carry, {}, PartyStorageRules.of_carry(carry), result["hand"])
+	return result
+
+
+## Scripted purchase (the autoplay shopper): shop_pick and the put-back in one step — into
+## `unit_id`'s first empty slot.
 func shop_buy(item_id: int, unit_id: String) -> Dictionary:
 	if mode != "shop":
 		return {"ok": false, "reason": "not_in_shop"}
@@ -563,7 +589,7 @@ func shop_buy(item_id: int, unit_id: String) -> Dictionary:
 	var board := ""
 	if bool(result.get("ok", false)):
 		carry = result["carry"]
-		shop_message = "%s 買下 %s（%d）" % [WorldPartyRules.member_name(speakers, str((carry["units"][unit_id] as Dictionary).get("actor_id", "")), unit_id), item_name(item_id), int(result.get("cost", 0))]
+		shop_message = ""
 		party_changed.emit(state, carry)
 	else:
 		shop_message = _reason_text(str(result.get("reason", "")))
@@ -594,6 +620,27 @@ func shop_sell(unit_id: String, slot: int) -> Dictionary:
 		shop_message = _reason_text(str(result.get("reason", "")))
 		board = shop_message
 	_show_shop_carry(board, str(result.get("reason", "")))
+	return result
+
+
+## The hand dropped on the goods list (0x4153b1): an important item is refused with 607 and stays
+## on the hand; otherwise half price (0x414ab0) is added and the hand empties.
+func shop_sell_hand(item_id: int) -> Dictionary:
+	if mode != "shop":
+		return {"ok": false, "reason": "not_in_shop"}
+	var entry: Dictionary = shop_catalog.get(str(item_id), {})
+	var result := WorldPartyRules.sell_hand(carry, item_id, WorldPartyRules.sell_price(int(entry.get("cost", 0))), shop_catalog)
+	records.append({"kind": "shop_sell", "item_id": item_id, "result": result.duplicate(true)})
+	if not bool(result.get("ok", false)):
+		shop_message = _reason_text(str(result.get("reason", "")))
+		var color: Color = {"insufficient_gold": BattleUISkin.TEXT_RED, "important_item": BattleUISkin.TEXT_YELLOW}.get(str(result.get("reason", "")), BattleUISkin.TEXT_WHITE)
+		if shop_screen != null:
+			shop_screen.show_carry(carry, shop_message, color, true)
+		return result
+	carry = result["carry"]
+	shop_message = ""
+	party_changed.emit(state, carry)
+	_show_shop_carry("", "")
 	return result
 
 

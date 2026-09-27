@@ -9,15 +9,16 @@ extends RefCounted
 ## (hsl01.exe 0x414c00 reads ITEM+0x9c, compares the gold global 0x4c1bcc and
 ## deducts at once), selling pays 0x414ab0's price * 50 / 100 (floor half for the
 ## non-negative table prices), and an item flagged important (0x40e690, bit
-## 0x08000000) is refused. Remake policy (provisional): a bought item goes to one
-## chosen member's first empty slot instead of the original hand cursor; items
+## 0x08000000) is refused. The shop window buys onto the hand (pay_for_hand, 0x41553c)
+## and sells the hand (sell_hand). Remake policy (provisional): the scripted shopper's
+## buy() puts the item straight into one member's first empty slot; items
 ## granted by a town event (teGetItem) fill the first member with room, and a
 ## party with no room gets a visible "dropped" receipt instead of a silent loss.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
 ##   rules: remake-invented
-##     (bought item to a chosen member's first empty slot instead of the hand cursor; dropped receipt when the party has
-##     no room)
+##     (scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt
+##     when the party has no room)
 ##   strings: resource-derived content/imported/hsl/global/tables/EXTRAS.H
 
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
@@ -154,7 +155,25 @@ static func apply_party(carry: Dictionary, before: Dictionary, after: Dictionary
 	return {"carry": next, "receipt": receipt}
 
 
-## Shop purchase into one member: price checked against loop gold, the item goes
+## Shop purchase onto the hand (0x415519-0x41553c): the price is checked against loop gold and
+## paid at once; the item is placed nowhere — the caller holds it (hand slot 0x4c1ce4) until the
+## player puts it down. Nothing changes on failure.
+static func pay_for_hand(carry: Dictionary, item_id: int, cost: int) -> Dictionary:
+	if str(carry.get("schema", "")) != CarryRules.SCHEMA:
+		return {"ok": false, "reason": "invalid_carry_schema"}
+	var gold := int((carry.get("loop", {}) as Dictionary).get("gold", 0))
+	if cost < 0 or item_id <= 0:
+		return {"ok": false, "reason": "invalid_goods"}
+	if gold < cost:
+		return {"ok": false, "reason": "insufficient_gold", "gold": gold, "cost": cost}
+	var next := carry.duplicate(true)
+	var loop: Dictionary = next.get("loop", {})
+	loop["gold"] = gold - cost
+	next["loop"] = loop
+	return {"ok": true, "carry": next, "item_id": item_id, "cost": cost, "gold": gold - cost, "hand": {"loose": true, "code": item_id}}
+
+
+## Scripted purchase into one member (the autoplay shopper — pay and put down at once): price checked against loop gold, the item goes
 ## to the member's first empty slot (InventoryRules.insert); nothing changes on
 ## failure.
 static func buy(carry: Dictionary, unit_id: String, item_id: int, cost: int) -> Dictionary:
@@ -206,6 +225,22 @@ static func sell(carry: Dictionary, unit_id: String, slot: int, item_id: int, pr
 	loop["gold"] = gold
 	next["loop"] = loop
 	return {"ok": true, "carry": next, "unit_id": unit_id, "item_id": item_id, "price": maxi(price, 0), "gold": gold}
+
+
+## Sells the hand's item (0x4153b1 → 0x414ab0): it is already out of every bag; important items
+## are refused and nothing changes.
+static func sell_hand(carry: Dictionary, item_id: int, price: int, catalog: Dictionary) -> Dictionary:
+	if str(carry.get("schema", "")) != CarryRules.SCHEMA:
+		return {"ok": false, "reason": "invalid_carry_schema"}
+	var entry: Variant = catalog.get(str(item_id))
+	if item_id <= 0 or (typeof(entry) == TYPE_DICTIONARY and bool((entry as Dictionary).get("important", false))):
+		return {"ok": false, "reason": "important_item" if item_id > 0 else "empty_hand"}
+	var next := carry.duplicate(true)
+	var loop: Dictionary = next.get("loop", {})
+	var gold := int(loop.get("gold", 0)) + maxi(price, 0)
+	loop["gold"] = gold
+	next["loop"] = loop
+	return {"ok": true, "carry": next, "item_id": item_id, "price": maxi(price, 0), "gold": gold}
 
 
 static func _insert_first_room(carry: Dictionary, code: int) -> String:

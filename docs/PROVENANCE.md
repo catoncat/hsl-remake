@@ -418,7 +418,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [TownShopScreen](../game/world/TownShopScreen.gd) | layout | no ↓ mark; magic／special lists on the plain WINDOW20 board — the original's shape-table boards 5／10 are not read |
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | layout | not-remade card, point name labels |
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
-| [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | bought item to a chosen member's first empty slot instead of the hand cursor; dropped receipt when the party has no room |
+| [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
 ### provisional 疑点 (74)
 
