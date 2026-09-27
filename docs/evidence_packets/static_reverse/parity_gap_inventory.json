@@ -470,12 +470,12 @@
     },
     {
       "id": "panel-captions",
-      "difference": "各面板的说明文字、提示（tooltip）、确认问句、拒绝理由都是重制写的",
+      "difference": "各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签与装备说明框的效果解释行两条路径都有",
       "original": "原版面板多为纯图标与数值",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
-      "remake": "各面板 strings 为 remake-invented；移动选格的说明（移動後不能施法、占地3×3）与系统卷轴確定／取消的问句只在 OPT-GUIDE=提示 时出（OPTIONS-S4、MENUEXTRAS），其余面板两条路径都有",
+      "remake": "原版值不显示，开关打开时显示：移动选格说明（OPTIONS-S4）、系统卷轴问句（MENUEXTRAS）与提示行（空的回憶錄、沒有戰場記錄等）、道具使用列表 tooltip／「沒有道具」／「道具 N / 8」、道具说明的解释行（保留其他狀態、延长上限、原始抗性上限；獲得物品窗／状态页／商店共用）；剩回忆录格标签（场景名＋时长）与装备说明框效果解释行两条路径都有",
       "remake_code": [
         "game/battle/scene/BattleItemPanel.gd",
         "game/battle/scene/BattleItemText.gd",

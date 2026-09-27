@@ -17,7 +17,7 @@ extends Control
 ##   layout: remake-invented (scrollable lists, preview rows)
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
 ##   strings: resource-derived content/imported/hsl/chapter01/consumables.json
-##   strings: remake-invented (captions and refusals)
+##   strings: remake-invented (tooltips, 沒有道具, 道具 N / 8 — OPT-GUIDE＝提示 only)
 signal use_requested(item_code: String, target_id: String)
 ## The use target pick (page "target"): started, every pointer move／left press on the map, left.
 signal use_pick_started
@@ -39,6 +39,7 @@ const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 var rows: VBoxContainer
 var menu: Control
 var page_root: Control
@@ -132,6 +133,8 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 	var placing := not owner.is_empty()
 	var unit: Dictionary = owner if placing else source_unit
 	page = "give_inventory" if placing else "inventory"
+	# OPT-GUIDE read once per window: the original window is icons and names only.
+	var hints := not GameOptions.is_original("OPT-GUIDE")
 	BattleUISkin.clear_panel(page_root)
 	var vitals := BattleVitals.new()
 	vitals.position = Vector2(0, 14)
@@ -176,11 +179,11 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 		var art := BattleUISkin.asset(button, str(details["icon"]), Vector2(3, 0))
 		art.name = "OriginalConsumable"
 		button.disabled = operation == "use" and ItemUseRules.definition_error(items.get(code, {})) != ""
-		if operation == "use" and not button.disabled:
+		if hints and operation == "use" and not button.disabled:
 			button.tooltip_text = preload("res://game/battle/scene/BattleItemText.gd").description(items[code])
 		button.pressed.connect(_place_give_item.bind(index, int(code)) if placing else _select_item.bind(code, index))
 		rows.add_child(button)
-	if rows.get_child_count() == 0:
+	if hints and rows.get_child_count() == 0:
 		var empty := Label.new()
 		empty.text = "沒有道具"
 		empty.add_theme_font_size_override("font_size", 16)
@@ -189,6 +192,7 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 	back.pressed.connect(cancel)
 	var capacity := BattleUISkin.label(page_root, Vector2(20, 440), 15)
 	capacity.text = "道具 %d / 8" % (8 - unit["inventory"].count(0))
+	capacity.visible = hints
 	if placing:
 		_hold_selected_item()
 
@@ -400,6 +404,7 @@ func _show_hand_window(command: String) -> void:
 	back.pressed.connect(cancel)
 	var capacity := BattleUISkin.label(page_root, Vector2(20, 440), 15)
 	capacity.text = "道具 %d / 8" % (8 - source_unit["inventory"].count(0))
+	capacity.visible = not GameOptions.is_original("OPT-GUIDE")
 	if operation == "drop":
 		drop_button = _drop_icon_button()
 	if held_code != 0:

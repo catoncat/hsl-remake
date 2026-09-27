@@ -3,24 +3,30 @@ extends RefCounted
 ## provenance:
 ##   strings: remake-invented (receipt descriptions; effect values are the settled receipt's)
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_item_actions.md (0 HP／MP number)
+##   strings: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
+##     (0x436d70 box: 回復／解除／永久 rows; the prose rows only under OPT-GUIDE＝提示)
 const StatEnhancementRules = preload("res://game/sim/StatEnhancementRules.gd")
 const PermanentCapabilityRules = preload("res://game/sim/PermanentCapabilityRules.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 
+## Description rows. The original box (0x436d70) has the value rows only; the explanatory prose
+## (保留其他狀態, 延長上限, 原始抗性上限…) is the remake's and shows under OPT-GUIDE＝提示.
 static func description(item: Dictionary) -> String:
+	var hints := not GameOptions.is_original("OPT-GUIDE")
 	var rows: Array[String] = []
 	for pair in [["heal_hp","HP"],["heal_mp","MP"],["restore_stamina","氣力"]]:
 		if int(item.get(pair[0],0)) > 0: rows.append("回復 %d %s" % [int(item[pair[0]]),pair[1]])
 	for pair in [["cure_poison","中毒"],["cure_paralysis","麻痺"],["cure_no_magic","禁魔"],["cure_weaken","衰弱"]]:
-		if int(item.get(pair[0],0)) == 1: rows.append("解除"+pair[1]+"；保留其他狀態")
+		if int(item.get(pair[0],0)) == 1: rows.append("解除"+pair[1]+("；保留其他狀態" if hints else ""))
 	for pair in [["local_attack","攻擊"],["local_defense","防禦"]]:
 		var limits: Array = item.get(pair[0],[])
 		if limits.size() == 2:
 			rows.append("%s +%d～%d，持續3回" % [pair[1],int(limits[0]),int(limits[1])])
-			rows.append("已有同類增益時只延長3回，上限9回")
+			if hints: rows.append("已有同類增益時只延長3回，上限9回")
 	for key in item.get("permanent",{}):
 		var limits: Array = item["permanent"][key]
 		rows.append("永久%s +%d%s" % [PermanentCapabilityRules.LABELS[key],int(limits[0]),"～%d"%int(limits[1]) if limits[0]!=limits[1] else ""])
-		rows.append("提升原始抗性；原始值上限80，裝備另計" if key.begins_with("resist_") else "不改力量／反應／精神／體質；卸裝仍保留")
+		if hints: rows.append("提升原始抗性；原始值上限80，裝備另計" if key.begins_with("resist_") else "不改力量／反應／精神／體質；卸裝仍保留")
 	return "\n".join(rows)
 
 static func preview(effect: Dictionary, item: Dictionary) -> String:

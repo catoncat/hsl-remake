@@ -50,7 +50,7 @@
       "comfort_value": "hints",
       "values": [
         {"id": "original", "label": "原版", "text": "原版：移動只畫範圍，撤離格只在劇本插入時畫。"},
-        {"id": "hints", "label": "提示", "text": "改良：移動路徑線與「移動 3/5」費用欄、撤離格常駐、待機與再次行動提示、大地圖點名、標題選項亮起、確認框問句。"}
+        {"id": "hints", "label": "提示", "text": "改良：移動路徑線與「移動 3/5」費用欄、撤離格常駐、待機與再次行動提示、大地圖點名、標題選項亮起、確認框問句與提示行、道具說明文字。"}
       ],
       "why": "新手第一次玩看得懂该点哪里、能走到哪",
       "save_effect": "none",
@@ -63,6 +63,9 @@
         "game/battle/scene/BattleStatusPanel.gd:show_unit（状态页每次打开读一次）→ hint_buttons：原版值状态页没有按钮条；提示 时底部加「保存 F5」「讀取 F9」「待領物品」「返回」（「成長點」随 OPT-GROWTH 暂缓路径，有点数就显示）",
         "game/title/TitleScreen.gd:_refresh_lit（标题每次悬停变化读一次）→ 原版值悬停不亮起（原版录屏悬停只有火花）；提示 时悬停项显示红色亮起字形",
         "game/battle/scene/BattleSystemMenu.gd:_ask（系统卷轴每次出 確定／取消 读一次）→ 原版值只有 確定／取消 无问句；提示 时卷轴下方加问句（「儲存戰場記錄？」「覆蓋回憶錄 N？」等）",
+        "game/battle/scene/BattleSystemMenu.gd:_show_hint（系统卷轴每次出提示行读一次）→ 原版值不显示；提示 时卷轴下方出「空的回憶錄」「回憶錄已儲存」「沒有可儲存的進度」「沒有戰場記錄」「…尚未重製」",
+        "game/battle/scene/BattleItemPanel.gd:_show_list（道具使用／给予列表每次打开读一次；持物窗 _show_hand_window 同读）→ 原版值只有图标与名字；提示 时使用列表行挂说明 tooltip、空栏出「沒有道具」、左下出「道具 N / 8」",
+        "game/battle/scene/BattleItemText.gd:description（每次生成道具说明读一次：獲得物品窗、状态页、商店、使用列表 tooltip）→ 原版值只有回復／解除／永久／增益数值行；提示 时加「；保留其他狀態」「已有同類增益時只延長3回，上限9回」「提升原始抗性…」「不改力量…」解释行",
         "game/world/WorldMapRuntime.gd:_refresh_labels（大地图每次刷新点名读一次：进图、到达、悬停变化、重建图层）→ 原版值不画点名；提示 时当前点、一条已显示路线可达的点与悬停点旁标名"
       ],
       "evidence": ["move-path-overlay", "wait-cue", "extra-action-cue", "world-map-presentation", "title-flow-extras",

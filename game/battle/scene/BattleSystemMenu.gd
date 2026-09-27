@@ -38,12 +38,12 @@ extends Control
 ##   layout: remake-invented (the confirm question line under the scroll, OPT-GUIDE＝提示 only)
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (「進度儲存完成」)
-##   strings: remake-invented (memoir labels, confirm questions)
+##   strings: remake-invented (memoir labels; confirm questions and hints — OPT-GUIDE＝提示 only)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (scroll steps 0x45e882／0x45e91e from 0x4253f0 case 0／4 and 0x425a90)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (save notice ≈0.24 s in, ≈1 s held, ≈0.14 s out; 任務說明 board dissolves ≈0.4 s each way (32／34 ticks))
-##   timing: remake-invented (1.6 s 沒有戰場記錄 hint — deliberately kept remake beat)
+##   timing: remake-invented (1.6 s hint line, OPT-GUIDE＝提示 only)
 ##   audio: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (ACCEPT01 on open: 0x4082ab, 0x427c41)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json (confirm = ACCEPT01)
@@ -883,9 +883,10 @@ func _show_save_notice() -> void:
 	_save_notice_tween.tween_callback(func() -> void: _save_notice.visible = false)
 
 
+## Remake hint line (空的回憶錄, 沒有戰場記錄…): the original shows nothing; OPT-GUIDE＝提示 only.
 func _show_hint(text: String) -> void:
 	_hint.text = text
-	_hint.visible = true
+	_hint.visible = not GameOptions.is_original("OPT-GUIDE")
 	_hint_timer.start(HINT_SECONDS)
 
 
