@@ -11,7 +11,7 @@ extends SceneTree
 ## Layout, pacing and prices are remake readings; nothing here proves the original.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")

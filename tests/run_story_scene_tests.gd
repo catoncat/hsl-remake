@@ -8,7 +8,7 @@ extends SceneTree
 
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")

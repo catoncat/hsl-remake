@@ -1,4 +1,4 @@
-extends "res://game/battle/runtime/CampaignProgress.gd"
+extends "res://game/common/CampaignProgress.gd"
 ## Battle-owned growth metadata around the shared campaign coordinator.
 ## Destination, story/world changes, party isolation and persistence stay in the
 ## parent. The adapter carries the sole PlayLoop's cursor and lets a finished

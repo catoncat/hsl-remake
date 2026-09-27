@@ -6,7 +6,7 @@ extends SceneTree
 ## default grants). Output ignored/partyequip/.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")

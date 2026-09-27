@@ -557,7 +557,7 @@ func map_magic() -> void:
 ## offered before, whether the member is the current actor, or whose turn it is. Level 3
 ## (雷歐納德／緹娜／琥, 琥 acts first) is the three-member formation.
 const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const SCENARIO := "res://content/battles/battle_003.json"

@@ -5,7 +5,7 @@ extends SceneTree
 ## `-- --level=55|56|61|62|64` for the post-battle camp talks and `-- --level=63` for the throne-hall report) at normal remake pacing.
 ## A preview whose card offers 略過戰鬥（視為勝利） is also captured with the second row highlighted.
 ## Output: ignored/story-scene-<level>-review/*.png + manifest.json (visual review input, not parity proof).
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 var level := 58
 var OUT := "res://ignored/story-scene-058-review/"
 var scene: Node

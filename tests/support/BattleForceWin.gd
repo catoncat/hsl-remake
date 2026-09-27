@@ -13,7 +13,7 @@ extends RefCounted
 ## fixtures defeat every living enemy / arm the source-timed status and resolve the
 ## outcome so the campaign hand-off can be followed.
 
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const PROFILE_DIRECTORY := "res://content/battles/levels"
 const RESULT_FRAMES := 9000

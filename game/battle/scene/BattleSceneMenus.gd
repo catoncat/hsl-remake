@@ -18,7 +18,7 @@ extends RefCounted
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

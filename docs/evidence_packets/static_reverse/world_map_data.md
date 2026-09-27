@@ -88,7 +88,7 @@ SHA-256 逐成员写在两份 JSON 的 `sources` 里；工具在构建时核对 
 ## 重制接线
 
 - `tools/hsltools/data/world_map.py`（`python3 tools/hsl.py generate world_map`）写 `world_map.json`／`towndef.json`／`previews/`；`tools/hsltools/data/big_map_flow.py` 写 `big_map_flow.json`。
-- `game/world/WorldMapRules.gd` `arrival` 与 `game/battle/runtime/CampaignProgress.gd` `next_destination` 按上表流转；字段语义（展示阶段、bmpm 位、到达分支、`+8` 初值＝点号）按 [original_world_town](original_world_town.md) 的原指令读法。
+- `game/world/WorldMapRules.gd` `arrival` 与 `game/common/CampaignProgress.gd` `next_destination` 按上表流转；字段语义（展示阶段、bmpm 位、到达分支、`+8` 初值＝点号）按 [original_world_town](original_world_town.md) 的原指令读法。
 
 ## 复现
 

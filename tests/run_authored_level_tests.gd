@@ -18,7 +18,7 @@ extends SceneTree
 ##   audio: n/a
 const TitleScene = preload("res://game/title/TitleScreen.tscn")
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const UnitSchema = preload("res://game/sim/UnitSchema.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")

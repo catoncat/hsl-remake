@@ -187,7 +187,7 @@ func dialogue_contracts() -> void:
 
 func run() -> void:
 	await dialogue_contracts()
-	var camera_rules = preload("res://game/battle/runtime/BattleCameraController.gd")
+	var camera_rules = preload("res://game/common/BattleCameraController.gd")
 	var scroll_oracle: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_mechanics_audit_scroll.json"))
 	var checked_edges := 0
 	for sample in scroll_oracle["cases"]:
@@ -1026,7 +1026,7 @@ func lead_in_contracts() -> void:
 ## the assertions follow the shared focus point rather than a fixed screen position.
 func ai_cue_camera_area_contracts() -> void:
 	const BattleAttackCue = preload("res://game/battle/scene/BattleAttackCue.gd")
-	const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+	const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 	var half := Vector2(320, 240)
 	var world := Vector2(1600, 960)
 	check(BattleAttackCue.edge_follow_request(Vector2(100, 100), Vector2(4, -3), half, world) == Vector2(4, -3), "a cursor short of the far bands carries the view on both axes, in either direction")

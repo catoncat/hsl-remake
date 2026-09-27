@@ -25,7 +25,7 @@ extends SceneTree
 ## The walk itself (map BFS, town exhaustion, scene playback) is tests/support/StoryExplorer.gd,
 ## shared with run_chapter_autoplay_tests.gd, which fights the battles instead.
 
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const StoryExplorer = preload("res://tests/support/StoryExplorer.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")

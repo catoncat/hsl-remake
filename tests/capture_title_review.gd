@@ -4,7 +4,7 @@ extends SceneTree
 ## the confirmed 開始新故事 holding lit, the fade into the intro film (movie.pak start.ani paged from the WebP
 ## sheets), the skipped film handing over to the product opening, and the ending film.
 ## Output: ignored/title-review/*.png + manifest.json (visual review input, not parity proof).
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const OUT := "res://ignored/title-review/"
 var scene: Node
 var failures: Array[String] = []

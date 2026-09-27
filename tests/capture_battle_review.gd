@@ -4,7 +4,7 @@ extends SceneTree
 ## line captured, the first-control frame, then the shared forced-victory fixture with the
 ## win cutscene's lines and the result page. Output: ignored/battle-<level>-review/*.png +
 ## manifest.json — visual review input for a player-visible change, not parity proof.
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 var level := 6
 var OUT := "res://ignored/battle-006-review/"

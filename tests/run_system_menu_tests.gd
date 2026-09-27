@@ -8,7 +8,7 @@ extends SceneTree
 ## the title screen.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const WORLD_SCENE_PATH := "res://content/world/world_map_scene.json"
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")

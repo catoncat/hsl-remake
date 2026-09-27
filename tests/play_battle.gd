@@ -20,7 +20,7 @@ func _initialize() -> void:
 		quit(1)
 		return
 	print("PLAY_BATTLE scenario=%s" % path)
-	preload("res://game/battle/runtime/CampaignProgress.gd").pending = {"scenario_path": path, "carry": {}}
+	preload("res://game/common/CampaignProgress.gd").pending = {"scenario_path": path, "carry": {}}
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	root.add_child(scene)
 	current_scene = scene

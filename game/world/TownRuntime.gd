@@ -55,7 +55,7 @@ const BattleDialogue = preload("res://game/battle/scene/BattleDialogue.gd")
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const TownShopScreen = preload("res://game/world/TownShopScreen.gd")
 const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 const SUMMARY_SCHEMA := "hsl_town_runtime.v1"

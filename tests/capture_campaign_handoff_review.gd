@@ -4,7 +4,7 @@ extends SceneTree
 ## The victory outcome is an explicit fixture on the dev first-control seam; it is not
 ## a natural playthrough. Output: ignored/campaign-handoff-review/*.png + manifest.json.
 const OUT := "res://ignored/campaign-handoff-review/"
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 var failures: Array[String] = []
 var records: Array = []

@@ -13,7 +13,7 @@ const TestSuite = preload("res://tests/support/TestSuite.gd")
 const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 var failures: Array[String] = []

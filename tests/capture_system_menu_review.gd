@@ -4,7 +4,7 @@ extends SceneTree
 ## its 進度儲存完成 notice; on the big map 設定選項 with its 重製選項 entry and the 重製選項 page
 ## under the 原版 preset, the 舒適 preset and one row changed (自定).
 ## Output: ignored/system-menu-review/*.png + manifest.json (visual review input, not parity proof).
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/system-menu-review/"

@@ -15,7 +15,7 @@ extends RefCounted
 
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const AutoplayBrain = preload("res://tests/support/AutoplayBrain.gd")
 const BattleSceneRuntime = preload("res://game/battle/scene/BattleSceneRuntime.gd")

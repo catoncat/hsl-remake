@@ -39,7 +39,7 @@ extends SceneTree
 ## here is evidence about original balance. Runs in the deep gate (tools/verify.sh --deep):
 ## `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_chapter_autoplay_tests.gd`.
 
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleSceneRuntime = preload("res://game/battle/scene/BattleSceneRuntime.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
 const AutoplayBrain = preload("res://tests/support/AutoplayBrain.gd")

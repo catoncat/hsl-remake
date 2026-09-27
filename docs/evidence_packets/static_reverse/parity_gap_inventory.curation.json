@@ -1077,7 +1077,7 @@
       "remake": "OpeningEndCard 与 CampaignProgress 的章末",
       "remake_code": [
         "game/battle/runtime/opening/OpeningEndCard.gd",
-        "game/battle/runtime/CampaignProgress.gd"
+        "game/common/CampaignProgress.gd"
       ],
       "original_status": "no_original_code",
       "visibility": "rare",
@@ -1652,7 +1652,7 @@
       ],
       "remake": "CampaignProgress、CampaignResumePrompt",
       "remake_code": [
-        "game/battle/runtime/CampaignProgress.gd",
+        "game/common/CampaignProgress.gd",
         "game/title/CampaignResumePrompt.gd"
       ],
       "original_status": "no_original_code",
@@ -1705,7 +1705,7 @@
       "remake": "BattleSceneInput／BattleCameraController",
       "remake_code": [
         "game/battle/scene/BattleSceneInput.gd",
-        "game/battle/runtime/BattleCameraController.gd"
+        "game/common/BattleCameraController.gd"
       ],
       "original_status": "no_original_code",
       "visibility": "rare",
@@ -2220,10 +2220,10 @@
     "provenance:game/battle/runtime/ActorRuntime.gd|timing|provisional|": {
       "item": "shape-override-cadence"
     },
-    "provenance:game/battle/runtime/BattleCameraController.gd|rules|remake-invented|": {
+    "provenance:game/common/BattleCameraController.gd|rules|remake-invented|": {
       "item": "home-recenter"
     },
-    "provenance:game/battle/runtime/BattleCameraController.gd|timing|remake-invented|": {
+    "provenance:game/common/BattleCameraController.gd|timing|remake-invented|": {
       "item": "home-recenter"
     },
     "provenance:game/battle/runtime/BattleCheckpoint.gd|rules|remake-invented|": {
@@ -2241,7 +2241,7 @@
     "provenance:game/sim/BattleScenario.gd|rules|remake-invented|": {
       "no_visible_effect": "场景 JSON 合同与归一化，是重制内部数据结构"
     },
-    "provenance:game/battle/runtime/CampaignProgress.gd|rules|remake-invented|": {
+    "provenance:game/common/CampaignProgress.gd|rules|remake-invented|": {
       "item": [
         "campaign-flow-extras",
         "opening-end-card"

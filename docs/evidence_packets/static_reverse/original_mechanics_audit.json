@@ -39,7 +39,7 @@
       ]
     },
     {
-      "path": "game/battle/runtime/BattleCameraController.gd",
+      "path": "game/common/BattleCameraController.gd",
       "sha256": "2814f62ecc774814b06715d3c4765bbdc812e37558bf989fb6e23b9b36f6dbf8",
       "reviewed_symbols": [
         "pan",

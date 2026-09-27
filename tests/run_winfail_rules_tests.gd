@@ -1432,7 +1432,7 @@ func _item_use_rereads_and_decides() -> void:
 ##    STORY actions name resolves to a unit of the cast (fielded, script template, or an
 ##    opening-only actor the STORY deletes) except KNOWN_UNBUILT.
 
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
 const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")

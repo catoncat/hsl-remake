@@ -11,8 +11,8 @@ extends SceneTree
 ## actWalkDispWait (speed 2) is followed 2 px per tick while a plain actWalkDisp is not.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const HALF_VIEW := Vector2(320, 240)

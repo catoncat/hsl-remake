@@ -37,7 +37,7 @@ func run() -> void:
 		return
 	# Select an untouched first battle without deleting the user's campaign save
 	# or accepting a concurrent worktree's resume destination.
-	preload("res://game/battle/runtime/CampaignProgress.gd").pending = {"scenario_path":"res://content/battles/battle_051.json","carry":{}}
+	preload("res://game/common/CampaignProgress.gd").pending = {"scenario_path":"res://content/battles/battle_051.json","carry":{}}
 	# The finished battle would fade out and leave by itself; this route inspects it and
 	# then checks that a reload re-enters the same battle with the same party.
 	preload("res://game/battle/scene/BattleSceneRuntime.gd").hold_finished_battle = true

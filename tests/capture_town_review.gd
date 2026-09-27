@@ -7,7 +7,7 @@ extends SceneTree
 ## the return to the map. Output: ignored/town-review/*.png + manifest.json
 ## (visual review input, not parity proof; the shop compares with original_world_town
 ## frames 08–14).
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/town-review/"
 var scene: Node

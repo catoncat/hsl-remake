@@ -9,7 +9,7 @@ extends SceneTree
 ## nothing here is evidence about original balance or pacing.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")

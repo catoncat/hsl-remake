@@ -17,7 +17,7 @@ const GameOptions = preload("res://game/settings/GameOptions.gd")
 const CombatPresentationTiming = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 ## OPT-PACE (docs/OPTIONS.md), read once per begin: the multiplier on advance (PACE_MAP).
 var pace := 1.0
-const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const RangeCellOverlay = preload("res://game/battle/runtime/RangeCellOverlay.gd")
 ## The yellow cell frame drawn on the cursor cell (BattleSelectionCursor.TARGET_FRAME).
 const TARGET_FRAME: Texture2D = preload("res://game/battle/scene/BattleSelectionCursor.gd").TARGET_FRAME

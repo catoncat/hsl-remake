@@ -42,7 +42,7 @@ extends SceneTree
 ## the loop seeded the repeats are a residual-variance check, not a necessity.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
 const AutoplayBrain = preload("res://tests/support/AutoplayBrain.gd")

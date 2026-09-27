@@ -20,7 +20,7 @@ extends RefCounted
 ##     HSL_OPTIONS_PRESET seam)
 
 const GameSettings = preload("res://game/settings/GameSettings.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const REGISTRY_PATH := "res://content/authored/options/remake_options.json"
 const SCHEMA := "hsl_remake_options.v1"

@@ -1635,7 +1635,7 @@
       ],
       "remake": "CampaignProgress、CampaignResumePrompt",
       "remake_code": [
-        "game/battle/runtime/CampaignProgress.gd",
+        "game/common/CampaignProgress.gd",
         "game/title/CampaignResumePrompt.gd"
       ],
       "original_status": "no_original_code",
@@ -1643,7 +1643,7 @@
       "effort": "S",
       "category": "重制新增（原版没有）",
       "sources": [
-        "provenance:game/battle/runtime/CampaignProgress.gd|rules|remake-invented|",
+        "provenance:game/common/CampaignProgress.gd|rules|remake-invented|",
         "provenance:game/title/CampaignResumePrompt.gd|layout|remake-invented|",
         "provenance:game/title/CampaignResumePrompt.gd|strings|remake-invented|"
       ]
@@ -1772,7 +1772,7 @@
       "remake": "BattleSceneInput／BattleCameraController",
       "remake_code": [
         "game/battle/scene/BattleSceneInput.gd",
-        "game/battle/runtime/BattleCameraController.gd"
+        "game/common/BattleCameraController.gd"
       ],
       "original_status": "no_original_code",
       "visibility": "rare",
@@ -1780,9 +1780,9 @@
       "category": "重制新增（原版没有）",
       "sources": [
         "matrix:鼠标浏览地图",
-        "provenance:game/battle/runtime/BattleCameraController.gd|rules|remake-invented|",
-        "provenance:game/battle/runtime/BattleCameraController.gd|timing|remake-invented|",
-        "provenance:game/battle/scene/BattleSceneInput.gd|rules|remake-invented|"
+        "provenance:game/battle/scene/BattleSceneInput.gd|rules|remake-invented|",
+        "provenance:game/common/BattleCameraController.gd|rules|remake-invented|",
+        "provenance:game/common/BattleCameraController.gd|timing|remake-invented|"
       ]
     },
     {
@@ -1935,17 +1935,17 @@
       "remake": "OpeningEndCard 与 CampaignProgress 的章末",
       "remake_code": [
         "game/battle/runtime/opening/OpeningEndCard.gd",
-        "game/battle/runtime/CampaignProgress.gd"
+        "game/common/CampaignProgress.gd"
       ],
       "original_status": "no_original_code",
       "visibility": "rare",
       "effort": "S",
       "category": "重制新增（原版没有）",
       "sources": [
-        "provenance:game/battle/runtime/CampaignProgress.gd|rules|remake-invented|",
         "provenance:game/battle/runtime/opening/OpeningEndCard.gd|layout|remake-invented|",
         "provenance:game/battle/runtime/opening/OpeningEndCard.gd|rules|remake-invented|",
-        "provenance:game/battle/runtime/opening/OpeningEndCard.gd|strings|remake-invented|"
+        "provenance:game/battle/runtime/opening/OpeningEndCard.gd|strings|remake-invented|",
+        "provenance:game/common/CampaignProgress.gd|rules|remake-invented|"
       ]
     },
     {

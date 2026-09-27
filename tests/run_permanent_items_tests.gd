@@ -11,7 +11,7 @@ const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const BattleLoopInventory = preload("res://game/sim/loop/BattleLoopInventory.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const CARRY_PATH := "res://ignored/permanent-carry-tests/progress.json"
 const VIEW := {"camera":Vector2(320,240),"shown_story_events":[],"story_complete":true,"growth_notified_level":1}
 

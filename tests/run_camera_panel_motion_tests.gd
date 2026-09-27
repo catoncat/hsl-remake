@@ -8,13 +8,13 @@ extends "res://tests/support/TestSuite.gd"
 ## file writes the camera position except BattleCameraController, so every camera move
 ## (battle focus, script scroll, speed scroll, edge pan, cut) goes through the controller.
 
-const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
-const CONTROLLER_PATH := "res://game/battle/runtime/BattleCameraController.gd"
+const CONTROLLER_PATH := "res://game/common/BattleCameraController.gd"
 ## Panels that must open and close through BattlePanelMotion (the modal list and the loot
 ## window; checked in BattleSceneMenus／BattleSettlementController by the attach census).
 const PANEL_SCRIPTS := ["BattleStatusPanel.gd", "BattleItemPanel.gd", "BattleMagicPanel.gd", "BattleGrowthPanel.gd", "BattleLootPanel.gd"]

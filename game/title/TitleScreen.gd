@@ -48,7 +48,7 @@ extends Node2D
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
 
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")

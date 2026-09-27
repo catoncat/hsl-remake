@@ -3,7 +3,7 @@ extends SceneTree
 ## 歐姆村, the town screen, an edge scroll there and back, and a mouse-driven trip along
 ## track 1 to 戈爾山道 into the level-2 battle. Output: ignored/world-map-review/*.png + manifest.json
 ## (visual review input, not parity proof — no original big-map frames exist).
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/world-map-review/"
 var scene: Node

@@ -24,7 +24,7 @@ extends RefCounted
 ## hand-off the walk booted so a later pass can resume from a real walked state.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")

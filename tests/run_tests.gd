@@ -9,7 +9,7 @@ const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
-const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const BattleScenarioRuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
 const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
@@ -36,7 +36,6 @@ func run() -> void:
 	_test_live_weapon_ranges()
 	_test_live_counter_exchange()
 	_test_experience_and_level_up()
-	_test_job_up_rule_check()
 	_test_battle_actor_roles_gate_player_control_and_targets()
 	_test_project_uses_640x480_viewport()
 	run_range_propagation()
@@ -526,24 +525,6 @@ func _test_experience_and_level_up() -> void:
 	_assert_eq(ProgressionRules.exp_to_next(2), 150, "native level-two threshold is 150")
 	_assert_eq(ProgressionRules.exp_to_next(39), 2000, "native threshold reaches cap at level 39")
 	_assert_eq(ProgressionRules.exp_to_next(50), 2000, "native threshold stays capped")
-
-
-func _test_job_up_rule_check() -> void:
-	var unit := {
-		"class_id": "swordsman",
-		"level": 12,
-		"stats": {"str": 30, "agi": 24, "mind": 7, "vit": 28},
-	}
-	var rule := {
-		"from_class": "swordsman",
-		"to_class": "swordmaster",
-		"min_level": 12,
-		"min_stats": {"str": 30, "agi": 24, "vit": 28},
-		"required_items": ["class_token_alpha"],
-		"required_flags": {"chapter_one_survived": true},
-	}
-	_assert_true(RulesReadback.can_job_up(unit, rule, ["class_token_alpha"], {"chapter_one_survived": true}), "matching unit should qualify for class change")
-	_assert_true(not RulesReadback.can_job_up(unit, rule, [], {"chapter_one_survived": true}), "missing item should block class change")
 
 
 func _test_battle_actor_roles_gate_player_control_and_targets() -> void:

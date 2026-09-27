@@ -39,7 +39,7 @@ signal disposal_started(unit: Dictionary)
 
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 ## The native disposal of a fallen actor (enemy process 0x43ede0's dead branch 0x43eff9..0x43f0e6,
 ## the player process's 0x443501..0x443602 — the same steps): after its last words the actor
 ## switches to draw mode 0x2c000000 at zoom 1.0 and draw level 16, then each tick its vertical

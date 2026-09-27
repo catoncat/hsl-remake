@@ -27,7 +27,7 @@ const SceneTimeline = preload("res://game/battle/runtime/SceneTimeline.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 ## actDarkScreen inserts obj_ScreenDarker (700) and the VM does not wait; the object's
 ## darkening cadence is unread, so the remake fades in and (actDeleteDarkScreen) out over

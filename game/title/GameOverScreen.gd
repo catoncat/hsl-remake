@@ -42,7 +42,7 @@ const TITLE_SCENE_PATH := "res://game/title/TitleScreen.tscn"
 const BATTLE_SCENE_PATH := "res://game/battle/scene/BattleSceneRuntime.tscn"
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
-const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## OPT-RETRY menu rows (remake layout): centred under the GAME OVER text, one 32 px pitch.

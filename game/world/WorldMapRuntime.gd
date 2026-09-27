@@ -45,7 +45,7 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const SUMMARY_SCHEMA := "hsl_world_map_runtime.v1"
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const EDGE_SCROLL_PIXELS_PER_SECOND := BattleCameraController.EDGE_SCROLL_PIXELS_PER_SECOND
 ## The big-map walker moves its 16.16 speed 0x20000 = 2 px per tick (0x4277ed).
 const WALKER_PIXELS_PER_TICK := 2.0

@@ -60,7 +60,7 @@
 
 - `content/battles/campaign.json`：关卡注册、`party: separate`、`next_level_event`（来自各战 winfail）。
 - `game/sim/loop/BattlePlayLoop.gd` `apply_campaign_carry`；`game/sim/ProgressionRules.gd` `refresh_growth_stats`。
-- `game/battle/runtime/CampaignProgress.gd`：一次性 `pending`、`next_destination`、`user://campaign_progress.json`。
+- `game/common/CampaignProgress.gd`：一次性 `pending`、`next_destination`、`user://campaign_progress.json`。
 - 正式战斗场景由 `tools/hsltools/levels/battle.py`（`python3 tools/hsl.py generate level_battle:N`）从预览、seed、EVEF 与演员模板组装；WINFAIL 由数据驱动解释器消费。
 
 ## 复现
