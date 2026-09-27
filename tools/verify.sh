@@ -62,33 +62,8 @@ ORIGINAL_PRESENT=1
 "$PYTHON_BIN" -c 'import sys; sys.path.insert(0, "tools"); from hsltools import original_content; sys.exit(0 if original_content.present() else 1)' \
   || ORIGINAL_PRESENT=0
 
-echo "== doctor =="
-step_started=$SECONDS
-tools/doctor.sh
-echo "DOCTOR_STEP_PASS seconds=$((SECONDS - step_started))"
-
-echo "== Python unit tests =="
-"$PYTHON_BIN" tools/verify_runner.py python-tests ${JOBS[@]+"${JOBS[@]}"}
-
-echo "== source, evidence and importer checks =="
-"$PYTHON_BIN" tools/verify_runner.py checks ${JOBS[@]+"${JOBS[@]}"}
-
-if [[ "$ORIGINAL_PRESENT" == 1 ]]; then
-  echo "== Godot asset import ($MODE) =="
-  if [[ "$MODE" == full ]]; then
-    cleanup_generated_cache
-    export HSL_GODOT_SEED=0  # prove the cold import: tools/godot.sh must not seed .godot from another worktree
-  fi
-  step_started=$SECONDS
-  run_godot --headless --import
-  echo "GODOT_IMPORT_PASS mode=$MODE seconds=$((SECONDS - step_started))"
-
-  echo "== Godot headless suites =="
-  GODOT_BIN="$GODOT_BIN" "$PYTHON_BIN" tools/verify_runner.py godot ${JOBS[@]+"${JOBS[@]}"}
-else
-  echo "GODOT_SUITES_SKIP original-absent (the Godot import and suites load content/: import the original first)"
-fi
-
+# Cheap checks first: syntax, whitespace hygiene, doc links and JSON parse fail in seconds,
+# before the minutes-long Python, check and Godot stages.
 echo "== source syntax =="
 for script in tools/*.sh; do
   bash -n "$script"
@@ -120,6 +95,33 @@ for path in existing:
     json.loads(path.read_text(encoding="utf-8"))
 print(f"CURRENT_JSON_PARSE_PASS count={len(existing)}")
 PY
+
+echo "== doctor =="
+step_started=$SECONDS
+tools/doctor.sh
+echo "DOCTOR_STEP_PASS seconds=$((SECONDS - step_started))"
+
+echo "== Python unit tests =="
+"$PYTHON_BIN" tools/verify_runner.py python-tests ${JOBS[@]+"${JOBS[@]}"}
+
+echo "== source, evidence and importer checks =="
+"$PYTHON_BIN" tools/verify_runner.py checks ${JOBS[@]+"${JOBS[@]}"}
+
+if [[ "$ORIGINAL_PRESENT" == 1 ]]; then
+  echo "== Godot asset import ($MODE) =="
+  if [[ "$MODE" == full ]]; then
+    cleanup_generated_cache
+    export HSL_GODOT_SEED=0  # prove the cold import: tools/godot.sh must not seed .godot from another worktree
+  fi
+  step_started=$SECONDS
+  run_godot --headless --import
+  echo "GODOT_IMPORT_PASS mode=$MODE seconds=$((SECONDS - step_started))"
+
+  echo "== Godot headless suites =="
+  GODOT_BIN="$GODOT_BIN" "$PYTHON_BIN" tools/verify_runner.py godot ${JOBS[@]+"${JOBS[@]}"}
+else
+  echo "GODOT_SUITES_SKIP original-absent (the Godot import and suites load content/: import the original first)"
+fi
 
 if [[ "$MODE" == deep && "$ORIGINAL_PRESENT" == 1 ]]; then
   echo "== Godot deep suites =="
