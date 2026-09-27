@@ -1,11 +1,11 @@
 # 库存与装备：八槽库存、六装备槽与当前装备刷新
 
-> evidence: static-derived; resource-derived: ITEM／TYPE／PLAYERS 表值 · status: live · functions: 0x436e30, 0x436e80, 0x436ed0, 0x436ef0, 0x436f30, 0x437020, 0x4464f0, 0x448420, 0x448840 · tools: hsltools/data/equipment.py, hsltools/evidence/inventory_equipment.py, run_inventory_equipment_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: ITEM／TYPE／PLAYERS 表值 · status: live · functions: 0x436e30, 0x436e80, 0x436ed0, 0x436ef0, 0x436f30, 0x437020, 0x4464f0, 0x448420, 0x448840 · tools: hsltools/data/equipment.py, hsltools/evidence/inventory_equipment.py, run_inventory_equipment_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：每个角色八个库存 DWORD（0 为空、同 code 不堆叠、首空插入、删除左移）；六个装备槽由 setter `0x436f30` 查职业、类型和旧装备 `take_off` 锁，失败 -1、成功返回旧 code；卸下 `0x437020` 禁止时返回 0；属性由 `0x448840` 从基础值加六槽 `0x448420` 统一刷新并夹紧（static-derived）。
-- 重制：`InventoryRules`、`EquipmentRules`、`ProgressionRules` 纯规则，PlayLoop 唯一提交；换装为「校验→取新物→换槽→旧物首空→统一刷新→一次提交」（static-derived；确认式事务为 provisional）。
+- 重制：`InventoryRules`、`EquipmentRules`、`ProgressionRules` 纯规则，PlayLoop 唯一提交；换装为「校验→取新物→换槽→旧物首空→统一刷新→一次提交」；战斗内由 mode4／5 持物窗触发、提交后旧物进手（static-derived；持物草稿为 provisional，见 [original_item_actions.md](original_item_actions.md)）。
 - 差异：原版暂持物中间态、取消归还与行动标志未全恢复；含未接入非零字段（状态被动、add_move、暴击、特殊武器范围等）的物品禁止装备（provisional）。
 
 ## 证据
@@ -45,7 +45,7 @@ ITEM 全局 `0x4c1b40`，步长 `0xb0`；type +0x8、flags2 +0xa4、职业 mask 
 | 抗性分组 | 同函数分支 | 0..4 土水风火心；7 全五类；8 前四类；9 水火、10 土火、11 风火、12 火心、13 土水、14 水风、15 水心、16 土风、17 土心、18 风心 |
 | 夹紧 | `0x44b6ca..0x44b75a` 抗性 0..80；`0x44b77e..0x44b7b8` 攻击／魔击／防御／速度下限 0 | HP／MP 当前值只向下夹，不因上限增加而治疗 |
 
-Equip 是 state7 mode4（`0x444185`），Drop 是 state8 mode5（`0x4441ac`），关窗流程见 [original_item_actions.md](original_item_actions.md)。
+Equip 是 state7 mode4（`0x444185`），Drop 是 state8 mode5（`0x4441ac`），两者同一持物窗（装备板点击 `0x43993e` setter／`0x439998` 卸下），窗体与关窗流程见 [original_item_actions.md](original_item_actions.md)。
 
 **resource-derived**：字段名与类别来自 `ITEM.TXT`、`TYPE.H`、`PLAYERS.TXT`、`RESOURCE.TXT`；表字节身份写入 `content/generated/hsl/equipment/items.json`。Leonard 初始库存 `[241,241,241,246,0,0,0,0]`；3 号銀劍 add_magic_power=5。TYPE.H 的 magic4TYPE 与部分 ITEM 的 magic4Type 大小写不一致。
 

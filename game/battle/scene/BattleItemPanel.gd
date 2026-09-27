@@ -1,11 +1,14 @@
 extends Control
-## One modal stack: item commands -> inventory -> map pick／give recipient window／confirmation.
+## One modal stack: item commands -> inventory -> map pick／give recipient window; equip／drop
+## share one held-item window (mode 4／5).
 ## Draft selection is presentation-only; all item mutations return to PlayLoop.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
 ##     (the use target is a map cell pick, not a window: the page gives way, BattleSceneMenus draws the range)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_give_exchange.md
 ##     (give: giver's window → held item → adjacent-cell map pick → recipient's window → back to the giver's)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_item_actions.md
+##     (equip／drop: the 0x43b4e0 mode-4／5 held-item window; no preview or confirmation page)
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#07
 ##     (item sub-menu, target selection)
@@ -25,11 +28,12 @@ signal give_requested(target_id: String, index: int, code: int, target_index: in
 signal give_finished(revision: int)
 signal drop_requested(item_code: String)
 signal equipment_requested(slot: String, inventory_index: int, item_code: int)
+## take_up (399) when an item comes into the hand, put_down (400) when the hand places it.
+signal ui_sound_requested(event: String)
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
 const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
-const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
@@ -52,7 +56,11 @@ var selected_index := -1
 var selected_slot := ""
 var equipment_view: Control
 var target_buttons: Dictionary = {}
-var confirm_button: Button
+## Mode 4／5 held slot [0x4c1ce4] as a draft: the real inventory index and code of the held item.
+var held_index := -1
+var held_code := 0
+var drop_button: TextureButton
+const DROP_BUTTON_CENTRE := Vector2(285, 387)
 var give_revision := -1
 var give_target_id := ""
 var give_target_index := -1
@@ -88,6 +96,8 @@ func show_inventory(unit: Dictionary, definitions: Dictionary, recipients: Array
 	selected_item = ""
 	selected_index = -1
 	selected_slot = ""
+	held_index = -1
+	held_code = 0
 	give_revision = -1
 	give_target_id = ""
 	show()
@@ -114,6 +124,9 @@ func _show_commands() -> void:
 ## `owner` set: the give recipient's window (state 114 0x444d9c opens the same mode-7 window on the
 ## target); its slots take the held item (_place_give_item) and the held icon stays on the pointer.
 func _show_list(command: String, owner: Dictionary = {}) -> void:
+	if command in ["equip", "drop"]:
+		_show_hand_window(command)
+		return
 	_clear_page()
 	operation = command
 	var placing := not owner.is_empty()
@@ -126,11 +139,6 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 	vitals.show_unit(unit)
 	var equipment := BattleEquipmentView.new()
 	equipment_view = equipment
-	equipment.interactive = operation == "equip"
-	equipment.slot_requested.connect(func(slot):
-		selected_item = "0"
-		selected_index = -1
-		_show_equipment_confirmation(slot))
 	page_root.add_child(equipment)
 	equipment.show_unit(unit)
 	BattleUISkin.board(page_root, "WINDOW20", Vector2(12, 174))
@@ -152,8 +160,6 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 				rows.add_child(_empty_slot_button(index))
 			continue
 		var details: Dictionary = catalog[code]
-		if operation == "equip" and int(details["type_code"]) not in range(2, 7):
-			continue
 		var button := Button.new()
 		button.name = "Item_%s_%d" % [code, index]
 		button.text = str(details["name"])
@@ -172,17 +178,11 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 		button.disabled = operation == "use" and ItemUseRules.definition_error(items.get(code, {})) != ""
 		if operation == "use" and not button.disabled:
 			button.tooltip_text = preload("res://game/battle/scene/BattleItemText.gd").description(items[code])
-		if operation == "equip" and not bool(details["supported"]):
-			button.disabled = true
-			button.tooltip_text = "此裝備效果尚未開放"
-		if operation == "drop" and InventoryRules.discard_error(int(code), catalog) != "":
-			button.disabled = true
-			button.tooltip_text = "重要道具不可丟棄"
 		button.pressed.connect(_place_give_item.bind(index, int(code)) if placing else _select_item.bind(code, index))
 		rows.add_child(button)
 	if rows.get_child_count() == 0:
 		var empty := Label.new()
-		empty.text = "沒有可更換的裝備" if operation == "equip" else "沒有道具"
+		empty.text = "沒有道具"
 		empty.add_theme_font_size_override("font_size", 16)
 		rows.add_child(empty)
 	var back := BattleUISkin.button(page_root, "返回", Vector2(502, 442), Vector2(113, 30))
@@ -191,29 +191,15 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 	capacity.text = "道具 %d / 8" % (8 - unit["inventory"].count(0))
 	if placing:
 		_hold_selected_item()
-	if operation == "equip":
-		var hint := BattleUISkin.label(page_root, Vector2(252, 444), 12)
-		hint.text = "點選裝備卸下；空手不能攻擊"
-	elif operation == "drop":
-		var hint := BattleUISkin.label(page_root, Vector2(252, 444), 12)
-		hint.text = "重要道具不可丟棄"
 
 
 func _select_item(code: String, index: int = -1) -> void:
 	selected_item = code
 	selected_index = index if index >= 0 else source_unit["inventory"].find(int(code))
-	if operation == "drop":
-		_show_drop_confirmation()
-	elif operation == "use":
+	if operation == "use":
 		_show_use_pick()
 	elif operation == "give":
 		_show_targets()
-	elif operation == "equip":
-		var kind := int(EquipmentCatalog.items()[code]["type_code"])
-		if kind == 6:
-			_show_accessory_slots()
-		else:
-			_show_equipment_confirmation(EquipmentRules.SLOTS[kind - 2])
 
 
 ## Give target pick (state 112 0x444bc7 → 113 0x444c27): the picked item is already held
@@ -230,7 +216,7 @@ func _show_targets() -> void:
 
 
 ## An empty-slot row of the recipient's window (no caption; the original slot is blank).
-func _empty_slot_button(index: int) -> Button:
+func _empty_slot_button(index: int, hand := false) -> Button:
 	var button := Button.new()
 	button.name = "Item_0_%d" % index
 	button.set_meta("item_code", "0")
@@ -238,7 +224,7 @@ func _empty_slot_button(index: int) -> Button:
 	button.custom_minimum_size = Vector2(195, 32)
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
-	button.pressed.connect(_place_give_item.bind(-1, 0))
+	button.pressed.connect(_hand_row.bind(-1, 0) if hand else _place_give_item.bind(-1, 0))
 	return button
 
 
@@ -351,176 +337,159 @@ func _place_give_item(target_index: int, return_code: int) -> void:
 	give_requested.emit(give_target_id, selected_index, int(selected_item), target_index, return_code, give_revision)
 
 
-func _show_drop_confirmation() -> void:
+## Equip／Drop window (player state 7 0x444185／state 8 0x4441ac → 0x43b4e0 mode 4／5, both
+## built at 0x43b7fd: root flags 0x40004000, left WINDOW20 inventory, right WINDOW30 board; mode 5
+## alone adds the 丟棄 button 0x43b280(0,0), template 148 BCMD08_1 centred at (285,387)).
+## The held slot is [0x4c1ce4]; here it is a draft over the real inventory (`held_index`), and
+## every change that reaches the rules is one PlayLoop command, refreshed back into the window.
+func _show_hand_window(command: String) -> void:
 	_clear_page()
-	page = "drop_confirm"
-	BattleUISkin.board(page_root, "WINDOW50", Vector2(132, 174))
-	var title := BattleUISkin.label(page_root, Vector2(154, 191), 19)
-	var catalog := EquipmentCatalog.items()
-	var rejected := InventoryRules.discard_error(int(selected_item), catalog) != ""
-	title.text = "此道具不可丟棄" if rejected else "丟棄 %s？" % catalog[selected_item]["name"]
-	confirm_button = BattleUISkin.button(page_root, "確定", Vector2(152, 268), Vector2(150, 36))
-	confirm_button.disabled = rejected
-	confirm_button.pressed.connect(func(): drop_requested.emit(selected_item))
-	var back := BattleUISkin.button(page_root, "取消", Vector2(338, 268), Vector2(150, 36))
-	back.pressed.connect(cancel)
-
-
-func _show_accessory_slots() -> void:
-	_clear_page()
-	page = "equipment_slot"
-	var board := BattleUISkin.board(page_root, "WINDOW50", Vector2(132, 174))
-	board.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	board.size = Vector2(376, 164)
-	var title := BattleUISkin.label(page_root, Vector2(154, 191), 19)
-	title.text = "選擇飾品位置"
-	for index in range(2):
-		var slot := "accessory%d" % (index + 1)
-		var button := BattleUISkin.button(page_root, "飾品 %d" % (index + 1), Vector2(152 + 186 * index, 235), Vector2(150, 36))
-		button.pressed.connect(_show_equipment_confirmation.bind(slot))
-	BattleUISkin.button(page_root, "取消", Vector2(246, 286), Vector2(150, 36)).pressed.connect(cancel)
-
-
-func _show_equipment_confirmation(slot: String) -> void:
-	_clear_page()
-	page = "equip_confirm"
-	selected_slot = slot
-	var catalog := EquipmentCatalog.items()
-	var result := EquipmentRules.replace(source_unit, slot, selected_index, int(selected_item), catalog)
-	if ProgressionRules.refresh_input_error(source_unit, catalog) != "":
-		result = {"ok": false, "reason": "unsupported_growth_model"}
-	var proposed := source_unit.duplicate(true)
-	if result["ok"]:
-		proposed["equipment"] = result["equipment"]
-		var error := ProgressionRules.refresh_input_error(proposed, catalog)
-		if error != "": result = {"ok": false, "reason": error}
-	var board := BattleUISkin.board(page_root, "WINDOW50", Vector2(132, 140))
-	board.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	board.size = Vector2(376, 248)
-	var title := BattleUISkin.label(page_root, Vector2(154, 160), 19)
-	var old := EquipmentRules.equipped_code(source_unit["equipment"], slot)
-	title.text = "卸下 %s？" % catalog[str(old)]["name"] if selected_item == "0" else "裝備 %s？" % catalog[selected_item]["name"]
+	operation = command
+	page = "hand"
+	BattleUISkin.clear_panel(page_root)
+	var vitals := BattleVitals.new()
+	vitals.position = Vector2(0, 14)
+	page_root.add_child(vitals)
+	vitals.show_unit(source_unit)
+	var equipment := BattleEquipmentView.new()
+	equipment_view = equipment
+	equipment.interactive = true
+	equipment.accepts_empty_slots = true
+	equipment.slot_requested.connect(_hand_slot)
+	page_root.add_child(equipment)
+	equipment.show_unit(source_unit)
+	BattleUISkin.board(page_root, "WINDOW20", Vector2(12, 174))
 	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(154, 197)
-	scroll.size = Vector2(330, 125)
+	scroll.position = Vector2(20, 180)
+	scroll.size = Vector2(207, 250)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	page_root.add_child(scroll)
-	var preview := BattleUISkin.label(scroll, Vector2.ZERO, 17)
-	preview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	preview.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	if result["ok"]:
-		result = _preview_equipment_change(proposed, catalog, preview, result)
-	else:
-		var messages := {"inventory_full": "背包已滿，無法收回裝備。", "wrong_job": "目前職業無法使用這件裝備。", "equipment_cannot_be_removed": "這件裝備無法卸下。", "equipment_unchanged": "已裝備相同道具。", "unsupported_equipment": "此裝備效果尚未開放。"}
-		preview.text = messages.get(result["reason"], "目前無法更換這件裝備。")
-	confirm_button = BattleUISkin.button(page_root, "確定", Vector2(152, 334), Vector2(150, 36))
-	confirm_button.disabled = not result["ok"]
-	confirm_button.pressed.connect(func(): equipment_requested.emit(selected_slot, selected_index, int(selected_item)))
-	BattleUISkin.button(page_root, "取消", Vector2(338, 334), Vector2(150, 36)).pressed.connect(cancel)
+	rows = VBoxContainer.new()
+	rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rows.add_theme_constant_override("separation", 0)
+	scroll.add_child(rows)
+	var catalog := EquipmentCatalog.items()
+	# The picked item left its slot (0x436e80 deletes and compacts); the rows show what remains.
+	for index in range(source_unit["inventory"].size()):
+		var code := int(source_unit["inventory"][index])
+		if index == held_index or code == 0:
+			continue
+		var details: Dictionary = catalog[str(code)]
+		var button := Button.new()
+		button.name = "Item_%d_%d" % [code, index]
+		button.text = str(details["name"])
+		button.set_meta("item_code", str(code))
+		button.set_meta("inventory_index", index)
+		button.custom_minimum_size = Vector2(195, 32)
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.add_theme_font_size_override("font_size", 18)
+		button.add_theme_color_override("font_hover_color", Color.YELLOW)
+		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+			var style := StyleBoxEmpty.new()
+			style.content_margin_left = 43
+			button.add_theme_stylebox_override(state, style)
+		BattleUISkin.asset(button, str(details["icon"]), Vector2(3, 0)).name = "OriginalConsumable"
+		button.pressed.connect(_hand_row.bind(index, code))
+		rows.add_child(button)
+	# 0x438c84: with an item held a pick on any row puts it back (first empty, 0x436e30).
+	for index in range(8 - rows.get_child_count()):
+		var empty := _empty_slot_button(-1, true)
+		empty.name = "Empty_%d" % index
+		rows.add_child(empty)
+	var back := BattleUISkin.button(page_root, "返回", Vector2(502, 442), Vector2(113, 30))
+	back.pressed.connect(cancel)
+	var capacity := BattleUISkin.label(page_root, Vector2(20, 440), 15)
+	capacity.text = "道具 %d / 8" % (8 - source_unit["inventory"].count(0))
+	if operation == "drop":
+		drop_button = _drop_icon_button()
+	if held_code != 0:
+		selected_item = str(held_code)
+		_hold_selected_item()
 
 
-## _show_equipment_confirmation: the before → after lines of a legal change (stats,
-## 氣力, attack count, extra actions); returns `result`, replaced when source data is bad.
-func _preview_equipment_change(proposed: Dictionary, catalog: Dictionary, preview: Label, result: Dictionary) -> Dictionary:
-	proposed = ProgressionRules.refresh_growth_stats(proposed, catalog)
-	var before: Dictionary = source_unit["combat_profile"]
-	var after: Dictionary = proposed["combat_profile"]
-	preview.text = "移動力  %d → %d\n攻擊  %d → %d\n防禦  %d → %d\n魔擊  %d → %d\n敏捷  %d → %d" % [source_unit["move_point"], proposed["move_point"], before["live_attack_damage"], after["live_attack_damage"], before["live_defense"], after["live_defense"], before["live_magic_attack"], after["live_magic_attack"], source_unit["live_speed"], proposed["live_speed"]]
-	for key in ["attack_damagex2", "attack_back", "avoid_hit_ratio"]:
-		if before[key] != after[key]: preview.text += "\n%s  %d%% → %d%%" % [{"attack_damagex2": "暴擊", "attack_back": "反擊", "avoid_hit_ratio": "迴避"}[key], before[key], after[key]]
-	if before["weapon_magic_attack_type"] != after["weapon_magic_attack_type"] or before["weapon_damage_variance_lo"] != after["weapon_damage_variance_lo"] or before["weapon_damage_variance_hi"] != after["weapon_damage_variance_hi"]:
-		var names := ["無附加", "地", "水", "風", "火", "心", "無屬性"]
-		preview.text += "\n武器附加  %s → %s" % [names[int(before["weapon_magic_attack_type"]) + 1], names[int(after["weapon_magic_attack_type"]) + 1]]
-	var stamina = preload("res://game/sim/StaminaRules.gd")
-	var previous := stamina.equipment_caption(source_unit, catalog)
-	var current := stamina.equipment_caption(proposed, catalog)
-	if previous != current: preview.text += "\n氣力累積  %s → %s" % [previous, current]
-	var sequence = preload("res://game/sim/CombatSequenceRules.gd")
-	var old_count: Dictionary = sequence.attack_count(source_unit, attack_source, catalog)
-	var new_count: Dictionary = sequence.attack_count(proposed, attack_source, catalog)
-	if old_count["ok"] and new_count["ok"] and old_count["count"] != new_count["count"]:
-		preview.text += "\n普通攻擊與反擊  %d擊 → %d擊" % [old_count["count"], new_count["count"]]
-	if not old_count["ok"] or not new_count["ok"]:
-		result = {"ok": false, "reason": "invalid_extra_attack_source"}
-		preview.text = "攻擊資料異常，無法更換這件裝備。"
-	var extra = preload("res://game/sim/ExtraActionRules.gd")
-	var old_actions: Dictionary = extra.equipment(source_unit, catalog)
-	var new_actions: Dictionary = extra.equipment(proposed, catalog)
-	if old_actions["ok"] and new_actions["ok"] and old_actions["count"] != new_actions["count"]:
-		preview.text += "\n輪到時連續行動  %d次 → %d次" % [old_actions["count"], new_actions["count"]]
-	if not old_actions["ok"] or not new_actions["ok"]:
-		result = {"ok": false, "reason": "invalid_extra_action_source"}
-		preview.text = "行動資料異常，無法更換這件裝備。"
-	return _preview_equipment_effects(proposed, catalog, preview, result)
+## Mode 5's 丟棄 (template 148 BCMD08_1, 42×42, origin (21,21)) centred at (285,387): x 0x11d,
+## y 0x183 from 0x43b280(0,0); the caption sits under the icon as on the loot window's.
+func _drop_icon_button() -> TextureButton:
+	var button := TextureButton.new()
+	button.name = "Button_drop"
+	button.texture_normal = load(BattleUISkin.ROOT + "BCMD08_1.SHP.png")
+	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	button.position = DROP_BUTTON_CENTRE - Vector2(21, 21)
+	page_root.add_child(button)
+	var label := BattleUISkin.text(page_root, DROP_BUTTON_CENTRE + Vector2(-40, 13), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(80, 16))
+	label.text = "丟棄"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
+	button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
+	button.pressed.connect(_hand_drop)
+	return button
 
 
-## _preview_equipment_change, continued: resource, position, weapon, casting, experience
-## and stamina effects.
-func _preview_equipment_effects(proposed: Dictionary, catalog: Dictionary, preview: Label, result: Dictionary) -> Dictionary:
-	var stamina = preload("res://game/sim/StaminaRules.gd")
-	var experience = preload("res://game/sim/ExperienceRules.gd")
-	var recovery = preload("res://game/sim/ResourceRecoveryRules.gd")
-	var old_resources: Dictionary = recovery.effects(source_unit, catalog)
-	var new_resources: Dictionary = recovery.effects(proposed, catalog)
-	if old_resources["ok"] and new_resources["ok"]:
-		for key in recovery.KEYS:
-			if old_resources["effects"][key] != new_resources["effects"][key]:
-				var title_text: String = {"mp_use_half": "魔法減耗", "hp_auto_restore": "末次行動回血", "mp_auto_restore": "末次行動回魔", "hp_transfer_mp": "末次行動生命轉魔力"}[key]
-				preview.text += "\n%s  %s → %s" % [title_text, "有" if old_resources["effects"][key] else "無", "有" if new_resources["effects"][key] else "無"]
-		if new_resources["effects"]["hp_transfer_mp"]:
-			preview.text += "\n魔力已滿仍耗生命，最低保留1HP。"
-	else:
-		result = {"ok": false, "reason": "invalid_resource_effect"}
-		preview.text = "資源效果資料異常，無法更換這件裝備。"
-	var status = preload("res://game/sim/StatusApplicationRules.gd")
-	var casting_source := {"actors": {str(source_unit["actor_id"]): attack_source}}
-	var position_rules = preload("res://game/sim/PositionCapabilityRules.gd")
-	var old_position: Dictionary = position_rules.effects(source_unit, casting_source, catalog)
-	var new_position: Dictionary = position_rules.effects(proposed, casting_source, catalog)
-	if old_position["ok"] and new_position["ok"]:
-		for key in ["move_magic_use", "add_attack_range"]:
-			if old_position["effects"][key] != new_position["effects"][key]:
-				preview.text += "\n%s  %s → %s" % ["移動後施法" if key == "move_magic_use" else "攻擊範圍加成", "有" if old_position["effects"][key] else "無", "有" if new_position["effects"][key] else "無"]
-		if new_position["effects"]["add_attack_range"]: preview.text += "\n攻擊／反擊提升一檔；魔法範圍不變。"
-	else:
-		result = {"ok": false, "reason": "invalid_position_capability"}
-		preview.text = "範圍或行動資料異常，無法更換這件裝備。"
-	var old_casting: Dictionary = status.modifiers(source_unit, casting_source, catalog)
-	var weapon = preload("res://game/sim/WeaponEffectRules.gd")
-	var old_weapon: Dictionary = weapon.effects(source_unit, catalog)
-	var new_weapon: Dictionary = weapon.effects(proposed, catalog)
-	if old_weapon["ok"] and new_weapon["ok"]:
-		for bit in [weapon.POISON, weapon.CANCEL, weapon.MANA]:
-			if (int(old_weapon["flags"]) & bit) != (int(new_weapon["flags"]) & bit):
-				preview.text += "\n%s  %s → %s" % [{weapon.POISON:"末擊附毒25%",weapon.CANCEL:"末擊取消行動10%",weapon.MANA:"末擊削減魔力"}[bit], "有" if int(old_weapon["flags"]) & bit else "無", "有" if int(new_weapon["flags"]) & bit else "無"]
-		if int(new_weapon["flags"]) & weapon.MANA: preview.text += "\n削減目標魔力＝末擊實際傷害的三分之一；自身不回魔。"
-	else:
-		result = {"ok": false, "reason": "invalid_weapon_effect_source"}
-		preview.text = "武器效果資料異常，無法更換這件裝備。"
-	var new_casting: Dictionary = status.modifiers(proposed, casting_source, catalog)
-	if old_casting["ok"] and new_casting["ok"]:
-		for key in status.IMMUNITY:
-			var before_protected: bool = (int(old_casting["effects"]) & (int(status.IMMUNITY[key]) | 0x80)) != 0
-			var after_protected: bool = (int(new_casting["effects"]) & (int(status.IMMUNITY[key]) | 0x80)) != 0
-			if before_protected != after_protected:
-				preview.text += "\n%s  %s → %s" % ["防止" + preload("res://game/sim/StatusCatalog.gd").name_of(key), "有" if before_protected else "無", "有" if after_protected else "無"]
-				if after_protected: preview.text += "（不解除已有狀態）"
-		if old_casting["magic_hit_bonus"] != new_casting["magic_hit_bonus"]:
-			preview.text += "\n魔法命中修正  +%d → +%d" % [old_casting["magic_hit_bonus"], new_casting["magic_hit_bonus"]]
-	else:
-		result = {"ok": false, "reason": "invalid_casting_equipment"}
-		preview.text = "施法裝備資料異常，無法更換這件裝備。"
-	var old_exp: Dictionary = experience.multiplier(source_unit, catalog)
-	var new_exp: Dictionary = experience.multiplier(proposed, catalog)
-	if old_exp["ok"] and new_exp["ok"] and old_exp["value"] != new_exp["value"]:
-		preview.text += "\n獲得經驗  ×%d → ×%d" % [old_exp["value"], new_exp["value"]]
-	if not old_exp["ok"] or not new_exp["ok"]:
-		result = {"ok": false, "reason": "invalid_experience_equipment_effect"}
-		preview.text = "經驗資料異常，無法更換這件裝備。"
-	if stamina.input_error(source_unit, catalog) != "" or not stamina.effects(proposed, catalog)["ok"]:
-		result = {"ok": false, "reason": "invalid_stamina_equipment_effect"}
-		preview.text = "氣力資料異常，無法更換這件裝備。"
-	return result
+## A pick on a WINDOW20 row (0x438c53..0x438de7): empty hand takes the row's item (sound 399);
+## a held item goes back first-empty (sound 400). The real inventory is untouched either way.
+func _hand_row(index: int, code: int) -> void:
+	if page != "hand":
+		return
+	if held_code != 0:
+		_set_hand(-1, 0)
+		ui_sound_requested.emit("put_down")
+	elif code != 0:
+		_set_hand(index, code)
+		ui_sound_requested.emit("take_up")
+
+
+## A pick on a WINDOW30 slot (0x439903..0x4399ec): held → setter 0x436f30 (-1 keeps the hand,
+## no sound), the old piece comes into the hand (sound 400); empty hand → 0x437020 takes the
+## piece off into the hand (sound 399). Both are committed through equipment_requested.
+func _hand_slot(slot: String) -> void:
+	if page != "hand":
+		return
+	selected_slot = slot
+	if held_code != 0:
+		selected_item = str(held_code)
+		selected_index = held_index
+		equipment_requested.emit(slot, held_index, held_code)
+	elif EquipmentRules.equipped_code(source_unit["equipment"], slot) != 0:
+		selected_item = "0"
+		selected_index = -1
+		equipment_requested.emit(slot, -1, 0)
+
+
+## BattleSceneMenus after a committed change: the window stays up on the new unit and the piece
+## that came off (old code) is in the hand, found where the rules put it (first empty).
+func hand_equipment_changed(unit: Dictionary, old_code: int) -> void:
+	source_unit = unit.duplicate(true)
+	var index: int = source_unit["inventory"].rfind(old_code) if old_code != 0 else -1
+	held_index = index
+	held_code = old_code if index >= 0 else 0
+	ui_sound_requested.emit("put_down" if selected_item != "0" else "take_up")
+	_show_hand_window(operation)
+
+
+## Mode 5's 丟棄 (0x43aacb..0x43aae6): a held non-important item is cleared; an important one
+## stays in the hand.
+func _hand_drop() -> void:
+	if page != "hand" or held_code == 0:
+		return
+	if InventoryRules.discard_error(held_code, EquipmentCatalog.items()) != "":
+		return
+	selected_item = str(held_code)
+	selected_index = held_index
+	drop_requested.emit(selected_item)
+
+
+## BattleSceneMenus after a committed discard: the hand is empty, the window stays up.
+func hand_item_dropped(unit: Dictionary) -> void:
+	source_unit = unit.duplicate(true)
+	held_index = -1
+	held_code = 0
+	_show_hand_window(operation)
+
+
+func _set_hand(index: int, code: int) -> void:
+	held_index = index
+	held_code = code
+	_show_hand_window(operation)
 
 
 ## Modal input while the stack is up: right click / Esc step back one page (`cancel`)
@@ -555,9 +524,11 @@ func cancel() -> void:
 		# 0x444a5c: right click returns the held item (0x436e30) and reopens the use window (state 102).
 		_show_list(operation)
 		BattlePanelMotion.attach(self).slide_in()
-	elif page in ["drop_confirm", "equip_confirm", "equipment_slot"]:
-		_show_list(operation)
-	elif page == "inventory":
+	elif page == "hand" and held_code != 0:
+		# 0x438868: right click puts the held item back (first empty) and keeps the window.
+		_set_hand(-1, 0)
+	elif page in ["inventory", "hand"]:
+		# 0x43896b → root 3 → parent 76→77, 0x444c19 writes 3: the item sub-menu reopens.
 		_show_commands()
 	else:
 		hide()

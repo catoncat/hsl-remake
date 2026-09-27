@@ -68,6 +68,7 @@ func build_panels() -> void:
 	runtime.item_panel.give_finished.connect(_finish_give_session)
 	runtime.item_panel.drop_requested.connect(discard_inventory_item)
 	runtime.item_panel.equipment_requested.connect(change_equipment)
+	runtime.item_panel.ui_sound_requested.connect(runtime.play_ui_sound)
 	runtime.growth_panel = preload("res://game/battle/scene/BattleGrowthPanel.gd").new()
 	ui.add_child(runtime.growth_panel)
 	runtime.growth_panel.allocation_requested.connect(allocate_growth)
@@ -379,13 +380,14 @@ func use_inventory_item(item_code: String, target_id: String) -> void:
 func discard_inventory_item(item_code: String) -> void:
 	if not runtime.item_panel.visible or runtime.item_panel.selected_item != item_code:
 		return
-	if runtime.item_panel.operation != "drop" or runtime.item_panel.page != "drop_confirm":
+	if runtime.item_panel.operation != "drop" or runtime.item_panel.page != "hand" or runtime.item_panel.held_code != int(item_code):
 		return
 	var next := BattlePlayLoop.discard_item(runtime.play_loop, item_code, runtime.item_panel.selected_index)
 	if next == runtime.play_loop:
 		return
 	runtime.apply_loop(next, "discard_item")
-	runtime.item_panel.hide()
+	# The mode-5 window stays up with an empty hand (0x43aae1 only clears [0x4c1ce4]).
+	runtime.item_panel.hand_item_dropped(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id))
 	runtime.play_ui_sound("confirm")
 	rebuild_action_menu_buttons()
 
@@ -438,16 +440,18 @@ func _finish_give_session(revision: int) -> void:
 
 
 func change_equipment(slot: String, inventory_index: int, item_code: int) -> void:
-	if not runtime.item_panel.visible or runtime.item_panel.operation != "equip" or runtime.item_panel.page != "equip_confirm":
+	if not runtime.item_panel.visible or runtime.item_panel.operation not in ["equip", "drop"] or runtime.item_panel.page != "hand":
 		return
 	if runtime.item_panel.selected_slot != slot or runtime.item_panel.selected_index != inventory_index or int(runtime.item_panel.selected_item) != item_code:
 		return
+	var old_code := BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)["equipment"], slot)
 	var next := BattlePlayLoop.change_equipment(runtime.play_loop, slot, inventory_index, item_code)
 	if next == runtime.play_loop:
+		# 0x436f30 returned -1: the hand keeps its item, no sound.
 		return
 	runtime.apply_loop(next, "change_equipment")
-	runtime.item_panel.hide()
-	runtime.play_ui_sound("confirm")
+	# The mode-4／5 window stays up; the piece that came off is in the hand (0x439957／0x4399a0).
+	runtime.item_panel.hand_equipment_changed(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), old_code)
 	rebuild_action_menu_buttons()
 
 

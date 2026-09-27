@@ -5,13 +5,15 @@ extends Control
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05
 ##     (frame_006 name start after the colon and per-column icon anchors)
 ##   layout: resource-derived content/generated/hsl/text/protected_words.json
-##   layout: remake-invented (355×70 detail and 330×125 confirm scroll areas)
+##   layout: remake-invented (355×70 detail scroll area)
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
-##   strings: remake-invented (detail／confirm captions)
+##   strings: remake-invented (detail captions)
 signal slot_requested(slot: String)
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
 var interactive := false
+## Mode 4／5 window (0x439903): a pick on an empty slot also counts (it takes the held item).
+var accepts_empty_slots := false
 var slot_controls: Dictionary = {}
 var labels: Dictionary = {}
 var icons: Dictionary = {}
@@ -83,7 +85,7 @@ func _ready() -> void:
 		area.mouse_entered.connect(_select.bind(slot))
 		area.mouse_exited.connect(_deselect.bind(slot))
 		area.gui_input.connect(func(event):
-			if interactive and slot_items.has(slot) and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			if interactive and (accepts_empty_slots or slot_items.has(slot)) and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 				slot_requested.emit(slot)
 				accept_event())
 		var icon := TextureRect.new()

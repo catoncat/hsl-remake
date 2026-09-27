@@ -3,11 +3,11 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 99,
-    "sources": 530,
+    "items": 100,
+    "sources": 531,
     "sources_by_kind": {
       "provenance": 217,
-      "sentence": 142,
+      "sentence": 143,
       "scope": 73,
       "matrix": 85,
       "video": 13
@@ -15,12 +15,12 @@
     "layout_timing_modules": 59,
     "items_by_original_status": {
       "read_complete": 15,
-      "read_partial": 58,
+      "read_partial": 59,
       "unread": 9,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 19,
+      "every_battle": 20,
       "some_levels": 37,
       "rare": 38,
       "invisible": 5
@@ -40,7 +40,7 @@
       "特写与施法演出": 10,
       "重制新增（原版没有）": 16,
       "镜头": 2,
-      "面板与界面": 10,
+      "面板与界面": 11,
       "音频": 3,
       "飘字与数字": 4
     },
@@ -59,6 +59,7 @@
     "npc-level-policy",
     "turn-queue-semantics",
     "shop-hand-cursor",
+    "battle-equip-drop-hand",
     "bitmap-font",
     "cast-lead-compositing",
     "effect-origin",
@@ -67,8 +68,7 @@
     "move-path-overlay",
     "panel-captions",
     "status-page-extras",
-    "wait-cue",
-    "ui-layout-readings"
+    "wait-cue"
   ],
   "items": [
     {
@@ -301,6 +301,28 @@
       ]
     },
     {
+      "id": "battle-equip-drop-hand",
+      "difference": "战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN：拿起、点槽装上旧装备进手、空手卸下进手、丟棄钮只清非重要持物、右键先放回再关窗）；剩重制读法：持物是草稿，提交前背包不删格；满包时不能把卸下的装备拿在手上（规则拒绝）；满包持物点格的互换顺序未做；持物移上装备板时左窗改显属性未做；窗内「返回」钮与「道具 n／8」为共用排布",
+      "original": "state7 0x444185／state8 0x4441ac → 0x43b4e0 跳表 0x43bef4 mode4／5 同进 0x43b7fd，mode5 另建丟棄钮 0x43b280(0,0) 中心 (285,387)；背包格 0x438c84..0x438de7、装备板 0x43993e／0x439998、丟棄 0x43aacb 已读；装备板判定旗标 0x40000 来源未追",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_item_actions.md",
+        "docs/evidence_packets/static_reverse/original_inventory_equipment.md"
+      ],
+      "remake": "BattleItemPanel 持物窗（held_index／held_code 草稿），装上／卸下／丢弃各提交一次 PlayLoop 命令，提交后窗不关",
+      "remake_code": [
+        "game/battle/scene/BattleItemPanel.gd",
+        "game/battle/scene/BattleSceneMenus.gd",
+        "game/battle/scene/BattleEquipmentView.gd"
+      ],
+      "original_status": "read_partial",
+      "visibility": "every_battle",
+      "effort": "S",
+      "category": "面板与界面",
+      "sources": [
+        "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#de46f1c9bf"
+      ]
+    },
+    {
       "id": "bitmap-font",
       "difference": "界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值；技能页名字墨迹对 Wine 帧偏移 0／0、宽 71＝原版）。AI 施法名字幕也换 FONT.24（lane UIFIX：0x43e110／0x43e1c0 的字体是 [0x4c1ae0]，对录像 14 源帧 9987 逐像素一致）。剩：重制各处字号归到原版两面（≤16→FONT.15、≥17→FONT.24）是重制定的，个别界面的字行位置未逐一对原版",
       "original": "位图字库已解码（简体字形在繁体码位）：全角 24×24／16×15、半角 12×24／8×15（FONT.15 半角下移 2 px），前进＝格宽、无额外字距（0x42f230／0x42f308／0x4608e4）；AI 施法名字幕 0x43e110／0x43e1c0 用 [0x4c1ae0]＝FONT.24",
@@ -513,7 +535,7 @@
     },
     {
       "id": "ui-layout-readings",
-      "difference": "多个面板的尺寸、排列与样式是重制读法：按钮与标签样式、面板绘制顺序与锚定、装备页说明／确认滚动区、道具目标列表",
+      "difference": "多个面板的尺寸、排列与样式是重制读法：按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区、道具目标列表",
       "original": "原窗体 SHP 已导入，部分面板原版录屏未覆盖",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
