@@ -144,7 +144,7 @@ Raw 发现只有压缩成可复跑工具输出、imported/generated data 或 cur
 ### 安全底线
 
 - 不用 destructive reset 处理未知改动；不改别人正在认领的函数／改动块。
-- **边提交边 push**（用户 2026-09-27："边做边提交，不需要做完验证完才提交；边提交边 push"）：每个可验证步骤单独提交，不等全部验证完；lane 每次提交后 `git push -u origin HEAD` 推自己的分支；合并树 publish 后由脚本自动推 main／presentation-line／pipeline-line，cleanup 顺手删远端 lane 分支。仅 hsl-fork 的 origin；公开仓库 hsl-remake 仍按导出流程同步。
+- **边提交边 push**（用户 2026-09-27："边做边提交，不需要做完验证完才提交；边提交边 push"）：每个可验证步骤单独提交，不等全部验证完；lane 每次提交后 `git push -u origin HEAD` 推自己的分支；合并树 publish 后由脚本自动推 main／presentation-line／pipeline-line，cleanup 顺手删远端 lane 分支。publish 推 main 后 `tools/oss_sync.sh` 自动把公开仓库 hsl-remake 同步到 main（导出→复扫→提交→推送），不再手动同步。
 - 结束进程只按自己记录的 PID（`kill <pid>`），不用 `pkill`／`killall`／按名字匹配：macOS `pkill -f X -U 501` 把模式之后的 `-U`、`501` 当成额外模式，会 SIGTERM 命令行含 501 的一切进程——2026-09-24 一条 lane 因此误杀了另外两条 lane 的 runner。
 - 不要用 Steam 文件覆盖原作目录；Steam 登录只由用户本人操作。
 - 不得用长时间无监督 playthrough 占用用户鼠标键盘，也不得截整个桌面。

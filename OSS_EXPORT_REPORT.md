@@ -1,16 +1,16 @@
 # OSS export report
 
-Source: private repository `main` = `01868163217acbe8112fc9368306d70e7de64e44` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `3f4d592e6de76fa4681590e364a4af321cb0d088` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
-- written: **1773 files, 54.5 MB**
+- written: **1774 files, 54.5 MB**
 - dropped: **19271 files, 733.4 MB**
-- processed (home path / author e-mail / public .gitignore rules): 19 files
+- processed (home path / author e-mail / public .gitignore rules): 20 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1291 | 19.9 |
+| B | 1292 | 19.9 |
 | C | 482 | 34.6 |
 
 ## Dropped (by reason)
@@ -53,6 +53,7 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 ## Processed files
 
 - `.gitignore`
+- `tools/oss_sync.sh`
 - `docs/OPTIONS.md`
 - `docs/PROVENANCE.md`
 - `docs/evidence_packets/resource_inventory/original_movies.md`

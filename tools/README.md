@@ -200,6 +200,7 @@ python3 tools/hsl_payload_inspector.py \
 | `hsl_docs_check.py` | 文档显式链接、图片、标题锚点 | `python3 tools/hsl_docs_check.py` |
 | 任务 `docs:tool_references` | 文档代码里的工具路径、模块、任务名都存在 | `python3 tools/hsl.py check docs:tool_references` |
 | `oss_export.sh` | 组装公开仓库树（不推送） | `tools/oss_export.sh OUT_DIR [REF]` |
+| `oss_sync.sh` | 公开仓库跟随 main：导出→复扫（个人路径、公开截图外的媒体）→提交→推送；`lane_merge.sh publish` 推 main 后自动调用 | `tools/oss_sync.sh [REF]`（`HSL_OSS_PUBLIC_DIR` 指公开仓库检出） |
 | `oss_screenshots.py` | 公开导出的截图计划与链接改写 | `python3 tools/oss_screenshots.py summary` |
 | `oss_audit_stats.py` | 开源审计：逐文件分类统计 | `python3 tools/oss_audit_stats.py [REF] [--migration]` |
 
