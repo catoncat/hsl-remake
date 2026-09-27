@@ -29,22 +29,18 @@ func run() -> void:
 	_test_core_combat_rules_hit_and_damage_packet()
 	_test_core_turn_queue_speed_sort_and_bcmd_icons()
 	_test_real_equal_speed_pairs_follow_registration_slots()
-	_test_first_battle_fixture_contract()
-	_test_first_battle_scenario_contract()
-	_test_battle_camera_controller_contract()
-	_test_shared_battle_scenario_normalization()
-	_test_second_battle_rule_adapter_seed()
 	_test_second_battle_play_loop_bootstrap()
 	_test_initial_npc_turns()
-	_test_battle_scene_play_loop_mechanics()
 	_test_live_hit_resolution()
-	_test_first_battle_live_handoff()
 	_test_live_weapon_ranges()
 	_test_live_counter_exchange()
 	_test_experience_and_level_up()
 	_test_job_up_rule_check()
 	_test_battle_actor_roles_gate_player_control_and_targets()
 	_test_project_uses_640x480_viewport()
+	run_range_propagation()
+	run_player_mode_sides()
+	run_random_stream()
 
 
 func _has_coord(coords: Array, coord: Vector2i) -> bool:
@@ -219,91 +215,6 @@ func _test_real_equal_speed_pairs_follow_registration_slots() -> void:
 	_assert_eq(equal_speed_npc_inversions(sixth), [], "level 6 opening: equal-speed NPCs act in registration (creation) order")
 
 
-func _test_shared_battle_scenario_normalization() -> void:
-	var synthetic := {
-		"resources": {"terrain": "res://example.json"},
-		"playable_units": [
-			{"id": "hero", "coord": [3, 4], "move_point": 6, "live_speed": 9},
-			"not-a-unit",
-		],
-		"view": {
-			"logical_viewport": [800, 600],
-			"grid_projection": {"origin": [8, 12], "cell_size": [24, 20]},
-		},
-		"commands": {"has_magic": true},
-	}
-	_assert_eq(BattleScenario.resource_path(synthetic, "terrain"), "res://example.json", "shared scenario loader should expose resource paths without first-battle semantics")
-	var units: Array = BattleScenario.units(synthetic)
-	_assert_eq(units.size(), 1, "shared scenario normalization should ignore malformed roster entries")
-	_assert_eq((units[0] as Dictionary).get("grid_coord"), Vector2i(3, 4), "shared scenario normalization should normalize grid coordinates")
-	_assert_eq((units[0] as Dictionary).get("move_point"), 6, "shared scenario retains the live source movement budget")
-	_assert_eq((units[0] as Dictionary).get("speed"), 9, "shared scenario normalization should map live speed")
-	_assert_eq(BattleScenario.logical_viewport_size(synthetic), Vector2i(800, 600), "shared scenario normalization should not assume first-battle viewport size")
-	var projection: Dictionary = BattleScenario.grid_projection(synthetic)
-	_assert_eq(projection.get("origin"), Vector2(8, 12), "shared scenario normalization should preserve arbitrary projection origins")
-	_assert_eq(projection.get("cell_size"), Vector2(24, 20), "shared scenario normalization should preserve arbitrary cell sizes")
-	_assert_eq(BattleScenario.command_flags(synthetic), {"has_magic": true, "has_special": false}, "shared scenario command flags should normalize absent values")
-
-
-func _test_second_battle_rule_adapter_seed() -> void:
-	var seed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/chapter01/battle052_seed.json"))
-	_assert_true(typeof(seed) == TYPE_DICTIONARY, "tracked battle-52 seed should parse")
-	if typeof(seed) != TYPE_DICTIONARY:
-		return
-	var rules := WinfailScenarioRules.rules_from_seed(seed)
-	_assert_eq(int(rules.get("source_level", 0)), 52, "battle 52 rules come from the level-52 seed")
-	_assert_eq(rules.get("unsupported_tokens", []), [], "WINFAIL052 uses only supported tokens")
-	var win: Dictionary = rules["statuses"]["win"][0]
-	var fail: Dictionary = rules["statuses"]["fail"][0]
-	_assert_eq(win["conditions"][0]["args"], ["1", "SID_ENEMY025"], "battle 52 win rule should preserve the source boss SID")
-	_assert_eq(fail["conditions"][0]["args"], ["1", "SID_PLAYER0"], "battle 52 fail rule should preserve the source player SID")
-	_assert_eq(WinfailCompiler.first_next_level_event(rules), [58, 58], "battle 52 win rule should preserve next level/event")
-	var event0: Dictionary = rules["statuses"]["event"][0]
-	var event1: Dictionary = rules["statuses"]["event"][1]
-	_assert_eq(event0["conditions"][0]["args"], ["SID_PLAYER0", "SID_ENEMY025"], "battle 52 event 0 should preserve its attacked pair")
-	_assert_eq(event1["conditions"][0]["args"], ["SID_ENEMY021", "2"], "battle 52 event 1 should preserve its reinforcement class SID and enemy-count threshold")
-	_assert_eq((event1["inserts"] as Array).size(), 4, "battle 52 event 1 should preserve its four scripted inserts")
-	_assert_eq(int((seed.get("scripts", {}).get("story", {}).get("action_counts", {}) as Dictionary).get("actInsertObject", 0)), 8, "battle 52 opening should preserve eight active scripted object inserts")
-
-	var scenario := {
-		"rule_adapter": "winfail",
-		"scenario_rules": {"reinforcement_class_id": "Enemy021"},
-		"opening": {"actor_bindings": {"SID_PLAYER0/1": {"unit_id": "leonard"}, "SID_ENEMY025/1": {"unit_id": "emperor"}}},
-	}
-	var battle := {
-		"rule_adapter": "winfail",
-		"scenario_ok": true,
-		"player_unit_id": "leonard",
-		"units": [
-			{"id": "leonard", "hp": 30, "defeated": false, "class_id": "Player001"},
-			{"id": "emperor", "hp": 30, "defeated": false, "class_id": "Enemy025"},
-			{"id": "enemy021_1", "hp": 20, "defeated": false, "class_id": "Enemy021"},
-		],
-		"last_attack": {},
-	}
-	battle = BattleScenarioRuleAdapter.initialize_script_state(battle, scenario, seed)
-	_assert_eq(battle["winfail_runtime"]["token_resolution"]["SID_ENEMY025"]["unit_ids"], ["emperor"], "the interpreter should map the source boss token to the bound scenario unit id")
-	battle = BattleScenarioRuleAdapter.run_event_hooks(battle)
-	_assert_eq(BattleScenarioRuleAdapter.reinforcement_deficits(battle), {"Enemy021": 4}, "the interpreter should preserve the four-insert reinforcement event when the threshold is reached")
-	_assert_eq(BattleScenarioRuleAdapter.victory_state(battle), {}, "battle 52 should continue while player and boss live")
-	battle["last_attack"] = {"attacker_id": "leonard", "defender_id": "emperor"}
-	battle = BattleScenarioRuleAdapter.run_event_hooks(battle, true)
-	_assert_true((battle.get("event_log", []) as Array).has("event_0"), "battle 52 attack event should fire only through the adapter seam")
-	for unit in battle["units"]:
-		if unit["id"] == "emperor":
-			unit["defeated"] = true
-	_assert_eq(BattleScenarioRuleAdapter.victory_state(battle), BattleOutcome.VICTORY_BOSS, "battle 52 should win when its mapped boss is defeated")
-	for unit in battle["units"]:
-		if unit["id"] == "leonard":
-			unit["defeated"] = true
-	_assert_eq(BattleScenarioRuleAdapter.victory_state(battle), BattleOutcome.DEFEAT_FALLEN, "player defeat should take precedence if both terminal actors are down")
-
-	_assert_eq(BattleScenarioRuleAdapter.adapter_id({"schema": "hsl_first_battle.v1"}), "", "the retired first_battle adapter has no schema default: a scenario names its rule_adapter or fails")
-	_assert_eq(BattleScenarioRuleAdapter.initialize_script_state({"rule_adapter": "first_battle"}, {"rule_adapter": "first_battle"}, seed).get("scenario_error", ""), "unsupported_rule_adapter", "the retired first_battle adapter id fails explicitly")
-	_assert_eq(BattlePlayLoop.create().get("scenario_error", ""), "missing_scenario", "create() has no default battle to fall back to")
-	_assert_eq(BattleScenarioRuleAdapter.initialize_script_state({"rule_adapter": "second_battle"}, {"rule_adapter": "second_battle"}, seed).get("scenario_error", ""), "unsupported_rule_adapter", "the retired second_battle adapter id fails explicitly")
-
-
 func _test_second_battle_play_loop_bootstrap() -> void:
 	var scenario := BattleScenario.load_file("res://content/battles/battle_052.json", "hsl_level_battle.v1")
 	_assert_true(bool(scenario.get("ok", false)), "second-battle scenario should load through the shared scenario boundary")
@@ -326,100 +237,6 @@ func _test_second_battle_play_loop_bootstrap() -> void:
 		if ai_order.back() == "emperor025": break
 	_assert_eq(ai_order, ["enemy069_1", "enemy069_2", "emperor025"], "the level-52 boss should execute through the shared AI turn path")
 	_assert_true(not BattleOutcome.decided(loop), "one bounded level-52 AI step should not fabricate a terminal result")
-
-
-func _test_battle_camera_controller_contract() -> void:
-	var config := MapSceneConfig.new()
-	config.world_size = Vector2i(768, 768)
-	config.logical_viewport_size = Vector2i(640, 480)
-	config.grid_projection = {"origin": Vector2.ZERO, "cell_size": Vector2(32.0, 32.0)}
-	var camera := Camera2D.new()
-	var controller = BattleCameraController.create(camera, config, Vector2i(640, 480))
-	_assert_eq(controller.grid_cell_center_world(Vector2i(15, 17)), Vector2(496, 560), "camera controller should share the map grid-center contract")
-	_assert_true(controller.center_on_grid(Vector2i(15, 17)), "camera controller should center a valid map cell")
-	_assert_eq(camera.position, Vector2(448, 528), "camera center should clamp against the logical viewport and world bounds")
-	_assert_eq(controller.world_to_logical(Vector2(496, 560)), Vector2(368, 272), "world-to-logical should use the camera center")
-	_assert_eq(controller.logical_to_world(Vector2(368, 272)), Vector2(496, 560), "logical-to-world should invert world-to-logical")
-	_assert_eq(controller.grid_at_logical(Vector2(368, 272)), Vector2i(15, 17), "logical hit testing should resolve through the shared projection")
-	_assert_eq(controller.viewport_to_logical(Vector2(640, 480), Vector2(1280, 960)), Vector2(320, 240), "viewport scaling should preserve logical coordinates")
-	_assert_eq(controller.logical_to_viewport(Vector2(320, 240), Vector2(1280, 960)), Vector2(640, 480), "logical scaling should invert viewport conversion")
-	_assert_true(controller.pan(Vector2.UP, 0.25, 240.0), "camera controller should pan when movement is available")
-	_assert_eq(camera.position, Vector2(448, 468), "camera controller should preserve the existing 240px/s pan contract")
-	camera.free()
-
-
-func _test_battle_scene_play_loop_mechanics() -> void:
-	var terrain: Dictionary = WrdTerrainTiles.load_tiles()
-	_assert_eq(terrain.get("ok", false), true, "level051 terrain tiles should load")
-	_assert_eq(terrain.get("map_size", Vector2i.ZERO), Vector2i(24, 24), "level051 should be 24x24")
-	_assert_eq(int(terrain.get("blocking_count", 0)), 123, "level051 should report 123 blocking cells")
-
-	var loop: Dictionary = _player_turn_loop()
-	_assert_eq(loop.get("schema", ""), "hsl_first_scene_play_loop.v1", "play loop should expose stable schema")
-	_assert_eq(loop.get("scenario_schema", ""), BattleFixture.SCHEMA, "play loop should load the fixture scenario schema")
-	_assert_eq(loop.get("scenario_path", ""), BattleFixture.PATH, "play loop should identify its fixture scenario path")
-	_assert_eq(loop.get("terrain_ok", false), true, "play loop should load WRD terrain")
-	_assert_eq(loop.get("formula_source", ""), "core_logic", "play loop should default to core combat formulas")
-	var summary: Dictionary = BattlePlayLoop.summary(loop)
-	_assert_eq(summary.get("current_actor_id", ""), "leonard", "This command fixture starts at Leonard’s turn")
-
-	loop = BattlePlayLoop.select_player_unit(loop, "leonard")
-	_assert_eq(loop.get("interaction", ""), "action_menu", "select Leonard should open action menu")
-	var menu_ids: Array = BattlePlayLoop.summary(loop).get("command_ids", [])
-	_assert_eq(menu_ids, ["move", "attack", "item", "wait", "status", "special"], "product action menu should expose only implemented move/attack/wait/status commands")
-	var unsupported_reject: Dictionary = BattlePlayLoop.choose_command(loop, "steal").get("last_command_reject", {})
-	_assert_eq(unsupported_reject.get("reason", ""), "not_implemented", "unimplemented Steal calls should reject honestly; Magic now has a source-owned public path")
-
-	var cells: Array = BattlePlayLoop.movement_cells(loop, "leonard")
-	_assert_true(cells.size() > 0, "Leonard should have WRD-reachable cells")
-	_assert_true(cells.size() < 61, "WRD blocking should reduce Manhattan diamond")
-	var target: Vector2i = cells[0]
-	loop = BattlePlayLoop.choose_command(loop, "move")
-	loop = BattlePlayLoop.move_unit_to(loop, target)
-	_assert_eq(bool(loop.get("moved_this_action", false)), true, "move should mark moved_this_action")
-	_assert_eq((_unit_coord(loop, "leonard")), target, "Leonard coord should update")
-
-	# Place an enemy adjacent for attack path.
-	_force_unit_coord(loop, "enemy021_1", target + Vector2i(1, 0))
-	loop = BattlePlayLoop.choose_command(loop, "attack")
-	_assert_eq(loop.get("interaction", ""), "attack_select", "attack command should enter attack select")
-	loop = BattlePlayLoop.attack_target(loop, "enemy021_1", Callable(self, "_stable_half_rng"))
-	_assert_eq(bool(loop.get("attacked_this_action", false)), true, "attack should mark attacked_this_action")
-	_assert_eq(str((loop.get("last_attack", {}) as Dictionary).get("formula_source", "")), "core_logic", "attack should use core_logic")
-	_assert_true(int((loop.get("last_attack", {}) as Dictionary).get("damage", 0)) > 0, "core attack should deal damage")
-
-	# Out-of-range reject should stay in attack_select with reason.
-	var reject_loop: Dictionary = _player_turn_loop()
-	reject_loop = BattlePlayLoop.select_player_unit(reject_loop, "leonard")
-	reject_loop = BattlePlayLoop.choose_command(reject_loop, "attack")
-	reject_loop = BattlePlayLoop.attack_target(reject_loop, "enemy021_1")
-	# With playable spawn, enemy may already be in range after create — force far.
-	reject_loop = _player_turn_loop()
-	reject_loop = BattlePlayLoop.select_player_unit(reject_loop, "leonard")
-	_force_unit_coord(reject_loop, "enemy021_1", Vector2i(0, 0))
-	reject_loop = BattlePlayLoop.choose_command(reject_loop, "attack")
-	reject_loop = BattlePlayLoop.attack_target(reject_loop, "enemy021_1")
-	_assert_eq(bool(reject_loop.get("attacked_this_action", false)), false, "out-of-range attack should not consume")
-	_assert_eq(str((reject_loop.get("last_attack_reject", {}) as Dictionary).get("reason", "")), "out_of_range", "out-of-range should report reject reason")
-	_assert_eq(reject_loop.get("interaction", ""), "attack_select", "failed attack should remain in attack_select")
-
-	# Instant commit_wait for headless; choose_command(wait) only begins AI resolution.
-	loop = BattlePlayLoop.commit_wait(loop, Callable(self, "_stable_half_rng"))
-	var after: Dictionary = BattlePlayLoop.summary(loop)
-	_assert_eq(after.get("current_actor_id", ""), "leonard", "after AI turns control should return to Leonard")
-	_assert_true(int(after.get("last_ai_action_count", 0)) >= 1, "wait should process non-player actors")
-	_assert_eq(after.get("interaction", ""), "action_menu", "Leonard should regain action menu")
-
-	var stepped: Dictionary = _player_turn_loop()
-	stepped = BattlePlayLoop.select_player_unit(stepped, "leonard")
-	stepped = BattlePlayLoop.choose_command(stepped, "wait")
-	_assert_eq(stepped.get("interaction", ""), "ai_resolving", "choose wait should begin stepped AI resolution")
-	var guard := 0
-	while str(stepped.get("interaction", "")) == "ai_resolving" and guard < 16:
-		stepped = BattlePlayLoop.step_ai_turn(stepped, Callable(self, "_stable_half_rng"))
-		guard += 1
-	_assert_eq(stepped.get("interaction", ""), "action_menu", "stepped AI should return to Leonard menu")
-	_assert_true(int(BattlePlayLoop.summary(stepped).get("last_ai_action_count", 0)) >= 1, "stepped AI should record actions")
 
 
 func _test_live_hit_resolution() -> void:
@@ -497,125 +314,6 @@ func _test_live_hit_resolution() -> void:
 
 func _last_roll_rng(n: int) -> int:
 	return n - 1
-
-
-func _test_first_battle_fixture_contract() -> void:
-	# The reviewed level-51 formation stays a pure-loop fixture (development_battle):
-	# same roster, positions and unit ids the mechanics suites were written against.
-	var scenario: Dictionary = BattleFixture.scenario()
-	_assert_true(bool(scenario.get("ok", false)), "first-battle fixture should load")
-	_assert_eq(scenario.get("schema", ""), BattleFixture.SCHEMA, "the fixture is a development battle, not a playable scenario")
-	_assert_eq(BattleScenarioRuleAdapter.adapter_id(scenario), BattleScenarioRuleAdapter.DEVELOPMENT, "the fixture runs the development objectives")
-	var units: Array = BattleScenario.units(scenario)
-	_assert_eq(units.size(), 12, "fixture should include every level-51 actor placement")
-	_assert_eq(str((units[0] as Dictionary).get("id", "")), "enemy021_1", "fixture should preserve source EVEF order")
-	_assert_eq((units.filter(func(u): return u["id"] == "leonard")[0] as Dictionary).get("coord", Vector2i.ZERO), Vector2i(15, 17), "Leonard should stand at his script-derived opening destination")
-	var loop := BattleFixture.loop()
-	_assert_true(bool(loop.get("scenario_ok", false)), "fixture loop should create: " + str(loop.get("scenario_error", "")))
-	_assert_eq(loop.get("objective_phase"), "escape", "the fixture opens in its escape objective")
-	_assert_eq(loop.get("escape_zone"), [Vector2i(14, 10)], "the fixture keeps the legacy provisional escape cell")
-
-
-func _test_first_battle_scenario_contract() -> void:
-	# The playable first battle is assembled by level_battle:51 and interpreted by the
-	# same winfail rules as every other level: same roster as the reviewed fixture,
-	# the arrival cell derived from WINFAIL051 (267,209).
-	var scenario := BattleScenario.load_file("res://content/battles/battle_051.json")
-	_assert_true(bool(scenario.get("ok", false)), "battle_051 should load")
-	_assert_eq(scenario.get("schema", ""), "hsl_level_battle.v1", "the first battle uses the generic level battle schema")
-	_assert_eq(int(scenario.get("level", 0)), 51, "the first battle is level 51")
-	_assert_eq(BattleScenarioRuleAdapter.adapter_id(scenario), BattleScenarioRuleAdapter.WINFAIL, "the first battle runs the winfail interpreter")
-	_assert_eq(scenario.get("player_unit_id", ""), "leonard", "level 51 names Leonard as the controlled unit")
-	var units: Array = BattleScenario.units(scenario)
-	var fixture_units: Array = BattleScenario.units(BattleFixture.scenario())
-	_assert_eq(units.size(), 12, "level 51 should field every EVEF placement")
-	for index in range(units.size()):
-		var unit: Dictionary = units[index]
-		var reviewed: Dictionary = fixture_units[index]
-		_assert_eq([unit["actor_id"], unit["battle_actor_role"], unit["grid_coord"], unit["hp"]], [reviewed["actor_id"], reviewed["battle_actor_role"], reviewed["grid_coord"], reviewed["hp"]], "level 51 unit %d matches the reviewed formation" % index)
-	_assert_eq(BattleScenario.logical_viewport_size(scenario), Vector2i(640, 480), "scenario should preserve the 640x480 logical viewport")
-	var projection: Dictionary = BattleScenario.grid_projection(scenario)
-	_assert_eq(projection.get("origin", Vector2.ZERO), Vector2.ZERO, "original actor initialization uses the map grid without a display offset")
-	_assert_eq(projection.get("cell_size", Vector2.ZERO), Vector2(32.0, 32.0), "scenario should own the grid cell size")
-	_assert_true(BattleScenario.resource_path(scenario, "terrain").ends_with("level051_terrain.json"), "scenario should point to tracked WRD terrain")
-	_assert_eq((scenario.get("scenario_rules", {}) as Dictionary).get("script_fallback", {}).get("escape_zone"), [[8.0, 6.0]], "the arrival cell comes from WINFAIL051 actCheckPlayerArrivePos 267,209")
-	_assert_eq((scenario.get("scenario_rules", {}) as Dictionary).get("status_timelines", {}).keys(), ["win_0", "win_1", "fail_0", "event_0", "event_1", "event_2", "event_3"], "every WINFAIL051 status compiles to a cutscene timeline")
-
-
-func _first_battle_hold_loop() -> Dictionary:
-	# The playable level 51 at Leonard's first turn with every NPC pinned (move 0, no
-	# attack): the winfail counts stay at 5×021 / 2×026 so no reinforcement event fires
-	# and the round hooks alone drive the script.
-	var scenario := BattleScenario.load_file("res://content/battles/battle_051.json")
-	var roster: Array = BattleScenario.units(scenario)
-	for unit in roster:
-		if str(unit.get("battle_actor_role", "")) != BattlePlayLoop.ROLE_PLAYER:
-			unit["move_point"] = 0
-			unit["base_move_point"] = 0
-			unit["no_attack"] = true
-	var loop := _player_turn_loop(roster, "", scenario)
-	return BattlePlayLoop.select_player_unit(loop, "leonard")
-
-
-func _test_first_battle_live_handoff() -> void:
-	var loop := _first_battle_hold_loop()
-	_assert_true(bool(loop.get("scenario_ok", false)), "level 51 should create through the winfail adapter: " + str(loop.get("scenario_error", "")))
-	_assert_eq(loop.get("rule_adapter"), "winfail", "level 51 rules come from the interpreter")
-	_assert_eq(loop.get("event_statuses"), [0, 1, 2, 3], "STORY051 arms the four event statuses")
-	_assert_eq(loop.get("fail_statuses"), [0], "STORY051 arms the fail status")
-	_assert_eq(loop.get("win_statuses"), [], "no win status is armed before the round-6 event")
-	_assert_eq(loop.get("objective_phase"), "hold", "the first battle opens in the hold phase")
-	for turn in range(2, 7):
-		loop = BattlePlayLoop.commit_wait(loop, Callable(self, "_stable_half_rng"))
-		_assert_eq(loop.get("turn"), turn, "one completed queue traversal advances one round")
-		_assert_eq(loop.get("objective_phase"), "hold" if turn < 6 else "escape", "only round six enables retreat")
-		_assert_eq((loop.get("event_log", []) as Array).has("event_2"), turn >= 4, "round four fires the waiting-lines event")
-	_assert_eq(loop.get("win_statuses"), [0, 1], "escape and enemy-clear hooks activate together")
-	_assert_eq(loop.get("event_statuses"), [], "the switch deletes the reinforcement events and the fired round events disarm themselves")
-	_assert_eq(loop.get("escape_zone"), [Vector2i(8, 6)], "the gate cell is the escape zone")
-	var departed: Array = (loop.get("winfail_runtime", {}) as Dictionary).get("departed_unit_ids", [])
-	_assert_eq(departed, ["actor026_1", "actor021_1", "Enemy021_script_1_2"], "one mage, one soldier and the messenger object leave through the gate")
-	var event_messages: Array = BattleScenarioRuleAdapter.story_dialogue_messages(loop).map(func(item): return str(item["message_id"]))
-	_assert_eq(event_messages, ["396", "397", "368", "369"], "round 4 and round 6 speak the source lines (companions alive)")
-	var fired_keys: Array = (loop.get("winfail_runtime", {}) as Dictionary).get("fired", []).map(func(item): return str(item["key"]))
-	_assert_eq(fired_keys, ["event_2", "event_3"], "the round hooks fire the two round-check events once each")
-	loop = BattlePlayLoop.commit_wait(loop, Callable(self, "_stable_half_rng"))
-	_assert_eq((loop.get("winfail_runtime", {}) as Dictionary).get("fired", []).size(), 2, "script notifications must not repeat on later rounds")
-	# Arrival is only committed by Wait/Attack; cancelling a tentative move cannot win.
-	_force_unit_coord(loop, "leonard", Vector2i(8, 7))
-	loop = BattlePlayLoop.choose_command(loop, "move")
-	loop = BattlePlayLoop.move_unit_to(loop, Vector2i(8, 6))
-	_assert_eq(loop.get("battle_outcome"), {}, "tentative arrival must remain cancellable")
-	loop = BattlePlayLoop.cancel_pending_move(loop)
-	_assert_eq(_unit_coord(loop, "leonard"), Vector2i(8, 7), "cancel restores pre-arrival coordinate")
-	loop = BattlePlayLoop.choose_command(loop, "move")
-	loop = BattlePlayLoop.move_unit_to(loop, Vector2i(8, 6))
-	loop = BattlePlayLoop.commit_wait(loop)
-	_assert_eq(loop.get("battle_outcome"), BattleOutcome.VICTORY_ESCAPE, "committed Leonard arrival wins before any AI action")
-	_assert_eq(loop.get("interaction"), "battle_result", "victory is terminal")
-	_assert_eq(loop.get("next_level_event"), [52, 52], "WINFAIL051 win 1 hands the campaign to level 52")
-	_assert_eq(BattlePlayLoop.select_player_unit(loop, "leonard"), loop, "selection cannot reopen a finished battle")
-	_assert_eq(BattlePlayLoop.commit_wait(loop), loop, "waiting cannot advance a finished battle")
-	var clear := _first_battle_hold_loop()
-	for unit in clear["units"]:
-		if str(unit.get("battle_actor_role", "")) == BattlePlayLoop.ROLE_ENEMY:
-			BattlePlayLoop._set_unit_defeated(clear, str(unit["id"]), true)
-	clear = BattlePlayLoop.commit_wait(clear, Callable(self, "_stable_half_rng"))
-	_assert_eq(clear.get("battle_outcome"), {}, "clearing enemies before the retreat event must not win")
-	_assert_true(BattlePlayLoop.unit_coords(clear).keys().any(func(id): return str(id).begins_with("Enemy021_script")), "the depleted hold phase inserts a soldier at the gate instead of ending the battle")
-	var late := _first_battle_hold_loop()
-	for turn in range(2, 7):
-		late = BattlePlayLoop.commit_wait(late, Callable(self, "_stable_half_rng"))
-	for unit in late["units"]:
-		if str(unit.get("battle_actor_role", "")) == BattlePlayLoop.ROLE_ENEMY:
-			BattlePlayLoop._set_unit_defeated(late, str(unit["id"]), true)
-	late = BattlePlayLoop.commit_wait(late, Callable(self, "_stable_half_rng"))
-	_assert_eq(late.get("battle_outcome"), BattleOutcome.VICTORY_ENEMIES_CLEARED, "enemy clear wins once win status 0 is armed")
-	_assert_eq(late.get("next_level_event"), [52, 52], "WINFAIL051 win 0 hands the campaign to level 52")
-	var lost := _first_battle_hold_loop()
-	BattlePlayLoop._set_unit_defeated(lost, "leonard", true)
-	lost = BattlePlayLoop._resolve_outcome(lost)
-	_assert_eq(lost.get("battle_outcome"), BattleOutcome.DEFEAT_FALLEN, "Leonard falling fails during hold")
 
 
 func _test_live_weapon_ranges() -> void:
@@ -741,27 +439,6 @@ func _test_live_counter_exchange() -> void:
 	ai_loop = BattlePlayLoop.commit_wait(ai_loop, func(_n: int) -> int: return 0)
 	_assert_eq(ai_loop["last_ai_action"]["counter"].get("attacker_id", ""), "leonard", "player can counter an AI attack")
 	_assert_true(int(BattlePlayLoop.unit(ai_loop, str(enemy["id"]))["hp"]) < 100, "counter applies real damage to AI attacker")
-
-
-func _unit_coord(loop: Dictionary, unit_id: String) -> Vector2i:
-	for unit_value in loop.get("units", []):
-		if typeof(unit_value) == TYPE_DICTIONARY and str((unit_value as Dictionary).get("id", "")) == unit_id:
-			return (unit_value as Dictionary).get("coord", Vector2i.ZERO)
-	return Vector2i.ZERO
-
-
-func _force_unit_coord(loop: Dictionary, unit_id: String, coord: Vector2i) -> void:
-	var units: Array = loop.get("units", [])
-	for i in range(units.size()):
-		if typeof(units[i]) != TYPE_DICTIONARY:
-			continue
-		var unit: Dictionary = units[i]
-		if str(unit.get("id", "")) == unit_id:
-			unit["coord"] = coord
-			unit["grid_coord"] = coord
-			units[i] = unit
-			loop["units"] = units
-			return
 
 
 func _test_core_combat_rules_hit_and_damage_packet() -> void:
@@ -996,3 +673,898 @@ func _test_initial_npc_turns() -> void:
 	_assert_eq(recorded["turn_queue"]["slots"].map(func(slot): return slot["id"]), ["actor021_3", "actor023_2", "actor021_1", "actor021_2", "actor021_4", "actor021_5", "leonard", "actor023_1", "actor024_2", "actor024_1", "actor026_1", "actor026_2"], "recorded level-51 opening levels reproduce the original round-1 order")
 	_assert_true(BattlePlayLoop.unit(loop, "enemy021_2")["coord"] != before["enemy021_2"], "Opening NPC turns must change real battle positions")
 	_assert_eq(BattlePlayLoop.unit(loop, "leonard")["coord"], before["leonard"], "Opening NPC resolution preserves Leonard's script destination")
+
+
+# ---- run_tests.gd ----
+## Original range propagation (RangePropagationRules, original_weapon_ranges.md):
+## every native 0x40f8b0／0x4100e0 return of original_range_terrain.json byte for byte, and
+## real battlefield cells through the player's weapon range, cast range and cast check.
+
+const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
+const SkillResolutionRules = preload("res://game/sim/SkillResolutionRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
+const Autoplay = preload("res://tests/support/Autoplay.gd")
+const PACKET := "res://docs/evidence_packets/static_reverse/original_range_terrain.json"
+const LINE_SIZES := {"range3CellDir": 3, "range4CellDir": 4, "range5CellDir": 5}
+const POISON_ARROW := "special:magicMIND:magicCode03"
+const QUAKE := "magic:magicEARTH:magicCode02"
+const DRAGON := "special:magicOTHER:magicCode02"
+
+
+func run_range_propagation() -> void:
+	_native_returns()
+	_wall_stop_battle_003()
+	_h255_and_ally_battle_005()
+	_open_ground_first_battle()
+	_walled_pocket_battle_504()
+	_cast_range_battle_003()
+	_area_wall_battle_003()
+	_area_matrix_battle_504()
+	_line_wall_battle_504()
+	_autoplay_destination()
+
+
+func _native_returns() -> void:
+	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(PACKET))
+	var rows := {}
+	var weapons: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/chapter01/attack_ranges.json"))["patterns"]
+	var skills: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/skills/targeting.json"))["ranges"]
+	for table in [weapons, skills]:
+		for code in table:
+			if table[code].get("data") is Array: rows[code] = table[code]["data"]
+	var grids := {}
+	for name in packet["grids"]:
+		var words := {}
+		for entry in packet["grids"][name]["words"]:
+			words[Vector2i(int(entry[0]), int(entry[1]))] = int(entry[2])
+		grids[name] = {"words": words, "size": Vector2i(int(packet["grids"][name]["size"]), int(packet["grids"][name]["size"]))}
+	var counts := {"weapon": 0, "area": 0, "line": 0}
+	for case in packet["cases"]:
+		var input: Dictionary = case["input"]
+		var grid: Dictionary = grids[input["grid"]]
+		var code := str(input["code"])
+		var got: Dictionary
+		var kind := str(input["builder"])
+		if kind == "weapon":
+			got = RangePropagationRules.weapon_coverage(rows[code], _cell(input["origin"]), grid["words"], grid["size"], int(input["mode"]), int(input["flag5"]) != 0)
+		elif LINE_SIZES.has(code):
+			kind = "line"
+			got = RangePropagationRules.line_coverage(LINE_SIZES[code], _cell(input["caster"]), _cell(input["target"]), grid["words"], grid["size"], int(input["mode"]))
+		else:
+			got = RangePropagationRules.area_coverage(rows[code], _cell(input["target"]), grid["words"], grid["size"], int(input["mode"]))
+		counts[kind] += 1
+		check(got == _native(case), "native %s %s %s %s mode %d: expected %s got %s" % [kind, input["grid"], code, str(input.get("origin", input.get("target"))), int(input["mode"]), str(_native(case)), str(got)])
+	check(counts["weapon"] == 124 and counts["area"] + counts["line"] == 230, "all 354 native returns compared: %s" % str(counts))
+
+
+## battle_003 opening: 胡 (4,9) with range3CellShoot. (4,7) carries the WRD 0x4000 flag; the
+## flat record covers it and (4,6) behind it, the original flood stops at it. (3,10)／(5,10)
+## hold allies (mode 2 leaves pmPLAYER occupants unwritten).
+func _wall_stop_battle_003() -> void:
+	var loop := _loop("battle_003")
+	var hu := BattlePlayLoop.unit(loop, "hu")
+	var tiles: Dictionary = TerrainEditRules.tiles(loop)
+	check(hu["coord"] == Vector2i(4, 9) and str(BattlePlayLoop.weapon_pattern(loop, hu)["name"]) == "range3CellShoot", "battle_003 胡 opens at (4,9) with range3CellShoot")
+	check(int(tiles[Vector2i(4, 7)]["movement_flags"]) & 0x4000 != 0 and int(tiles[Vector2i(4, 6)]["movement_flags"]) & 0x4000 != 0, "battle_003 (4,7) and (4,6) are 0x4000 walls")
+	var flat: Array = BattlePlayLoop.TacticalGridRules.attack_pattern_cells(hu["coord"], BattlePlayLoop.weapon_pattern(loop, hu)["offsets"], loop["map_size"])
+	var cells := BattlePlayLoop.attack_cells(loop, "hu")
+	check(flat.has(Vector2i(4, 7)) and not cells.has(Vector2i(4, 7)), "battle_003 胡: the 0x4000 cell (4,7) is in the flat record but not attackable")
+	check(flat.has(Vector2i(2, 10)) and not cells.has(Vector2i(2, 10)), "battle_003 胡: (2,10) next to the (2,9)／(3,9) walls loses its power at the onward check")
+	check(cells.has(Vector2i(5, 8)) and cells.has(Vector2i(4, 12)), "battle_003 胡: (5,8) beside the wall and (4,12) on open ground stay attackable")
+	_assert_eq(cells, [Vector2i(5, 8), Vector2i(6, 8), Vector2i(6, 9), Vector2i(7, 9), Vector2i(6, 10), Vector2i(3, 11), Vector2i(4, 11), Vector2i(5, 11), Vector2i(4, 12)], "battle_003 胡 weapon cells")
+
+
+## battle_005 opening: 胡 (10,11) with range3CellShoot. (8,11) and (7,11) are height 255
+## without 0x4000: the range builders never read heights, so both stay covered. (9,10)
+## holds an ally: left out, and the flood carries on to (8,10) behind it.
+func _h255_and_ally_battle_005() -> void:
+	var loop := _loop("battle_005")
+	var hu := BattlePlayLoop.unit(loop, "hu")
+	var tiles: Dictionary = TerrainEditRules.tiles(loop)
+	check(hu["coord"] == Vector2i(10, 11), "battle_005 胡 opens at (10,11)")
+	for cell in [Vector2i(8, 11), Vector2i(7, 11)]:
+		check(int(tiles[cell]["elevation"]) == 255 and int(tiles[cell]["movement_flags"]) & 0x4000 == 0, "battle_005 %s is h255 without 0x4000" % str(cell))
+	var cells := BattlePlayLoop.attack_cells(loop, "hu")
+	check(cells.has(Vector2i(8, 11)) and cells.has(Vector2i(7, 11)), "battle_005 胡: the range passes over the h255 cells (8,11) and (7,11)")
+	check(RangePropagationRules.side_word(_at(loop, Vector2i(9, 10))) & RangePropagationRules.P != 0 and not cells.has(Vector2i(9, 10)) and cells.has(Vector2i(8, 10)), "battle_005 胡: the ally at (9,10) is left out, (8,10) behind it stays")
+	_assert_eq(cells.size(), 19, "battle_005 胡 weapon cell count (20 flat minus the ally)")
+
+
+## first_battle opening: 萊納德 (15,17) with range1Cell on open ground — the flood equals
+## the flat record.
+func _open_ground_first_battle() -> void:
+	var loop := _loop("first_battle")
+	var leonard := BattlePlayLoop.unit(loop, "leonard")
+	var flat: Array = BattlePlayLoop.TacticalGridRules.attack_pattern_cells(leonard["coord"], BattlePlayLoop.weapon_pattern(loop, leonard)["offsets"], loop["map_size"])
+	check(leonard["coord"] == Vector2i(15, 17), "first_battle 萊納德 opens at (15,17)")
+	_assert_eq(BattlePlayLoop.attack_cells(loop, "leonard"), [Vector2i(15, 16), Vector2i(14, 17), Vector2i(16, 17), Vector2i(15, 18)], "first_battle 萊納德 open-ground weapon cells")
+	_assert_eq(BattlePlayLoop.attack_cells(loop, "leonard"), flat, "first_battle 萊納德: flood equals the flat record on open ground")
+
+
+## battle_504 opening: 咕嚕 (7,15) range3CellCircle inside a walled pocket.
+func _walled_pocket_battle_504() -> void:
+	var loop := _loop("battle_504")
+	check(BattlePlayLoop.unit(loop, "gulu")["coord"] == Vector2i(7, 15), "battle_504 咕嚕 opens at (7,15)")
+	_assert_eq(BattlePlayLoop.attack_cells(loop, "gulu"), [Vector2i(7, 12), Vector2i(6, 13), Vector2i(7, 13), Vector2i(5, 14), Vector2i(6, 14), Vector2i(7, 14), Vector2i(8, 14), Vector2i(6, 15), Vector2i(6, 16), Vector2i(7, 16), Vector2i(8, 16), Vector2i(7, 17)], "battle_504 咕嚕 weapon cells (24 flat)")
+
+
+## battle_003 opening: 胡's 毒魔箭 cast range range3CellThrust through the player's
+## selection (mode -1, flag 0: walls stop, no side exclusion) and the settled cast check.
+func _cast_range_battle_003() -> void:
+	var loop := _loop("battle_003")
+	var hu := BattlePlayLoop.unit(loop, "hu")
+	var fields := BattlePlayLoop.skill_fields(loop, POISON_ARROW)
+	check(str(fields.get("range", "")) == "range3CellThrust", "毒魔箭 cast range is range3CellThrust")
+	var flat: Array = BattlePlayLoop.SkillTargetRules.cells(hu["coord"], fields, loop["skill_target_data"], loop["map_size"])
+	var selecting := loop.duplicate()
+	selecting.merge({"selected_attack": "special", "interaction": "attack_select", "selected_unit_id": "hu", "selected_skill_id": POISON_ARROW}, true)
+	var cells := BattlePlayLoop.attack_cells(selecting, "hu")
+	check(flat.has(Vector2i(4, 7)) and flat.has(Vector2i(4, 6)) and not cells.has(Vector2i(4, 7)) and not cells.has(Vector2i(4, 6)), "毒魔箭 from (4,9): the 0x4000 cell (4,7) and (4,6) behind it are not castable")
+	check(cells.has(Vector2i(4, 8)) and cells.has(Vector2i(3, 10)), "毒魔箭 from (4,9): (4,8) before the wall and the ally cell (3,10) stay castable")
+	_assert_eq(cells, [Vector2i(4, 8), Vector2i(5, 8), Vector2i(5, 9), Vector2i(6, 9), Vector2i(7, 9), Vector2i(3, 10), Vector2i(4, 10), Vector2i(5, 10), Vector2i(4, 11), Vector2i(4, 12)], "毒魔箭 cast cells from (4,9)")
+	var caster: Dictionary = hu.duplicate(true)
+	caster["stamina"] = 60
+	var walled := SkillResolutionRules.prepare_cast(caster, caster, loop["units"], POISON_ARROW, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"], caster["coord"], loop["map_size"], Vector2i(4, 7), {"range_terrain": BattlePlayLoop.skill_terrain(loop)})
+	var bare := SkillResolutionRules.prepare_cast(caster, caster, loop["units"], POISON_ARROW, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"], caster["coord"], loop["map_size"], Vector2i(4, 7))
+	check(walled.get("reason") == "out_of_range" and bare.get("reason") != "out_of_range", "毒魔箭 aimed at the wall (4,7): out_of_range with the terrain (got %s), in range without (got %s)" % [str(walled.get("reason")), str(bare.get("reason"))])
+
+
+## battle_003 opening: 胡's 毒魔箭 area (range1Cell) through the player's effect area
+## (0x444f08／0x4450e0 → 0x4100e0 mode 2): the 0x4000 cells and the P occupants are left
+## out, the centre is written unless a P occupant stands on it (0x410498[2]).
+func _area_wall_battle_003() -> void:
+	var loop := _loop("battle_003")
+	var selecting := loop.duplicate()
+	selecting.merge({"selected_attack": "special", "interaction": "attack_select", "selected_unit_id": "hu", "selected_skill_id": POISON_ARROW}, true)
+	var fields := BattlePlayLoop.skill_fields(loop, POISON_ARROW)
+	var hu := BattlePlayLoop.unit(loop, "hu")
+	var flat: Array = BattlePlayLoop.SkillTargetRules.cast_footprint(hu["coord"], Vector2i(4, 8), fields, loop["skill_target_data"], loop["map_size"])
+	_assert_eq(flat, [Vector2i(4, 7), Vector2i(3, 8), Vector2i(4, 8), Vector2i(5, 8), Vector2i(4, 9)], "毒魔箭 at (4,8): the flat cross")
+	_assert_eq(BattlePlayLoop.Combat.skill_cast_footprint(selecting, Vector2i(4, 8)), [Vector2i(4, 8), Vector2i(5, 8)], "毒魔箭 at (4,8) against the (4,7)／(3,8) walls, 胡 at (4,9) left out")
+	_assert_eq(BattlePlayLoop.Combat.skill_cast_footprint(selecting, Vector2i(4, 10)), [Vector2i(4, 10), Vector2i(4, 11)], "毒魔箭 at (4,10) between 胡, 緹娜 and 雷歐納德: only the open cells")
+	_assert_eq(BattlePlayLoop.Combat.skill_cast_footprint(selecting, Vector2i(3, 10)), [Vector2i(2, 10), Vector2i(4, 10), Vector2i(3, 11)], "毒魔箭 on 緹娜's cell (3,10): the P centre and the (3,9) wall left out")
+	_assert_eq(BattlePlayLoop.Combat.skill_cast_footprint(selecting, Vector2i(4, 11)), [Vector2i(4, 10), Vector2i(3, 11), Vector2i(4, 11), Vector2i(5, 11), Vector2i(4, 12)], "毒魔箭 at (4,11) on open ground: the whole cross")
+	# The settled context carries the same terrain only in the player's command cast.
+	check(BattlePlayLoop.Combat._skill_context(selecting).get("range_terrain") == BattlePlayLoop.skill_terrain(selecting), "the player's command cast settles with the player's skill terrain")
+	check(not BattlePlayLoop.Combat._skill_context(loop).has("range_terrain"), "outside the player's skill targeting the settled context carries no terrain")
+	var ai_casting := selecting.duplicate()
+	ai_casting["interaction"] = "ai_resolving"
+	check(not BattlePlayLoop.Combat._skill_context(ai_casting).has("range_terrain"), "an AI cast (ai_resolving) settles flat")
+	# The area modes 2／3 are the P side's: a commandable caster of another side keeps the flat area.
+	var hu_e: Dictionary = BattlePlayLoop.unit(selecting, "hu").merged({"player_mode": RangePropagationRules.E}, true)
+	check(BattlePlayLoop.skill_terrain(selecting).has("area_modes") and not BattlePlayLoop.skill_terrain(selecting, hu_e).has("area_modes") and BattlePlayLoop.skill_terrain(selecting, hu_e).has("cast_mode"), "the area half needs a P-side caster; the mode -1 cast range applies to any")
+
+
+## battle_504 opening: 克勞蒂 (7,11) casts 地龍震 (range3CellCircle → range2CellCircle) on a
+## foe at (7,14). 胡 (8,13), 漢克斯 (9,14) and 咕嚕 (7,15) are P and left out, (8,15) is
+## 0x4000; at (7,15) the onward check sees the (8,15) wall and ends the flood, so the foe
+## at (7,16) is outside the area the flat record would reach. Preview, target line and
+## the settled strike read that one area.
+func _area_matrix_battle_504() -> void:
+	var loop := _loop("battle_504")
+	BattlePlayLoop._unit(loop, "actor036_1")["coord"] = Vector2i(7, 14)
+	BattlePlayLoop._unit(loop, "actor036_2")["coord"] = Vector2i(7, 16)
+	BattlePlayLoop._unit(loop, "actor036_3")["coord"] = Vector2i(6, 14)
+	var casting := BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(_turn(loop, "claudie"), "magic"), QUAKE)
+	check(casting["interaction"] == "attack_select" and casting["selected_skill_id"] == QUAKE, "克勞蒂 selects 地龍震")
+	var fields := BattlePlayLoop.skill_fields(casting, QUAKE)
+	var flat: Array = BattlePlayLoop.SkillTargetRules.cast_footprint(Vector2i(7, 11), Vector2i(7, 14), fields, casting["skill_target_data"], casting["map_size"])
+	var area: Array = BattlePlayLoop.Combat.skill_cast_footprint(casting, Vector2i(7, 14))
+	check(flat.has(Vector2i(7, 16)) and flat.has(Vector2i(8, 15)), "地龍震 at (7,14): the flat record reaches (7,16) and the (8,15) wall")
+	_assert_eq(area, [Vector2i(7, 12), Vector2i(6, 13), Vector2i(7, 13), Vector2i(5, 14), Vector2i(6, 14), Vector2i(7, 14), Vector2i(8, 14), Vector2i(6, 15)], "地龍震 at (7,14) beside the (8,15) wall")
+	check(BattlePlayLoop.magic_target_id_at_coord(casting, Vector2i(7, 14)) == "actor036_1", "the target line at (7,14) names the centre foe")
+	var before := int(BattlePlayLoop.unit(casting, "actor036_2")["hp"])
+	var cast := BattlePlayLoop.attack_target(casting, "actor036_1", func(_n): return 0, Vector2i(7, 14))
+	var hit: Array = cast.get("last_attack", {}).get("affected_targets", []).map(func(receipt): return receipt["defender_id"])
+	check(cast.get("last_attack_reject", {}).is_empty() and hit == ["actor036_1", "actor036_3"], "地龍震 settles on the two foes inside the area (got %s)" % [hit])
+	check(int(BattlePlayLoop.unit(cast, "actor036_2")["hp"]) == before, "the foe at (7,16) past the wall-side stop keeps its HP")
+	_assert_eq(hit, _foes_on(casting, area), "地龍震: the settled targets are the foes on the previewed area")
+
+
+## battle_504: 咕嚕 (moved to (7,16)) slashes 皇龍閃 (range1Cell → range3CellDir) at the foe
+## on (8,16). (9,16) is 0x4000: the 0x4100e0 line ends there as a whole, so the foe on
+## (10,16) — on the flat line — is not struck, and the settled cue shows the one cell.
+func _line_wall_battle_504() -> void:
+	var loop := _loop("battle_504")
+	var gulu := BattlePlayLoop._unit(loop, "gulu")
+	own(loop, "skill_book")["actors"][str(gulu["actor_id"])]["supported_initial_ids"].append(DRAGON)
+	gulu["coord"] = Vector2i(7, 16)
+	gulu["stamina"] = 80
+	BattlePlayLoop._unit(loop, "actor036_1")["coord"] = Vector2i(8, 16)
+	BattlePlayLoop._unit(loop, "actor036_2")["coord"] = Vector2i(10, 16)
+	var tiles: Dictionary = TerrainEditRules.tiles(loop)
+	check(int(tiles[Vector2i(9, 16)]["movement_flags"]) & 0x4000 != 0 and int(tiles[Vector2i(10, 16)]["movement_flags"]) & 0x4000 == 0, "battle_504 (9,16) is a 0x4000 wall, (10,16) open")
+	var casting := BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(_turn(loop, "gulu"), "special"), DRAGON)
+	check(casting["interaction"] == "attack_select" and casting["selected_skill_id"] == DRAGON, "咕嚕 selects 皇龍閃")
+	var fields := BattlePlayLoop.skill_fields(casting, DRAGON)
+	_assert_eq(BattlePlayLoop.SkillTargetRules.cast_footprint(Vector2i(7, 16), Vector2i(8, 16), fields, casting["skill_target_data"], casting["map_size"]), [Vector2i(8, 16), Vector2i(9, 16), Vector2i(10, 16)], "皇龍閃 from (7,16) at (8,16): the flat line")
+	_assert_eq(BattlePlayLoop.Combat.skill_cast_footprint(casting, Vector2i(8, 16)), [Vector2i(8, 16)], "皇龍閃 at (8,16): the line ends at the (9,16) wall")
+	var before := int(BattlePlayLoop.unit(casting, "actor036_2")["hp"])
+	var slashed := BattlePlayLoop.attack_target(casting, "actor036_1", func(_n): return 0)
+	var hit: Array = slashed.get("last_attack", {}).get("affected_targets", []).map(func(receipt): return receipt["defender_id"])
+	check(slashed.get("last_attack_reject", {}).is_empty() and hit == ["actor036_1"], "皇龍閃 settles on the foe before the wall only (got %s)" % [hit])
+	check(int(BattlePlayLoop.unit(slashed, "actor036_2")["hp"]) == before, "the foe on (10,16) behind the wall keeps its HP")
+	_assert_eq(BattlePlayLoop.strike_range_cells(slashed, slashed.get("last_attack", {})), [Vector2i(8, 16)], "the settled cue shows the cut line")
+
+
+## The autoplay driver's destination (tests/support/Autoplay.gd `_destination`): the flat
+## pattern proposes the cheapest cell, the weapon's flood from it decides. 胡 (range3CellShoot)
+## on real walls: battle_003 foe (6,6) — from (6,9) the flat record covers it but (6,7)／(6,8)
+## sit beside the walls; foe (1,10) — from (4,10) the flood dies at (2,10) beside (2,9)／(3,9);
+## battle_504 foe (7,16) — from (8,14) the (8,15) wall is in the way. Each time the driver
+## lands on another cell and strikes from it in the same action.
+func _autoplay_destination() -> void:
+	for case in [["battle_003", "actor028_1", Vector2i(6, 6), Vector2i(6, 9)], ["battle_003", "actor028_1", Vector2i(1, 10), Vector2i(4, 10)], ["battle_504", "actor036_1", Vector2i(7, 16), Vector2i(8, 14)]]:
+		var loop := _loop(case[0])
+		var foe := BattlePlayLoop._unit(loop, case[1])
+		foe["coord"] = case[2]
+		var turn := _turn(loop, "hu")
+		var hu := BattlePlayLoop.unit(turn, "hu")
+		var pattern := BattlePlayLoop.weapon_pattern(turn, hu)
+		var flat_cell: Vector2i = case[3]
+		var label := "%s 胡 %s → foe %s" % [case[0], str(hu["coord"]), str(case[2])]
+		check(BattlePlayLoop.Footprint.contact(foe, BattlePlayLoop.attack_cells(turn, "hu")) == null, "%s: not in reach before the move" % label)
+		var from_flat: Array = Autoplay._weapon_cells_from(turn, hu, pattern, flat_cell)
+		check(BattlePlayLoop.movement_cells(turn, "hu").has(flat_cell) and BattlePlayLoop.TacticalGridRules.attack_pattern_cells(flat_cell, pattern["offsets"], turn["map_size"]).has(case[2]) and not from_flat.has(case[2]), "%s: the flat record covers the foe from %s, the flood does not" % [label, str(flat_cell)])
+		var destination: Variant = Autoplay._destination(turn, "hu")
+		check(destination is Vector2i and destination != flat_cell and BattlePlayLoop.movement_path(turn, "hu", flat_cell).size() <= BattlePlayLoop.movement_path(turn, "hu", destination).size(), "%s: the driver passes over the cheaper flat cell %s (chose %s)" % [label, str(flat_cell), str(destination)])
+		var step := Autoplay._take_player_action(turn, RandomNumberGenerator.new())
+		check(step["action"] == "move_then_attack" and BattlePlayLoop.unit(step["loop"], "hu")["coord"] == destination, "%s: lands on %s and strikes (got %s)" % [label, str(destination), str(step["action"])])
+
+
+## The living foes standing on `cells`, in roster order.
+func _foes_on(loop: Dictionary, cells: Array) -> Array:
+	var result: Array = []
+	for unit in loop["units"]:
+		if int(unit["hp"]) > 0 and cells.has(unit["coord"]) and unit.get("battle_actor_role") == "enemy_ai": result.append(unit["id"])
+	return result
+
+
+## Hands the action to `id` (its slot becomes current) and opens its action menu.
+func _turn(loop: Dictionary, id: String) -> Dictionary:
+	for index in range(loop["turn_queue"]["slots"].size()):
+		if loop["turn_queue"]["slots"][index]["id"] == id: loop["turn_queue"]["index"] = index
+	return BattlePlayLoop.select_player_unit(loop, id)
+
+
+func _loop(level: String) -> Dictionary:
+	return BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file("res://content/battles/%s.json" % level), 1)
+
+
+func _at(loop: Dictionary, cell: Vector2i) -> Dictionary:
+	for unit in loop["units"]:
+		if unit.get("coord") == cell: return unit
+	return {}
+
+
+func _cell(pair: Array) -> Vector2i:
+	return Vector2i(int(pair[0]), int(pair[1]))
+
+
+func _native(case: Dictionary) -> Dictionary:
+	var frame: Array = case["frame"]
+	var bytes: PackedByteArray = str(case["coverage"]).hex_decode()
+	var result := {}
+	for y in range(int(frame[1])):
+		for x in range(int(frame[0])):
+			var value := int(bytes[y * int(frame[0]) + x])
+			if value != 0: result[Vector2i(int(frame[2]) + x, int(frame[3]) + y)] = value
+	return result
+
+
+# ---- run_tests.gd ----
+## Side bits of the installed player mode (docs/evidence_packets/static_reverse/
+## original_player_mode_sides.md): who may target whom, who the win/fail counters count,
+## and the level-6 / level-531 all-wait rounds the packet's comparison table quotes.
+## Prints one `PLAYER_MODE_SIDES_ATTACK level=… round=… attacker=… defender=…` line per AI
+## exchange so the remake column of the table is reproducible from this suite.
+
+const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
+const WinfailActions = preload("res://game/sim/WinfailActions.gd")
+const PM_PLAYER := 0x10000
+const PM_ENEMY := 0x20000
+const PM_PLAYER_ENEMY := 0x30000
+const PM_NPC := 0x40000
+const PM_NPC_PLAYER := 0x50000
+
+
+func run_player_mode_sides() -> void:
+	_test_side_mask_reads_player_mode_then_role()
+	_test_hostility_matrix_follows_disjoint_side_bits()
+	_test_counters_follow_register_side_rule()
+	_test_player_attack_gate_and_skill_side()
+	_test_set_player_mode_writes_mode_and_role()
+	_test_pm_all_occupant_ranges()
+	_test_level6_soldiers_never_attack_villagers()
+	_test_level531_npc_rider_is_hostile_to_both_camps()
+
+
+func _unit(role: String, mode: Variant = null, id: String = "u") -> Dictionary:
+	var unit := {"id": id, "battle_actor_role": role, "hp": 10}
+	if mode != null:
+		unit["player_mode"] = mode
+	return unit
+
+
+func _test_side_mask_reads_player_mode_then_role() -> void:
+	check(ActorRoleRules.side_mask(_unit("player_controlled")) == PM_PLAYER, "player_controlled without player_mode is pmPlayer")
+	check(ActorRoleRules.side_mask(_unit("friendly_ai")) == PM_PLAYER, "friendly_ai without player_mode keeps the player side it always implied")
+	check(ActorRoleRules.side_mask(_unit("enemy_ai")) == PM_ENEMY, "enemy_ai without player_mode is pmEnemy")
+	check(ActorRoleRules.side_mask(_unit("friendly_ai", PM_PLAYER_ENEMY)) == PM_PLAYER_ENEMY, "installed pmPlayerEnemy wins over the role")
+	check(ActorRoleRules.side_mask(_unit("enemy_ai", PM_NPC)) == PM_NPC, "installed pmNPC wins over the role")
+	check(ActorRoleRules.side_mask(_unit("friendly_ai", 0x850000)) == PM_NPC_PLAYER, "pmNPCPlayerNoMagic masks to its pmALL side bits")
+	check(ActorRoleRules.side_mask({"id": "tree", "fixture_role": "map_object"}) == 0, "a map object has no side")
+
+
+func _test_hostility_matrix_follows_disjoint_side_bits() -> void:
+	var player := _unit("player_controlled", PM_PLAYER, "p")
+	var enemy := _unit("enemy_ai", PM_ENEMY, "e")
+	var npc := _unit("enemy_ai", PM_NPC, "n")
+	var villager := _unit("friendly_ai", PM_PLAYER_ENEMY, "v")
+	var ally := _unit("friendly_ai", PM_NPC_PLAYER, "a")
+	# 0x40bb80: own & other & 0x870000 != 0 excludes the candidate.
+	check(ActorRoleRules.hostile(player, enemy) and ActorRoleRules.hostile(enemy, player), "pmPlayer and pmEnemy are mutual targets")
+	check(ActorRoleRules.hostile(player, npc) and ActorRoleRules.hostile(npc, player), "pmNPC and pmPlayer are mutual targets")
+	check(ActorRoleRules.hostile(enemy, npc) and ActorRoleRules.hostile(npc, enemy), "pmNPC and pmEnemy are mutual targets (three-way battle)")
+	check(not ActorRoleRules.hostile(enemy, villager) and not ActorRoleRules.hostile(villager, enemy), "pmPlayerEnemy shares pmEnemy: the enemy AI never selects a villager")
+	check(not ActorRoleRules.hostile(player, villager) and not ActorRoleRules.hostile(villager, player), "pmPlayerEnemy shares pmPlayer: the player cannot target a villager")
+	check(ActorRoleRules.hostile(villager, npc), "a pmPlayerEnemy villager is hostile only to pmNPC")
+	check(not ActorRoleRules.hostile(ally, player) and ActorRoleRules.hostile(ally, enemy) and not ActorRoleRules.hostile(ally, npc), "pmNPCPlayer sides with the player, fights pmEnemy, shares pmNPC")
+	check(not ActorRoleRules.hostile(player, {"id": "tree", "fixture_role": "map_object"}), "no side is never hostile")
+	check(ActorRoleRules.same_side(player, ally) and ActorRoleRules.same_side(villager, player) and ActorRoleRules.same_side(villager, enemy), "support same-side is an overlapping side")
+	check(not ActorRoleRules.same_side(npc, player) and not ActorRoleRules.same_side(enemy, player), "disjoint sides are not the same side")
+	# Units without player_mode keep the pre-R22 contract.
+	check(ActorRoleRules.hostile(_unit("player_controlled"), _unit("enemy_ai")) and not ActorRoleRules.hostile(_unit("player_controlled"), _unit("friendly_ai")), "role-only units: player vs enemy hostile, player vs friendly not")
+
+
+func _test_counters_follow_register_side_rule() -> void:
+	# 0x407660 / 0x407720: enemy total counts pmEnemy without pmPlayer, player total pmPlayer without pmEnemy.
+	check(ActorRoleRules.counts_as_enemy(_unit("enemy_ai", PM_ENEMY)) and ActorRoleRules.counts_as_enemy(_unit("enemy_ai", 0x60000)), "pmEnemy and pmNPCEnemy count as enemies")
+	check(not ActorRoleRules.counts_as_enemy(_unit("enemy_ai", PM_NPC)), "pmNPC does not count as an enemy")
+	check(not ActorRoleRules.counts_as_enemy(_unit("friendly_ai", PM_PLAYER_ENEMY)) and not ActorRoleRules.counts_as_player(_unit("friendly_ai", PM_PLAYER_ENEMY)), "pmPlayerEnemy counts for neither side")
+	check(ActorRoleRules.counts_as_player(_unit("player_controlled", PM_PLAYER)) and ActorRoleRules.counts_as_player(_unit("friendly_ai", PM_NPC_PLAYER)), "pmPlayer and pmNPCPlayer count as players")
+	check(ActorRoleRules.counts_as_enemy(_unit("enemy_ai")) and ActorRoleRules.counts_as_player(_unit("friendly_ai")), "role-only units count by their implied side")
+	var battle := {"units": [
+		_unit("player_controlled", PM_PLAYER, "p"), _unit("enemy_ai", PM_ENEMY, "e1"), _unit("enemy_ai", PM_ENEMY, "e2"),
+		_unit("enemy_ai", PM_NPC, "n"), _unit("friendly_ai", PM_PLAYER_ENEMY, "v"),
+	]}
+	check(WinfailConditions._alive_enemy_total(battle) == 2, "actCheckEnemyTotalNumber counts the two pmEnemy units, not the pmNPC rider or the villager")
+	check(WinfailConditions._alive_player_side_total(battle) == 1, "actCheckPlayerTotalNumber counts the pmPlayer unit only")
+
+
+func _test_player_attack_gate_and_skill_side() -> void:
+	var player := _unit("player_controlled", PM_PLAYER, "p")
+	check(ActorRoleRules.can_player_attack_actor(player, _unit("enemy_ai", PM_NPC, "n")), "the player may attack a pmNPC unit")
+	check(not ActorRoleRules.can_player_attack_actor(player, _unit("friendly_ai", PM_PLAYER_ENEMY, "v")), "the player may not attack a pmPlayerEnemy villager (0x40f8b0 mode 2 skips pmPlayer cells)")
+	var dead := _unit("enemy_ai", PM_ENEMY, "d")
+	dead["hp"] = 0
+	check(not ActorRoleRules.can_player_attack_actor(player, dead), "a fallen unit is no target")
+	var skill_data := {"skills": {}}
+	var offensive := {"function_bits": 0, "range": "range1Cell", "effect_range": "range0Cell"}
+	check(BattlePlayLoop.SkillTargetRules.side_matches(player, _unit("enemy_ai", PM_NPC, "n"), offensive, skill_data), "an offensive skill reaches a pmNPC unit")
+	check(not BattlePlayLoop.SkillTargetRules.side_matches(player, _unit("friendly_ai", PM_PLAYER_ENEMY, "v"), offensive, skill_data), "an offensive skill does not reach a villager")
+
+
+## 0x40f5d0 keeps a pmALL occupant in every player range except the weapon range (0x409090,
+## flag 1), which drops pmMagicAttack's 0x800000; the AI keeps disjoint sides (0x40bb80).
+## The level-37 gems: magic／specials only; an undeclared gem with nothing to target waits.
+func _test_pm_all_occupant_ranges() -> void:
+	var player := _unit("player_controlled", PM_PLAYER, "p")
+	var gem := _unit("friendly_ai", 0x870000, "gem")
+	var door := _unit("friendly_ai", 0x70000, "door")
+	var villager := _unit("friendly_ai", PM_PLAYER_ENEMY, "v")
+	var enemy := _unit("enemy_ai", PM_ENEMY, "e")
+	check(not ActorRoleRules.player_range_selectable(player, gem, false) and ActorRoleRules.player_range_selectable(player, gem, true), "a pmMagicAttack gem is out of the weapon range, inside the magic／special range")
+	check(ActorRoleRules.player_range_selectable(player, door, false) and ActorRoleRules.player_range_selectable(player, door, true), "a plain pmALL occupant stays in every player range")
+	check(not ActorRoleRules.player_range_selectable(player, villager, false) and not ActorRoleRules.player_range_selectable(player, villager, true), "a pmPlayerEnemy occupant (a gem switched off) stays out of both")
+	check(ActorRoleRules.player_range_selectable(player, enemy, false) and not ActorRoleRules.player_range_selectable(gem, gem, true), "hostile units stay selectable; nobody selects itself")
+	var skill_data := {"skills": {}}
+	var offensive := {"function_bits": 0, "range": "range1Cell", "effect_range": "range0Cell"}
+	check(BattlePlayLoop.SkillTargetRules.side_matches(player, gem, offensive, skill_data), "a player offensive skill reaches a gem")
+	check(not BattlePlayLoop.SkillTargetRules.side_matches(enemy, gem, offensive, skill_data), "an AI caster never targets a pmALL gem (0x40bb80)")
+	# 0x40fdc0 (the area mask 0x4104d0 walks): a pmALL occupant is kept whatever the caster's
+	# excluded side, so an AI's offensive area around its target takes a gem in too (R6-L11).
+	check(BattlePlayLoop.SkillTargetRules.area_side_matches(enemy, gem, offensive, skill_data) and BattlePlayLoop.SkillTargetRules.area_side_matches(player, gem, offensive, skill_data), "every caster's offensive area takes in a pmALL gem")
+	check(not BattlePlayLoop.SkillTargetRules.area_side_matches(enemy, villager, offensive, skill_data) and not BattlePlayLoop.SkillTargetRules.area_side_matches(gem, gem, offensive, skill_data), "the area keeps excluding the caster's own side (a switched-off gem is pmPlayerEnemy) and the caster itself")
+	var profiles := {"actors": {"067": {"missing_required": ["find_type", "find_range", "ai_call_range", "ai_fixed"]}}}
+	gem["actor_id"] = "067"
+	var board := {"ai_profiles": profiles, "units": [gem, player, enemy]}
+	check(BattlePlayLoop.AI._idle_without_strategy(board, gem), "an undeclared gem with no hostile unit waits")
+	var npc := _unit("enemy_ai", PM_NPC, "n")
+	gem["player_mode"] = PM_PLAYER_ENEMY
+	board["units"].append(npc)
+	check(not BattlePlayLoop.AI._idle_without_strategy(board, gem), "a switched-off gem facing a pmNPC unit is not idle: the missing strategy still fails")
+	profiles["actors"]["067"]["missing_required"] = []
+	check(not BattlePlayLoop.AI._idle_without_strategy({"ai_profiles": profiles, "units": [gem, player]}, gem), "a declared strategy takes the ordinary AI turn")
+
+
+func _test_set_player_mode_writes_mode_and_role() -> void:
+	var next := {"units": [{"id": "claudie", "actor_id": "009", "battle_actor_role": "enemy_ai", "player_commandable": false, "player_mode": PM_ENEMY, "hp": 30}],
+		"winfail_runtime": {"actor_bindings": {"SID_克羅蒂/1": "claudie"}}}
+	var runtime := {"mode_changes": [], "unsupported_encountered": []}
+	WinfailActions._apply_player_mode(next, runtime, "event_6", ["SID_克羅蒂", "1", "pmPlayerEnemy", "0"])
+	var unit: Dictionary = next["units"][0]
+	check(runtime["mode_changes"].size() == 1 and runtime["mode_changes"][0]["unit_ids"] == ["claudie"], "the bound token resolves to the unit")
+	check(unit["battle_actor_role"] == "friendly_ai" and unit["player_mode"] == PM_PLAYER_ENEMY and not unit["player_commandable"], "WINFAIL036 event 6 pmPlayerEnemy: AI-driven, side pmPlayerEnemy")
+	check(runtime["unsupported_encountered"].is_empty(), "pmPlayerEnemy is a supported mode")
+	WinfailActions._apply_player_mode(next, runtime, "event_7", ["SID_克羅蒂", "1", "pmPlayer", "1"])
+	check(unit["battle_actor_role"] == "player_controlled" and unit["player_mode"] == PM_PLAYER and unit["player_commandable"], "pmPlayer returns control and the pmPlayer side")
+	# R6-L10: WINFAIL037 swaps the level-37 gems between pmPlayerEnemy and pmMagicAttack; the
+	# pmALL side is now read by ActorRoleRules.player_range_selectable (0x40f5d0 callers).
+	WinfailActions._apply_player_mode(next, runtime, "event_x", ["SID_克羅蒂", "1", "pmMagicAttack", "0"])
+	check(runtime["unsupported_encountered"].is_empty() and unit["player_mode"] == 0x870000 and unit["battle_actor_role"] == "friendly_ai" and not unit["player_commandable"], "pmMagicAttack is a supported mode: AI-driven, side pmALL plus 0x800000")
+	check(WinfailActions.PLAYER_MODE_ROLES[PM_NPC] == "enemy_ai", "pmNPC maps to enemy_ai")
+
+
+func _reach_player(loop: Dictionary, label: String, attacks: Array, level: int, rng: RandomNumberGenerator) -> Dictionary:
+	## Every AI unit takes its ordinary step_ai_turn (as the autoplay sweep does) until the
+	## next controlled action menu; each settled exchange is recorded and printed.
+	var next := loop
+	for _step in range(4096):
+		if str(next.get("interaction", "")) == "action_menu" or BattleOutcome.decided(next):
+			return next
+		if BattlePlayLoop.loot_waiting(next):
+			var settlement: Dictionary = next["settlement"]
+			next = BattlePlayLoop.finish_rewards(next, int(settlement["sequence"]), int(settlement["revision"]), false, true)
+			continue
+		if str(next.get("interaction", "")) != "ai_resolving":
+			_assert_true(false, "%s stops in %s (%s)" % [label, str(next.get("interaction", "")), str(next.get("scenario_error", ""))])
+			return next
+		var before := int(next.get("last_combat", {}).get("sequence", 0))
+		var stepped := BattlePlayLoop.step_ai_turn(next, rng)
+		if stepped == next:
+			_assert_true(false, "%s: step_ai_turn made no progress" % label)
+			return next
+		next = stepped
+		var combat: Dictionary = next.get("last_combat", {})
+		# A caster buffing itself (0x43fce1..0x43fd46: no ally in need, own mask useful) is a support cast, not an exchange.
+		if int(combat.get("sequence", 0)) > before and str(combat.get("attacker_id", "")) != str(combat.get("defender_id", "")):
+			var attacker := BattlePlayLoop._unit(next, str(combat.get("attacker_id", "")))
+			var defender := BattlePlayLoop._unit(next, str(combat.get("defender_id", "")))
+			attacks.append({"attacker": attacker, "defender": defender, "round": int(next.get("turn", 0))})
+			print("PLAYER_MODE_SIDES_ATTACK level=%d round=%d attacker=%s(%s,0x%x) defender=%s(%s,0x%x)" % [level, int(next.get("turn", 0)),
+				str(attacker.get("id", "")), str(attacker.get("actor_id", "")), ActorRoleRules.side_mask(attacker),
+				str(defender.get("id", "")), str(defender.get("actor_id", "")), ActorRoleRules.side_mask(defender)])
+	_assert_true(false, "%s did not return to a player action" % label)
+	return next
+
+
+func _all_wait_rounds(level: int, rounds: int, attacks: Array) -> Dictionary:
+	var scenario: Dictionary = BattleScenario.load_file("res://content/battles/battle_%03d.json" % level)
+	var loop := BattlePlayLoop.create([], "", scenario, level)
+	_assert_true(bool(loop.get("scenario_ok", false)), "level %d PlayLoop creates (%s)" % [level, str(loop.get("scenario_error", ""))])
+	if not bool(loop.get("scenario_ok", false)):
+		return loop
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 22
+	loop = BattlePlayLoop.begin_battle(loop)
+	loop = _reach_player(loop, "level %d battle start" % level, attacks, level, rng)
+	var guard := 0
+	while int(loop.get("turn", 0)) < rounds and guard < 64 and not BattleOutcome.decided(loop):
+		if str(loop.get("interaction", "")) != "action_menu":
+			print("PLAYER_MODE_SIDES_STOP level=%d turn=%d interaction=%s error=%s" % [level, int(loop.get("turn", 0)), str(loop.get("interaction", "")), str(loop.get("scenario_error", ""))])
+			break
+		loop = BattlePlayLoop.choose_command(loop, "wait")
+		loop = _reach_player(loop, "level %d round %d" % [level, rounds], attacks, level, rng)
+		guard += 1
+	return loop
+
+
+func _test_level6_soldiers_never_attack_villagers() -> void:
+	var attacks: Array = []
+	var loop := _all_wait_rounds(6, 3, attacks)
+	if not bool(loop.get("scenario_ok", false)):
+		return
+	var villagers: Array = loop["units"].filter(func(unit): return str(unit.get("actor_id", "")) in ["061", "062"])
+	check(villagers.size() == 12 and villagers.all(func(unit): return int(unit.get("player_mode", 0)) == PM_PLAYER_ENEMY and str(unit["battle_actor_role"]) == "friendly_ai"), "level 6 fields twelve pmPlayerEnemy villagers as uncommandable AI")
+	var captain := BattlePlayLoop.unit(loop, "guard024_1")
+	# 0x448840 drops the hp_level term for a live pmEnemy side (JobStatsRules.base_values):
+	# the swapped 024 is 42 at L1, not the pmPlayer template's 43, before the +30 word.
+	check(int(captain.get("max_hp", 0)) == 72 and int(captain.get("object_hit_point", 0)) == 30, "the inserted captain carries the +30 obj_HitPoint word (42 -> 72)")
+	check(int(loop.get("turn", 0)) >= 2, "level 6 all-wait reaches round 2 (turn=%d)" % int(loop.get("turn", 0)))
+	for record in attacks:
+		var attacker: Dictionary = record["attacker"]
+		var defender: Dictionary = record["defender"]
+		check(ActorRoleRules.hostile(attacker, defender), "every exchange is between disjoint sides: %s -> %s" % [str(attacker.get("id", "")), str(defender.get("id", ""))])
+		check(not (str(defender.get("actor_id", "")) in ["061", "062"]), "no soldier attacks a villager: %s -> %s" % [str(attacker.get("id", "")), str(defender.get("id", ""))])
+		check(not (str(attacker.get("actor_id", "")) in ["061", "062"]), "no villager attacks anyone: %s -> %s" % [str(attacker.get("id", "")), str(defender.get("id", ""))])
+	check(attacks.size() > 0, "the soldiers do engage the party in the first two rounds")
+	print("PLAYER_MODE_SIDES_LEVEL6 rounds=%d exchanges=%d villagers_attacked=0 outcome=%s" % [int(loop.get("turn", 0)), attacks.size(), BattleOutcome.of(loop)])
+
+
+func _test_level531_npc_rider_is_hostile_to_both_camps() -> void:
+	var attacks: Array = []
+	var loop := _all_wait_rounds(531, 3, attacks)
+	if not bool(loop.get("scenario_ok", false)):
+		return
+	var rider := BattlePlayLoop.unit(loop, "actor049_1")
+	check(not rider.is_empty() and int(rider.get("player_mode", 0)) == PM_NPC and str(rider.get("battle_actor_role", "")) == "enemy_ai", "encounter 531 fields the pmNPC 049 rider as AI")
+	var captain := BattlePlayLoop.unit(loop, "actor024_1")
+	check(int(captain.get("player_mode", 0)) == PM_ENEMY and int(captain.get("object_hit_point", 0)) == 50 and int(captain.get("max_hp", 0)) == 92, "the swapped 024 captain carries +50 HP (42 -> 92; no hp_level term on the pmEnemy side)")
+	check(ActorRoleRules.hostile(rider, captain) and ActorRoleRules.hostile(rider, BattlePlayLoop.unit(loop, "leonard")), "the pmNPC rider is hostile to the pmEnemy captain and to the party")
+	check(not ActorRoleRules.counts_as_enemy(rider), "the rider does not count for actCheckEnemyTotalNumber")
+	var three_way := 0
+	for record in attacks:
+		check(ActorRoleRules.hostile(record["attacker"], record["defender"]), "every 531 exchange is between disjoint sides")
+		if str(record["attacker"].get("actor_id", "")) == "049" or str(record["defender"].get("actor_id", "")) == "049":
+			three_way += 1
+	check(three_way > 0, "the pmNPC rider and the pmEnemy escort exchange blows (three-way battle)")
+	print("PLAYER_MODE_SIDES_LEVEL531 rounds=%d exchanges=%d rider_exchanges=%d outcome=%s" % [int(loop.get("turn", 0)), attacks.size(), three_way, BattleOutcome.of(loop)])
+
+
+# ---- run_tests.gd ----
+## The two original random streams against the original. The damage／hit stream:
+## DamageRandomStream replays original_damage_random.json (0x458c10 raw and 0x458c80 rand(n),
+## executed on hsl01.exe by `hsl generate damage_random`) value for value from every recorded
+## state, one exchange draws in the original order, and the save carries it. The global stream
+## (0x4795d4／0x4795d8): the same generator, the static initial words, the clock seed of
+## 0x458c10, and the emulated enemy turn of original_enemy_turn.json (`hsl generate
+## enemy_turn`), whose every global draw GlobalRandomStream replays value for value from the
+## turn's words; the save leaves it out.
+const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
+const PACKET_random_stream := "res://docs/evidence_packets/static_reverse/original_damage_random.json"
+const ORACLE := "res://docs/evidence_packets/static_reverse/original_enemy_turn.json"
+const FIRST_BATTLE := "res://content/battles/battle_051.json"
+const VIEW := {"camera": Vector2(320, 240), "shown_story_events": [], "story_complete": true, "growth_notified_level": 1}
+## The AI's decision stream is the global one; the damage-stream replay pins it so only the
+## damage stream carried by the save decides whether the results repeat.
+const DECISION_SEED := 11
+
+
+func run_random_stream() -> void:
+	damage_native_cases()
+	damage_order_cases()
+	damage_save_load_cases()
+	global_native_cases()
+	oracle_cases()
+	session_cases()
+	global_save_load_cases()
+	new_campaign_cases()
+
+
+static func words(text: String) -> Array:
+	var out: Array = []
+	for index in range(0, text.length(), 8):
+		out.append(text.substr(index, 8).hex_to_int())
+	return out
+
+
+static func state_of(value: Variant) -> Array:
+	return DamageRandomStream.from_words(value)
+
+
+func damage_native_cases() -> void:
+	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(PACKET_random_stream))
+	var bounds: Array = packet["bounds"].map(func(b): return int(b))
+	var draws := int(packet["draws"])
+	check(packet["states"].size() >= 3 and draws == 1000, "native packet covers at least 3 states × 1000 draws")
+	for row in packet["states"]:
+		var start := state_of(row["state"])
+		check(DamageRandomStream.valid(start), "native start state is two u32 words")
+		var native_raw := words(row["raw_hex"])
+		var state := start.duplicate()
+		var raw_ok := native_raw.size() == draws
+		for index in range(draws):
+			var step := DamageRandomStream.raw(state)
+			state = step["state"]
+			if not raw_ok or int(step["value"]) != int(native_raw[index]):
+				raw_ok = false
+				break
+		check(raw_ok and state == state_of(row["raw_end"]), "0x458c10 raw draws match the original value for value from %s" % str(start))
+		var native_rand := words(row["rand_hex"])
+		state = start.duplicate()
+		var rand_ok := native_rand.size() == draws
+		for index in range(draws):
+			var step := DamageRandomStream.rand(state, int(bounds[index % bounds.size()]))
+			state = step["state"]
+			if not rand_ok or int(step["value"]) != int(native_rand[index]):
+				rand_ok = false
+				break
+		check(rand_ok and state == state_of(row["rand_end"]), "0x458c80 rand(n) matches the original for every cycled bound from %s" % str(start))
+		var drawn := DamageRandomStream.rand(start, 0)
+		check(drawn["value"] == 0 and drawn["state"] == start and row["rand_zero"]["state_unchanged"] == true, "rand(0) returns 0 without advancing, as 0x458c80 does")
+		check(state_of(row["damage_wrapper"]["rand_end"]) == state_of(row["rand_end"]) and row["damage_wrapper"]["global_state_kept"] == true,
+			"0x42c780 advances only the damage words, exactly like the generator on them")
+	check(DamageRandomStream.seeded(0x12d687) == [0x12d687, 0xffed2978] and DamageRandomStream.seeded(-1) == [0xffffffff, 0], "new-game seed is [t, ~t] on 32-bit words")
+	var loop := {DamageRandomStream.LOOP_KEY: DamageRandomStream.seeded(7)}
+	var source := DamageRandomStream.loop_source(loop)
+	var expected := DamageRandomStream.rand(DamageRandomStream.seeded(7), 100)
+	check(int(source.call(100)) == int(expected["value"]) and loop[DamageRandomStream.LOOP_KEY] == expected["state"], "the loop source draws rand(n) and writes the state back at once")
+	check(int(source.call(0)) == 0 and loop[DamageRandomStream.LOOP_KEY] == expected["state"], "the loop source's rand(0) leaves the stream where it was")
+	var raw := DamageRandomStream.raw(expected["state"])
+	check(int(source.call(-1)) == int(raw["value"]) and loop[DamageRandomStream.LOOP_KEY] == raw["state"], "a negative bound is the raw 0x42c720 draw")
+	check(DamageRandomStream.advance(DamageRandomStream.seeded(7), 2) == raw["state"], "advance(n) walks the same chain")
+	check(DamageRandomStream.from_words([1.0, 4294967295.0]) == [1, 0xffffffff] and DamageRandomStream.from_words([1.5, 2]).is_empty() and DamageRandomStream.from_words([-1, 2]).is_empty(), "carried JSON words are accepted only as exact u32 pairs")
+
+
+## Leonard next to enemy021_1 (who always counters), Leonard to act. He carries one 會心
+## (262: first use draws its 5–10 strength) and wears an HP auto-restore accessory (223:
+## every final action below full HP draws rand(6)), so items and the turn-end tail share
+## the stream with the exchanges.
+static func duel(seed: int) -> Dictionary:
+	var loop := BattleFixture.loop([], "", seed)
+	var player := BattlePlayLoop._unit(loop, "leonard")
+	player["inventory"] = [262, 0, 0, 0, 0, 0, 0, 0]
+	player["equipment"] = player["equipment"].filter(func(slot): return not str(slot["slot"]).begins_with("accessory"))
+	player["equipment"].append({"slot": "accessory2", "item_code": 223})
+	player.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(player, loop["equipment_items"]), true)
+	player["hp"] = int(player["max_hp"]) - 5
+	player["live_speed"] = 100
+	player["coord"] = Vector2i(15, 15)
+	var target := BattlePlayLoop._unit(loop, "enemy021_1")
+	target["coord"] = player["coord"] + Vector2i.RIGHT
+	target["combat_profile"]["attack_back"] = 100
+	target["max_hp"] = 400
+	target["hp"] = 400
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	return BattlePlayLoop.select_player_unit(loop, "leonard")
+
+
+## What a player sees of one step: every actor's HP／EXP／status, the last exchange's rolls
+## and the stream.
+static func observed(loop: Dictionary) -> Dictionary:
+	var vitals := {}
+	for actor in loop["units"]:
+		vitals[actor["id"]] = [actor["hp"], actor["exp"], actor["status_flags"]]
+	var combat: Dictionary = loop.get("last_combat", {})
+	var strikes: Array = []
+	for receipt in [combat, combat.get("counter", {})]:
+		if receipt.is_empty(): continue
+		for strike in [receipt] + receipt.get("followups", []):
+			strikes.append([strike["attacker_id"], strike["hit_roll"], strike["hit"], strike["damage"], strike["critical"], strike["critical_roll"], strike["damage_detail"]["noise"]])
+	return {"vitals": vitals, "strikes": strikes, "sequence": combat.get("sequence", 0), "stream": loop[DamageRandomStream.LOOP_KEY],
+		"item": loop.get("last_item_use", {}).get("draws", []), "tail": loop.get("last_action_end", {}).get("draws", [])}
+
+
+## Leonard drinks 會心 first, then three rounds of Leonard attacking and the AI side
+## answering: the observed trace.
+static func damage_play(loop: Dictionary) -> Array:
+	var trace: Array = []
+	var decisions := RandomNumberGenerator.new()
+	decisions.seed = DECISION_SEED
+	var next := loop
+	for round in range(3):
+		if str(next.get("interaction", "")) != "action_menu" or next.get("selected_unit_id") != "leonard": break
+		if round == 0:
+			next = BattlePlayLoop.use_item(next, "262")
+			trace.append(observed(next))
+		next = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(next, "attack"), "enemy021_1")
+		trace.append(observed(next))
+		if BattlePlayLoop.action_exhausted(next):
+			next = BattlePlayLoop.finish_exhausted_action(next)
+		for _step in range(60):
+			if str(next.get("interaction", "")) != "ai_resolving": break
+			next = BattlePlayLoop.step_ai_turn(next, decisions)
+			trace.append(observed(next))
+	trace.append(next.get("interaction", ""))
+	return trace
+
+
+## One exchange draws in the original order (0x4423c0 → 0x409be0 → 0x403860): counter gate
+## rand(100), then the damage draws, then hit rand(100), then the critical rand(100).
+func damage_order_cases() -> void:
+	var loop := duel(5)
+	var shadow := {DamageRandomStream.LOOP_KEY: loop[DamageRandomStream.LOOP_KEY]}
+	var bounds: Array = []
+	var logging := func(bound: int) -> int:
+		bounds.append(bound)
+		return DamageRandomStream.loop_draw(shadow, bound)
+	var done := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop, "attack"), "enemy021_1", logging)
+	var strike: Dictionary = done.get("last_combat", {})
+	check(not strike.is_empty(), "the duel fixture settles one exchange")
+	if strike.is_empty(): return
+	var detail: Dictionary = strike["damage_detail"]
+	var expected: Array = [100]
+	if detail["path"] == "base_non_positive_floor": expected.append(5)
+	elif detail["path"] == "base_weak_band": expected.append(int(detail["base_attack_minus_defense"]) + 4)
+	var half := absi(int(detail["str_term"])) / 2
+	expected.append_array([int(detail["effective_before_noise"]) * 30 / 100, half, half])
+	if detail["used_nonpositive_fallback"]: expected.append(-1)
+	check(int(detail["variance_bonus"]) == 0, "the fixture weapon has no element variance draws")
+	expected.append(100)
+	if strike["hit"]: expected.append(100)
+	_assert_eq(bounds.slice(0, expected.size()), expected, "one exchange draws gate → damage → hit → critical in the original order")
+	var live := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop, "attack"), "enemy021_1")
+	check(observed(live)["strikes"] == observed(done)["strikes"] and live[DamageRandomStream.LOOP_KEY] == shadow[DamageRandomStream.LOOP_KEY],
+		"the product exchange draws exactly those values from the loop's own stream and keeps where it stopped")
+
+
+## Save → act and record → load → repeat → identical, as the original's reload (0x42e980
+## restores the damage words) makes it. A different saved stream changes the results.
+func damage_save_load_cases() -> void:
+	var loop := duel(20260925)
+	var saved := BattleCheckpoint.encode(loop, VIEW)
+	check(saved["ok"], "the duel fixture is a savable boundary: " + str(saved.get("reason", "")))
+	if not saved["ok"]: return
+	var first := damage_play(loop)
+	var decoded := BattleCheckpoint.decode(saved["bytes"], loop)
+	check(decoded["ok"], "the save loads back")
+	if not decoded["ok"]: return
+	var restored: Dictionary = decoded["snapshot"]["loop"]
+	check(restored[DamageRandomStream.LOOP_KEY] == loop[DamageRandomStream.LOOP_KEY], "the save keeps the damage stream words exactly")
+	var again := damage_play(restored)
+	var strikes := 0
+	for step in first:
+		if step is Dictionary: strikes += step["strikes"].size()
+	check(strikes >= 3, "the replayed stretch settles at least three strikes (%d)" % strikes)
+	var item_draws := 0
+	var tail_draws := 0
+	for step in first:
+		if step is Dictionary:
+			item_draws = maxi(item_draws, step["item"].size())
+			tail_draws = maxi(tail_draws, step["tail"].size())
+	check(item_draws == 1 and tail_draws >= 1, "the stretch also draws an item strength and a turn-end recovery from the same stream (item %d, tail %d)" % [item_draws, tail_draws])
+	_assert_eq(again, first, "after loading, the same actions repeat the same HP, hits, damage, criticals and stream")
+	check(first[first.size() - 2]["stream"] != loop[DamageRandomStream.LOOP_KEY], "the stretch advanced the saved stream")
+	var other := BattlePlayLoop.copy(restored)
+	other[DamageRandomStream.LOOP_KEY] = DamageRandomStream.advance(restored[DamageRandomStream.LOOP_KEY], 1)
+	check(damage_play(other) != first, "a different saved stream gives different results: the save, not luck, repeats them")
+
+
+func global_native_cases() -> void:
+	var state: Array = GlobalRandomStream.STATIC_STATE.duplicate()
+	var values: Array = []
+	for _index in range(5):
+		var step := GlobalRandomStream.raw(state)
+		state = step["state"]
+		values.append(int(step["value"]))
+	_assert_eq(values, [0x75308ecb, 0x10a9752a, 0xc6c87601, 0xa18611ff, 0xb50b4dc4], "the static words 0x12345678／0x87654321 give the original's first five raw values")
+	var probe := GlobalRandomStream.seeded(0x2a)
+	check(GlobalRandomStream.raw(probe) == DamageRandomStream.raw(probe) and GlobalRandomStream.rand(probe, 99) == DamageRandomStream.rand(probe, 99) and GlobalRandomStream.advance(probe, 7) == DamageRandomStream.advance(probe, 7),
+		"the global stream runs the damage stream's generator 0x458c10／0x458c80, not a second implementation")
+	check(GlobalRandomStream.seeded(12) == [12, 12 ^ 0xe54a231c] and GlobalRandomStream.seeded(-1) == [0xffffffff, 0x1ab5dce3], "0x458c10's lazy seed stores [t, t ^ 0xe54a231c] on 32-bit words")
+	check(GlobalRandomStream.seeded(12) != DamageRandomStream.seeded(12), "the same clock value seeds the two streams to different words")
+	var loop := {GlobalRandomStream.LOOP_KEY: GlobalRandomStream.seeded(9)}
+	var source := GlobalRandomStream.loop_source(loop)
+	var expected := GlobalRandomStream.rand(GlobalRandomStream.seeded(9), 100)
+	check(int(source.call(100)) == int(expected["value"]) and loop[GlobalRandomStream.LOOP_KEY] == expected["state"], "the loop source draws rand(n) and writes the state back at once")
+	check(int(source.call(0)) == 0 and loop[GlobalRandomStream.LOOP_KEY] == expected["state"], "rand(0) leaves the stream where it was")
+	var raw := GlobalRandomStream.raw(expected["state"])
+	check(int(source.call(-1)) == int(raw["value"]) and loop[GlobalRandomStream.LOOP_KEY] == raw["state"], "a negative bound is the raw 0x458c10 draw")
+
+
+## Every global draw of the emulated turn, in order, from the turn's starting words: the
+## recorded values follow from rand(n)／raw alone, so nothing else drew from the stream
+## between them (the damage draws of the one attack sit on the damage words).
+func oracle_cases() -> void:
+	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ORACLE))
+	var turn: Dictionary = packet["turns"][0]
+	var streams := {"global": GlobalRandomStream.from_words(turn["rng"]["global"]), "damage": DamageRandomStream.from_words(turn["rng"]["damage"])}
+	check(GlobalRandomStream.valid(streams["global"]) and DamageRandomStream.valid(streams["damage"]), "the oracle turn starts from two word pairs")
+	var counts := {"global": 0, "damage": 0}
+	var first_miss := ""
+	for action in turn["actions"]:
+		for draw in action["draws"]:
+			var stream := str(draw["stream"])
+			var bound := -1 if draw["n"] == null else int(draw["n"])
+			var step := GlobalRandomStream.raw(streams[stream]) if bound < 0 else GlobalRandomStream.rand(streams[stream], bound)
+			streams[stream] = step["state"]
+			counts[stream] += 1
+			if first_miss == "" and int(step["value"]) != int(draw["value"]):
+				first_miss = "%s %s draw %d at %s" % [action["actor"], stream, counts[stream], draw["site"]]
+	check(counts["global"] >= 500 and counts["damage"] >= 1, "the oracle turn records hundreds of global draws and the attack's damage draws (%s)" % str(counts))
+	check(first_miss == "", "every oracle draw replays from the turn's words value for value (first miss: %s)" % first_miss)
+
+
+## The process stream: seeded once on first use, by HSL_RNG_SEED when a headless run names
+## one; the running battle hands its words back.
+func session_cases() -> void:
+	var saved := OS.get_environment(GlobalRandomStream.SEED_ENV)
+	OS.set_environment(GlobalRandomStream.SEED_ENV, "77")
+	GlobalRandomStream.reset_session()
+	check(GlobalRandomStream.session() == GlobalRandomStream.seeded(77), "headless with HSL_RNG_SEED, the first use seeds the process stream from it")
+	var first := GlobalRandomStream.session_draw(100)
+	check(first == int(GlobalRandomStream.rand(GlobalRandomStream.seeded(77), 100)["value"]) and GlobalRandomStream.session() == GlobalRandomStream.rand(GlobalRandomStream.seeded(77), 100)["state"], "a session draw advances the process stream")
+	OS.set_environment(GlobalRandomStream.SEED_ENV, "78")
+	check(GlobalRandomStream.session() == GlobalRandomStream.rand(GlobalRandomStream.seeded(77), 100)["state"], "the process stream is seeded once; a later seed does not re-seed it")
+	var loop := {GlobalRandomStream.LOOP_KEY: GlobalRandomStream.session()}
+	GlobalRandomStream.loop_draw(loop, 99)
+	GlobalRandomStream.loop_draw(loop, -1)
+	GlobalRandomStream.remember(loop)
+	check(GlobalRandomStream.session() == loop[GlobalRandomStream.LOOP_KEY], "remember adopts the battle loop's words as the process stream")
+	GlobalRandomStream.reset_session()
+	check(GlobalRandomStream.session() == GlobalRandomStream.seeded(78), "reset forgets the stream and the next use seeds it again")
+	if saved == "": OS.unset_environment(GlobalRandomStream.SEED_ENV)
+	else: OS.set_environment(GlobalRandomStream.SEED_ENV, saved)
+	GlobalRandomStream.reset_session()
+
+
+## The duel above with the product AI: every AI step draws from the
+## loop's own global words (no decision source handed in). Per step: what a player sees,
+## the AI's decision, and the global words.
+static func global_play(loop: Dictionary) -> Array:
+	var trace: Array = []
+	var next := loop
+	for round in range(3):
+		if str(next.get("interaction", "")) != "action_menu" or next.get("selected_unit_id") != "leonard": break
+		next = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(next, "attack"), "enemy021_1")
+		trace.append({"seen": observed(next), "ai": {}, "global": next[GlobalRandomStream.LOOP_KEY]})
+		if BattlePlayLoop.action_exhausted(next):
+			next = BattlePlayLoop.finish_exhausted_action(next)
+		for _step in range(60):
+			if str(next.get("interaction", "")) != "ai_resolving": break
+			next = BattlePlayLoop.step_ai_turn(next)
+			var act: Dictionary = next.get("last_ai_action", {})
+			trace.append({"seen": observed(next), "global": next[GlobalRandomStream.LOOP_KEY],
+				"ai": {"actor": act.get("actor_id", ""), "kind": act.get("kind", ""), "to": act.get("to", act.get("from")), "target": act.get("target_id", "")}})
+	return trace
+
+
+static func first_ai(trace: Array) -> int:
+	for index in range(trace.size()):
+		if not trace[index]["ai"].is_empty(): return index
+	return -1
+
+
+## Save → play → load into a battle whose global stream has moved on → play again: the
+## save holds the damage words, not the global ones (the original keeps 0x4795d4／0x4795d8
+## out of its save and seeds them from the clock), so everything up to the first AI step
+## repeats exactly and the AI may then choose differently — the first live advance of the
+## global words that turns its first choice is searched, not pinned; the same global words
+## replay the whole stretch.
+## The target stands left of Leonard: 0x413390 ranks the station right of him first, and
+## with a foe beside it the actor walks round there only on rand(99) + 1 above 92
+## (0x440b2c state 0xb sub 0), so the global words can change its first choice. (Right of
+## him, that station is its own cell and both outcomes are the same attack in place.)
+func global_save_load_cases() -> void:
+	var loop := duel(20260925)
+	BattlePlayLoop._unit(loop, "enemy021_1")["coord"] = BattlePlayLoop._unit(loop, "leonard")["coord"] + Vector2i.LEFT
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	loop = BattlePlayLoop.select_player_unit(loop, "leonard")
+	check(not BattleCheckpoint.state(loop).has(GlobalRandomStream.LOOP_KEY) and BattleCheckpoint.state(loop).has(DamageRandomStream.LOOP_KEY), "the saved half of the loop holds the damage stream and not the global stream")
+	var saved := BattleCheckpoint.encode(loop, VIEW)
+	check(saved["ok"], "the duel fixture is a savable boundary: " + str(saved.get("reason", "")))
+	if not saved["ok"]: return
+	var first := global_play(loop)
+	var ai_at := first_ai(first)
+	check(ai_at >= 1, "the stretch reaches an AI step after the player's strike (%d)" % ai_at)
+	if ai_at < 1: return
+	var live := {}
+	var restored := {}
+	var again: Array = []
+	for advance in range(1, 65):
+		live = BattlePlayLoop.copy(loop)
+		live[GlobalRandomStream.LOOP_KEY] = GlobalRandomStream.advance(loop[GlobalRandomStream.LOOP_KEY], advance)
+		var decoded := BattleCheckpoint.decode(saved["bytes"], live)
+		check(decoded["ok"], "the save loads back into the running battle: " + str(decoded.get("reason", "")))
+		if not decoded["ok"]: return
+		restored = decoded["snapshot"]["loop"]
+		again = global_play(restored)
+		if first_ai(again) == ai_at and again[ai_at]["ai"] != first[ai_at]["ai"]: break
+	check(restored[DamageRandomStream.LOOP_KEY] == loop[DamageRandomStream.LOOP_KEY] and restored[GlobalRandomStream.LOOP_KEY] == live[GlobalRandomStream.LOOP_KEY], "the load restores the saved damage words and keeps the running battle's global words")
+	check(first_ai(again) == ai_at, "the loaded stretch reaches its AI step at the same point (%d)" % first_ai(again))
+	_assert_eq(again.slice(0, ai_at).map(func(step): return step["seen"]), first.slice(0, ai_at).map(func(step): return step["seen"]), "after loading, the player's strike repeats the same hits, damage, criticals and damage stream")
+	check(again.size() > ai_at and again[ai_at]["ai"] != first[ai_at]["ai"], "some live global words within 64 advances change the AI's first choice after the load (%s)" % str(first[ai_at]["ai"]))
+	var pinned := BattlePlayLoop.copy(restored)
+	pinned[GlobalRandomStream.LOOP_KEY] = (loop[GlobalRandomStream.LOOP_KEY] as Array).duplicate()
+	_assert_eq(global_play(pinned), first, "the loaded battle with the save-time global words replays the whole stretch, AI included")
+
+
+## A new battle's NPC opening levels (InitialRosterGrowthRules, 0x40e870 rand draws) come
+## from the process stream: the same HSL_RNG_SEED gives the same levels, other seeds other
+## levels.
+static func opening_levels(scenario: Dictionary, seed: int) -> Array:
+	OS.set_environment(GlobalRandomStream.SEED_ENV, str(seed))
+	GlobalRandomStream.reset_session()
+	var loop := BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.create([], "", scenario, 1, GlobalRandomStream.session()))
+	var levels: Array = []
+	for unit in loop["units"]:
+		if unit.has("entry_growth"): levels.append([unit["id"], unit["level"], unit["max_hp"]])
+	return levels
+
+
+func new_campaign_cases() -> void:
+	var saved := OS.get_environment(GlobalRandomStream.SEED_ENV)
+	var scenario := BattlePlayLoop.BattleScenario.load_file(FIRST_BATTLE)
+	check(bool(scenario.get("ok", false)), "battle 051 loads")
+	if not bool(scenario.get("ok", false)): return
+	var rosters := {}
+	for seed in [1, 2, 3, 4]:
+		var levels := opening_levels(scenario, seed)
+		check(not levels.is_empty(), "battle 051 has NPCs with an opening level adjustment (seed %d)" % seed)
+		_assert_eq(opening_levels(scenario, seed), levels, "the same HSL_RNG_SEED gives the same opening levels (seed %d)" % seed)
+		rosters[str(levels)] = seed
+	check(opening_levels(scenario, 1) != opening_levels(scenario, 2) and rosters.size() >= 3, "different seeds give different opening levels (%d distinct rosters of 4)" % rosters.size())
+	if saved == "": OS.unset_environment(GlobalRandomStream.SEED_ENV)
+	else: OS.set_environment(GlobalRandomStream.SEED_ENV, saved)
+	GlobalRandomStream.reset_session()

@@ -62,7 +62,6 @@ tools/godot.sh --screen 0 res://game/battle/development/OhmVillage.tscn
 ## 复跑与证据边界
 
 ```sh
-python3 -m unittest tools.test_hsl_ohm_village
 tools/godot.sh --headless --script res://tests/run_ohm_village_tests.gd
 tools/godot.sh --screen 0 --script res://tests/capture_ohm_village_review.gd -- opening natural
 tools/godot.sh --screen 0 --script res://tests/capture_ohm_village_review.gd -- mixed silence limited retreat defeat villagers clear

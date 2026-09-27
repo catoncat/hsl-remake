@@ -56,7 +56,6 @@ tools/play.sh --screen 1 --script res://tests/capture_extra_attack_review.gd
 # 也可选定路线，避免重复已成立的部分。
 tools/play.sh --screen 1 --script res://tests/capture_extra_attack_review.gd -- ai_move final_kill
 tools/godot.sh --headless --script res://tests/run_all.gd -- run_extra_attack_tests.gd
-python3 -m unittest tools.test_hsl_extra_attack
 ```
 
 原始输出在`ignored/extra-attack-review`，每条完成后保存progress，最终receipt另记录整体错误。保存使用同目录专用`.save`，不覆盖玩家存档。默认数据完整流程沿`tests/run_first_battle_playthrough.gd`，本批完整门禁与默认路线的最终结果记录在提交说明；没有新增第二套战斗状态、额外回合或原作文件依赖。

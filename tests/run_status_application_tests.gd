@@ -57,9 +57,8 @@ func run() -> void:
 	cast_cases()
 	seal_cases()
 	decay_cases()
-	ai_cases()
 	lifecycle_cases()
-	await panel_cases()
+	await run_status_effect()
 	print("STATUS_APPLICATION_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
 	quit(0 if failures.is_empty() else 1)
 
@@ -209,34 +208,6 @@ func decay_cases() -> void:
 	var killed := SkillResolutionRules.resolve(caster, victim, DECAY, BattlePlayLoop.skill_fields(lethal, DECAY), lethal["skill_book"], lethal["skill_target_data"], lethal["equipment_items"], caster["coord"], lethal["map_size"], func(_n): draws[0] += 1; return 0)
 	check(killed["ok"] and killed["target_changes"]["defeated"] and killed["target_changes"]["status_flags"] == 0 and draws[0] == 3 and killed["receipt"]["status_effects"].all(func(effect): return not effect["applied"] and effect["reason"] == "target_defeated"), "a lethal primary hit skips all four status checks and their draws")
 
-func ai_cases() -> void:
-	var loop := fixture()
-	var owner: String = loop["selected_unit_id"]
-	var actor := BattlePlayLoop._unit(loop, owner)
-	actor["player_commandable"] = false
-	actor["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
-	var target := BattlePlayLoop._unit(loop, "leonard")
-	var result := BattleLoopAI._try_skill_turn(loop, owner, [target], func(_n): return 0)
-	check(not result.is_empty() and result.get("magic_key") == "poison" and StatusEffectRules.poisoned(BattlePlayLoop.unit(loop, "leonard")), "AI source-owned poison uses the same application path")
-	var immune := fixture()
-	actor = BattlePlayLoop._unit(immune, owner)
-	actor["player_commandable"] = false
-	actor["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
-	TestSuite.own(immune, "skill_book")["actors"]["001"]["status_capability_flags"] = 0x40
-	TestSuite.own(immune, "skill_book")["actors"]["023"]["status_capability_flags"] = 0x40
-	var before := immune.duplicate(true)
-	var plan:=BattleLoopAI._ai_skill_candidates(immune,owner,[BattlePlayLoop.unit(immune,"leonard")],"magic")
-	check(plan["ok"] and plan["targets"]["leonard"]["skills"].all(func(s):return s["skill_id"]=="magic:magicWATER:magicCode01") and immune==before,"read-only AI planning excludes immune poison while retaining source025's effective water spell")
-	var water:=BattleLoopAI._try_skill_turn(immune,owner,[BattlePlayLoop.unit(immune,"leonard")],func(_n):return 0)
-	check(water.get("magic_key")=="water" and BattlePlayLoop.unit(immune,owner)["mp"]==BattlePlayLoop.unit(before,owner)["mp"]-8 and not StatusEffectRules.poisoned(BattlePlayLoop.unit(immune,"leonard")),"AI water fallback has one real cost and no rejected poison effect")
-	var invalid := fixture()
-	BattlePlayLoop._unit(invalid, owner)["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
-	BattlePlayLoop._unit(invalid, owner).erase("hit_bonus_accum")
-	var untouched := invalid.duplicate(true)
-	var refused := BattleLoopAI._try_skill_turn(invalid, owner, [BattlePlayLoop.unit(invalid, "leonard")], func(_n): check(false, "missing status input must not draw"); return 0)
-	check(refused.get("kind") == "invalid_skill_input" and refused.get("reason") == "invalid_status_skill_profile" and invalid == untouched, "AI reports bad status inputs rather than quietly choosing another attack")
-
-
 func native_lifecycle_cases() -> void:
 	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_status_application.json"))
 	for row in packet["application_cases"]:
@@ -303,83 +274,160 @@ func lifecycle_cases() -> void:
 	check(BattlePlayLoop.unit(skipped, dead_actor["id"]) == dead_actor and skipped["selected_unit_id"] == "leonard", "dead slot is skipped without ticking or clearing frozen status")
 
 
-func panel_cases() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	scene.apply_loop(fixture(), "test")
-	scene.menus.choose_command("magic")
-	check(scene.magic_panel.visible and scene.play_loop["interaction"] == "magic_select", "runtime opens source-owned magic panel")
-	var stale_spell: Button = scene.magic_panel.choices[POISON]
-	scene.menus.cancel_magic()
-	check(scene.action_menu.visible, "magic cancel makes the action menu available for another actual click")
-	var cancelled: Dictionary = scene.play_loop.duplicate(true)
-	stale_spell.pressed.emit()
-	check(scene.play_loop == cancelled, "closed-panel callback cannot select a spell")
-	scene.menus.choose_command("magic")
-	var reopened: Dictionary = scene.play_loop.duplicate(true)
-	stale_spell.pressed.emit()
-	check(scene.play_loop == reopened and scene.magic_panel.visible, "an old spell control cannot act on a reopened menu")
-	scene.magic_panel.choices[POISON].pressed.emit()
-	check(not scene.magic_panel.visible and scene.play_loop["interaction"] == "attack_select" and scene.interaction_state == "attack_select", "current control selects spell and synchronizes map input phase")
-	scene.cancel_current_interaction()
-	check(scene.interaction_state == "action_menu" and scene.play_loop["interaction"] == "action_menu", "map-target cancel restores the action menu in both input and battle state")
-	var actor := BattlePlayLoop._unit(scene.play_loop, scene.selected_unit_id)
-	actor["status_flags"] = 2
-	actor["status_counters"]["no_magic"] = 2
-	scene.menus.choose_command("magic")
-	var silenced: Dictionary = scene.play_loop.duplicate(true)
-	check(scene.magic_panel.choices[POISON].disabled, "silenced owned spell is visibly disabled")
-	scene.magic_panel.choices[POISON].pressed.emit()
-	check(scene.play_loop == silenced, "disabled control signal cannot change selection, MP or status")
-	await feedback_cases(scene)
-	scene.queue_free()
-	await process_frame
-	await create_timer(0.3).timeout
-
-
-func feedback_cases(scene: Node) -> void:
-	var ids := ["enemy021_1", "enemy021_2", "enemy023_1"]
-	for index in range(ids.size()):
-		BattlePlayLoop._unit(scene.play_loop, ids[index])["coord"] = Vector2i(8 + index, 8)
-	scene.apply_loop(scene.play_loop, "test")
-	var before: Dictionary = scene.play_loop.duplicate(true)
-	# Settled mixed-result fixture: all three per-target outcomes must stay readable.
-	var receipt := {"affected_targets": [
-		{"defender_id": ids[0], "actual_damage": 0, "status_effects": [{"applied": true, "status": "poison"}]},
-		{"defender_id": ids[1], "actual_damage": 12, "status_effects": [{"applied": true, "status": "no_magic"}]},
-		{"defender_id": ids[2], "actual_damage": 0, "status_effects": [{"applied": false, "reason": "immune"}]}]}
-	var saved := receipt.duplicate(true)
-	var presentation = scene.get_node("BattlePresentation")
-	presentation._present_status_effects(receipt)
-	var labels: Array = presentation.status_feedback.get_children()
-	check(presentation.status_feedback.layer > presentation.cutin.layer, "status results remain above the source spell's additive light")
-	# One node per part: the second target's damage number (the original red glyphs, unsigned) stacks under its 禁魔 caption.
-	check(labels.size() == 4 and labels.map(func(label): return label.text) == ["中毒", "12", "禁魔", "免疫"], "adjacent feedback retains each individual status, damage and immune result")
-	var Style = preload("res://game/battle/runtime/ShowNumberStyle.gd")
-	check(labels.size() == 4 and labels[1] is Node2D and labels[1].kind == "damage" and labels[2].get_theme_color("font_color") == Style.CAPTION and feedback_rect(labels[1]).get_center().y > feedback_rect(labels[2]).get_center().y, "the damage number is red and sits below the white status caption of the same target")
-	var owners := [ids[0], ids[1], ids[1], ids[2]]
-	for index in range(labels.size()):
-		var actor = scene.actor_node_for_unit(owners[index])
-		var center_x: float = labels[index].position.x if labels[index] is Node2D else labels[index].get_rect().get_center().x
-		check(is_equal_approx(center_x, scene.world_to_logical_position(actor.position).x), "status feedback stays centered on its own projected target")
-		for other in range(index):
-			check(not feedback_rect(labels[index]).grow(4).intersects(feedback_rect(labels[other]).grow(4)), "adjacent mixed-result text and outlines do not collide")
-	await create_timer(0.2).timeout
-	for index in range(labels.size()):
-		for other in range(index):
-			check(not feedback_rect(labels[index]).grow(4).intersects(feedback_rect(labels[other]).grow(4)), "floating status text remains separated throughout movement")
-	check(receipt == saved and scene.play_loop == before, "status layout never changes receipt, targets, resources or queue")
-	await create_timer(0.8).timeout
-	check(labels.all(func(label): return not is_instance_valid(label)), "all per-target feedback clears on its existing finite clock")
-
-
-## A caption Label's rect, or a result number's glyph rect at its current rise.
 func feedback_rect(node: Node) -> Rect2:
 	if node is Node2D:
 		var rect: Rect2 = node.bounds()
 		return rect if node.number == null else Rect2(rect.position + node.number.position, rect.size)
 	return node.get_rect()
+
+
+# ---- run_status_application_tests.gd ----
+const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
+func controlled() -> Dictionary:
+	var loop := BattleFixture.loop()
+	var player := BattlePlayLoop._unit(loop, "leonard")
+	player["live_speed"] = 100
+	var ally := BattlePlayLoop._unit(loop, "enemy023_1")
+	ally["live_speed"] = 99
+	ally["player_commandable"] = true
+	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
+	ally["coord"] = player["coord"] + Vector2i.RIGHT
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	return BattlePlayLoop.select_player_unit(loop, "leonard")
+
+
+func afflict(actor: Dictionary, turns: int, power: int, silence: int = 0) -> void:
+	actor["status_flags"] = (1 if turns > 0 else 0) | (2 if silence > 0 else 0)
+	actor["status_counters"] = {"poison": (power << 16) | turns if turns > 0 else 0, "paralysis": 0, "no_magic": silence}
+
+
+func run_status_effect() -> void:
+	check(BattleFixture.loop()["scenario_ok"], "normal bootstrap has explicit healthy status data")
+	for hp in [1, 3, 30]:
+		for power in [0, 2, 20, 65535]:
+			for turns in [1, 2, 9]:
+				var actor := BattlePlayLoop.unit(controlled(), "leonard").duplicate(true)
+				actor["hp"] = hp
+				afflict(actor, turns, power, 2)
+				var before := actor.duplicate(true)
+				var result := StatusEffectRules.after_action(actor)
+				check(result["ok"], "supported packed status words accepted")
+				var next: Dictionary = result["changes"]
+				check(next["hp"] == maxi(1, hp - power), "poison damage clamps at one HP without healing")
+				check(next["status_counters"]["poison"] == (0 if turns == 1 else (power << 16) | (turns - 1)), "duration decays without corrupting potency; expiry clears entire word")
+				check(next["status_flags"] == (2 if turns == 1 else 3) and next["status_counters"]["no_magic"] == 1, "independent no-magic duration survives poison expiry")
+				check(actor == before, "pure status proposal preserves input")
+	item_cases()
+	action_cases()
+	skill_cases()
+func item_cases() -> void:
+	var loop := controlled()
+	var actor := BattlePlayLoop._unit(loop, "leonard")
+	afflict(actor, 3, 7, 2)
+	var initial := loop.duplicate(true)
+	var used := BattlePlayLoop.use_item(loop, "246", "leonard", 3)
+	var cured := BattlePlayLoop.unit(used, "leonard")
+	check(cured["hp"] == actor["hp"] and not StatusEffectRules.poisoned(cured), "full-health antidote clears poison before post-action damage")
+	check(cured["status_counters"] == {"poison": 0, "paralysis": 0, "no_magic": 1} and cured["status_flags"] == 2, "antidote preserves unrelated silence then owner duration ticks once")
+	check(cured["inventory"] == [241, 241, 241, 0, 0, 0, 0, 0] and used["selected_unit_id"] == "enemy023_1", "consume exactly one antidote and reach the next ally")
+	check(BattlePlayLoop.use_item(used, "246", "leonard", 3) == used and loop == initial, "repeat after handoff is inert and original input remains intact")
+	var ally := BattlePlayLoop._unit(loop, "enemy023_1")
+	afflict(ally, 1, 9)
+	var given := BattlePlayLoop.use_item(loop, "246", ally["id"], 3)
+	check(not StatusEffectRules.poisoned(BattlePlayLoop.unit(given, ally["id"])), "antidote can cure an adjacent full-health ally")
+	check(BattlePlayLoop.unit(given, "leonard")["hp"] == actor["hp"] - 7 and BattlePlayLoop.unit(given, "leonard")["status_counters"]["poison"] == (7 << 16) | 2, "only the acting user's own poison ticks after ally cure")
+	for hp in [10, 30]:
+		var healthy := controlled()
+		BattlePlayLoop._unit(healthy, "leonard")["hp"] = hp
+		var spent := BattlePlayLoop.use_item(healthy, "246", "leonard", 3)
+		check(spent["item_use_sequence"] == healthy["item_use_sequence"] + 1 and BattlePlayLoop.unit(spent, "leonard")["inventory"].count(246) == BattlePlayLoop.unit(healthy, "leonard")["inventory"].count(246) - 1 and not spent["last_item_use"]["cured_poison"], "healthy antidote use still spends one 246 without a cure (0x444aba)")
+	for target in ["missing", "enemy021_1"]:
+		check(BattlePlayLoop.use_item(loop, "246", target, 3) == loop, "invalid target cannot mutate items, health, status or action")
+	for value in [-1, 1.5, "2", null]:
+		var invalid := loop.duplicate(true)
+		BattlePlayLoop._unit(invalid, "leonard")["status_counters"]["poison"] = value
+		check(BattlePlayLoop.use_item(invalid, "246", "leonard", 3) == invalid, "invalid counter refuses the complete transaction")
+	var missing := loop.duplicate(true)
+	TestSuite.own(missing, "consumables")["246"].erase("cure_poison")
+	check(BattlePlayLoop.use_item(missing, "246", "leonard", 3) == missing, "missing cure rule cannot silently consume the item")
+	var raw: Array = BattleFixture.loop()["units"].duplicate(true)
+	raw[0].erase("status_counters")
+	check(not BattleFixture.loop(raw)["scenario_ok"], "missing initial status state fails explicitly")
+
+
+func action_cases() -> void:
+	var loop := controlled()
+	var actor := BattlePlayLoop._unit(loop, "leonard")
+	afflict(actor, 2, 5, 1)
+	var original := loop.duplicate(true)
+	var dropped := BattlePlayLoop.discard_item(loop, "241", 0)
+	check(BattlePlayLoop.unit(dropped, "leonard")["status_counters"] == actor["status_counters"] and dropped["turn_queue"] == loop["turn_queue"], "free Drop does not tick poison or no-magic")
+	var equipped := BattlePlayLoop.change_equipment(dropped, "head", -1, 0)
+	check(BattlePlayLoop.unit(equipped, "leonard")["status_counters"] == actor["status_counters"] and BattlePlayLoop.unit(equipped, "leonard")["hp"] == actor["hp"], "free equipment refresh preserves status without ticking")
+	var moved := BattlePlayLoop.choose_command(equipped, "move")
+	var destinations := BattlePlayLoop.movement_cells(moved, "leonard")
+	for cell in destinations:
+		if cell != actor["coord"]:
+			moved = BattlePlayLoop.move_unit_to(moved, cell)
+			break
+	var cancelled := BattlePlayLoop.cancel_pending_move(moved)
+	check(BattlePlayLoop.unit(cancelled, "leonard")["coord"] == actor["coord"] and BattlePlayLoop.unit(cancelled, "leonard")["status_counters"] == actor["status_counters"], "movement cancellation restores location but does not advance status time")
+	cancelled = BattlePlayLoop.cancel_interaction(cancelled)
+	var ended := BattlePlayLoop.choose_command(cancelled, "wait")
+	check(ended["selected_unit_id"] == "enemy023_1" and BattlePlayLoop.unit(ended, "leonard")["hp"] == actor["hp"] - 5, "Wait applies poison once and reaches exactly the next actor")
+	check(BattlePlayLoop.unit(ended, "leonard")["status_counters"] == {"poison": (5 << 16) | 1, "paralysis": 0, "no_magic": 0}, "expiry clears no-magic while preserving poison potency")
+	check(loop == original, "all combined operations preserve the supplied input state")
+	for command in ["attack", "special"]:
+		var ready := controlled()
+		var player := BattlePlayLoop._unit(ready, "leonard")
+		player["hp"] = 100
+		player["max_hp"] = 100
+		afflict(player, 2, 5)
+		player["stamina"] = 20
+		var foe := BattlePlayLoop._unit(ready, "enemy021_1")
+		foe["coord"] = player["coord"] + Vector2i.UP
+		foe["hp"] = 100
+		var selected := BattlePlayLoop.choose_command(ready, command)
+		if command == "special": selected = BattlePlayLoop.choose_special(selected, "special:magicOTHER:magicCode01")
+		var attack := BattlePlayLoop.attack_target(selected, foe["id"], func(_n): return 0)
+		check(BattlePlayLoop.unit(attack, "leonard")["status_counters"] == player["status_counters"], "offense does not tick status while presentation is pending")
+		var finished := BattlePlayLoop.finish_exhausted_action(attack)
+		check(finished["selected_unit_id"] == "enemy023_1" and BattlePlayLoop.unit(finished, "leonard")["hp"] == BattlePlayLoop.unit(attack,"leonard")["hp"] - 5, "offense completion adds one poison tick after all committed primary/counter HP loss: " + command)
+		check(BattlePlayLoop.finish_exhausted_action(finished) == finished, "duplicate offense completion cannot tick another actor")
+
+
+func skill_cases() -> void:
+	var loop := controlled()
+	var mage := BattlePlayLoop._unit(loop, "enemy026_1")
+	afflict(mage, 0, 0, 1)
+	var target := BattlePlayLoop._unit(loop, "leonard")
+	mage["coord"] = target["coord"] + Vector2i.UP
+	var before := loop.duplicate(true)
+	var draws: Array = []
+	var blocked := SkillResolutionRules.resolve(mage, target, "magic:magicAIR:magicCode01", loop["skill_book"]["skills"]["magic:magicAIR:magicCode01"]["fields"], loop["skill_book"], loop["skill_target_data"], loop["equipment_items"], mage["coord"], loop["map_size"], func(n): draws.append(n); return 0)
+	check(not blocked["ok"] and blocked["reason"] == "magic_disabled_by_status" and draws.is_empty() and loop == before, "shared spell rejection precedes RNG, MP, HP and movement")
+	check(BattleLoopAI._try_skill_turn(loop, mage["id"], [target], func(_n): return 0).is_empty() and loop == before, "AI uses the same no-magic restriction before planning a spell")
+	afflict(target, 0, 0, 2)
+	target["stamina"] = 20
+	check(BattlePlayLoop.can_use_special(loop, "leonard"), "no-magic does not prohibit a supported special")
+	mage.merge(StatusEffectRules.after_action(mage)["changes"], true)
+	check(SkillResolutionRules.available(mage, "magic:magicAIR:magicCode01", loop["skill_book"]["skills"]["magic:magicAIR:magicCode01"]["fields"], loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])["ok"], "spell becomes eligible after the owner's silence expires")
+	var ai := controlled()
+	var ai_mage := BattlePlayLoop._unit(ai, "enemy026_1")
+	# This case isolates the post-counter status tail. A source-stocked antidote
+	# now correctly selects self-cure first; that route has dedicated item tests.
+	ai_mage["inventory"] = [0,0,0,0,0,0,0,0]
+	ai_mage["hp"] = 1000
+	ai_mage["max_hp"] = 1000
+	ai_mage["coord"] = BattlePlayLoop.unit(ai, "leonard")["coord"] + Vector2i.UP
+	ai_mage["live_speed"] = 101
+	afflict(ai_mage, 2, 5, 1)
+	ai["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(ai["units"])
+	ai["selected_unit_id"] = ""
+	ai["interaction"] = "ai_resolving"
+	var ai_done := BattlePlayLoop.step_ai_turn(ai, func(_n): return 0)
+	var after := BattlePlayLoop.unit(ai_done, ai_mage["id"])
+	check(after["mp"] == ai_mage["mp"] and ai_done["last_ai_action"].get("kind") != "magic", "silenced AI completes a non-magic action without spending MP")
+	var counter_damage := int(ai_done["last_ai_action"].get("counter",{}).get("actual_damage",0))
+	check(after["hp"] == ai_mage["hp"] - counter_damage - 5 and after["status_flags"] == 1 and after["status_counters"] == {"poison": (5 << 16) | 1, "paralysis": 0, "no_magic": 0}, "AI without a cure uses one post-action status step after the actual counter receipt")
+	check(ai_done["selected_unit_id"] == "leonard" and ai_done["turn_queue"]["round"] == ai["turn_queue"]["round"], "AI status step preserves queue order and does not rebuild mid-round")

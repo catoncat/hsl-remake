@@ -1,6 +1,6 @@
 # 麻痺：新行动入口、解除与恢复链
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c230, 0x448840 · tools: capture_paralysis_review.gd, hsltools/assets/paralysis_assets.py, hsltools/probes/paralysis.py, run_paralysis_tests.gd · updated: 2026-09-18
+> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c230, 0x448840 · tools: capture_paralysis_review.gd, hsltools/assets/paralysis_assets.py, hsltools/probes/paralysis.py, run_support_magic_tests.gd · updated: 2026-09-18
 
 本批在SR-058移动施法／范围装备、既有双击／两次行动与最终资源尾部之上，接通麻痺的完整行动资格。来源分为`resource-derived`的角色／魔法／道具／对象表，以及`static-derived`的[原指令回执](original_paralysis.json)。Unicorn使用合成内存，原EXE只读、callee不替换；前段在显示／完整dispatcher之前停止，不能称原作自然游玩或整引擎执行。
 
@@ -57,7 +57,7 @@
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate paralysis --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 python3 tools/hsl.py check paralysis
 python3 tools/hsl.py check paralysis_assets
-tools/godot.sh --headless --script res://tests/run_paralysis_tests.gd
+tools/godot.sh --headless --script res://tests/run_support_magic_tests.gd
 tools/godot.sh --screen 0 --script res://tests/capture_paralysis_review.gd
 tools/verify.sh
 ```

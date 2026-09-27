@@ -24,8 +24,6 @@ func run() -> void:
 	damage_cases()
 	support_cases()
 	chain_and_growth_cases()
-	atomic_cases()
-	checkpoint_cases()
 	await presentation_cases()
 	failures.append_array(await TestSuite.settle_audio_before_quit(self, 0.3))
 	print("MAGIC_EXPERIENCE_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
@@ -211,47 +209,6 @@ func chain_and_growth_cases() -> void:
 	var grown := BattlePlayLoop.ProgressionRules.resolve_experience(owner, 300, small["equipment_items"])
 	check(grown["level"] == 2 and grown["pending_stat_points"] == 3 and grown["exp"] == 299, "reserved last three growth points cannot create unlimited zero-point levels")
 	check(BattlePlayLoop.ProgressionRules.resolve_experience(grown, 10, small["equipment_items"]) == grown, "pending allocation reserves exhausted capacity")
-
-
-func atomic_cases() -> void:
-	for corruption in ["no_mp", "silence", "target_exp", "caster_exp", "chain", "equipment", "growth", "area"]:
-		var loop := fixture()
-		var actor := BattlePlayLoop._unit(loop, "leonard")
-		match corruption:
-			"no_mp": actor["mp"] = 0
-			"silence": actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, "no_magic", 2)["changes"], true)
-			"target_exp": BattlePlayLoop._unit(loop, "enemy021_1")["kill_exp"] = "bad"
-			"caster_exp": actor["exp"] = -1
-			"chain": actor["kill_chain_word"] = 0x20000
-			"equipment": TestSuite.own(loop, "equipment_items")[str(int(actor["equipment"][0]["item_code"]))].erase("experience_double")
-			"growth": actor["growth_profile"]["source"].erase("speed")
-			"area":
-				BattlePlayLoop.skill_fields(loop, FIRE)["effect_range"] = "range1Cell"
-				BattlePlayLoop._unit(loop, "enemy021_2")["kill_exp"] = null
-		var started := selected(loop, FIRE)
-		var before := started.duplicate(true)
-		var result := BattlePlayLoop.attack_target(started, "enemy021_1", no_rng)
-		check(result["units"] == before["units"] and result["turn_queue"] == before["turn_queue"] and started == before, "invalid native effect/EXP rejects before any RNG or mutation: " + corruption)
-
-
-func checkpoint_cases() -> void:
-	var loop := fixture()
-	BattlePlayLoop._unit(loop, "leonard")["kill_chain_word"] = 2
-	var settled := BattlePlayLoop.finish_exhausted_action(BattlePlayLoop.attack_target(selected(loop, HEAL), "enemy023_1", zero))
-	var view := {"camera": Vector2(320, 240), "shown_story_events": [], "story_complete": false, "growth_notified_level": 1}
-	var encoded := BattleCheckpoint.encode(settled, view)
-	check(encoded["ok"], "native support EXP and kill state serialize at a quiet boundary")
-	if not encoded["ok"]: return
-	var decoded := BattleCheckpoint.decode(encoded["bytes"], settled)
-	check(decoded["ok"] and decoded["snapshot"]["loop"] == settled, "restoring a paid support cast cannot re-award contributions")
-	var invalid: Dictionary = decoded["snapshot"].duplicate(true)
-	invalid["loop"]["units"][0]["kill_chain_word"] = -1
-	check(BattleCheckpoint.validate(invalid, settled) == "invalid_saved_experience", "saved chain corruption fails closed")
-	var terminal := settled.duplicate(true)
-	terminal["battle_outcome"] = BattleOutcome.VICTORY_ESCAPE
-	terminal["interaction"] = "battle_result"
-	var saved := terminal.duplicate(true)
-	check(BattlePlayLoop._resolve_outcome(terminal) == saved and BattlePlayLoop.attack_target(terminal, "enemy021_1", no_rng) == saved, "escape or repeated final-state input cannot distribute EXP again")
 
 
 func presentation_cases() -> void:

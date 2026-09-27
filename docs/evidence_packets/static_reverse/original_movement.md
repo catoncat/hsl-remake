@@ -35,7 +35,6 @@ Godot导航套件逐格对照58份原扩展结果，并核对每条路径累计�
 ```sh
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate movement --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 python3 tools/hsl.py check movement
-python3 -m unittest tools.test_hsl_native_movement_probe
 tools/godot.sh --headless --script res://tests/run_ai_navigation_tests.gd
 ```
 

@@ -1,6 +1,6 @@
 # Original Weapon Ranges
 
-> evidence: static-derived; resource-derived: EVEF 装备字为零; provisional: AI 技能规划与 AI 施放仍平铺、大型角色锚点 · status: live · functions: 0x409090, 0x40bab0, 0x40bb00, 0x40eb80, 0x40f5d0, 0x40f8b0, 0x40fa80, 0x40fab0, 0x40fb20, 0x40fc90, 0x40fdc0, 0x4100e0, 0x411a30, 0x411b90, 0x42bd50, 0x4423c0, 0x442a90, 0x4477c0, 0x44b980, 0x44cb10 · tools: audit_range_propagation_impact.gd, hsltools/data/attack_ranges.py, hsltools/probes/range_terrain.py, run_ai_navigation_tests.gd, run_range_propagation_tests.gd · updated: 2026-09-25
+> evidence: static-derived; resource-derived: EVEF 装备字为零; provisional: AI 技能规划与 AI 施放仍平铺、大型角色锚点 · status: live · functions: 0x409090, 0x40bab0, 0x40bb00, 0x40eb80, 0x40f5d0, 0x40f8b0, 0x40fa80, 0x40fab0, 0x40fb20, 0x40fc90, 0x40fdc0, 0x4100e0, 0x411a30, 0x411b90, 0x42bd50, 0x4423c0, 0x442a90, 0x4477c0, 0x44b980, 0x44cb10 · tools: audit_range_propagation_impact.gd, hsltools/data/attack_ranges.py, hsltools/probes/range_terrain.py, run_ai_navigation_tests.gd, run_tests.gd · updated: 2026-09-25
 
 ## Scope
 
@@ -46,7 +46,7 @@ This packet records the source-range builder used by the first-battle weapon cat
 
 ## 地形传播
 
-2026-09-25（lane WRANGE；`hsl01.exe` sha256 `f0b5f835…`，只读反汇编加本机逐函数执行，不启动 Wine）。原版没有一处直接拿 RANGE 正掩码当目标格：武器与施放范围由 `0x40f8b0`（经包装 `0x40fa80`）起点写格后四向调 `0x40f5d0`，技能效果区域由 `0x4100e0` 的矩阵分支调 `0x40fdc0`、RANGE 21..23 走直线分支（[直线范围](original_line_ranges.md)）。两者都只读地图字 `0x4c0928`。[original_range_terrain.json](original_range_terrain.json) 在 open／wall／pillar 三张 15×15 格子上完整执行 354 次（武器 124、矩阵区域 104、直线 126），覆盖字节逐个对拍；`python3 tools/hsl.py check range_terrain` 复核，`tests/run_range_propagation_tests.gd` 让重制逐字节重放。
+2026-09-25（lane WRANGE；`hsl01.exe` sha256 `f0b5f835…`，只读反汇编加本机逐函数执行，不启动 Wine）。原版没有一处直接拿 RANGE 正掩码当目标格：武器与施放范围由 `0x40f8b0`（经包装 `0x40fa80`）起点写格后四向调 `0x40f5d0`，技能效果区域由 `0x4100e0` 的矩阵分支调 `0x40fdc0`、RANGE 21..23 走直线分支（[直线范围](original_line_ranges.md)）。两者都只读地图字 `0x4c0928`。[original_range_terrain.json](original_range_terrain.json) 在 open／wall／pillar 三张 15×15 格子上完整执行 354 次（武器 124、矩阵区域 104、直线 126），覆盖字节逐个对拍；`python3 tools/hsl.py check range_terrain` 复核，`tests/run_tests.gd` 让重制逐字节重放。
 
 | 规则 | 原版做法 | 等级 | 重制位置 |
 | --- | --- | --- | --- |
@@ -71,7 +71,7 @@ This packet records the source-range builder used by the first-battle weapon cat
 | 反击资格 | `0x4423c0` 内 `0x4426b0`：守方按 `0x40bab0` 取 mode、flag 1，经 `0x409090`→`0x40fa80` 建覆盖，再 `0x40fab0` 查攻方格，命中则在 `0x4c4320` 置 `0x10000` 位；门槛 `test byte [ecx+0x24], 4` 与 `[ecx+0x19e]` | `BattleLoopCombat` 读 `Loop.attack_cells(loop, defender_id)`，`weapon_cells` 按守方 `offensive_mode` | 已接，static-derived（未改 BattleLoopCombat） |
 | 敌方／NPC 武器格显示 | 同 `0x40bab0` mode | `weapon_cells` 按 `offensive_mode` | 已接 |
 | 玩家魔法／绝技施放范围 | `0x444eb7`／`0x445075`／`0x44508f`：mode −1、flag 0 | `SkillTargetRules.cells(…, terrain)`，`BattlePlayLoop.skill_terrain`；`prepare_cast` 的 `range_terrain` | 已接：选择、确认与结算校验同一组格 |
-| 玩家效果区域 | `0x444f08`／`0x4450e0`：`0x4100e0`，mode 2 攻击、3 支援 | `effect_cells`／`line_cells`／`cast_footprint` 在 terrain 带 `area_modes` 时走 `area_coverage`／`line_coverage`；`BattlePlayLoop.player_cast_terrain` 只在玩家指令施放（`attack_select` 的魔法／特技）返回 `skill_terrain`（区域一半只给 P 侧施放者：mode 2／3 是玩家侧常数），`BattleLoopCombat._skill_context` 把它放进 `range_terrain`，`skill_cast_footprint`（悬停自绘格）、悬停目标行、`magic_target_id_at_coord`、自身中心特技范围与 `RepeatedSpecialRules.prepare` 读同一份 | 已接（lane WRANGE2），static-derived；`run_range_propagation_tests.gd` 在第 3 关（毒魔箭贴墙、夹在三名我方之间）、第 504 关（地龍震中心旁 (8,15) 墙、皇龍閃直线遇 (9,16) 墙）钉住预览＝结算，`run_targeting_preview_tests.gd` 钉住自绘格＝`skill_cast_footprint` |
+| 玩家效果区域 | `0x444f08`／`0x4450e0`：`0x4100e0`，mode 2 攻击、3 支援 | `effect_cells`／`line_cells`／`cast_footprint` 在 terrain 带 `area_modes` 时走 `area_coverage`／`line_coverage`；`BattlePlayLoop.player_cast_terrain` 只在玩家指令施放（`attack_select` 的魔法／特技）返回 `skill_terrain`（区域一半只给 P 侧施放者：mode 2／3 是玩家侧常数），`BattleLoopCombat._skill_context` 把它放进 `range_terrain`，`skill_cast_footprint`（悬停自绘格）、悬停目标行、`magic_target_id_at_coord`、自身中心特技范围与 `RepeatedSpecialRules.prepare` 读同一份 | 已接（lane WRANGE2），static-derived；`run_tests.gd` 在第 3 关（毒魔箭贴墙、夹在三名我方之间）、第 504 关（地龍震中心旁 (8,15) 墙、皇龍閃直线遇 (9,16) 墙）钉住预览＝结算，`run_targeting_preview_tests.gd` 钉住自绘格＝`skill_cast_footprint` |
 | AI 武器 | `0x40d8b0` 站位：先 `0x411b90` 抹自身占位（`0x40d8c3`），对普通目标 `0x40fa80(目标, 0x409090 射程, 0x40bab0 mode, 0)`（`0x40dbe6..0x40dbfa`），3×3 目标逐身体格 `0x40f8b0(px±32, py±32, 射程, mode, 0)`；「目标在射程内」`0x40fa80(行动者, 射程, mode, 1)` → `0x40fb20`（`0x440d2d`、`0x440c62`、`0x43fca5`）；到站复查 `0x44134a`（`0x441311..0x441369`：清 `0x10000`、`0x411a30` 放回占位、flag 1 覆盖测持有目标，为零 `je 0x441eb8` 不出手） | `AINavigationRules.weapon_terrain`（每回合一次：RANGE 行、mode、全占位字图与抹掉自身的字图）→ `attack_stations(…, terrain)`（站位＝目标覆盖∩可停格，原地＝行动者覆盖含目标）→ `BattleLoopAI._ai_station_attack` 到站 `target_in_range`，不含目标时回 `move`（站位即自身格时 `wait`），`wait_reason = station_out_of_range` | 已接，static-derived（lane AI-PRIO）；`run_ai_navigation_tests.gd` `terrain_range_cases` 钉住并可消融；504／003 探针局面隔墙出手 8／15／21／27 → 0 |
 | AI 技能 | `0x40f8b0` 调用方 `0x40cca0`、`0x40d340`、`0x40d530`、`0x40df70`；`0x4100e0` 调用方 `0x40ca71`、`0x4417a6`、`0x4418fd`、`0x441aa0`、`0x441c02`；`0x40fa80` 调用方 `0x441779`、`0x441a73` | `AISkillPlanning` 的施放位与效果格经 `SkillTargetRules`，仍平铺；`approach_goals`（`candidate_filters` 回执、`no_attack` 追击）的武器目标格也仍平铺；AI 施放在 `ai_resolving` 里结算，`player_cast_terrain` 返回空，效果区域也平铺，与 AI 规划一致 | provisional：`SkillTargetRules` 属他 lane；提交走 resolver，不经 `attack_target`，不会被新射程拒绝成循环 |
 | `0x44451e`–`0x444592` | range 9..13、mode 4、flag 1，受 `0x45b554` 门控 | — | 未验证（像调试路径） |
@@ -100,7 +100,7 @@ tools/godot.sh --headless --script res://tests/diagnostics/audit_range_propagati
 
 输出一行 `WRANGE_IMPACT battles=139 maps=63 units_changed=481/2516 …`，逐关清单写进 JSON。5 场自动对局（51、1、3、504、80）胜负、回合数与 `results.json` 相同，无 dead_end。
 
-lane WRANGE2 起，自动对局驾驭器 `tests/support/Autoplay.gd` `_destination` 的落脚格也按落脚后的武器洪泛判定（平铺射程只提候选格），不再走到墙边落地后打不到；第 3／504 关三处墙边站位由 `run_range_propagation_tests.gd` 钉住。
+lane WRANGE2 起，自动对局驾驭器 `tests/support/Autoplay.gd` `_destination` 的落脚格也按落脚后的武器洪泛判定（平铺射程只提候选格），不再走到墙边落地后打不到；第 3／504 关三处墙边站位由 `run_tests.gd` 钉住。
 
 ## Remaining Rejections
 

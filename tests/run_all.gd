@@ -10,7 +10,7 @@ extends SceneTree
 ## them one per process.
 ##
 ##   tools/godot.sh --headless --script res://tests/run_all.gd                        # every rule suite
-##   tools/godot.sh --headless --script res://tests/run_all.gd -- run_stamina_tests.gd # only the named suites
+##   tools/godot.sh --headless --script res://tests/run_all.gd -- run_ordinary_special_tests.gd # only the named suites
 ##
 ## Isolation between suites is the process-global state a rule suite does not touch
 ## (no scene boot, no user:// writes); the runner still fails a suite that leaves nodes

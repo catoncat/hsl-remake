@@ -81,7 +81,6 @@ Godot 的 `action_ready` 仍是完成时清除的队列元数据；原版在选�
 
 ```sh
 PYTHONPATH=tools python3 -m hsltools.evidence.action_state --exe $HSL_ORIGINAL_DIR/hsl01.exe --pak $HSL_ORIGINAL_DIR/hsl.pak
-python3 -m unittest tools.test_hsl_action_state_evidence -v
 PYTHONPATH=tools python3 -m hsltools.evidence.offense_completion --exe $HSL_ORIGINAL_DIR/hsl01.exe --pak $HSL_ORIGINAL_DIR/hsl.pak
 uv run --with unicorn==2.1.4 python3 tools/hsl.py generate turn_select --exe $HSL_ORIGINAL_DIR/hsl01.exe
 godot --headless --path . --script res://tests/run_action_handoff_tests.gd

@@ -1,6 +1,6 @@
 # 给予、交换与物品行动消耗
 
-> evidence: static-derived · status: live · functions: 0x407800, 0x40f560, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x43b4e0 · tools: capture_give_review.gd, hsltools/evidence/give.py, run_give_exchange_tests.gd · updated: 2026-09-26
+> evidence: static-derived · status: live · functions: 0x407800, 0x40f560, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x43b4e0 · tools: capture_give_review.gd, hsltools/evidence/give.py, run_inventory_equipment_tests.gd · updated: 2026-09-26
 
 Checked: 2026-09-13。接续 [物品命令和窗口关闭](original_item_actions.md) 及 [八槽库存／装备](original_inventory_equipment.md)。机器证据为 [original_give_exchange.json](original_give_exchange.json)，复跑工具为 `tools/hsltools/evidence/give.py`。
 
@@ -69,12 +69,11 @@ Checked: 2026-09-13。接续 [物品命令和窗口关闭](original_item_actions
 
 ```sh
 PYTHONPATH=tools python3 -m hsltools.evidence.give --exe $HSL_ORIGINAL_DIR/hsl01.exe --pak $HSL_ORIGINAL_DIR/hsl.pak
-python3 -m unittest tools.test_hsl_give_evidence -v
-godot --headless --path . --script res://tests/run_give_exchange_tests.gd
+godot --headless --path . --script res://tests/run_inventory_equipment_tests.gd
 godot --path . --position 1700,350 --resolution 640x480 --script res://tests/capture_give_review.gd
 tools/verify.sh
 ```
 
-运行窗口坐标只适用于本次已检查的显示器布局，其他布局先定位内建屏。`run_give_exchange_tests.gd` 包含独立合成例子、各容量组合的逐 code 守恒、顺序、满包、同 code、连续给予、拒绝、移动与实际 UI 信号回归。首次比较失败是 JSON float 数组与整数槽位的测试 oracle 类型不一致，已规范化期望数组后通过，没有修改产品来迎合错误断言。
+运行窗口坐标只适用于本次已检查的显示器布局，其他布局先定位内建屏。`run_inventory_equipment_tests.gd` 包含独立合成例子、各容量组合的逐 code 守恒、顺序、满包、同 code、连续给予、拒绝、移动与实际 UI 信号回归。首次比较失败是 JSON float 数组与整数槽位的测试 oracle 类型不一致，已规范化期望数组后通过，没有修改产品来迎合错误断言。
 
 内建屏短 Control 鼠标验收与准确数据见 [give_exchange/README.md](../runtime_observations/give_exchange/README.md)。完整门禁最终退出结果记录在本次本地提交说明中。仍未恢复自动整理、完整原目标过滤、所有动作状态／角色控制和跨关存档；不由这一批扩成全物品系统原版等价声明。

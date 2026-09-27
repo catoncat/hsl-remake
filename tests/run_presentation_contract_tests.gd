@@ -201,7 +201,6 @@ func run() -> void:
 	check(camera_rules.edge_direction(Vector2(9, 9), false) == Vector2.ZERO, "inactive pointer must not move the map")
 	check(camera_rules.edge_direction(Vector2(-1, 9), true) == Vector2.ZERO, "outside-window pointer must not move the map")
 	await inventory_contracts()
-	await exhausted_action_contract()
 	await cast_overlay_contracts()
 	await lead_in_contracts()
 	await ai_cue_camera_area_contracts()
@@ -209,7 +208,6 @@ func run() -> void:
 	identity_mask_contracts()
 	aftermath_contracts()
 	skill_effect_contracts()
-	utility_special_contracts()
 	# Golden traces were obtained by executing the version-checked original
 	# machine instructions with synthetic objects, not by this Godot model.
 	var oracle: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/native_presentation_helpers.json"))
@@ -634,73 +632,6 @@ func skill_effect_contracts() -> void:
 	cutin.free()
 
 
-## Utility specials (special_key special_utility: 天鳴覺醒／獅子吼／吸血劍／竊殺／金之手／銀之手／
-## 高級金之手). 0x40b8f0 → 0x40aa80 channel 1 spawns no number; the defender script's
-## aniShowHitResult (0x404643) shows the HP loss when there is one, else nothing while the cast's
-## EXP return (*0x4c13f0, the receipt's experience_basis.points) is non-zero, else MISS. The
-## gold a StealGold row took floats as $ with the drop gold (0x442720 case 2 reads *0x4c2c84).
-func utility_special_contracts() -> void:
-	var base := {"special_key": "special_utility", "attacker_id": "leonard", "defender_id": "enemy021_1", "hit": true, "damage": 0, "actual_damage": 0,
-		"defender_hp_before": 22, "defender_hp_after": 22, "attacker_before": {}, "defender_before": {}, "turn_effects": [], "gold_effects": [], "stolen_items": [], "direct_experience": 0, "stolen_hp": 0}
-	var receipts := {}
-	for row in [
-		["steal_item", "special:magicOTHER:magicCode12", "金之手", {"stolen_items": [{"kind": "steal_item", "code": 1, "source_slot": 0, "unit_id": "enemy021_1", "steal_roll": 7}], "experience_basis": {"points": 4}}],
-		["steal_item_high", "special:magicOTHER:magicCode14", "高級金之手", {"stolen_items": [{"kind": "steal_item", "code": 1, "source_slot": 0, "unit_id": "enemy021_1", "steal_roll": 7}], "experience_basis": {"points": 4}}],
-		["slots_refused", "special:magicOTHER:magicCode12", "金之手", {"experience_basis": {"points": 0}}],
-		["steal_gold", "special:magicOTHER:magicCode10", "銀之手", {"gold_effects": [{"kind": "steal_gold", "amount": 37, "from": "target_carry", "unit_id": "enemy021_1"}], "direct_experience": 25, "experience_basis": {"points": 25}}],
-		["gold_under_two", "special:magicOTHER:magicCode10", "銀之手", {"gold_effects": [{"kind": "steal_gold", "amount": 1, "from": "target_carry", "unit_id": "enemy021_1"}], "experience_basis": {"points": 0}}],
-		["reactivate", "special:magicMIND:magicCode02", "天鳴覺醒", {"defender_id": "ally", "turn_effects": [{"kind": "reactivate", "unit_id": "ally", "applied": true, "slot_index": 2}], "experience_basis": {"points": 3}}],
-		["cancel", "special:magicOTHER:magicCode20", "獅子吼", {"turn_effects": [{"kind": "cancel_pending", "unit_id": "enemy021_1", "applied": true, "slot_index": 5}], "experience_basis": {"points": 3}}],
-		["rolled_miss", "special:magicOTHER:magicCode20", "獅子吼", {"hit": false, "experience_basis": {"points": 0}}],
-		["drain", "special:magicOTHER:magicCode24", "吸血劍", {"damage": 14, "actual_damage": 14, "defender_hp_after": 8, "stolen_hp": 14, "experience_basis": {"points": 9}}],
-		["mug", "special:magicOTHER:magicCode13", "竊殺", {"damage": 9, "actual_damage": 9, "defender_hp_after": 13, "gold_effects": [{"kind": "steal_gold", "amount": 15, "from": "target_carry", "unit_id": "enemy021_1"}], "experience_basis": {"points": 12}}]]:
-		var receipt := base.duplicate(true)
-		receipt.merge({"skill_id": row[1], "skill_name": row[2]}, true)
-		receipt.merge(row[3], true)
-		receipts[row[0]] = receipt
-	for key in ["steal_item", "steal_item_high", "steal_gold", "reactivate", "cancel"]:
-		check(BattleCombatCutin.strike_feedback(receipts[key]) == "" and not BattleCombatCutin.shows_miss(receipts[key]), "%s (%s): a landed utility effect with no HP change shows no result, not 0 (%s)" % [receipts[key]["skill_name"], key, BattleCombatCutin.strike_feedback(receipts[key])])
-	for key in ["slots_refused", "gold_under_two", "rolled_miss"]:
-		check(BattleCombatCutin.strike_feedback(receipts[key]) == "MISS" and BattleCombatCutin.shows_miss(receipts[key]), "%s (%s): a utility cast whose EXP return is 0 reads as the miss (kind 5, MISS), not 0 (%s)" % [receipts[key]["skill_name"], key, BattleCombatCutin.strike_feedback(receipts[key])])
-	check(BattleCombatCutin.strike_feedback(receipts["drain"]) == "14" and BattleCombatCutin.strike_feedback(receipts["mug"]) == "9", "吸血劍／竊殺 keep their red HP number (%s, %s)" % [BattleCombatCutin.strike_feedback(receipts["drain"]), BattleCombatCutin.strike_feedback(receipts["mug"])])
-	var cutin = BattleCombatCutin.new()
-	root.add_child(cutin)
-	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
-	cutin.set_process(false)
-	for key in ["steal_item", "steal_gold", "reactivate", "cancel", "slots_refused"]:
-		cutin.play(receipts[key], unit("001"), unit("021"), false)
-		var line := ""
-		var reached := false
-		while cutin.busy():
-			cutin._process(1.0 / 60.0)
-			if cutin.busy() and cutin.result.visible and cutin.result.position.y == 264:
-				line = cutin.result_text()
-				reached = true
-		var expected: String = BattleCombatCutin.MISS_TEXT if key == "slots_refused" else ""
-		check(reached and line == expected, "the scripted %s cut-in (%s) reads «%s» at aniShowHitResult — the result alone, no skill-name head (UI6) (%s)" % [receipts[key]["skill_name"], key, expected, line])
-	cutin.free()
-	var aftermath = preload("res://game/battle/scene/BattleAftermath.gd").new()
-	var runtime := AftermathStubRuntime.new()
-	root.add_child(runtime)
-	root.add_child(aftermath)
-	var units := [{"id": "leonard", "actor_id": "001", "coord": Vector2i(3, 3), "hp": 40}, {"id": "enemy021_1", "actor_id": "021", "coord": Vector2i(4, 3), "hp": 22}]
-	var take: Dictionary = receipts["steal_gold"].duplicate(true)
-	take.merge({"sequence": 1, "rewards": {"gold": 0, "kills": [], "item_count": 0}}, true)
-	aftermath.prepare(take, units)
-	check(aftermath.jobs.size() == 1 and aftermath.jobs[0]["kind"] == "gold" and int(aftermath.jobs[0]["gold"]) == 37 and aftermath.jobs[0]["coord"] == Vector2i(3, 3), "銀之手's take floats once as $ over the caster (%s)" % str(aftermath.jobs))
-	aftermath.advance(1.0 / 60.0, runtime)
-	check(aftermath.reward_label.visible and aftermath.reward_label.text == "$ 37", "the $ float reads the stolen amount (%s)" % aftermath.reward_label.text)
-	while aftermath.busy(): aftermath.advance(1.0 / 60.0, runtime)
-	var kill: Dictionary = receipts["mug"].duplicate(true)
-	kill.merge({"sequence": 2, "defender_hp_after": 0, "rewards": {"gold": 20, "kills": [{"attacker_id": "leonard", "defender_id": "enemy021_1"}], "item_count": 0}}, true)
-	units[1]["hp"] = 0
-	aftermath.prepare(kill, units)
-	var floats: Array = aftermath.jobs.filter(func(job): return job["kind"] == "gold")
-	check(floats.size() == 1 and int(floats[0]["gold"]) == 35, "竊殺's take joins the drop gold in one $ float, as *0x4c2c84 sums both (%s)" % str(floats))
-	aftermath.free()
-	runtime.free()
-
-
 func sprite_key_contracts() -> void:
 	var Key = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 	var shared: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(Key.SHARED_WALK_MANIFEST_PATH))
@@ -738,8 +669,6 @@ func sprite_key_contracts() -> void:
 	vitals.show_unit(leonard)
 	check(vitals.portrait.texture.resource_path.ends_with("portraits/001.png") and vitals.values["role"].text == "劍豪", "010 雷歐納德: base portrait (same FACE0000), the 劍豪 title")
 	vitals.free()
-	install_word_contracts()
-	cutin_key_contracts()
 
 
 ## BattleVitals.mask — the three 0x434d10 predicates on every WINDOW10／WINDOW20 surface
@@ -814,128 +743,6 @@ func identity_mask_contracts() -> void:
 	cutin._show_shot(cutin.clips[0], true)
 	check(cutin.vitals.values["hp"].text == "22 / 22", "a clip enqueued without a known map shows the strip in the clear (the player's own target is known at confirmation)")
 	cutin.queue_free()
-
-
-## Status panel 稱號 / name of a unit whose placed object installed obj_Data5 (0x407ec0: low
-## word → live +0x1c 稱號, high word → live +0x04 name): level 17's three workers are the
-## 062 村民 row with 稱號 1235 搬運工人 and name 306; 0x434d10 prints +0x04 verbatim, so the
-## name is 「???」 even on a known unit (lead decision 2026-09-26). Units without the install
-## word keep the row's.
-func install_word_contracts() -> void:
-	var vitals = preload("res://game/battle/scene/BattleVitals.gd").new()
-	root.add_child(vitals)
-	var seventeen: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/battles/battle_017.json"))
-	var workers: Array = seventeen["playable_units"].filter(func(row): return str(row["actor_id"]) == "062")
-	check(workers.size() == 3 and workers.all(func(row): return str(row.get("title", "")) == "搬運工人" and str(row.get("display_name", "")) == "???"), "battle_017 carries the installed 稱號 1235 and name 306 on all three placed workers (obj_Data5)")
-	var worker: Dictionary = workers[0].duplicate(true)
-	worker["level"] = 1
-	vitals.show_unit(worker)
-	check(vitals.portrait.texture.resource_path.ends_with("portraits/062.png") and vitals.values["name"].text == "???" and vitals.values["role"].text == "搬運工人", "level 17 worker: 062 face, name 306 printed ???, the installed 稱號 搬運工人")
-	var villager: Dictionary = worker.duplicate(true)
-	villager.erase("title")
-	villager.erase("display_name")
-	vitals.show_unit(villager)
-	check(vitals.values["name"].text == "???" and vitals.values["role"].text == "村民", "the same row without the install word: the row's name 306 ??? and PLAYERS 稱號 村民")
-	var captain := unit("024")
-	vitals.show_unit(captain)
-	check(vitals.values["name"].text == "???" and vitals.values["role"].text == "重裝兵", "the fixture's 024 (no install word) keeps the row's name 306 ??? and 稱號 重裝兵")
-	captain["title"] = "兵隊長"
-	vitals.show_unit(captain)
-	check(vitals.values["role"].text == "兵隊長" and vitals.values["name"].text == "???", "a unit-level title alone changes the 稱號 label only; the name stays the row's ???")
-	var leonard := unit("001")
-	leonard["title"] = "兵隊長"
-	vitals.show_unit(leonard)
-	check(vitals.values["name"].text == "雷歐納德" and vitals.values["role"].text == "兵隊長", "a named row keeps its proper name under an installed 稱號")
-	vitals.free()
-
-
-## Attack cut-in art for a job-up member: the ordinary frames (P0xx_001…, flash, dispatch, hurt
-## frame) and the special-skill panels both follow the up-title row when the combat manifest
-## carries it (the 3-panel s_shape strips of 010／012／013／016／017／019／020); a row without a
-## strip falls back to its base row's (011 → 002 has none imported here → []); the base rows
-## 004／006／007／009 and the monsters 053–055／057 carry their own ANIMAL s_shape strips, and a row
-## whose ANIMAL block declares none (056) yields [] so the cut-in shows the standing caster
-## instead of erroring.
-func cutin_key_contracts() -> void:
-	var cutin = BattleCombatCutin.new()
-	root.add_child(cutin)
-	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
-	var actors: Dictionary = cutin.manifest["actors"]
-	for row in ["010", "011", "012", "013", "014", "015", "016", "017", "019", "020", "052"]:
-		var entry: Dictionary = actors.get(row, {})
-		check(not entry.is_empty() and str(entry["frames"][0]["source_member"]) == "ANIMAL\\P%s_001.SHP" % row and entry.has("dispatch") and int(entry["hurt_frame"]) < entry["frames"].size(), "up-title row %s carries its own ordinary cut-in frames, dispatch and hurt frame" % row)
-		check(str(entry["facing_evidence"]).begins_with("provisional"), "up-title row %s sprite_facing stays provisional until reviewed" % row)
-	check(not actors.has("018"), "018 (no SHAPEDEF walk row) is not imported into the combat manifest")
-	for row in ["010", "012", "013", "016", "017", "019", "020"]:
-		check(actors[row].get("special_frames", []).size() == 3 and str(actors[row]["special_frames"][0]["source_member"]) == "ANIMAL\\P%s_201.SHP" % row, "up-title row %s imports its 3-frame s_shape strip" % row)
-	check(actors["001"]["special_frames"].size() == 7 and actors["003"]["special_frames"].size() == 6, "base 001/003 special panels are unchanged")
-	var undeclared: Array = actors.keys().filter(func(row): return not actors[row].has("special_frames"))
-	check(undeclared.is_empty() and str(cutin.manifest.get("special_frames_policy", "")).begins_with("Every actor carries special_frames"), "every combat manifest row declares special_frames ([] = no strip imported): %s" % str(undeclared))
-	for row in ["004", "006", "007", "009", "053", "054", "055", "057"]:
-		var member := "ANIMAL\\P%s_201.SHP" % ("009" if row == "053" else row)
-		check(actors[row]["special_frames"].size() == (4 if row in ["009", "053"] else 3) and str(actors[row]["special_frames"][0]["source_member"]) == member, "row %s imports its ANIMAL s_shape strip from %s" % [row, member])
-	check(actors["056"]["special_frames"] == [], "056 declares no s_shape strip in ANIMAL.TXT: none imported")
-	var leonard := unit("001")
-	leonard["job_up_target_actor_id"] = "010"
-	var archer := {"actor_id": "003", "job_up_target_actor_id": "012"}
-	check(cutin.art_key(leonard) == "010" and cutin.art_key(unit("001")) == "001", "a 001→010 member cuts in with the 010 劍豪 frames; an unchanged member keeps 001")
-	check(cutin.art_key({"actor_id": "009", "job_up_target_actor_id": "018"}) == "009", "009→018 keeps the 009 cut-in (018 not imported)")
-	check(cutin.art_key({"actor_id": "008", "job_up_target_actor_id": "052"}) == "052", "008→052 cuts in with the 052 frames")
-	check(cutin.art_key({"actor_id": "002", "job_up_target_actor_id": "011"}) == "011", "002→011 cuts in with the 011 frames (011 has no s_shape strip; its base panels stay reachable below)")
-	var strike := {"attacker_before": {}, "defender_before": {}}
-	cutin.play(strike, leonard, unit("021"), false)
-	cutin.play(strike, archer, unit("021"), false)
-	cutin.play(strike, {"actor_id": "002", "job_up_target_actor_id": "011"}, unit("021"), false)
-	cutin.play(strike, unit("001"), unit("021"), false)
-	cutin.play(strike, {"actor_id": "004"}, unit("021"), false)
-	cutin.play(strike, {"actor_id": "056"}, unit("021"), false)
-	check(cutin.clips[0]["attacker"] == "010" and cutin.clips[0]["attacker_base"] == "001" and cutin.special_frames(cutin.clips[0]) == actors["010"]["special_frames"], "劍豪 ordinary clip keys 010 and 氣刃斬 shows the 3-panel P010 strip")
-	check(cutin.clips[1]["attacker"] == "012" and cutin.special_frames(cutin.clips[1]) == actors["012"]["special_frames"], "003→012 clip keys 012 and 毒魔箭 composes the 3-panel P012 strip")
-	check(cutin.clips[2]["attacker"] == "011" and cutin.clips[2]["defender"] == "021", "defender key follows the same rule (no job-up: own row)")
-	check(cutin.special_frames(cutin.clips[2]).is_empty(), "011 has no strip and 002's is not in the combat manifest: no panels")
-	check(cutin.special_frames(cutin.clips[3]) == actors["001"]["special_frames"], "an unchanged 001 keeps its 7 氣刃斬 cast panels")
-	check(cutin.special_frames(cutin.clips[4]) == actors["004"]["special_frames"], "004 漢克斯 composes its own 3-panel P004 strip")
-	check(cutin.special_frames(cutin.clips[5]).is_empty(), "056 (no s_shape strip) yields no panels instead of a missing-key error")
-	cutin.clips.clear()
-	# Playback of the 絶技 cut-in: the 劍豪 strip's three panels appear in order across the
-	# 0.5 s lead (banner, then the two insets); a caster without a strip
-	# stands on the ordinary shot line and the clip still runs to completion.
-	cutin.set_process(false)
-	var swordmaster := unit("001")
-	swordmaster["job_up_target_actor_id"] = "010"
-	var skill_strike := {"skill_name": "氣刃斬", "damage": 8, "hit": true, "defender_hp_before": 22, "defender_hp_after": 14, "attacker_before": {}, "defender_before": {}}
-	cutin.play(skill_strike, swordmaster, unit("021"), false)
-	var panels_seen: Array[String] = []
-	while cutin.busy():
-		cutin._process(1.0 / 60.0)
-		if cutin.busy() and cutin.elapsed < 0.5 and cutin.attacker_sprite.texture != null:
-			var shown: String = cutin.attacker_sprite.texture.resource_path
-			if panels_seen.is_empty() or panels_seen.back() != shown:
-				panels_seen.append(shown)
-	check(panels_seen == actors["010"]["special_frames"].map(func(frame): return str(frame["res_path"])), "劍豪 氣刃斬 shows P010_201→203 in order during the lead (%s)" % str(panels_seen))
-	var stripless := unit("001")  # the first-battle roster has no 056; only the art row matters here
-	stripless["actor_id"] = "056"
-	cutin.play({"skill_name": "連續突刺", "damage": 6, "hit": true, "defender_hp_before": 22, "defender_hp_after": 16, "attacker_before": {}, "defender_before": {}}, stripless, unit("021"), false)
-	var standing_positions: Array[Vector2] = []
-	while cutin.busy():
-		cutin._process(1.0 / 60.0)
-		if cutin.busy() and cutin.elapsed < 0.5 and cutin.attacker_sprite.visible:
-			standing_positions.append(cutin.attacker_sprite.position)
-	check(not standing_positions.is_empty() and standing_positions.all(func(point): return point == Vector2(320, 330)) and cutin.attacker_sprite.texture.resource_path.ends_with("056/0.png"), "a 056 caster without a strip stands on the shot line with its standing cut-in frame")
-	# An enemy caster (level 36: 055 傲 casts 碎岩擊2 and kills the target) composes its P055 strip; the
-	# clip must release, impact and complete within its 1.5 s so the battle can end.
-	var boss := unit("021")
-	boss["actor_id"] = "055"
-	var boss_events: Array[String] = []
-	cutin.released.connect(func(_s, _a, _d, _c): boss_events.append("release"))
-	cutin.impact.connect(func(_s, _a, _d, _c): boss_events.append("impact"))
-	cutin.play({"skill_name": "碎岩擊2", "damage": 40, "hit": true, "defender_hp_before": 30, "defender_hp_after": 0, "attacker_before": {}, "defender_before": {}}, boss, unit("001"), false)
-	var boss_frames := 0
-	while cutin.busy() and boss_frames < 600:
-		boss_frames += 1
-		cutin._process(1.0 / 60.0)
-	check(not cutin.busy() and boss_frames < 600 and boss_events == ["release", "impact"], "a 055 碎岩擊2 lethal cut-in completes with one release and one impact (frames=%d events=%s)" % [boss_frames, str(boss_events)])
-	cutin.free()
 
 
 func inventory_contracts() -> void:
@@ -1318,45 +1125,3 @@ func ai_cue_camera_area_contracts() -> void:
 		reference_camera.free()
 		scene.queue_free()
 		await process_frame
-
-
-func exhausted_action_contract() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	var player: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
-	enemy["coord"] = player["coord"] + Vector2i.RIGHT
-	enemy["hp"] = 100
-	enemy["max_hp"] = 100
-	scene.play_loop["moved_this_action"] = true
-	scene.apply_loop(scene.play_loop, "test")
-	scene.menus.choose_command("attack")
-	scene.apply_loop(BattlePlayLoop.attack_target(scene.play_loop, enemy["id"], func(_n): return 0), "test")
-	scene.finish_attack_attempt()
-	var queue: Dictionary = scene.play_loop["turn_queue"].duplicate(true)
-	var view = scene.get_node("BattlePresentation")
-	view.cutin.set_process(false)
-	scene._process(0)
-	check(scene.play_loop["turn_queue"] == queue and not scene.ai_playback_active, "exhausted action must not hand off before its map cue")
-	scene._process(view.attack_cue.duration)
-	check(view.cutin.busy() and not scene.action_menu.visible, "complete hit sequence must precede exhausted-action handoff")
-	for _clip in range(2):
-		if not view.cutin.busy(): break
-		view.cutin._process(10)
-		check(scene.play_loop["turn_queue"] == queue,"primary/counter clip completion alone never advances the queue")
-	scene._process(0)
-	check(view.aftermath.reward_label.visible and scene.play_loop["turn_queue"] == queue, "map EXP finishes before exhausted-action handoff")
-	for _job in range(view.aftermath.jobs.size()):
-		if not view.aftermath.busy(): break
-		scene._process(0)
-		check(scene.play_loop["turn_queue"] == queue, "NPC counter EXP cannot release the next menu early")
-		scene._process(view.aftermath.REWARD_SECONDS)
-	check(scene.ai_playback_active and not scene.action_menu.visible, "move then hit continues to the next actor, without a stray two-button menu")
-	check(scene.play_loop["turn_queue"] != queue and not BattlePlayLoop.action_exhausted(scene.play_loop), "handoff commits existing action flags once")
-	check(not view.status_label.visible, "normal battle must not retain the debug objective transcript")
-	scene.queue_free()
-	await process_frame

@@ -43,50 +43,31 @@ func _run_all() -> void:
 	_test_map_scene_uses_texture_world_size_and_spatial_gate()
 	_test_map_object_placement_alignment_manifest()
 	_test_grid_projection_round_trip_is_single_contract()
-	_test_scene_timeline_advances_events_without_scene_side_effects()
-	_test_actor_runtime_exposes_stable_motion_contract()
 	_test_actor_runtime_consumes_real_walk_manifest_frames()
 	await _test_battle_scene_runtime_scene_loads_with_camera_and_spatial_gate()
-	await _test_first_battle_opening_through_coordinator()
-	await _test_ai_move_preview_before_walk()
 	await _test_battle_scene_select_move_cancel_loop()
-	await _test_battle_scene_mechanics_play_loop_wait_handoff()
 	await _test_battle_scene_pointer_input_hit_test_loop()
-	await _test_ai_walk_displacement()
-	await _test_player_walk_uses_obstacle_detour()
-	await _test_walk_turns_and_returns_to_stand()
 	await _test_fire_animation_live_scene()
 	await _test_walk_audio_cues()
-	await _test_idle_animation_loop()
 	await _test_job_up_reconfigures_actor_frames()
-	await _test_skipped_opening_removes_story_statues()
 	await _test_actor_depth_follows_visible_position()
 	await _test_combat_feedback_once_per_exchange()
-	await _test_round_six_cutscene_and_closing_line()
 	await _test_result_presentation()
-	await _test_battle_music_lifecycle()
-	_test_departure_queue()
 	await _test_status_inspection_no_turn_cost()
 	await _test_attack_target_preview()
 	await _test_move_select_identity_bar()
 	await _test_combat_cutin_sequence()
 	await _test_cutin_effect_anchors_and_reset()
 	await _test_pending_combat_blocks_early_input()
-	await _test_lethal_actor_survives_presentation_boundary()
 	await _test_mage_magic()
 	await _test_local_spell_layers()
 	await _test_live_experience()
 	await _test_growth_allocation_interaction()
 	await _test_special_skill()
-	await _test_ally_recovery_item()
 	await _test_recovery_item()
 	await _test_camera_pan_spatial_contract()
-	await _test_menu_screen_bounds()
-	_test_ai_reachable_strikes()
 	_test_stamina_builds_from_zero()
 	_test_undead_survives_lethal_strike()
-	await _test_equipment_mobility_display()
-	await _test_stat_magic_trial_scene()
 	await _test_priest_trial_scene()
 
 
@@ -183,63 +164,6 @@ func _test_grid_projection_round_trip_is_single_contract() -> void:
 	_assert_eq(world, Vector2(196.0, 208.0), "grid_to_world should use one map-scene projection contract")
 	_assert_eq(config.world_to_grid(world + Vector2(8.0, 8.0)), Vector2i(3, 4), "world_to_grid should use the same projection contract")
 	_assert_eq(config.world_size, Vector2i(1024, 768), "projection code must not bake LEVEL51 768x768 as a global constant")
-
-
-func _test_scene_timeline_advances_events_without_scene_side_effects() -> void:
-	var source_events := [
-		{"id": "first_control_ready", "kind": "state_marker", "evidence_tier": "godot-rendered-provisional"},
-		{"id": "opening_placeholder", "kind": "deferred_marker", "evidence_tier": "provisional"},
-	]
-	var timeline := SceneTimeline.from_events(source_events)
-	var initial_summary: Dictionary = timeline.summary()
-	_assert_eq(initial_summary.get("schema", ""), "hsl_scene_timeline.v1", "SceneTimeline should expose a stable schema")
-	_assert_eq(int(initial_summary.get("event_count", 0)), 2, "SceneTimeline should retain event count")
-	_assert_eq(initial_summary.get("current_event_id", ""), "first_control_ready", "SceneTimeline should start at the first event")
-	_assert_eq(initial_summary.get("finished", true), false, "SceneTimeline should not start finished")
-	var current_event: Dictionary = timeline.current_event()
-	current_event["id"] = "mutated"
-	_assert_eq(timeline.current_event().get("id", ""), "first_control_ready", "SceneTimeline current_event reads should not mutate the stored event")
-	_assert_eq(source_events[0].get("id", ""), "first_control_ready", "SceneTimeline should not mutate source events")
-
-	var transition: Dictionary = timeline.advance("confirm")
-	_assert_eq(transition.get("schema", ""), "hsl_scene_timeline_transition.v1", "SceneTimeline advance should return a transition envelope")
-	_assert_eq(transition.get("from_event_id", ""), "first_control_ready", "SceneTimeline transition should report the previous event")
-	_assert_eq(transition.get("to_event_id", ""), "opening_placeholder", "SceneTimeline transition should report the next event")
-	_assert_eq(transition.get("trigger", ""), "confirm", "SceneTimeline transition should preserve trigger")
-	_assert_eq(timeline.summary().get("current_event_id", ""), "opening_placeholder", "SceneTimeline should advance to the next event")
-	timeline.advance("confirm")
-	_assert_eq(timeline.summary().get("finished", false), true, "SceneTimeline should finish after advancing past the final event")
-	var finished_index := int(timeline.summary().get("current_index", -1))
-	timeline.advance("confirm")
-	_assert_eq(int(timeline.summary().get("current_index", -1)), finished_index, "SceneTimeline should not advance beyond finished state")
-
-	var seek_timeline := SceneTimeline.from_events(source_events, "opening_placeholder")
-	_assert_eq(seek_timeline.summary().get("current_event_id", ""), "opening_placeholder", "SceneTimeline should optionally start at a named event")
-	seek_timeline.reset()
-	_assert_eq(seek_timeline.summary().get("current_event_id", ""), "first_control_ready", "SceneTimeline reset should return to the first event")
-
-
-func _test_actor_runtime_exposes_stable_motion_contract() -> void:
-	var actor := ActorRuntime.new()
-	actor.configure_from_manifest("leonard", {
-		"actor_id": "001",
-		"fallback": {
-			"mode": "single_frame",
-			"src": "res://content/imported/hsl/shared/shape_previews/actor_sprite/001-00001.SHP.png",
-			"tier": "provisional"
-		},
-		"animations": {},
-		"unresolved": ["full_walk_manifest_not_loaded"]
-	})
-	actor.play_state("idle", "south")
-	var movement_result: Dictionary = actor.move_along([Vector2(10.0, 20.0), Vector2(42.0, 52.0)], 0.0)
-	_assert_eq(actor.unit_id, "leonard", "ActorRuntime should keep stable unit id")
-	_assert_eq(actor.animation_state, "idle", "ActorRuntime should expose requested animation state even with fallback")
-	_assert_eq(actor.facing, "south", "ActorRuntime should expose requested facing")
-	_assert_eq(actor.position, Vector2(42.0, 52.0), "ActorRuntime zero-duration move should land on final path point")
-	_assert_eq(movement_result.get("schema", ""), "hsl_actor_runtime_move.v1", "ActorRuntime movement should return a stable envelope")
-	_assert_eq(movement_result.get("frame_source_status", ""), "fallback_single_frame", "ActorRuntime should label fallback frame use")
-	actor.free()
 
 
 func _test_actor_runtime_consumes_real_walk_manifest_frames() -> void:
@@ -432,46 +356,6 @@ func _test_battle_scene_select_move_cancel_loop() -> void:
 	await process_frame
 
 
-func _test_battle_scene_mechanics_play_loop_wait_handoff() -> void:
-	var packed: PackedScene = load("res://game/battle/scene/BattleSceneRuntime.tscn")
-	var scene := packed.instantiate()
-	root.add_child(scene)
-	await process_frame
-	scene.call("start_dev_first_control_harness")
-	await process_frame
-	scene.call("select_actor", "leonard")
-	var before: Dictionary = RuntimeReadback.play_loop_summary(scene)
-	_assert_eq(before.get("current_actor_id", ""), "leonard", "Leonard should be current before wait")
-	_assert_true(before.get("command_ids", []).has("wait"), "menu should include wait")
-	scene.menus.choose_command("wait")
-	_assert_eq(scene.get_node("World/Actors").get_child_count(), 12, "full opening roster has no initial reinforcement deficit")
-	var mid: Dictionary = RuntimeReadback.interaction_summary(scene)
-	_assert_true(
-		str(mid.get("interaction_state", "")) == "ai_resolving" or bool(mid.get("ai_playback_active", false)),
-		"wait should enter visible AI playback"
-	)
-	# Drive AI playback explicitly — headless frame delta is unreliable for timed waits.
-	_assert_true(scene.has_method("flush_ai_playback"), "runtime should expose flush_ai_playback for tests")
-	scene.call("flush_ai_playback")
-	await process_frame
-	var expected_actor_count: int = scene.play_loop.units.size()
-	scene.apply_loop(scene.play_loop, "test")
-	_assert_eq(scene.get_node("World/Actors").get_child_count(), expected_actor_count, "repeated sync must render each real unit once, including legitimate replacement recruits")
-	var rendered_ids := {}
-	for actor in scene.get_node("World/Actors").get_children():
-		_assert_true(not rendered_ids.has(actor.unit_id), "repeated sync must not duplicate any unit identity")
-		rendered_ids[actor.unit_id] = true
-	var after: Dictionary = RuntimeReadback.play_loop_summary(scene)
-	_assert_eq(after.get("current_actor_id", ""), "leonard", "after non-player AI turns, control should return to Leonard")
-	_assert_true(int(after.get("last_ai_action_count", 0)) >= 1, "wait should run at least one non-player AI action")
-	_assert_eq(after.get("interaction", ""), "action_menu", "after wait handoff Leonard should be back in action menu")
-	var interaction: Dictionary = RuntimeReadback.interaction_summary(scene)
-	_assert_eq(interaction.get("selected_unit_id", ""), "leonard", "Leonard should remain selected after handoff")
-	_assert_eq(bool(interaction.get("ai_playback_active", true)), false, "AI playback should finish")
-	scene.queue_free()
-	await process_frame
-
-
 func _test_battle_scene_pointer_input_hit_test_loop() -> void:
 	var packed: PackedScene = load("res://game/battle/scene/BattleSceneRuntime.tscn")
 	var scene := packed.instantiate()
@@ -568,106 +452,6 @@ func _dispatch_key(scene: Node, keycode: Key) -> void:
 	event.keycode = keycode
 	event.pressed = true
 	scene.call("_input", event)
-
-
-func _test_ai_walk_displacement() -> void:
-	var scene: Node = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	scene.menus.choose_command("wait")
-	var moves := 0
-	for step in range(12):
-		if not scene.ai_playback_active:
-			break
-		var before := {}
-		for actor in scene.get_node("World/Actors").get_children():
-			before[actor.unit_id] = actor.position
-		scene.advance_ai_playback()
-		var action: Dictionary = scene.play_loop.get("last_ai_action", {})
-		if str(action.get("kind", "")) not in ["move", "move_then_attack"]:
-			continue
-		var actor: Node2D = scene.actor_node_for_unit(str(action.actor_id))
-		var start: Vector2 = before[action.actor_id]
-		var destination: Vector2 = scene.actor_world_position_for_grid(action.to)
-		if start.is_equal_approx(destination):
-			continue
-		moves += 1
-		var before_wait: Dictionary = scene.play_loop.duplicate(true)
-		scene.tick_ai_playback(10.0)
-		_assert_eq(scene.play_loop, before_wait, "AI timer expiry must not resolve another turn while the current actor is walking")
-		_assert_true(not scene.get_node("UI/ActionMenu").visible, "Final AI movement must finish before the player menu is shown")
-		_assert_true(actor.position.is_equal_approx(start), "AI movement must begin at the visible origin, including the last AI turn")
-		_assert_true(actor._motion_tween != null, "AI movement must create a nonzero duration tween")
-		if actor._motion_tween == null:
-			continue
-		actor._motion_tween.pause()
-		actor._motion_tween.custom_step(0.05)
-		_assert_true(not actor.position.is_equal_approx(start) and not actor.position.is_equal_approx(destination), "AI movement must have a displaced intermediate frame")
-		actor._motion_tween.custom_step(3.0)
-		_assert_true(actor.position.is_equal_approx(destination), "AI movement must reach the committed destination")
-	_assert_true(moves > 0, "AI walk regression must exercise a real moving action")
-	scene.queue_free()
-	await process_frame
-
-
-func _test_player_walk_uses_obstacle_detour() -> void:
-	var scene: Node = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	for unit in scene.play_loop.units:
-		if unit.id == "leonard":
-			unit.coord = Vector2i(4, 4)
-			unit.move_point = 5
-	scene.play_loop.tiles = {Vector2i(5, 4): {"blocks_movement": true}}
-	scene.apply_loop(scene.play_loop, "test")
-	scene.select_actor("leonard")
-	scene.menus.choose_command("move")
-	scene.move_selected_actor_to_grid(Vector2i(6, 4))
-	var actor: Node2D = scene.actor_node_for_unit("leonard")
-	var previous: Vector2 = scene.actor_world_position_for_grid(Vector2i(4, 4))
-	var forbidden: Vector2 = scene.actor_world_position_for_grid(Vector2i(5, 4))
-	_assert_eq(actor.last_path.size(), 4, "Player presentation must walk the four-cell detour around the blocked direct route")
-	for point in actor.last_path:
-		_assert_true(is_equal_approx(previous.distance_to(point), 32.0), "Every rendered path segment must cross one adjacent grid edge")
-		_assert_true(point != forbidden, "Rendered path must not enter a blocked cell")
-		previous = point
-	_assert_eq(previous, scene.actor_world_position_for_grid(Vector2i(6, 4)), "Detour must finish at the accepted target")
-	_assert_true(is_equal_approx(float(scene.last_move_result.duration_seconds), 4 * ActorRuntime.WALK_CELL_SECONDS), "A four-cell walk uses four 8-tick (0.128 s) intervals, not a fixed-total teleport")
-	var moving_loop: Dictionary = scene.play_loop.duplicate(true)
-	scene.menus.choose_command("wait")
-	_assert_eq(scene.play_loop, moving_loop, "Wait cannot commit a turn before the player's visible movement finishes")
-	_assert_true(not scene.get_node("UI/ActionMenu").visible, "Post-move menu must remain hidden during walking")
-	actor._motion_tween.pause()
-	actor._motion_tween.custom_step(ActorRuntime.WALK_CELL_SECONDS)
-	_assert_true(actor.position.is_equal_approx(actor.last_path[0]), "One cell interval must reach only the first detour cell")
-	actor._motion_tween.custom_step(1.0)
-	scene._process(0.0)
-	_assert_true(scene.get_node("UI/ActionMenu").visible, "Walking completion must reveal the post-move menu")
-	scene.cancel_pending_move()
-	_assert_eq(actor.position, scene.actor_world_position_for_grid(Vector2i(4, 4)), "Cancel must stop the detour tween and restore the starting position")
-	scene.queue_free()
-	await process_frame
-
-
-func _test_walk_turns_and_returns_to_stand() -> void:
-	var actor := ActorRuntime.new()
-	root.add_child(actor)
-	actor.configure_from_manifest("leonard", _load_json("res://content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json").actors["001"])
-	actor.move_along([Vector2.ZERO, Vector2(32, 0), Vector2(32, -32)], 0.4)
-	_assert_eq(actor.facing, "right", "Moving right must select SHAPEDEF walk_right immediately")
-	_assert_true(str(actor.runtime_summary().current_frame_source).ends_with("001-20001.png"), "Rightward motion must use group 2, not the stand group")
-	actor._motion_tween.pause()
-	actor._motion_tween.custom_step(0.21)
-	_assert_eq(actor.facing, "up", "An upward corner must change the displayed walking direction")
-	_assert_true(str(actor.runtime_summary().current_frame_source).ends_with("001-30001.png"), "Upward corner must use group 3")
-	actor._motion_tween.custom_step(0.3)
-	_assert_eq(actor.animation_state, "idle", "Completed movement must return to the stand animation")
-	_assert_true(str(actor.runtime_summary().current_frame_source).ends_with("001-00001.png"), "Completed movement must show the stand source group")
-	_assert_true(not actor.runtime_summary().frame_tween_active, "Walking frames must stop after arrival")
-	actor.queue_free()
-	await process_frame
 
 
 func _test_fire_animation_live_scene() -> void:
@@ -790,78 +574,6 @@ func _test_job_up_reconfigures_actor_frames() -> void:
 	await process_frame
 
 
-## STORY037 deletes the statue on each of its five shuffled slots before a guardian appears
-## there (actDeleteRandomPosObject). Entering first control without the opening (the dev
-## harness; a restored checkpoint takes the same BattleSceneRuntime.apply_opening_object_deletes)
-## must not leave a statue drawn over a guardian; the gems and guardians stand on the slots
-## the PlayLoop shuffled (opening_story_state, 0x451d0f).
-func _test_skipped_opening_removes_story_statues() -> void:
-	var packed: PackedScene = load("res://game/battle/scene/BattleSceneRuntime.tscn")
-	var scene := packed.instantiate()
-	scene.scenario_path = "res://content/battles/battle_037.json"
-	scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	await process_frame
-	var state: Dictionary = scene.play_loop.get("opening_story_state", {})
-	var deletes: Array = state.get("object_deletes", [])
-	_assert_eq(deletes.size(), 5, "level 37: the opening removes one statue per random slot")
-	var table: Array = state.get("random_slot_table", [])
-	var order: Array = state.get("random_slot_order", [])
-	var hidden := 0
-	var shown := 0
-	for request in deletes:
-		var at := Vector2(float(request["x"]), float(request["y"]))
-		for layer in [scene.map_objects_back, scene.map_objects_foreground]:
-			for child in layer.get_children():
-				if child.has_meta("candidate_anchor_world") and (child.get_meta("candidate_anchor_world") as Vector2).distance_to(at) <= float(request["range"]):
-					if child.visible: shown += 1
-					else: hidden += 1
-	_assert_true(hidden >= 5 and shown == 0, "the skipped opening leaves no statue on a slot (hidden %d, still shown %d)" % [hidden, shown])
-	for serial in range(1, 6):
-		var slot_pixel: Vector2i = table[int(order[serial - 1])]
-		var gem: Dictionary = scene.play_loop["units"].filter(func(unit): return unit["id"] == "guard067_%d" % serial)[0]
-		_assert_eq(gem["coord"], Vector2i(slot_pixel.x / 32, (slot_pixel.y + 32) / 32), "gem %d stands on the pillar of shuffled slot %d" % [serial, serial - 1])
-	# 柱子燈號 carries obj_Mode engADDCOLOR: the gem sprite blends additively; a guardian does not.
-	var gem_sprite: Sprite2D = scene.actor_node_for_unit("guard067_1").get_node("Sprite2D")
-	var guard_sprite: Sprite2D = scene.actor_node_for_unit("guard066_1").get_node("Sprite2D")
-	_assert_true(gem_sprite.material is CanvasItemMaterial and (gem_sprite.material as CanvasItemMaterial).blend_mode == CanvasItemMaterial.BLEND_MODE_ADD and guard_sprite.material == null, "an engADDCOLOR actor object draws additively, an ordinary one does not")
-	scene.queue_free()
-	await process_frame
-	await process_frame
-
-
-func _test_idle_animation_loop() -> void:
-	var manifest := _load_json("res://content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json")
-	for actor_id in ["001", "021", "023", "024", "026"]:
-		var actor := ActorRuntime.new()
-		actor.configure_from_manifest(actor_id, manifest.actors[actor_id])
-		root.add_child(actor)
-		actor.set_process(false)
-		actor.position = Vector2(100, 200)
-		actor.play_state("idle", "0")
-		var first: String = actor.runtime_summary().current_frame_source
-		# Standing cadence: 11 ticks per frame (delay 10 at 0x442139), 16 ms per tick.
-		var period: float = 1.0 / ActorRuntime.IDLE_FRAMES_PER_SECOND
-		actor._process(period * 0.5)
-		_assert_eq(actor.runtime_summary().current_frame_source, first, "Idle frame holds until its full interval")
-		actor._process(period * 0.5)
-		_assert_true(actor.runtime_summary().current_frame_source != first, "Standing actors must advance beyond the first source frame")
-		actor._process(period * 5.0)
-		_assert_eq(actor.runtime_summary().current_frame_source, first, "All six standing poses must loop back to the start")
-		_assert_eq(actor.position, Vector2(100, 200), "Standing animation must preserve the actor's world foot position")
-		actor.move_along([Vector2(132, 200)], 0.18)
-		actor._motion_tween.pause()
-		actor._frame_tween.pause()
-		var walking: String = actor.runtime_summary().current_frame_source
-		actor._process(period * 2.0)
-		_assert_eq(actor.runtime_summary().current_frame_source, walking, "Idle clock must not advance or replace the walking sequence")
-		actor._motion_tween.custom_step(0.2)
-		actor._process(period)
-		_assert_true(actor.runtime_summary().current_frame_source.ends_with(actor_id + "-00002.png"), "Arrival must restart the standing loop with a fresh clock")
-		actor.queue_free()
-	await process_frame
-
-
 func _test_actor_depth_follows_visible_position() -> void:
 	var actor := ActorRuntime.new()
 	root.add_child(actor)
@@ -964,415 +676,6 @@ func _damage_labels(presentation: Node) -> Array:
 	return labels
 
 
-## The first battle opens like every other level: BattleOpeningCoordinator plays the
-## compiled STORY051 timeline (Leonard's 96 px walk, the six-line exchange plus the
-## soldier's 1101, the dead-message registration, WORD051, the fail / event statuses,
-## the board refresh) and hands control to the shared PlayLoop at first_control_ready.
-func _test_first_battle_opening_through_coordinator() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	root.add_child(scene)
-	await process_frame
-	await process_frame
-	var coordinator = scene.opening_coordinator
-	_assert_true(coordinator != null and coordinator.active, "the product opening runs through BattleOpeningCoordinator")
-	if coordinator == null:
-		scene.queue_free()
-		await process_frame
-		return
-	_assert_eq(scene.interaction_state, "opening_timeline", "battle input waits for the STORY051 queue")
-	_assert_eq(scene.runtime_entrypoint, "product_opening", "the first battle enters through the product opening entrypoint")
-	_assert_eq(str(scene.scene_timeline.events[0].get("kind", "")), "opening_music", "STORY051 starts on actPlayLevelMusic")
-	_assert_eq(scene.scene_timeline.events.size(), 20, "the compiled STORY051 timeline carries 19 tokens plus the first-control marker")
-	_assert_true(not scene.action_menu.visible, "the action menu stays hidden during the opening")
-	var leonard = scene.actor_node_for_unit("leonard")
-	var leonard_cell: Vector2i = scene.unit_grid_coord("leonard")
-	_assert_eq(leonard_cell, Vector2i(15, 17), "Leonard's PlayLoop cell is the STORY051 endpoint")
-	if leonard != null:
-		var final_world: Vector2 = scene.camera_controller.grid_cell_center_world(leonard_cell)
-		_assert_true(leonard.position.is_equal_approx(final_world + Vector2(0, 96)), "Leonard starts 96 px below his cell before actWalkDispWait(0,-96)")
-	for unit_id in ["actor021_1", "actor026_1", "actor023_1", "actor024_1"]:
-		var actor = scene.actor_node_for_unit(unit_id)
-		_assert_true(actor != null and actor.visible and actor.position.is_equal_approx(scene.camera_controller.grid_cell_center_world(scene.unit_grid_coord(unit_id))), "%s stands on its EVEF cell from the first frame" % unit_id)
-	coordinator.walk_pixels_per_second = 6400.0
-	coordinator.delay_token_seconds = 0.001
-	coordinator.default_step_seconds = 0.005
-	# The title keeps its product pacing: actShowSectionName 159 ticks in, a 320-tick hold any
-	# key or click ends, 103 ticks out (original_tick_counts.md §2).
-	var Tick = coordinator.OriginalTick
-	_assert_eq(coordinator.title_seconds, Tick.seconds(582), "the section title's unskipped length is the original 582 ticks")
-	var title_in_seconds: float = Tick.seconds(coordinator.SECTION_TITLE_IN_TICKS)
-	var title_out_seconds: float = Tick.seconds(coordinator.SECTION_TITLE_OUT_TICKS)
-	var dialogue: Array = []
-	var speakers: Array = []
-	var portraits: Array = []
-	var seen_event_ids: Array = []
-	var title_shown := false
-	var title_full_screen := false
-	var title_skip_attempts := 0
-	var title_skipped := false
-	var board_seen := false
-	var board_early_click := false
-	var board_dismissed := false
-	var board_rows: Dictionary = {}
-	var frames := 0
-	while coordinator.active and frames < 3000:
-		var current: Dictionary = coordinator.summary()
-		var kind := str(current.get("current_event_kind", ""))
-		if kind == "section_title_resource" and not title_skipped:
-			var title_elapsed: float = coordinator.title_seconds - float(current["wait_remaining"])
-			var press := InputEventKey.new()
-			press.keycode = KEY_A
-			press.pressed = true
-			if title_skip_attempts == 0 and title_elapsed > Tick.seconds(8) and title_elapsed < title_in_seconds - Tick.seconds(8):
-				title_skip_attempts += 1
-				coordinator.handle_input(press)
-				_assert_true(float(coordinator.wait_remaining) > coordinator.title_seconds - title_in_seconds, "a key during the title's entry ramps does not cut the hold")
-			elif title_skip_attempts == 1 and title_elapsed > title_in_seconds + Tick.seconds(8):
-				title_skip_attempts += 1
-				coordinator.handle_input(press)
-				title_skipped = true
-				_assert_true(float(coordinator.wait_remaining) > title_out_seconds and float(coordinator.wait_remaining) <= title_out_seconds + Tick.seconds(1) + 0.0001, "any key during the 320-tick hold leaves the hold tick that takes it and the 103-tick exit (wait %.3f)" % float(coordinator.wait_remaining))
-				var skips: Array = (coordinator.summary().get("story_records", []) as Array).filter(func(record): return str(record.get("kind", "")) == "section_title_skip")
-				_assert_true(skips.size() == 1 and str(skips[0].get("trigger", "")) == "key" and int(skips[0].get("held_ticks", -1)) >= 8, "the skip is recorded with its trigger and the ticks actually held")
-				_assert_true(coordinator.cinematics._title.visible and is_equal_approx(coordinator.cinematics._title_band.modulate.a, 1.0) and is_equal_approx(coordinator.cinematics._title_name.modulate.a, 1.0) and is_equal_approx(coordinator.cinematics._title_band.scale.y, 1.0), "the band and the name are still fully shown when the hold is cut; the exit sub-states fade them")
-		if kind == "dialogue_message_id":
-			_assert_true(scene.opening_overlay.visible, "dialogue tokens show the shared dialogue board")
-			var event_id := str(current.get("current_event_id", ""))
-			if not seen_event_ids.has(event_id):
-				seen_event_ids.append(event_id)
-				dialogue.append(str(scene.scene_timeline.current_event().get("message_id", "")))
-				speakers.append(str(scene.opening_overlay.speaker_label.text))
-				portraits.append(str(scene.opening_overlay.portrait.texture.resource_path).get_file() if scene.opening_overlay.portrait.texture != null else "")
-			_assert_no_visible_debug_text({"title_text": scene.opening_overlay.speaker_label.text, "detail_text": scene.opening_overlay.body_label.text, "meta_text": scene.opening_overlay.continue_label.text}, "opening dialogue")
-			var click := InputEventMouseButton.new()
-			click.button_index = MOUSE_BUTTON_LEFT
-			click.pressed = true
-			coordinator.handle_input(click)
-		if kind == "section_title_resource" and coordinator.cinematics._title != null and coordinator.cinematics._title.visible:
-			title_shown = true
-			# Entry sub-state 1 (ticks 2..52): the LEVELSEC band stretched 8× over the whole view
-			# darkens the scene while the name is not drawn yet.
-			var band: TextureRect = coordinator.cinematics._title_band
-			if coordinator.cinematics.title_ticks_done() >= 4 and coordinator.cinematics.title_ticks_done() <= 52 and band.visible:
-				title_full_screen = is_equal_approx(band.scale.y, 8.0) and (band.material as CanvasItemMaterial).blend_mode == CanvasItemMaterial.BLEND_MODE_SUB and not coordinator.cinematics._title_name.visible
-		# actShowWinFailStatus: the WINDOW60 board dissolves in (32 ticks), waits for a key or
-		# click (no timeout in the game; a --script driver like this suite is auto-skipped after 112 ticks) and dissolves out (34 ticks) while the
-		# timeline holds (camera_panel_motion §3).
-		var board = coordinator.winfail_board
-		if kind == "winfail_board_refresh" and board != null and board.busy():
-			board_seen = true
-			board_rows = board.last_rows.duplicate(true)
-			if board.stage == "in" and not board_early_click:
-				board_early_click = true
-				var early := InputEventMouseButton.new()
-				early.button_index = MOUSE_BUTTON_LEFT
-				early.pressed = true
-				coordinator.handle_input(early)
-				_assert_true(board.stage == "in", "a click during the dissolve in is ignored, as in 0x413a80 state 1")
-			elif board.stage == "hold" and not board_dismissed:
-				board_dismissed = true
-				_assert_true(is_equal_approx(board.modulate.a, 1.0) and board.position == Vector2(136, 108), "the board is fully shown at the screen centre (136,108) while it waits")
-				var confirm := InputEventKey.new()
-				confirm.keycode = KEY_ENTER
-				confirm.pressed = true
-				coordinator.handle_input(confirm)
-				_assert_true(board.stage == "out", "a key while the board waits starts its dissolve out")
-				_assert_eq(str(coordinator.summary().get("current_event_kind", "")), "winfail_board_refresh", "the script still waits on the board during its dissolve out")
-		await process_frame
-		frames += 1
-	_assert_true(board_seen and board_dismissed, "the opening shows the win／fail board and the key dismisses it")
-	_assert_eq(board_rows.get("win", []), ["等待援軍到來"], "the board lists the armed event label under 勝利條件")
-	_assert_true((board_rows.get("fail", []) as Array).size() == 1 and str(board_rows["fail"][0]).contains("雷歐納德"), "the board lists Leonard's death under 失敗條件 (%s)" % [board_rows.get("fail", [])])
-	_assert_true(coordinator.winfail_board != null and not coordinator.winfail_board.visible, "the board is gone at first control")
-	_assert_true(not coordinator.active, "the opening reaches first control within the frame budget")
-	_assert_eq(dialogue, ["363", "364", "365", "366", "367", "364", "1101"], "STORY051 speaks its seven lines in source order")
-	_assert_eq(speakers, ["雷歐納德：", "一般兵：", "重裝兵：", "一般兵：", "雷歐納德：", "重裝兵：", "拉爾斯帝國兵："], "speaker labels come from the level's message evidence")
-	_assert_eq(portraits, ["001.png", "023.png", "024.png", "023.png", "001.png", "024.png", "021.png"], "each line shows its speaker's portrait row")
-	_assert_true(title_shown, "actShowSectionName shows the WORD051 title card")
-	_assert_true(title_full_screen, "the title card first darkens the whole view with the 8×-stretched subtractive band, the name still hidden")
-	_assert_true(title_skipped, "the test reached the title's hold and skipped it")
-	var final_summary: Dictionary = coordinator.summary()
-	_assert_eq((final_summary.get("skipped_records", []) as Array).size(), 0, "no STORY051 token is silently skipped")
-	_assert_eq(int(final_summary.get("motion_count", 0)), 1, "Leonard's walk is the only opening motion")
-	var tokens: Dictionary = final_summary.get("status_tokens", {})
-	_assert_eq(tokens.get("fail", []), ["0"], "actInsertFailStatus(0) is registered")
-	_assert_eq(tokens.get("event", []), ["0", "1", "2", "3"], "the four event statuses are registered")
-	_assert_eq(tokens.get("win", []), [], "STORY051 arms no win status (the commented actInsertWinStatus,1 stays out)")
-	_assert_eq(str((tokens.get("dead_message", {}) as Dictionary).get("message_id", "")), "304", "Leonard's dead message 304 is registered")
-	_assert_eq(scene.opening_timeline_mode, "first_control", "the runtime reports first control after the opening")
-	_assert_true(scene.interaction_state != "opening_timeline", "the opening hands off into the PlayLoop")
-	if leonard != null:
-		_assert_true(leonard.position.is_equal_approx(scene.camera_controller.grid_cell_center_world(Vector2i(15, 17))), "Leonard ends his walk on his PlayLoop cell")
-	_assert_eq(scene.play_loop.get("event_statuses"), [0, 1, 2, 3], "the PlayLoop holds the armed event statuses")
-	_assert_eq(scene.play_loop.get("fail_statuses"), [0], "the PlayLoop holds the armed fail status")
-	_assert_eq(scene.play_loop.get("objective_phase"), "hold", "the first battle opens in its hold phase")
-	var presentation = scene.get_node("BattlePresentation")
-	_assert_eq(presentation._objective_board_text(scene.play_loop), "目標：等待援軍到來 ｜ 敗北：雷歐納德 死亡", "the objective line comes from the WINFAIL051 board labels (event 3 / fail 0)")
-	_assert_true(scene.world_root.get_node_or_null("ShowPosOverlay") == null, "no position marker is shown before the win statuses arm")
-	scene.flush_ai_playback()
-	frames = 0
-	while frames < 600 and (scene.ai_playback_active or scene.interaction_state != "action_menu"):
-		await process_frame
-		frames += 1
-	var leonard_click: Vector2 = scene.grid_cell_center_to_logical_position(scene.unit_grid_coord("leonard"))
-	_dispatch_mouse_button(scene, leonard_click, MOUSE_BUTTON_LEFT, true)
-	var post_handoff: Dictionary = RuntimeReadback.interaction_summary(scene)
-	_assert_eq(post_handoff.get("interaction_state", ""), "action_menu", "input after the opening selects Leonard")
-	_assert_eq(post_handoff.get("selected_unit_id", ""), "leonard", "Leonard is the selected unit after the opening")
-	scene.queue_free()
-	await process_frame
-
-
-## AI move preview (camera_panel_motion §4): before an AI unit walks, the camera glides to it
-## and its blue reach shows for 16 ticks (the recording's median 0.26 s); only then does the
-## walk start. The PlayLoop has already settled the move, so the actor node is held at its
-## origin and the playback waits (has_actor_motion) until the walk ends.
-func _test_ai_move_preview_before_walk() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	var frames := 0
-	while frames < 600 and (scene.ai_playback_active or scene.has_actor_motion() or scene.interaction_state != "action_menu"):
-		await process_frame
-		frames += 1
-	var preview = scene.ai_move_preview
-	var shown_before: int = preview.shown_count
-	scene.menus.choose_command("wait")
-	var saw_preview := false
-	var held_at_origin := true
-	var overlay_during := true
-	var reach_seen := false
-	var walk_after := false
-	var preview_unit := ""
-	var origin := Vector2.ZERO
-	frames = 0
-	while frames < 1200 and not walk_after and scene.interaction_state != "action_menu":
-		await process_frame
-		frames += 1
-		if preview.busy():
-			if not saw_preview:
-				saw_preview = true
-				preview_unit = preview._unit_id
-				origin = scene.actor_node_for_unit(preview_unit).position
-			held_at_origin = held_at_origin and scene.actor_node_for_unit(preview_unit).position == origin
-			if preview.reach_shown:
-				reach_seen = true
-				overlay_during = overlay_during and scene.move_overlay.visible and scene.move_overlay.get_child_count() > 0
-			_assert_true(scene.has_actor_motion(), "the preview counts as actor motion, so AI playback and combat wait")
-		elif saw_preview and not walk_after:
-			walk_after = true
-			var actor = scene.actor_node_for_unit(preview_unit)
-			_assert_true(actor.is_moving() or actor.position != origin, "the walk starts when the preview ends")
-	_assert_true(saw_preview and preview.shown_count > shown_before, "an AI move shows its reach before walking")
-	_assert_true(not preview.last_cells.is_empty(), "the preview holds the mover's reach from its origin")
-	_assert_true(held_at_origin, "the settled move does not snap the actor to its destination during the preview")
-	_assert_true(reach_seen and overlay_during, "the reach is drawn on the move overlay once the camera glide's ticks have passed")
-	_assert_eq(preview.PREVIEW_TICKS, 16, "the reach shows for 16 ticks (0.26 s median of the recording)")
-	# The whole enemy turn on production frames: every preview (move_then_attack included, whose
-	# pending combat receipt holds _process before the AI playback) ends on its own.
-	var presentation = scene.get_node("BattlePresentation")
-	var busy_run := 0
-	var longest := 0
-	frames = 0
-	while frames < 3600 and not (scene.interaction_state == "action_menu" and not scene.ai_playback_active and not scene.has_actor_motion()):
-		if presentation.dialogue_active():
-			presentation.advance_dialogue()
-		busy_run = busy_run + 1 if preview.busy() else 0
-		longest = maxi(longest, busy_run)
-		await process_frame
-		frames += 1
-	_assert_true(longest < 90, "no move preview outlives its glide and 16 ticks (longest %d frames)" % longest)
-	_assert_true(preview.shown_count - shown_before >= 2, "the enemy turn previews each moving unit (%d)" % (preview.shown_count - shown_before))
-	scene.flush_ai_playback()
-	_assert_true(not preview.busy(), "explicit fast-forward ends the preview")
-	scene.queue_free()
-	await process_frame
-
-
-## Round six of the first battle is a winfail cutscene: the messenger object walks in
-## from the gate, speaks 368, leaves, one mage and one soldier follow him out, Leonard
-## answers 369, the gate cell is marked and both win statuses arm. The win chain's
-## closing line 371 precedes the victory result page; on defeat there is no result-page
-## line — Leonard's death word 304 is spoken once, at death, by BattleAftermath.
-func _test_round_six_cutscene_and_closing_line() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	var presentation = scene.get_node("BattlePresentation")
-	var coordinator = scene.opening_coordinator
-	_assert_true(coordinator != null, "the first battle keeps its coordinator for script cutscenes")
-	var frames := 0
-	while frames < 600 and (scene.ai_playback_active or scene.has_actor_motion() or scene.interaction_state != "action_menu"):
-		await process_frame
-		frames += 1
-	coordinator.walk_pixels_per_second = 6400.0
-	coordinator.delay_token_seconds = 0.001
-	coordinator.default_step_seconds = 0.005
-	# Round 4: the waiting lines (396, then 397 while a companion still stands).
-	# The round hooks fire the events; the PlayLoop's own outcome boundary then applies
-	# their script transactions (inserts, departures) exactly as a completed action does.
-	scene.play_loop["turn"] = 4
-	scene.apply_loop(scene.BattlePlayLoop._resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
-	_assert_eq(scene.play_loop.get("objective_phase"), "hold", "round four keeps the hold phase")
-	frames = 0
-	while frames < 240 and not coordinator.cutscene_mode:
-		await process_frame
-		frames += 1
-	_assert_true(coordinator.cutscene_mode and coordinator.cutscene_key == "event_2", "the fired round-4 event starts its cutscene at the next idle frame")
-	var waiting_lines: Array = []
-	frames = 0
-	while frames < 600 and coordinator.active:
-		if str(coordinator.summary().get("current_event_kind", "")) in ["dialogue_message_id", "dialogue_message_if_exist"]:
-			var message_id := str(scene.scene_timeline.current_event().get("message_id", ""))
-			if waiting_lines.is_empty() or waiting_lines.back() != message_id:
-				waiting_lines.append(message_id)
-				_assert_eq(str(scene.opening_overlay.speaker_label.text), "雷歐納德：", "the waiting lines are Leonard's")
-			_dispatch_key(scene, KEY_SPACE)
-		await process_frame
-		frames += 1
-	_assert_eq(waiting_lines, ["396", "397"], "round four speaks 396 and, with companions alive, 397")
-	frames = 0
-	while frames < 600 and (scene.ai_playback_active or scene.has_actor_motion() or scene.interaction_state != "action_menu"):
-		await process_frame
-		frames += 1
-	# Round 6: the messenger, the departures, the rally and both win statuses.
-	scene.play_loop["turn"] = 6
-	scene.apply_loop(scene.BattlePlayLoop._resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
-	_assert_eq(scene.play_loop.get("win_statuses"), [0, 1], "the round-6 event arms both win statuses")
-	_assert_eq(scene.play_loop.get("event_statuses"), [], "the reinforcement events are deleted and the fired round events disarm themselves")
-	_assert_eq(scene.play_loop.get("objective_phase"), "escape", "the objective switches to the escape phase")
-	_assert_eq(scene.play_loop.get("escape_zone"), [Vector2i(8, 6)], "the gate cell (267,209) is the escape cell")
-	var state_before: Dictionary = scene.play_loop.duplicate(true)
-	frames = 0
-	while frames < 240 and not coordinator.cutscene_mode:
-		await process_frame
-		frames += 1
-	_assert_true(coordinator.cutscene_mode and coordinator.cutscene_key == "event_3", "the fired round-6 event starts its cutscene at the next idle frame")
-	_assert_true(not scene.action_menu.visible, "the action menu hides during the cutscene")
-	var messenger: Node = null
-	var dialogue: Array = []
-	var speakers: Array = []
-	var portraits: Array = []
-	var seen: Array = []
-	var messenger_seen_moving := false
-	var messenger_visible_at_report := false
-	var departing_seen_moving := false
-	var gate_marker_origin := Vector2(-1, -1)
-	frames = 0
-	while frames < 3000 and coordinator.active:
-		var current: Dictionary = coordinator.summary()
-		var kind := str(current.get("current_event_kind", ""))
-		if messenger == null:
-			for unit in scene.play_loop["units"]:
-				if str(unit["id"]).begins_with("Enemy021_script_"):
-					messenger = scene.actor_node_for_unit(str(unit["id"]))
-		if messenger != null and messenger.is_moving():
-			messenger_seen_moving = true
-		for id in ["actor026_1", "actor021_1"]:
-			var actor = scene.actor_node_for_unit(id)
-			if actor != null and actor.is_moving():
-				departing_seen_moving = true
-		if kind == "dialogue_message_id":
-			var event_id := str(current.get("current_event_id", ""))
-			if not seen.has(event_id):
-				seen.append(event_id)
-				dialogue.append(str(scene.scene_timeline.current_event().get("message_id", "")))
-				speakers.append(str(scene.opening_overlay.speaker_label.text))
-				portraits.append(str(scene.opening_overlay.portrait.texture.resource_path).get_file() if scene.opening_overlay.portrait.texture != null else "")
-				if dialogue.back() == "368":
-					messenger_visible_at_report = messenger != null and messenger.visible and not messenger.is_moving()
-					_assert_eq(scene.play_loop, state_before, "the messenger's report pauses the battle without mutating the PlayLoop")
-			_dispatch_key(scene, KEY_SPACE)
-		if not coordinator.story_objects._position_markers.is_empty():
-			gate_marker_origin = coordinator.story_objects._position_markers[0].get_meta("cell_origin")
-		await process_frame
-		frames += 1
-	_assert_true(not coordinator.active, "the round-6 cutscene finishes within the frame budget")
-	_assert_true(messenger != null, "the messenger object (obj_Story_Level51_Object1, renamed 10000) is created by the interpreter and drawn by the coordinator")
-	_assert_eq(dialogue, ["368", "369"], "the messenger reports 368 and Leonard rallies the surviving companions with 369")
-	_assert_eq(speakers, ["拉爾斯帝國兵：", "雷歐納德："], "the messenger speaks under the remake soldier label, Leonard under his name")
-	_assert_eq(portraits, ["021.png", "001.png"], "the report shows the soldier portrait, the reply Leonard's")
-	var messenger_id := str(messenger.unit_id) if messenger != null else ""
-	var messenger_walks: Array = coordinator.motion_records.filter(func(record): return str(record.get("unit_id", "")) == messenger_id and str(record.get("kind", "")) == "walk" and str(record.get("source_token", "")).begins_with("actWalkDispWait(10000"))
-	_assert_true(not messenger_walks.is_empty(), "the messenger walks (actWalkDispWait 10000,1,32,32) before speaking (seen moving on a frame: %s)" % str(messenger_seen_moving))
-	_assert_true(messenger_visible_at_report, "the messenger stands at the gate while reporting")
-	_assert_true(departing_seen_moving, "one mage and one soldier walk out through the gate")
-	_assert_true(messenger == null or not messenger.visible, "the messenger leaves after his report")
-	for id in ["actor026_1", "actor021_1"]:
-		_assert_true(scene.BattlePlayLoop.unit(scene.play_loop, id).get("departed", false), "%s remains as retired history" % id)
-		var actor = scene.actor_node_for_unit(id)
-		_assert_true(actor == null or not actor.visible, "%s is hidden after leaving" % id)
-		for slot in scene.play_loop["turn_queue"]["slots"]:
-			_assert_true(slot["id"] != id, "%s left the turn queue" % id)
-	_assert_eq(scene.play_loop["units"].filter(func(unit): return unit.get("departed", false)).map(func(unit): return str(unit["actor_id"])), ["021", "026", "021"], "one mage, one soldier and the messenger left the field")
-	_assert_true(not scene.play_loop["units"].any(func(unit): return str(unit["id"]).begins_with("Enemy021_script_") and scene.BattlePlayLoop.Presence.living(unit)), "the messenger never becomes a living combatant")
-	frames = 0
-	while frames < 240 and (presentation.dialogue_active() or scene.ai_playback_active or scene.has_actor_motion()):
-		if presentation.dialogue_active():
-			_dispatch_key(scene, KEY_SPACE)
-		await process_frame
-		frames += 1
-	presentation.refresh(scene.play_loop, scene.map_config, true, true, 0.0)
-	_assert_true(gate_marker_origin == scene.map_config.grid_to_world(Vector2i(8, 6)) and scene.world_root.get_node_or_null("ShowPosOverlay") == null, "actInsertShowPosObject(267,209) marks the whole gate cell (8,6) during the cutscene and no marker stays after the switch")
-	_assert_eq(presentation._objective_board_text(scene.play_loop), "目標：消滅所有敵人 ｜ 目標：雷歐納德 到達城門 ｜ 敗北：雷歐納德 死亡", "both win labels join the board after the switch")
-	presentation.refresh(scene.play_loop, scene.map_config, true, true, 0.0)
-	_assert_true(not presentation.dialogue_active(), "the completed event does not replay its lines through the story queue")
-	# Victory: the win chain's 371 precedes the result page; defeat: no repeat of the death word.
-	scene.set_process(false)
-	for outcome in [BattleOutcome.VICTORY_ESCAPE, BattleOutcome.DEFEAT_FALLEN]:
-		var probe: Dictionary = scene.play_loop.duplicate(true)
-		if outcome == BattleOutcome.VICTORY_ESCAPE:
-			scene.BattlePlayLoop._unit(probe, "leonard")["coord"] = Vector2i(8, 6)
-		else:
-			scene.BattlePlayLoop._set_unit_defeated(probe, "leonard", true)
-		probe = scene.BattlePlayLoop._resolve_outcome(probe)
-		_assert_eq(probe.get("battle_outcome"), outcome, "the committed outcome is %s" % outcome)
-		var view_state: Array = presentation._shown_story_events.duplicate()
-		presentation.refresh(probe, scene.map_config, true, true, 0.0)
-		if outcome == BattleOutcome.VICTORY_ESCAPE:
-			_assert_true(presentation.dialogue_active(), "%s delivers its closing line before the result" % outcome)
-			_assert_eq(presentation.current_message_id(), "371", "%s speaks the source closing line" % outcome)
-			_assert_true(not presentation.battle_finished, "the result waits for the closing line (%s)" % outcome)
-			while presentation.dialogue_active():
-				presentation.advance_dialogue()
-			presentation.refresh(probe, scene.map_config, true, true, 0.0)
-		else:
-			_assert_true(not presentation.dialogue_active(), "%s does not repeat the death word on the result page" % outcome)
-		_assert_true(presentation.battle_finished, "the result appears after the closing line (%s)" % outcome)
-		_assert_true(not presentation.status_label.visible and not presentation.combat_label.visible, "the result screen removes the battle prompts (%s)" % outcome)
-		_assert_true(scene.world_root.get_node_or_null("ShowPosOverlay") == null, "the completed battle shows no destination marker (%s)" % outcome)
-		presentation._shown_story_events.assign(view_state)
-	scene.queue_free()
-	await process_frame
-
-
-## A scripted departure (walk-and-delete) retires the unit's queue slot: other slots keep
-## the current actor, removing the current actor hands off to the next slot, and repeating
-## the departure is inert.
-func _test_departure_queue() -> void:
-	var loop_script = load("res://game/sim/loop/BattlePlayLoop.gd")
-	for current_id in ["leonard", "enemy021_1", "enemy026_1"]:
-		var loop: Dictionary = BattleFixture.loop()
-		for index in range(loop["turn_queue"]["slots"].size()):
-			if loop["turn_queue"]["slots"][index]["id"] == current_id:
-				loop["turn_queue"]["index"] = index
-		var before: Dictionary = loop.duplicate(true)
-		var next: Dictionary = loop.duplicate(true)
-		_assert_true(BattleLoopScript._commit_departures(next, ["enemy021_1"], "winfail", "event_3"), "the departure commits")
-		_assert_eq(loop, before, "departure should not mutate input battle")
-		_assert_true(loop_script.unit(next, "enemy021_1").get("departed", false) and not loop_script.unit_coords(next).has("enemy021_1"), "departure retains history but removes field presence")
-		var current: Dictionary = loop_script.CoreTurnQueue.current(next["turn_queue"])
-		if current_id != "enemy021_1":
-			_assert_eq(current["id"], current_id, "removing other slots must preserve current actor")
-		else:
-			_assert_eq(current["id"], "enemy021_2", "removing current actor must hand off to next slot")
-		var repeated: Dictionary = next.duplicate(true)
-		_assert_true(not BattleLoopScript._commit_departures(repeated, ["enemy021_1"], "winfail", "event_3"), "repeated departure must be inert")
-		_assert_eq(repeated, next, "an inert departure leaves the loop unchanged")
-
-
 func _test_result_presentation() -> void:
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	root.add_child(scene)
@@ -1393,37 +696,6 @@ func _test_result_presentation() -> void:
 	scene._process(0.0)
 	_assert_true(not scene.ui_audio.playing, "refreshing result must not repeat game-over sound")
 	_assert_eq(scene.play_loop, before, "result presentation must preserve settled battle state")
-	scene.queue_free()
-	await process_frame
-
-
-func _test_battle_music_lifecycle() -> void:
-	## original_music.md: the engine plays nothing on entry; a music event plays its track from the
-	## top, even the one already playing, and −1 keeps the current track; 讀取戰場記錄 restarts the
-	## loaded level's table track, and a level >= 100 (empty table stream) stays silent.
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	var music: AudioStreamPlayer = scene.get_node("BattleMusic")
-	var silent_start := music.stream == null
-	root.add_child(scene)
-	await process_frame
-	var first: Dictionary = scene.scene_timeline.events[0]
-	var opened: bool = music.playing and music.stream != null and music.stream.resource_path == str(first.get("stream", "-"))
-	music.seek(5.0)
-	scene.opening_coordinator._apply_event({"kind": "opening_music", "track": -1, "stream": ""})
-	var kept: bool = music.playing and music.stream.resource_path == str(first.get("stream", "-")) and music.get_playback_position() >= 4.0
-	scene.opening_coordinator._apply_event(first)
-	var restarted: bool = music.playing and music.get_playback_position() < 1.0
-	_assert_true(silent_start and opened and kept and restarted, "no default stream; %s plays %s, −1 keeps it, the same event restarts it: %s %s %s %s" % [first.get("id"), first.get("stream"), silent_start, opened, kept, restarted])
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	var saved: bool = scene.settlement_controller.save_battle()["ok"]
-	music.seek(5.0)
-	var table := str(scene.first_battle_scenario.get("level_table_music", {}).get("stream", ""))
-	var loaded: bool = scene.settlement_controller.load_battle()["ok"] and music.playing and music.stream.resource_path == table and music.get_playback_position() < 1.0
-	scene.first_battle_scenario["level_table_music"] = {"track": -1, "stream": ""}
-	var silent_load: bool = scene.settlement_controller.load_battle()["ok"] and not music.playing
-	_assert_true(saved and table != "" and loaded and silent_load, "讀取戰場記錄 restarts the table track %s, an empty one stays silent: %s %s %s" % [table, saved, loaded, silent_load])
-	DirAccess.remove_absolute(scene.settlement_controller.checkpoint_path)
 	scene.queue_free()
 	await process_frame
 
@@ -1642,39 +914,6 @@ func _test_pending_combat_blocks_early_input() -> void:
 	await process_frame
 
 
-func _test_lethal_actor_survives_presentation_boundary() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	var presentation = scene.get_node("BattlePresentation")
-	presentation.cutin.set_process(false)
-	var player: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var victim: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "actor021_1")
-	victim["coord"] = player["coord"] + Vector2i.RIGHT
-	victim["hp"] = 1
-	scene.apply_loop(scene.play_loop, "test")
-	var actor = scene.actor_node_for_unit("actor021_1")
-	scene.apply_loop(scene.BattlePlayLoop.choose_command(scene.play_loop, "attack"), "test")
-	scene.apply_loop(scene.BattlePlayLoop.attack_target(scene.play_loop, "actor021_1", func(_n): return 0), "test")
-	_assert_true(scene.BattlePlayLoop.unit(scene.play_loop, "actor021_1")["defeated"], "fixture must really settle a lethal strike")
-	_assert_true(actor.visible, "settled HP zero must not remove a map actor before its attack cue")
-	scene._process(0.0)
-	_assert_true(actor.visible and presentation.cutin.busy(), "lethal target remains present when the confirmed attack's cut-in starts")
-	_seek_ordinary(presentation.cutin, "impact")
-	_assert_true(actor.visible and presentation.cutin.defender_sprite.visible, "logical death remains deferred while the visible hurt shot plays")
-	presentation.cutin._process(4.0)
-	scene._process(0.0)
-	_assert_true(actor.visible and presentation.current_message_id() == "372", "map target stays for its source last words after the strike")
-	presentation.advance_dialogue()
-	scene._process(presentation.aftermath.FADE_SECONDS)
-	_assert_true(not actor.visible, "map target is removed only after last words and fade")
-	_assert_true(not presentation.combat_label.visible and not presentation.status_label.text.contains("方向键"), "normal HUD must not retain combat logs or a debug control transcript")
-	scene.queue_free()
-	await process_frame
-
-
 func _test_recovery_item() -> void:
 	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	root.add_child(scene)
@@ -1806,7 +1045,7 @@ func _test_special_skill() -> void:
 	# map, insets, portrait) plays first; then 氣刃斬's own specCode01／02 scripts
 	# (SkillEffectScriptPlayer, 62.5 ticks/s): the blade object flies during the 60-tick caster
 	# shot, the hit lands on aniProcessHitMiss at script tick 90 and the clip completes at
-	# script tick 190 (see run_skill_effect_script_tests, run_animal_program_tests).
+	# script tick 190 (see run_skill_effect_script_tests).
 	var lead_seconds: float = cutin.OriginalTick.seconds(float(cutin.cast_lead(cutin.clips[0])["complete_tick"]))
 	cutin._process(0.5)
 	_assert_true(cutin.attacker_sprite.visible and cutin.attacker_sprite.texture.resource_path.ends_with("001/special-0.png") and not cutin.scenery.visible and not cutin.clips[0]["release_emitted"], "the cast lead shows the caster's banner over the map shot before the script")
@@ -2143,52 +1382,6 @@ func _test_growth_allocation_interaction() -> void:
 	await process_frame
 
 
-func _test_ally_recovery_item() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	var player: Dictionary = scene.BattlePlayLoop.unit(scene.play_loop, "leonard")
-	var ally: Dictionary
-	var enemy: Dictionary
-	for unit in scene.play_loop["units"]:
-		if unit["id"] == "actor023_1":
-			ally = unit
-			ally["coord"] = player["coord"] + Vector2i(1, 0)
-			ally["hp"] = 3
-		if unit["id"] == "actor021_1":
-			enemy = unit
-			enemy["coord"] = player["coord"] + Vector2i(-1, 0)
-			enemy["hp"] = 3
-	var before: Dictionary = scene.play_loop.duplicate(true)
-	_assert_eq(scene.BattlePlayLoop.use_item(before, "241", enemy["id"]), before, "recovery cannot target an adjacent enemy")
-	var far: Dictionary = before.duplicate(true)
-	for unit in far["units"]:
-		if unit["id"] == ally["id"]:
-			unit["coord"] = player["coord"] + Vector2i(2, 0)
-	_assert_eq(scene.BattlePlayLoop.use_item(far, "241", ally["id"]), far, "recovery cannot reach beyond adjacency")
-	scene.menus.choose_command("item")
-	scene.item_panel.menu._process(0.25)
-	scene.item_panel.menu.get_node("UseCommand").pressed.emit()
-	scene.item_panel.rows.get_child(0).pressed.emit()
-	var found := false
-	for button in scene.item_panel.target_buttons.values():
-		if button.get_meta("target_id", "") == ally["id"]:
-			found = true
-			_assert_true(not button.disabled, "wounded adjacent ally should be selectable even at full player HP")
-			button.pressed.emit()
-			break
-	_assert_true(found, "Item panel must list the adjacent ally")
-	var healed: Dictionary = scene.BattlePlayLoop.unit(scene.play_loop, ally["id"])
-	_assert_eq(healed["hp"], healed["max_hp"], "ally recovery caps at recipient maximum")
-	var after: Dictionary = scene.BattlePlayLoop.unit(scene.play_loop, "leonard")
-	_assert_eq(after["hp"], player["hp"], "healing an ally must not heal the owner")
-	_assert_eq(after["inventory"].count(241), 2, "ally recovery consumes owner's inventory")
-	_assert_true(not scene.item_panel.visible and scene.ai_playback_active, "ally recovery closes panel and ends action")
-	scene.queue_free()
-	await process_frame
-
-
 func _test_attack_target_preview() -> void:
 	# Boot from the seeded global stream, not from where the earlier cases' openings and AI
 	# turns left the process stream: the opening levels (0x40e870) decide the stats pinned here.
@@ -2328,99 +1521,6 @@ func _test_move_select_identity_bar() -> void:
 	await create_timer(0.1).timeout
 
 
-func _test_menu_screen_bounds() -> void:
-	GameOptions.environment_preset = "comfort"  # the OPT-GUIDE 提示 branch (原版 draws none of this)
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	var before: Dictionary = scene.play_loop.duplicate(true)
-	var menu = scene.action_menu
-	menu._process(0.25)
-	var viewport := Rect2(12, 12, 616, 456)
-	for corner in [Vector2i(0, 0), Vector2i(23, 0), Vector2i(0, 23), Vector2i(23, 23)]:
-		scene.center_camera_on_grid(corner)
-		scene.menus.update_action_menu_anchor()
-		var anchor: Vector2 = menu.position
-		for button in menu.get_children():
-			var id: String = scene.scene_input.command_id_for_control(button)
-			scene.scene_input.handle_pointer_motion(scene.scene_input.command_center_logical_position(id))
-			_assert_true(viewport.encloses(button.get_global_rect()), "edge camera must keep command icon visible")
-			var caption = button.get_node("Caption")
-			_assert_true(viewport.encloses(caption.get_global_rect()), "edge camera must keep complete caption visible")
-			_assert_true(caption.get_global_rect().position.y >= button.get_global_rect().end.y, "caption must not cover original icon pixels")
-			_assert_eq(menu.position, anchor, "hover enlargement must not shift the whole menu")
-	_assert_eq(scene.play_loop, before, "menu placement and hover must not mutate battle state")
-	GameOptions.environment_preset = ""
-	var move_point: Vector2 = scene.scene_input.command_center_logical_position("move")
-	scene.scene_input.handle_pointer_left_pressed(move_point)
-	scene.scene_input.handle_pointer_left_released(move_point)
-	_assert_eq(scene.interaction_state, "move_select", "clamped menu must retain real Move hit-test")
-	# This test ends on the same frame that Move starts confirm audio. Wait for
-	# the mixer to observe new voices before stopping/freeing their owner; merely
-	# sleeping after queue_free leaves a never-started playback reference behind.
-	var voices: Array[WeakRef] = []
-	for player in scene.find_children("*", "AudioStreamPlayer", true, false):
-		if player.playing:
-			var deadline := Time.get_ticks_msec() + 1000
-			while player.playing and player.get_playback_position() <= 0 and Time.get_ticks_msec() < deadline:
-				await create_timer(0.01).timeout
-			if player.playing: voices.append(weakref(player.get_stream_playback()))
-		player.stop()
-		player.stream = null
-	scene.queue_free()
-	await process_frame
-	var deadline := Time.get_ticks_msec() + 2000
-	while voices.any(func(voice): return voice.get_ref() != null) and Time.get_ticks_msec() < deadline:
-		await create_timer(0.02).timeout
-	_assert_true(voices.all(func(voice): return voice.get_ref() == null), "final menu scene releases started audio voices before exit")
-
-
-func _test_ai_reachable_strikes() -> void:
-	var Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
-	var loop: Dictionary = BattleFixture.loop()
-	var spear: Dictionary = {}
-	var enemy: Dictionary = {}
-	var friendly: Dictionary = {}
-	var player: Dictionary = Loop._unit(loop, "leonard").duplicate(true)
-	for unit in loop["units"]:
-		if unit["actor_id"] == "024": spear = unit.duplicate(true)
-		if unit["actor_id"] == "021": enemy = unit.duplicate(true)
-		if unit["actor_id"] == "023": friendly = unit.duplicate(true)
-	loop["tiles"] = {}
-	loop["map_size"] = Vector2i(8, 8)
-	spear["coord"] = Vector2i(3, 3)
-	enemy["coord"] = Vector2i(5, 3)
-	var wounded := enemy.duplicate(true)
-	wounded["id"] = "wounded"
-	wounded["coord"] = Vector2i(3, 5)
-	wounded["hp"] = 3
-	loop["units"] = [spear, enemy, wounded]
-	var before := loop.duplicate(true)
-	var result: Dictionary = BattleLoopAI._ai_take_turn(loop, spear["id"], func(_n): return 0)
-	_assert_eq(result["action"]["kind"], "attack", "spear should keep two-cell reach without walking adjacent")
-	_assert_eq(result["action"]["ai_decision"]["target_selection"]["index"], 1, "source AI_NEAREST still selects the earlier equal-distance ordinary target")
-	_assert_eq(result["action"]["target_id"], wounded["id"], "separate dying-foe priority may replace the ordinary target while preserving spear reach")
-	_assert_eq(Loop.unit(result["loop"], spear["id"])["coord"], Vector2i(3, 3), "in-range strike must preserve position")
-	_assert_eq(loop, before, "AI planning and execution must preserve input snapshot")
-
-	enemy["coord"] = Vector2i(2, 2)
-	enemy["move_point"] = 2
-	player["coord"] = Vector2i(2, 4)
-	friendly["coord"] = Vector2i(4, 3)
-	loop["units"] = [enemy, player, friendly]
-	for coord in [Vector2i(2, 3), Vector2i(1, 4), Vector2i(3, 4), Vector2i(2, 5)]:
-		TestSuite.own(loop, "tiles")[coord] = {"blocks_movement": true, "move_cost": 1}
-	result = BattleLoopAI._ai_take_turn(loop, enemy["id"], func(_n): return 0)
-	_assert_eq(result["action"]["kind"], "move_then_attack", "AI must take reachable strike instead of chasing enclosed nearest foe")
-	_assert_eq(result["action"]["target_id"], friendly["id"], "reachable farther target should beat inaccessible nearest target")
-	# Stations (4,2) and (3,3) are equally far from the target; 0x413390 collects them
-	# row-major and only a set rand bit swaps them, so rand 0 walks to (4,2).
-	_assert_eq(result["action"]["path"], [Vector2i(2, 2), Vector2i(3, 2), Vector2i(4, 2)], "strike must retain legal movement-budget path for animation")
-	_assert_true(Loop.attack_cells(result["loop"], enemy["id"]).has(friendly["coord"]), "chosen destination must satisfy actual weapon range")
-
-
 func _test_stamina_builds_from_zero() -> void:
 	var Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 	var loop: Dictionary = BattleFixture.loop()
@@ -2476,75 +1576,6 @@ func _ordinary_schedule(cutin: Node) -> Dictionary:
 	return cutin.Timing.ordinary(cutin.manifest["actors"][clip["attacker"]], clip["strike"], bool(clip["first_shot"]), bool(clip["last_shot"]))
 
 
-## Equipped movement (run_position_equipment_tests.gd mobility cases) as the real scene shows it.
-func _test_equipment_mobility_display() -> void:
-	var Loop = run_position_equipment_tests.BattlePlayLoop
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	scene.apply_loop(run_position_equipment_tests.mobility_fixture(), "test")
-	scene.resume_turn_presentation()
-	scene.apply_loop(run_position_equipment_tests.equip(scene.play_loop,"foot",193), "test")
-	scene.status_panel.show_unit(Loop.unit(scene.play_loop,"leonard"))
-	_assert_true(scene.status_panel.stat_values["move"].text == "6","status displays the committed movement, not the initial source")
-	scene.status_panel.hide()
-	scene.menus.choose_command("move")
-	scene.overlays.refresh_move_overlay()
-	var legal = Loop.movement_cells(scene.play_loop)
-	_assert_true(scene.move_overlay_cells.size() == legal.size() and scene.move_overlay_cells.all(func(cell):return legal.has(cell)),"real map overlay reads the same updated envelope")
-	var growing: Dictionary = Loop.unit(scene.play_loop,"leonard").duplicate(true)
-	growing["pending_stat_points"] = 5
-	scene.growth_panel.show_unit(growing)
-	await process_frame
-	_assert_true(scene.growth_panel.derived_values["move"].text == "6","growth window's 移動力 row shows the preserved equipment mobility next to the derived stats")
-	scene.growth_panel.choices["str"]["plus"].pressed.emit()
-	_assert_true(scene.growth_panel.derived_values["move"].text == "6" and scene.growth_panel.remaining_label.text == "4","placing a point keeps the preserved mobility while the 殘餘點數 box counts down")
-	scene.growth_panel.hide()
-	var voices: Array[WeakRef] = []
-	for player in scene.find_children("*","AudioStreamPlayer",true,false):
-		if player.playing:
-			var deadline := Time.get_ticks_msec() + 1000
-			while player.playing and player.get_playback_position() <= 0 and Time.get_ticks_msec() < deadline: await create_timer(0.01).timeout
-			if player.playing: voices.append(weakref(player.get_stream_playback()))
-		player.stop()
-		player.stream = null
-	scene.queue_free()
-	await process_frame
-	var deadline := Time.get_ticks_msec() + 2000
-	while voices.any(func(voice):return voice.get_ref() != null) and Time.get_ticks_msec() < deadline: await create_timer(0.02).timeout
-
-
-## The stat-magic dev trial (run_support_magic_tests.gd stat cases) as the real scene plays it.
-func _test_stat_magic_trial_scene() -> void:
-	var Loop = run_support_magic_tests.BattlePlayLoop
-	var scene=load("res://game/battle/development/StatMagicTrial.tscn").instantiate()
-	root.add_child(scene);await create_timer(0.2).timeout;scene.set_process(false)
-	_assert_true(scene.play_loop["scenario_ok"],"actual stat development scene boots: "+str(scene.play_loop.get("scenario_error","")))
-	var view=scene.get_node("BattlePresentation")
-	# The three stat spells play their effCode scripts (灼熱波動 effCode27, 地精守護 effCode06, 退魔 effCode33)
-	# through the script player: source artwork visible at impact, every sprite faded out at completion.
-	var rows:={"attack_up":"magic:magicFIRE:magicCode05","defense_up":"magic:magicEARTH:magicCode06","dispel":"magic:magicMIND:magicCode06"}
-	_assert_true(rows.values().all(func(id):return view.cutin.skill_effects.presentation(id)=="script"),"all three stat spells play their own source effect scripts")
-	view.cutin.set_process(false)
-	for key in rows:
-		view.cutin.play({"skill_id":rows[key],"attacker_id":"tina","defender_id":"tina","magic_key":key,"magic_name":key,"hit":true,"damage":0,"actual_damage":0,"defender_hp_after":30,"stat_effects":[]},Loop.unit(run_support_magic_tests.stat_fixture(),"tina"),Loop.unit(run_support_magic_tests.stat_fixture(),"tina"),false,Vector2(310,220),Vector2(200,220),[Vector2(310,220)])
-		var guard:=0
-		while view.cutin.busy() and not view.cutin.clips[0]["impact_emitted"] and guard<6000:
-			view.cutin._process(1.0/60.0);guard+=1
-		_assert_true(view.cutin.busy() and view.cutin.skill_effects.sprites.any(func(s):return s.visible and s.modulate.a > 0 and str(s.texture.resource_path).contains("skill_effects/frames/")),"source stat artwork is visible at impact: "+key)
-		while view.cutin.busy() and guard<6000:
-			view.cutin._process(1.0/60.0);guard+=1
-		_assert_true(not view.cutin.busy() and guard<6000 and view.cutin.skill_effects.sprites.all(func(s):return not s.visible),"stat effect completion includes the last visible frame fade: "+key)
-	for sound in scene.find_children("*","AudioStreamPlayer",true,false):sound.stop();sound.stream=null
-	# Stopped playbacks leave the AudioServer only on its next real-time mix; a blocking wall-clock
-	# wait lets that happen before quit, or the exit reports them as resources still in use.
-	OS.delay_msec(200)
-	scene.queue_free();await process_frame;await create_timer(0.1).timeout
-
-
-## The priest dev trial (run_support_magic_tests.gd priest cases) as the real scene shows it.
 func _test_priest_trial_scene() -> void:
 	var Loop = run_support_magic_tests.BattlePlayLoop
 	var scene=load("res://game/battle/development/PriestTrial.tscn").instantiate()

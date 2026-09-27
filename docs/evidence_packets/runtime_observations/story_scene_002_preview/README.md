@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_campaign_chain_review.gd, capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-18
 
-来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=2`（`STORY_SCENE_REVIEW_PASS shots=14`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_level_2_preview`）。场景文件 `content/battles/story_002.json` 由 `python3 tools/hsl.py generate story_scene:2` 从 `battle002_seed` 生成；campaign 注册 level 2 后，大地图到达戈爾山道（bigmap 点 2，无脚本点事件时其 +8 事件值＝2）即交接进入，卡片确认回大地图仍站在点 2（[大地图回执](../world_map_scene/README.md)、`tests/capture_campaign_chain_review.gd` 15 帧链路）。
+来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=2`（`STORY_SCENE_REVIEW_PASS shots=14`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_level_2_preview_skip_battle`、`_run_registered_story_sweep` 与全程剧情 explorer）。场景文件 `content/battles/story_002.json` 由 `python3 tools/hsl.py generate story_scene:2` 从 `battle002_seed` 生成；campaign 注册 level 2 后，大地图到达戈爾山道（bigmap 点 2，无脚本点事件时其 +8 事件值＝2）即交接进入，卡片确认回大地图仍站在点 2（[大地图回执](../world_map_scene/README.md)、`tests/capture_campaign_chain_review.gd` 15 帧链路）。
 
 ## 看到什么
 

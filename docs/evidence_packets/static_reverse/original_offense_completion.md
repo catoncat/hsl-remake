@@ -24,7 +24,6 @@ Checked: 2026-09-13。原文件身份与机器锚点在 [original_offense_comple
 
 ```sh
 PYTHONPATH=tools python3 -m hsltools.evidence.offense_completion --exe $HSL_ORIGINAL_DIR/hsl01.exe --pak $HSL_ORIGINAL_DIR/hsl.pak
-python3 -m unittest tools.test_hsl_offense_completion_evidence -v
 godot --headless --path . --script res://tests/run_action_handoff_tests.gd
 ```
 

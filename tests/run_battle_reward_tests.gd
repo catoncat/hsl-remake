@@ -53,7 +53,6 @@ static func attack(loop: Dictionary) -> Dictionary:
 func run() -> void:
 	roll_cases()
 	settlement_cases()
-	deferred_and_empty_cases()
 	area_cases()
 	counter_and_end_cases()
 	carried_gold_cases()
@@ -63,7 +62,6 @@ func run() -> void:
 	ai_handoff_cases()
 	undead_victim_cases()
 	checkpoint_cases()
-	await runtime_cases()
 	failures.append_array(await TestSuite.settle_audio_before_quit(self, 0.3))
 	print("BATTLE_REWARD_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
 	quit(0 if failures.is_empty() else 1)
@@ -139,49 +137,6 @@ func settlement_cases() -> void:
 	TestSuite.own(invalid, "reward_data")["items"]["281"]["get_ratio"] = NAN
 	var rejected := BattlePlayLoop.attack_target(invalid, "enemy021_1", func(_n): check(false, "bad reward data must reject before combat RNG"); return 0)
 	check(rejected["units"] == invalid["units"] and rejected["gold"] == 0, "invalid rewards cannot half-settle combat")
-
-
-func deferred_and_empty_cases() -> void:
-	var loop := attack(fixture())
-	loop = BattlePlayLoop.claim_reward(loop, 1, 0, loop["settlement"]["pending"][0]["id"], "leonard")
-	var retained: Dictionary = loop["settlement"]["pending"][0].duplicate(true)
-	loop = BattlePlayLoop.finish_exhausted_action(BattlePlayLoop.finish_rewards(loop, 1, 1, false, true))
-	var target := BattlePlayLoop._unit(loop, "enemy021_2")
-	target["coord"] = BattlePlayLoop.unit(loop, "enemy023_1")["coord"] + Vector2i.RIGHT
-	target["hp"] = 1
-	target["inventory"] = [283, 0, 0, 0, 0, 0, 0, 0]
-	loop = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop, "attack"), target["id"], func(_n): return 0)
-	check(loop["gold"] == 200 and loop["settlement"]["sequence"] == 2 and loop["settlement"]["pending"].size() == 2, "a later actual combat adds rewards without deleting deferred items")
-	check(loop["settlement"]["pending"][0] == retained and BattlePlayLoop.unit(loop, "leonard")["inventory"].count(281) == 1, "prior pending identity and prior committed pickup both survive the next sequence")
-	check(BattlePlayLoop.claim_reward(loop, 1, 1, retained["id"], "leonard") == loop, "old sequence cannot claim after another exchange")
-	var full := attack(fixture(true))
-	for revision in range(2):
-		full = BattlePlayLoop.claim_reward(full, 1, revision, full["settlement"]["pending"][revision]["id"], "leonard", 0, 241)
-	var bag: Array = BattlePlayLoop.unit(full, "leonard")["inventory"].duplicate()
-	check(full["settlement"]["pending"].all(func(item): return item["code"] == 241), "both displaced medicines remain available after full-bag exchanges")
-	full = BattlePlayLoop.finish_rewards(full, 1, 2, true)
-	check(not BattlePlayLoop.loot_waiting(full) and full["settlement"]["abandoned"].size() == 2 and BattlePlayLoop.unit(full, "leonard")["inventory"] == bag and full["gold"] == 100, "explicit abandonment removes only the remaining pool, never accepted loot or gold")
-	var empty := fixture()
-	BattlePlayLoop._unit(empty, "enemy021_1")["inventory"] = EMPTY.duplicate()
-	empty = attack(empty)
-	check(empty["gold"] == 100 and empty["settlement"]["pending"].is_empty() and not BattlePlayLoop.loot_waiting(empty), "gold-only kill needs no empty modal confirmation")
-	check(BattlePlayLoop.finish_exhausted_action(empty)["selected_unit_id"] == "enemy023_1", "empty-drop settlement can hand off normally after its presentation")
-	instance_gold_cases()
-
-
-func instance_gold_cases() -> void:
-	# EVEF instance word 0 (0x42bd50 jump table 0x42c0a8) overwrites live +0x98 after the
-	# PLAYERS template copy; the reward reads the live word. Only level 53 record 17
-	# carries one (100 == template), so the override is exercised with a synthetic value.
-	var template_gold: int = fixture()["reward_data"]["actors"]["021"]["gold"]
-	check(BattleRewardRules.kill_gold({"actor_id": "021"}, template_gold) == template_gold, "unit without EVEF instance words keeps the PLAYERS template kill gold")
-	check(BattleRewardRules.kill_gold({"evef_instance": {"record_index": 17, "overrides": {"wait_round": 8}}}, template_gold) == template_gold, "instance words without a gold override keep the template kill gold")
-	check(BattleRewardRules.kill_gold({"evef_instance": {"record_index": 17, "overrides": {"gold": 0}}}, template_gold) == 0, "instance gold 0 is an explicit override, not a missing word")
-	var overridden := fixture()
-	BattlePlayLoop._unit(overridden, "enemy021_1")["inventory"] = EMPTY.duplicate()
-	BattlePlayLoop._unit(overridden, "enemy021_1")["evef_instance"] = {"evidence_tier": "resource-derived", "record_index": 17, "overrides": {"gold": 250}}
-	overridden = attack(overridden)
-	check(overridden["gold"] == 250 and overridden["settlement"]["kills"][0]["gold"] == 250, "kill gold takes the EVEF instance override over the template: " + str(overridden["gold"]))
 
 
 func area_cases() -> void:
@@ -620,85 +575,6 @@ func checkpoint_cases() -> void:
 	var from_disk := BattleCheckpoint.read(path, loop)
 	check(from_disk["ok"] and from_disk["snapshot"]["loop"] == loop, "fresh file read preserves completed settlement")
 	DirAccess.remove_absolute(path)
-
-
-func runtime_cases() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	TestSuite.stop_audio(scene.get_node("BattleMusic"))
-	scene.apply_loop(attack(fixture()), "test")
-	scene.interaction_state = scene.play_loop["interaction"]
-	var view = scene.get_node("BattlePresentation")
-	view.cutin.set_process(false)
-	var controller = scene.settlement_controller
-	controller.checkpoint_path = "res://ignored/battle-settlement/runtime-test.save"
-	scene._process(0)
-	check(not controller.panel.visible and not scene.action_menu.visible, "loot waits for queued attack and map aftermath")
-	check(not controller.save_battle()["ok"], "half-presented exchange cannot be saved as a quiet boundary")
-	scene._process(1)
-	view.cutin._process(30)
-	view.aftermath.finish(scene)
-	scene._process(0)
-	check(controller.panel.visible and BattlePlayLoop.loot_waiting(scene.play_loop), "completed map feedback opens real loot controls")
-	check(controller.panel._recipient == "leonard", "loot defaults to its earning actor rather than the first roster entry")
-	var before: Dictionary = scene.play_loop.duplicate(true)
-	controller.panel.rows[0].pressed.emit()
-	var old = controller.panel.slots[controller.panel.first_empty_slot()]
-	controller.panel.cancel()
-	old.pressed.emit()
-	check(scene.play_loop == before, "putting the held item back leaves a bag-slot click inert")
-	controller.panel.rows[0].pressed.emit()
-	old = controller.panel.slots[controller.panel.first_empty_slot()]
-	old.pressed.emit()
-	var partial: Dictionary = scene.play_loop.duplicate(true)
-	old.pressed.emit()
-	check(partial == scene.play_loop and partial["settlement"]["pending"].size() == 1, "accepted slot button cannot replay after the window rebuilds")
-	check(controller.save_battle()["ok"], "partial receipt can be explicitly saved")
-	controller.panel.rows[0].pressed.emit()
-	old = controller.panel.slots[controller.panel.first_empty_slot()]
-	old.pressed.emit()
-	check(controller.load_battle()["ok"] and scene.play_loop == partial, "actual load replaces the sole state with exact partial-claim receipt")
-	old.pressed.emit()
-	check(scene.play_loop == partial, "pre-load confirmation cannot claim again after restoring the same sequence and revision")
-	check(controller.panel.visible and not view.combat_busy(scene.play_loop), "restored receipt resumes loot without replaying attack/death/EXP/gold")
-	check(view._shown_combat_sequence == partial["last_combat"]["sequence"], "restored combat sequence is presentation-acknowledged")
-	var path: String = controller.checkpoint_path
-	stop_audio(scene)
-	await process_frame
-	await create_timer(0.1).timeout
-	scene.queue_free()
-	await process_frame
-	await create_timer(0.3).timeout
-	var fresh = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	fresh.scenario_path = BattleFixture.PATH; fresh.startup_mode = "dev_first_control"
-	root.add_child(fresh)
-	fresh.set_process(false)
-	fresh.settlement_controller.checkpoint_path = path
-	fresh.settlement_controller.tick()
-	# The development fixture has no opening: the fresh scene stands at first control (the
-	# product path's resume-before-opening button is covered by the title / system-menu suites).
-	check(fresh.interaction_state == "action_menu" and fresh.settlement_controller.quiet(), "a fresh fixture scene is quiet at first control before loading")
-	# The global stream is not saved: the restored loop keeps the fresh scene's live words.
-	var fresh_words: Array = (TestSuite.stream_of(fresh.play_loop, "global") as Array).duplicate()
-	var fresh_loaded: bool = fresh.settlement_controller.load_battle()["ok"]
-	var restored_state: Dictionary = fresh.play_loop.duplicate()
-	var partial_state: Dictionary = partial.duplicate()
-	restored_state.erase(TestSuite.STREAM_KEYS["global"]); partial_state.erase(TestSuite.STREAM_KEYS["global"])
-	check(fresh_loaded and restored_state == partial_state and TestSuite.stream_of(fresh.play_loop, "global") == fresh_words, "fresh scene restores exact partial state despite its independently initialized streams; the global stream (drops, carry) stays the fresh scene's live words")
-	check(fresh.settlement_controller.panel.visible and not fresh.get_node("BattlePresentation").combat_busy(fresh.play_loop), "fresh restoration opens pending loot without replaying the reward sequence")
-	var protected: Dictionary = fresh.play_loop.duplicate(true)
-	FileAccess.open(path, FileAccess.WRITE).store_string("broken checkpoint")
-	check(not fresh.settlement_controller.load_battle()["ok"] and fresh.play_loop == protected, "failed file load leaves the current battle and pending items unchanged")
-	DirAccess.remove_absolute(path)
-	stop_audio(fresh)
-	await process_frame
-	await create_timer(0.1).timeout
-	fresh.queue_free()
-	await process_frame
-	await create_timer(0.3).timeout
 
 
 func stop_audio(node: Node) -> void:

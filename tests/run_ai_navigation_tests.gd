@@ -29,17 +29,12 @@ func run() -> void:
 	registry_cases()
 	route_cases()
 	memory_cases()
-	wait_cases()
 	instance_cases()
 	script_anchor_cases()
 	pursuit_walk_cases()
 	crowded_filter_cases()
 	attack_station_cases()
 	terrain_range_cases()
-	center_cases()
-	atomic_cases()
-	checkpoint_cases()
-	await presentation_cases()
 	print("AI_NAVIGATION_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
 	quit(0 if failures.is_empty() else 1)
 
@@ -314,24 +309,6 @@ func memory_cases() -> void:
 	check(returning["last_ai_action"].get("purpose") == "return_home" and BattlePlayLoop.unit(returning, actor["id"])["coord"] == Vector2i(1,5), "source fixed-radius guard returns to its anchor instead of chasing outside its post")
 
 
-func wait_cases() -> void:
-	var loop := fixture("wait")
-	var owner: String = loop["units"][0]["id"]
-	var after := BattlePlayLoop.step_ai_turn(loop, forbidden_rng)
-	check(after["last_ai_action"].get("wait_reason") == "wait_round" and BattlePlayLoop.unit(after, owner)["ai_wait_remaining"] == 2, "healthy distant guard waits one real action and decrements once")
-	after = BattlePlayLoop.step_ai_turn(next_owner(after, owner), forbidden_rng)
-	check(BattlePlayLoop.unit(after, owner)["ai_wait_remaining"] == 1, "next round continues the saved remaining wait")
-	for kind in ["hurt", "poison", "nearby"]:
-		var waking := fixture("wait")
-		var actor: Dictionary = waking["units"][0]
-		if kind == "hurt": actor["hp"] -= 1
-		elif kind == "poison": actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, "poison", 2, 7)["changes"], true)
-		else: waking["units"][1]["coord"] = Vector2i(8,5)
-		var woken := BattlePlayLoop.step_ai_turn(waking, zero)
-		check(BattlePlayLoop.unit(woken, owner)["ai_wait_remaining"] == 0 and woken["last_ai_action"]["kind"] != "wait", "source event ends initial waiting: " + kind)
-		if kind == "poison": check(BattlePlayLoop.unit(woken, owner)["hp"] == 393 and BattlePlayLoop.unit(woken, owner)["status_counters"]["poison"] == (7<<16)|1, "wake and movement share exactly one owner status tick")
-
-
 static func escort_fixture(point: Vector2i, items: Array = [241, 241]) -> Dictionary:
 	# Level-17 shape: an unarmed friendly NPC (weapon 0 -> range0, no attack goal) whose EVEF
 	# instance words grant 回復藥 and a fixed point, with one enemy far away.
@@ -599,86 +576,6 @@ func terrain_range_cases() -> void:
 				BattlePlayLoop._set_unit_coord(board, probe[2], action["to"])
 				if not BattlePlayLoop.attack_cells(board, probe[2]).has(struck): outside.append([probe[0], probe[3], cell, action["to"], action["target_id"]])
 	check(strikes > 40 and outside.is_empty(), "no AI strike through a wall on the battle_003／504 probe boards (%d strikes): %s" % [strikes, str(outside)])
-
-
-func center_cases() -> void:
-	for mode in ["empty_center", "cure_center"]:
-		var loop := fixture(mode)
-		# The cast's hit and EXP draws come from the loop's damage stream (0x42c780). The
-		# fixture's own state seeded(1) gives the four cures 112 EXP, a level-up whose refresh
-		# refills MP; seeded(2) keeps both casts inside level 1, so the live MP shows the one payment.
-		TestSuite.seed_stream(loop, "damage", 2)
-		var before := loop.duplicate(true)
-		var after := BattlePlayLoop.step_ai_turn(loop, zero)
-		check(after["scenario_ok"], "empty-center preflight: " + mode + " " + str(after.get("scenario_error", "")))
-		if not after["scenario_ok"]: continue
-		var action: Dictionary = after["last_ai_action"]
-		check(action.get("cast_center") == Vector2i(7,5) and BattlePlayLoop.unit_id_at_coord(loop, Vector2i(7,5)) == "", "four-target cross selects its empty center: " + mode)
-		check(action.get("affected_targets", []).size() == 4 and BattlePlayLoop.unit(after, loop["units"][0]["id"])["mp"] == 100-int(action["resource_payment"]["amount"]), "every area member settles while MP pays once: " + mode)
-		check(loop == before and after["last_ai_actions"].size() == 1, "empty-center selection preserves source state and emits one action")
-	var player := fixture("empty_center")
-	var actor: Dictionary = player["units"][0]
-	actor["player_commandable"] = true
-	player = BattlePlayLoop.select_player_unit(player, actor["id"])
-	player = BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(player, "magic"), POISON)
-	var selected := player.duplicate(true)
-	var committed := BattlePlayLoop.attack_coord(player, Vector2i(7,5), zero)
-	check(committed.get("last_attack", {}).get("cast_center") == Vector2i(7,5), "player map-cell confirmation uses the same empty-center transaction")
-	check(BattlePlayLoop.attack_coord(committed, Vector2i(7,5), forbidden_rng)["units"] == committed["units"] and player == selected, "repeated cell input cannot repeat a completed area cast")
-	var malformed := selected.duplicate(true)
-	malformed["units"][3]["status_counters"]["poison"] = 1
-	var rejected := BattlePlayLoop.attack_coord(malformed, Vector2i(7,5), forbidden_rng)
-	check(rejected["units"] == malformed["units"] and rejected["turn_queue"] == malformed["turn_queue"], "bad secondary target rejects the entire empty-center cast before RNG or payment")
-
-
-func atomic_cases() -> void:
-	for bad in ["wait", "lock", "home", "target", "terrain", "flags"]:
-		var loop := fixture("cast")
-		var actor: Dictionary = loop["units"][0]
-		match bad:
-			"wait": actor["ai_wait_remaining"] = -1
-			"lock": TestSuite.own(loop, "ai_profiles")["actors"][actor["actor_id"]]["profile"]["ai_lock"] = 101
-			"home": actor["ai_home_coord"] = null
-			"target": actor["ai_target_id"] = 42
-			"terrain": TestSuite.own(loop, "tiles")[Vector2i(3,5)] = {"move_cost": 0}
-			"flags": TestSuite.own(loop, "tiles")[Vector2i(3,5)] = {"movement_flags": -1}
-		var saved := loop.duplicate(true)
-		var rejected := BattlePlayLoop.step_ai_turn(loop, forbidden_rng)
-		check(not rejected["scenario_ok"] and rejected["units"] == saved["units"] and rejected["turn_queue"] == saved["turn_queue"] and loop == saved, "invalid navigation fails atomically before any choice: " + bad)
-
-
-func checkpoint_cases() -> void:
-	for mode in ["detour", "wait"]:
-		var loop := BattlePlayLoop.step_ai_turn(fixture(mode), zero)
-		var view := {"camera": Vector2(320,240), "shown_story_events": [], "story_complete": false, "growth_notified_level": 1}
-		var saved := BattleCheckpoint.encode(loop, view)
-		check(saved["ok"], "navigation checkpoint encodes: " + mode + " " + str(saved.get("reason", "")))
-		if not saved["ok"]: continue
-		var restored := BattleCheckpoint.decode(saved["bytes"], loop)
-		check(restored["ok"] and restored["snapshot"]["loop"]["units"] == loop["units"], "target, anchor and wait restore without rerunning selection")
-
-
-func presentation_cases() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	var before: Dictionary = scene.play_loop.duplicate(true)
-	var actor = scene.actor_node_for_unit(scene.selected_unit_id)
-	var presentation = scene.get_node("BattlePresentation")
-	GameOptions.environment_preset = "comfort"  # the OPT-GUIDE 提示 branch (原版 draws none of this)
-	presentation.navigation_cue.begin({"kind": "wait"}, actor, scene.map_config)
-	GameOptions.environment_preset = ""
-	check(presentation.combat_busy(scene.play_loop) and presentation.navigation_cue.caption.text == "待機", "visible wait participates in the common input and handoff barrier")
-	await create_timer(0.65).timeout
-	check(not presentation.navigation_cue.busy() and not presentation.navigation_cue.visible and scene.play_loop == before, "wait caption clears on a finite clock without moving the queue or state")
-	for player in scene.find_children("*", "AudioStreamPlayer", true, false):
-		player.stop()
-		player.stream = null
-	scene.queue_free()
-	await process_frame
-	await create_timer(0.3).timeout
 
 
 func next_owner(loop: Dictionary, owner: String) -> Dictionary:

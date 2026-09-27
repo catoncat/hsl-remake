@@ -48,7 +48,6 @@
 
 ```sh
 python3 tools/hsl.py check mobility
-python3 -m unittest tools.test_hsl_mobility
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate mobility --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 ```
 

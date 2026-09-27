@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-26
 
-来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=1`（`STORY_SCENE_REVIEW_PASS shots=36`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_level_1_preview`）。场景文件 `content/battles/story_001.json` 由 `python3 tools/hsl.py generate story_scene:1` 从 `battle001_seed` 生成；campaign 把 level 53 胜利的 winfail `[1,1]` 路由到它。
+来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=1`（`STORY_SCENE_REVIEW_PASS shots=36`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_registered_story_sweep` 与全程剧情 explorer）。场景文件 `content/battles/story_001.json` 由 `python3 tools/hsl.py generate story_scene:1` 从 `battle001_seed` 生成；campaign 把 level 53 胜利的 winfail `[1,1]` 路由到它。
 
 ## 看到什么
 

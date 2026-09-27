@@ -6,7 +6,7 @@
 
 ## 组装结果
 
-python3 tools/hsl.py generate level_battle:80 生成 30 名初始单位、7 名受控玩家、23 名敌方单位。条件槽 008／009 保留在 cast 但本次开场未安装。WINFAIL080 是脚本推进：到达两个位置后删除站立物件并分别发放物品 112／15；每条链末尾的 `actCheckEventNotExist 1,<另一条>` 是闸门（R6-L11，static-derived，`0x450840` case 0x72），所以只有第二个宝物到手才武装 win_0——下方宝物在墙后，墙要 怨念體 068 倒下（event 3）才开，即必须先打倒它（`run_winnability_census_tests` 的 80 关宝箱顺序）。怨念體 按对象 `obj_Mode engADDCOLOR` 加色绘制；落点仍是 provisional (25,9)。回执夹具提交 source win status 仅用于验证流转。
+python3 tools/hsl.py generate level_battle:80 生成 30 名初始单位、7 名受控玩家、23 名敌方单位。条件槽 008／009 保留在 cast 但本次开场未安装。WINFAIL080 是脚本推进：到达两个位置后删除站立物件并分别发放物品 112／15；每条链末尾的 `actCheckEventNotExist 1,<另一条>` 是闸门（R6-L11，static-derived，`0x450840` case 0x72），所以只有第二个宝物到手才武装 win_0——下方宝物在墙后，墙要 怨念體 068 倒下（event 3）才开，即必须先打倒它（`run_winfail_rules_tests` 的 80 关宝箱顺序）。怨念體 按对象 `obj_Mode engADDCOLOR` 加色绘制；落点仍是 provisional (25,9)。回执夹具提交 source win status 仅用于验证流转。
 
 ## 本次回执
 

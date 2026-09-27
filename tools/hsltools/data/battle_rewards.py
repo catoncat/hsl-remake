@@ -1,7 +1,7 @@
 """Compile reward source fields and carry lists; no live reward rules are implied.
 
 Registry task battle_rewards (family actors): output content/generated/hsl/combat/rewards.json.
-Bodies (including the --pak/--import-carry command line, exercised by test_hsl_battle_rewards)
+Bodies (including the --pak/--import-carry command line)
 moved verbatim from the former hsl_battle_rewards.py.
 """
 import argparse

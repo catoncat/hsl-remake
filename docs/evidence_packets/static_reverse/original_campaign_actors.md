@@ -1,6 +1,6 @@
 # 主线角色模板、职业刷新与学习来源
 
-> evidence: static-derived · status: live · functions: 0x42c700, 0x42caa0, 0x42cac0, 0x4373f0, 0x437970, 0x437a40, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_campaign_actor_tests.gd, test_hsl_campaign_actors.py, test_hsl_level_battle.py · updated: 2026-09-29
+> evidence: static-derived · status: live · functions: 0x42c700, 0x42caa0, 0x42cac0, 0x4373f0, 0x437970, 0x437a40, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-09-29
 
 ## 交付与口径
 
@@ -58,7 +58,7 @@ uv run --no-project --with unicorn==2.1.4 --with pillow --python /opt/homebrew/b
 python3 tools/hsl.py check campaign_actor
 python3 tools/hsl.py check campaign_actor_data
 python3 -m unittest discover -s tools -p 'test_hsl_campaign_actors.py'
-bash tools/godot.sh --headless --path . --script res://tests/run_campaign_actor_tests.gd
+bash tools/godot.sh --headless --path . --script res://tests/run_job_stats_tests.gd
 ```
 
 定向 Python 4 项＋既有角色资源4项通过；Godot **10,524 检查通过**，覆盖独立原返回、所有模板初始化及008明确拒绝、不可变输入、cap／出生随机边界和学技 mask。未作 GUI 人工验收；本片无布局／动效变更，正式组装仍由 presentation 线独立验收。完整门禁和提交回执见本线协作记录（已删，见 Git 历史）。

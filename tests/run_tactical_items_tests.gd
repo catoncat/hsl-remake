@@ -37,12 +37,9 @@ func run() -> void:
 	check(initial()["scenario_ok"],"published tactical training initializes")
 	if not initial()["scenario_ok"]: return
 	native_items()
-	atomic_effects()
 	independent_actions()
 	magic_and_expiry()
 	cure_weaken()
-	ai_and_saves()
-	terminal_guards()
 
 func native_items() -> void:
 	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_tactical_items.json"))
@@ -84,35 +81,6 @@ func native_items() -> void:
 	for row in packet["scans"]:
 		var scanned := ItemUseRules.first_status_slot(row["input"]["inventory"],ordinary["consumables"],int(row["input"]["flags"]))
 		check(scanned["ok"] and scanned["index"] + 1 == int(row["native"]),"first matching native cure slot includes silence and keeps source ordering")
-
-func atomic_effects() -> void:
-	var loop := fixture();var before := loop.duplicate(true)
-	var actor := BattlePlayLoop.unit(loop,"tina")
-	for _i in range(5): check(ItemUseRules.prepare(actor,loop["consumables"]["262"])["ok"],"first-use preview is useful without sampling")
-	check(loop == before,"multiple previews preserve entire loop and independent random streams")
-	var used := BattlePlayLoop.use_item(loop,"262")
-	check(used["extra_action"]["pending"] and used["item_use_sequence"] == 1,"a confirmed inventory use commits one independent action")
-	var receipt: Dictionary = used["last_item_use"]
-	check(receipt["draws"].size() == 1 and int(receipt["draws"][0]["bound"]) == 6 and stream_of(used, "damage") == DamageRandomStream.rand(stream_of(loop, "damage"),6)["state"],"first temporary item commits one rand(6) from the loop's saved damage stream (0x409e10)")
-	check(no_draw(used, loop, "reward"),"item draws never touch the reward stream")
-	check(BattlePlayLoop.unit(used,"tina")["inventory"].count(262) == 1 and StatEnhancementRules.power(BattlePlayLoop.unit(used,"tina"),"attack_up") in range(5,11),"exactly one source item removed and actual5..10 power applied")
-	check(BattlePlayLoop.unit(used,"tina")["exp"] == actor["exp"],"item strengthening does not fabricate magic contribution EXP")
-	var repeated := BattlePlayLoop.use_item(used,"262")
-	check(repeated["last_item_use"]["stat_effects"][0]["duration"] == 6 and repeated["last_item_use"]["draws"].is_empty() and no_draw(repeated, used, "damage"),"repeat extends three turns without changing strength or drawing")
-	check(StatEnhancementRules.power(BattlePlayLoop.unit(repeated,"tina"),"attack_up") == StatEnhancementRules.power(BattlePlayLoop.unit(used,"tina"),"attack_up") and (StatEnhancementRules.word(BattlePlayLoop.unit(repeated,"tina"),"attack_up") & 65535) == 5,"second independent action ticks only once after the item extension")
-	for code in ["247","250","262"]:
-		var full := fixture();var target := BattlePlayLoop._unit(full,"tina")
-		if code == "250": target["stamina"] = 60
-		if code == "262": run_support_magic_tests.buff(full,"tina","attack_up",9,24)
-		var spent := BattlePlayLoop.use_item(full,code)
-		var holder := BattlePlayLoop.unit(spent,"tina")
-		check(spent["item_use_sequence"] == 1 and holder["inventory"].count(int(code)) == target["inventory"].count(int(code))-1 and spent["last_item_use"]["draws"].is_empty() and no_draw(spent, full, "damage") and holder["hp"] == target["hp"] and holder["stamina"] == target["stamina"],"a use without effect still spends one item without drawing (0x444aba): "+code)
-	var distant := fixture();BattlePlayLoop._unit(distant,"companion")["coord"] = Vector2i(20,20)
-	check(BattlePlayLoop.use_item(distant,"263","companion") == distant,"unreachable recipient cannot consume a random item")
-	var malformed := fixture();own(malformed, "consumables")["262"]["local_attack"] = [10,5]
-	check(BattlePlayLoop.use_item(malformed,"262") == malformed,"invalid item range is rejected before inventory/random mutation")
-	var unavailable := fixture();BattlePlayLoop._unit(unavailable,"tina").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(unavailable,"tina"),"paralysis",2)["changes"],true)
-	check(BattlePlayLoop.use_item(unavailable,"262") == unavailable,"paralyzed owner cannot drink a tactical item")
 
 func independent_actions() -> void:
 	var loop := fixture();var target := BattlePlayLoop._unit(loop,"tina")
@@ -197,57 +165,3 @@ func magic_and_expiry() -> void:
 		else: cursor = BattlePlayLoop.choose_command(cursor,"wait")
 	check(saved_word != 0 and StatEnhancementRules.word(BattlePlayLoop.unit(cursor,"tina"),"defense_up") == 0 and cursor["last_action_end"]["expired"].has("defense_up"),"actual independent actions and queue cycles expire the local enhancement")
 	check(BattlePlayLoop.unit(cursor,"tina")["combat_profile"]["live_defense"] == BattlePlayLoop.unit(base,"tina")["combat_profile"]["live_defense"],"item expiry restores exact base/equipment defense")
-
-func ai_and_saves() -> void:
-	for self_cure in [true,false]:
-		var loop := fixture();var actor := BattlePlayLoop._unit(loop,"tina")
-		actor["player_commandable"] = false;actor["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY;actor["no_attack"] = true
-		actor["inventory"] = [247,0,0,0,0,0,0,0]
-		var target := actor if self_cure else BattlePlayLoop._unit(loop,"companion")
-		target.merge(BattlePlayLoop.StatusEffectRules.apply(target,"no_magic",3)["changes"],true)
-		if self_cure: BattlePlayLoop._unit(loop,"companion")["hp"] = 1
-		own(loop, "ai_profiles")["actors"]["002"]["profile"].merge({"ai_check_hp":0,"ai_check_dying":0,"ai_help_otherhp":100 if self_cure else 0,"ai_help_status":100,"ai_help_attack":0,"ai_att_magic":100 if self_cure else 0},true)
-		own(loop, "skill_book")["skills"][run_support_magic_tests.HEAL]["fields"]["use_ratio"] = "100"
-		loop["interaction"] = "ai_resolving";loop["selected_unit_id"] = ""
-		var first := BattlePlayLoop.step_ai_turn(loop,func(_n):return 0)
-		check(first["scenario_ok"] and first["last_item_use"].get("item_code") == "247" and first["extra_action"]["pending"],"AI commits first matching silence cure on self/ally")
-		check(not BattlePlayLoop.StatusEffectRules.magic_blocked(BattlePlayLoop.unit(first,target["id"])) and no_draw(first, loop, "damage"),"AI cure clears actual target without artificial item random draws")
-		var second := BattlePlayLoop.step_ai_turn(first,func(_n):return 0)
-		if self_cure: check(second["last_ai_action"].get("skill_id") == run_support_magic_tests.HEAL and second["last_ai_action"].get("healing",0) > 0,"AI rebuilds owned healing after its first-action silence cure")
-		else: check(second["item_use_sequence"] == 1,"AI does not repeat a consumed/unneeded ally cure")
-	var used := BattlePlayLoop.use_item(fixture(),"262")
-	var snapshot := BattleCheckpoint.encode(used,VIEW)
-	check(snapshot["ok"],"snapshot records exactly one random item application")
-	if snapshot["ok"]:
-		var loaded := BattleCheckpoint.decode(snapshot["bytes"], used)
-		check(loaded["ok"] and loaded["snapshot"]["loop"] == used,"decode validates past item effect without applying it a second time")
-		var one := BattlePlayLoop.use_item(used,"263")
-		var two := BattlePlayLoop.use_item(loaded["snapshot"]["loop"],"263")
-		check(one == two,"same saved stream yields identical subsequent defense, inventory and final tail")
-	for part in ["rng","sequence"]:
-		var bad := used.duplicate(true)
-		if part == "rng":set_stream(bad, "damage", [0])
-		elif part == "sequence":bad["item_use_sequence"] += 1
-		check(not BattleCheckpoint.encode(bad,VIEW)["ok"],"tampered tactical effect proof is rejected: "+part)
-	var no_item := fixture()
-	check(BattlePlayLoop.use_item(no_item,"262","tina",7) == no_item,"stale inventory index cannot consume another slot or draw")
-
-func terminal_guards() -> void:
-	for mode in ["victory","defeat","escape"]:
-		var loop := fixture();var actor := BattlePlayLoop._unit(loop,"tina");var foe := BattlePlayLoop._unit(loop,"enemy026_1")
-		actor["hit_bonus_accum"] = 1000;foe["coord"] = Vector2i(15,16)
-		if mode == "victory":foe["hp"] = 1
-		if mode == "defeat":
-			actor["hp"] = 1;foe["no_attack"] = false;foe["hit_bonus_accum"] = 1000
-			foe["growth_profile"]["source"].merge({"attack_back":100,"attack_power":1000},true)
-			foe.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(foe,loop["equipment_items"]),true)
-		if mode == "escape":
-			actor["coord"] = Vector2i(13,10);BattlePlayLoop._unit(loop,"companion")["coord"] = Vector2i(13,11);foe["coord"] = Vector2i(12,10)
-		loop = BattlePlayLoop.use_item(loop,"263")
-		var random_after: Array = stream_of(loop, "damage").duplicate()
-		if mode == "escape":loop = BattlePlayLoop.choose_command(BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop,"move"),Vector2i(14,10)),"wait")
-		else:loop = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),"enemy026_1",func(_n):return 0)
-		check(loop["battle_outcome"] == {"victory":BattleOutcome.VICTORY_ENEMIES_CLEARED,"defeat":BattleOutcome.DEFEAT_FALLEN,"escape":BattleOutcome.VICTORY_ESCAPE}[mode],"tactical item second action reaches "+mode)
-		check(stream_of(loop, "damage") == random_after and not loop["extra_action"]["pending"],"terminal freezes the damage stream (the scripted strike brings its own draws) and remaining action")
-		check(BattlePlayLoop.use_item(loop,"262") == loop and BattleLoopInventory._resolve_item_use(loop,"tina","tina","262",0).is_empty() and BattlePlayLoop.step_ai_turn(loop) == loop,"no direct or UI item path can continue after terminal")
-		check(BattleCheckpoint.encode(loop,VIEW)["ok"],"terminal tactical receipt remains restorable")

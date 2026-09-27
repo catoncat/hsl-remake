@@ -1,6 +1,6 @@
 # 技能资源费用、门槛与扣除
 
-> evidence: static-derived · status: live · functions: 0x408fe0, 0x409040, 0x409890, 0x409980, 0x40e240, 0x40e290 · tools: hsltools/probes/skill_cost.py, run_skill_resource_tests.gd · updated: 2026-09-13
+> evidence: static-derived · status: live · functions: 0x408fe0, 0x409040, 0x409890, 0x409980, 0x40e240, 0x40e290 · tools: hsltools/probes/skill_cost.py, run_skill_resolution_tests.gd · updated: 2026-09-13
 
 Checked: 2026-09-13。机器证据见 [original_skill_resources.json](original_skill_resources.json)，复跑工具为 `tools/hsltools/probes/skill_cost.py`。本包恢复费用，不代替技能拥有权、目标阵营／状态资格、效果公式或AI决策树。
 
@@ -48,12 +48,11 @@ ITEM的 `mp_use_half` 在 `0x447ddf` 被读取，非零在 `0x447df4` 置掩码2
 
 缺失费用、负数、非整数、非有限资源、超出32位费用域、缺装备修饰数据都明确失败。初始化和AI公共入口检查必需费用数据；坏数据进入scenario_error并保留坐标／资源／队列，不默默改用普通攻击。真正的MP不足仍允许AI使用既有其他可用动作，这是资源选择而非缺数据fallback。
 
-`run_skill_resource_tests.gd` 包含32例原结果对照、ST19/20边界、命中／落空、取消和重复请求、无效目标不使用RNG、非法字段、AI普通／减耗费用及坏数据不前进；原508项行动组合和核心／第一战回归继续保留。新测试曾因JSON数字拼接为`2.0`触发错误，已改为整数key；冷缓存失败先完成导入后重跑。可见夹具曾误用“必须enabled”的点击helper测试disabled按钮，改为真实坐标输入后通过，不放宽产品按钮门槛。
+`run_skill_resolution_tests.gd` 包含32例原结果对照、ST19/20边界、命中／落空、取消和重复请求、无效目标不使用RNG、非法字段、AI普通／减耗费用及坏数据不前进；原508项行动组合和核心／第一战回归继续保留。新测试曾因JSON数字拼接为`2.0`触发错误，已改为整数key；冷缓存失败先完成导入后重跑。可见夹具曾误用“必须enabled”的点击helper测试disabled按钮，改为真实坐标输入后通过，不放宽产品按钮门槛。
 
 ```sh
 uv run --with unicorn==2.1.4 python3 tools/hsl.py generate skill_cost --exe $HSL_ORIGINAL_DIR/hsl01.exe
-python3 -m unittest tools.test_hsl_native_skill_cost_probe tools.test_hsl_equipment_data -v
-godot --headless --path . --script res://tests/run_skill_resource_tests.gd
+godot --headless --path . --script res://tests/run_skill_resolution_tests.gd
 ```
 
 不带EXE/PAK参数只检查保存证据与来源，不重新执行原函数。原例、代码块与来源校验进入完整门禁；真实Control边界验收见 [skill_resources/README.md](../runtime_observations/skill_resources/README.md)。完整技能拥有权、目标function-mask、状态条件、伤害／效果／随机顺序及AI策略仍继续研究。

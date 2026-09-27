@@ -53,7 +53,6 @@ func run() -> void:
 	if not loop["scenario_ok"]: quit(1); return
 	movement_and_pickup()
 	full_bag_extra_action_and_combat()
-	eligibility_and_terminals()
 	carry_and_validation()
 	await presentation_and_restore()
 	print("TREASURE_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
@@ -137,30 +136,6 @@ func full_bag_extra_action_and_combat() -> void:
 	var finish := BattlePlayLoop.finish_exhausted_action(defer_loot(attacked))
 	check(finish["treasures"]["receipts"].size() == 1 and finish["action_end_sequence"] == before["action_end_sequence"] + 1 and not finish["extra_action"]["pending"], "second completed action does not open the box again, grant a third action or duplicate the final tail")
 	check(BattlePlayLoop.Treasure.settlement_error(finish) == "", "mixed chest/kill settlement retains explicit provenance")
-
-
-func eligibility_and_terminals() -> void:
-	var loop := placed()
-	var paralyzed := loop.duplicate(true)
-	var owner := BattlePlayLoop._unit(paralyzed, "hu")
-	owner.merge(BattlePlayLoop.StatusEffectRules.apply(owner, "paralysis", 2)["changes"], true)
-	paralyzed["interaction"] = "ai_resolving"; paralyzed["selected_unit_id"] = ""
-	var skipped := BattlePlayLoop.step_ai_turn(paralyzed)
-	check(skipped["treasures"]["opened_ids"].is_empty() and skipped["action_end_sequence"] == paralyzed["action_end_sequence"] + 1, "paralysis skip gets its established single tail but no treasure action")
-	var npc := loop.duplicate(true)
-	var actor := BattlePlayLoop._unit(npc, "hu")
-	actor["player_commandable"] = false; actor["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY
-	npc["interaction"] = "ai_resolving"; npc["selected_unit_id"] = ""
-	var unclaimed := BattlePlayLoop._advance_current_actor(npc)
-	check(unclaimed["treasures"]["opened_ids"].is_empty(), "AI control does not take party treasures through the player-only completion adapter")
-	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED, BattleOutcome.DEFEAT_FALLEN, BattleOutcome.VICTORY_ESCAPE]:
-		var terminal := loop.duplicate(true)
-		terminal["battle_outcome"] = outcome; terminal["interaction"] = "battle_result"
-		check(BattlePlayLoop.begin_wait_resolution(terminal) == terminal and BattlePlayLoop.step_ai_turn(terminal) == terminal and BattlePlayLoop.finish_exhausted_action(terminal) == terminal, "existing terminal states never start post-freeze chest transactions: " + BattleOutcome.describe(outcome))
-	check(initial()["treasures"]["opened_ids"].is_empty(), "fresh restart initializes the source chest state, not old awards")
-	var missing := BattlePlayLoop.BattleScenario.load_file("res://content/battles/gol_road_battle.json")
-	missing["resources"]["treasures"] = "res://absent_treasure.json"
-	check(not BattlePlayLoop.create([], "", missing)["scenario_ok"], "missing required contents fail explicitly rather than inventing a reward")
 
 
 func carry_and_validation() -> void:

@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-18
 
-来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=8`（`STORY_SCENE_REVIEW_PASS shots=9`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_level_8_story`）。场景文件 `content/battles/story_008.json` 由 `python3 tools/hsl.py generate story_scene:8` 从 `battle008_seed` 生成。level 8 是主线 22 段 story-only 过场之一（无 WINFAIL），因此这是**完整重制**而非开场预览：大地图到达菲納斯河畔（bigmap 点 8）即进入，播完自动回大地图。
+来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=8`（`STORY_SCENE_REVIEW_PASS shots=9`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_registered_story_sweep` 与全程剧情 explorer）。场景文件 `content/battles/story_008.json` 由 `python3 tools/hsl.py generate story_scene:8` 从 `battle008_seed` 生成。level 8 是主线 22 段 story-only 过场之一（无 WINFAIL），因此这是**完整重制**而非开场预览：大地图到达菲納斯河畔（bigmap 点 8）即进入，播完自动回大地图。
 
 ## 看到什么
 

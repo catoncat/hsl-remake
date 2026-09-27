@@ -134,8 +134,7 @@
 
 ```sh
 /opt/homebrew/bin/python3 tools/hsl.py check animal_programs
-/opt/homebrew/bin/python3 -m unittest tools.test_hsl_animal_programs \
-  tools.test_hsl_native_growth_probe tools.test_hsl_native_map_scroll_probe -v
+/opt/homebrew/bin/python3 -m unittest tools.test_hsl_native_growth_probe tools.test_hsl_native_map_scroll_probe -v
 ```
 
 重新执行本机指定 EXE 的原指令（Unicorn 仅分析依赖）：

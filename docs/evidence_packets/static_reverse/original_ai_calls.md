@@ -1,6 +1,6 @@
 # AI 呼叫目标：广播、消费与共享行动
 
-> evidence: static-derived · status: live · functions: 0x40ba20, 0x40bb80, 0x40bee0, 0x40c110, 0x45ec32 · tools: hsltools/probes/ai_call.py, run_ai_call_tests.gd · updated: 2026-09-14
+> evidence: static-derived · status: live · functions: 0x40ba20, 0x40bb80, 0x40bee0, 0x40c110, 0x45ec32 · tools: hsltools/probes/ai_call.py, run_ai_skill_tests.gd · updated: 2026-09-14
 
 2026-09-14 / SR-036。接续 `a4f1197` 的来源目标／进攻类别规则。本包的原指令结果是 **static-derived**：用合成对象执行原 EXE 的有界函数／前段，不是原作自然战斗的 runtime-measured 样本。
 
@@ -30,7 +30,7 @@ AI 准备阶段同时验证可能采用的呼叫目标，包括超出接收者�
 
 ## 验证与边界
 
-`run_ai_call_tests.gd` 重放全部原结果，并实际运行“帝国兵发现目标／广播 → 法师在自身搜索半径外采用呼叫／共同施法 → 可控角色接手”。过程中重排单位数组，核对目标 ID、MP 一次扣除、两份行动收据和恰好两次队列推进。还覆盖新呼叫覆盖旧值、普通目标优先、零半径禁用、无目标 Wait、失效／死亡／同阵营／排除对象、普通与魔法击杀、剧情离场、终局及 RNG 前失败原子性。接到呼叫仍受禁魔限制，普通行动只触发一次毒伤／禁魔到期；本回合不能攻击的远处呼叫目标只能沿现有合法移动包络追击。
+`run_ai_skill_tests.gd` 重放全部原结果，并实际运行“帝国兵发现目标／广播 → 法师在自身搜索半径外采用呼叫／共同施法 → 可控角色接手”。过程中重排单位数组，核对目标 ID、MP 一次扣除、两份行动收据和恰好两次队列推进。还覆盖新呼叫覆盖旧值、普通目标优先、零半径禁用、无目标 Wait、失效／死亡／同阵营／排除对象、普通与魔法击杀、剧情离场、终局及 RNG 前失败原子性。接到呼叫仍受禁魔限制，普通行动只触发一次毒伤／禁魔到期；本回合不能攻击的远处呼叫目标只能沿现有合法移动包络追击。
 
 本次没有改变界面布局、技能素材或演出播放器；上述新链路是 headless 真实 PlayLoop 回归，不称为新的鼠标／原作现场验收。既有完整门禁继续覆盖 Runtime、表现、第二战和主入口。
 
@@ -38,8 +38,7 @@ AI 准备阶段同时验证可能采用的呼叫目标，包括超出接收者�
 
 ```sh
 python3 tools/hsl.py check ai_call
-python3 -m unittest tools.test_hsl_native_ai_call_probe -v
-godot --headless --path . --script res://tests/run_ai_call_tests.gd
+godot --headless --path . --script res://tests/run_ai_skill_tests.gd
 uv run --with unicorn==2.1.4 python3 tools/hsl.py generate ai_call --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 tools/verify.sh
 ```

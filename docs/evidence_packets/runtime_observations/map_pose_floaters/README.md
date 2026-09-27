@@ -1,6 +1,6 @@
 # 地图人物的施法姿势、升级星光与红色伤害数字：原版读法与重制
 
-> evidence: static-derived: 0x4071e0 姿势入口与 0x446c40 状态 7、0x45e525／0x45e575／0x45e660 帧程序、敌我过程 0x43f1dc..0x43f24c／0x4436f9..0x443770 与 0x44212a..0x442161 回站立、0x4071e0 的调用点（0x402fd1／0x403128 法术引导末、0x4449a7／0x440366／0x4404c7 用道具、0x442720 升级）、0x408b20 case 3 → 0x415c10 撒星、effProcFlyUpShape 0x41f5db → effProcFlyUp2 0x416d04、0x45ebdc 位移、0x422c9a 淡出、0x408580 kind 0 分支 0x40863e..0x40888e; runtime-measured: 2026-09-24 用户录屏 470.05–471.58 s（026 施法姿势）、339.60–340.6 s（LEVEL UP 星光）、203.25 s（特写伤害数字「2」→「22」）; resource-derived: SHAPEDEF use_magic／use_magic_num、hsl.pak NNN-M0001..6、AIR06_03..06、NUM100..109、NUM510; provisional: 无 m_shape 引导者的姿势起点、加色层级混合的 alpha 读法 · status: live · functions: 0x402fd1, 0x403128, 0x406d20, 0x4071e0, 0x408580, 0x408b20, 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x422c9a, 0x43f1dc, 0x440366, 0x4404c7, 0x442720, 0x4436f9, 0x4449a7, 0x446c40, 0x45dc5c, 0x45e525, 0x45e575, 0x45e660, 0x45eb9d, 0x45ebdc · tools: capture_map_pose_floaters_review.gd, run_combat_aftermath_tests.gd, run_map_pose_floaters_tests.gd · updated: 2026-09-27
+> evidence: static-derived: 0x4071e0 姿势入口与 0x446c40 状态 7、0x45e525／0x45e575／0x45e660 帧程序、敌我过程 0x43f1dc..0x43f24c／0x4436f9..0x443770 与 0x44212a..0x442161 回站立、0x4071e0 的调用点（0x402fd1／0x403128 法术引导末、0x4449a7／0x440366／0x4404c7 用道具、0x442720 升级）、0x408b20 case 3 → 0x415c10 撒星、effProcFlyUpShape 0x41f5db → effProcFlyUp2 0x416d04、0x45ebdc 位移、0x422c9a 淡出、0x408580 kind 0 分支 0x40863e..0x40888e; runtime-measured: 2026-09-24 用户录屏 470.05–471.58 s（026 施法姿势）、339.60–340.6 s（LEVEL UP 星光）、203.25 s（特写伤害数字「2」→「22」）; resource-derived: SHAPEDEF use_magic／use_magic_num、hsl.pak NNN-M0001..6、AIR06_03..06、NUM100..109、NUM510; provisional: 无 m_shape 引导者的姿势起点、加色层级混合的 alpha 读法 · status: live · functions: 0x402fd1, 0x403128, 0x406d20, 0x4071e0, 0x408580, 0x408b20, 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x422c9a, 0x43f1dc, 0x440366, 0x4404c7, 0x442720, 0x4436f9, 0x4449a7, 0x446c40, 0x45dc5c, 0x45e525, 0x45e575, 0x45e660, 0x45eb9d, 0x45ebdc · tools: capture_map_pose_floaters_review.gd, run_combat_aftermath_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -63,7 +63,7 @@
 
 ## 复现
 
-`tools/godot.sh --headless --script res://tests/run_all.gd -- run_map_pose_floaters_tests.gd`（姿势程序、调用点只有三类、星光参数与层级、kind 0 状态机、揭位顺序、不上浮）；目审截帧 `tests/capture_map_pose_floaters_review.gd`（写 `ignored/map_pose_floaters/`）。
+`tools/godot.sh --headless --script res://tests/run_all.gd -- run_skill_effect_script_tests.gd`（姿势程序、调用点只有三类、星光参数与层级、kind 0 状态机、揭位顺序、不上浮）；目审截帧 `tests/capture_map_pose_floaters_review.gd`（写 `ignored/map_pose_floaters/`）。
 
 ## 边界
 

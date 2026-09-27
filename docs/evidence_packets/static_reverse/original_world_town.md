@@ -119,7 +119,6 @@ opcode 按原 `TOWNDEF.H`；实现入口为 `0x454e20`。VM 返回值 0 为本�
 
 ```sh
 python3 tools/hsl.py check world_town
-python3 -m unittest tools.test_hsl_world_town_native
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate world_town --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 ```
 

@@ -96,7 +96,6 @@ AI 用药条件只有阈值和状态 mask，没有满值判断；`0x40c110` 要�
 PYTHONPATH=tools python3 -m hsltools.evidence.item_action \
   --exe $HSL_ORIGINAL_DIR/hsl01.exe \
   --pak $HSL_ORIGINAL_DIR/hsl.pak
-python3 -m unittest tools.test_hsl_item_action_evidence -v
 godot --headless --path . --script res://tests/run_inventory_equipment_tests.gd
 ```
 

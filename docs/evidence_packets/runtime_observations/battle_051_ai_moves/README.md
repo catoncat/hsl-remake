@@ -105,7 +105,7 @@
 ## 修了什么
 
 - `BattleLoopAI._ai_pursuit`：够不着目标时改走 `AINavigationRules.approach_point`（从 `approach_home` 抽出的同一精化核：半径 max(18, 移动力) 洪泛 → 曼哈顿最近可停格、等距抛 rand(2) → 半径 −2 重复到移动力），目标点＝持有目标所在格；回执 `ai_decision.pursuit_approach` 记录每级半径／目标／选格。静态依据：`0x43ede0` state 0xb sub 0 在 `0x40fb20` 为零时 `0x440d5c..0x440d84` 调 `0x4111a0(actor, 目标像素, 0x12, 移动力)`，与守备回点同入口同参数（[original_ai_navigation](../../static_reverse/original_ai_navigation.md)「普通追击也走同一条精化链」）。「目标是否可追」仍由重制的可达攻击格判定（`approaches`），没有可达攻击格的目标照旧 `unreachable_target` 待機。**收窄（provisional）**：R28 读出的是武器射程的 state 0xb 路径；没有普通攻击（`no_attack`）、只能去施法位的单位保留重制「沿路线走向最近施法位」的前缀（否则 `run_position_equipment_tests` 的「移动后下一行动施法」会走到施法范围外）。替换证据：读 `0x43ede0` 法术进攻状态在本回合无施法站位时的移动分支（是否同样调 `0x4111a0`、目标点取什么）。
-- 回归：[run_ai_navigation_tests.gd](../../../../tests/run_ai_navigation_tests.gd) `pursuit_walk_cases`——R1-01 八个种子都落 (10,8)、回执半径 18→5；R1-03 的十六个种子同时出现 (12,6) 与 (13,7)。把追击换回最短路前缀，三项全部失败。[run_ai_decision_tests.gd](../../../../tests/run_ai_decision_tests.gd) 与 [run_ai_call_tests.gd](../../../../tests/run_ai_call_tests.gd)（被呼叫单位追击）的单目标追击允许且只允许 rand(2) 硬币这一种抽样（旧断言要求零抽样，负责人 2026-09-25 批准改为只放行 bound 2；依据 `0x4111a0` → `0x413740` 等距 `0x458c10 & 1`），并新增单行走廊局面：每级精化只有一个最近格时全程零抽样（把硬币改成每格都抽则失败）。
+- 回归：[run_ai_navigation_tests.gd](../../../../tests/run_ai_navigation_tests.gd) `pursuit_walk_cases`——R1-01 八个种子都落 (10,8)、回执半径 18→5；R1-03 的十六个种子同时出现 (12,6) 与 (13,7)。把追击换回最短路前缀，三项全部失败。[run_ai_decision_tests.gd](../../../../tests/run_ai_decision_tests.gd) 与 [run_ai_skill_tests.gd](../../../../tests/run_ai_skill_tests.gd)（被呼叫单位追击）的单目标追击允许且只允许 rand(2) 硬币这一种抽样（旧断言要求零抽样，负责人 2026-09-25 批准改为只放行 bound 2；依据 `0x4111a0` → `0x413740` 等距 `0x458c10 & 1`），并新增单行走廊局面：每级精化只有一个最近格时全程零抽样（把硬币改成每格都抽则失败）。
 
 ## 敌人回合导出（enemy_turn_v1）
 

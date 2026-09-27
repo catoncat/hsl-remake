@@ -1,6 +1,6 @@
 # 麻痺入口、解围与恢复：实际输入验收
 
-> evidence: runtime-measured · status: live · tools: capture_paralysis_review.gd, run_paralysis_tests.gd · updated: 2026-09-18
+> evidence: runtime-measured · status: live · tools: capture_paralysis_review.gd, run_support_magic_tests.gd · updated: 2026-09-18
 
 SR-059基于`a8d9ae3`，在原WRD、美术、职业资格和正常时钟下，通过真实鼠标／键盘运行14条具名路线。原指令结论见[麻痺证据](../../static_reverse/original_paralysis.md)，本包[receipt.json](receipt.json)分别保存实际路线、进程退出码、耗时、截图哈希及明确夹具设置。
 
@@ -38,7 +38,7 @@ SR-059基于`a8d9ae3`，在原WRD、美术、职业资格和正常时钟下，�
 ```sh
 # 内建屏编号需现场核对；本次为0。
 tools/godot.sh --screen 0 --script res://tests/capture_paralysis_review.gd
-tools/godot.sh --headless --script res://tests/run_paralysis_tests.gd
+tools/godot.sh --headless --script res://tests/run_support_magic_tests.gd
 tools/verify.sh
 ```
 

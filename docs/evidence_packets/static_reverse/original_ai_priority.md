@@ -1,6 +1,6 @@
 # 原 AI 自救检查与残血敌方机会
 
-> evidence: static-derived · status: live · functions: 0x40bf70, 0x40c110, 0x40c1d0, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x44fa80 · tools: hsltools/probes/ai_priority.py, run_ai_priority_tests.gd · updated: 2026-09-14
+> evidence: static-derived · status: live · functions: 0x40bf70, 0x40c110, 0x40c1d0, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x44fa80 · tools: hsltools/probes/ai_priority.py, run_ai_support_tests.gd · updated: 2026-09-14
 
 Checked 2026-09-14，SR-037，基线 `304c5c2`。机器证据：[original_ai_priority.json](original_ai_priority.json)；原 EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。
 
@@ -44,7 +44,7 @@ SID排除在血量抽样之后；原函数本身没有removed或HP0过滤，`0x4
 
 原玩家用药文字移到共享 `BattlePresentation.show_item_use`，玩家／AI都按唯一收据显示绿色回血／解毒文字与原用药音效。AI正常演出期间保留输入屏蔽，直到反馈结束才显示下一角色菜单；重复收据不会重复文字或声音。现有显式快进也能结束这段反馈，但不再结算物品或队列。Scene和表现模块不保存新的战斗真相。
 
-`tests/run_ai_priority_tests.gd` 包含原结果逐项重放、玩家/AI相同物品收据、真实Give后友军自救、自救优先、药不足／健康不耗药、毒／禁魔收尾、残血近战与法术、方域边界、受阻目标继续扫描、no_attack、错误输入原子性及表现快进。旧长枪测试拆分普通目标与最终机会目标断言，继续要求原地二格攻击。完整门禁最终数量和退出码写入本批提交说明。
+`tests/run_ai_support_tests.gd` 包含原结果逐项重放、玩家/AI相同物品收据、真实Give后友军自救、自救优先、药不足／健康不耗药、毒／禁魔收尾、残血近战与法术、方域边界、受阻目标继续扫描、no_attack、错误输入原子性及表现快进。旧长枪测试拆分普通目标与最终机会目标断言，继续要求原地二格攻击。完整门禁最终数量和退出码写入本批提交说明。
 
 内建屏正常时钟实际Wait控件验证见 [ai_priority/README.md](../runtime_observations/ai_priority/README.md)：自救HP4→44，显示+40HP；另一回合近战／魔法选残血敌人，结束后均交接指定可控角色。测试场景的HP、位置、队列、药品和026魔法倾向100是明确夹具，不改变正常第一战，不能作为原作自然玩法证据。
 
@@ -58,8 +58,7 @@ SID排除在血量抽样之后；原函数本身没有removed或HP0过滤，`0x4
 
 ```sh
 python3 tools/hsl.py check ai_priority
-python3 -m unittest tools.test_hsl_native_ai_priority_probe -v
-godot --headless --path . --script res://tests/run_ai_priority_tests.gd
+godot --headless --path . --script res://tests/run_ai_support_tests.gd
 uv run --with unicorn==2.1.4 python3 tools/hsl.py generate ai_priority --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 tools/verify.sh
 ```

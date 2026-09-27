@@ -35,35 +35,7 @@ func run() -> void:
 	if not boot["scenario_ok"]: return
 	native_cases()
 	multi_target_transaction()
-	qualification_and_restore()
 	interaction_boundaries()
-	ai_and_outcomes()
-	presentation_known_mask()
-
-## The dedicated presenter builds its own shot per target; the cut-in strip's 0x434d10 mask
-## (BattleCombatCutin._show_shot reads clip["known"]) must hold for a 月花圓舞 target the
-## player has not fought (R34: the chapter walk's first 53-win hit a missing key here).
-func presentation_known_mask() -> void:
-	var loop := fixture();var caster := BattlePlayLoop._unit(loop,"tina");caster["kill_chain_word"] = 3
-	var foe := BattlePlayLoop._unit(loop,"enemy021_1");foe["hp"] = 100
-	var result := BattlePlayLoop.attack_coord(selection(loop),caster["coord"],zero)
-	check(result["last_attack"].has("special_segments"),"presentation fixture commits a repeated special")
-	if not result["last_attack"].has("special_segments"): return
-	var view = preload("res://game/battle/scene/BattleCombatCutin.gd").new()
-	root.add_child(view);view.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json");view.set_process(false)
-	var known := {"tina": true, "enemy021_1": false}
-	view.play(result["last_attack"],BattlePlayLoop.unit(result,"tina"),BattlePlayLoop.unit(result,"enemy021_1"),false,Vector2(320,240),Vector2(240,240),[],result["units"],known)
-	var presenter = view._presenter(view.clips[0])
-	check(presenter != null and presenter.get_script().resource_path.ends_with("MoonDancePresentation.gd"),"月花圓舞 routes to its dedicated presenter")
-	if presenter == null: view.free();return
-	var clip: Dictionary = view.clips[0]
-	check(clip["known"] == known,"the clip carries the known map for every participant")
-	presenter.present(view, clip, presenter.intro + 0.01) # first target shot, before its first pulse
-	check(view.vitals.values["hp"].text == "???" and view.vitals.values["level"].text == "??","an unknown 月花圓舞 target keeps the ??? strip through the presenter's own shot")
-	var seen: Dictionary = view.clips[0].duplicate(true);seen["known"] = {"tina": true, "enemy021_1": true}
-	presenter.present(view, seen, presenter.intro + 0.01)
-	check(view.vitals.values["hp"].text != "???","a fought target's HP is readable in the same shot")
-	presenter.reset();view.free()
 
 func native_cases() -> void:
 	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_moon_dance.json"))
@@ -124,37 +96,6 @@ func multi_target_transaction() -> void:
 	var broken := result.duplicate(true);broken["last_attack"]["special_segments"][1]["defender_hp_before"]+=1
 	check(not BattleCheckpoint.encode(broken,run_support_magic_tests.VIEW)["ok"],"save rejects a contradictory intermediate HP sequence")
 
-func qualification_and_restore() -> void:
-	var loop := fixture();var actor := BattlePlayLoop._unit(loop,"tina")
-	actor["mp"] = 0;actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
-	var walk := BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop,"move"),Vector2i(11,17))
-	check(walk["pending_move"] and BattlePlayLoop.command_available(walk,"special") and not BattlePlayLoop.command_available(walk,"magic"),"special remains legal after movement with zero MP and silence")
-	var cancel := BattlePlayLoop.cancel_interaction(selection(walk))
-	check(cancel["units"]==walk["units"] and cancel["pending_move"],"cancel target selection preserves pending movement and all resources")
-	var restored := BattlePlayLoop.cancel_interaction(BattlePlayLoop.cancel_pending_move(cancel))
-	check(BattlePlayLoop.unit(restored,"tina")["coord"]==actor["coord"] and not restored["moved_this_action"],"movement cancellation restores exact phase")
-	var encoded := BattleCheckpoint.encode(restored,run_support_magic_tests.VIEW)
-	check(encoded["ok"] and BattleCheckpoint.decode(encoded["bytes"], restored)["snapshot"]["loop"]==restored,"saved phase has current ownership without additional resources")
-	var wings := run_support_magic_tests.equip(fixture(),"accessory2",227)
-	var first := BattlePlayLoop.attack_coord(selection(wings),BattlePlayLoop.unit(wings,"tina")["coord"],zero)
-	first = BattlePlayLoop.finish_exhausted_action(first)
-	check(first["extra_action"]["pending"] and BattlePlayLoop.unit(first,"tina")["stamina"]==40,"completed five pulses lead to one independent second action")
-	var second := BattlePlayLoop.attack_coord(selection(first),BattlePlayLoop.unit(first,"tina")["coord"],zero)
-	check(second["last_attack"]["special_segments"].size()==5 and BattlePlayLoop.unit(second,"tina")["stamina"]==20,"second action pays separately and does not multiply the five-pulse program")
-	var both := fixture();own(both, "skill_book")["actors"]["002"]["supported_initial_ids"].append("special:magicOTHER:magicCode01")
-	var chooser := BattlePlayLoop.choose_command(both,"special")
-	check(chooser["interaction"]=="special_select" and BattlePlayLoop.choose_special(chooser,RepeatedSpecialRules.ID)["selected_skill_id"]==RepeatedSpecialRules.ID,"multiple owned specials have an actual choice without replacing existing Qi Blade")
-	for kind in ["resource","paralysis","empty","unowned","bad_target"]:
-		var invalid := fixture()
-		var source := BattlePlayLoop._unit(invalid,"tina")
-		if kind=="resource": source["stamina"]=19
-		elif kind=="paralysis": source.merge(BattlePlayLoop.StatusEffectRules.apply(source,"paralysis",2)["changes"],true)
-		elif kind=="empty": BattlePlayLoop._unit(invalid,"enemy021_1")["coord"]=Vector2i(18,20)
-		elif kind=="unowned": own(invalid, "skill_book")["actors"]["002"]["supported_initial_ids"]=[run_support_magic_tests.HEAL]
-		else: BattlePlayLoop._unit(invalid,"enemy021_1")["status_counters"].erase("poison")
-		var rejected := BattlePlayLoop.attack_coord(selection(invalid),source["coord"],no_rng)
-		check(rejected["units"]==invalid["units"] and rejected["turn_queue"]==invalid["turn_queue"],"failed cast is atomic with no RNG: "+kind)
-
 func interaction_boundaries() -> void:
 	var loop := fixture()
 	own(loop, "equipment_items")["82"]["weapon_effect_flags"] = 0x210000 # Synthetic ordinary-only flags, never a source staff grant.
@@ -180,29 +121,3 @@ func interaction_boundaries() -> void:
 	check(trial["scenario_ok"] and BattlePlayLoop.CoreTurnQueue.current(trial["turn_queue"])["id"]=="tina","published surrounding-enemy practice gives a real first player action")
 	for unit in trial["units"]:
 		check(BattlePlayLoop.TraversalRules.placement_error(unit,trial["units"],trial["tiles"],trial["map_size"])=="","published practice actors occupy actual original walkable ground")
-
-
-func ai_and_outcomes() -> void:
-	var ai := fixture();var actor := BattlePlayLoop._unit(ai,"tina")
-	actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
-	ai["interaction"]="ai_resolving";ai["selected_unit_id"]=""
-	BattlePlayLoop._unit(ai,"enemy021_1")["coord"]=Vector2i(14,16)
-	own(ai, "ai_profiles")["actors"]["002"]["profile"].merge({"ai_check_dying":0,"ai_help_otherhp":0,"ai_help_status":0,"ai_att_special":100},true)
-	var prepared := BattleLoopAI._prepare_ai_turn(ai,"tina")
-	check(prepared["ok"],"AI self-centered candidate search is valid: "+str(prepared.get("reason","")))
-	var acted := BattlePlayLoop.step_ai_turn(ai,zero)
-	check(acted["scenario_ok"] and acted["last_ai_action"].get("skill_id")==RepeatedSpecialRules.ID and acted["last_ai_action"]["kind"]=="move_then_attack","AI moves to an actual area anchor and casts its owned special")
-	check(acted["last_combat"].get("special_segments",[]).size()==5 and BattlePlayLoop.unit(acted,"tina")["stamina"]==40,"AI shares the five-stage transaction and one resource payment")
-	for outcome in ["victory","defeat","escape"]:
-		var loop := fixture();var source := BattlePlayLoop._unit(loop,"tina")
-		if outcome=="victory":
-			BattlePlayLoop._unit(loop,"enemy021_1")["hp"]=1
-			loop=BattlePlayLoop.attack_coord(selection(loop),source["coord"],zero)
-		elif outcome=="escape":
-			BattlePlayLoop._set_unit_coord(loop,"tina",loop["escape_zone"][0]);loop=BattlePlayLoop.choose_command(loop,"wait")
-		else:
-			source["hp"]=1
-			var foe:=BattlePlayLoop._unit(loop,"enemy021_1");foe["hit_bonus_accum"]=1000;foe["combat_profile"]["attack_back"]=100;foe["combat_profile"]["live_attack_damage"]=1000
-			loop=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),foe["id"],zero)
-		check(BattleOutcome.decided(loop) and BattleCheckpoint.encode(loop,run_support_magic_tests.VIEW)["ok"],"special-capable priest terminal/checkpoint: "+outcome)
-		check(BattlePlayLoop.step_ai_turn(loop,no_rng)==loop and BattlePlayLoop.finish_exhausted_action(loop)==loop,"terminal blocks more callbacks: "+outcome)

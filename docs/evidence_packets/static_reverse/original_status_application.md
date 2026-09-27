@@ -48,7 +48,6 @@ Checked 2026-09-14。接续 [已有状态生命周期](original_status_effects.m
 ```sh
 python3 tools/hsl.py check status_roll
 python3 tools/hsl.py check status_lifecycle
-python3 -m unittest tools.test_hsl_native_status_roll_probe tools.test_hsl_initial_skill_book -v
 godot --headless --path . --script res://tests/run_status_application_tests.gd
 uv run --with unicorn==2.1.4 python3 tools/hsl.py generate status_lifecycle --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 tools/verify.sh

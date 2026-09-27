@@ -72,7 +72,6 @@
 ```sh
 python3 tools/hsl.py check physical
 python3 tools/hsl.py check special_damage
-python3 -m unittest tools.test_hsl_physical_special
 tools/godot.sh --headless --script res://tests/run_ordinary_special_tests.gd
 # 有原EXE时定向重新执行，不启动Wine
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate physical --exe "$HSL_ORIGINAL_DIR/hsl01.exe"

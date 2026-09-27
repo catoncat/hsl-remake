@@ -28,7 +28,7 @@
 55／56／60／61通过新入口从原PAK重建到正式路径，现有PNG与seed内容没有变化；32／33互换与66借用夜营也真实重建成功，但输出只留ignored，未替presentation增加章节场景。测试将两个目录中的同名SHP赋予不同颜色，真实OBS／SHP／WRD解码及PNG生成证明旧逻辑选错、新逻辑选择正确；无登记别名仍能生成，缺精确成员时明确失败。未把只替换PAK IO的合成987关登记到产品。
 
 ```sh
-python3 -m unittest tools.test_hsl_source_map_binding tools.test_hsl_battle_seed
+python3 -m unittest tools.test_hsl_battle_seed
 python3 tools/hsl.py check source_map_binding
 tools/godot.sh --headless --import
 tools/godot.sh --screen 0 --script res://tests/capture_map_binding_review.gd -- --level=61

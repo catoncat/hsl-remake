@@ -1,6 +1,6 @@
 # 阵营位：每个已放置演员的 player mode 覆盖、HP 加值与谁打谁
 
-> evidence: static-derived; resource-derived: OBJ 字段普查与 TYPE.H 位定义; runtime-measured: 裁判开局盘 obj_Data9 换边单位与全库 NPC 最大 HP（DATA9）；整镜像 LEVEL012 62 枚船壳同一 live 记录（改一枚 HP 其余同读）; provisional: 玩家可见后果未原生观察 · status: live · functions: 0x407660, 0x407720, 0x407ec0, 0x40ba20, 0x40ba80, 0x40bab0, 0x40bb00, 0x40bb80, 0x40f5d0, 0x40f8b0, 0x40fdc0, 0x4104d0, 0x42bdb0, 0x43f413, 0x4420ef, 0x446b30, 0x446b60, 0x446be0, 0x44cb10, 0x450710 · tools: hsl_payload_inspector.py, hsltools/levels/battle.py, hsltools/probes/_enemy_level.py, run_player_mode_sides_tests.gd · updated: 2026-09-29
+> evidence: static-derived; resource-derived: OBJ 字段普查与 TYPE.H 位定义; runtime-measured: 裁判开局盘 obj_Data9 换边单位与全库 NPC 最大 HP（DATA9）；整镜像 LEVEL012 62 枚船壳同一 live 记录（改一枚 HP 其余同读）; provisional: 玩家可见后果未原生观察 · status: live · functions: 0x407660, 0x407720, 0x407ec0, 0x40ba20, 0x40ba80, 0x40bab0, 0x40bb00, 0x40bb80, 0x40f5d0, 0x40f8b0, 0x40fdc0, 0x4104d0, 0x42bdb0, 0x43f413, 0x4420ef, 0x446b30, 0x446b60, 0x446be0, 0x44cb10, 0x450710 · tools: hsl_payload_inspector.py, hsltools/levels/battle.py, hsltools/probes/_enemy_level.py, run_tests.gd · updated: 2026-09-29
 
 ## 范围
 
@@ -60,7 +60,7 @@ R21 字段覆盖审计（[original_field_coverage.md](original_field_coverage.md
 
 ## 6 关 席達鎮 全待机对照（前两回合谁打谁）
 
-重制列由 `tests/run_player_mode_sides_tests.gd`（`_test_level6_soldiers_never_attack_villagers`，loop RNG 种子 22）打印的 `PLAYER_MODE_SIDES_ATTACK` 行得出；原版列为静态推断，**未原生观察**。
+重制列由 `tests/run_tests.gd`（`_test_level6_soldiers_never_attack_villagers`，loop RNG 种子 22）打印的 `PLAYER_MODE_SIDES_ATTACK` 行得出；原版列为静态推断，**未原生观察**。
 
 | 回合 | 重制（R22 前，`13bda1bb`） | 重制（R22 后） | 原版（static prediction，provisional） |
 | --- | --- | --- | --- |
@@ -71,14 +71,14 @@ R21 字段覆盖审计（[original_field_coverage.md](original_field_coverage.md
 
 ## 边界（provisional／未接）
 
-- **玩家可见后果未原生观察**：士兵不打村民、531–533 关 049 与其余敌军互打、24 关 049／053／054 pmNPC 三方、44／45 关 021／022 到场为友军、34 关 023／044 到场为友军再叛变——全部只到静态读法（`run_player_mode_sides_tests.gd` 在 531 关 3 回合里记录到 7 次 049↔044 交锋，是重制行为，不是原版观察）。
+- **玩家可见后果未原生观察**：士兵不打村民、531–533 关 049 与其余敌军互打、24 关 049／053／054 pmNPC 三方、44／45 关 021／022 到场为友军、34 关 023／044 到场为友军再叛变——全部只到静态读法（`run_tests.gd` 在 531 关 3 回合里记录到 7 次 049↔044 交锋，是重制行为，不是原版观察）。
 - **支援同侧 = 有交集** 保留现行合同（friendly_ai 援助 player_controlled）；原 AI 支援扫描要求掩码相等、支援范围模式 8／9／10 只留同首位格——若按原读法，pmNPCPlayer 村民不能被 P 侧治疗、也不能治疗 P 侧；待原生观察后再定。
 - **hp_level 项（lane DATA9 用裁判核过，重制自 R34 `647dbca9` 起与原版一致，不需要改）**：`0x448840` 算 HP 等级项只看刷新那一刻 live `+0x28` 的 pmPlayer 位（`0x448851 test eax,0x10000`，不置位时 `0x448858` 清零；[original_job_stats.md](original_job_stats.md)）。`0x407ec0` 先做 obj_Data9 换边、再调 `0x448840`，所以出生刷新读到的已是换边后的 pmEnemy，023／024 比模板少 `1.2×level`（job 88）～`1.5×level`（job 94）。重制顺序相同：组装器把换边后的值写进单位 `player_mode`。载入刷新（`ActorInitializationRules.prepare`）和 NPC 出生刷新（`InitialRosterGrowthRules.prepare` → `ReinforcementGrowthRules._apply` → `ProgressionRules.refresh_growth_stats`）都经 `ActorRoleRules.side_mask` → `JobStatsRules.base_values` 读这个值。模板 `growth_profile.source.mode` 不参与，也就用不着 HANKS3 的 `birth_player_mode`；那个字段只给出生后才被脚本 `0x450710` 改阵营的玩家单位用。
   - **裁判实测（runtime-measured，2026-09-26）**：原版一侧跑 `_enemy_level.py batch --seed 1`，growth 设为 false（`0x43eefb` 清零 +0x1f8／+0x1fa，`0x40e870` 照常推等级并刷新），读 `meta.opening_board`；重制一侧是同关零成长出生（`adjust_level [0,0]`，经 `initialize_roster_growth` → `begin_battle`；诊断脚本未入库）。结果：obj_Data9 单位共 113 名，出现在原版开局盘上的 111 名等级和最大 HP 全部相同（023 L1 28、023＋20 L1 48、024＋30 L1 72、024＋50 L1 92、52 关 069 L4 40）；另外 2 名（53 关 `enemy023_2／3`）原版要到停机点之后才出生。全库 127 关 NPC 最大 HP 1487／1487 相同，玩家 1012／1012 相同（200 关裁判起不来）。
   - **battle JSON 快照**（lane CUTMIRROR，2026-09-26）：`max_hp／hp` 快照也按安装后的 `player_mode` 取 HP 等级项（`hsltools/model/jobs.py` `calculate(..., mode=)`，组装器 `battle.py align_birth_hp`，在模板行的出生前等级上取差）。改前 113 名放置单位＋10 个脚本模板（互换单位）与 1 个无对象定义的 903 关模板比运行值差 1（29／49／73／93／41 与反向的 021／044／048），改后 0；运行时载入刷新本来就覆盖它，对局不变，`_enemy_level.py --align`／`board_diff` 不再报这 1 点假差。
 - **`+0xa0` 掩码 8（换边位）**（lane CUTMIRROR 读）：构造 `0x407ec0` 只在 obj_Data9 真的互换了 pmPlayer／pmEnemy 时 `or dword [+0xa0], 8`（`0x407fc3`；模板 mode 是别的就不互换也不置位）；`0x450710` 每次调用都先 `xor ecx, 8` 写回（`0x45073c`），在比较新旧 mode（`0x45073f`）之前——是**翻转**，模式不变也翻。`0x446be0` 读它镜像该演员的全部切入对象：攻方（普攻／施法引导，x 缩放 −1、aniSetXYDisp x 取反、速度角反射）、刀光、守方（x 缩放 −1、受击位移旗左右互换）（[效果对象运动包 §4b](original_effect_motion.md#4b-普通切入的换边镜像cutin-mirror)）。重制：组装器写单位 `side_swapped`，`WinfailActions._apply_player_mode` 每次翻转。
 - **pmALL 占位者** 已按上文调用方读法接入（R6-L10）。
-- **范围波及（R6-L11，static-derived）**：施法事务 `0x442a90` 的目标由 `0x4104d0` 逐格扫范围遮罩 `*0x4c1b4c`（`0x407800` 取占位对象、去重）得到，`0x4116a0` 只是画范围。遮罩由 `0x40fdc0` 建：与 `0x40f5d0` 同一张 mode→排除位跳表（`0x4100a0`），格标志 `& 排除位 != 0` 且 `(flags & 0x70000) != 0x70000` 才丢；**没有 `0x4c63ac` 这一步**，所以 pmALL（含 pmMagicAttack）占位者对任何施法者的攻击型范围都在内；另外 `0x40fc90` 之后 `(flags & 0x870000) == 0x850000`（pmNPCPlayerNoMagic）的格也丢（重制无此类单位）。重制：`SkillTargetRules.area_side_matches` 供范围结算（`SkillResolutionRules` 区域分支、`RepeatedSpecialRules`）使用——AI 的范围魔法也会波及宝石，宝石各自的 event（`actCheckSerialPlayerAttacked` 不看攻击者）照常可触发；主目标选择与 AI 规划仍用 `side_matches`（AI 不会以宝石为目标，0x40bb80）。`run_player_mode_sides_tests` 覆盖。给予／支援对 pmALL 的处理沿用「有交集」读法。
+- **范围波及（R6-L11，static-derived）**：施法事务 `0x442a90` 的目标由 `0x4104d0` 逐格扫范围遮罩 `*0x4c1b4c`（`0x407800` 取占位对象、去重）得到，`0x4116a0` 只是画范围。遮罩由 `0x40fdc0` 建：与 `0x40f5d0` 同一张 mode→排除位跳表（`0x4100a0`），格标志 `& 排除位 != 0` 且 `(flags & 0x70000) != 0x70000` 才丢；**没有 `0x4c63ac` 这一步**，所以 pmALL（含 pmMagicAttack）占位者对任何施法者的攻击型范围都在内；另外 `0x40fc90` 之后 `(flags & 0x870000) == 0x850000`（pmNPCPlayerNoMagic）的格也丢（重制无此类单位）。重制：`SkillTargetRules.area_side_matches` 供范围结算（`SkillResolutionRules` 区域分支、`RepeatedSpecialRules`）使用——AI 的范围魔法也会波及宝石，宝石各自的 event（`actCheckSerialPlayerAttacked` 不看攻击者）照常可触发；主目标选择与 AI 规划仍用 `side_matches`（AI 不会以宝石为目标，0x40bb80）。`run_tests` 覆盖。给予／支援对 pmALL 的处理沿用「有交集」读法。
 - **0x800000（NoMagic）位**：`side_mask` 丢弃；魔法范围对该位的排除未接。
 - **着色**：`0x450710` 按模式给对象着色（P 蓝／E 红／其他黄）；表现层未按 `player_mode` 区分村民与友军。
 - `obj_Data8`（死亡台词）与 `obj_Data5`（称号／名字）自 R29 起由同一 `_apply_object_install` 写单位 `dead_message` 与 `title`／`display_name`（读法见 [字段覆盖 §4](original_field_coverage.md#4-静态读法本包新增static-derived)）；`obj_Y1`（+0x134）仍未进数据链。

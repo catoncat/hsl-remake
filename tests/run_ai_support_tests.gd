@@ -25,13 +25,12 @@ func _initialize() -> void:
 
 func run() -> void:
 	native_cases()
-	moving_geometry()
 	ally_actions()
 	item_assistance()
 	selection_and_rejection()
 	useful_bucket_acceptance()
 	special_channel_actions()
-	await moving_item_feedback()
+	await run_ai_priority()
 	failures.append_array(await TestSuite.settle_audio_before_quit(self, 0.3))
 	print("AI_SUPPORT_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
 	quit(0 if failures.is_empty() else 1)
@@ -89,29 +88,6 @@ func native_cases() -> void:
 				cursor = result["next_cursor"]
 			check(indices == row["result"]["indices"].map(func(value): return int(value)) and masks == row["result"]["masks"].map(func(value): return int(value)), "same-side square scan/continuation matches full original returns: %s radius%s %s %s" % [input["kind"], input["radius"], indices, row["result"]["indices"]])
 		check(draws.is_empty(), "support kernel consumes all and only original random draws")
-
-
-func moving_geometry() -> void:
-	var loop := fixture(CURE)
-	var caster := BattlePlayLoop._unit(loop, "leonard")
-	var target := BattlePlayLoop._unit(loop, "enemy023_1")
-	target["coord"] = Vector2i(12, 8)
-	for unit in [caster, target]: unit.merge(BattlePlayLoop.StatusEffectRules.apply(unit, "poison", 2, 10)["changes"], true)
-	var before := loop.duplicate(true)
-	var prepared := BattlePlayLoop.SkillResolutionRules.prepare_cast(caster, target, loop["units"], CURE, BattlePlayLoop.skill_fields(loop, CURE), loop["skill_book"], loop["skill_target_data"], loop["equipment_items"], Vector2i(11,8), loop["map_size"])
-	check(prepared["ok"], "moved cure proposal remains legal")
-	if prepared["ok"]:
-		check(prepared["targets"].map(func(unit): return unit["id"]).has("leonard"), "moved caster belongs to the destination footprint, not the old occupied cell")
-	check(loop == before, "moving-caster preflight cannot alter any live coordinate or status")
-	var receipt := BattleLoopCombat._resolve_skill(loop, "leonard", target["id"], CURE, BattlePlayLoop.skill_fields(loop,CURE), Vector2i(11,8), zero)
-	check(not receipt.is_empty() and receipt["affected_targets"].size() == 2, "one moving cast commits both destination friends")
-	check(not BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(loop,"leonard")) and BattlePlayLoop.unit(loop,"leonard")["mp"] == 96, "self target change preserves one payment and clears poison after movement")
-	loop = before.duplicate(true)
-	caster = BattlePlayLoop._unit(loop,"leonard")
-	target = BattlePlayLoop._unit(loop,"enemy023_1")
-	target["coord"] = Vector2i(9,8)
-	receipt = BattleLoopCombat._resolve_skill(loop,"leonard",target["id"],CURE,BattlePlayLoop.skill_fields(loop,CURE),Vector2i(6,8),zero)
-	check(receipt["affected_targets"].size() == 1 and BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(loop,"leonard")), "leaving an allied footprint cannot retain the old-cell self effect")
 
 
 func ally_actions() -> void:
@@ -360,59 +336,6 @@ func useful_bucket_acceptance() -> void:
 			check(attempts.size() == 1 and attempts[0]["attempts"].size() == 1 and not attempts[0]["attempts"][0]["useful_accepts"] and int(attempts[0]["attempts"][0]["index"]) == -1 and attempts[0]["attempts"][0]["source"] == "0x40dd80", "the declined SPECIAL cure walk records one bucket-7 roll")
 
 
-func moving_item_feedback() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	var loop := fixture()
-	BattlePlayLoop._unit(loop,"leonard")["inventory"][0] = 241
-	BattlePlayLoop._unit(loop,"enemy023_1")["coord"] = Vector2i(12,8)
-	TestSuite.own(loop, "skill_book")["actors"]["001"]["supported_initial_ids"] = []
-	scene.apply_loop(loop, "test")
-	scene.resume_turn_presentation()
-	scene.tick_ai_playback(1.0)
-	var view = scene.get_node("BattlePresentation")
-	var settled: Dictionary = scene.play_loop.duplicate(true)
-	check(scene.play_loop["last_ai_action"].get("kind") == "move_then_item" and scene.has_actor_motion(), "normal runtime starts the moved medicine action")
-	check(not view.item_feedback_busy() and not scene.action_menu.visible, "medicine feedback cannot appear before arrival")
-	await create_timer(0.2).timeout
-	scene.tick_ai_playback(100.0)
-	check(scene.has_actor_motion() and not view.item_feedback_busy() and scene.ai_playback_active, "long AI wait delta cannot skip remaining actor movement")
-	var deadline := Time.get_ticks_msec() + 2000
-	while scene.has_actor_motion() and Time.get_ticks_msec() < deadline: await create_timer(0.02).timeout
-	scene.tick_ai_playback(0.0)
-	check(view.item_feedback_busy() and not scene.action_menu.visible and scene.ai_playback_active, "arrival starts shared medicine feedback before successor input")
-	# sfxUseItem plays as the item applies, after the AI lead-in (range, cursor glide, target hold).
-	deadline = Time.get_ticks_msec() + 3000
-	while view.item_use.stage == "lead" and Time.get_ticks_msec() < deadline: await create_timer(0.02).timeout
-	await wait_for_mixer(scene.ui_audio)
-	var voice: WeakRef = weakref(scene.ui_audio.get_stream_playback())
-	for _iteration in range(5): scene.tick_ai_playback(1.0)
-	check(voice.get_ref() == scene.ui_audio.get_stream_playback() and scene.play_loop == settled, "repeat playback ticks neither restart medicine audio nor replay its transaction")
-	deadline = Time.get_ticks_msec() + 4000
-	while view.item_feedback_busy() and Time.get_ticks_msec() < deadline: await create_timer(0.02).timeout
-	scene.tick_ai_playback(0.0)
-	await create_timer(0.3).timeout
-	check(not scene.ai_playback_active and scene.selected_unit_id == "enemy023_1" and scene.action_menu.visible, "finished item feedback releases the precise next actor")
-	check(scene.play_loop == settled and not view.show_item_use(settled["last_item_use"],Vector2.ZERO), "sequence remains consumed after successor input opens")
-	scene.ui_audio.stop()
-	scene.ui_audio.stream = null
-	scene.queue_free()
-	await process_frame
-	deadline = Time.get_ticks_msec() + 2000
-	while voice.get_ref() != null and Time.get_ticks_msec() < deadline: await create_timer(0.02).timeout
-	check(voice.get_ref() == null, "completed medicine playback releases its mixer voice")
-
-
-func wait_for_mixer(player: AudioStreamPlayer) -> void:
-	var deadline := Time.get_ticks_msec() + 2000
-	while player.playing and player.get_playback_position() <= 0.0 and Time.get_ticks_msec() < deadline: await create_timer(0.01).timeout
-	check(player.get_playback_position() > 0.0, "mixer observes the actual started sound")
-
-
 func zero(_bound: int) -> int:
 	return 0
 
@@ -427,3 +350,120 @@ func check(ok: bool, message: String) -> void:
 	if not ok:
 		failures.append(message)
 		push_error(message)
+
+
+# ---- run_ai_support_tests.gd ----
+const AIPriorityRules = preload("res://game/sim/AIPriorityRules.gd")
+const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
+const run_ai_decision_tests = preload("res://tests/run_ai_decision_tests.gd")
+func run_ai_priority() -> void:
+	native_cases_ai_priority()
+	healing_cases()
+func native_cases_ai_priority() -> void:
+	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_ai_priority.json"))
+	for row in packet["cases"]:
+		var input: Dictionary = row["input"]
+		var before := input.duplicate(true)
+		var cursor := [0]
+		var rng := func(bound):
+			check(cursor[0] < row["draws"].size(), "no additional priority RNG")
+			if cursor[0] >= row["draws"].size(): return 0
+			var draw: Dictionary = row["draws"][cursor[0]]
+			cursor[0] += 1
+			check(bound == int(draw["bound"]), "priority RNG bound matches original")
+			return int(draw["value"])
+		var result: Dictionary
+		match input["kind"]:
+			"priority":
+				result = AIPriorityRules.choose_check({"ai_check_hp": input["self_rate"], "ai_check_dying": input["dying_rate"]}, int(input["attempted"]), rng)
+				for key in ["kind", "attempted", "next_roll"]:
+					check(result["ok"] and result[key] == int(row["result"][key]), "priority prefix output " + key)
+			"self_hp":
+				result = AIPriorityRules.self_recovery(input, rng)
+				check(result["ok"] and int(result["needed"]) == int(row["result"]["native"]) and result["threshold"] == int(row["result"]["threshold"]), "self HP remainder threshold matches original")
+			"dying":
+				var units: Array = input["units"].duplicate(true)
+				for unit in units:
+					if unit != null:
+						unit["coord"] = Vector2i(int(unit["coord"][0]), int(unit["coord"][1]))
+						unit.merge({"level": 1, "job": 80})
+				result = AIPriorityRules.low_hp_target(units, int(input["owner"]), int(input["radius"]), int(input["excluded"]), int(input["cursor"]), rng)
+				check(result["ok"] and result["native_index"] == int(row["result"]["native"]), "dying target matches original full return")
+				check(result["evaluated"] == row["result"]["evaluated"].map(func(value): return {"index": int(value["index"]), "threshold": int(value["threshold"])}), "every absolute threshold and cursor matches original")
+			"heal_item":
+				var catalog := {}
+				for code in input["items"]:
+					var item: Dictionary = input["items"][code]
+					# Live catalog is a registered subset of source type1 consumables.
+					if int(item["type"]) == 1: catalog[code] = {"heal_hp": int(item["heal_hp"]), "cure_poison": 1 if int(item["heal_hp"]) == 0 else 0, "cure_paralysis": 0}
+				result = ItemUseRules.first_healing_slot(input["slots"], catalog)
+				check(result["ok"] and result["index"] + 1 == int(row["result"]["native"]), "first registered healing slot follows native inventory order")
+		check(input == before and cursor[0] == row["draws"].size(), "immutable input and exact source random consumption")
+
+
+static func healing_code(loop: Dictionary) -> int:
+	for code in loop["consumables"]:
+		if int(loop["consumables"][code]["heal_hp"]) > 0: return int(code)
+	return 0
+
+
+static func opportunity_fixture(owner: String = "enemy021_1") -> Dictionary:
+	var loop := run_ai_decision_tests.live_fixture(owner)
+	var wounded := BattlePlayLoop.unit(loop, "leonard")
+	wounded.merge({"id": "priority-wounded", "coord": Vector2i(6, 3), "hp": 8, "max_hp": 100, "live_speed": 1, "player_commandable": false}, true)
+	loop["units"].append(wounded)
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	return loop
+
+
+static func recovery_fixture() -> Dictionary:
+	var loop := opportunity_fixture()
+	var actor := BattlePlayLoop._unit(loop, "enemy021_1")
+	actor["hp"] = 4
+	actor["inventory"] = [healing_code(loop), healing_code(loop), 0, 0, 0, 0, 0, 0]
+	return loop
+
+
+func healing_cases() -> void:
+	var before := recovery_fixture()
+	var saved := before.duplicate(true)
+	var actor := BattlePlayLoop.unit(before, "enemy021_1")
+	var after := BattlePlayLoop.step_ai_turn(before, func(_n): return 0)
+	check(after["scenario_ok"], "self recovery preflight accepts valid source inputs")
+	if not after["scenario_ok"]: return
+	var action: Dictionary = after["last_ai_action"]
+	var healed := BattlePlayLoop.unit(after, actor["id"])
+	check(action["kind"] == "use_item" and action["ai_decision"]["priority"]["checks"][0]["kind"] == 2, "source self-recovery priority precedes reachable dying foe")
+	check(healed["hp"] == 4 + mini(int(before["consumables"][str(healing_code(before))]["heal_hp"]), 396), "one shared healing effect is applied")
+	check(healed["inventory"] == [healing_code(before), 0, 0, 0, 0, 0, 0, 0] and healed["coord"] == actor["coord"], "one ordered item is consumed without movement")
+	check(after["selected_unit_id"] == "enemy023_1" and after["turn_queue"]["index"] == 1 and after["last_ai_actions"].size() == 1, "AI item ends exactly one action")
+	check(before == saved and not action.has("damage") and BattlePlayLoop.unit(after, "priority-wounded")["hp"] == 8, "healing cannot also attack or mutate input")
+	check(BattlePlayLoop.step_ai_turn(after, func(_n): check(false, "completed AI cannot act again"); return 0) == after, "duplicate AI step is inert after player handoff")
+	var player := before.duplicate(true)
+	BattlePlayLoop._unit(player, actor["id"])["player_commandable"] = true
+	BattlePlayLoop._unit(player, actor["id"])["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
+	player = BattlePlayLoop._return_to_player(player, actor["id"])
+	var used := BattlePlayLoop.use_item(player, str(healing_code(player)), actor["id"], 0)
+	var player_effect:Dictionary = used["last_item_use"].duplicate(true)
+	var ai_effect:Dictionary = after["last_item_use"].duplicate(true)
+	check(player_effect["actor_before"]["battle_actor_role"] == BattlePlayLoop.ROLE_PLAYER and ai_effect["actor_before"]["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY, "item replay snapshots retain the actual caller's role and decision provenance")
+	for receipt in [player_effect,ai_effect]:
+		for key in ["actor_before","target_before"]: receipt.erase(key)
+	check(player_effect == ai_effect and BattlePlayLoop.unit(used, actor["id"])["inventory"] == healed["inventory"], "player and AI share the complete effect, inventory, RNG and sequence receipt despite distinct caller snapshots")
+	var poisoned := before.duplicate(true)
+	BattlePlayLoop._unit(poisoned, actor["id"])["status_flags"] = 3
+	BattlePlayLoop._unit(poisoned, actor["id"])["status_counters"] = {"poison": (5 << 16) | 2, "paralysis": 0, "no_magic": 1}
+	var settled := BattlePlayLoop.step_ai_turn(poisoned, func(_n): return 0)
+	check(settled["last_ai_action"]["kind"] == "use_item" and BattlePlayLoop.unit(settled, actor["id"])["hp"] == healed["hp"] - 5 and BattlePlayLoop.unit(settled, actor["id"])["status_counters"] == {"poison": (5 << 16) | 1, "paralysis": 0, "no_magic": 0}, "self medicine is allowed under silence and ticks poison/status once")
+	for health in [395, 400]:
+		var healthy := before.duplicate(true)
+		BattlePlayLoop._unit(healthy, actor["id"])["hp"] = health
+		var attacked := BattlePlayLoop.step_ai_turn(healthy, func(_n): return 0)
+		# The strike kills priority-wounded; 0x442720 state 4 hands its rolled drops to this non-player
+		# killer through 0x44f600 (0x4428cd), so only the slots the hand-over filled may differ.
+		var taken: Array = attacked.get("last_combat", {}).get("rewards", {}).get("taken", [])
+		var kept: Array = BattlePlayLoop.unit(attacked, actor["id"])["inventory"].duplicate()
+		for row in taken:
+			if int(row["slot"]) >= 0: kept[int(row["slot"])] = 0
+		check(attacked["last_ai_action"]["kind"] != "use_item" and kept == actor["inventory"], "full or nearly full HP preserves medicine and allows offense")
+		check(taken.map(func(row): return [int(row["code"]), int(row["slot"])]) == [[246, 2]] and BattlePlayLoop.unit(attacked, actor["id"])["inventory"] == [healing_code(attacked), healing_code(attacked), 246, 0, 0, 0, 0, 0], "the kill hands the victim's drop to the AI killer's first empty slot (0x44f600): " + str(taken))

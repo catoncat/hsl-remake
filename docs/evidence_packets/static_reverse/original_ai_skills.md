@@ -65,7 +65,6 @@ PLAYERS原包字节差异没有放宽；原先三种伤害策略和0.20秒移动
 
 ```sh
 python3 tools/hsl.py check ai_skill
-python3 -m unittest tools.test_hsl_native_ai_skill_probe tools.test_hsl_initial_skill_book
 tools/godot.sh --headless --script res://tests/run_ai_skill_tests.gd
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate ai_skill --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 ```

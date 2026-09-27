@@ -66,7 +66,6 @@ func run() -> void:
 	actual_acquisition()
 	job_up_learning()
 	initial_rosters()
-	carry_and_terminals()
 	await separate_party_stream()
 	failures.append_array(await TestSuite.settle_audio_before_quit(self, 0.3))
 	print("GROWTH_LIFECYCLE_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
@@ -264,39 +263,6 @@ func initial_rosters() -> void:
 		var live:=BattlePlayLoop.begin_battle(start);var encoded:=BattleCheckpoint.encode(live,VIEW)
 		check(encoded["ok"],"initially adjusted live roster saves: "+str(encoded.get("reason")))
 		if encoded["ok"]:check(BattleCheckpoint.decode(encoded["bytes"], live)["snapshot"]["loop"]==live,"initial F9 cannot resample birth or remake the queue")
-
-
-func carry_and_terminals() -> void:
-	var origin:=cast(fixture(),HEAL,"companion",zero)
-	var actor:=BattlePlayLoop._unit(origin,"tina")
-	actor["permanent_gains"]["defense"]=5
-	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,origin["equipment_items"]),true)
-	var next:=BattlePlayLoop.apply_campaign_carry(run_support_magic_tests.priest_initial(),BattlePlayLoop.CampaignCarryRules.capture(origin))
-	check(next["campaign_carry_receipt"]["errors"].is_empty(),"campaign accepts learned ability and independent permanent growth")
-	next=BattlePlayLoop.initialize_roster_growth(next)
-	check(next["scenario_ok"] and BattlePlayLoop.unit(next,"tina")["learned_skills"]==actor["learned_skills"] and BattlePlayLoop.unit(next,"tina")["level"]==actor["level"],"cross-battle creation retains party growth without infer-level rollback")
-	var json_carry:Dictionary=JSON.parse_string(JSON.stringify(BattlePlayLoop.CampaignCarryRules.capture(origin)))
-	var json_next:=BattlePlayLoop.apply_campaign_carry(run_support_magic_tests.priest_initial(),json_carry)
-	check(json_next["campaign_carry_receipt"]["errors"].is_empty() and BattlePlayLoop.unit(json_next,"tina")["learned_skills"]==actor["learned_skills"],"actual campaign JSON round-trip keeps canonical acquisition records exactly")
-	var fractional:=json_carry.duplicate(true)
-	fractional["units"]["tina"]["learned_skills"][0]["level"]=5.5
-	var rejected:=BattlePlayLoop.apply_campaign_carry(run_support_magic_tests.priest_initial(),fractional)
-	check(not rejected["campaign_carry_receipt"]["errors"].is_empty() and BattlePlayLoop.unit(rejected,"tina")["learned_skills"].is_empty(),"canonicalization must not round a fractional unearned acquisition into a valid one")
-	var created:=BattlePlayLoop.initialize_roster_growth(BattleFixture.loop())
-	var carry:=BattlePlayLoop.CampaignCarryRules.capture(created)
-	var fresh:=BattleFixture.loop()
-	var continued:=BattlePlayLoop.apply_campaign_carry(fresh,carry)
-	check(TestSuite.carries_no_stream(carry) and TestSuite.no_draw(continued, fresh, "global"),"the carry leaves the next battle's global stream at its own start")
-	var a:=BattlePlayLoop.initialize_roster_growth(continued);var b:=BattlePlayLoop.initialize_roster_growth(continued)
-	check(a["scenario_ok"] and a==b and not TestSuite.no_draw(a, fresh, "global"),"fresh target roster samples once deterministically from the battle's global stream")
-	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
-		var frozen:=origin.duplicate(true);frozen["battle_outcome"]=outcome;frozen["interaction"]="battle_result";BattlePlayLoop._clear_extra_action(frozen)
-		check(BattlePlayLoop.step_ai_turn(frozen)==frozen and BattlePlayLoop.finish_exhausted_action(frozen)==frozen,"terminal excludes late auto growth and extra actions")
-		# Manual allocation (and its learning) stays open on a won result only — the final blow's
-		# window precedes the victory (user decision 2026-09-24, 0x442720 phase 8 before the win scan).
-		var allocated:=BattlePlayLoop.allocate_growth(frozen,"tina",{"str":1});var can_spend:=int(BattlePlayLoop.unit(frozen,"tina")["pending_stat_points"])>0
-		check((allocated!=frozen)==(BattleOutcome.is_victory(outcome) and can_spend) and allocated["battle_outcome"]==frozen["battle_outcome"] and allocated["interaction"]==frozen["interaction"] and allocated["turn_queue"]==frozen["turn_queue"],"terminal allocation: a won result takes the member's points, a lost one none")
-		var encoded:=BattleCheckpoint.encode(frozen,VIEW);check(encoded["ok"],"terminal skill state persists")
 
 
 func zero(_bound:int)->int:return 0

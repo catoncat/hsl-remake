@@ -1,6 +1,6 @@
 # 普通交锋尾部：武器附毒、未来行动取消与防护
 
-> evidence: static-derived · status: live · functions: 0x406fe0, 0x407550, 0x409110, 0x4091b0, 0x409210, 0x409240, 0x4092d0, 0x409310, 0x409460, 0x4095e0, 0x40e240, 0x40e2f0, 0x4423c0, 0x448420, 0x448840 · tools: capture_weapon_effect_review.gd, hsltools/data/weapon_effect_trial.py, hsltools/probes/weapon_effect.py, run_weapon_effect_tests.gd, test_hsl_weapon_effects.py · updated: 2026-09-22
+> evidence: static-derived · status: live · functions: 0x406fe0, 0x407550, 0x409110, 0x4091b0, 0x409210, 0x409240, 0x4092d0, 0x409310, 0x409460, 0x4095e0, 0x40e240, 0x40e2f0, 0x4423c0, 0x448420, 0x448840 · tools: capture_weapon_effect_review.gd, hsltools/data/weapon_effect_trial.py, hsltools/probes/weapon_effect.py, run_weapon_effect_tests.gd · updated: 2026-09-22
 
 本批沿已有extra_attack／EXP caller的确定性符号继续，未调用Jev。`hsl01.exe`身份由共用PE映像校验固定；完整回执为[original_weapon_effects.json](original_weapon_effects.json)，复跑工具为[原指令探针](../../../tools/hsltools/probes/weapon_effect.py)。原始EXE／PAK只读。原公式与Godot整合分别验证，表字段／名字不单独构成行为证据。
 
@@ -89,7 +89,7 @@ Godot以`CoreTurnQueue.cancel_pending`更新现有`slots[].enabled`，保存该�
 
 `I_STING.SHP`与已确认的I_CLAW同为原36字节空图，清单保留真实空资源和武器名称；RESOURCE.H没有同名sting命中别名，目前仅播放源角色攻击声一次，不挪用刀剑图或捏造第二个音效。正式第一／第二战库存、技能和编队没有额外赠送。
 
-本批回归入口：`tests/run_weapon_effect_tests.gd`、`tests/capture_weapon_effect_review.gd`、`tools/test_hsl_weapon_effects.py`。原概率不为实玩调成100%，实际控件路线记录有限重试次数；完整门禁的终端退出码写入提交说明。`WeaponEffectsTrial.tscn`为可手动操作的独立演练，由`hsltools/data/weapon_effect_trial.py`生成：原地图与039三职业刷新，额外HP及供换装的库存明确标为开发设置，正式编队和初始授予不变。
+本批回归入口：`tests/run_weapon_effect_tests.gd`、`tests/capture_weapon_effect_review.gd`。原概率不为实玩调成100%，实际控件路线记录有限重试次数；完整门禁的终端退出码写入提交说明。`WeaponEffectsTrial.tscn`为可手动操作的独立演练，由`hsltools/data/weapon_effect_trial.py`生成：原地图与039三职业刷新，额外HP及供换装的库存明确标为开发设置，正式编队和初始授予不变。
 
 [十五条实际控件与十六张图证](../runtime_observations/weapon_effects/README.md)分别记录主攻／反击末击、取消未来槽、防护与驱毒、阶段取消重选、第二行动／换装／成长、AI耗魔／禁魔／无有效动作、手动开发入口和三终态。每个进程只采用已完成的具名范围，失败夹具、缺失旧终端退出码与最终退出0均单独说明。替换装备后的效果位还在同一库存提交前验证，避免错误来源进入可恢复状态。
 

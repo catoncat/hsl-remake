@@ -1,6 +1,6 @@
 # 中毒、禁魔与解毒的公共规则
 
-> evidence: static-derived · status: live · functions: 0x40aa80, 0x40b910 · tools: hsltools/evidence/status.py, run_status_effect_tests.gd · updated: 2026-09-26
+> evidence: static-derived · status: live · functions: 0x40aa80, 0x40b910 · tools: hsltools/evidence/status.py, run_status_application_tests.gd · updated: 2026-09-26
 
 Checked: 2026-09-13。机器记录：[original_status_effects.json](original_status_effects.json)。本批是 `6217b4f` 共同技能结算的后续。原始函数只做静态阅读；没有新原函数执行结果。
 
@@ -42,9 +42,8 @@ Checked: 2026-09-13。机器记录：[original_status_effects.json](original_sta
 
 ```sh
 python3 tools/hsl.py check status_evidence
-python3 -m unittest tools.test_hsl_status_evidence -v
 godot --headless --path . --import
-godot --headless --path . --script res://tests/run_status_effect_tests.gd
+godot --headless --path . --script res://tests/run_status_application_tests.gd
 R2_NOPLUGINS=1 r2 -N -q -e bin.relocs.apply=true -e scr.color=0 \
   -c 'pD 258 @ 0x40b910' -c 'pD 128 @ 0x443ad1' \
   -c 'pD 112 @ 0x441f50' -c 'pD 29 @ 0x447f70' \

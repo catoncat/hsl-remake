@@ -1,6 +1,6 @@
 # 技能function、目标覆盖与共享范围
 
-> evidence: static-derived · status: live · functions: 0x407800, 0x409850, 0x409870, 0x40ba80, 0x40fc90, 0x4100e0, 0x4104d0, 0x446b30 · tools: hsltools/data/skill_targeting.py, hsltools/probes/skill_target.py, run_skill_target_tests.gd · updated: 2026-09-25
+> evidence: static-derived · status: live · functions: 0x407800, 0x409850, 0x409870, 0x40ba80, 0x40fc90, 0x4100e0, 0x4104d0, 0x446b30 · tools: hsltools/data/skill_targeting.py, hsltools/probes/skill_target.py, run_skill_resolution_tests.gd · updated: 2026-09-25
 
 Checked: 2026-09-13。接续 [技能资源费用](original_skill_resources.md)。机器证据为 `original_skill_targets.json`；生成数据为 `content/generated/hsl/skills/targeting.json`。本包恢复函数标记到目标模式、当前单格覆盖／枚举及来源范围的公共合同，未实现全部辅助效果或原AI决策。
 
@@ -49,8 +49,7 @@ PlayLoop玩家特殊技选择/确认/效果提交、AI法术可达性和战斗�
 ```sh
 python3 tools/hsl.py check skill_target_data
 uv run --with unicorn==2.1.4 python3 tools/hsl.py generate skill_target --exe $HSL_ORIGINAL_DIR/hsl01.exe
-python3 -m unittest tools.test_hsl_skill_targets -v
-godot --headless --path . --script res://tests/run_skill_target_tests.gd
+godot --headless --path . --script res://tests/run_skill_resolution_tests.gd
 ```
 
 无EXE/PAK参数只核对保存证据；不用runtime原函数仿真。完整门禁最终结果保存于本批提交说明，Control验收见 [skill_targets](../runtime_observations/skill_targets/README.md)。下一项仍是能力拥有权、原不可行动／目标状态位与各效果应用。

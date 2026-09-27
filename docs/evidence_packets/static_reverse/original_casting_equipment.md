@@ -62,7 +62,6 @@ Item→Equip使用真实职业资格及八槽交换；预览和Status说明明�
 ```sh
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate casting_equipment --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 python3 tools/hsl.py check casting_equipment
-python3 -m unittest tools.test_hsl_casting_equipment
 tools/godot.sh --headless --script res://tests/run_all.gd -- run_position_equipment_tests.gd
 tools/godot.sh --screen 1 --script res://tests/capture_casting_equipment_review.gd
 tools/verify.sh

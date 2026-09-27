@@ -1,6 +1,6 @@
 # 战斗特写站位、击杀／升级飘字与抗性宝石：原版三路测量
 
-> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（特写演员锚点、底栏 WINDOW10 外框、左上红框立绘外框、KILL／EXP／$／LEVEL UP 精灵匹配的出现时刻与轨迹、抗性宝石位置）与音轨起音; static-derived: 0x401c20／0x4038a0 特写站位与击退、0x442720 结算阶段、0x4084e0／0x408580 数字浮字、0x408390／0x4083e0 KILL 浮字、0x434d10 抗性文字; resource-derived: hsl.pak KILL_000..010、NUM4xx／5xx／511／512／514、MAGICON1..5、ANIMAL.TXT k_action · status: live · functions: 0x401c20, 0x4038a0, 0x404560, 0x408390, 0x4083e0, 0x4084e0, 0x408580, 0x408b20, 0x42f4fc, 0x434d10, 0x43f0aa, 0x442720, 0x4435c5, 0x45e91e · tools: hsl_video_events.py, run_combat_aftermath_tests.gd, run_cutin_floaters_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（特写演员锚点、底栏 WINDOW10 外框、左上红框立绘外框、KILL／EXP／$／LEVEL UP 精灵匹配的出现时刻与轨迹、抗性宝石位置）与音轨起音; static-derived: 0x401c20／0x4038a0 特写站位与击退、0x442720 结算阶段、0x4084e0／0x408580 数字浮字、0x408390／0x4083e0 KILL 浮字、0x434d10 抗性文字; resource-derived: hsl.pak KILL_000..010、NUM4xx／5xx／511／512／514、MAGICON1..5、ANIMAL.TXT k_action · status: live · functions: 0x401c20, 0x4038a0, 0x404560, 0x408390, 0x4083e0, 0x4084e0, 0x408580, 0x408b20, 0x42f4fc, 0x434d10, 0x43f0aa, 0x442720, 0x4435c5, 0x45e91e · tools: hsl_video_events.py, run_combat_aftermath_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -94,7 +94,7 @@ Godot Movie Maker 离线录像（60 fps），开发夹具：A 段雷歐納德普
 
 ## 复现
 
-不可再生：原版侧唯一记录（录屏读数）。重制侧：`tools/godot.sh --headless --script tests/run_cutin_floaters_tests.gd`（站位全经 `defender_anchor`、manifest 行都有已知 k_action、美术字与升级音单一入口）。
+不可再生：原版侧唯一记录（录屏读数）。重制侧：`tools/godot.sh --headless --script tests/run_skill_effect_script_tests.gd`（站位全经 `defender_anchor`、manifest 行都有已知 k_action、美术字与升级音单一入口）。
 
 ## 边界
 

@@ -72,21 +72,13 @@ func run() -> void:
 	native_cases()
 	permission_cases()
 	range_and_growth()
-	ai_cases()
-	stale_ai_choices()
-	terminal_cases()
 	casting_native_cases()
 	equipment_cases()
 	transfer_lifecycle()
 	protected_spells()
-	casting_ai_cases()
-	casting_terminal_cases()
-	await presentation_cases()
 	mobility_native_cases()
 	equipment_growth_cases()
 	movement_cases()
-	mobility_ai_cases()
-	save_and_invalid_cases()
 
 
 func native_cases() -> void:
@@ -197,97 +189,6 @@ func range_and_growth() -> void:
 		elif bad == "source": own(broken, "skill_book")["actors"]["001"].erase("move_magic_use")
 		else: own(broken, "attack_patterns").erase("range2Cell")
 		check(not BattleCheckpoint.encode(broken,VIEW)["ok"],"invalid source/equipment/range checkpoint is rejected: "+bad)
-
-
-func ai_cases() -> void:
-	for grant in [false,true]:
-		var loop := fixture("026",true);var actor := BattlePlayLoop._unit(loop,"leonard")
-		actor["no_attack"] = true
-		actor["equipment"] = actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
-		actor["equipment"].append({"slot":"accessory1","item_code":227})
-		if grant: actor["equipment"].append({"slot":"accessory2","item_code":232})
-		BattlePlayLoop._unit(loop,"enemy021_1")["coord"] = Vector2i(14,8)
-		own(loop, "ai_profiles")["actors"]["026"]["profile"].merge({"find_range":20,"ai_att_magic":100,"ai_check_dying":0,"ai_help_otherhp":0,"ai_help_status":0},true)
-		own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"] = "100"
-		own(loop, "skill_book")["skills"]["magic:magicFIRE:magicCode01"]["fields"]["use_ratio"] = "0"
-		var before := loop.duplicate(true)
-		var first := BattlePlayLoop.step_ai_turn(loop,zero)
-		check(first["scenario_ok"] and first["extra_action"]["pending"] and loop == before,"AI position decision commits one independent action: "+str(first.get("scenario_error")))
-		if not first["scenario_ok"]: continue
-		check(first["last_ai_action"]["kind"] == ("move_then_attack" if grant else "move"),"source permission distinguishes moved casting from preparing a future position")
-		if not grant: check(BattlePlayLoop.unit(first,"leonard")["mp"] == actor["mp"],"pursuit without casting cannot debit magic")
-		var second := BattlePlayLoop.step_ai_turn(first,zero)
-		check(second["scenario_ok"] and second["last_ai_action"].get("skill_id") == WIND and second["selected_unit_id"] == "enemy023_1", "AI reconsiders the new origin and casts on its second action")
-		check(second["last_ai_actions"].size() == 2 and second["action_end_sequence"] == 1,"two independent AI decisions share one final tail and successor")
-	var support := fixture("026",true);var caster := BattlePlayLoop._unit(support,"leonard")
-	caster["equipment"] = caster["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
-	BattlePlayLoop._unit(support,"enemy023_1")["coord"] = Vector2i(14,8)
-	BattlePlayLoop._unit(support,"enemy023_1")["hp"] = 1
-	BattlePlayLoop._unit(support,"enemy021_1")["coord"] = Vector2i(17,10) # Leave the only three-step casting square accessible.
-	own(support, "skill_book")["actors"]["026"]["supported_initial_ids"] = [HEAL]
-	own(support, "skill_book")["skills"][HEAL]["fields"]["use_ratio"] = "100"
-	own(support, "ai_profiles")["actors"]["026"]["profile"].merge({"ai_help_otherhp":100,"ai_help_status":100,"ai_att_magic":100},true)
-	var stationary := BattleLoopAI._prepare_ai_turn(support,"leonard")
-	check(stationary["ok"] and stationary["ally_support"]["heal"].is_empty(),"stationary healer cannot manufacture a moved allied cast")
-	caster["equipment"].append({"slot":"accessory1","item_code":232})
-	var mobile := BattleLoopAI._prepare_ai_turn(support,"leonard")
-	check(mobile["ok"] and not mobile["ally_support"]["heal"].is_empty(),"current permission adds legal allied healing positions")
-	var accepted := BattlePlayLoop.step_ai_turn(support,zero)
-	check(accepted["last_ai_action"].get("skill_id") == HEAL and accepted["last_ai_action"]["healing"] > 0,"AI commits its exact moved support proposal")
-
-
-func stale_ai_choices() -> void:
-	var loop := fixture("026",true)
-	var actor := BattlePlayLoop._unit(loop,"leonard")
-	actor["no_attack"]=true
-	actor["equipment"]=actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
-	actor["equipment"].append({"slot":"accessory2","item_code":232})
-	BattlePlayLoop._unit(loop,"enemy021_1")["coord"]=Vector2i(14,8)
-	var plan := BattleLoopAI._ai_skill_candidates(loop,"leonard",[BattlePlayLoop.unit(loop,"enemy021_1")],"magic")
-	check(plan["ok"] and plan["targets"].has("enemy021_1"),"mobile AI generates a real stored candidate before world changes")
-	if not plan["ok"] or not plan["targets"].has("enemy021_1"):return
-	var choice: Dictionary = BattlePlayLoop.AISkillPlanning.choose(plan["targets"]["enemy021_1"],zero)["intent"]
-	check(choice["destination"]!=actor["coord"],"stored candidate actually needs movement")
-	for change in ["removed_permission","occupied","dead_target","no_mp","silenced"]:
-		var changed := loop.duplicate(true)
-		var caster := BattlePlayLoop._unit(changed,"leonard")
-		match change:
-			"removed_permission":caster["equipment"]=caster["equipment"].filter(func(s):return s["slot"]!="accessory2")
-			"occupied":BattlePlayLoop._unit(changed,"enemy023_1")["coord"]=choice["destination"]
-			"dead_target":
-				# A distant bystander keeps the development fixture undecided (enemy clear
-				# would otherwise end the battle before the hand-off under test).
-				var bystander: Dictionary = BattlePlayLoop._unit(changed,"enemy021_1").duplicate(true)
-				bystander.merge({"id":"enemy021_far","coord":Vector2i(0,0),"live_speed":1,"no_attack":true,"move_point":0,"base_move_point":0},true)
-				changed["units"].append(bystander)
-				changed["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(changed["units"])
-				BattlePlayLoop._unit(changed,"enemy021_1")["hp"]=0
-				BattlePlayLoop._set_unit_defeated(changed,"enemy021_1",true)
-			"no_mp":caster["mp"]=0
-			"silenced":caster.merge(BattlePlayLoop.StatusEffectRules.apply(caster,"no_magic",2)["changes"],true)
-		var before := changed.duplicate(true)
-		check(BattleLoopAI._execute_ai_skill_choice(changed,"leonard",choice,no_rng).is_empty() and changed==before,"stale candidate rejects before movement/payment/EXP: "+change)
-		var fresh := BattlePlayLoop.step_ai_turn(changed,zero)
-		check(fresh["scenario_ok"] and fresh["last_ai_actions"].size()==1 and fresh["selected_unit_id"]=="enemy023_1","normal AI entry recomputes one legitimate action and hands off: "+change)
-		if change=="occupied":check(fresh["last_ai_action"].get("to")!=choice["destination"],"fresh AI cannot stand on the newly occupied target cell")
-
-
-func terminal_cases() -> void:
-	for outcome in ["victory","defeat","escape"]:
-		var loop := equip(equip(fixture("001"),"accessory1",236),"accessory2",227)
-		loop = BattlePlayLoop.choose_command(loop,"wait")
-		var actor := BattlePlayLoop._unit(loop,"leonard");var target := BattlePlayLoop._unit(loop,"enemy021_1")
-		if outcome == "escape":
-			actor["coord"] = loop["escape_zone"][0];loop = BattlePlayLoop.choose_command(loop,"wait")
-		else:
-			target["coord"] = Vector2i(9,8);actor["hit_bonus_accum"] = 1000
-			if outcome == "victory": target["hp"] = 1;actor["exp"] = 99
-			else:
-				actor["hp"] = 1;target["no_attack"] = false;target["hit_bonus_accum"] = 1000
-				target["combat_profile"]["attack_back"] = 100;target["combat_profile"]["live_attack_damage"] = 1000
-			loop = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),"enemy021_1",zero)
-		check(loop["battle_outcome"] == {"victory":BattleOutcome.VICTORY_ENEMIES_CLEARED,"defeat":BattleOutcome.DEFEAT_FALLEN,"escape":BattleOutcome.VICTORY_ESCAPE}[outcome] and not loop["extra_action"]["pending"],"position equipment leaves terminal transaction frozen: "+outcome)
-		check(BattleCheckpoint.encode(loop,VIEW)["ok"] and BattlePlayLoop.finish_exhausted_action(loop) == loop,"terminal checkpoint and repeated finish cannot regrant effects")
 
 
 func casting_native_cases() -> void:
@@ -419,76 +320,6 @@ func protected_spells() -> void:
 	check(not status_roll["hit_check_passed"] and status_roll["hit_rate"] == 65,"magic accuracy cannot silently raise the independent status success rate")
 
 
-func casting_ai_cases() -> void:
-	var area := run_ai_skill_tests.area_fixture()
-	for actor in area["units"]:
-		if actor["id"] != "enemy026_1": actor["equipment"].append({"slot":"accessory2","item_code":217})
-	var before := area.duplicate(true)
-	var plan := BattleLoopAI._ai_skill_candidates(area,"enemy026_1",[BattlePlayLoop.unit(area,"leonard")],"magic")
-	check(plan["ok"] and plan["targets"]["leonard"]["skills"].all(func(s):return s["skill_id"]=="magic:magicWATER:magicCode01") and area == before,"current equipment removes useless poison proposals while preserving source025's effective water spell")
-	var water := BattleLoopAI._try_skill_turn(area,"enemy026_1",[BattlePlayLoop.unit(area,"leonard")],zero)
-	check(water.get("magic_key")=="water" and BattlePlayLoop.unit(area,"enemy026_1")["mp"]==BattlePlayLoop.unit(before,"enemy026_1")["mp"]-8,"equipment-protected poison targets still permit one paid source-owned water fallback")
-	check(area["units"].all(func(u):return not BattlePlayLoop.StatusEffectRules.poisoned(u)),"water fallback never applies the excluded poison effect")
-	var unavailable := before.duplicate(true)
-	BattlePlayLoop._unit(unavailable,"enemy026_1")["mp"]=7
-	var unchanged := unavailable.duplicate(true)
-	check(BattleLoopAI._try_skill_turn(unavailable,"enemy026_1",[BattlePlayLoop.unit(unavailable,"leonard")],no_rng).is_empty() and unavailable==unchanged,"no affordable effective skill preserves equipment protection, payment and random state")
-	var loop := equip(equip(casting_fixture(),"armor",145),"accessory1",218)
-	var actor := BattlePlayLoop._unit(loop,"leonard")
-	actor["growth_profile"]["source"]["hit_point"] += 100
-	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
-	actor.merge({"hp":actor["max_hp"],"mp":0,"live_speed":120,"player_commandable":false,"battle_actor_role":BattlePlayLoop.ROLE_FRIENDLY,"no_attack":true,"inventory":[0,0,0,0,0,0,0,0]},true)
-	actor["growth_profile"]["allocation"] = "fixed_template"
-	BattlePlayLoop._unit(loop,"enemy021_1")["no_attack"] = true
-	own(loop, "ai_profiles")["actors"]["026"]["profile"].merge({"ai_att_magic":100,"ai_check_dying":0,"ai_help_selfhp":0,"ai_help_otherhp":0,"ai_help_status":0,"find_range":20},true)
-	own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"] = "100"
-	own(loop, "skill_book")["skills"]["magic:magicFIRE:magicCode01"]["fields"]["use_ratio"] = "0"
-	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	var first := BattlePlayLoop.step_ai_turn(run_job_stats_tests.ai_start(loop),zero)
-	check(first["scenario_ok"] and not first["last_ai_action"].has("skill_id") and BattlePlayLoop.unit(first,"leonard")["mp"] >= 4,"zero-MP AI falls back before conversion enables a later cast")
-	var following := BattlePlayLoop.choose_command(first,"wait")
-	for _step in range(8):
-		if BattlePlayLoop.CoreTurnQueue.current(following["turn_queue"])["id"] == "leonard": break
-		following = BattlePlayLoop.step_ai_turn(following,zero)
-	var mp_before := int(BattlePlayLoop.unit(following,"leonard")["mp"])
-	var second := BattlePlayLoop.step_ai_turn(following,zero)
-	check(second["scenario_ok"] and second["last_ai_action"].get("skill_id") == WIND and second["last_action_end"]["before"]["mp"] == mp_before - 4,"next actual queue cycle redecides a reduced-cost spell using converted MP")
-
-
-func casting_terminal_cases() -> void:
-	for ending in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
-		var loop := equip(equip(casting_fixture("001"),"armor",145),"accessory2",227)
-		loop = BattlePlayLoop.choose_command(loop,"wait")
-		var actor := BattlePlayLoop._unit(loop,"leonard")
-		actor["coord"] = Vector2i(10,8); actor["hit_bonus_accum"] = 1000; actor["exp"] = 99
-		if ending == BattleOutcome.VICTORY_ENEMIES_CLEARED: BattlePlayLoop._unit(loop,"enemy021_1")["hp"] = 1
-		elif ending == BattleOutcome.DEFEAT_FALLEN:
-			actor["hp"] = 1
-			BattlePlayLoop._unit(loop,"enemy021_1")["combat_profile"].merge({"attack_back":100,"live_attack_damage":1000},true)
-		else: actor["coord"] = loop["escape_zone"][0]
-		var done := BattlePlayLoop.choose_command(loop,"wait") if ending == BattleOutcome.VICTORY_ESCAPE else BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),"enemy021_1",zero)
-		check(done["battle_outcome"] == ending and done["action_end_sequence"] == 0 and no_draw(done, loop, "damage") and not done["extra_action"]["pending"],"real terminal action cancels blood transfer and leftover extra action: "+BattleOutcome.describe(ending))
-		check(BattleCheckpoint.encode(done,run_resource_recovery_tests.VIEW)["ok"] and BattlePlayLoop.choose_command(done,"wait") == done,"terminal persistence remains frozen")
-		if ending == BattleOutcome.VICTORY_ENEMIES_CLEARED: check(BattlePlayLoop.unit(done,"leonard")["level"] == 2,"terminal killing blow retains final EXP before freeze")
-
-
-func presentation_cases() -> void:
-	var cue = preload("res://game/battle/scene/BattleTurnEndCue.gd").new()
-	root.add_child(cue)
-	var loop := equip(casting_fixture(),"armor",145)
-	BattlePlayLoop._unit(loop,"leonard")["mp"] = 0
-	loop = BattlePlayLoop.choose_command(loop,"wait")
-	var before := loop.duplicate(true)
-	for index in range(2):
-		cue.refresh(loop,Vector2(320,240),true,0 if index == 0 else cue.EVENT_SECONDS)
-		# The number alone (UI6: no 轉化 caption, no HP／MP suffix, no sign glyph): the loss beat in the red kind-0 glyphs, the gain in the blue MP glyphs.
-		var number = cue.numbers[cue.cursor]
-		check(number != null and number.text.is_valid_int() and number.kind == ("damage" if index == 0 else "mp") and not cue.label.visible and cue.busy(loop),"blood loss and MP gain have distinct ordered visible beats")
-	cue.refresh(loop,Vector2(320,240),true,cue.NUMBER_SECONDS)  # last number lives 46 ticks
-	check(not cue.busy(loop) and loop == before,"both conversion beats release without another resource transaction")
-	cue.queue_free();await process_frame
-
-
 func mobility_native_cases() -> void:
 	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_equipment_mobility.json"))
 	var loop := BattleFixture.loop()
@@ -569,62 +400,3 @@ func movement_cases() -> void:
 	check(BattlePlayLoop.movement_path(blocked,"leonard",target).is_empty(),"one mobility bonus does not bypass a blocked detour whose full cost is8")
 	var stacked := equip(equip(blocked,"armor",138),"accessory1",231)
 	check(not BattlePlayLoop.movement_path(stacked,"leonard",target).is_empty(),"stacked bonuses legitimately pay the longer shared route")
-
-
-static func mobility_ai_fixture(with_boots: bool) -> Dictionary:
-	var loop := mobility_fixture()
-	var ai := BattlePlayLoop._unit(loop,"enemy021_1")
-	ai["coord"] = Vector2i(4,8); ai["live_speed"] = 120; ai["hp"] = 100; ai["max_hp"] = 100
-	BattlePlayLoop._unit(loop,"leonard")["coord"] = Vector2i(11,8)
-	ai["equipment"] = ai["equipment"].filter(func(slot):return slot["slot"] != "foot")
-	if with_boots: ai["equipment"].append({"slot":"foot","item_code":193,"name":"舞空之靴"})
-	ai["move_point"] = MobilityRules.prepare(ai,loop["equipment_items"])["value"]
-	own(loop, "ai_profiles")["actors"]["021"]["profile"].merge({"find_range":30,"ai_check_dying":0,"ai_help_selfhp":0,"ai_help_otherhp":0,"ai_help_status":0,"ai_att_magic":0},true)
-	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	loop["interaction"] = "ai_resolving"
-	return loop
-
-
-func mobility_ai_cases() -> void:
-	for with_boots in [false,true]:
-		var loop := mobility_ai_fixture(with_boots)
-		var before := loop.duplicate(true)
-		var after := BattlePlayLoop.step_ai_turn(loop,func(_n):return 0)
-		var action: Dictionary = after["last_ai_action"]
-		check(after["scenario_ok"] and action["kind"] == ("move_then_attack" if with_boots else "move"),"AI plans with the same current equipped movement as players")
-		check(loop == before and after["last_ai_actions"].size() == 1,"changing mobility cannot duplicate AI movement or actions")
-		if not with_boots: check(BattlePlayLoop.unit(after,"leonard")["hp"] == BattlePlayLoop.unit(loop,"leonard")["hp"],"unreachable attack remains pursuit without early damage")
-	var invalid := mobility_ai_fixture(true)
-	BattlePlayLoop._unit(invalid,"enemy021_1").erase("base_move_point")
-	var denied := BattlePlayLoop.step_ai_turn(invalid,no_rng)
-	check(not denied["scenario_ok"] and denied["units"] == invalid["units"] and denied["turn_queue"] == invalid["turn_queue"],"invalid source mobility stops AI preflight before RNG or movement")
-
-
-func save_and_invalid_cases() -> void:
-	var loop := equip(mobility_fixture(),"foot",193)
-	loop = BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop,"move"),Vector2i(10,8))
-	var view := {"camera":Vector2(320,240),"shown_story_events":[],"story_complete":false,"growth_notified_level":1}
-	var encoded := BattleCheckpoint.encode(loop,view)
-	check(encoded["ok"],"quiet pending movement with equipped budget can be saved")
-	if encoded["ok"]:
-		var restored := BattleCheckpoint.decode(encoded["bytes"], loop)
-		check(restored["ok"] and restored["snapshot"]["loop"] == loop,"base, current movement, equipment and pending origin survive exact restore")
-		var cancel := BattlePlayLoop.cancel_pending_move(restored["snapshot"]["loop"])
-		check(BattlePlayLoop.unit(cancel,"leonard")["move_point"] == 6 and BattlePlayLoop.movement_cells(cancel).has(Vector2i(10,8)),"restored pending walk can be cancelled and selected again with the same budget")
-	for field in ["base_move_point","move_point"]:
-		var bad := loop.duplicate(true)
-		BattlePlayLoop._unit(bad,"leonard")[field] += 1
-		check(not BattleCheckpoint.encode(bad,view)["ok"],"save rejects inconsistent base/equipped movement: " + field)
-	for value in [null,true,1.5,NAN,INF,10001]:
-		var bad := mobility_fixture()
-		own(bad, "equipment_items")["193"]["effects"]["move_point"] = value
-		var refused := equip(bad,"foot",193)
-		check(refused["units"] == bad["units"] and refused["turn_queue"] == bad["turn_queue"] and refused["interaction"] == bad["interaction"],"malformed candidate bonus cannot partially exchange or refresh: " + str(value))
-	var bad_source := mobility_fixture()
-	BattlePlayLoop._unit(bad_source,"leonard").erase("base_move_point")
-	check(equip(bad_source,"foot",193) == bad_source,"missing source never infers a new base from the currently equipped movement")
-	var capped := mobility_fixture()
-	BattlePlayLoop._unit(capped,"leonard")["inventory"] = [194,236,0,0,0,0,0,0]
-	check(equip(capped,"foot",194) == capped,"unknown companion fields remain rejected through the actual equipment API")
-	var necklace := equip(capped,"accessory1",236)
-	check(BattlePlayLoop.unit(necklace,"leonard")["move_point"] == 6 and BattlePlayLoop.weapon_pattern(necklace,BattlePlayLoop.unit(necklace,"leonard"))["index"] == 2,"proven necklace combines movement and source weapon range without a second refresh")

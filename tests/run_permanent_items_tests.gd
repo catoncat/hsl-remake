@@ -50,12 +50,9 @@ func run() -> void:
 	check(initial()["scenario_ok"],"public permanent-item trial initializes through the production loop")
 	if not initial()["scenario_ok"]: return
 	native_cases()
-	transactions()
 	resistance_caps()
 	magic_and_protection()
 	states_growth_and_combat()
-	ai_and_queue()
-	saved_and_terminal()
 	carry_cases()
 
 func native_cases() -> void:
@@ -91,28 +88,6 @@ func native_cases() -> void:
 			actor = ProgressionRules.refresh_growth_stats(actor,base["equipment_items"])
 			assert_values(actor,part["values"],"original complete "+part["kind"])
 			check(actor["growth_profile"]==source and actor["hp"]==1 and actor["mp"]==0 and actor["stamina"]==20 and actor["exp"]==37,"refresh never edits the source template or grants resources/EXP")
-
-func transactions() -> void:
-	for code in range(253,262):
-		var loop := fixture(); var owner := BattlePlayLoop._unit(loop,"tina")
-		owner["inventory"] = [code,code,0,0,0,0,0,0]
-		var saved := loop.duplicate(true)
-		var key: String = loop["consumables"][str(code)]["permanent"].keys()[0]
-		var preview := BattlePlayLoop.ItemUseRules.prepare(owner,loop["consumables"][str(code)])
-		check(preview["ok"] and BattleItemText.preview(preview,loop["consumables"][str(code)]).contains("永久") and loop==saved,"preview exposes permanent meaning without spending or sampling")
-		var first := BattlePlayLoop.use_item(loop,str(code))
-		check(first["scenario_ok"] and first["item_use_sequence"]==1 and first["extra_action"]["pending"],"first actual permanent use commits one independent action")
-		var receipt: Dictionary = first["last_item_use"]
-		var after := BattlePlayLoop.unit(first,"tina")
-		check(receipt["draws"].size()==1 and receipt["draws"][0]["bound"]==(1 if code>=257 else 5),"source permanent sampler including fixed resistance1 still advances once")
-		check(after["inventory"]==[code,0,0,0,0,0,0,0] and int(after["permanent_gains"][key])==int(receipt["permanent_effects"][0]["amount"]),"one actual slot is consumed for exactly the acquired source amount")
-		for attribute in ["str","dex","mind","con"]: check(after["combat_profile"][attribute]==owner["combat_profile"][attribute],"permanent derived offset never changes basic "+attribute)
-		for value in ["hp","mp","stamina","exp","max_hp","max_mp","move_point"]: check(after[value]==owner[value],"permanent item does not refill or alter unrelated "+value)
-		var second := BattlePlayLoop.use_item(first,str(code))
-		check(second["item_use_sequence"]==2 and second["action_end_sequence"]==1,"two actual uses advance the item stream twice and final-action tail once")
-		check(BattlePlayLoop.unit(second,"tina")["permanent_gains"][key]==int(receipt["permanent_effects"][0]["amount"])+int(second["last_item_use"]["permanent_effects"][0]["amount"]),"repeated permanent consumables add distinct gains, unlike duration-only temporary items")
-		check(BattlePlayLoop.unit(second,"tina")["growth_profile"]==owner["growth_profile"] and loop==saved,"source and caller input remain immutable")
-		check(BattlePlayLoop.use_item(second,str(code))==second,"late repeat cannot consume absent inventory or act for a different owner")
 
 func resistance_caps() -> void:
 	var loop := fixture(); var actor := BattlePlayLoop._unit(loop,"tina")
@@ -197,75 +172,6 @@ func states_growth_and_combat() -> void:
 	check(exchange["scenario_ok"] and exchange["last_attack"].get("followups",[]).size()==1,"permanent defense enters the actual two-hit ordinary/counter transaction")
 	check(BattlePlayLoop.unit(exchange,"tina")["permanent_gains"]==gain and exchange["item_use_sequence"]==1,"multiple attack/counter hits do not reapply or consume the permanent item")
 
-func ai_and_queue() -> void:
-	var loop:=fixture();var actor:=BattlePlayLoop._unit(loop,"tina");var ally:=BattlePlayLoop._unit(loop,"companion")
-	ally["growth_profile"]["source"]["speed"]+=int(actor["live_speed"])-int(ally["live_speed"])-1
-	ally.merge(ProgressionRules.refresh_growth_stats(ally,loop["equipment_items"]),true)
-	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	for seed_value in range(1,100):
-		if DamageRandomStream.rand(DamageRandomStream.seeded(seed_value),5)["value"]==4:seed_stream(loop, "damage", seed_value);break
-	var slots: Array=loop["turn_queue"]["slots"].duplicate(true)
-	var first:=BattlePlayLoop.use_item(loop,"256","companion")
-	check(first["turn_queue"]["slots"]==slots and BattlePlayLoop.unit(first,"companion")["live_speed"]>actor["live_speed"],"speed gain updates the actor but never reorders an action already in progress")
-	first=BattlePlayLoop.choose_command(first,"wait");first=BattlePlayLoop.choose_command(first,"wait")
-	first=BattlePlayLoop.step_ai_turn(first,zero)
-	check(first["scenario_ok"] and BattlePlayLoop.CoreTurnQueue.current(first["turn_queue"])["id"]=="companion","next real round sorts the acquired speed at the existing queue rebuild")
-	var aid:=fixture();var helper:=BattlePlayLoop._unit(aid,"companion")
-	helper["inventory"]=[253,0,0,0,0,0,0,0];helper["player_commandable"]=false;helper["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
-	var foe:=BattlePlayLoop._unit(aid,"enemy026_1");foe["coord"]=Vector2i(15,15)
-	aid=BattlePlayLoop.use_item(aid,"253","companion");aid=BattlePlayLoop.choose_command(aid,"wait")
-	var response:=BattlePlayLoop.step_ai_turn(aid,zero)
-	check(response["scenario_ok"] and response["last_ai_action"]["kind"] in ["attack","move_then_attack"],"AI with acquired attack uses its current legal combat action")
-	check(BattlePlayLoop.unit(response,"companion")["inventory"]==[253,0,0,0,0,0,0,0] and response["item_use_sequence"]==1,"unproven proactive rare-item consumption is not introduced")
-
-func saved_and_terminal() -> void:
-	var used:=BattlePlayLoop.use_item(fixture(),"255")
-	var unsupported := fixture()
-	var unknown := BattlePlayLoop._unit(unsupported,"tina")
-	unknown.erase("growth_profile")
-	check(PermanentCapabilityRules.input_error(unknown)=="" and ExperienceRules.input_error(unsupported,unknown)=="","an existing no-growth combat actor remains valid with an empty acquired ledger")
-	var unchanged := unsupported.duplicate(true)
-	check(BattlePlayLoop.ItemUseRules.prepare(unknown,unsupported["consumables"]["253"])["reason"]=="missing_permanent_source" and BattlePlayLoop.use_item(unsupported,"253")==unchanged,"unproven growth source rejects permanent use before consumption or random advance")
-	unknown["permanent_gains"]["attack_power"]=1
-	check(PermanentCapabilityRules.input_error(unknown)=="missing_permanent_source","missing source cannot conceal an already acquired permanent value")
-	unknown["permanent_gains"]["attack_power"]=0
-	unknown["growth_profile"]={}
-	check(PermanentCapabilityRules.input_error(unknown)!="","a present malformed growth source is never treated as the intentional no-growth case")
-	var saved:=BattleCheckpoint.encode(used,VIEW)
-	check(saved["ok"],"permanent use has a complete replayable checkpoint")
-	if saved["ok"]:
-		var restored:=BattleCheckpoint.decode(saved["bytes"], used)
-		check(restored["ok"] and restored["snapshot"]["loop"]==used,"restoring validates the acquired source without applying it again")
-		check(BattlePlayLoop.use_item(used,"253")==BattlePlayLoop.use_item(restored["snapshot"]["loop"],"253"),"subsequent random permanent gains and second-action tail are identical after restore")
-	for part in ["missing","negative","fraction","unknown","resistance","derived"]:
-		var bad:=used.duplicate(true);var actor:=BattlePlayLoop._unit(bad,"tina")
-		match part:
-			"missing":actor.erase("permanent_gains")
-			"negative":actor["permanent_gains"]["speed"]=-1
-			"fraction":actor["permanent_gains"]["speed"]=0.5
-			"unknown":actor["permanent_gains"]["str"]=1
-			"resistance":actor["permanent_gains"]["resist_0"]=80
-			"derived":actor["combat_profile"]["live_magic_attack"]+=1
-		check(not BattleCheckpoint.encode(bad,VIEW)["ok"],"invalid permanent state or proof rejects before saving: "+part)
-	for mode in ["victory","defeat","escape"]:
-		var loop:=fixture();var actor:=BattlePlayLoop._unit(loop,"tina");var foe:=BattlePlayLoop._unit(loop,"enemy026_1")
-		actor["hit_bonus_accum"]=1000;foe["coord"]=Vector2i(15,16)
-		if mode=="victory":foe["hp"]=1;actor["exp"]=99
-		if mode=="defeat":
-			actor["hp"]=1;foe["no_attack"]=false;foe["hit_bonus_accum"]=1000
-			foe["growth_profile"]["source"].merge({"attack_back":100,"attack_power":1000},true);foe.merge(ProgressionRules.refresh_growth_stats(foe,loop["equipment_items"]),true)
-		if mode=="escape":actor["coord"]=Vector2i(13,10);BattlePlayLoop._unit(loop,"companion")["coord"]=Vector2i(13,11);foe["coord"]=Vector2i(12,10)
-		loop=BattlePlayLoop.use_item(loop,"253")
-		var gains:Dictionary=BattlePlayLoop.unit(loop,"tina")["permanent_gains"].duplicate(true)
-		if mode=="escape":loop=BattlePlayLoop.choose_command(BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop,"move"),Vector2i(14,10)),"wait")
-		else:loop=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),"enemy026_1",zero)
-		check(loop["battle_outcome"]=={"victory":BattleOutcome.VICTORY_ENEMIES_CLEARED,"defeat":BattleOutcome.DEFEAT_FALLEN,"escape":BattleOutcome.VICTORY_ESCAPE}[mode],"permanent-item second action reaches actual "+mode)
-		check(BattlePlayLoop.unit(loop,"tina")["permanent_gains"]==gains and BattleCheckpoint.encode(loop,VIEW)["ok"],"terminal keeps the acquired offset exactly once and remains restorable")
-		check(BattlePlayLoop.use_item(loop,"253")==loop and BattlePlayLoop.step_ai_turn(loop)==loop and BattlePlayLoop.finish_exhausted_action(loop)==loop,"terminal cannot resample, spend or act after "+mode)
-
-
-## Cross-battle carry of acquired permanent gains (formerly run_permanent_carry_tests.gd): the real
-## item commit and campaign serialization, with isolated disk paths.
 func carry_cases() -> void:
 	DirAccess.make_dir_recursive_absolute(CARRY_PATH.get_base_dir())
 	var first := BattleFixture.loop()

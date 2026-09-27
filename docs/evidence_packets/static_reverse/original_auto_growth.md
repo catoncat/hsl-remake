@@ -69,7 +69,6 @@ lane R7-NPC，2026-09-25。r2 线性读与 r2ghidra 反编译（同一 EXE SHA�
 ```sh
 python3 tools/hsl.py check auto_growth
 python3 tools/hsl.py check entry_growth_data
-python3 -m unittest tools.test_hsl_entry_growth
 tools/godot.sh --headless --script res://tests/run_entry_growth_tests.gd
 tools/godot.sh --screen 0 --script res://tests/capture_entry_growth_review.gd
 ```

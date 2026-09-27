@@ -45,7 +45,6 @@ tools/play.sh --screen 1 --script res://tests/capture_equipment_mobility_review.
 # 只重验受影响路径时显式选择。
 tools/play.sh --screen 1 --script res://tests/capture_equipment_mobility_review.gd -- pending_restore ai_boots
 tools/godot.sh --headless --script res://tests/run_all.gd -- run_position_equipment_tests.gd
-python3 -m unittest tools.test_hsl_mobility
 ```
 
 原始图、进程记录和逐路线progress在`ignored/equipment-mobility-review`，保存文件也仅在该目录，不覆盖玩家存档。单战静止边界保存、降低移动力后保留已接受位置，是明确的重制交互合同；原完整装备UI、临时移动状态、飞行／大体型通行及全局初始化随机序列尚未声称恢复。没有新增第二份战斗字典或长期测试专属产品入口。

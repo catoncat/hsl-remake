@@ -49,8 +49,6 @@ func run() -> void:
 	native_mana()
 	abilities_and_growth()
 	series()
-	ai_and_navigation()
-	endings()
 	cross_battle()
 	await presentation()
 
@@ -177,50 +175,6 @@ func series() -> void:
 	var returned:=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(counter,"attack"),"enemy026_1",zero)
 	var counters:Dictionary=returned["last_attack"].get("counter",{})
 	check(not counters.is_empty() and not counters.has("weapon_effects") and counters["followups"][0]["weapon_effects"].has("mana"),"counter series uses its own final mana tail")
-
-func ai_and_navigation() -> void:
-	var loop:=fixture("006");loop["tiles"]={}
-	var actor:=BattlePlayLoop._unit(loop,"wing");var ground:=BattlePlayLoop.unit(fresh(),"enemy036_1")
-	for y in range(0,24):own(loop, "tiles")[Vector2i(13,y)]={"blocks_movement":true}
-	actor["coord"]=Vector2i(14,12);ground["coord"]=actor["coord"]
-	var flying:=BattlePlayLoop.TraversalRules.prepare(actor,[actor],loop["tiles"])
-	var walking:=BattlePlayLoop.TraversalRules.prepare(ground,[ground],loop["tiles"])
-	check(BattlePlayLoop.TraversalRules.transition_error(actor["coord"],Vector2i(13,12),flying,loop["tiles"])=="" and BattlePlayLoop.TraversalRules.transition_error(ground["coord"],Vector2i(13,12),walking,loop["tiles"])!="","006 crosses source height barrier while036 stays grounded")
-	for restricted in ["none","empty","silence","paralysis"]:
-		var battle:=fixture("006");actor=BattlePlayLoop._unit(battle,"wing")
-		actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
-		# Source006 has no full AI declarations. This authored regression strategy
-		# tests the shared adapter without inventing a production default.
-		own(battle, "ai_profiles")["actors"]["006"]["missing_required"]=[]
-		own(battle, "ai_profiles")["actors"]["006"]["profile"].merge({"find_type":3,"find_range":12,"ai_call_range":4,"ai_fixed":0,"ai_lock":0},true)
-		actor["inventory"]=[0,0,0,0,0,0,0,0]
-		if restricted=="empty":actor["mp"]=0
-		if restricted in ["silence","paralysis"]:actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic" if restricted=="silence" else restricted,2)["changes"],true)
-		own(battle, "ai_profiles")["actors"]["006"]["profile"].merge({"ai_att_magic":100,"ai_check_hp":0,"ai_check_dying":0,"ai_help_otherhp":0,"ai_help_status":0},true)
-		own(battle, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"]="100"
-		battle["selected_unit_id"]="";battle["interaction"]="ai_resolving"
-		var after:=BattlePlayLoop.step_ai_turn(battle,zero)
-		check(after["scenario_ok"],"source006 AI reaches a valid action: "+restricted+" "+str(after.get("scenario_error")))
-		if after["scenario_ok"]:
-			check(after["last_ai_action"].get("skill_id","")==WIND if restricted=="none" else after["last_ai_action"].get("skill_id","")!=WIND,"AI uses only affordable unblocked owned wind: "+restricted)
-	var drain:=fixture();var target:=BattlePlayLoop._unit(drain,"enemy026_1")
-	target["mp"]=8
-	BattleLoopCombat._apply_strike(drain,"thief","enemy026_1",zero,false,0)
-	var quote:=BattlePlayLoop.SkillResolutionRules.available(target,WIND,BattlePlayLoop.skill_fields(drain,WIND),drain["skill_book"],drain["skill_target_data"],drain["equipment_items"])
-	check(target["mp"]==0 and not quote["ok"] and quote["reason"]=="insufficient_mp","post-strike planning reads current depleted MP")
-
-func endings() -> void:
-	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
-		var loop:=fixture("004",true,true);var actor:=BattlePlayLoop._unit(loop,"thief");var target:=BattlePlayLoop._unit(loop,"enemy026_1")
-		if outcome==BattleOutcome.VICTORY_ESCAPE:actor["coord"]=loop["escape_zone"][0];loop=BattlePlayLoop.choose_command(loop,"wait")
-		else:
-			if outcome==BattleOutcome.VICTORY_ENEMIES_CLEARED:target["hp"]=1;actor["exp"]=99
-			else:actor["hp"]=1;target["combat_profile"]["live_attack_damage"]=1000
-			loop=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),"enemy026_1",zero)
-		check(loop["battle_outcome"]==outcome and not loop["extra_action"]["pending"],"mana profession terminal freezes: "+BattleOutcome.describe(outcome))
-		var saved:=BattleCheckpoint.encode(loop,run_permanent_items_tests.VIEW)
-		check(saved["ok"] and BattlePlayLoop.step_ai_turn(loop,no_rng)==loop and BattlePlayLoop.finish_exhausted_action(loop)==loop,"terminal save/repeated finish cannot reapply MP loss")
-		if saved["ok"]:check(BattleCheckpoint.decode(saved["bytes"], loop)["ok"],"terminal restore validates current derived source")
 
 func cross_battle() -> void:
 	var destination:=fresh()

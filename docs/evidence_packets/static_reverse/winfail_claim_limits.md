@@ -1,6 +1,6 @@
 # Winfail 解释器的声明边界（claim limits）
 
-> evidence: provisional; static-derived: 带地址的各条; resource-derived: 脚本结构 · status: live · functions: 0x4348f0, 0x43ede0, 0x446bb0, 0x448840, 0x44e820, 0x44fad0, 0x44fb90, 0x450840, 0x453b30, 0x458c80 · tools: run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd, run_winnability_census_tests.gd · updated: 2026-09-29
+> evidence: provisional; static-derived: 带地址的各条; resource-derived: 脚本结构 · status: live · functions: 0x4348f0, 0x43ede0, 0x446bb0, 0x448840, 0x44e820, 0x44fad0, 0x44fb90, 0x450840, 0x453b30, 0x458c80 · tools: run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-29
 
 Checked: 2026-09-20. `game/sim/WinfailScenarioRules.gd`（数据驱动的 winfail 脚本解释器）过去把下列 20 条边界原文作为常量 `CLAIM_LIMITS` 内嵌，并整段复制进每个 `rules_from_seed()` 结果的 `claim_limits`。收口冲刺 P3b 把原文迁到本包；代码只保留短 id 列表 `CLAIM_LIMIT_IDS`，`claim_limits` 字段存 id。**id 是引用，不是语义**：每条的层级以本表 evidence 列（取自原句开头的层级词）为准；`static-derived` 只覆盖句中给出地址的那部分，句内标 `provisional` 的部分仍是重制读法。任何一条都不声明原版 handler 时序或等价。
 

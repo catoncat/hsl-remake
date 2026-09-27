@@ -193,7 +193,7 @@ action = actWalkPrevInsertObject,512,288,4
 - `content/battles/*.json` 里 `rule_adapter` 为 `winfail`／`development_battle` 的文件是战斗，装载时按 `content/schema/battle.schema.json`（`hsl_battle.v1`）校验：`required` 是没有默认值可顶替的输入（`schema`、`id`、`title`、`rule_adapter`、`player_unit_id`、`playable_units`、`resources` 里的 `map_texture`／`terrain`／`attack_ranges`／`consumables`／`progression`、`scenario_rules.initial_objective_phase`），其余键都带 `default`。`BattleScenario.load_file` 先填默认值再交给 `BattlePlayLoop.create`；违规明确失败（`scenario_error = "battle_schema:$.<path>: <reason>"`，Python 侧 `python3 tools/hsl.py check battle_schema` 同一文本）。
 - 场景进入 `BattleSceneRuntime` 还需要表现输入 `actor_walk_manifest`／`actor_audio`／`interface_audio`（缺了 push_error）和对白说话者表 `portraits`（缺了该场对白没有脸）。引擎级全局表（技能书、targeting、成长、AI、奖励、装备目录、名册头像表）不在 `resources` 里，登记在 `game/sim/ContentPaths.gd`。
 - 单位只需要 `content/schema/unit.schema.json` 的规则键（`tools/hsltools/schema/unit.py` 的 `RULE_KEYS`）；证据台账键（`PROVENANCE_KEYS`）一个都不用写，运行时按 `authored` 处理。
-- 最小原文：`tests/support/authored_minimal_battle.json`；`tests/run_authored_battle_tests.gd` 证明它能建局、开到首次控制，并让机器人打完几回合。
+- 最小原文：`tests/support/authored_minimal_battle.json`；`tests/run_authored_level_tests.gd` 证明它能建局、开到首次控制，并让机器人打完几回合。
 
 ## 8. 必须改代码的情况
 

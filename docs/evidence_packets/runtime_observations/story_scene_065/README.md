@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-18
 
-来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=65`（`STORY_SCENE_REVIEW_PASS shots=23`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_level_65_story`）。场景文件 `content/battles/story_065.json` 由 `python3 tools/hsl.py generate story_scene:65` 从 `battle065_seed` 生成。level 65 是 STORY009 以 `actSetNextPlayLevelEvent 9,65` 串起的 story-only 过场（无 WINFAIL、自有地图 `shape41\level65.SHP` 640×480），为**完整重制**。
+来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=65`（`STORY_SCENE_REVIEW_PASS shots=23`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_registered_story_sweep` 与全程剧情 explorer）。场景文件 `content/battles/story_065.json` 由 `python3 tools/hsl.py generate story_scene:65` 从 `battle065_seed` 生成。level 65 是 STORY009 以 `actSetNextPlayLevelEvent 9,65` 串起的 story-only 过场（无 WINFAIL、自有地图 `shape41\level65.SHP` 640×480），为**完整重制**。
 
 ## 看到什么
 

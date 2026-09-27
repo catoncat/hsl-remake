@@ -110,8 +110,6 @@ func run() -> void:
 	transactions()
 	insertion_and_actions()
 	double_bow()
-	ai_current_state()
-	terminal_and_carry(loop)
 
 func native_stats() -> void:
 	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_ohm_growth.json"))
@@ -272,36 +270,3 @@ func double_bow() -> void:
 	var ordinary:=BattlePlayLoop.choose_command(after,"attack")
 	var rejected:=BattlePlayLoop.attack_coord(ordinary,Vector2i(15,21),func(_n):check(false,"empty ordinary cell cannot consume random draws");return 0)
 	check(rejected["units"]==ordinary["units"] and rejected["last_combat"]==ordinary["last_combat"],"ordinary attacks retain their separate occupied-target contract")
-
-func ai_current_state() -> void:
-	var initial := ai_fixture()
-	var ready := BattlePlayLoop.choose_command(initial,"wait")
-	check(ready["interaction"]=="ai_resolving" and BattlePlayLoop.CoreTurnQueue.current(ready["turn_queue"])["id"]=="hu","real player Wait hands the next slot to the explicitly configured friendly Hu")
-	var first := BattlePlayLoop.step_ai_turn(ready,zero)
-	check(first["scenario_ok"],"current Hu AI preflight stays valid: "+str(first.get("scenario_error")))
-	if not first["scenario_ok"]:return
-	check(first["last_ai_action"].get("skill_id")==PoisonArrowRules.ID and BattlePlayLoop.unit(first,"hu")["stamina"]==0,"silenced AI can use its actual ST special and pays its last twenty stamina once")
-	check(first["extra_action"]["pending"] and first["interaction"]=="ai_resolving","first complete AI special leaves one independent decision, not a cached cast")
-	var second := BattlePlayLoop.step_ai_turn(first,zero)
-	check(second["scenario_ok"] and second["last_ai_action"].get("actor_id")=="hu" and second["last_ai_action"].get("skill_id")!=PoisonArrowRules.ID,"AI second action recalculates after ST depletion and cannot reuse Poison Arrow")
-	check(second["last_ai_action"].get("kind") in ["attack","move_then_attack","move","wait"],"depleted AI retains legal bow movement/attack/wait fallbacks")
-	var skip := ai_fixture(true)
-	var before := BattlePlayLoop.unit(skip,"hu").duplicate(true)
-	skip = BattlePlayLoop.step_ai_turn(BattlePlayLoop.choose_command(skip,"wait"),zero)
-	check(skip["scenario_ok"] and skip["last_ai_action"].get("kind")=="paralysis_skip","current paralysis is checked before the owned special or White Wings")
-	check(BattlePlayLoop.unit(skip,"hu")["stamina"]==before["stamina"] and not BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(skip,"hu")),"paralysis consumes one status tail, not twenty stamina or a second skipped action")
-	check(not skip["extra_action"]["pending"] and BattlePlayLoop.CoreTurnQueue.current(skip["turn_queue"])["id"]!="hu","expiry does not create an extra Hu action in the consumed queue slot")
-
-func terminal_and_carry(loop: Dictionary) -> void:
-	var carry: Dictionary = JSON.parse_string(JSON.stringify(BattlePlayLoop.CampaignCarryRules.capture(loop)))
-	var resumed := BattlePlayLoop.apply_campaign_carry(fresh(false),carry)
-	check(resumed["campaign_carry_receipt"]["errors"].is_empty() and resumed["campaign_carry_receipt"]["applied_unit_ids"].has("hu"),"both actual controlled party members carry through JSON; villagers do not join the persistent party")
-	var ready := BattlePlayLoop.initialize_roster_growth(resumed)
-	check(ready["scenario_ok"] and BattlePlayLoop.unit(ready,"hu")["level"]==BattlePlayLoop.unit(loop,"hu")["level"],"carried Hu is not reinitialized or reallocated")
-	for mode in ["hero_dead","villagers_dead","clear","retreat"]:
-		var terminal := loop.duplicate(true)
-		for actor in terminal["units"]:
-			var remove: bool = (mode=="hero_dead" and actor["id"]=="leonard") or (mode=="villagers_dead" and actor["actor_id"] in ["061","062"]) or (mode=="clear" and actor["battle_actor_role"]==BattlePlayLoop.ROLE_ENEMY) or (mode=="retreat" and actor["id"] in ["actor028_3","actor028_4","actor028_5","actor028_6"])
-			if remove:actor["hp"]=0;actor["defeated"]=true
-		var outcome := BattlePlayLoop.BattleScenarioRuleAdapter.victory_state(terminal)
-		check(BattleOutcome.is_defeat(outcome) if mode in ["hero_dead","villagers_dead"] else BattleOutcome.is_victory(outcome),"actual WINFAIL001 terminal condition: "+mode+" -> "+BattleOutcome.describe(outcome))

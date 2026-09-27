@@ -47,7 +47,6 @@
 
 ```sh
 python3 tools/hsl.py check extra_action
-python3 -m unittest tools.test_hsl_extra_action
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate extra_action --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 ```
 

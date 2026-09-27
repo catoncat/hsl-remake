@@ -1,6 +1,6 @@
 # Level 3 Player Mode and Undead Flags
 
-> evidence: static-derived; provisional: 反击击杀 undead 攻击者时的结算（重制未对齐） · status: live · functions: 0x40a5d0, 0x40e390, 0x43ede0, 0x4423c0, 0x442720, 0x446bb0, 0x44f580, 0x44fad0, 0x450710, 0x450840, 0x452885 · tools: run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd, run_winnability_census_tests.gd · updated: 2026-09-28
+> evidence: static-derived; provisional: 反击击杀 undead 攻击者时的结算（重制未对齐） · status: live · functions: 0x40a5d0, 0x40e390, 0x43ede0, 0x4423c0, 0x442720, 0x446bb0, 0x44f580, 0x44fad0, 0x450710, 0x450840, 0x452885 · tools: run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## Scope
 
@@ -87,7 +87,7 @@ Re-read with capstone on the same `hsl01.exe` (only disassembly, Wine not starte
 | `0x4528e2`..`0x4528e7` | threshold below 1 → 1 |
 | `0x4528ec`..`0x4528f8` | live HP `+0xd8` greater than the threshold → not held; otherwise held (`0x452794`) |
 
-Consequence for the scripts: `actCheckPlayerHPLow code,serial,0` holds at **HP ≤ 1**, not only after death. Every such use targets a unit the script made undead (STORY／WINFAIL 030／031／032／033／036／037／041／059／075／076／077／078／079), and an undead unit revives at 1 HP instead of dying (table above), so in the original the condition fires on the blow that would have killed it. Before R6-L8 the remake read ratio 0 as "HP ≤ 0": the revive left HP 1 and the win／event never fired, which made the boss fights of 41／59／75／76／77／79 and the undead-gated events of 30–37 unwinnable or unreachable. `WinfailConditions.hp_low_threshold` now uses the threshold above; `tests/run_winnability_census_tests.gd` checks, for every HPLow condition of all registered battles, that its target satisfies it at the revive HP.
+Consequence for the scripts: `actCheckPlayerHPLow code,serial,0` holds at **HP ≤ 1**, not only after death. Every such use targets a unit the script made undead (STORY／WINFAIL 030／031／032／033／036／037／041／059／075／076／077／078／079), and an undead unit revives at 1 HP instead of dying (table above), so in the original the condition fires on the blow that would have killed it. Before R6-L8 the remake read ratio 0 as "HP ≤ 0": the revive left HP 1 and the win／event never fired, which made the boss fights of 41／59／75／76／77／79 and the undead-gated events of 30–37 unwinnable or unreachable. `WinfailConditions.hp_low_threshold` now uses the threshold above; `tests/run_winfail_rules_tests.gd` checks, for every HPLow condition of all registered battles, that its target satisfies it at the revive HP.
 
 provisional: a **defeated** unit is still read as HP 0 (holds) in the remake; the original lookup no longer finds an unregistered object (`0x4528a4`), but whether the scan runs before the death unregisters it (`0x43ef36`) is not read. No script uses a non-undead ratio-0 target in a way where the difference decides a battle.
 

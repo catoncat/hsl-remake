@@ -76,7 +76,6 @@ R2_NOPLUGINS=1 r2 -N -q -e bin.relocs.apply=true -e scr.color=0 \
   -c 'pD 304 @ 0x429e00' $HSL_ORIGINAL_DIR/hsl01.exe
 python3 tools/hsl.py check equipment_data
 PYTHONPATH=tools python3 -m hsltools.evidence.inventory_equipment --exe $HSL_ORIGINAL_DIR/hsl01.exe
-python3 -m unittest tools.test_hsl_equipment_data tools.test_hsl_attack_ranges
 godot --headless --path . --script res://tests/run_inventory_equipment_tests.gd
 tools/verify.sh
 ```

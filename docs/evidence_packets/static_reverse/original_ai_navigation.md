@@ -106,7 +106,6 @@ lane R7-NPC，2026-09-25。r2 线性读与 r2ghidra 反编译（同一 EXE），
 
 ```sh
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate ai_navigation --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-python3 -m unittest tools.test_hsl_native_ai_navigation_probe
 tools/godot.sh --headless --script res://tests/run_ai_navigation_tests.gd
 ```
 

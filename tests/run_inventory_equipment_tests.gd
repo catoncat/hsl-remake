@@ -48,7 +48,7 @@ func run() -> void:
 	transfer_cases()
 	important_item_cases()
 	discard_action_cases()
-	await ui_cases()
+	await run_give_exchange()
 	print("INVENTORY_EQUIPMENT_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
 	quit(0 if failures.is_empty() else 1)
 
@@ -285,50 +285,132 @@ func discard_action_cases() -> void:
 			check(BattlePlayLoop.discard_item(invalid, "241", 0) == invalid, "free discard still rejects invalid action state: " + field)
 
 
-func ui_cases() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	BattlePlayLoop._unit(scene.play_loop, "leonard")["inventory"] = [241, 3, 241, 246, 0, 0, 0, 0]
-	var before: Dictionary = scene.play_loop.duplicate(true)
-	scene.menus.choose_command("item")
-	scene.item_panel.menu._process(0.25)
-	scene.item_panel.menu.get_node("EquipCommand").pressed.emit()
-	scene.item_panel.rows.get_child(0).pressed.emit()
-	check(scene.item_panel.page == "equip_confirm" and scene.play_loop == before, "equipment preview cannot mutate live state")
-	scene.item_panel.cancel()
-	scene.menus.change_equipment("weapon", 1, 3)
-	check(scene.play_loop == before, "cancelled equipment callback is inert")
-	scene.item_panel.rows.get_child(0).pressed.emit()
-	scene.item_panel.confirm_button.pressed.emit()
-	check(not scene.item_panel.visible and BattlePlayLoop.unit(scene.play_loop, "leonard")["weapon_code"] == 3, "UI confirmation commits through the runtime and PlayLoop")
-	var after: Dictionary = scene.play_loop.duplicate(true)
-	scene.menus.change_equipment("weapon", 1, 3)
-	check(scene.play_loop == after and not scene.ai_playback_active, "closed-panel duplicate cannot repeat a free exchange")
-	BattlePlayLoop._unit(scene.play_loop, "leonard")["inventory"] = [281, 241, 241, 246, 0, 0, 0, 0]
-	scene.menus.choose_command("item")
-	scene.item_panel.menu._process(0.25)
-	scene.item_panel.menu.get_node("DropCommand").pressed.emit()
-	check(scene.item_panel.rows.get_child(0).disabled and not scene.item_panel.rows.get_child(1).disabled, "UI blocks important items while keeping ordinary discard available")
-	var protected: Dictionary = scene.play_loop.duplicate(true)
-	scene.item_panel._select_item("281", 0)
-	check(scene.item_panel.confirm_button.disabled, "stale/programmatic important-item selection cannot enable confirm")
-	scene.menus.discard_inventory_item("281")
-	check(scene.play_loop == protected and scene.item_panel.visible, "runtime rejects important discard without closing the panel or consuming action")
-	scene.item_panel.cancel()
-	check(scene.play_loop == protected and scene.item_panel.page == "inventory", "blocked discard remains cancellable")
-	scene.item_panel.rows.get_child(1).pressed.emit()
-	scene.item_panel.confirm_button.pressed.emit()
-	var discarded: Dictionary = scene.play_loop.duplicate(true)
-	check(BattlePlayLoop.unit(discarded, "leonard")["inventory"] == [281, 241, 246, 0, 0, 0, 0, 0], "confirmation removes only one of two adjacent duplicate items")
-	check(discarded["turn_queue"] == protected["turn_queue"] and not scene.ai_playback_active and scene.interaction_state == "action_menu", "runtime does not hand off the turn after free discard")
-	scene.menus.discard_inventory_item("241")
-	check(scene.play_loop == discarded, "closed-panel stale callback cannot discard the identical item now in the same slot")
-	scene.menus.choose_command("move")
-	check(scene.interaction_state == "move_select", "runtime accepts movement after discard")
-	scene.queue_free()
-	await process_frame
-	await create_timer(0.3).timeout
+# ---- run_inventory_equipment_tests.gd ----
+const ActionBudgetRules = preload("res://game/sim/ActionBudgetRules.gd")
+func controlled_give_exchange() -> Dictionary:
+	var loop := BattleFixture.loop()
+	for index in range(loop["turn_queue"]["slots"].size()):
+		if loop["turn_queue"]["slots"][index]["id"] == "leonard":
+			loop["turn_queue"]["index"] = index
+	loop = BattlePlayLoop.select_player_unit(loop, "leonard")
+	var actor := BattlePlayLoop._unit(loop, "leonard")
+	actor["inventory"] = [241, 241, 246, 281, 0, 0, 0, 0]
+	var ally := BattlePlayLoop._unit(loop, "enemy023_1")
+	ally["coord"] = actor["coord"] + Vector2i.RIGHT
+	ally["inventory"] = [246, 241, 0, 0, 0, 0, 0, 0]
+	return loop
+
+
+func totals(a: Array, b: Array) -> Dictionary:
+	var counts := {}
+	for value in a + b:
+		var code := int(value)
+		if code > 0:
+			counts[code] = int(counts.get(code, 0)) + 1
+	return counts
+
+
+func gameplay(loop: Dictionary) -> Dictionary:
+	var result := loop.duplicate(true)
+	# Monotonic stale-request identity is not an inventory or action resource.
+	result.erase("item_revision")
+	return result
+
+
+func confirm(loop: Dictionary, index: int, target: int) -> Dictionary:
+	return BattlePlayLoop.confirm_give(loop, "enemy023_1", index, int(BattlePlayLoop.unit(loop, "leonard")["inventory"][index]), target, int(BattlePlayLoop.unit(loop, "enemy023_1")["inventory"][target]), int(loop["item_revision"]))
+
+
+func run_give_exchange() -> void:
+	pure_cases()
+	session_cases()
+	movement_cases()
+func pure_cases() -> void:
+	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_give_exchange.json"))
+	check(not packet["native_execution"], "static model fixtures are not native execution results")
+	for case in packet["examples"]:
+		var actual := InventoryRules.exchange(case["sender"], int(case["index"]), int(case["sender"][int(case["index"])]), case["receiver"], int(case["target"]), int(case["receiver"][int(case["target"])]))
+		check(actual["ok"], "reviewed example accepted: " + case["name"])
+		for key in case["expected"]:
+			var expected: Variant = case["expected"][key]
+			if expected is Array:
+				expected = expected.map(func(value): return int(value))
+			check(actual[key] == expected, case["name"] + ": " + key)
+		check(totals(case["sender"], case["receiver"]) == totals(actual["sender"], actual["receiver"]), "example conserves each item code")
+	for count_a in range(1, 9):
+		for count_b in range(9):
+			var a := [0, 0, 0, 0, 0, 0, 0, 0]
+			var b := a.duplicate()
+			for i in range(count_a): a[i] = 241 if i % 2 == 0 else 246
+			for i in range(count_b): b[i] = 246 if i % 3 == 0 else 241
+			for index in [0, count_a - 1]:
+				for target in [0, 7]:
+					var original := [a.duplicate(), b.duplicate()]
+					var result := InventoryRules.exchange(a, index, a[index], b, target, b[target])
+					check(result["ok"] and totals(result["sender"], result["receiver"]) == totals(a,b), "all occupancy boundaries conserve duplicate items")
+					check(result["sender"].size() == 8 and result["receiver"].size() == 8, "all exchange outputs retain eight slots")
+					check(original == [a,b], "pure exchange never mutates either input")
+	check(not InventoryRules.exchange([241,0,0,0,0,0,0,0], 0, 241, [246,246,246,246,246,246,246,246], -1, 0)["ok"], "full bag needs explicit exchange choice")
+	for index in [-2, 8]:
+		check(not InventoryRules.exchange([241,0,0,0,0,0,0,0], index, 241, [0,0,0,0,0,0,0,0], 0, 0)["ok"], "invalid source selection rejected")
+	check(not InventoryRules.exchange([241,0,0,0,0,0,0,0], 0, 241, [246,0,0,0,0,0,0,0], 0, 241)["ok"], "stale expected target cannot swap a different item")
+	check(not InventoryRules.exchange([241,0], 0, 241, [0,0,0,0,0,0,0,0], 0, 0)["ok"], "malformed bags rejected before mutation")
+	check(ActionBudgetRules.ends_action("use") and not ActionBudgetRules.ends_action("drop") and not ActionBudgetRules.ends_action("equip"), "common ordinary item policy matrix")
+	check(not ActionBudgetRules.ends_action("give", false) and ActionBudgetRules.ends_action("give", true), "Give settles at session exit")
+
+
+func session_cases() -> void:
+	var original := controlled_give_exchange()
+	var started := BattlePlayLoop.begin_give(original)
+	check(started["interaction"] == "give_session" and BattlePlayLoop.begin_give(started) == started, "begin is explicit and cannot reset an existing session")
+	var first := confirm(started, 0, 2)
+	check(BattlePlayLoop.unit(first, "leonard")["inventory"] == [241,246,281,0,0,0,0,0], "give removes selected duplicate from sender in order")
+	check(BattlePlayLoop.unit(first, "enemy023_1")["inventory"] == [246,241,241,0,0,0,0,0], "recipient duplicate occupies a new slot")
+	check(first["turn_queue"] == original["turn_queue"] and first["give_session"]["action_used"], "successful give retains current queue and marks the session used")
+	check(BattlePlayLoop.confirm_give(first, "enemy023_1", 0, 241, -1, 0, started["item_revision"]) == first, "stale request cannot consume adjacent identical item")
+	var second := confirm(first, 0, 3)
+	check(BattlePlayLoop.unit(second, "leonard")["inventory"] == [246,281,0,0,0,0,0,0], "second give in same session works")
+	var finished := BattlePlayLoop.finish_give(second, second["item_revision"])
+	check(finished["turn_queue"] != original["turn_queue"] and finished["give_session"].is_empty(), "close after multiple transfers ends exactly one actor action")
+	check(BattlePlayLoop.finish_give(finished, second["item_revision"]) == finished, "duplicate finish does not advance a second actor")
+	var cancelled := BattlePlayLoop.finish_give(started, started["item_revision"])
+	check(gameplay(cancelled) == gameplay(original), "unconfirmed session cancellation restores all gameplay state")
+	var reopened := BattlePlayLoop.begin_give(cancelled)
+	check(BattlePlayLoop.confirm_give(reopened, "enemy023_1", 0, 241, -1, 0, started["item_revision"]) == reopened, "cancelled-session request cannot enter a reopened session")
+	var same := confirm(started, 0, 1)
+	check(not same["give_session"]["action_used"], "same-code exchange does not set native action flag")
+	check(BattlePlayLoop.unit(same, "leonard")["inventory"] == [241,246,281,241,0,0,0,0], "same-code exchange still applies original slot ordering")
+	var same_finished := BattlePlayLoop.finish_give(same, same["item_revision"])
+	check(same_finished["turn_queue"] == original["turn_queue"] and same_finished["selected_unit_id"] == "leonard", "same-code-only session returns player control")
+	var charged_then_same := confirm(first, 0, 1)
+	check(charged_then_same["give_session"]["action_used"], "same-code later exchange cannot erase prior action charge")
+	var full := controlled_give_exchange()
+	BattlePlayLoop._unit(full, "leonard")["inventory"] = [241,241,241,241,241,241,241,241]
+	BattlePlayLoop._unit(full, "enemy023_1")["inventory"] = [246,241,241,241,241,241,241,241]
+	full = BattlePlayLoop.begin_give(full)
+	var exchanged := confirm(full, 0, 0)
+	check(BattlePlayLoop.unit(exchanged, "leonard")["inventory"] == [241,241,241,241,241,241,241,246], "full sender gets returned item in freed tail")
+	check(BattlePlayLoop.unit(exchanged, "enemy023_1")["inventory"] == [241,241,241,241,241,241,241,241], "full target receives incoming after removal and compaction")
+	var important := confirm(started, 3, 0)
+	check(BattlePlayLoop.unit(important, "enemy023_1")["inventory"].has(281), "important restriction remains discard-only")
+
+
+func movement_cases() -> void:
+	var original := controlled_give_exchange()
+	var origin: Vector2i = BattlePlayLoop.unit(original, "leonard")["coord"]
+	var moving := BattlePlayLoop.choose_command(original, "move")
+	var cells: Array = BattlePlayLoop.movement_cells(moving, "leonard").filter(func(cell): return cell != origin)
+	check(not cells.is_empty(), "movement fixture has a legal destination")
+	if cells.is_empty(): return
+	var moved := BattlePlayLoop.move_unit_to(moving, cells[0])
+	BattlePlayLoop._unit(moved, "enemy023_1")["coord"] = cells[0] + Vector2i.RIGHT
+	var started := BattlePlayLoop.begin_give(moved)
+	check(BattlePlayLoop.cancel_pending_move(started) == started, "movement cannot be rolled back while a give session is open")
+	var cancelled := BattlePlayLoop.finish_give(started, started["item_revision"])
+	check(gameplay(cancelled) == gameplay(moved), "cancel Give retains pending move and all inventory state")
+	check(BattlePlayLoop.unit(BattlePlayLoop.cancel_pending_move(cancelled), "leonard")["coord"] == origin, "no-transfer Give cancellation leaves movement rollback available")
+	var received := confirm(started, 0, 2)
+	check(received["pending_move"] and received["turn_queue"] == moved["turn_queue"], "move-then-give waits for session exit")
+	var finished := BattlePlayLoop.finish_give(received, received["item_revision"])
+	check(not finished["pending_move"] and BattlePlayLoop.unit(finished, "leonard")["coord"] == cells[0], "ending changed Give session commits the move")
+	check(BattlePlayLoop.cancel_pending_move(finished) == finished, "completed give cannot roll back committed movement")

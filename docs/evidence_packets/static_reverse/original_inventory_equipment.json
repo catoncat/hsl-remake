@@ -100,7 +100,7 @@
     "new_native_execution": false,
     "original_ui_execution": false,
     "existing_native_oracle": "original_growth_refresh.json: ten fixtures, equipped and unequipped",
-    "offline_tests": "tests/run_inventory_equipment_tests.gd; tools/test_hsl_equipment_data.py",
+    "offline_tests": "tests/run_inventory_equipment_tests.gd",
     "unresolved": [
       "Original full Give session, same-code exchanges and movement flags; ordinary Equip/Drop held-return and closing subsequently traced in original_item_actions.json",
       "Original give/use range and complete action consumption; important-item protection and free discard subsequently restored",

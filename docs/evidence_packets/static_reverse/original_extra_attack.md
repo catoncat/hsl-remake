@@ -37,7 +37,6 @@
 
 ```sh
 python3 tools/hsl.py check extra_attack
-python3 -m unittest tools.test_hsl_extra_attack
 # 只有显式execute才重新运行原字节；不启动Wine或修改原作。
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate extra_attack --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 ```

@@ -68,7 +68,6 @@ SR-036 已将 `0x40bee0` 广播与 `0x43f6c2..0x43f74e` 普通搜索失败时的
 ```sh
 python3 tools/hsl.py check ai_profiles
 python3 tools/hsl.py check ai
-python3 -m unittest tools.test_hsl_native_ai_probe -v
 godot --headless --path . --script res://tests/run_ai_decision_tests.gd
 uv run --with unicorn==2.1.4 python3 tools/hsl.py generate ai --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 tools/verify.sh

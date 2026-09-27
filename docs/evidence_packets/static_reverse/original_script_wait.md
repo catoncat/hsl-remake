@@ -36,7 +36,6 @@ AI仍共用已有导航和优先级。设置等待不强行清除已锁定目标
 
 ```sh
 python3 tools/hsl.py check script_wait
-python3 -m unittest tools.test_hsl_script_wait
 tools/godot.sh --headless --script res://tests/run_script_wait_tests.gd
 tools/godot.sh --screen 0 --script res://tests/capture_script_wait_review.gd
 ```

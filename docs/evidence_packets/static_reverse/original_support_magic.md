@@ -55,7 +55,6 @@
 ```sh
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate support --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 python3 tools/hsl.py check support
-python3 -m unittest tools.test_hsl_support_magic
 ```
 
 ## 逐项对照：18 组数值返回与 24 组应用前段 vs 重制规则（2026-09-24，lane R25）

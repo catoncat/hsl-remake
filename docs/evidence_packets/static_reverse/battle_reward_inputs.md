@@ -1,6 +1,6 @@
 # 战斗奖励来源输入
 
-> evidence: resource-derived; static-derived; runtime-measured: 携带 0x407c86 与掉落 0x44f5d3 的抽样都在全局流 0x458c10（整镜像模拟器） · status: live · functions: 0x407c40, 0x407cc0, 0x40ba20, 0x43ede0, 0x44e100, 0x44f580, 0x458c10 · tools: hsltools/data/battle_rewards.py, hsltools/evidence/reward.py, hsltools/probes/_reward_rng_trace.py, test_hsl_battle_rewards.py · updated: 2026-09-26
+> evidence: resource-derived; static-derived; runtime-measured: 携带 0x407c86 与掉落 0x44f5d3 的抽样都在全局流 0x458c10（整镜像模拟器） · status: live · functions: 0x407c40, 0x407cc0, 0x40ba20, 0x43ede0, 0x44e100, 0x44f580, 0x458c10 · tools: hsltools/data/battle_rewards.py, hsltools/evidence/reward.py, hsltools/probes/_reward_rng_trace.py · updated: 2026-09-26
 
 Checked: 2026-09-19
 
@@ -31,7 +31,6 @@ python3 tools/hsl.py check battle_rewards
 PYTHONPATH=tools python3 -m hsltools.data.battle_rewards --import-carry \
   --pak "$HSL_ORIGINAL_DIR/hsl.pak"
 
-PYTHONPATH=tools python3 -m unittest tools/test_hsl_battle_rewards.py
 tools/verify.sh
 ```
 

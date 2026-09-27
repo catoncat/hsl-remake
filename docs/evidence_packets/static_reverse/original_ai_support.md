@@ -41,7 +41,6 @@
 ```sh
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate ai_support --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 python3 tools/hsl.py check ai_support
-python3 -m unittest tools.test_hsl_ai_support
 ```
 
 普通checker只检查保存结果，不等于又执行了一次原作。

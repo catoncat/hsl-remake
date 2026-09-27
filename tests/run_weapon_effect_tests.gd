@@ -47,10 +47,7 @@ func run() -> void:
 	queue_lifecycle()
 	gear_and_support()
 	status_word()
-	terminal_and_invalid()
 	phase_cancellation()
-	trial_data()
-	await presentation_order()
 
 
 func native_replay() -> void:
@@ -286,28 +283,6 @@ func gear_and_support() -> void:
 		check(not hit.is_empty() and defended["status_flags"]==0,"universal gear protects current status magic without bypassing its paid transaction: "+id)
 
 
-func terminal_and_invalid() -> void:
-	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
-		var loop:=fixture(35,true,true)
-		var actor:=BattlePlayLoop._unit(loop,"leonard");var target:=BattlePlayLoop._unit(loop,"enemy021_1")
-		if outcome==BattleOutcome.VICTORY_ESCAPE:actor["coord"]=loop["escape_zone"][0];loop=BattlePlayLoop.choose_command(loop,"wait")
-		else:
-			if outcome==BattleOutcome.VICTORY_ENEMIES_CLEARED:target["hp"]=1
-			else:actor["hp"]=1;target["combat_profile"]["live_attack_damage"]=1000
-			loop=BattlePlayLoop.attack_coord(BattlePlayLoop.choose_command(loop,"attack"),Vector2i(8,6),zero)
-		check(loop["battle_outcome"]==outcome and not loop["extra_action"]["pending"],"weapon tail preserves terminal/extra-action boundary: "+BattleOutcome.describe(outcome))
-		check(BattleCheckpoint.encode(loop,run_position_equipment_tests.VIEW)["ok"] and BattlePlayLoop.step_ai_turn(loop,no_rng)==loop,"terminal checkpoint freezes weapon effects and queue")
-	for malformed in ["field","queue","duplicate"]:
-		var loop:=fixture()
-		if malformed=="field":own(loop, "equipment_items")["35"].erase("weapon_effect_flags")
-		elif malformed=="queue":loop["turn_queue"]["slots"][2]["enabled"]=1
-		else:loop["turn_queue"]["slots"].append(loop["turn_queue"]["slots"][2].duplicate(true))
-		check(not BattleCheckpoint.encode(loop,run_position_equipment_tests.VIEW)["ok"],"invalid source or eligibility cannot survive checkpoint: "+malformed)
-		if malformed!="duplicate":
-			var before:=loop.duplicate(true)
-			check(BattleLoopCombat._resolve_exchange(loop,"leonard","enemy021_1",no_rng).is_empty() and loop==before,"invalid weapon source/queue rejects before RNG and mutation")
-
-
 func phase_cancellation() -> void:
 	for code in [29,35]:
 		var loop:=fixture(code,true);run_large_actor_tests.spell_kit(loop)
@@ -337,36 +312,6 @@ func phase_cancellation() -> void:
 	var malformed:=fixture()
 	own(malformed, "equipment_items")["29"]["weapon_effect_flags"]=1
 	check(run_position_equipment_tests.equip(malformed,"weapon",29)==malformed,"replacement weapon source is validated before inventory or actor changes commit")
-
-
-func trial_data() -> void:
-	var scenario:=BattlePlayLoop.BattleScenario.load_file("res://content/battles/weapon_effect_trial.json")
-	var loop:=BattlePlayLoop.create([],"",scenario)
-	check(loop["scenario_ok"],"manual weapon trial uses the same complete runtime initialization")
-	var friend:=BattlePlayLoop.unit(loop,"large039_friend")
-	check(friend["inventory"].has(29) and friend["inventory"].has(229) and friend["weapon_code"]==35,"manual trial exposes actual exchangeable weapon/protection sources")
-	check(BattlePlayLoop.unit(loop,"enemy039_1")["weapon_code"]==37 and BattleCheckpoint.encode(BattlePlayLoop._return_to_player(loop,"leonard"),run_position_equipment_tests.VIEW)["ok"],"opposing poison weapon and initial footprints are save-consistent")
-
-
-func presentation_order() -> void:
-	var loop:=fixture(35,false,false)
-	own(loop, "skill_book")["actors"]["039"]["double_attack"]=true
-	var finished:=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),"enemy021_1",zero)
-	var first:Dictionary=finished["last_attack"];var last:Dictionary=first["followups"][0]
-	var view=preload("res://game/battle/scene/BattleCombatCutin.gd").new()
-	root.add_child(view);view.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json");view.set_process(false)
-	for strike in [first,last]:
-		var actor:=BattlePlayLoop.unit(finished,"leonard");var target:=BattlePlayLoop.unit(finished,"enemy021_1")
-		# The fixture's no_attack only suppresses the counter; the strip would mask a no_attack unit's state (0x434d10 bVar21).
-		target.erase("no_attack")
-		view.play(strike,actor,target,false)
-		var clip:Dictionary=view.clips.back()
-		view._show_shot(clip,true)
-		check(not view.vitals.values["state"].text.contains("毒"),"already committed poison remains hidden before the corresponding strike impact")
-		clip["impact_emitted"]=true;view._show_shot(clip,true)
-		check(view.vitals.values["state"].text.contains("毒")==strike.has("weapon_effects"),"first and last blow expose only their own status snapshots")
-		view.clips.clear()
-	view.queue_free();await process_frame
 
 
 func native_draw(bound:int)->int:

@@ -33,6 +33,8 @@ func run() -> void:
 	effect_random_insertion()
 	native_motion_tracks()
 	native_motion_drawing()
+	await run_animal_program()
+	await run_cutin_floaters()
 
 
 ## The importer's declarations and the player's spelling agree; every SPECIAL and MAGIC row
@@ -531,3 +533,801 @@ func native_motion_drawing() -> void:
 	check(shown.size() == 1 and is_equal_approx(shown[0].modulate.a, float(level) / 16.0) and level < 16, "幻火 at tick 40: the light fades by its level %d / 16" % level)
 	player.clear()
 	player.free()
+
+
+# ---- run_skill_effect_script_tests.gd ----
+## The cut-in plays each actor's own ANIMAL.TXT program. The expectations here are computed
+## from content/generated/hsl/animation/animal_programs.json (the source programs) with the
+## documented dispatcher call model (animal_program_execution.md §5／§8), never from the
+## manifest's compiled dispatch — so a stale binding or a hand-authored pose fails.
+const BattleCombatCutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
+const AnimalCastLead = preload("res://game/battle/scene/AnimalCastLead.gd")
+const CommandPresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
+const CombatPresentationTiming = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const BattleFixture = preload("res://tests/support/BattleFixture.gd")
+const PROGRAMS_PATH := "res://content/generated/hsl/animation/animal_programs.json"
+## One dispatcher call per step, a hair over a tick so accumulated float error never lands a
+## sample just before the boundary it is meant to have crossed.
+const STEP := OriginalTick.TICK_SECONDS * (1.0 + 1e-4)
+var programs: Dictionary
+
+
+func unit(actor_id: String) -> Dictionary:
+	for actor in BattleFixture.loop()["units"]:
+		if str(actor["actor_id"]) == actor_id:
+			return actor.duplicate(true)
+	assert(false, "missing actor fixture " + actor_id)
+	return {}
+
+
+func record(code: String) -> Dictionary:
+	for row in programs["records"]:
+		if str(row["code"]) == code:
+			return row
+	assert(false, "missing ANIMAL record " + code)
+	return {}
+
+
+## The frame visible after each dispatcher call of an ordinary `action` program, from the
+## probe-measured call model: aniDelay D occupies the setup call plus max(D,1) waiting calls
+## (its successor is first visible at index max(D,1)+2), aniSetShape yields after its call,
+## aniInsertAttackFlash and the speed setters continue／yield as compile_action reads them.
+func expected_action_frames(program: Array) -> Dictionary:
+	var frames: Array[int] = []
+	var frame := 0
+	var release_call := -1
+	for instruction in program:
+		var args: Array = instruction["args"]
+		match str(instruction["op"]):
+			"aniDelay":
+				for _call in range(1 + maxi(1, int(args[0]))):
+					frames.append(frame)
+			"aniSetShape":
+				frame = int(args[0])
+				frames.append(frame)
+			"aniInsertAttackFlash":
+				release_call = frames.size() + 1
+			"aniSetSubSpeed", "aniSetAddSpeed", "aniSetStopSpeed":
+				frames.append(frame)
+			_:
+				assert(false, "unexpected ordinary opcode " + str(instruction["op"]))
+	return {"frames": frames, "release_call": release_call}
+
+
+func ordinary_program_drives_the_cutin(actor_id: String, code: String, defender_id: String) -> void:
+	var expected := expected_action_frames(record(code)["programs"]["action"])
+	var cutin := BattleCombatCutin.new()
+	root.add_child(cutin)
+	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
+	cutin.set_process(false)
+	var release_marks: Array[int] = []
+	cutin.released.connect(func(_s, _a, _d, _c): release_marks.append(int(round(OriginalTick.ticks(cutin.elapsed)))))
+	var attacker := unit(actor_id)
+	var defender := unit(defender_id)
+	cutin.play({"hit": true, "damage": 5, "defender_hp_before": 22, "defender_hp_after": 17}, attacker, defender, false)
+	var seen: Array[int] = []
+	var schedule := CombatPresentationTiming.ordinary(cutin.manifest["actors"][actor_id], cutin.clips[0]["strike"])
+	var calls: int = expected["frames"].size()
+	# The first shot's phase-100 opening (56 ticks) precedes the program's first call.
+	cutin._process(float(schedule["opening"]) * 0.25 / CombatPresentationTiming.PLAYBACK_SPEED)
+	_assert_true(cutin.opening_ball.visible and not cutin.attacker_sprite.visible and not cutin.defender_sprite.visible, "%s: the opening's zoom draws fill the screen before the program, attacker hidden" % code)
+	cutin._process(float(schedule["opening"]) * 0.75 / CombatPresentationTiming.PLAYBACK_SPEED)
+	_assert_true(not cutin.opening_ball.visible and cutin.attacker_sprite.visible and absf(cutin.elapsed - float(schedule["opening"])) < 1e-6, "%s: the program starts as the opening ends" % code)
+	release_marks.clear()
+	# Call k (1-based) is visible once elapsed reaches k ticks; sample the frame just after
+	# each call but the last (the last wait's end hands over to the target shot).
+	for call in range(1, calls):
+		cutin._process(STEP)
+		var path: String = cutin.attacker_sprite.texture.resource_path
+		seen.append(int(path.get_file().get_basename()))
+	_assert_eq(seen, expected["frames"].slice(0, calls - 1), "%s: the cut-in's attacker frames follow the ANIMAL action program call by call" % code)
+	_assert_true(cutin.attacker_sprite.visible and not cutin.defender_sprite.visible and cutin.elapsed < float(schedule["target"]), "%s: the attacker's shot lasts through call %d" % [code, calls - 1])
+	cutin._process(STEP * 2)
+	_assert_true(cutin.defender_sprite.visible and not cutin.attacker_sprite.visible, "%s: the target shot follows the program's %d calls" % [code, calls])
+	_assert_eq(release_marks, [int(expected["release_call"]) + CombatPresentationTiming.OPENING_TICKS], "%s: `released` fires once, at the aniInsertAttackFlash call after the opening" % code)
+	var poses: Array[int] = []
+	for frame in seen:
+		if poses.is_empty() or poses.back() != frame:
+			poses.append(frame)
+	var source_poses: Array[int] = [0]
+	for instruction in record(code)["programs"]["action"]:
+		if str(instruction["op"]) == "aniSetShape" and int(instruction["args"][0]) != source_poses.back():
+			source_poses.append(int(instruction["args"][0]))
+	_assert_eq(poses, source_poses, "%s: the pose order is the source aniSetShape order" % code)
+	while cutin.busy():
+		cutin._process(0.1)
+	cutin.queue_free()
+	await process_frame
+
+
+## 雷歐納德 (SID_PLAYER0: 12／8／3 waits, poses 1／2／3, flash before the last pose, 30-tick
+## tail) and the 帝國一般兵 021 (SID_ENEMY021: 12／3／12／30) play their own programs.
+func ordinary_programs() -> void:
+	await ordinary_program_drives_the_cutin("001", "SID_PLAYER0", "021")
+	await ordinary_program_drives_the_cutin("021", "SID_ENEMY021", "001")
+	var leonard := expected_action_frames(record("SID_PLAYER0")["programs"]["action"])
+	_assert_eq(leonard["frames"].size(), 60, "雷歐納德's action program is 60 dispatcher calls")
+	_assert_eq(leonard["release_call"], 29, "雷歐納德's flash is the 29th call")
+	var soldier := expected_action_frames(record("SID_ENEMY021")["programs"]["action"])
+	_assert_true(soldier["frames"] != leonard["frames"], "the soldier's program differs from 雷歐納德's — the cut-in does not share one hand-written sequence")
+
+
+## The 0x45e80d slide as the cast lead calls it (tolerance 16, step 32), independent of the
+## menu's (2, 8) defaults: 640 px take 21 calls (19 × 32, one 16, then the snap).
+func slide_calls(from: Vector2i, to: Vector2i) -> int:
+	var calls := 0
+	var at := from
+	while at != to:
+		at = CommandPresentationRules.opening_step(at, to, AnimalCastLead.SLIDE_TOLERANCE, AnimalCastLead.SLIDE_STEP)
+		calls += 1
+		assert(calls < 1000)
+	return calls
+
+
+## The 氣刃斬 cast lead of 雷歐納德: ANIMAL.TXT lines 14–15 (aniSetXYDisp −640,0 · aniShadowBG ·
+## aniMoveToCenter · aniInsertCastObject −160,−150,2,6,6) against the 7-panel P001_201 strip.
+func cast_lead_program() -> void:
+	var row := record("SID_PLAYER0")
+	var program: Array = row["programs"]["s_action"]
+	var cutin := BattleCombatCutin.new()
+	root.add_child(cutin)
+	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
+	cutin.set_process(false)
+	var actor: Dictionary = cutin.manifest["actors"]["001"]
+	_assert_eq(actor["cast_program"].map(func(i): return [str(i["op"]), i["args"]]), program.map(func(i): return [str(i["op"]), i["args"]]), "the combat manifest carries 001's s_action verbatim")
+	_assert_eq(int(row["fields"]["s_number"]["value"]), actor["special_frames"].size(), "the strip has the source s_number panels")
+	var cast_object: Dictionary = program.filter(func(i): return str(i["op"]) == "aniInsertCastObject")[0]
+	var first_inset := int(cast_object["args"][2])
+	var inset_delay := int(cast_object["args"][3])
+	var portrait_delay := int(cast_object["args"][4])
+	var displacement := Vector2i(int(program[0]["args"][0]), int(program[0]["args"][1]))
+	_assert_eq(str(program[0]["op"]), "aniSetXYDisp", "the program opens with the displacement")
+	var strike := {"skill_id": "special:magicOTHER:magicCode01", "skill_name": "氣刃斬", "attacker_id": "leonard", "defender_id": "enemy021_1", "hit": true, "damage": 9, "defender_hp_before": 22, "defender_hp_after": 13, "attacker_before": {}, "defender_before": {}}
+	cutin.play(strike, unit("001"), unit("021"), false)
+	var lead: Dictionary = cutin.cast_lead(cutin.clips[0])
+	var states: Array = lead["states"]
+	var panels: Array = AnimalCastLead.panel_metrics(actor["special_frames"], actor["special_frames"].map(func(frame): return load(frame["res_path"])))
+	# Expected call counts from the program's numbers and the handler constants.
+	var banner_start: Vector2i = AnimalCastLead.CENTRE + displacement
+	var move_calls := slide_calls(banner_start, AnimalCastLead.CENTRE)
+	_assert_eq(move_calls, 21, "aniMoveToCenter from −640 takes 21 steps of 0x45e80d(16,32)")
+	var inset: Dictionary = panels[first_inset]
+	var inset_target := Vector2i(AnimalCastLead.NEAR_EDGE + inset["origin"].x, inset["origin"].y)
+	var inset_calls := slide_calls(Vector2i(inset["origin"].x - inset["size"].x, inset["origin"].y), inset_target)
+	var portrait: Dictionary = panels[1]
+	var portrait_target := Vector2i(AnimalCastLead.FAR_RIGHT_EDGE - portrait["size"].x + portrait["origin"].x, AnimalCastLead.PORTRAIT_BOTTOM - portrait["size"].y + portrait["origin"].y)
+	var portrait_calls := slide_calls(Vector2i(AnimalCastLead.SCREEN_WIDTH + portrait["origin"].x, portrait_target.y), portrait_target)
+	var inset_count := panels.size() - first_inset
+	var portrait_hold := 0
+	for panel in range(1, first_inset):
+		portrait_hold += portrait_delay + (AnimalCastLead.LAST_PORTRAIT_BONUS if first_inset - panel <= 1 else 0)
+	var expected_total := (1 + AnimalCastLead.SHADOW_BG_CALLS) + (1 + move_calls) + 1 + inset_calls + inset_count * inset_delay + portrait_calls + portrait_hold + AnimalCastLead.FADE_CALLS + AnimalCastLead.HOLD_CALLS
+	_assert_eq(int(lead["complete_tick"]), expected_total, "the lead's call count is the sum the program's numbers give (%d)" % expected_total)
+	_assert_eq(int(lead["complete_tick"]), 139, "雷歐納德's 氣刃斬 lead is 139 ticks")
+	# Phase by phase.
+	for call in range(1 + AnimalCastLead.SHADOW_BG_CALLS):
+		_assert_true(states[call]["shadow"] and states[call]["banner"] == banner_start and int(states[call]["inset"]) < 0, "call %d: shadow background, banner still displaced, no inset" % call)
+	var at := 1 + AnimalCastLead.SHADOW_BG_CALLS
+	_assert_eq(states[at]["banner"], banner_start, "the aniMoveToCenter call itself does not move")
+	_assert_eq(states[at + 1]["banner"], banner_start + Vector2i(AnimalCastLead.SLIDE_STEP, 0), "the first slide call steps 32 px")
+	_assert_eq(states[at + move_calls]["banner"], AnimalCastLead.CENTRE, "the banner arrives at (320,240)")
+	at += 1 + move_calls + 1
+	_assert_eq(int(states[at]["inset"]), first_inset, "the cast object's first inset is the program's start panel (%d)" % first_inset)
+	_assert_true(states[at]["inset_anchor"].x < 0, "the inset starts off-screen on the displacement's side")
+	at += inset_calls
+	_assert_true(states[at - 1]["inset_anchor"] != inset_target and states[at]["inset_anchor"] == inset_target, "each slide call draws before it steps; the inset stands with its left edge at x 100 and top at 0 from the next call")
+	for index in range(inset_count):
+		for call in range(inset_delay):
+			_assert_eq(int(states[at + index * inset_delay + call]["inset"]), first_inset + index, "inset panel %d holds delay1 = %d calls" % [first_inset + index, inset_delay])
+	at += inset_count * inset_delay
+	_assert_eq(int(states[at]["portrait"]), 1, "the portrait (panel 1) enters after the insets")
+	_assert_true(states[at]["portrait_anchor"].x >= AnimalCastLead.SCREEN_WIDTH, "the portrait starts off-screen on the far side")
+	at += portrait_calls
+	_assert_true(states[at - 1]["portrait_anchor"] != portrait_target and states[at]["portrait_anchor"] == portrait_target, "the portrait stands with its right edge at 540 and bottom at 480 from the call after its slide")
+	_assert_eq(states[at + portrait_hold - 1]["fade"], 0.0, "the portrait holds delay2 + 20 = %d calls before the fade" % portrait_hold)
+	_assert_eq(states[at + portrait_hold + AnimalCastLead.FADE_CALLS - 1]["fade"], 1.0, "the fade completes over 16 calls")
+	_assert_eq(states.size() - (at + portrait_hold + AnimalCastLead.FADE_CALLS), AnimalCastLead.HOLD_CALLS, "then the 10-call hold ends the lead")
+	# The special presenter plays the lead first, then the attack script: 氣刃斬's 60-tick
+	# attack script releases at lead + 60.
+	var release_marks: Array[int] = []
+	cutin.released.connect(func(_s, _a, _d, _c): release_marks.append(int(round(OriginalTick.ticks(cutin.elapsed)))))
+	var banner_seen := false
+	var inset_seen := false
+	var portrait_seen := false
+	var frames := 0
+	while cutin.busy() and frames < 1000:
+		frames += 1
+		cutin._process(STEP)
+		if frames < int(lead["complete_tick"]):
+			banner_seen = banner_seen or (cutin.attacker_sprite.visible and cutin.attacker_sprite.texture.resource_path.ends_with("001/special-0.png") and cutin.attacker_sprite.position == Vector2(320, 240))
+			inset_seen = inset_seen or (cutin.cast_inset.visible and cutin.cast_inset.texture.resource_path.ends_with("001/special-%d.png" % first_inset) and cutin.cast_inset.position == Vector2(inset_target))
+			portrait_seen = portrait_seen or (cutin.cast_portrait.visible and cutin.cast_portrait.texture.resource_path.ends_with("001/special-1.png") and cutin.cast_portrait.position == Vector2(portrait_target))
+			_assert_true(not cutin.scenery.visible and not cutin.vitals.visible and cutin.stage.size == Vector2(640, 480), "during the lead the map shows through a 640×480 stage without backdrop or vitals")
+		elif frames == int(lead["complete_tick"]) + 1:
+			_assert_true(cutin.scenery.visible and not cutin.cast_inset.visible and not cutin.cast_portrait.visible and not cutin.attacker_sprite.visible, "after the lead the attack script owns the shot: special backdrop, no cast panels, no standing caster")
+	_assert_true(banner_seen and inset_seen and portrait_seen, "the banner, an inset and the portrait were drawn at their anchors (%s %s %s)" % [str(banner_seen), str(inset_seen), str(portrait_seen)])
+	_assert_eq(release_marks, [int(lead["complete_tick"]) + 60], "氣刃斬 releases once, after the lead plus its 60-tick attack script")
+	cutin.queue_free()
+	await process_frame
+
+
+## The expected call count of a cast lead from the program's numbers and the handler
+## constants (the same sum cast_lead_program checks phase by phase for 雷歐納德).
+func expected_lead_calls(program: Array, panels: Array) -> int:
+	var cast_object: Dictionary = program.filter(func(i): return str(i["op"]) == "aniInsertCastObject")[0]
+	var first_inset := int(cast_object["args"][2])
+	var displacement := Vector2i(int(program[0]["args"][0]), int(program[0]["args"][1]))
+	var move_calls := slide_calls(AnimalCastLead.CENTRE + displacement, AnimalCastLead.CENTRE)
+	var inset: Dictionary = panels[first_inset]
+	var inset_calls := slide_calls(Vector2i(inset["origin"].x - inset["size"].x, inset["origin"].y), Vector2i(AnimalCastLead.NEAR_EDGE + inset["origin"].x, inset["origin"].y))
+	var portrait: Dictionary = panels[1]
+	var portrait_target := Vector2i(AnimalCastLead.FAR_RIGHT_EDGE - portrait["size"].x + portrait["origin"].x, AnimalCastLead.PORTRAIT_BOTTOM - portrait["size"].y + portrait["origin"].y)
+	var portrait_calls := slide_calls(Vector2i(AnimalCastLead.SCREEN_WIDTH + portrait["origin"].x, portrait_target.y), portrait_target)
+	var portrait_hold := 0
+	for panel in range(1, first_inset):
+		portrait_hold += int(cast_object["args"][4]) + (AnimalCastLead.LAST_PORTRAIT_BONUS if first_inset - panel <= 1 else 0)
+	return (1 + AnimalCastLead.SHADOW_BG_CALLS) + (1 + move_calls) + 1 + inset_calls + (panels.size() - first_inset) * int(cast_object["args"][3]) + portrait_calls + portrait_hold + AnimalCastLead.FADE_CALLS + AnimalCastLead.HOLD_CALLS
+
+
+## The magic cast lead: 緹娜's m_action (SID_PLAYER1: aniSetXYDisp −640,0 · aniShadowBG ·
+## aniMoveToCenter · aniInsertCastObject −160,−150,2,4,4 over the 7-panel P002_101 strip) plays
+## through the map magic presenter before the effCode script — the same AnimalCastLead as the
+## 絕技 lead; `released` fires at its end and the script clock starts there. A caster without
+## an imported m_shape strip (026, whose m_shape is commented out) keeps the Cast_Star ring.
+func magic_cast_lead_program() -> void:
+	var row := record("SID_PLAYER1")
+	var program: Array = row["programs"]["m_action"]
+	var cutin := BattleCombatCutin.new()
+	root.add_child(cutin)
+	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
+	cutin.set_process(false)
+	var actor: Dictionary = cutin.manifest["actors"]["002"]
+	_assert_eq(actor["magic_cast_program"].map(func(i): return [str(i["op"]), i["args"]]), program.map(func(i): return [str(i["op"]), i["args"]]), "the combat manifest carries 002's m_action verbatim")
+	_assert_eq(int(row["fields"]["m_number"]["value"]), actor["magic_frames"].size(), "the magic strip has the source m_number panels")
+	_assert_eq(actor["magic_frames"][0]["source_member"], str(row["fields"]["m_shape"]["token"]), "panel 0 is the m_shape member")
+	var strike := {"skill_id": "magic:magicAIR:magicCode01", "magic_key": "wind", "magic_name": "風刃", "attacker_id": "tina", "defender_id": "enemy021_1", "hit": true, "damage": 5, "defender_hp_before": 30, "defender_hp_after": 25, "attacker_before": {}, "defender_before": {}}
+	var tina := unit("001")
+	tina["actor_id"] = "002"
+	cutin.play(strike, tina, unit("021"), false, Vector2(470, 320), Vector2(190, 210), [Vector2(470, 320)])
+	var lead: Dictionary = cutin.cast_lead(cutin.clips[0], "magic")
+	_assert_true(not lead.is_empty() and cutin.cast_lead(cutin.clips[0]).is_empty(), "002 has a magic lead and no special lead (its s_shape strip is not imported)")
+	var panels: Array = AnimalCastLead.panel_metrics(actor["magic_frames"], actor["magic_frames"].map(func(frame): return load(frame["res_path"])))
+	var expected_total := expected_lead_calls(program, panels)
+	_assert_eq(int(lead["complete_tick"]), expected_total, "the magic lead's call count is the sum the program's numbers give (%d)" % expected_total)
+	_assert_eq(expected_lead_calls(record("SID_PLAYER0")["programs"]["s_action"], AnimalCastLead.panel_metrics(cutin.manifest["actors"]["001"]["special_frames"], cutin.manifest["actors"]["001"]["special_frames"].map(func(frame): return load(frame["res_path"])))), 139, "the same sum gives 雷歐納德's 139")
+	var cast_object: Dictionary = program.filter(func(i): return str(i["op"]) == "aniInsertCastObject")[0]
+	var first_inset := int(cast_object["args"][2])
+	var release_marks: Array[int] = []
+	var impact_marks: Array[int] = []
+	cutin.released.connect(func(_s, _a, _d, _c): release_marks.append(int(round(OriginalTick.ticks(cutin.elapsed)))))
+	cutin.impact.connect(func(_s, _a, _d, _c): impact_marks.append(int(round(OriginalTick.ticks(cutin.elapsed)))))
+	var banner_seen := false
+	var inset_seen := false
+	var portrait_seen := false
+	var star_seen := false
+	var objects_seen := false
+	var frames := 0
+	while cutin.busy() and frames < 3000:
+		frames += 1
+		cutin._process(STEP)
+		if frames < int(lead["complete_tick"]):
+			banner_seen = banner_seen or (cutin.attacker_sprite.visible and cutin.attacker_sprite.texture.resource_path.ends_with("002/magic-0.png") and cutin.attacker_sprite.position == Vector2(320, 240))
+			inset_seen = inset_seen or (cutin.cast_inset.visible and cutin.cast_inset.texture.resource_path.ends_with("002/magic-%d.png" % first_inset))
+			portrait_seen = portrait_seen or (cutin.cast_portrait.visible and cutin.cast_portrait.texture.resource_path.ends_with("002/magic-1.png"))
+			star_seen = star_seen or cutin.skill_effects.sprites.any(func(sprite): return sprite.visible and str(sprite.texture.resource_path).contains("cast_star"))
+			_assert_true(not cutin.scenery.visible and not cutin.vitals.visible and cutin.stage.size == Vector2(640, 480) and not cutin.result.visible, "during the magic lead the map shows through a 640×480 stage, with no name caption (the spell's name captions only the AI lead-in range)")
+		elif frames == int(lead["complete_tick"]) + 1:
+			_assert_true(not cutin.cast_inset.visible and not cutin.cast_portrait.visible and not cutin.attacker_sprite.visible, "after the lead the effCode script owns the map shot")
+		else:
+			objects_seen = objects_seen or cutin.skill_effects.sprites.any(func(sprite): return sprite.visible and str(sprite.texture.resource_path).contains("skill_effects/frames/"))
+	var timeline: Dictionary = cutin.clips[0]["effect_timeline"] if cutin.busy() else {}
+	_assert_true(banner_seen and inset_seen and portrait_seen and not star_seen and objects_seen, "the m_shape banner, an inset and the portrait were drawn, no Cast_Star ring, then the script's objects (%s %s %s %s %s)" % [str(banner_seen), str(inset_seen), str(portrait_seen), str(star_seen), str(objects_seen)])
+	_assert_eq(release_marks, [int(lead["complete_tick"])], "the spell releases once, when its m_action lead ends")
+	_assert_true(impact_marks.size() == 1 and impact_marks[0] > int(lead["complete_tick"]), "impact follows the lead (%s)" % str(impact_marks))
+	_assert_true(not cutin.busy() and timeline.is_empty(), "the magic clip completes")
+	cutin.play(strike, unit("026"), unit("021"), false, Vector2(470, 320), Vector2(190, 210), [Vector2(470, 320)])
+	_assert_true(cutin.cast_lead(cutin.clips[0], "magic").is_empty() and cutin.manifest["actors"]["026"]["magic_frames"].is_empty() and cutin.manifest["actors"]["026"]["magic_cast_program"].is_empty(), "026 declares no m_action (commented out in ANIMAL.TXT) and no strip")
+	cutin._process(STEP * 5)
+	_assert_true(cutin.skill_effects.sprites.any(func(sprite): return sprite.visible and str(sprite.texture.resource_path).contains("cast_star")), "a caster without a magic strip keeps the Cast_Star stand-in lead")
+	while cutin.busy():
+		cutin._process(0.1)
+	for actor_id in cutin.manifest["actors"]:
+		var manifest_row: Dictionary = cutin.manifest["actors"][actor_id]
+		if not manifest_row["magic_frames"].is_empty():
+			_assert_true(AnimalCastLead.playable(manifest_row["magic_cast_program"], manifest_row["magic_frames"].size()), "%s: imported magic strip with a playable m_action" % actor_id)
+	cutin.queue_free()
+	await process_frame
+
+
+## A caster whose s_action program exists but whose strip is not in the combat manifest (002:
+## its P002_201 strip is the moon-dance import) keeps the standing caster — the manifest's
+## declared per-actor gap, not a silent global fallback. 004 漢克斯, whose P004_201…203 strip is
+## imported, compiles its s_action lead over it.
+func caster_without_strip() -> void:
+	var cutin := BattleCombatCutin.new()
+	root.add_child(cutin)
+	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
+	cutin.set_process(false)
+	var actor: Dictionary = cutin.manifest["actors"]["002"]
+	_assert_true(not actor["cast_program"].is_empty() and actor["special_frames"].is_empty(), "002 declares an s_action but no strip in the combat manifest")
+	var tina := unit("001")
+	tina["actor_id"] = "002"
+	var strike := {"skill_id": "special:magicOTHER:magicCode02", "skill_name": "連續突刺", "attacker_id": "a", "defender_id": "b", "hit": true, "damage": 6, "defender_hp_before": 22, "defender_hp_after": 16, "attacker_before": {}, "defender_before": {}}
+	cutin.play(strike, tina, unit("021"), false)
+	_assert_true(cutin.cast_lead(cutin.clips[0]).is_empty(), "no lead is compiled for a caster without a strip")
+	cutin._process(STEP * 5)
+	_assert_true(cutin.attacker_sprite.visible and cutin.attacker_sprite.texture.resource_path.ends_with("002/0.png") and cutin.scenery.visible, "the attack phase shows the standing caster over the backdrop")
+	while cutin.busy():
+		cutin._process(0.1)
+	var hanks := unit("001")
+	hanks["actor_id"] = "004"
+	cutin.play(strike, hanks, unit("021"), false)
+	var lead: Dictionary = cutin.cast_lead(cutin.clips[0])
+	_assert_true(not lead.is_empty() and str(lead["row"]) == "004" and lead["strip"] == cutin.manifest["actors"]["004"]["special_frames"], "004 compiles its s_action lead over the imported P004 strip")
+	while cutin.busy():
+		cutin._process(0.1)
+	# Every actor with an imported strip has a playable lead; every program in ANIMAL.TXT's
+	# m_action／s_action channels uses only the four cast opcodes.
+	var manifest_actors: Dictionary = cutin.manifest["actors"]
+	for actor_id in manifest_actors:
+		var row: Dictionary = manifest_actors[actor_id]
+		if not row["special_frames"].is_empty():
+			_assert_true(AnimalCastLead.playable(row["cast_program"], row["special_frames"].size()), "%s: imported strip with a playable cast program" % actor_id)
+	cutin.queue_free()
+	await process_frame
+	var cast_ops := {}
+	for row in programs["records"]:
+		for channel in ["m_action", "s_action"]:
+			for instruction in row["programs"].get(channel, []):
+				cast_ops[str(instruction["op"])] = true
+	_assert_eq(cast_ops.keys().size(), AnimalCastLead.CAST_OPCODES.size(), "the live cast programs use exactly the interpreted opcodes (%s)" % str(cast_ops.keys()))
+	for op in cast_ops:
+		_assert_true(AnimalCastLead.CAST_OPCODES.has(op), "cast opcode interpreted: " + op)
+
+
+## The cast lead's afterimages and the side mirror, from the handler constants: 0x401220
+## copies the object's shape at level 6 (0x40124e) and defProcShadowLeft (0x4010c0) takes one
+## level every 4 calls (+0x90 = 0x40004, 0x40126f) — 24 calls; aniSetXYDisp leaves one of the
+## banner where it stands as the call's first opcode (0x402187), every inset panel that
+## expires with panels to come leaves one at the inset anchor (0x402b68). A side-swapped actor
+## (obj_Data9 ≠ 0: 0x407ec0 sets live +0xa0 bit 8, 0x446be0 reads it) draws the banner with x
+## zoom −1 (0x401ddf) and enters from the other side (x displacement negated, 0x4021b8).
+func cast_lead_afterimages_and_mirror() -> void:
+	var row := record("SID_PLAYER0")
+	var program: Array = row["programs"]["s_action"]
+	var cutin := BattleCombatCutin.new()
+	root.add_child(cutin)
+	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
+	cutin.set_process(false)
+	var actor: Dictionary = cutin.manifest["actors"]["001"]
+	var panels: Array = AnimalCastLead.panel_metrics(actor["special_frames"], actor["special_frames"].map(func(frame): return load(frame["res_path"])))
+	var cast_object: Dictionary = program.filter(func(i): return str(i["op"]) == "aniInsertCastObject")[0]
+	var first_inset := int(cast_object["args"][2])
+	var inset_delay := int(cast_object["args"][3])
+	var displacement := Vector2i(int(program[0]["args"][0]), int(program[0]["args"][1]))
+	var plain: Dictionary = AnimalCastLead.compile(program, panels)
+	var states: Array = plain["states"]
+	# The banner's afterimage: at (320,240) from call 0, level 6 for 4 calls, then one less
+	# every 4, gone at call 24.
+	for call in range(26):
+		var banner_ghosts: Array = states[call]["afterimages"].filter(func(ghost): return int(ghost["panel"]) == 0)
+		if call < 24:
+			_assert_true(banner_ghosts.size() == 1 and banner_ghosts[0]["anchor"] == AnimalCastLead.CENTRE and int(banner_ghosts[0]["level"]) == 6 - int(call / 4) and not bool(banner_ghosts[0]["mirrored"]), "call %d: the banner's afterimage stands at (320,240) at level %d" % [call, 6 - int(call / 4)])
+		else:
+			_assert_true(banner_ghosts.is_empty(), "call %d: the banner's afterimage is gone after 24 calls" % call)
+	# Each inset panel but the last leaves an afterimage on the call it expires.
+	var inset: Dictionary = panels[first_inset]
+	var inset_target := Vector2i(AnimalCastLead.NEAR_EDGE + inset["origin"].x, inset["origin"].y)
+	var arrive := -1
+	for call in range(states.size()):
+		if int(states[call]["inset"]) == first_inset and states[call]["inset_anchor"] == inset_target:
+			arrive = call
+			break
+	var inset_count := panels.size() - first_inset
+	for index in range(inset_count):
+		var expiry: int = arrive + index * inset_delay + inset_delay - 1
+		var ghosts: Array = states[expiry]["afterimages"].filter(func(ghost): return int(ghost["panel"]) == first_inset + index)
+		if index < inset_count - 1:
+			_assert_true(ghosts.size() == 1 and ghosts[0]["anchor"] == inset_target and int(ghosts[0]["level"]) == 6, "inset panel %d leaves a level-6 afterimage at the inset anchor on its last call" % (first_inset + index))
+			_assert_true(states[expiry + 1]["afterimages"].any(func(ghost): return int(ghost["panel"]) == first_inset + index) and int(states[expiry + 1]["inset"]) == first_inset + index + 1, "the next panel shows over the fading copy")
+		else:
+			_assert_true(ghosts.is_empty(), "the last inset panel leaves no afterimage")
+	_assert_eq(int(plain["complete_tick"]), 139, "the afterimages do not change the 139-call lead")
+	# The mirror: same length, banner from the right, drawn flipped.
+	var mirrored: Dictionary = AnimalCastLead.compile(program, panels, true)
+	_assert_eq(int(mirrored["complete_tick"]), int(plain["complete_tick"]), "a mirrored lead takes the same calls")
+	_assert_true(mirrored["states"][0]["banner"] == AnimalCastLead.CENTRE + Vector2i(-displacement.x, displacement.y) and bool(mirrored["states"][0]["mirrored"]) and bool(mirrored["states"][0]["afterimages"][0]["mirrored"]), "a side-swapped caster's banner starts at x %d (displacement negated) and is drawn mirrored, its afterimage too" % (AnimalCastLead.CENTRE.x - displacement.x))
+	# The host: a side_swapped unit gets the mirrored lead; the banner sprite flips, the
+	# afterimage draws at level／16.
+	var strike := {"skill_id": "special:magicOTHER:magicCode01", "skill_name": "氣刃斬", "attacker_id": "leonard", "defender_id": "enemy021_1", "hit": true, "damage": 9, "defender_hp_before": 22, "defender_hp_after": 13, "attacker_before": {}, "defender_before": {}}
+	var swapped := unit("001")
+	swapped["side_swapped"] = true
+	cutin.play(strike, swapped, unit("021"), false)
+	var lead: Dictionary = cutin.cast_lead(cutin.clips[0])
+	_assert_true(bool(lead["states"][0]["mirrored"]), "cast_lead reads the unit's side_swapped")
+	cutin.show_cast_lead(cutin.clips[0], lead, 0.0)
+	var ghost_sprites: Array = cutin.cast_afterimages.filter(func(sprite): return sprite.visible)
+	_assert_true(cutin.attacker_sprite.scale == Vector2(-1, 1) and ghost_sprites.size() == 1 and is_equal_approx(ghost_sprites[0].modulate.a, 6.0 / 16.0) and ghost_sprites[0].scale == Vector2(-1, 1) and ghost_sprites[0].position == Vector2(AnimalCastLead.CENTRE), "the mirrored banner flips and its afterimage draws at 6/16 at (320,240)")
+	cutin.clips.clear()
+	cutin.play(strike, unit("001"), unit("021"), false)
+	cutin.show_cast_lead(cutin.clips[0], cutin.cast_lead(cutin.clips[0]), 0.0)
+	_assert_true(cutin.attacker_sprite.scale == Vector2.ONE, "an ordinary caster's banner is not flipped")
+	cutin.queue_free()
+	await process_frame
+
+
+func run_animal_program() -> void:
+	programs = JSON.parse_string(FileAccess.get_file_as_string(PROGRAMS_PATH))
+	await ordinary_programs()
+	await cast_lead_program()
+	await magic_cast_lead_program()
+	await caster_without_strip()
+	await cast_lead_afterimages_and_mirror()
+	# The script player's sounds (氣刃斬／連續突刺) must stop before the batch quits.
+	await settle_wall_clock(tree, 0.4)
+
+
+# ---- run_skill_effect_script_tests.gd ----
+## Close-up layout and aftermath floats (lane R6-P3,
+## docs/evidence_packets/runtime_observations/cutin_floaters/README.md).
+## Close-up: the defender object 0x4038a0 starts on the shot line and shifts by its row's hit
+## move flag (aniKRight −50, aniKLeft +30), then a hit knocks it back 14+13+…+1 = 105 px and a
+## miss slides it 150 px (0x45e91e) the same way; the census checks that every cut-in path
+## places its actors through CutinLayout and that every combat manifest row declares a flag.
+## Floats: the original glyph layout of KILL／EXP／$／LEVEL UP, the defProcShowNumber level
+## fade, the aftermath queue order KILL (with the disposal) → EXP → $ → LEVEL UP, and a census
+## that no other game file draws a reward float or plays the level-up sound. Vitals: the resist
+## row's element gems and "07%"／"MAX" values.
+
+const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
+const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
+const BattleAftermath = preload("res://game/battle/scene/BattleAftermath.gd")
+const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
+const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
+const CHAPTER_MANIFEST := "res://content/imported/hsl/chapter01/combat_animation/manifest.json"
+const AUTHORED_ROOT := "res://content/generated/hsl/authored"
+## Files that stand close-up actors; each must place them through CutinLayout.
+const CUTIN_FILES := ["res://game/battle/scene/BattleCombatCutin.gd", "res://game/battle/scene/SkillEffectScriptPlayer.gd",
+	"res://game/battle/scene/MoonDancePresentation.gd", "res://game/battle/scene/PoisonArrowPresentation.gd"]
+
+
+func run_cutin_floaters() -> void:
+	_test_defender_anchor_and_reaction()
+	await _test_float_glyph_layout()
+	await _test_aftermath_order()
+	await _test_resist_row()
+	await run_map_pose_floaters()
+
+
+func _test_defender_anchor_and_reaction() -> void:
+	var right := {"source_k_action": "aniKRight"}
+	var left := {"source_k_action": "aniKLeft"}
+	var stop := {"source_k_action": "aniKStop"}
+	_assert_eq(CutinLayout.attacker_anchor(), Vector2(320, 330), "the attacker stands at (0x140, 0x14a) — the recording's (320,330)")
+	_assert_eq(CutinLayout.defender_anchor(left).y, 330.0, "the victim shares the shot line y 0x14a")
+	_assert_eq(CutinLayout.defender_anchor(right).x, 270.0, "aniKRight victims start 50 px left of the shot line (0x404560)")
+	_assert_eq(CutinLayout.defender_anchor(left).x, 350.0, "aniKLeft victims start 30 px right — the recording's 拉爾斯帝國兵 at x 350")
+	_assert_eq(CutinLayout.defender_anchor(stop).x, 320.0, "aniKStop stays on the line")
+	var steps: Array[float] = []
+	for tick in range(16):
+		steps.append(CutinLayout.knockback_x(left, tick))
+	_assert_eq(steps.slice(0, 3), [-14.0, -27.0, -39.0], "the knock-back starts at 14 px a tick and slows by 1")
+	_assert_eq(steps[13], -105.0, "14 ticks carry it 105 px — the recording's 350 → 245")
+	_assert_eq(steps[15], -105.0, "then it stops")
+	_assert_eq(CutinLayout.knockback_x(right, 20), 105.0, "aniKRight is knocked to the right")
+	_assert_eq(CutinLayout.knockback_x(stop, 20), 0.0, "aniKStop is not moved")
+	var dodge: Array[float] = []
+	for tick in range(16):
+		dodge.append(CutinLayout.dodge_x(right, tick))
+	_assert_eq(dodge.slice(0, 4), [36.0, 64.0, 85.0, 101.0], "the dodge steps min(36, remaining／4)")
+	_assert_true(dodge[13] < 150.0 and dodge[14] == 150.0 and dodge[15] == 150.0, "14 moving ticks and the arrival land 150 px away (%s)" % str(dodge))
+	_assert_eq(CutinLayout.reaction_x(left, false, 30), -150.0, "a miss slides; a hit knocks back")
+
+
+func _test_float_glyph_layout() -> void:
+	var node: Node2D = BattleRewardFloater.new()
+	root.add_child(node)
+	node.present("experience", 26)
+	_assert_eq(node.text, "EXP 26", "the EXP float names its value")
+	_assert_eq(node.glyphs.map(func(g): return g.position.x), [-35.0, 21.0, 35.0], "EXP prefix at x − 5 × 7, digits 14 px apart after 4 units (0x408580)")
+	_assert_true(node.glyphs[0].texture.resource_path.ends_with("reward_floats/exp.png") and node.glyphs[1].texture.resource_path.ends_with("exp_digit_2.png"), "EXP uses NUM511 and the NUM4xx digits")
+	node.present("gold", 100)
+	_assert_eq(node.glyphs.map(func(g): return g.position.x), [-28.0, 0.0, 14.0, 28.0], "$ prefix at x − 4 × 7, digits after 2 units")
+	_assert_eq(node.text, "$ 100", "the $ float names its value")
+	node.present("kill", 3)
+	_assert_eq(node.glyphs.map(func(g): return g.position.x), [-57.0, 57.0], "KILL at x − (19 + 38), its digit 114 further (0x4083e0)")
+	_assert_true(node.glyphs[1].texture.resource_path.ends_with("kill_digit_3.png"), "the digit 3 is KILL_004")
+	node.present("kill", 12)
+	_assert_eq(node.glyphs.map(func(g): return g.position.x), [-76.0, 38.0, 76.0], "two digits 38 px apart")
+	node.present("level_up")
+	_assert_eq([node.text, node.glyphs.size(), node.glyphs[0].position.x], ["LEVEL UP", 1, 0.0], "LEVEL UP is NUM514 alone on the spawn point")
+	node.queue_free()
+	await process_frame
+
+
+func _test_aftermath_order() -> void:
+	var aftermath: Node = BattleAftermath.new()
+	root.add_child(aftermath)
+	var units := [
+		{"id": "hero", "actor_id": "001", "coord": Vector2i(2, 2), "dead_message": {"messages": []}},
+		{"id": "foe", "actor_id": "021", "coord": Vector2i(2, 3), "dead_message": {"messages": []}},
+	]
+	var receipt := {"sequence": 1, "attacker_id": "hero", "defender_id": "foe", "defender_hp_before": 5, "defender_hp_after": 0,
+		"hit": true, "kill_chain": 3, "experience": {"gained": 26, "level_before": 1, "level_after": 3, "exp_before": 90, "exp_after": 16},
+		"rewards": {"gold": 100, "kills": [{"attacker_id": "hero", "defender_id": "foe"}]}}
+	aftermath.prepare(receipt, units)
+	_assert_eq(aftermath.jobs.map(func(job): return job["kind"]), ["death", "experience", "gold", "level_up"], "0x442720: EXP → $ → LEVEL UP after the death, one LEVEL UP for two levels")
+	_assert_eq(int(aftermath.jobs[0]["kill_count"]), 3, "the victim carries its killer's chain for its KILL float")
+	var countered := {"sequence": 2, "attacker_id": "foe", "defender_id": "hero", "defender_hp_before": 9, "defender_hp_after": 4,
+		"hit": true, "kill_chain": 0, "counter": {"attacker_id": "hero", "defender_id": "foe", "defender_hp_before": 3, "defender_hp_after": 0, "hit": true, "kill_chain": 2}}
+	aftermath.cursor = aftermath.jobs.size()
+	aftermath.prepare(countered, units)
+	_assert_eq(int(aftermath.jobs[0]["kill_count"]), 2, "an attacker a counter killed floats the counter's chain")
+	aftermath.cursor = aftermath.jobs.size()
+	var both_level := {"sequence": 3, "attacker_id": "hero", "defender_id": "foe", "defender_hp_before": 9, "defender_hp_after": 4, "hit": true,
+		"experience": {"gained": 19, "level_before": 1, "level_after": 2},
+		"counter": {"attacker_id": "foe", "defender_id": "hero", "defender_hp_before": 9, "defender_hp_after": 7, "hit": true, "experience": {"gained": 1, "level_before": 1, "level_after": 1}}}
+	aftermath.prepare(both_level, units)
+	_assert_eq(aftermath.jobs.map(func(job): return "%s@%s" % [job["kind"], str(job["coord"])]), ["experience@(2, 2)", "level_up@(2, 2)", "experience@(2, 3)"], "each recipient's EXP → LEVEL UP before the countering target's EXP (recording 501.48／502.05／502.70)")
+	aftermath.cursor = aftermath.jobs.size()
+	aftermath.queue_free()
+	await process_frame
+
+
+## The runtime seams the reward glide touches: a real camera controller on a 1600×1600 map, map
+## actors, and the grid → view projection through that camera.
+class FocusStubRuntime extends Node:
+	var camera_controller: RefCounted
+	var camera := Camera2D.new()
+	var actors := {}
+	func _init() -> void:
+		var config := MapSceneConfig.new()
+		config.world_size = Vector2i(1600, 1600)
+		config.logical_viewport_size = Vector2i(640, 480)
+		config.grid_projection = {"origin": Vector2.ZERO, "cell_size": Vector2(32.0, 32.0)}
+		add_child(camera)
+		camera_controller = BattleCameraController.create(camera, config, Vector2i(640, 480))
+		camera_controller.snap_to(Vector2(320, 240))
+	func actor_node_for_unit(unit_id: String) -> Node2D:
+		if not actors.has(unit_id):
+			actors[unit_id] = Node2D.new()
+			add_child(actors[unit_id])
+		return actors[unit_id]
+	func grid_cell_center_to_logical_position(coord: Vector2i) -> Vector2:
+		return camera_controller.grid_cell_center_to_logical(coord)
+
+
+func _test_resist_row() -> void:
+	_assert_eq([BattleVitals.resist_text(7), BattleVitals.resist_text(0), BattleVitals.resist_text(79), BattleVitals.resist_text(80), BattleVitals.resist_text(95)], ["07%", "00%", "79%", "MAX", "MAX"], "0x434d10 prints two digits and %, MAX from 80")
+	var vitals: Control = BattleVitals.new()
+	root.add_child(vitals)
+	_assert_eq(vitals.resist_gems.size(), 5, "five element gems")
+	for index in range(5):
+		_assert_true(vitals.resist_gems[index].texture.resource_path.ends_with("panels/magicon%d.png" % (index + 1)), "gem %d is MAGICON%d" % [index, index + 1])
+		_assert_eq(vitals.resist_gems[index].position, Vector2(138 + 48 * index, 128), "gem %d at the recording's (138 + 48·i, 450 − 322)" % index)
+		_assert_eq(vitals.resist_values[index].position.x, 149.0 + 48 * index, "value %d starts 11 px after its gem" % index)
+	vitals.queue_free()
+	await process_frame
+
+
+func _game_scripts(directory: String) -> Array[String]:
+	var found: Array[String] = []
+	for file in DirAccess.get_files_at(directory):
+		if file.ends_with(".gd"): found.append("%s/%s" % [directory, file])
+	for sub in DirAccess.get_directories_at(directory):
+		found.append_array(_game_scripts("%s/%s" % [directory, sub]))
+	return found
+
+
+# ---- run_skill_effect_script_tests.gd ----
+## Map actor pose, LEVEL UP stars and the red damage digits (lane R7-POSE,
+## docs/evidence_packets/runtime_observations/map_pose_floaters/README.md).
+## Pose: 0x4071e0 plays the SHAPEDEF use_magic frames forward at delay 3, holds the last one
+## 40 ticks, plays them back and returns to standing (8 × frames + 40 ticks); its three caller
+## classes (map spell lead end, item use, level-up) are the only callers in the game scripts.
+## Stars: 0x415c10(x, y, 149, 64, 24, 0, 6, 36) and effProcFlyUpShape → effProcFlyUp2.
+## Digits: defProcShowNumber kind 0 (0x40863e) replayed tick by tick — digits appear from the
+## left every 10 ticks, the number does not rise, life 10 × digits + 34 ticks.
+
+const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
+const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
+const DamageNumberFloater = preload("res://game/battle/scene/DamageNumberFloater.gd")
+const WALK_MANIFEST := "res://content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json"
+const POSE_MANIFEST := "res://content/imported/hsl/shared/actor_magic_poses/manifest.json"
+
+
+func run_map_pose_floaters() -> void:
+	_test_pose_schedule()
+	_test_pose_census()
+	await _test_actor_plays_the_pose()
+	_test_pose_callers()
+	await _test_star_shower()
+	_test_damage_digit_states()
+	await _test_damage_digit_node()
+
+
+func _test_pose_schedule() -> void:
+	var frames: Array[int] = []
+	for tick in range(90):
+		frames.append(ActorRuntime.magic_pose_frame(tick, 6))
+	_assert_eq([frames[0], frames[3], frames[4], frames[19], frames[20]], [0, 0, 1, 4, 5], "forward at delay 3: each use_magic frame shows 4 ticks (0x45e575)")
+	_assert_eq([frames[23], frames[24], frames[63], frames[64], frames[67]], [5, 5, 5, 5, 5], "the last frame holds through +0x92 = 40 (ticks 20–67)")
+	_assert_eq([frames[68], frames[72], frames[76], frames[80], frames[84], frames[87]], [4, 3, 2, 1, 0, 0], "played back one frame per 4 ticks (0x45e660)")
+	_assert_eq([frames[88], frames[89]], [-1, -1], "the pose is over at 8 × 6 + 40 = 88 ticks; standing resumes")
+	_assert_eq(ActorRuntime.magic_pose_frame(8 * 5 + 40 - 1, 5), 0, "five frames (044 lacks M0002) end at 8 × 5 + 40")
+	_assert_eq(ActorRuntime.magic_pose_frame(8 * 5 + 40, 5), -1, "and not a tick later")
+
+
+func _test_pose_census() -> void:
+	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(POSE_MANIFEST))
+	_assert_eq(manifest["program"]["frame_delay"], 3, "the manifest records 0x4071e0's delay 3")
+	_assert_eq(manifest["program"]["hold_ticks"], ActorRuntime.MAGIC_POSE_HOLD_TICKS, "and its 40-tick hold, the constant the runtime uses")
+	var walk: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(WALK_MANIFEST))
+	var undeclared: Array = []
+	for key in walk["actors"]:
+		if ActorRuntime.magic_pose_entry(key).is_empty() and not key in manifest["use_magic_is_stand"] and not key in manifest["without_use_magic"]:
+			undeclared.append(key)
+	_assert_eq(undeclared, [], "every first-chapter walk key has use_magic frames or a declared reason not to")
+	_assert_eq(ActorRuntime.magic_pose_entry("001")["frames"].size(), 6, "雷歐納德 has the six 001-M frames")
+	_assert_eq(ActorRuntime.magic_pose_entry("026")["frames"].size(), 6, "帝國法師 026 (the recording's caster) has six")
+
+
+func _test_actor_plays_the_pose() -> void:
+	var walk: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(WALK_MANIFEST))
+	var actor: Node2D = ActorRuntime.new()
+	root.add_child(actor)
+	actor.configure_from_manifest("probe", walk["actors"]["026"])
+	actor.play_state("idle", "0")
+	var standing: String = actor.get_node("Sprite2D").texture.resource_path
+	_assert_true(actor.play_use_magic(), "026 takes the use_magic pose")
+	_assert_true(actor.is_posing() and _sprite(actor).ends_with("/026-M0001.png"), "the pose starts on M0001 (%s)" % _sprite(actor))
+	actor._process(OriginalTick.seconds(20.5))
+	_assert_true(_sprite(actor).ends_with("/026-M0006.png"), "tick 20 reaches the last frame (%s)" % _sprite(actor))
+	actor._process(OriginalTick.seconds(40.0))
+	_assert_true(_sprite(actor).ends_with("/026-M0006.png"), "held at tick 60 (%s)" % _sprite(actor))
+	actor._process(OriginalTick.seconds(10.0))
+	_assert_true(_sprite(actor).ends_with("/026-M0005.png"), "one frame back by tick 70 (%s)" % _sprite(actor))
+	actor._process(OriginalTick.seconds(18.0))
+	_assert_true(not actor.is_posing() and actor.animation_state == "idle" and _sprite(actor) == standing, "standing again after 88 ticks (%s)" % _sprite(actor))
+	_assert_true(actor.play_use_magic(), "a second pose starts over")
+	actor.set_shape_override([{"res_path": "res://content/imported/hsl/shared/actor_hit_poses/026-P.png", "draw_origin": [30, 50]}])
+	_assert_true(not actor.is_posing() and _sprite(actor).ends_with("/026-P.png"), "a death hit pose ends the casting pose")
+	actor.clear_shape_override()
+	_assert_true(actor.play_use_magic(), "posing again")
+	actor.move_along([actor.position + Vector2(32, 0)], 0.2)
+	_assert_true(not actor.is_posing(), "walking ends the pose")
+	actor.queue_free()
+	await process_frame
+	var stand_only: Node2D = ActorRuntime.new()
+	root.add_child(stand_only)
+	stand_only.actor_id = "060"
+	_assert_true(not stand_only.play_use_magic() and not stand_only.is_posing(), "060, whose use_magic is its stand shape, keeps its frames")
+	stand_only.queue_free()
+	await process_frame
+
+
+func _sprite(actor: Node2D) -> String:
+	return actor.get_node("Sprite2D").texture.resource_path
+
+
+## The original's three 0x4071e0 caller classes are the remake's only play_use_magic callers.
+func _test_pose_callers() -> void:
+	var callers := {}
+	for path in _game_scripts_map_pose_floaters("res://game"):
+		if path.ends_with("/ActorRuntime.gd"): continue
+		var text := FileAccess.get_file_as_string(path)
+		if text.contains("play_use_magic("): callers[path] = true
+	_assert_eq(callers.keys().map(func(path): return path.get_file()), ["BattleAftermath.gd", "BattlePresentation.gd"], "only the aftermath (level-up) and the presentation (spell lead end, item use) pose actors")
+	var aftermath := FileAccess.get_file_as_string("res://game/battle/scene/BattleAftermath.gd")
+	var level_up := aftermath.substr(aftermath.find("func _present_level_up"), 900)
+	_assert_true(level_up.contains("play_use_magic()") and level_up.contains("LevelUpStars.new()"), "the LEVEL UP stage poses the recipient and scatters its stars (0x442720 phase 6)")
+	var presentation := FileAccess.get_file_as_string("res://game/battle/scene/BattlePresentation.gd")
+	var item_use := FileAccess.get_file_as_string("res://game/battle/scene/BattleItemUsePresentation.gd")
+	_assert_true(item_use.substr(item_use.find("func _start_effect"), 700).contains("_pose_unit("), "item use poses its user (0x4449a7／0x440366／0x4404c7)")
+	_assert_true(presentation.contains("\t_sync_cast_pose()\n"), "every refresh checks the running spell clip for the caster pose")
+
+
+func _test_star_shower() -> void:
+	var stars: Node2D = LevelUpStars.new()
+	root.add_child(stars)
+	stars.begin(12345)
+	_assert_eq(stars.stars.size(), 36, "0x415c10 scatters 0x24 = 36 stars")
+	_assert_eq(stars.get_child_count(), 36, "one additive sprite each")
+	var bad_offsets := 0
+	var bad_speeds := 0
+	var bad_holds := 0
+	var bad_steps := 0
+	var last_appear := 0
+	for index in range(stars.stars.size()):
+		var star: Dictionary = stars.stars[index]
+		var offset: Vector2 = star["offset"]
+		if offset.x < -31 or offset.x > 32 or offset.y < -11 or offset.y > 12: bad_offsets += 1
+		var steps := (float(star["speed"]) - 0.25) * 16.0
+		if steps < 0.0 or steps > 31.0 or not is_equal_approx(steps, roundf(steps)): bad_speeds += 1
+		if int(star["hold"]) < 6 or int(star["hold"]) > 13: bad_holds += 1
+		if index > 1 and (int(star["appear"]) - last_appear < 1 or int(star["appear"]) - last_appear > 6): bad_steps += 1
+		last_appear = int(star["appear"])
+	_assert_eq([bad_offsets, bad_speeds, bad_holds, bad_steps], [0, 0, 0, 0], "stars within x + [−31, 32], y + [−11, 12]; speed 0.25 + k／16 px; hold 6..13; delays 1..6 apart")
+	_assert_eq(stars.stars[0]["appear"], 0, "the first star draws at once")
+	var texture_ok := true
+	for index in range(36):
+		var sprite: Sprite2D = stars.get_child(index)
+		texture_ok = texture_ok and sprite.texture.resource_path.ends_with("level_up_star_%d.png" % int(stars.stars[index]["frame"])) and sprite.material.blend_mode == CanvasItemMaterial.BLEND_MODE_ADD
+	_assert_true(texture_ok, "each star holds one random AIR06_03..06 frame, drawn additively")
+	_assert_eq([LevelUpStars.level(0, 8), LevelUpStars.level(9, 8), LevelUpStars.level(10, 8), LevelUpStars.level(24, 8), LevelUpStars.level(25, 8)], [16, 16, 15, 1, 0], "full level for hold + 1 ticks after the first, then −1 a tick (0x422c9a)")
+	_assert_eq([LevelUpStars.rise_at(0, 1.5), LevelUpStars.rise_at(1, 1.5), LevelUpStars.rise_at(3, 1.5)], [0.0, 1.0, 4.0], "straight up by floor(speed × age) (0x45ebdc keeps the fraction)")
+	stars.advance(OriginalTick.seconds(0.5))
+	var first: Sprite2D = stars.get_child(0)
+	_assert_true(first.visible and first.position == Vector2(stars.stars[0]["offset"]), "the first star is drawn at its spawn offset on tick 0")
+	var end_tick := 0
+	for star in stars.stars:
+		end_tick = maxi(end_tick, int(star["appear"]) + int(star["hold"]) + 17)
+	_assert_true(stars.advance(OriginalTick.seconds(end_tick - 1.5)), "stars are alive until the last one fades")
+	_assert_true(not stars.advance(OriginalTick.seconds(1.5)) and not stars.visible, "then the shower is over (%d ticks)" % end_tick)
+	var again: Node2D = LevelUpStars.new()
+	root.add_child(again)
+	again.begin(12345)
+	_assert_eq(again.stars, stars.stars, "the same exchange and recipient scatter the same stars")
+	stars.queue_free()
+	again.queue_free()
+	await process_frame
+
+
+func _test_damage_digit_states() -> void:
+	_assert_eq(DamageNumberFloater.state_at(0, 2)["visible"], 0, "the hold tick draws nothing")
+	var tick1 := DamageNumberFloater.state_at(1, 2)
+	_assert_eq([tick1["visible"], tick1["newest"], tick1["previous"], tick1["flash"], tick1["flash_level"]], [1, 1, 0, 1, 16], "tick 1: only the first (leftmost) digit, at 2×, with the NUM510 flash at level 16")
+	_assert_eq([DamageNumberFloater.state_at(6, 2)["flash_level"], DamageNumberFloater.state_at(7, 2)["flash"]], [11, 0], "the flash burns 6 ticks, 16 → 11")
+	var tick10 := DamageNumberFloater.state_at(10, 2)
+	_assert_eq([tick10["visible"], tick10["newest"], tick10["previous"], tick10["flash"]], [2, 2, 1, 2], "tick 10: the second digit joins at 2×, the first at 1.5×, the flash moves to it")
+	_assert_eq(DamageNumberFloater.state_at(11, 2)["previous"], 0, "the 1.5× step lasts to the next half-step")
+	var tick20 := DamageNumberFloater.state_at(20, 2)
+	_assert_eq([tick20["visible"], tick20["newest"], tick20["previous"]], [2, 0, 2], "tick 20: past the last digit only the 1.5× step remains")
+	var tick21 := DamageNumberFloater.state_at(21, 2)
+	_assert_eq([tick21["visible"], tick21["newest"], tick21["previous"], tick21["level"]], [2, 0, 0, 16], "then the whole number stands at 1×")
+	_assert_eq([DamageNumberFloater.state_at(38, 2)["level"], DamageNumberFloater.state_at(39, 2)["level"], DamageNumberFloater.state_at(53, 2)["level"]], [16, 15, 1], "18 settle ticks, then the level drops a tick")
+	_assert_true(not DamageNumberFloater.state_at(54, 2)["alive"], "deleted at level 0")
+	_assert_eq([DamageNumberFloater.life_ticks(1), DamageNumberFloater.life_ticks(2), DamageNumberFloater.life_ticks(3)], [44, 54, 64], "life 10 × digits + 34 (original_tick_counts §1)")
+	_assert_true(DamageNumberFloater.state_at(43, 1)["alive"] and not DamageNumberFloater.state_at(44, 1)["alive"], "a one-digit number lives 44 ticks")
+	var three := []
+	for tick in [1, 10, 20, 30]:
+		three.append(DamageNumberFloater.state_at(tick, 3)["visible"])
+	_assert_eq(three, [1, 2, 3, 3], "digits appear one by one, left to right, every 10 ticks")
+
+
+func _test_damage_digit_node() -> void:
+	var number: Node2D = DamageNumberFloater.new()
+	root.add_child(number)
+	number.position = Vector2(200, 150)
+	number.present(57)
+	_assert_true(number.glyphs[0].texture.resource_path.ends_with("damage_digit_5.png") and number.glyphs[1].texture.resource_path.ends_with("damage_digit_7.png"), "NUM105 then NUM107: the digits in reading order")
+	_assert_eq([number.glyphs[0].position, number.glyphs[1].position], [Vector2(-7, 0), Vector2(7, 0)], "first digit at x − 7 × (digits − 1), 14 px apart")
+	number.set_process(false)
+	number.advance(OriginalTick.seconds(1.5))
+	_assert_true(number.glyphs[0].visible and not number.glyphs[1].visible and number.glyphs[0].scale == Vector2(2, 2), "tick 1 shows the leftmost digit at 2× — the recording's 203.25 s 「2」 of 「22」")
+	_assert_true(number.flash.visible and number.flash.scale == Vector2(4, 4) and number.flash.material.blend_mode == CanvasItemMaterial.BLEND_MODE_ADD, "behind it the 4× additive NUM510 flash")
+	number.advance(OriginalTick.seconds(9.0))
+	_assert_true(number.glyphs[1].visible and number.glyphs[1].scale == Vector2(2, 2) and number.glyphs[0].scale == Vector2(1.5, 1.5), "tick 10 completes 「57」")
+	var positions := []
+	for tick in range(40):
+		number.advance(OriginalTick.TICK_SECONDS)
+		positions.append(number.position.y + number.glyphs[0].position.y)
+	_assert_eq(positions.filter(func(y): return y != 150.0), [], "kind 0 does not rise (no 0x10000 toggle)")
+	var finished := [false]
+	number.finished.connect(func(): finished[0] = true)
+	number.advance(OriginalTick.seconds(20.0))
+	_assert_true(finished[0] and not number.visible, "finished once the level reaches 0")
+	number.queue_free()
+	await process_frame
+
+
+func _game_scripts_map_pose_floaters(directory: String) -> Array[String]:
+	var found: Array[String] = []
+	for file in DirAccess.get_files_at(directory):
+		if file.ends_with(".gd"): found.append("%s/%s" % [directory, file])
+	for sub in DirAccess.get_directories_at(directory):
+		found.append_array(_game_scripts_map_pose_floaters("%s/%s" % [directory, sub]))
+	return found

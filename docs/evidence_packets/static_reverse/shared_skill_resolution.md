@@ -50,7 +50,6 @@ PlayLoop `_resolve_skill` 是唯一资源／HP提交点，玩家特殊技和法�
 
 ```sh
 python3 tools/hsl.py check initial_skill_book
-python3 -m unittest tools.test_hsl_initial_skill_book -v
 godot --headless --path . --script res://tests/run_skill_resolution_tests.gd
 ```
 

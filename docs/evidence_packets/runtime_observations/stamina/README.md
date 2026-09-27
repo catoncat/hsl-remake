@@ -20,7 +20,7 @@
 
 收尾检查发现：战斗已逻辑结算，特写却直接读取最终气力，受击前会提前显示增长，主攻击还会泄漏尚未播放的反击增长。定向回归先产生8项失败；修复后409项检查通过。特写只从当前strike的气力收据投影before／after，落空时也剔除未来反击的增长，不改实际HP、ST或队列。
 
-增加实际普通路线的前后观察并重新运行，输出`STAMINA_RENDER_REVIEW_PASS`、退出0，无Godot错误。下列截图与断言同时确认受击前14、命中后20；完整普通／反击及落空组合由`run_stamina_tests.gd`覆盖。装备操作的既有图证继续复用。
+增加实际普通路线的前后观察并重新运行，输出`STAMINA_RENDER_REVIEW_PASS`、退出0，无Godot错误。下列截图与断言同时确认受击前14、命中后20；完整普通／反击及落空组合由`run_ordinary_special_tests.gd`覆盖。装备操作的既有图证继续复用。
 
 ![受击前保留14气力和原HP](ordinary-hit-before.png)
 ![命中后显示20气力和扣减HP](ordinary-hit-after.png)

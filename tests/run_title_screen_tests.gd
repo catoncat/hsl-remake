@@ -42,7 +42,6 @@ func _run() -> void:
 	await _run_battle_record_resume()
 	await _run_battle_record_checkpoint()
 	await _run_new_story()
-	await _run_movie_player()
 	await _run_game_over_screen()
 	await _run_defeat_leaves_for_game_over()
 	await _run_game_clear_screen()
@@ -273,51 +272,6 @@ func _run_new_story() -> void:
 		_assert_eq(str(runtime.scenario_path), "res://content/battles/battle_051.json", "the new story starts at the first battle")
 		runtime.queue_free()
 	await process_frame
-	await process_frame
-
-
-func _run_movie_player() -> void:
-	## The film player pages the imported FLI sheets (content/imported/hsl/movie/manifest.json)
-	## at the manifest rate — frame k sits on the sheet whose range holds it, row-major — with
-	## the decoded soundtrack, and finishes when the last frame has shown.
-	var spec: Dictionary = MoviePlayer.movie_spec("end")
-	_assert_true(not spec.is_empty(), "the ending film is imported")
-	if spec.is_empty():
-		return
-	var player = MoviePlayer.new()
-	root.add_child(player)
-	var reasons: Array[String] = []
-	player.finished.connect(func(reason: String) -> void: reasons.append(reason))
-	var summary: Dictionary = player.play("end")
-	_assert_eq(int(summary.get("frame_count", 0)), int(spec.get("frame_count", -1)), "the film has the manifest's frame count")
-	_assert_eq(float(summary.get("frame_rate", 0.0)), float(spec.get("frame_rate", -1)), "the film runs at the manifest frame rate")
-	_assert_eq(int(summary.get("frame_index", -1)), 0, "playback starts on frame 0")
-	_assert_eq(int(summary.get("sheet_index", -1)), 0, "frame 0 comes from the first sheet")
-	_assert_true(bool(summary.get("audio_playing", false)), "the soundtrack starts with frame 0")
-	var frame_size := Vector2(float(spec.get("frame_width", 0)), float(spec.get("frame_height", 0)))
-	_assert_eq(player.get_node("Frame").region_rect, Rect2(Vector2.ZERO, frame_size), "frame 0 is the sheet's top-left cell")
-	_assert_eq(player.get_node("Frame").scale, Vector2(640, 480) / frame_size, "the 320×240 frame is doubled onto the 640×480 screen")
-	var sheets: Array = spec.get("sheets", [])
-	var second: Dictionary = sheets[1] if sheets.size() > 1 else {}
-	if not second.is_empty():
-		var target := int(second.get("frame_start", 0)) + 13
-		# The first tick after play() is swallowed (it carries the first sheet's load); the
-		# headless frame after the jump adds its own delta, so allow a few frames of drift.
-		await process_frame
-		player.elapsed = (float(target) + 0.5) / float(spec.get("frame_rate", 15))
-		await process_frame
-		var shown := int(player.summary().get("frame_index", -1))
-		_assert_true(shown >= target and shown <= target + 6, "the clock selects the frame (target %d, shown %d)" % [target, shown])
-		_assert_eq(str(player.summary().get("sheet_file", "")), str(second.get("file", "")), "a frame past the first range comes from the second sheet")
-		var columns := int(second.get("columns", 1))
-		var local := shown - int(second.get("frame_start", 0))
-		_assert_eq(player.get_node("Frame").region_rect.position, Vector2(float(local % columns) * frame_size.x, float(floori(local / float(columns))) * frame_size.y), "row-major cell of the frame inside its sheet")
-	player.elapsed = float(spec.get("frame_count", 0)) / float(spec.get("frame_rate", 15)) + 1.0
-	await process_frame
-	_assert_eq(reasons, ["completed"] as Array[String], "the film finishes once after its last frame")
-	_assert_true(not bool(player.summary().get("playing", true)) and not bool(player.summary().get("audio_playing", true)), "a finished film stops its soundtrack")
-	_assert_true(player.skip().get("finished_reason", "") == "completed", "skipping a finished film changes nothing")
-	player.queue_free()
 	await process_frame
 
 

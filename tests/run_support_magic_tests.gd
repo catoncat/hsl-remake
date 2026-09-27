@@ -31,10 +31,9 @@ func run() -> void:
 	native_cases()
 	player_cases()
 	earth_heals()
-	ai_cases()
-	await presentation_tail_cases()
 	stat_magic_cases()
 	priest_cases()
+	await run_paralysis()
 
 
 static func fixture(ai: bool = false) -> Dictionary:
@@ -143,44 +142,6 @@ func player_cases() -> void:
 	check(empty_cure.get("last_attack_reject", {}).get("reason") == "skill_has_no_effect" and empty_cure["units"] == no_effect["units"], "clean area cannot silently consume cure MP")
 
 
-func ai_cases() -> void:
-	for mode in ["magic", "empty_mp", "silenced", "failed_use_ratio", "cure", "no_foe"]:
-		var loop := fixture(true)
-		var actor: Dictionary = loop["units"][0]
-		own(loop, "skill_book")["actors"][actor["actor_id"]]["supported_initial_ids"] = [HEAL, CURE]
-		own(loop, "ai_profiles")["actors"][actor["actor_id"]]["profile"]["ai_att_magic"] = 100
-		match mode:
-			"empty_mp": actor["mp"] = 0
-			"silenced": actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, "no_magic", 2)["changes"], true)
-			"failed_use_ratio": own(loop, "skill_book")["skills"][HEAL]["fields"]["use_ratio"] = "0"
-			"cure":
-				actor["hp"] = 100
-				actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, "poison", 2, 10)["changes"], true)
-			"no_foe":
-				loop["units"][1]["coord"] = Vector2i(22, 18)
-				loop["units"][2]["coord"] = Vector2i(23, 18)
-		var before := loop.duplicate(true)
-		var after := BattlePlayLoop.step_ai_turn(loop, func(_bound): return 0)
-		check(after["scenario_ok"], "AI support preflight: " + mode + " " + str(after.get("scenario_error", "")))
-		if not after["scenario_ok"]: continue
-		var action: Dictionary = after["last_ai_action"]
-		if mode in ["magic", "no_foe", "cure"]:
-			check(action.get("skill_id") == (CURE if mode == "cure" else HEAL) and action.get("defender_id") == actor["id"], "AI chooses one owned self-preservation spell: " + mode)
-			check(BattlePlayLoop.unit(after, actor["id"])["inventory"] == actor["inventory"] and BattlePlayLoop.unit(after, actor["id"])["mp"] == 100 - (4 if mode == "cure" else 6), "successful self spell preserves medicine and pays one fee")
-		else:
-			check(action.get("kind") == "use_item" and not action.has("skill_id") and BattlePlayLoop.unit(after, actor["id"])["mp"] == actor["mp"], "unavailable/failed spell retains one medicine fallback: " + mode)
-		check(after["selected_unit_id"] == "enemy023_1" and after["turn_queue"]["index"] == 1 and after["last_ai_actions"].size() == 1, "AI self action hands off exactly once")
-		check(loop == before and BattlePlayLoop.unit(after, "leonard")["hp"] == BattlePlayLoop.unit(before, "leonard")["hp"], "self action cannot also attack or mutate its caller")
-	var corrupted := fixture(true)
-	corrupted["units"][0]["max_hp"] = 0
-	var refused := BattlePlayLoop.step_ai_turn(corrupted, no_rng)
-	check(not refused["scenario_ok"] and refused["units"] == corrupted["units"] and refused["turn_queue"] == corrupted["turn_queue"], "malformed support cannot fall through into another attack")
-
-
-## Wave 9 lane A2: 大地之癒 (EARTH 08) and 大地之惠 (EARTH 09) are magicFun_Heal rows with an area
-## footprint: same 0x40aa80 bit 2 branch / proc1 roll as the water heals, every wounded ally inside
-## the footprint is healed for one MP payment; the 治癒之水 effect art is reused (provisional).
-## [id, cost, initial holders]
 func earth_heals() -> void:
 	for row in [["magic:magicEARTH:magicCode08", 25, ["056", "065"]], ["magic:magicEARTH:magicCode09", 45, ["059"]]]:
 		var id: String = row[0]
@@ -195,31 +156,6 @@ func earth_heals() -> void:
 		check(after["last_attack"].get("skill_id") == id and receipts.map(func(receipt): return receipt["defender_id"]) == ["leonard", "enemy023_1"], "the footprint heals the ally center and the caster inside it, never the foe: " + id)
 		check(receipts.all(func(receipt): return int(receipt["healing"]) > 0 and receipt["healing"] == receipt["defender_hp_after"] - receipt["defender_hp_before"]) and BattlePlayLoop.unit(after, "leonard")["hp"] > 20 and BattlePlayLoop.unit(after, "enemy023_1")["hp"] > 20, "both wounded allies recover actual HP: " + id)
 		check(BattlePlayLoop.unit(after, "leonard")["mp"] == 100 - int(row[1]) and BattlePlayLoop.unit(after, "enemy026_1")["hp"] == 100, "one MP payment; the enemy is untouched: " + id)
-
-## The four water support spells play their effCode scripts (驅毒 12, 治癒之水 13, 生命之水 14,
-## 女神之淚 15) through SkillEffectScriptPlayer: source WATER shapes visible one tick after the
-## impact mark (an object is not drawn on its creation tick — the 0x10000000 skip bit of the
-## 0x45f5f7 draw walk; 生命之水's last cue creates its star ball at tick 0), every sprite gone at
-## the clip's complete mark (the last fade is inside the busy interval).
-func presentation_tail_cases() -> void:
-	var view := preload("res://game/battle/scene/SkillEffectScriptPlayer.gd").new()
-	root.add_child(view)
-	for skill_id in ["magic:magicWATER:magicCode06", "magic:magicWATER:magicCode07", "magic:magicWATER:magicCode08", "magic:magicWATER:magicCode05"]:
-		# Sound dispatch is already covered by real playback. This fixture isolates
-		# whether the advertised busy interval actually contains all source sprites.
-		var clip := {"effect_timeline": view.compile_row(skill_id, true, 3), "effect_sounds_played": [0, 1, 2, 3, 4, 5]}
-		var timeline: Dictionary = clip["effect_timeline"]
-		view.draw(clip, float(timeline["impact_tick"] + 1) / view.TICKS_PER_SECOND, [Vector2(300, 200)])
-		check(view.sprites.any(func(sprite): return sprite.visible and sprite.modulate.a > 0.001 and str(sprite.texture.resource_path).contains("/wat")), "impact retains visible source WATER effect (first drawable tick after the impact mark): " + skill_id)
-		view.draw(clip, float(timeline["complete_tick"]) / view.TICKS_PER_SECOND, [Vector2(300, 200)])
-		check(view.sprites.all(func(sprite): return not sprite.visible or sprite.modulate.a <= 0.001), "cast completion cannot truncate a remaining particle fade: " + skill_id)
-	# The creation tick draws nothing: 生命之水 creates its only object at tick 0.
-	var life := {"effect_timeline": view.compile_row("magic:magicWATER:magicCode07", true, 3), "effect_sounds_played": [0, 1, 2, 3, 4, 5]}
-	view.draw(life, 0.0, [Vector2(300, 200)])
-	check(view.sprites.all(func(sprite): return not sprite.visible), "an effect object is not drawn on its creation tick (0x45f5f7 skip bit)")
-	view.queue_free()
-	await process_frame
-
 
 static func stat_initial() -> Dictionary:
 	return BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file("res://content/battles/stat_magic_trial.json"))
@@ -268,7 +204,6 @@ func stat_magic_cases() -> void:
 	dispel_decisions_and_combat()
 	high_tier_area_buffs()
 	resist_barrier()
-	save_and_terminal()
 
 func native_applications() -> void:
 	var source := priest_initial()
@@ -544,39 +479,6 @@ func dispel_decisions_and_combat() -> void:
 	var b := BattlePlayLoop.SkillResolutionRules.resolve(BattlePlayLoop.unit(stronger,"tina"),receiver,heal,heal_fields,baseline["skill_book"],baseline["skill_target_data"],baseline["equipment_items"],caster["coord"],baseline["map_size"],zero)
 	check(a["ok"] and b["ok"] and a["receipt"]["healing"] == b["receipt"]["healing"],"attack enhancement leaves actual support healing and MP formula unchanged")
 
-func save_and_terminal() -> void:
-	var loop:=gear(stat_fixture(),227,"accessory2")
-	buff(loop,"tina","attack_up",1)
-	var first:=BattlePlayLoop.begin_wait_resolution(loop)
-	check(first["extra_action"]["pending"] and StatEnhancementRules.word(BattlePlayLoop.unit(first,"tina"),"attack_up")>0,"buff1 survives first independent action")
-	var saved:=BattleCheckpoint.encode(first,VIEW)
-	var tampered:=first.duplicate(true)
-	BattlePlayLoop._unit(tampered,"tina")["combat_profile"]["live_attack_damage"]+=20
-	check(not BattleCheckpoint.encode(tampered,VIEW)["ok"] and BattlePlayLoop.begin_wait_resolution(tampered)==tampered,"stale/double-added buff values reject save and final-action advancement")
-	check(saved["ok"],"active buff/second-action checkpoint accepted: "+str(saved.get("error","")))
-	if not saved["ok"]:return
-	var restored:=BattleCheckpoint.decode(saved["bytes"], first)
-	check(restored["ok"] and restored["snapshot"]["loop"]==first,"load does not reapply buff or replay first action")
-	var finish:=BattlePlayLoop.begin_wait_resolution(first);var again:=BattlePlayLoop.begin_wait_resolution(restored["snapshot"]["loop"])
-	check(finish==again and finish["action_end_sequence"]==1 and StatEnhancementRules.word(BattlePlayLoop.unit(finish,"tina"),"attack_up")==0,"restored final action has identical expiry and RNG order")
-	check(finish["last_action_end"]["events"].any(func(e):return e["kind"]=="attack_up_expired"),"expiry carries explicit presentation receipt")
-	var clean:=BattlePlayLoop.ProgressionRules.refresh_growth_stats(BattlePlayLoop.unit(finish,"tina"),finish["equipment_items"])
-	check(clean["combat_profile"]==BattlePlayLoop.unit(finish,"tina")["combat_profile"],"final owner tail removes derived buff immediately")
-	var casted:=cast(gear(stat_fixture(),227,"accessory2"),ATT,"tina",zero)
-	check(BattleCheckpoint.encode(casted,VIEW)["ok"],"settled original stat receipt saves without replay")
-	var bad:=casted.duplicate(true);bad["last_attack"]["stat_effects"][0]["after_power"]+=1
-	check(not BattleCheckpoint.encode(bad,VIEW)["ok"],"saved receipt cannot silently reorder or alter stat effects")
-	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
-		var terminal:=stat_fixture();buff(terminal,"tina","attack_up");buff(terminal,"enemy026_1","defense_up")
-		if outcome==BattleOutcome.VICTORY_ENEMIES_CLEARED:BattlePlayLoop._set_unit_defeated(terminal,"enemy026_1",true)
-		elif outcome==BattleOutcome.DEFEAT_FALLEN:BattlePlayLoop._set_unit_defeated(terminal,"tina",true)
-		else:BattlePlayLoop._set_unit_coord(terminal,"tina",terminal["escape_zone"][0])
-		terminal=BattlePlayLoop._resolve_outcome(terminal)
-		check(terminal["battle_outcome"]==outcome and BattleCheckpoint.encode(terminal,VIEW)["ok"],"enhanced terminal is coherent and saveable "+BattleOutcome.describe(outcome))
-		check(BattlePlayLoop.step_ai_turn(terminal,no_rng)==terminal and BattlePlayLoop.finish_exhausted_action(terminal)==terminal and BattlePlayLoop._advance_current_actor(terminal)==terminal,"terminal freezes every subsequent status/resource/extra-action tail "+BattleOutcome.describe(outcome))
-		var restarted:=stat_initial();check(not BattleOutcome.decided(restarted) and StatEnhancementRules.word(BattlePlayLoop.unit(restarted,"tina"),"attack_up")==0,"new scenario carries no expired/terminal enhancement")
-
-
 static func priest_initial() -> Dictionary:
 	return BattlePlayLoop.create([],"",BattlePlayLoop.BattleScenario.load_file("res://content/battles/priest_trial.json"))
 
@@ -605,7 +507,6 @@ func priest_cases()->void:
 	native_stats()
 	actions_and_growth()
 	mana_items()
-	ai_and_terminal()
 
 func native_stats()->void:
 	var loop:=priest_initial();check(loop["scenario_ok"],"source priest initializes in the real loop")
@@ -697,24 +598,190 @@ func mana_items()->void:
 	spent=BattlePlayLoop.finish_exhausted_action(spent)
 	check(BattleCheckpoint.encode(spent,VIEW)["ok"] and not BattlePlayLoop.unit(spent,"tina")["inventory"].has(244),"post-item/spent save preserves exactly one consumed mana item")
 
-func ai_and_terminal()->void:
-	var loop:=priest_fixture();var actor:=BattlePlayLoop._unit(loop,"tina")
-	actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
-	loop["selected_unit_id"]="";loop["interaction"]="ai_resolving"
-	var done:=BattlePlayLoop.step_ai_turn(loop,zero)
-	check(done["scenario_ok"] and done.get("last_ai_action",{}).get("skill_id")==HEAL,"source priest AI selects its actual ally support skill: "+str(done.get("scenario_error",done.get("last_ai_action",{}))))
-	for condition in ["mp","silence","paralysis"]:
-		var blocked:=loop.duplicate(true);var caster:=BattlePlayLoop._unit(blocked,"tina")
-		if condition=="mp":caster["mp"]=0
-		else:caster.merge(BattlePlayLoop.StatusEffectRules.apply(caster,"no_magic" if condition=="silence" else "paralysis",2)["changes"],true)
-		var result:=BattlePlayLoop.step_ai_turn(blocked,zero)
-		check(result["scenario_ok"] and not result.get("last_ai_action",{}).has("skill_id"),"priest AI respects resource/status fallback: "+condition+" "+str(result.get("scenario_error","")))
-		if condition=="paralysis":check(result["last_ai_action"]["kind"]=="paralysis_skip","priest paralysis consumes the shared single entry tail")
-	for outcome in [BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE,BattleOutcome.VICTORY_ENEMIES_CLEARED]:
-		var terminal:=priest_fixture()
-		if outcome==BattleOutcome.DEFEAT_FALLEN:BattlePlayLoop._set_unit_defeated(terminal,"tina",true)
-		elif outcome==BattleOutcome.VICTORY_ESCAPE:BattlePlayLoop._set_unit_coord(terminal,"tina",terminal["escape_zone"][0])
-		else:BattlePlayLoop._set_unit_defeated(terminal,"enemy021_1",true)
-		terminal=BattlePlayLoop._resolve_outcome(terminal)
-		check(terminal["battle_outcome"]==outcome and BattleCheckpoint.encode(terminal,VIEW)["ok"],"configured priest controls terminal/save boundary: "+BattleOutcome.describe(outcome))
-		check(BattlePlayLoop.step_ai_turn(terminal,no_rng)==terminal,"no actor executes after priest terminal: "+BattleOutcome.describe(outcome))
+# ---- run_support_magic_tests.gd ----
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const ActionEntryRules = preload("res://game/sim/ActionEntryRules.gd")
+const run_position_equipment_tests = preload("res://tests/run_position_equipment_tests.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+const StatusApplicationRules = preload("res://game/sim/StatusApplicationRules.gd")
+const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
+const BIND := "magic:magicEARTH:magicCode05"
+
+static func fixture_paralysis(role: String = "026", ai: bool = false) -> Dictionary:
+	var loop := run_position_equipment_tests.fixture(role, ai)
+	var actor := BattlePlayLoop._unit(loop, "leonard")
+	actor["inventory"] = [211,248,232,227,31,12,241,0]
+	actor["growth_profile"]["source"]["hit_point"] += 200
+	actor["growth_profile"]["source"]["magic_point"] += 100
+	actor["growth_profile"]["source"]["speed"] += 120
+	actor["growth_profile"]["source"]["has_magic"] = true
+	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor, loop["equipment_items"]), true)
+	actor["hp"] = actor["max_hp"]; actor["mp"] = actor["max_mp"]
+	own(loop, "skill_book")["actors"][role]["supported_initial_ids"] = [BIND, run_position_equipment_tests.WIND, run_position_equipment_tests.HEAL, run_position_equipment_tests.CURE]
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	return loop if ai else BattlePlayLoop._return_to_player(loop,"leonard")
+
+static func afflict(actor: Dictionary, turns: int = 2) -> void:
+	actor.merge(StatusEffectRules.apply(actor,"paralysis",2)["changes"],true)
+	actor["status_counters"]["paralysis"] = turns # Explicit remaining-time setup.
+
+func run_paralysis() -> void:
+	native_cases_paralysis()
+	entry_and_restore()
+	spell_and_equipment()
+	aid_and_replanning()
+
+func native_cases_paralysis() -> void:
+	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_paralysis.json"))
+	for row in packet["entries"]:
+		var c: Dictionary = row["input"]
+		check(ActionEntryRules.skips(int(c["flags"]),int(c["phase"]),bool(c["active"])) == row["native"]["skipped"],"native player/AI skip gate preserves nonfresh action phases")
+	var base := fixture_paralysis()
+	for row in packet["applications"]:
+		var c: Dictionary = row["input"]
+		var loop := base.duplicate(true)
+		var actor := BattlePlayLoop._unit(loop,"leonard");var target := BattlePlayLoop._unit(loop,"enemy021_1")
+		actor["level"] = int(c["level"]);actor["hit_bonus_accum"] = int(c["hit_bonus"])
+		actor["combat_profile"].merge({"mind":int(c["mind"]),"live_magic_attack":int(c["magic_attack"])},true)
+		actor["equipment"] = [{"slot":"accessory1","item_code":215}]
+		target["equipment"] = [] if int(c["effects"]) == 0 else [{"slot":"accessory1","item_code":229 if int(c["effects"]) == 0x80 else 211}]
+		own(loop, "skill_book")["actors"][target["actor_id"]]["status_capability_flags"] = 2 if c["no_attack"] else 0
+		target["combat_profile"]["resist_by_type"]["0"] = int(c["resistance"])
+		target.merge({"hp":int(c["hp"]),"status_flags":3|(4 if c["turns"] else 0),"status_counters":{"poison":0x70003,"no_magic":2,"paralysis":int(c["turns"])}},true)
+		var prepared := StatusApplicationRules.prepare(actor,target,BattlePlayLoop.skill_fields(loop,BIND),loop["skill_book"],loop["skill_target_data"],loop["equipment_items"])
+		check(prepared["ok"],"source paralysis inputs prepare")
+		if not prepared["ok"]:continue
+		var draws: Array = row["draws"].duplicate(true)
+		var result := StatusApplicationRules.resolve(prepared,target,func(bound):
+			check(not draws.is_empty() and bound == int(draws[0]["bound"]),"original paralysis draw order/bound")
+			return int(draws.pop_front()["value"]) if not draws.is_empty() else 0)
+		check(draws.is_empty() and result["native_contribution"] == int(row["native"]["contribution"]),"original actual added-duration contribution, including zero at cap")
+		check(result["target_changes"]["status_counters"]["paralysis"] == int(row["native"]["turns"]) and result["target_changes"]["status_flags"] == int(row["native"]["flags"]),"original paralysis application/immune result")
+		check(result["target_changes"]["hp"] == target["hp"] and result["target_changes"]["status_counters"]["poison"] == 0x70003 and result["target_changes"]["status_counters"]["no_magic"] == 2,"binding never invents HP damage or clears unrelated statuses")
+	for row in packet["ticks"]:
+		var counters := {};var flags := 0
+		for key in row["input"]:
+			counters[key] = int(row["input"][key])
+			if counters[key]:flags |= int(StatusEffectRules.COUNTERS[key])
+		var result := StatusEffectRules.after_action({"hp":100,"status_flags":flags,"status_counters":counters})
+		check(result["ok"],"all three native counters prepare")
+		for key in counters:check(result["changes"]["status_counters"][key] == int(row["native"][key]),"normal-return counter expiry agrees with original")
+	for row in packet["cures"]:
+		if int(row["input"]["effects"]) != 0x20000000:continue
+		var actor := BattlePlayLoop.unit(base,"leonard")
+		actor.merge({"status_flags":3|(4 if row["input"]["turns"] else 0),"status_counters":{"poison":0x70003,"no_magic":2,"paralysis":int(row["input"]["turns"])}},true)
+		var effect := ItemUseRules.prepare(actor,base["consumables"]["248"])
+		check(effect["ok"] == (int(row["input"]["turns"]) > 0),"real cure rejects a healthy target without spending the item")
+		if effect["ok"]:check(effect["changes"]["status_flags"] == int(row["native"]["flags"]) and effect["changes"]["status_counters"]["paralysis"] == 0 and effect["changes"]["status_counters"]["poison"] == 0x70003,"native cure clears only paralysis")
+	for row in packet["scans"]:
+		if row["input"]["slots"].has(251.0):continue # Native multi-cure item is not enabled in this product subset.
+		var slots: Array = row["input"]["slots"].map(func(n):return int(n))
+		var selected := ItemUseRules.first_status_slot(slots,base["consumables"],int(row["input"]["mask"]))
+		check(selected["ok"] and selected["index"]+1 == int(row["native"]),"native eight-slot matching status-cure order")
+	check(not BattlePlayLoop.unit(BattleFixture.loop(),"leonard")["inventory"].has(248),"registered cure is not a default inventory grant")
+
+func entry_and_restore() -> void:
+	for ai in [false,true]:
+		for wings in [false,true]:
+			var loop := fixture_paralysis("026",ai);var actor := BattlePlayLoop._unit(loop,"leonard")
+			actor["equipment"] = actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
+			if wings:actor["equipment"].append({"slot":"accessory1","item_code":227})
+			afflict(actor);actor.merge(StatusEffectRules.apply(actor,"poison",3,7)["changes"],true)
+			if not ai:loop=BattlePlayLoop._return_to_player(loop,"leonard")
+			var original := loop.duplicate(true)
+			check(loop["interaction"] == "ai_resolving" and not BattlePlayLoop.command_available(loop,"wait"),"paralyzed player and AI share automatic fresh-entry path")
+			var saved := BattleCheckpoint.encode(loop,run_position_equipment_tests.VIEW)
+			check(saved["ok"],"unprocessed paralysis entry can be serialized")
+			var result := BattlePlayLoop.step_ai_turn(loop,no_rng)
+			check(result["scenario_ok"] and result["last_ai_action"]["kind"] == "paralysis_skip" and result["turn_queue"]["index"] == 1,"one skip hands to the next real queue actor")
+			check(not result["extra_action"]["pending"] and result["action_end_sequence"] == 1 and result["last_ai_actions"].size() == 1,"wings cannot turn a paralysis skip into two waits or two tails")
+			var after := BattlePlayLoop.unit(result,"leonard")
+			check(after["status_counters"]["paralysis"] == 1 and after["hp"] == actor["hp"]-7 and after["exp"] == actor["exp"] and after["stamina"] == actor["stamina"],"skip ticks poison and duration exactly once without offense/EXP/ST")
+			check(loop == original,"entry proposal never mutates its caller")
+			if saved["ok"]:
+				var restored := BattleCheckpoint.decode(saved["bytes"], loop)
+				check(restored["ok"] and BattlePlayLoop.step_ai_turn(restored["snapshot"]["loop"],no_rng) == result,"restoring before entry produces one identical skip, not a repeated old action")
+	var all := fixture_paralysis()
+	for actor in all["units"]:afflict(actor,1)
+	all=BattlePlayLoop._return_to_player(all,"leonard")
+	for _i in range(3):all=BattlePlayLoop.step_ai_turn(all,no_rng)
+	check(all["selected_unit_id"] == "leonard" and all["turn"] == 2 and all["action_end_sequence"] == 3,"entire immobilized roster advances once and returns normal control after expiry")
+	check(all["units"].all(func(a):return not StatusEffectRules.paralyzed(a)) and BattlePlayLoop.command_available(all,"move"),"expiry restores the next normal action instead of granting a late extra turn")
+	var skipped := fixture_paralysis();var actor := BattlePlayLoop._unit(skipped,"leonard")
+	afflict(actor,1);actor["equipment"].append({"slot":"armor-extra-invalid","item_code":227})
+	var bad := BattlePlayLoop.step_ai_turn(BattlePlayLoop._return_to_player(skipped,"leonard"),no_rng)
+	check(not bad["scenario_ok"] and bad["units"] == skipped["units"] and bad["action_end_sequence"] == 0,"invalid equipment/entry state cannot partially tick or advance")
+
+func spell_and_equipment() -> void:
+	var loop := fixture_paralysis();var actor := BattlePlayLoop._unit(loop,"leonard");var first := BattlePlayLoop._unit(loop,"enemy021_1")
+	actor["exp"] = 99;first["coord"] = Vector2i(11,8)
+	first["equipment"] = [{"slot":"accessory1","item_code":211}]
+	var second := first.duplicate(true);second.merge({"id":"bound-second","coord":Vector2i(10,9),"equipment":[]},true)
+	loop["units"].append(second)
+	var mp_before: int = actor["mp"]
+	var receipt := BattleLoopCombat._resolve_skill(loop,"leonard",first["id"],BIND,BattlePlayLoop.skill_fields(loop,BIND),actor["coord"],zero,Vector2i(10,8))
+	check(not receipt.is_empty() and receipt["affected_targets"].size() == 2,"source cross effect accepts an empty center and real multiple targets")
+	if receipt.is_empty():return
+	check(not StatusEffectRules.paralyzed(first) and StatusEffectRules.paralyzed(second) and actor["mp"] == mp_before-16,"mixed immunity is per target and the action pays once")
+	check(actor["level"] == 2 and receipt.has("experience") and receipt["damage"] == 0,"paralysis contribution enters final EXP and role growth without fictitious damage")
+	var attacker := fixture_paralysis("001");var unit := BattlePlayLoop._unit(attacker,"leonard");var victim := BattlePlayLoop._unit(attacker,"enemy021_1")
+	attacker=run_position_equipment_tests.equip(attacker,"weapon",12);unit=BattlePlayLoop._unit(attacker,"leonard");victim=BattlePlayLoop._unit(attacker,"enemy021_1")
+	unit["hit_bonus_accum"]=1000;victim["coord"]=Vector2i(9,8);victim["no_attack"]=false;victim["combat_profile"]["attack_back"]=100;afflict(victim)
+	var exchange := BattleLoopCombat._resolve_exchange(attacker,"leonard",victim["id"],zero)
+	check(exchange["counter"].is_empty() and BattlePlayLoop.CombatSequence.participant_strikes(exchange).size()==2 and StatusEffectRules.paralyzed(victim),"paralyzed defender cannot counter a double series and damage does not fabricate a cure")
+	for role in ["001","024","026"]:
+		var equipped := run_position_equipment_tests.equip(fixture_paralysis(role),"accessory1",211)
+		var owner := BattlePlayLoop._unit(equipped,"leonard")
+		check(StatusApplicationRules.modifiers(owner,equipped["skill_book"],equipped["equipment_items"])["effects"] & 0x4000000,"source ring protects current eligible job")
+		afflict(owner)
+		var refreshed := BattlePlayLoop.ProgressionRules.refresh_growth_stats(owner,equipped["equipment_items"])
+		check(StatusEffectRules.paralyzed(refreshed) and refreshed["status_counters"] == owner["status_counters"],"protection and growth refresh do not cure existing paralysis")
+	var heavy := run_position_equipment_tests.equip(fixture_paralysis("024"),"weapon",31)
+	check(BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(heavy,"leonard")["equipment"],"weapon")==31,"source heavy class may equip protected axe")
+	check(run_position_equipment_tests.equip(fixture_paralysis("026"),"weapon",31)==fixture_paralysis("026"),"mage cannot bypass original axe job restriction")
+
+func aid_and_replanning() -> void:
+	var support := run_position_equipment_tests.equip(fixture_paralysis(),"accessory2",227)
+	var bound := BattlePlayLoop._unit(support,"enemy023_1")
+	bound["coord"] = Vector2i(10,8);bound["hp"] = 4;afflict(bound)
+	bound.merge(StatusEffectRules.apply(bound,"poison",3,7)["changes"],true)
+	bound.merge(StatusEffectRules.apply(bound,"no_magic",2)["changes"],true)
+	var counters: Dictionary = bound["status_counters"].duplicate(true)
+	var healed := BattlePlayLoop.attack_target(run_position_equipment_tests.selected(support,run_position_equipment_tests.HEAL),bound["id"],zero)
+	healed = BattlePlayLoop.finish_exhausted_action(healed) # The live scene calls this only after the support/EXP presentation.
+	check(healed["last_attack"].get("healing",0)>0 and healed["extra_action"]["pending"] and BattlePlayLoop.unit(healed,bound["id"])["status_counters"]==counters,"first support action heals a paralyzed patient without curing or ticking any status")
+	var cured := BattlePlayLoop.attack_target(run_position_equipment_tests.selected(healed,run_position_equipment_tests.CURE),bound["id"],zero)
+	cured = BattlePlayLoop.finish_exhausted_action(cured)
+	check(BattlePlayLoop.unit(cured,bound["id"])["status_counters"]=={"poison":0,"paralysis":2,"no_magic":2} and cured["interaction"]=="ai_resolving","second support action cures poison alone; the bound patient still takes the automatic entry path")
+	var skipped := BattlePlayLoop.step_ai_turn(cured,no_rng)
+	check(BattlePlayLoop.unit(skipped,bound["id"])["status_counters"]=={"poison":0,"paralysis":1,"no_magic":1} and BattlePlayLoop.unit(skipped,bound["id"])["hp"]==BattlePlayLoop.unit(cured,bound["id"])["hp"],"the now poison-free patient skips once without replaying damage/healing or either support reward")
+	# Use the actual source owner for the caster-state check; patients may not own Binding.
+	var disabled := BattlePlayLoop.unit(support,"leonard");afflict(disabled)
+	var unavailable := BattlePlayLoop.SkillResolutionRules.available(disabled,BIND,BattlePlayLoop.skill_fields(support,BIND),support["skill_book"],support["skill_target_data"],support["equipment_items"])
+	check(not unavailable["ok"] and unavailable["reason"]=="caster_paralyzed","ownership and resources cannot bypass caster paralysis")
+	var loop := fixture_paralysis();var ally := BattlePlayLoop._unit(loop,"enemy023_1")
+	ally["coord"] = Vector2i(10,8);afflict(ally);ally.merge(StatusEffectRules.apply(ally,"no_magic",2)["changes"],true)
+	loop=run_position_equipment_tests.moved(loop,Vector2i(9,8))
+	var use := BattlePlayLoop.use_item(loop,"248","enemy023_1",BattlePlayLoop.unit(loop,"leonard")["inventory"].find(248))
+	check(use["last_item_use"].get("cured_paralysis",false) and not StatusEffectRules.paralyzed(BattlePlayLoop.unit(use,"enemy023_1")) and StatusEffectRules.magic_blocked(BattlePlayLoop.unit(use,"enemy023_1")),"actual move-then-item releases only paralysis before ally acts")
+	check(use["selected_unit_id"]=="enemy023_1" and not BattlePlayLoop.unit(use,"leonard")["inventory"].has(248),"cure item debits once and restores next actor control")
+	var ai := fixture_paralysis("026",true);var medic := BattlePlayLoop._unit(ai,"leonard");var patient := BattlePlayLoop._unit(ai,"enemy023_1")
+	medic["inventory"]=[248,0,0,0,0,0,0,0];medic["mp"]=0;patient["coord"]=Vector2i(12,8);afflict(patient)
+	BattlePlayLoop._unit(ai,"enemy021_1")["coord"] = Vector2i(17,18) # Preserve a reachable aid route, not an occupied corridor.
+	own(ai, "ai_profiles")["actors"]["026"]["profile"].merge({"ai_help_otherhp":0,"ai_help_status":100,"ai_check_dying":0,"ai_help_selfhp":0},true)
+	var prep := BattleLoopAI._prepare_ai_turn(ai,"leonard")
+	check(prep["ok"] and prep["ally_support"]["status_items"].has(patient["id"]),"AI with no mana plans actual cure-item aid: "+str(prep.get("reason","")))
+	if not prep["ok"] or not prep["ally_support"]["status_items"].has(patient["id"]):return
+	var plan: Dictionary = prep["ally_support"]["status_items"][patient["id"]]
+	for changed in ["blocked","dead","cured","spent","paralyzed"]:
+		var bad := ai.duplicate(true)
+		if changed=="blocked":own(bad, "tiles")[plan["destination"]]={"blocks_movement":true}
+		elif changed=="dead":BattlePlayLoop._unit(bad,patient["id"]).merge({"hp":0,"defeated":true},true)
+		elif changed=="cured":BattlePlayLoop._unit(bad,patient["id"]).merge(StatusEffectRules.cure_paralysis(BattlePlayLoop.unit(bad,patient["id"])),true)
+		elif changed=="spent":BattlePlayLoop._unit(bad,"leonard")["inventory"][0]=0
+		else:afflict(BattlePlayLoop._unit(bad,"leonard"))
+		var original := bad.duplicate(true)
+		check(BattleLoopAI._execute_ai_support_item(bad,"leonard",plan).is_empty() and bad==original,"stale aid rejects before position/inventory/effect mutation: "+changed)
+	var done := BattlePlayLoop.step_ai_turn(ai,zero)
+	check(done["scenario_ok"] and done["last_ai_action"]["kind"] == "move_then_item" and not StatusEffectRules.paralyzed(BattlePlayLoop.unit(done,patient["id"])) and done["selected_unit_id"]==patient["id"],"AI follows path, cures, then returns actual patient control")

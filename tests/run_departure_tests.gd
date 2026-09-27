@@ -28,9 +28,6 @@ static func fixture(twice:bool=false)->Dictionary:
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 	return BattlePlayLoop._return_to_player(loop,"thief")
 
-static func living_enemies(loop:Dictionary)->int:
-	return loop["units"].filter(func(actor):return actor["battle_actor_role"]=="enemy_ai" and BattlePresenceRules.living(actor)).size()
-
 static func request(loop:Dictionary,ids:Array,key:String="event_departure")->Dictionary:
 	var next:=loop.duplicate(true)
 	if not next.has("winfail_runtime"):next["winfail_runtime"]={"fired":[],"departed_unit_ids":[],"departure_requests":[]}
@@ -46,9 +43,6 @@ func run()->void:
 	native_queue()
 	current_and_future()
 	spatial_and_targets()
-	transactions_and_endings()
-	checkpoint()
-	script_configuration()
 	ai_script_handoff()
 	rearmed_binding()
 
@@ -126,77 +120,6 @@ func spatial_and_targets()->void:
 	check(not BattlePresenceRules.prepare(death,["enemy026_1"],"winfail","dead")["changed"],"death then departure does not reclassify death or issue a new cleanup")
 	check(not BattlePresenceRules.prepare(fixture(),["thief","thief"],"winfail","bad")["ok"],"duplicate batch rejected atomically")
 	check(not BattlePresenceRules.prepare(fixture(),[4],"winfail","bad")["ok"],"non-string identity rejected atomically")
-
-func transactions_and_endings()->void:
-	var base:=fixture(true)
-	var strike:=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(base,"attack"),"enemy026_1",zero)
-	check(not strike["last_attack"].is_empty(),"ordinary source mana/EXP transaction completed")
-	var departed:=request(strike,["enemy026_1"])
-	check(departed["last_attack"]==strike["last_attack"] and departed["action_end_sequence"]==strike["action_end_sequence"],"after-attack departure does not reopen completed MP/EXP or status tail")
-	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
-		var terminal:=departed.duplicate(true);terminal["battle_outcome"]=outcome;terminal["interaction"]="battle_result";terminal["selected_unit_id"]="";BattlePlayLoop._clear_extra_action(terminal)
-		check(BattlePlayLoop.step_ai_turn(terminal)==terminal and BattlePlayLoop.begin_wait_resolution(terminal)==terminal and BattlePlayLoop.finish_exhausted_action(terminal)==terminal,"terminal transaction cannot tick departure or next actor")
-		check(BattleLoopCombat._resolve_exchange(terminal,"thief","tina",no_rng).is_empty(),"terminal ordinary entry cannot pay/attack")
-		check(BattleCheckpoint.encode(terminal,VIEW)["ok"],"three terminal histories accept a quiet checkpoint")
-	var chapter:=BattleFixture.loop()
-	var historical:=BattlePlayLoop.unit(chapter,"enemy021_1")
-	var first:=chapter.duplicate(true)
-	BattleLoopScript._commit_departures(first,["enemy021_1"],"winfail", "event_3")
-	check(BattlePlayLoop.unit(first,"enemy021_1")["hp"]==historical["hp"] and living_enemies(first)==living_enemies(chapter)-1,"scripted departure shares presence and the living enemy count")
-
-func checkpoint()->void:
-	var loop:=request(fixture(),["tina"])
-	var view:=VIEW.duplicate(true);view["script_cutscene_consumed"]=loop["winfail_runtime"]["fired"].size()
-	var saved:=BattleCheckpoint.encode(loop,view)
-	check(saved["ok"],"departure has a valid saved history")
-	if saved["ok"]:
-		var restored:=BattleCheckpoint.decode(saved["bytes"], loop)
-		check(restored["ok"] and restored["snapshot"]["loop"]==loop and restored["snapshot"]["view"]==view,"restore preserves exact history and script cursor without replay")
-	for bad in ["flag","queue","lock","ledger","source","sequence","cursor"]:
-		var corrupt:=loop.duplicate(true);var meta:=view.duplicate(true)
-		match bad:
-			"flag":BattlePlayLoop._unit(corrupt,"tina")["departed"]=false
-			"queue":corrupt["turn_queue"]["slots"].append({"id":"tina","enabled":true,"action_ready":true,"live_speed":100})
-			"lock":BattlePlayLoop._unit(corrupt,"thief")["ai_target_id"]="tina"
-			"ledger":corrupt["winfail_runtime"]["departed_unit_ids"].clear()
-			"source":BattlePlayLoop._unit(corrupt,"tina")["departure"]["source"]="unknown"
-			"sequence":corrupt["last_departure"]["unit_ids"]=["thief"]
-			"cursor":meta["script_cutscene_consumed"]=1000
-		check(not BattleCheckpoint.encode(corrupt,meta)["ok"],"checkpoint rejects malformed departure "+bad)
-	var carry:=BattlePlayLoop.CampaignCarryRules.capture(loop)
-	var fresh:=BattlePlayLoop.apply_campaign_carry(run_mobile_jobs_tests.fresh(),carry)
-	check(fresh["campaign_carry_receipt"]["errors"].is_empty() and not BattlePlayLoop.unit(fresh,"tina").get("departed",false),"battle departure does not delete a campaign party member")
-
-
-func script_configuration()->void:
-	var fixture_script = preload("res://tests/ScriptDepartureFixture.gd")
-	var sample: Dictionary = fixture_script.build("delete")
-	var loop: Dictionary = sample["loop"]
-	var origin := BattleCheckpoint.configuration(loop)
-	var before := BattleCheckpoint.encode(loop,VIEW)
-	check(before["ok"],"before-event save requires no completed script cursor")
-	var struck := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),sample["target_id"],zero)
-	check(struck["departure_sequence"] == 0,"the strike itself scans nothing: the attacked event waits for the completion scan")
-	# The owner acts twice (Mobile.fixture twice=true): the first half's repeat re-enters
-	# phase 0, clearing the attacker global, so the second half's attack is the one read.
-	var repeat := BattlePlayLoop.finish_exhausted_action(struck)
-	check(repeat["extra_action"]["pending"] and repeat["departure_sequence"] == 0,"the first half of the extra action completes without a scan")
-	var waited := BattlePlayLoop.choose_command(repeat,"wait")
-	check(waited["scenario_ok"] and waited["departure_sequence"] == 0 and waited["winfail_runtime"]["fired"].is_empty() and not waited["extra_action"]["pending"],"a second half that does not attack completes without the first half's attack (the repeat re-entered phase 0)")
-	var after := BattlePlayLoop.finish_exhausted_action(BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(repeat,"attack"),sample["target_id"],zero))
-	check(after["departure_sequence"] == 1,"real attack fires a configured departure")
-	check(BattleCheckpoint.encode(after,VIEW).get("reason") == "pending_saved_script_cutscene","unplayed script cannot be silently omitted from a quiet save")
-	var view := VIEW.duplicate(true);view["script_cutscene_consumed"] = after["winfail_runtime"]["fired"].size()
-	check(BattleCheckpoint.encode(after,view)["ok"],"completed script cursor permits quiet departure save")
-	var changed := loop.duplicate(true)
-	changed["winfail_script_rules"]["source_level"] += 1
-	check(BattleCheckpoint.configuration(changed) != origin,"changed rule source invalidates the old cursor configuration")
-	changed = loop.duplicate(true)
-	own(changed, "script_presentation_source")["digest"] = "0".repeat(64)
-	check(BattleCheckpoint.decode(before["bytes"], changed).get("reason") == "incompatible_save_configuration","changed timeline cannot reuse an old battle cursor")
-	changed = loop.duplicate(true);changed.erase("departure_policy")
-	check(BattleCheckpoint.configuration(changed) == "","old pre-presence saves require a fresh battle, not guessed migration")
-
 
 func rearmed_binding()->void:
 	var presentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")

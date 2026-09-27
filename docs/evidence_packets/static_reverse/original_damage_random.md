@@ -1,6 +1,6 @@
 # 伤害／命中随机流：原版生成器、单一状态、随存档保存
 
-> evidence: static-derived · status: live · functions: 0x403860, 0x406fe0, 0x409be0, 0x40a5d0, 0x40aa80, 0x40e430, 0x42c720, 0x42c780, 0x42c7e0, 0x42e070, 0x42e640, 0x4414a0, 0x4423c0, 0x4445cf, 0x457410, 0x458bb0, 0x458c10, 0x458c80 · tools: export_exchanges.gd, hsltools/evidence/damage_random.py, hsltools/probes/_exchange_check.py, run_random_stream_tests.gd · updated: 2026-09-26
+> evidence: static-derived · status: live · functions: 0x403860, 0x406fe0, 0x409be0, 0x40a5d0, 0x40aa80, 0x40e430, 0x42c720, 0x42c780, 0x42c7e0, 0x42e070, 0x42e640, 0x4414a0, 0x4423c0, 0x4445cf, 0x457410, 0x458bb0, 0x458c10, 0x458c80 · tools: export_exchanges.gd, hsltools/evidence/damage_random.py, hsltools/probes/_exchange_check.py, run_tests.gd · updated: 2026-09-26
 
 ## 结论
 
@@ -136,7 +136,7 @@ mode 由调用进程压入：
 - **收据**：道具与回合末收据记下抽样前后的状态。存档校验只要求收据自证：从抽样前状态重算，得到同样的抽样和抽样后状态。不再要求loop当前状态等于收据的抽样后状态，因为之后的交锋会继续推进同一条流。
 
 测试有两组：
-- `run_random_stream_tests.gd`的`damage_order_cases`：用影子流逐次比对一次交锋的抽取上界`[100, 5|base+4, eff*30/100, half, half, (-1), 100, (100)]`。
+- `run_tests.gd`的`damage_order_cases`：用影子流逐次比对一次交锋的抽取上界`[100, 5|base+4, eff*30/100, half, half, (-1), 100, (100)]`。
 - `save_load_cases`：在一场小战里先存档，连打三回合，再跑AI回合；然后读档，重复同样操作。逐次比对伤害、命中、暴击、状态和最终状态，并确认流确实推进过，而且换一个起始状态结果就不同。
 
 ## 复跑
@@ -144,7 +144,7 @@ mode 由调用进程压入：
 ```sh
 python3 tools/hsl.py check damage_random
 uv run --no-project --with 'unicorn>=2,<3' --with capstone python3 tools/hsl.py generate damage_random
-tools/godot.sh --headless --script res://tests/run_all.gd -- run_random_stream_tests.gd
+tools/godot.sh --headless --script res://tests/run_all.gd -- run_tests.gd
 
 # 整段交锋对拍（第 53 关 250 个种子约 5 分钟，第 51 关约 35 秒）
 U='uv run --no-project --with unicorn==2.1.4 python3 tools/hsltools/probes/_exchange_check.py'

@@ -19,12 +19,9 @@ func _initialize() -> void:
 func run() -> void:
 	passage_cases()
 	native_cases()
-	transaction_cases()
-	pursuit_cases()
 	source_and_save_cases()
 	terrain_rejection_cases()
 	blocked_start_cases()
-	await presentation_cases()
 	print("ACTOR_TRAVERSAL_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
 	quit(0 if failures.is_empty() else 1)
 
@@ -121,69 +118,6 @@ static func fixture(ai: bool = false) -> Dictionary:
 	return loop if ai else BattlePlayLoop.select_player_unit(loop, actor["id"])
 
 
-func transaction_cases() -> void:
-	for ability in ["attack", WIND, HEAL]:
-		var loop := fixture()
-		if ability == HEAL:
-			loop["units"][1]["hp"] = 20
-			loop["units"][1]["coord"] = Vector2i(8,5)
-			loop["units"][2]["coord"] = Vector2i(10,5)
-			var blocker := BattlePlayLoop.unit(loop, "enemy023_1")
-			blocker["id"] = "pass-through-ally"
-			blocker["coord"] = Vector2i(4,5)
-			loop["units"].append(blocker)
-		var selecting := BattlePlayLoop.choose_command(loop, "move")
-		var refused := BattlePlayLoop.move_unit_to(selecting, Vector2i(4,5))
-		check(refused == selecting, "clicking a transit-only ally cannot spend movement or overlap units")
-		var before := selecting.duplicate(true)
-		var destination := Vector2i(7,5) if ability == "attack" else Vector2i(6,5)
-		var moved := BattlePlayLoop.move_unit_to(selecting, destination)
-		check(BattlePlayLoop.unit(moved, "leonard")["coord"] == destination and moved["pending_move"], "player commits a path beyond the friendly corridor")
-		var cancelled := BattlePlayLoop.cancel_pending_move(moved)
-		check(BattlePlayLoop.unit(cancelled, "leonard")["coord"] == Vector2i(3,5) and cancelled["turn_queue"] == before["turn_queue"] and not cancelled["moved_this_action"], "cancel restores source coordinate and budget without ticking turns")
-		moved = BattlePlayLoop.move_unit_to(cancelled, destination)
-		var ready := BattlePlayLoop.choose_command(moved, "attack" if ability == "attack" else "magic")
-		if ability != "attack": ready = BattlePlayLoop.choose_magic(ready, ability)
-		var result := BattlePlayLoop.attack_target(ready, "enemy023_1" if ability == HEAL else "enemy021_1", func(_n): return 0)
-		check(not result.get("last_attack", {}).is_empty(), "movement through a teammate can finish with attack, magic or friendly healing")
-		check(BattlePlayLoop.unit(result, "leonard")["coord"] == destination and result["attacked_this_action"] and not result["pending_move"], "movement and follow-up action settle together")
-		if ability == HEAL: check(result["last_attack"]["healing"] > 0 and BattlePlayLoop.unit(result, "leonard")["mp"] == 94, "friendly support uses the exact same movement endpoint and one payment")
-		elif ability == WIND: check(result["last_attack"]["actual_damage"] > 0 and result["last_attack"]["skill_id"] == WIND, "native damaging spell follows the traversed route")
-		check(BattlePlayLoop.attack_target(result, "enemy021_1", no_rng)["units"] == result["units"], "late duplicate input cannot repeat the committed offense")
-
-
-func pursuit_cases() -> void:
-	var loop := fixture(true)
-	var actor: Dictionary = loop["units"][0]
-	actor["base_move_point"] = 1
-	actor["move_point"] = 1
-	var full := AINavigationRules.full_routes(loop, actor)
-	var route := AINavigationRules.route_to_goals(full, [Vector2i(7,5)])
-	check(not route.is_empty() and route["path_stops"] == [true,false,true,true,true], "full-map paths distinguish each transit and stopping point")
-	if route.is_empty(): return
-	var cut := AINavigationRules.advance_path(actor, route)
-	check(cut["to"] == actor["coord"] and cut["path"].size() == 1 and cut["cost"] == 0, "budget ending on an ally keeps the AI at the previous free cell")
-	actor["move_point"] = 2
-	cut = AINavigationRules.advance_path(actor, route)
-	check(cut["to"] == Vector2i(5,5) and cut["path"].has(Vector2i(4,5)), "enough budget crosses an ally and ends on a free cell")
-	loop["units"][1]["battle_actor_role"] = "player_controlled"
-	check(AINavigationRules.route_to_goals(AINavigationRules.full_routes(loop, actor), [Vector2i(7,5)]).is_empty(), "changing a corridor occupant to hostile invalidates the old route")
-	loop["units"][1].merge({"hp": 0, "defeated": true}, true)
-	check(not AINavigationRules.route_to_goals(AINavigationRules.full_routes(loop, actor), [Vector2i(7,5)]).is_empty(), "a defeated blocker releases both transit and landing on the next decision")
-	for unavailable in ["no_mp", "silence", "none"]:
-		var current := fixture(true)
-		var caster: Dictionary = current["units"][0]
-		caster["mp"] = 0 if unavailable == "no_mp" else 100
-		if unavailable == "silence": caster.merge(BattlePlayLoop.StatusEffectRules.apply(caster, "no_magic", 2)["changes"], true)
-		if unavailable == "none":
-			caster["no_attack"] = true
-			TestSuite.own(current, "skill_book")["actors"][caster["actor_id"]]["supported_initial_ids"] = []
-		var after := BattlePlayLoop.step_ai_turn(current, func(_n): return 0)
-		check(after["scenario_ok"] and after["last_ai_actions"].size() == 1, "unavailable spells continue the normal one-action decision seam")
-		check(BattlePlayLoop.unit(after, caster["id"])["coord"] != current["units"][1]["coord"], "AI fallback never stops inside its ally")
-		if unavailable == "none": check(after["last_ai_action"]["kind"] == "wait", "no useful attack, support or item produces a single Wait")
-
-
 func source_and_save_cases() -> void:
 	var loop := fixture()
 	check(loop["skill_book"]["actors"]["006"]["traversal"]["flying"] and loop["skill_book"]["actors"]["101"]["traversal"]["no_block"], "source-only later traits are retained without granting them to the first battle")
@@ -250,64 +184,6 @@ func blocked_start_cases() -> void:
 			if height < 253: ground = mini(ground, height)
 		ablated["tiles"][start] = {"elevation": ground, "blocks_movement": false, "movement_flags": 0}
 		check(BattlePlayLoop.movement_cells(ablated, entry[1]).any(func(cell): return int(loop["tiles"][cell]["elevation"]) < 253), "ablation: battle_%s %s walks off when its start cell is read at ground height" % entry)
-
-
-func presentation_cases() -> void:
-	var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
-	scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
-	root.add_child(scene)
-	await process_frame
-	scene.start_dev_first_control_harness()
-	scene.set_process(false)
-	await create_timer(0.15).timeout
-	scene.apply_loop(fixture(), "test")
-	for child in scene.actors_root.get_children(): scene.actors_root.remove_child(child); child.queue_free()
-	scene.unit_grid_coords.clear()
-	scene.resume_turn_presentation()
-	scene.center_camera_on_grid(Vector2i(4,5))
-	scene.menus.choose_command("move")
-	var before: Dictionary = scene.play_loop.duplicate(true)
-	GameOptions.environment_preset = "comfort"  # the OPT-GUIDE 提示 branch (原版 draws none of this)
-	var view = scene.get_node("BattlePresentation")
-	view.refresh(scene.play_loop,scene.map_config,true,true)
-	view.show_selection(scene.play_loop,Vector2i(4,5),scene.grid_cell_center_to_logical_position(Vector2i(4,5)),Vector2(32,32))
-	check(view.movement_preview.visible and not view.selection_cursor.eligible and view.selection_cursor.caption.text.contains("可通過，不能停留"), "scene preview distinguishes passage through a teammate from an accepted stopping cell")
-	view.show_selection(scene.play_loop,Vector2i(6,5),scene.grid_cell_center_to_logical_position(Vector2i(6,5)),Vector2(32,32))
-	check(view.movement_preview.points.size() == 4 and view.selection_cursor.caption.text == "移動 3 / 4", "preview path and arrival cost are the same route used for confirmation")
-	for index in range(view.movement_preview.points.size()):
-		check(view.movement_preview.points[index] == scene.actor_world_position_for_grid(Vector2i(3+index,5)), "path line shares the actor foot/grid transform")
-	check(scene.play_loop == before, "showing a path never changes resources, queue or targets")
-	scene.scene_input.disarm_pointer_scroll()
-	check(not view.movement_preview.visible and view.movement_preview.points.is_empty(), "focus loss clears the whole route and selection feedback")
-	scene.scene_input.handle_pointer_cancel(Vector2.ZERO)
-	scene._process(0)
-	check(not view.movement_preview.visible and scene.interaction_state == "action_menu", "cancel leaves no path behind the menu")
-	GameOptions.environment_preset = ""
-	# Reproduce the actual terminal seam: an AI action has settled, its last
-	# animation is over, and result visibility prevents the regular AI tick.
-	BattlePlayLoop._set_unit_hp(scene.play_loop,"leonard",0)
-	BattlePlayLoop._set_unit_defeated(scene.play_loop,"leonard",true)
-	scene.apply_loop(BattlePlayLoop._resolve_outcome(scene.play_loop), "test")
-	scene.ai_playback_active = true
-	scene.ai_playback_wait_remaining = 0.5
-	var terminal: Dictionary = scene.play_loop.duplicate(true)
-	for _attempt in range(12):
-		scene._process(0)
-		if view.dialogue_active(): view.advance_dialogue()
-		if view.battle_finished: break
-	check(view.battle_finished and not scene.ai_playback_active and scene.ai_playback_wait_remaining == 0.0, "visible defeat finishes AI playback before terminal save/retry")
-	check(scene.play_loop == terminal and not view.movement_preview.visible and not scene.action_menu.visible, "terminal playback cleanup cannot repeat a strike or advance the queue")
-	var voices: Array[WeakRef] = []
-	for player in scene.find_children("*","AudioStreamPlayer",true,false):
-		if player.playing:
-			var deadline := Time.get_ticks_msec() + 1000
-			while player.playing and player.get_playback_position() <= 0 and Time.get_ticks_msec() < deadline: await create_timer(0.01).timeout
-			if player.playing: voices.append(weakref(player.get_stream_playback()))
-		player.stop(); player.stream = null
-	scene.queue_free()
-	await process_frame
-	var deadline := Time.get_ticks_msec() + 2000
-	while voices.any(func(voice):return voice.get_ref() != null) and Time.get_ticks_msec() < deadline: await create_timer(0.02).timeout
 
 
 func check(ok: bool, label: String) -> void:

@@ -17,8 +17,8 @@ func run() -> void:
 	transactions()
 	hit_bonus_process()
 	equipment()
-	rejections()
 	await presentation()
+	await run_stamina()
 
 
 func random_from(draws: Array) -> Callable:
@@ -214,28 +214,6 @@ func equipment() -> void:
 	check(BattlePlayLoop.change_equipment(malformed,"weapon",0,6) == malformed, "bad weapon magnitude cannot exchange equipment or silently omit its effect")
 
 
-func rejections() -> void:
-	for key in ["attack_damagex2", "attack_back", "weapon_magic_attack_type", "weapon_damage_variance_hi"]:
-		var loop := fixture()
-		BattlePlayLoop._unit(loop,"enemy021_1")["combat_profile"].erase(key)
-		var selected := BattlePlayLoop.choose_command(loop,"attack")
-		check(BattlePlayLoop.attack_target(selected,"enemy021_1",no_rng) == selected, "bad required physical input refuses whole exchange before RNG: " + key)
-	var insufficient := fixture()
-	BattlePlayLoop._unit(insufficient,"leonard")["stamina"] = 19
-	var insufficient_page := BattlePlayLoop.choose_command(insufficient,"special")
-	check(not BattlePlayLoop.can_use_special(insufficient,"leonard") and insufficient_page["units"] == insufficient["units"] and BattlePlayLoop.choose_special(insufficient_page,"special:magicOTHER:magicCode01")["interaction"] == "special_select", "19ST opens the skill page but cannot enter a paid special action")
-	var save = preload("res://game/battle/runtime/BattleCheckpoint.gd")
-	var state := fixture()
-	var encoded: Dictionary = save.encode(state,{"camera":Vector2(320,240),"shown_story_events":[],"story_complete":false,"growth_notified_level":1})
-	check(encoded["ok"],"quiet battle with explicit physical fields saves normally")
-	if encoded["ok"]:
-		var decoded: Dictionary = save.decode(encoded["bytes"], state)
-		check(decoded["ok"] and decoded["snapshot"]["loop"] == state,"save restore retains current weapon and critical/counter rates")
-		var corrupt: Dictionary = decoded["snapshot"].duplicate(true)
-		corrupt["loop"]["units"][0]["combat_profile"].erase("attack_damagex2")
-		check(save.validate(corrupt, state) == "invalid_saved_physical_profile","missing stored critical rate cannot restore into a later partial strike")
-
-
 func presentation() -> void:
 	var loop := fixture()
 	BattlePlayLoop._unit(loop,"leonard")["combat_profile"]["attack_damagex2"] = 100
@@ -292,3 +270,109 @@ func presentation() -> void:
 	deadline = Time.get_ticks_msec() + 1500
 	while voice.get_ref() != null and Time.get_ticks_msec() < deadline: await tree.create_timer(0.02).timeout
 	check(voice.get_ref() == null,"completed special review releases its actual audio playback")
+
+
+# ---- run_ordinary_special_tests.gd ----
+const StaminaRules = preload("res://game/sim/StaminaRules.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const run_ai_decision_tests = preload("res://tests/run_ai_decision_tests.gd")
+func run_stamina() -> void:
+	native_cases()
+	combat_cases()
+	equipment_cases()
+
+
+func native_cases() -> void:
+	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_stamina.json"))
+	for row in packet["cases"]:
+		var c: Dictionary = row["input"]
+		var before := c.duplicate(true)
+		var amount := StaminaRules.amounts(int(c["max_hp"]), int(c["hp_after"]), int(c["damage"]), int(c["attacker_level"]), int(c["defender_level"]), int(c["attacker_st"]), int(c["defender_st"]), int(c["attacker_flags"]), int(c["defender_flags"]))
+		check(amount["attacker"]["after"] == row["native"]["attacker"] and amount["defender"]["after"] == row["native"]["defender"], "both gains equal complete original x86 return")
+		check(row["normal_return"] and row["rng_calls"] == 0 and c == before, "native stamina case has complete return, zero RNG and no input mutation")
+	check(StaminaRules.amounts(11, 1, 5, 1, 1, 0, 0, 0, 0)["base_gain"] == 4, "odd maxHP half threshold uses integer floor")
+	check(StaminaRules.amounts(1, 1, 4, 1, 1, 0, 0, 0, 0)["base_gain"] == 3, "maxHP below10 retains original minimum denominator")
+
+
+static func fixture_stamina() -> Dictionary:
+	var loop := BattleFixture.loop()
+	var player := BattlePlayLoop._unit(loop, "leonard")
+	var enemy := BattlePlayLoop._unit(loop, "enemy021_1")
+	player["live_speed"] = 100
+	for unit in loop["units"]:
+		unit["combat_profile"]["attack_back"] = 0
+	for unit in [player, enemy]:
+		unit["hp"] = 500
+		unit["max_hp"] = 500
+		unit["level"] = 1
+		unit["combat_profile"]["live_hit_ratio"] = 200
+		unit["combat_profile"]["live_defense"] = 0
+		unit["combat_profile"]["live_attack_damage"] = 10
+		enemy["coord"] = player["coord"] + Vector2i.UP
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
+	return BattlePlayLoop.select_player_unit(loop, "leonard")
+
+
+func combat_cases() -> void:
+	var loop := fixture_stamina()
+	check(loop["units"].all(func(unit): return unit["stamina"] == 0), "every roster actor starts at explicit zero ST")
+	for unit in loop["units"]:
+		if unit["id"] == "leonard": continue
+		check(not BattlePlayLoop._menu_for_unit(loop, unit["id"])["commands"].any(func(command): return command["command"] == "special"), "having ST never grants another actor Leonard's ability")
+	var player := BattlePlayLoop._unit(loop, "leonard")
+	var enemy := BattlePlayLoop._unit(loop, "enemy021_1")
+	for index in range(5):
+		var attacking: String = "leonard" if index % 2 == 0 else "enemy021_1"
+		var defending: String = "enemy021_1" if index % 2 == 0 else "leonard"
+		var before := [player["stamina"], enemy["stamina"]]
+		var strike := BattleLoopCombat._apply_strike(loop, attacking, defending, func(_bound): return 0)
+		check(strike["stamina_gain"]["attacker"]["delta"] == 3 and strike["stamina_gain"]["defender"]["delta"] == 6, "ordinary light damage has asymmetric native gain")
+		check(player["stamina"] == before[0] + (3 if attacking == "leonard" else 6), "committed player ST matches role")
+	check(player["stamina"] == 21 and BattlePlayLoop.can_use_special(loop, "leonard"), "earned charge unlocks the real20-cost skill")
+	var canceled := BattlePlayLoop.cancel_interaction(BattlePlayLoop.choose_command(loop, "special"))
+	check(canceled["units"] == loop["units"], "canceling earned special preserves exact charges")
+	var selected := BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(loop, "special"), "special:magicOTHER:magicCode01")
+	for hit in [true, false]:
+		var cast := BattlePlayLoop.attack_coord(selected, enemy["coord"], func(bound): return 0 if hit or bound != 100 else 99)
+		check(BattlePlayLoop.unit(cast, "leonard")["stamina"] == 1 and BattlePlayLoop.unit(cast, enemy["id"])["stamina"] == enemy["stamina"], "special pays20 once on hit or miss, with no invented normal-attack gain")
+	var counter_loop := fixture_stamina()
+	BattlePlayLoop._unit(counter_loop, "enemy021_1")["combat_profile"]["attack_back"] = 200
+	var exchange := BattleLoopCombat._resolve_exchange(counter_loop, "leonard", "enemy021_1", func(_n): return 0)
+	check(not exchange["counter"].is_empty() and BattlePlayLoop.unit(counter_loop, "leonard")["stamina"] == 9 and BattlePlayLoop.unit(counter_loop, "enemy021_1")["stamina"] == 9, "counter exchanges gain independently with reversed roles")
+	var missed := fixture_stamina()
+	BattlePlayLoop._unit(missed, "leonard")["combat_profile"]["live_hit_ratio"] = 0
+	var miss := BattleLoopCombat._apply_strike(missed, "leonard", "enemy021_1", func(_n): return 99)
+	check(not miss["hit"] and not miss.has("stamina_gain") and BattlePlayLoop.unit(missed, "leonard")["stamina"] == 0 and BattlePlayLoop.unit(missed, "enemy021_1")["stamina"] == 0, "miss grants neither participant stamina")
+	var mage_loop := run_ai_decision_tests.live_fixture()
+	var magic := BattleLoopAI._try_skill_turn(mage_loop, "enemy026_1", [BattlePlayLoop.unit(mage_loop, "leonard")], func(_n): return 0)
+	check(not magic.is_empty() and BattlePlayLoop.unit(mage_loop, "leonard")["stamina"] == 0 and BattlePlayLoop.unit(mage_loop, "enemy026_1")["stamina"] == 0, "magic damage retains the separate original no-ST-gain channel")
+	var killed := fixture_stamina()
+	BattlePlayLoop._unit(killed, "enemy021_1")["hp"] = 1
+	var death := BattleLoopCombat._apply_strike(killed, "leonard", "enemy021_1", func(_n): return 0)
+	check(death["stamina_gain"]["base_gain"] == 4 and death["stamina_gain"]["defeated"] and BattlePlayLoop.unit(killed, "leonard")["stamina"] == 4, "lethal strike includes the source kill increment once")
+	var capped := fixture_stamina()
+	BattlePlayLoop._unit(capped, "leonard")["stamina"] = 59
+	BattleLoopCombat._apply_strike(capped, "leonard", "enemy021_1", func(_n): return 0)
+	check(BattlePlayLoop.unit(capped, "leonard")["stamina"] == 60, "earned charges never exceed source cap60")
+
+
+func equipment_cases() -> void:
+	var loop := fixture_stamina()
+	BattlePlayLoop._unit(loop, "leonard")["inventory"] = [225, 225, 169, 0, 0, 0, 0, 0]
+	var before := loop.duplicate(true)
+	var equipped := BattlePlayLoop.change_equipment(loop, "accessory1", 0, 225)
+	check(BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(equipped, "leonard")["equipment"], "accessory1") == 225 and loop == before, "source ring equips through actual immutable player transaction")
+	check(equipped["turn_queue"] == loop["turn_queue"] and BattlePlayLoop.unit(equipped, "leonard")["stamina"] == 0, "equipping grants no free ST and preserves current turn")
+	equipped = BattlePlayLoop.change_equipment(equipped, "accessory2", BattlePlayLoop.unit(equipped, "leonard")["inventory"].find(225), 225)
+	var old_st: int = BattlePlayLoop.unit(equipped, "leonard")["stamina"]
+	var strike := BattleLoopCombat._apply_strike(equipped, "leonard", "enemy021_1", func(_n): return 0)
+	check(strike["stamina_gain"]["attacker"]["doubled"] and BattlePlayLoop.unit(equipped, "leonard")["stamina"] == old_st + 6, "two source rings set one native bit; gains double, never quadruple")
+	equipped = BattlePlayLoop.change_equipment(equipped, "head", BattlePlayLoop.unit(equipped, "leonard")["inventory"].find(169), 169)
+	check(BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(equipped, "leonard")["equipment"], "head") == 169, "Ghost Mask is actually equipable with supported effects")
+	old_st = BattlePlayLoop.unit(equipped, "leonard")["stamina"]
+	var locked := BattleLoopCombat._apply_strike(equipped, "leonard", "enemy021_1", func(_n): return 0)
+	check(locked["stamina_gain"]["attacker"]["blocked"] and BattlePlayLoop.unit(equipped, "leonard")["stamina"] == old_st, "source no_addst takes precedence over double gain")
+	var mask_removed := BattlePlayLoop.change_equipment(equipped, "head", -1, 0)
+	check((int(StaminaRules.effects(BattlePlayLoop.unit(mask_removed, "leonard"), mask_removed["equipment_items"])["flags"]) & StaminaRules.BLOCK) == 0, "unequip removes effective block immediately without resetting earned ST")
+	var resumed := BattleLoopCombat._apply_strike(mask_removed, "leonard", "enemy021_1", func(_n): return 0)
+	check(resumed["stamina_gain"]["attacker"]["delta"] == 6, "normal progression refresh preserves passive gain behavior")

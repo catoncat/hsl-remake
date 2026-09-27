@@ -1,6 +1,6 @@
 # 剧情脚本的镜头：居中缓动、走路跟随与 actScrollBG 步进
 
-> evidence: static-derived; resource-derived: 脚本 token 与参数; provisional: 16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定） · status: live · functions: 0x42dc50, 0x43bf30, 0x43c140, 0x44fcf0, 0x44fd90, 0x450840, 0x453b90, 0x45e80d · tools: hsltools/data/story_corpus.py, run_opening_camera_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: 脚本 token 与参数; provisional: 16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定） · status: live · functions: 0x42dc50, 0x43bf30, 0x43c140, 0x44fcf0, 0x44fd90, 0x450840, 0x453b90, 0x45e80d · tools: hsltools/data/story_corpus.py, run_camera_panel_motion_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -59,15 +59,15 @@ runtime-measured 旁证：录屏 212.45 s AI 回合被对准的法师站在 (320
 | `OpeningCinematics.camera_scroll_seconds` 逐 tick 模拟 `0x45e80d`（步进 16、容差 4） | 逐轴 `min(step, 剩余/2)`，剩余 ≤ 4 px 落位 | static-derived（[tick 映射表](../runtime_observations/original_tick_rate/tick_mapping.md) 行 27／28） |
 | `BattleOpeningCoordinator.walk_pixels_per_tick` 用 `0x4543d8` 表；`OpeningStoryObjects` 的 Wait 行走按同一步长请求镜头（`0x453fbd..0x454039`） | speed → 1／2／2／4／8 px／tick | static-derived |
 | Wait 变体（`actWalkWait`／`actWalkDispWait`／`actWalkPrevInsertObjectWait`）走路时按同一组边界逐 tick 跟随；开走前对所有变体瞬切到演员 | 只有 Wait 变体先缓动居中 | 跟随 static-derived；瞬切 remake-invented |
-| `OpeningCinematics.script_position_camera_centre`：位置 token 的点放在视口中心（重制 640×480 视口＝点＋(0,48)） | case 0x13／0x4b 先取格心再经 `0x43bf30` 放到 (320,192) | static-derived；普查 `run_opening_camera_tests.gd`：82 次「位置镜头后插入的演员」旧读法（视口左上角）仅 12 次完整在画面内，新读法 81 次，余下 WINFAIL041 event 0 的水怪在原版读法下也只露脚——重制对插入演员加「拉进画面」（remake-invented） |
+| `OpeningCinematics.script_position_camera_centre`：位置 token 的点放在视口中心（重制 640×480 视口＝点＋(0,48)） | case 0x13／0x4b 先取格心再经 `0x43bf30` 放到 (320,192) | static-derived；普查 `run_camera_panel_motion_tests.gd`：82 次「位置镜头后插入的演员」旧读法（视口左上角）仅 12 次完整在画面内，新读法 81 次，余下 WINFAIL041 event 0 的水怪在原版读法下也只露脚——重制对插入演员加「拉进画面」（remake-invented） |
 | `BattleCameraController.focus_centre`（点＋(0,48)）供战斗对准、结算对准、位置／对象 token、对白与走前瞬切共用 | `0x43bf30` 对任何对象都把点放在 (320,192) | static-derived |
 | `scroll_to(目标, speed, 1)` | case 0x4b → `0x43c140`，`tol 1, step = speed` | static-derived |
 
-provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md`（`BattleOpeningCoordinator`、`BattleCameraController`、`OpeningStoryObjects`、`OpeningCinematics`、`BattleAftermath`；测试 `run_opening_camera_tests.gd`、`run_camera_panel_motion_tests.gd`）。
+provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md`（`BattleOpeningCoordinator`、`BattleCameraController`、`OpeningStoryObjects`、`OpeningCinematics`、`BattleAftermath`；测试 `run_camera_panel_motion_tests.gd`、`run_camera_panel_motion_tests.gd`）。
 
 ## 复现
 
-`tools/godot.sh --headless --script tests/run_opening_camera_tests.gd`（位置镜头与插入演员普查）；静态部分 `r2 -q -e scr.color=0 -c 'pd 90 @ 0x43bf30; pd 40 @ 0x45e80d; pxw 32 @ 0x4543d8' hsl01.exe`。
+`tools/godot.sh --headless --script tests/run_camera_panel_motion_tests.gd`（位置镜头与插入演员普查）；静态部分 `r2 -q -e scr.color=0 -c 'pd 90 @ 0x43bf30; pd 40 @ 0x45e80d; pxw 32 @ 0x4543d8' hsl01.exe`。
 
 ## 边界
 

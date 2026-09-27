@@ -1,6 +1,6 @@
 # 世界地图／城镇数据链（bigmap.dat、TRACK、TOWNDEF）
 
-> evidence: resource-derived; provisional · status: live · tools: hsltools/data/big_map_flow.py, hsltools/data/world_map.py, hsltools/levels/map_objects.py, test_hsl_big_map_flow.py · updated: 2026-09-18
+> evidence: resource-derived; provisional · status: live · tools: hsltools/data/big_map_flow.py, hsltools/data/world_map.py, hsltools/levels/map_objects.py · updated: 2026-09-18
 
 Checked: 2026-09-18. 本包只记录原包成员的**结构**与字段交叉校验，证据等级为 `resource-derived`；
 凡是数据本身不能证明的字段含义和运行时行为一律标 `provisional`，列在文末。它不声明任何原版
@@ -75,7 +75,7 @@ SHA-256 逐成员写在两份 JSON 的 `sources` 里；工具在构建时核对 
 
 ## 大地图流转脚本惯例（resource-derived）
 
-`tools/hsltools/data/big_map_flow.py` 扫描原 PAK 全部 151 个含流转指令的 `story*.txt`／`winfail*.txt`（352 条 `actSetNextPlayLevelEvent`／`actBM*`／`actSetTownExecEvent`／`actAddTE` 等），写 `content/generated/hsl/static/hsl01/big_map_flow.json`（`hsl_big_map_flow.v1`，`--check` 离线复推导；单测 `tools/test_hsl_big_map_flow.py`）。symbol 取 `towndef.json` 的 TYPE.H／extras.h 读法（`gameBigMapLevel = 49`、`town_*`）。脚本惯例（不是 EXE handler 的证明）：
+`tools/hsltools/data/big_map_flow.py` 扫描原 PAK 全部 151 个含流转指令的 `story*.txt`／`winfail*.txt`（352 条 `actSetNextPlayLevelEvent`／`actBM*`／`actSetTownExecEvent`／`actAddTE` 等），写 `content/generated/hsl/static/hsl01/big_map_flow.json`（`hsl_big_map_flow.v1`，`--check` 离线复推导）。symbol 取 `towndef.json` 的 TYPE.H／extras.h 读法（`gameBigMapLevel = 49`、`town_*`）。脚本惯例（不是 EXE handler 的证明）：
 
 | 惯例 | 数据 | 读法 |
 | --- | --- | --- |

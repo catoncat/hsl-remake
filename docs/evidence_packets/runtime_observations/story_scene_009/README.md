@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-18
 
-来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=9`（`STORY_SCENE_REVIEW_PASS shots=9`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_level_9_story`）。场景文件 `content/battles/story_009.json` 由 `python3 tools/hsl.py generate story_scene:9` 从 `battle009_seed` 生成。level 9 是 story-only 过场（无 WINFAIL）：STORY008 把廢都（bigmap 点 9）改成战斗点后到达即进入，是**完整重制**。
+来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=9`（`STORY_SCENE_REVIEW_PASS shots=9`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_registered_story_sweep` 与全程剧情 explorer）。场景文件 `content/battles/story_009.json` 由 `python3 tools/hsl.py generate story_scene:9` 从 `battle009_seed` 生成。level 9 是 story-only 过场（无 WINFAIL）：STORY008 把廢都（bigmap 点 9）改成战斗点后到达即进入，是**完整重制**。
 
 ## 看到什么
 

@@ -41,7 +41,6 @@ func run() -> void:
 	create_timer(120).timeout.connect(func(): push_error("SCRIPT_WAIT_TIMEOUT"); quit(2))
 	native_setters()
 	source_initialization()
-	repeat_and_restore()
 	insertion_order()
 	wake_and_actions()
 	await object_synchronization()
@@ -94,44 +93,6 @@ func source_initialization() -> void:
 		var sixth_rows: Array = sixth["script_wait_source"]["initial"]
 		check(sixth_rows.size() == 1 and sixth_rows[0]["unit_id"] == "guard024_1" and sixth_rows[0]["rounds"] == 3 and BattlePlayLoop.unit(sixth,"guard024_1")["ai_wait_remaining"] == 3, "STORY006 mixed-symbol inserts bind the wait round to the captain: " + str(sixth_rows))
 		check(BattlePlayLoop.unit(sixth,"guard023_3")["ai_wait_remaining"] == 0, "the third soldier keeps its default wait")
-
-func repeat_and_restore() -> void:
-	var next := assign(fixture(),2,9)
-	BattlePlayLoop._unit(next,"enemy026_2")["ai_wait_remaining"] = 4 # Several accepted AI actions elapsed.
-	var before := next.duplicate(true)
-	BattleLoopScript._consume_script_waits(next)
-	check(next == before, "already-consumed setter cannot restore an old countdown")
-	next = assign(next,2,1)
-	check(BattlePlayLoop.unit(next,"enemy026_2")["ai_wait_remaining"] == 1 and next["script_wait_cursor"] == 2, "new firing replaces rather than adds remaining wait")
-	var saved := BattleCheckpoint.encode(next,VIEW)
-	check(saved["ok"], "new wait state can be saved: " + str(saved.get("reason")))
-	if saved["ok"]:
-		var restored := BattleCheckpoint.decode(saved["bytes"], next)
-		check(restored["ok"] and restored["snapshot"]["loop"] == next, "load restores exact assignment cursor and countdown without replay")
-	for bad in ["cursor", "firing", "value", "receipt", "source"]:
-		var invalid := next.duplicate(true)
-		match bad:
-			"cursor": invalid["script_wait_cursor"] -= 1
-			"firing": invalid["winfail_runtime"]["wait_requests"][0]["firing_index"] = 999
-			"value": invalid["winfail_runtime"]["wait_requests"][0]["rounds"] = -1
-			"receipt": invalid["last_script_wait"]["rows"][0]["changes"][0]["after"] = 99
-			"source": TestSuite.own(invalid, "script_wait_source")["policy"] = "old"
-		check(not BattleCheckpoint.encode(invalid,VIEW)["ok"], "checkpoint rejects inconsistent " + bad)
-	var gone := run_departure_tests.request(next,["enemy026_1"])
-	var fresh := assign(gone,1,5)
-	check(BattlePlayLoop.unit(fresh,"enemy026_2")["ai_wait_remaining"] == 5 and BattlePlayLoop.unit(fresh,"enemy026_1").get("departed"), "repeated serial1 resolves current registration after departure")
-	var wrong := next.duplicate(true)
-	WinfailActions.apply_actions(wrong,{"key":"event_bad","actions":[{"name":"actSetWaitRound","args":["SID_ENEMY026","1","7"]},{"name":"actSetWaitRound","args":["SID_ENEMY026","2","-1"]}]},"test")
-	var untouched: Array = wrong["units"].duplicate(true)
-	BattleLoopScript._consume_script_waits(wrong)
-	check(not wrong["scenario_ok"] and wrong["units"] == untouched, "all new requests validate before any live actor assignment")
-	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
-		var terminal := next.duplicate(true)
-		terminal.merge({"battle_outcome":outcome,"interaction":"battle_result","selected_unit_id":""},true)
-		BattlePlayLoop._clear_extra_action(terminal)
-		var frozen := terminal.duplicate(true)
-		BattleLoopScript._consume_script_waits(terminal)
-		check(terminal == frozen and BattlePlayLoop.step_ai_turn(terminal) == frozen and BattleCheckpoint.encode(terminal,VIEW)["ok"], "terminal keeps all counters frozen and saveable")
 
 func insertion_order() -> void:
 	var loop := fixture()

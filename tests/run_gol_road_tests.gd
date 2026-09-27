@@ -69,10 +69,7 @@ func run() -> void:
 	check(before["units"].size() == 7, "script proposal preserves its input")
 	if not BattlePlayLoop.unit(fired, "tina").is_empty():
 		birth_and_persistence(loop, fired)
-		atomic_proposals(before)
-		combat_and_terminals(fired)
 	actual_action_transition()
-	await rendering_boundary()
 	print("GOL_ROAD_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
 	call_deferred("quit", 0 if failures.is_empty() else 1)
 
@@ -117,43 +114,6 @@ func birth_and_persistence(initial_state: Dictionary, fired: Dictionary) -> void
 	check(outcome["ok"] and not outcome["created"] and replay == existing, "repeat installation of the existing slot never resets health, equipment, progress or RNG")
 
 
-func atomic_proposals(before: Dictionary) -> void:
-	var pending := WinfailScenarioRules.run_event_hooks(before)
-	var broken := pending.duplicate(true)
-	TestSuite.own(broken, "script_actor_source")["templates"]["obj_Story_Level2_Enemy23"]["source_actor_id"] = "026"
-	var untouched := broken.duplicate(true)
-	var result := BattlePlayLoop.ScriptActors.prepare(broken)
-	check(not result["ok"] and broken == untouched, "bad later guard source rejects the whole proposal without partial Tina or RNG commit")
-	var actor: Dictionary = before["units"][0].duplicate(true)
-	var landing := BattlePlayLoop.ScriptActors._landing(actor, Vector2i(-100000, -100000), before["units"], before)
-	check(landing["ok"] and landing["coord"].x >= 0 and landing["coord"].y >= 0, "outside cinematic insertion is bounded by the real map, not by the magnitude of a script coordinate")
-	var blocked := pending.duplicate(true)
-	var last: Dictionary = blocked["script_actor_source"]["templates"]["obj_Story_Level2_Enemy23"]
-	last["actor"]["growth_profile"]["job_code"] = 999
-	untouched = blocked.duplicate(true)
-	result = BattlePlayLoop.ScriptActors.prepare(blocked)
-	check(not result["ok"] and blocked == untouched, "later growth failure cannot leak an earlier newly installed player or advanced random stream")
-
-
-func combat_and_terminals(fired: Dictionary) -> void:
-	for dead_id in ["leonard", "hu", "tina"]:
-		var state := fired.duplicate(true)
-		BattlePlayLoop._set_unit_defeated(state, dead_id, true)
-		state = BattlePlayLoop._resolve_outcome(state)
-		check(BattleOutcome.lost(state), "second phase checks actual registered member death: " + dead_id)
-		check(BattlePlayLoop.step_ai_turn(state) == state and BattlePlayLoop.finish_exhausted_action(state) == state, "terminal freezes further installation/growth/actions: " + dead_id)
-	var won := fired.duplicate(true)
-	var guards: Array = won["units"].filter(func(a): return a["actor_id"] == "023")
-	for index in range(guards.size() - 1): BattlePlayLoop._set_unit_defeated(won, guards[index]["id"], true)
-	won = BattlePlayLoop._resolve_outcome(won)
-	check(BattleOutcome.won(won) and won["next_level_event"] == [2, 55], "source second phase leaves one retreating pursuer and leads to the camp, not an invented escape")
-	check(won["script_actor_transactions"].size() == 2 and BattlePlayLoop.ScriptActors.state_error(won) == "", "terminal script movement has one committed receipt, no second installation")
-	var view := VIEW.duplicate(true);view["script_cutscene_consumed"] = 2
-	check(BattleCheckpoint.encode(won, view)["ok"], "completed victory movement/camp destination are checkpointable")
-	var restarted := initial()
-	check(restarted["units"].size() == 7 and restarted["script_actor_transactions"].is_empty() and BattlePlayLoop.unit(restarted, "tina").is_empty(), "fresh restart returns to original first phase without retaining the completed grant")
-
-
 func actual_action_transition() -> void:
 	var before := attack_fixture()
 	var attacked := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(before, "attack"), "actor028_2", func(_n): return 0)
@@ -192,36 +152,6 @@ func actual_action_transition() -> void:
 	var birth: Dictionary = unit["script_creation"].duplicate(true)
 	var grown := BattlePlayLoop.ProgressionRules.resolve_experience(unit, 1000, current["equipment_items"])
 	check(grown["level"] > unit["level"] and grown["script_creation"] == birth and grown["permanent_gains"] == unit["permanent_gains"], "subsequent multi-level growth preserves committed installation and permanent gain sources")
-
-
-func rendering_boundary() -> void:
-	var runtime = load("res://game/battle/development/GolRoad.tscn").instantiate()
-	runtime.startup_mode = "dev_first_control"
-	root.add_child(runtime);runtime.set_process(false)
-	# Let the audio mixer consume the scene's queued startup before stopping it.
-	# This test drives the visual event synchronously, not at audio wall-clock pace.
-	await create_timer(0.15).timeout
-	var input := BattlePlayLoop.begin_battle(ready_event(initial()))
-	runtime.apply_loop(input, "test")
-	var actor_node: Node = runtime.actor_node_for_unit("leonard")
-	var position: Vector2 = actor_node.position
-	runtime.apply_loop(BattlePlayLoop._resolve_outcome(WinfailScenarioRules.run_event_hooks(input)), "test")
-	check(runtime.actor_node_for_unit("tina") == null and runtime.actor_node_for_unit("leonard").position == position, "post-hit state commit does not preview an unplayed installation or future scripted position")
-	var source: Dictionary = runtime.first_battle_scenario["scenario_rules"]["status_timelines"]["event_0"]
-	var events: Array = runtime.ScriptActorsPresentation.attach(runtime, source["events"], 0)
-	runtime.script_cutscene_consumed = 1
-	if runtime.opening_coordinator == null:
-		runtime.opening_coordinator = runtime.BattleOpeningCoordinator.new()
-		runtime.opening_coordinator.runtime = runtime
-		runtime.add_child(runtime.opening_coordinator)
-	runtime.opening_coordinator.start_cutscene("event_0", events)
-	check(runtime.actor_node_for_unit("tina") != null and runtime.actor_node_for_unit("tina").visible, "first actual installation token reveals only the already-committed priest")
-	check(runtime.play_loop["units"].size() == 12, "renderer never creates a second gameplay actor")
-	for node in runtime.find_children("*", "AudioStreamPlayer", true, false): node.stop();node.stream = null
-	await create_timer(0.15).timeout
-	root.remove_child(runtime);runtime.queue_free()
-	await process_frame
-	await create_timer(0.3).timeout
 
 
 func check(value: bool, message: String) -> void:

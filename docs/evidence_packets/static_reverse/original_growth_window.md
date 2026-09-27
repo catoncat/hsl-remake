@@ -93,7 +93,7 @@ Checked: 2026-09-21。r2 + r2ghidra 阅读 `hsl01.exe`（sha256 `f0b5f835…`，
 | 属性原地修改、开窗即升级 | 草稿 + `Growth.apply_allocation` 预览；OK → `allocate_growth` 一次提交（PlayLoop 已在 EXP 结算时升级并留 `pending_stat_points`） | 玩家可见数值变化一致；真相所有者不变 |
 | WINDOW31 學會魔法（开窗固定） | 显示本级 `trigger == level_up` 的 learned_skills | 重制在 EXP 结算时已学 |
 | WINDOW50 學會特殊技（随加点预览，OK 提交） | `Learning.acquire(预览角色, skill_book, "special")["added"]` 实时预览；`allocate_growth` 提交 | 同 |
-| 阶段 8 对每个玩家对象开窗（敌方回合反击亦同） | `BattleSceneMenus.offer_pending_growth`：行动菜单或敌方回合两步 AI 之间的安静时刻，按角色记录已提示等级（`growth_offered_levels`），任何存活可控成员都弹；`run_growth_offer_tests` | 胜利一击：在胜利对白／过场／结果页之前弹（`terminal_growth_pending`，`allocate_growth` 胜利后仍收点数、失败后拒绝；`run_growth_offer_tests`、`run_combat_aftermath_tests.terminal_victory_level_up`）；先后为静态读法，见 §1 |
+| 阶段 8 对每个玩家对象开窗（敌方回合反击亦同） | `BattleSceneMenus.offer_pending_growth`：行动菜单或敌方回合两步 AI 之间的安静时刻，按角色记录已提示等级（`growth_offered_levels`），任何存活可控成员都弹；`run_combat_aftermath_tests` | 胜利一击：在胜利对白／过场／结果页之前弹（`terminal_growth_pending`，`allocate_growth` 胜利后仍收点数、失败后拒绝；`run_combat_aftermath_tests`、`run_combat_aftermath_tests.terminal_victory_level_up`）；先后为静态读法，见 §1 |
 | 右键／Esc 不能关闭（`0x43bbd3`／`0x438839`） | 同：`BattleGrowthPanel.handle_input` 吞掉右键／Esc，窗不关、无提示；只有点满后出现的 OK 能关 | GROWTHWIN（2026-09-26）起照原版；此前重制允许右键／Esc 暂缓。`hide()` 只作自动对局／测试的跳过缝；旧存档或跳过缝留下的点数在读档后、下一场首个安静时刻或状态页「成長點」再开 |
 | 一次跨多级：每级一个窗（`0x442a22` 阶段减一、关窗时阶段字 `0x4c432c` 加一重查，§1） | 同：`window_points` 每窗 5 点，OK 后 `BattleSceneMenus.allocate_growth` 接着开下一级的窗，等级／經驗显示逐窗；点数仍在 EXP 结算时一次预占（`ProgressionRules`） | GROWTHWIN2（2026-09-27）起照原版；OPT-GROWTH=合成一窗 保留一窗给全部点数 |
 | 无 稍后／重置／确定 文字按钮 | 已删除 | |

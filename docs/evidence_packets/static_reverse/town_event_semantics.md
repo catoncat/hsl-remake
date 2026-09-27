@@ -15,7 +15,6 @@ Checked: 2026-09-18. 本包对应 `game/sim/TownEventRules.gd`（无状态 te �
 
 ```sh
 PYTHONPATH=. python3 tools/hsl.py check town_initial_trees          # 有 PAK：重生成比对；无 PAK：离线一致性
-PYTHONPATH=. python3 -m unittest tools.test_hsl_town_initial_trees
 tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd
 ```
 

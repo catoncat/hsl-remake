@@ -1,6 +1,6 @@
 # 原作战斗气力、装备修饰与绝技门槛
 
-> evidence: static-derived; runtime-measured: 开场实测——整映像模拟器照 0x42da60 进关逐次记录 live +0xe8 写入，Wine 原版首控存档 HSLBAT_first_control · status: live · functions: 0x4075e0, 0x407ec0, 0x40e240, 0x40e2e0, 0x40e590, 0x40e870, 0x42c640, 0x42da60, 0x4368c0, 0x43b4e0, 0x44cb10, 0x461479 · tools: hsltools/data/equipment.py, hsltools/probes/_stamina_trace.py, hsltools/probes/stamina.py, run_stamina_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 开场实测——整映像模拟器照 0x42da60 进关逐次记录 live +0xe8 写入，Wine 原版首控存档 HSLBAT_first_control · status: live · functions: 0x4075e0, 0x407ec0, 0x40e240, 0x40e2e0, 0x40e590, 0x40e870, 0x42c640, 0x42da60, 0x4368c0, 0x43b4e0, 0x44cb10, 0x461479 · tools: hsltools/data/equipment.py, hsltools/probes/_stamina_trace.py, hsltools/probes/stamina.py, run_ordinary_special_tests.gd · updated: 2026-09-27
 
 2026-09-16。接续 [费用证据](original_skill_resources.md) 和 [AI技能选择](original_ai_skills.md)，本包把普通攻击／受击积气、装备修饰、60上限和现有气刃斩串成同一个可玩资源循环。状态只在BattlePlayLoop保存；原版开场气力见 [开场实测](#开场实测)，整体伤害与全局随机序列仍各有边界。
 
@@ -210,7 +210,7 @@ lane R5-L5（2026-09-28，static-derived：r2 只读反汇编 `hsl01.exe` sha256
 
 对象自身 shape（ebx+0）是 BAR_ST1 空条。PAK 目录记录 4953–4956 依次为 `bar_st1..bar_st4`（resource-derived），与画法自洽：BAR_ST3 宽58＝第一段、BAR_ST4 宽122＝前两段、BAR_ST2 宽215＝全条，且 BAR_ST2 的段间透明列 x 58／122 画在 (1,1) 偏移后正落在 BAR_ST1 的分隔 x 59／123。
 
-结论：填充在每个20点阶段内按该阶段参照宽比例增长，**一段只有到20点才被叠画点亮**（19点红色填充到55 px，不叠画；20点蓝色 BAR_ST3 覆盖第一段；40点黄色 BAR_ST4 覆盖两段；60点 BAR_ST2 覆盖全条）。原录像 `06_status_and_stats_screen/frame_006`（runtime-reference）的状态页气力条恰是蓝色 BAR_ST3 盖住第一段（约 58 px）、其后无红色填充，与 ST=20（PLAYERS raw 20）时本画法的输出一致。重制 `game/battle/scene/BattleStaminaBar.gd` 照此绘制，`run_stamina_tests.presentation_cases` 逐点断言 0／1／19／20／21／39／40／41／59／60 的填充宽与点亮段数，并断言点亮段数 = `ST / SkillResourceRules.ST_PER_EXPEND`。叠画与右界（lane STATUSPAGE，2026-09-27，static-derived，同一 EXE）：已点亮段按混合级 `+0x28`／16 叠在底条上，级数在 12..16 间三角往复；切入栏与悬停栏（`0x10000`）共用 `0x4c1ce0`，每 5 tick 一步、45 tick 一周，状态页等窗口用对象自己的 `+0x98`，每 tick 一步、9 tick 一周；红色填充少画最右 1 px（上表末三行）。重制 `BattleStaminaBar` 照此：`shared_pulse` 默认真（悬停／切入栏），`BattleStatusPanel` 置假；叠画 `modulate` α＝级数/16（逐像素混合公式在光栅器里，按常规 α 混合，未逐字读）；红色区域宽＝`fill_width() − 1`，`fill_width()` 仍是原式的 clip 宽。
+结论：填充在每个20点阶段内按该阶段参照宽比例增长，**一段只有到20点才被叠画点亮**（19点红色填充到55 px，不叠画；20点蓝色 BAR_ST3 覆盖第一段；40点黄色 BAR_ST4 覆盖两段；60点 BAR_ST2 覆盖全条）。原录像 `06_status_and_stats_screen/frame_006`（runtime-reference）的状态页气力条恰是蓝色 BAR_ST3 盖住第一段（约 58 px）、其后无红色填充，与 ST=20（PLAYERS raw 20）时本画法的输出一致。重制 `game/battle/scene/BattleStaminaBar.gd` 照此绘制，`run_ordinary_special_tests.presentation_cases` 逐点断言 0／1／19／20／21／39／40／41／59／60 的填充宽与点亮段数，并断言点亮段数 = `ST / SkillResourceRules.ST_PER_EXPEND`。叠画与右界（lane STATUSPAGE，2026-09-27，static-derived，同一 EXE）：已点亮段按混合级 `+0x28`／16 叠在底条上，级数在 12..16 间三角往复；切入栏与悬停栏（`0x10000`）共用 `0x4c1ce0`，每 5 tick 一步、45 tick 一周，状态页等窗口用对象自己的 `+0x98`，每 tick 一步、9 tick 一周；红色填充少画最右 1 px（上表末三行）。重制 `BattleStaminaBar` 照此：`shared_pulse` 默认真（悬停／切入栏），`BattleStatusPanel` 置假；叠画 `modulate` α＝级数/16（逐像素混合公式在光栅器里，按常规 α 混合，未逐字读）；红色区域宽＝`fill_width() − 1`，`fill_width()` 仍是原式的 clip 宽。
 
 普通／反击特写按当前strike的气力收据投影命中前后，不能提前显示已结算的未来反击增长；落空且只有反击增长时同样使用反击前值。此处只调整只读镜头快照，不改变结算和表现时钟。发现经过定向red／green与实际受击前后图证，见下方验收入口。
 
@@ -224,14 +224,13 @@ StaminaRules只返回提案，PlayLoop在提交普通伤害时一次写入双方
 
 ## 验证入口与后续依据
 
-[run_stamina_tests.gd](../../../tests/run_stamina_tests.gd)覆盖原168组对拍、攻击／受击／反击、落空、击杀、魔法和特殊技不返还、上限、源技能拥有权、两枚戒指／鬼面／卸下、错误数据零变更和实际条值。原行动交接、战斗收尾、费用、装备与第一战runtime测试继续覆盖共同路径。
+[run_ordinary_special_tests.gd](../../../tests/run_ordinary_special_tests.gd)覆盖原168组对拍、攻击／受击／反击、落空、击杀、魔法和特殊技不返还、上限、源技能拥有权、两枚戒指／鬼面／卸下、错误数据零变更和实际条值。原行动交接、战斗收尾、费用、装备与第一战runtime测试继续覆盖共同路径。
 
 实际鼠标操作的积气、装备预览、取消、绝技释放及默认数值整场结果见 [可见验收](../runtime_observations/stamina/README.md)。可见夹具与正式默认战斗分开；原数值对拍与重制图证也分开。
 
 ```sh
 python3 tools/hsl.py check stamina
-python3 -m unittest tools.test_hsl_native_stamina_probe tools.test_hsl_equipment_data
-tools/godot.sh --headless --script res://tests/run_stamina_tests.gd
+tools/godot.sh --headless --script res://tests/run_ordinary_special_tests.gd
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate stamina --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 ```
 

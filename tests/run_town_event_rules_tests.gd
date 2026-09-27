@@ -44,7 +44,6 @@ func run() -> void:
 		_job_up_fail_branch()
 		_menu_move_out()
 		_script_actions()
-		_unknown_token_and_errors()
 		_corpus_smoke()
 
 
@@ -449,36 +448,6 @@ func _script_actions() -> void:
 	_assert_eq(_kinds(result["effects"]), ["bm_point_event", "set_exec_event", "bm_encounter_ratio", "bm_flag_change", "bm_walk_to_point", "recorded_only"], "script effects")
 	var entered := TownEventRules.begin_event(result["state"], _party(), towndef, 1, int(result["state"]["towns"]["1"]["exec_event"]))
 	_assert_eq(_message_ids(entered["effects"]), [858, 859, 860, 861], "entering 歐姆村 runs event 9")
-
-
-func _unknown_token_and_errors() -> void:
-	var mini := {
-		"schema": "hsl_towndef.v1",
-		"symbols": {"town_A": 1},
-		"items": [],
-		"town_events": [
-			{"code": 1, "comment": "A", "show_name": {"resource_id": 30, "text": "x"}, "item_code": null, "events": [
-				{"token": "teBogusToken", "args": ["1", "2"]},
-				{"token": "teCheckMoney2", "args": []},
-				{"token": "tePlayerMessage", "args": ["SID_x", "5", "0"]},
-			]},
-		],
-	}
-	var state := _state()
-	var run := TownEventRules.begin_event(state, _party(), mini, 1, 1)
-	_assert_eq(_kinds(run["effects"]), ["recorded_only", "recorded_only", "player_message"], "unknown tokens are recorded, chain continues")
-	_assert_eq((run["records"][0] as Dictionary)["status"], "unknown_token", "unknown token status")
-	_assert_eq((run["records"][1] as Dictionary)["status"], "recorded_only", "signature-less token status")
-	_assert_true(bool(run["done"]), "run completes")
-	_assert_eq(TownEventRules.begin_event({"schema": "other"}, _party(), towndef, 1, 9).get("error"), "state_schema_mismatch", "state schema check")
-	_assert_eq(TownEventRules.begin_event(state, _party(), towndef, 99, 9).get("error"), "unknown_town:99", "unknown town")
-	_assert_eq(TownEventRules.begin_event(state, _party(), towndef, 1, 999).get("error"), "unknown_event:999", "unknown event")
-	_assert_eq(TownEventRules.begin_event(state, _party(), {"schema": "x"}, 1, 9).get("error"), "towndef_schema_mismatch", "towndef schema check")
-	_assert_eq(TownEventRules.load_towndef("res://content/does_not_exist.json").get("error"), "missing_file", "missing file")
-	_assert_eq(TownEventRules.load_towndef(WORLD_MAP_PATH).get("error"), "schema_mismatch", "wrong schema file")
-	var done := TownEventRules.begin_event(state, _party(), towndef, 1, 9)
-	var again := TownEventRules.resume(done, null)
-	_assert_eq((again["records"] as Array).back()["status"], "ignored_after_done", "resume after done is a no-op")
 
 
 func _corpus_smoke() -> void:

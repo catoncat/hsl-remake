@@ -1,6 +1,6 @@
 # ANIMAL 完整动作程序与分派计数
 
-> evidence: resource-derived; static-derived · status: live · tools: hsl_native_animal_probe.py, hsltools/assets/animal_programs.py, hsltools/assets/combat_animation.py, run_animal_program_tests.gd, test_hsl_animal_programs.py · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: live · tools: hsl_native_animal_probe.py, hsltools/assets/animal_programs.py, hsltools/assets/combat_animation.py, run_skill_effect_script_tests.gd, test_hsl_animal_programs.py · updated: 2026-09-27
 
 ## 结论
 
@@ -136,7 +136,7 @@ D＝0、1、2、12、30 都执行过：后继指令首次可见的调用下标�
 
 ## 复现
 
-`python3 tools/hsl.py check animal_programs`（有原作 PAK 时同时核对三份原始来源）；原指令重跑 `uv run --with unicorn==2.1.4 python tools/hsl_native_animal_probe.py --check`；Godot 侧 `tools/godot.sh --headless --script res://tests/run_all.gd -- run_animal_program_tests.gd`（`ANIMAL_PROGRAM_TESTS_PASS checks=386`，以程序数字与 handler 常数独立算出雷歐納德 139 call、緹娜 130 call 并逐相位断言）。
+`python3 tools/hsl.py check animal_programs`（有原作 PAK 时同时核对三份原始来源）；原指令重跑 `uv run --with unicorn==2.1.4 python tools/hsl_native_animal_probe.py --check`；Godot 侧 `tools/godot.sh --headless --script res://tests/run_all.gd -- run_skill_effect_script_tests.gd`（`ANIMAL_PROGRAM_TESTS_PASS checks=386`，以程序数字与 handler 常数独立算出雷歐納德 139 call、緹娜 130 call 并逐相位断言）。
 
 ## 边界
 

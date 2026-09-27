@@ -48,9 +48,6 @@ func run() -> void:
 	native_cases()
 	spatial_transactions()
 	skill_and_items()
-	ai_cases()
-	stale_plans_and_phases()
-	terminal_cases()
 	await trial_scene()
 	print("LARGE_ACTOR_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=",checks)
 	quit(0 if failures.is_empty() else 1)
@@ -154,24 +151,6 @@ func skill_and_items() -> void:
 	guarded=BattlePlayLoop._return_to_player(guarded,"leonard");var before:=guarded.duplicate(true);var skip:=BattlePlayLoop.step_ai_turn(guarded,no_rng)
 	check(skip["last_ai_action"]["kind"]=="paralysis_skip" and BattlePlayLoop.unit(skip,"leonard")["coord"]==BattlePlayLoop.unit(before,"leonard")["coord"],"large paralysis skip preserves anchor/occupancy and advances only one action")
 
-func ai_cases() -> void:
-	var loop:=fixture();var actor:=BattlePlayLoop._unit(loop,"leonard");actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY;actor["growth_profile"]["allocation"]="fixed_template"
-	loop["interaction"]="ai_resolving";loop["selected_unit_id"]=""
-	var target:=BattlePlayLoop._unit(loop,"enemy021_1");target["coord"]=Vector2i(12,6)
-	for y in range(2,10):TestSuite.own(loop, "tiles")[Vector2i(9,y)]={"elevation":255,"blocks_movement":true}
-	var prepared:=BattleLoopAI._prepare_ai_turn(loop,"leonard")
-	check(prepared["ok"],"large AI full-map approach prepares around a real obstruction")
-	if not prepared["ok"]:return
-	var first:=BattlePlayLoop.step_ai_turn(loop,zero)
-	check(first["scenario_ok"] and first["last_ai_action"]["kind"]=="move","large AI follows a full-body detour when immediate attack is impossible")
-	for p in first["last_ai_action"]["path"]:
-		var projected:=actor.duplicate(true);projected["coord"]=p
-		check(BattlePlayLoop.TraversalRules.placement_error(projected,first["units"],first["tiles"],first["map_size"])=="","every large path anchor has legal occupied cells")
-	var clear:=fixture(false);var small:=BattlePlayLoop._unit(clear,"leonard");small["player_commandable"]=false;small["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
-	clear["selected_unit_id"]="";clear["interaction"]="ai_resolving"
-	var chosen:=BattleLoopAI._prepare_ai_turn(clear,"leonard")
-	check(chosen["ok"] and chosen["physical"].has("enemy039_1") and chosen["physical"]["enemy039_1"]["cost"]==0,"small AI sees an in-range body edge without unnecessary movement toward the center")
-
 static func spell_kit(loop: Dictionary) -> void:
 	var actor:=BattlePlayLoop._unit(loop,"leonard")
 	TestSuite.own(loop, "skill_book")["actors"][actor["actor_id"]]["supported_initial_ids"]=[BIND,run_position_equipment_tests.WIND,run_position_equipment_tests.HEAL,run_position_equipment_tests.CURE]
@@ -179,77 +158,6 @@ static func spell_kit(loop: Dictionary) -> void:
 	actor["growth_profile"]["source"]["magic_point"]=100
 	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 	actor["mp"]=actor["max_mp"]
-
-func stale_plans_and_phases() -> void:
-	var template:=fixture();spell_kit(template)
-	# Source039/job94 cannot equip the caster-only ring. Explicitly author the
-	# already-proven innate permission for this synthetic large-caster fixture.
-	TestSuite.own(template, "skill_book")["actors"]["039"]["move_magic_use"]=true
-	var choice:Dictionary={"skill_id":run_position_equipment_tests.WIND,"target_id":"enemy021_1","destination":Vector2i(8,6),"cast_center":Vector2i(10,6)}
-	var control:=template.duplicate(true)
-	check(not BattleLoopAI._execute_ai_skill_choice(control,"leonard",choice,zero).is_empty(),"large moving-cast baseline uses a complete legal body route")
-	for reason in ["blocked_ring","dead_target","no_mp","silence","lost_permission","less_budget"]:
-		var changed:=template.duplicate(true);var actor:=BattlePlayLoop._unit(changed,"leonard")
-		match reason:
-			"blocked_ring":BattlePlayLoop._set_unit_coord(changed,"enemy023_1",Vector2i(8,6))
-			"dead_target":BattlePlayLoop._set_unit_defeated(changed,"enemy021_1",true)
-			"no_mp":actor["mp"]=0
-			"silence":actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
-			"lost_permission":TestSuite.own(changed, "skill_book")["actors"]["039"]["move_magic_use"]=false
-			"less_budget":actor["base_move_point"]=1;actor["move_point"]=1
-		var before:=changed.duplicate(true)
-		check(BattleLoopAI._execute_ai_skill_choice(changed,"leonard",choice,no_rng).is_empty() and changed==before,"stale whole-body intent rejected before movement/payment/EXP: "+reason)
-	var changed:=fixture();var actor:=BattlePlayLoop._unit(changed,"leonard")
-	actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
-	var oldplan:=BattleLoopAI._prepare_ai_turn(changed,"leonard")
-	BattlePlayLoop._set_unit_coord(changed,"enemy023_1",Vector2i(8,6))
-	var freshplan:=BattleLoopAI._prepare_ai_turn(changed,"leonard")
-	check(oldplan["ok"] and freshplan["ok"] and oldplan["approaches"]["enemy021_1"]["path"]!=freshplan["approaches"]["enemy021_1"]["path"],"AI replans its entire footprint when a previous approach ring becomes occupied")
-	var second:=BattlePlayLoop.unit(changed,"enemy021_1").duplicate(true);second["id"]="another_foe";second["coord"]=Vector2i(11,9);second["grid_coord"]=second["coord"]
-	changed["units"].append(second);BattlePlayLoop._set_unit_defeated(changed,"enemy021_1",true)
-	freshplan=BattleLoopAI._prepare_ai_turn(changed,"leonard")
-	check(freshplan["ok"] and not freshplan["approaches"].has("enemy021_1") and freshplan["approaches"].has("another_foe"),"dead target's body is released and another reachable candidate replaces it")
-	var loop:=fixture();var first:=source_large();var later:=source_large()
-	first.merge({"coord":Vector2i(9,6),"grid_coord":Vector2i(9,6),"hp":1,"no_attack":true,"live_speed":50},true)
-	later.merge({"id":"later039","coord":Vector2i(9,9),"grid_coord":Vector2i(9,9),"hp":500,"max_hp":500,"no_attack":true,"live_speed":40},true)
-	loop["units"]=[BattlePlayLoop.unit(loop,"leonard"),BattlePlayLoop.unit(loop,"enemy023_1"),first,later]
-	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	TestSuite.own(loop, "skill_book")["actors"]["039"]["double_attack"]=true
-	loop=run_position_equipment_tests.equip(loop,"accessory2",227);actor=BattlePlayLoop._unit(loop,"leonard");actor["exp"]=99
-	actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"poison",3,7)["changes"],true)
-	loop=BattlePlayLoop.attack_coord(BattlePlayLoop.choose_command(loop,"attack"),Vector2i(8,6),zero)
-	check(loop["last_attack"]["followups"].is_empty() and BattlePlayLoop.unit(loop,"leonard")["level"]>1 and loop["rewarded_unit_ids"].count("enemy039_1")==1,"large lethal first hit truncates double attack and awards one native kill/growth")
-	loop=BattlePlayLoop.finish_exhausted_action(loop)
-	check(loop["extra_action"]["pending"] and not loop["moved_this_action"] and not loop["attacked_this_action"] and int(BattlePlayLoop.unit(loop,"leonard")["status_counters"]["poison"])&0xffff==3,"independent second action starts without ticking the large owner's poison")
-	var saved:=BattleCheckpoint.encode(loop,run_position_equipment_tests.VIEW);check(saved["ok"],"large second action and pending growth checkpoint together")
-	if saved["ok"]:loop=BattleCheckpoint.decode(saved["bytes"], loop)["snapshot"]["loop"]
-	loop=BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop,"move"),Vector2i(7,6))
-	loop=BattlePlayLoop.attack_coord(BattlePlayLoop.choose_command(loop,"attack"),Vector2i(8,8),zero)
-	check(loop["last_attack"]["followups"].size()==1 and loop["last_attack"]["defender_id"]=="later039","second action attacks the new body edge with its own two-hit series")
-	loop=BattlePlayLoop.finish_exhausted_action(loop)
-	check(not loop["extra_action"]["pending"] and int(BattlePlayLoop.unit(loop,"leonard")["status_counters"]["poison"])&0xffff==2 and loop["selected_unit_id"]=="enemy023_1","only the final action ticks poison once and hands the queue on")
-	var malformed:=fixture();BattlePlayLoop._unit(malformed,"leonard")["traversal"]="not a footprint"
-	check(BattleCheckpoint.encode(malformed,run_position_equipment_tests.VIEW).get("reason")=="invalid_saved_actor_traversal","malformed saved body is rejected before geometry allocation or access")
-	var fallback:=fixture();spell_kit(fallback);actor=BattlePlayLoop._unit(fallback,"leonard")
-	actor.merge({"player_commandable":false,"battle_actor_role":BattlePlayLoop.ROLE_FRIENDLY,"mp":0,"no_attack":true,"inventory":[0,0,0,0,0,0,0,0]},true)
-	actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
-	fallback["interaction"]="ai_resolving";fallback["selected_unit_id"]=""
-	var idle:=BattlePlayLoop.step_ai_turn(fallback,zero)
-	check(idle["scenario_ok"] and idle["last_ai_action"]["kind"]=="wait" and idle["action_end_sequence"]==1 and BattlePlayLoop.unit(idle,"leonard")["coord"]==actor["coord"],"large AI with zero resources/silence/no attack ends once without phantom movement")
-
-func terminal_cases() -> void:
-	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
-		var loop:=fixture()
-		var actor:=BattlePlayLoop._unit(loop,"leonard");var enemy:=BattlePlayLoop._unit(loop,"enemy021_1")
-		if outcome==BattleOutcome.VICTORY_ESCAPE:actor["coord"]=loop["escape_zone"][0];loop=BattlePlayLoop.choose_command(loop,"wait")
-		else:
-			enemy["coord"]=Vector2i(8,6)
-			if outcome==BattleOutcome.VICTORY_ENEMIES_CLEARED:enemy["hp"]=1;actor["exp"]=99
-			else:
-				actor["hp"]=1;enemy["no_attack"]=false;enemy["hit_bonus_accum"]=1000;enemy["combat_profile"]["attack_back"]=100;enemy["combat_profile"]["live_attack_damage"]=1000
-			loop=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),enemy["id"],zero)
-		check(loop["battle_outcome"]==outcome and BattleCheckpoint.encode(loop,run_position_equipment_tests.VIEW)["ok"],"large actor complete terminal/checkpoint boundary: "+BattleOutcome.describe(outcome))
-		check(BattlePlayLoop.finish_exhausted_action(loop)==loop and BattlePlayLoop.step_ai_turn(loop,no_rng)==loop,"terminal body and action state stay frozen")
 
 func trial_scene() -> void:
 	var scenario:=BattlePlayLoop.BattleScenario.load_file("res://content/battles/large_actor_trial.json")

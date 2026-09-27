@@ -60,7 +60,6 @@ actor+0xa8 的低16位是连续数，高位0x10000标记本次行动是否击杀
 
 ```sh
 python3 tools/hsl.py check experience
-python3 -m unittest tools.test_hsl_magic_experience
 uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate experience --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
 tools/godot.sh --headless --script res://tests/run_magic_experience_tests.gd
 ```

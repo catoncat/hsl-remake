@@ -83,6 +83,8 @@ func run() -> void:
 	_failure_paths_and_edges()
 	_round_and_x_range_tokens()
 	_adapter_dispatch()
+	run_event_cadence()
+	run_winnability_census()
 
 
 func _select_event_status_branches() -> void:
@@ -1122,3 +1124,862 @@ func _adapter_dispatch() -> void:
 	_assert_eq(BattleScenarioRuleAdapter.result_message_id({"rule_adapter": "second_battle"}, BattleOutcome.VICTORY_BOSS), "", "second battle has no board result label yet")
 	var unsupported: Dictionary = BattleScenarioRuleAdapter.initialize_script_state(battle.merged({"rule_adapter": "third_battle"}), {"rule_adapter": "third_battle"}, seed)
 	_assert_eq(unsupported.get("scenario_error", ""), "unsupported_rule_adapter", "the retired third_battle adapter id fails explicitly")
+
+
+# ---- run_winfail_rules_tests.gd ----
+## Winfail scan cadence through the PlayLoop (static-derived,
+## docs/evidence_packets/static_reverse/original_round_display.md «Evaluation cadence»):
+## every completed action runs its status tail (0x40b910), then 0x407510 scans
+## win／fail／event statuses (0x408370 → 0x44ee20) before 0x4074a0 advances the
+## queue and bumps the round counter at wrap. So (1) a round-N event of the live
+## level 51 fires after round N's first completed action, not at the boundary;
+## (2) a Wait re-reads statuses after its poison tick; (3) an item use re-reads
+## statuses, and a win armed by the event it fires decides in that same action.
+## Scan shape (same packet «Scan shape»): (4) the event walk of 0x44ee20 returns after
+## the first status that fires, so level 51's two reinforcement events that one kill
+## satisfies together start on two consecutive completed actions; (5) only a chain
+## that ran actExecWinFailProcess rescans at once (0x453b7c), so a second holding event
+## joins the same action only behind such a chain. Attack context (packet «Attack
+## context»): (6) actCheckPlayerAttacked is read by the attack action's completion scan
+## (0x450840 case 0x2a reads the attacker global 0x4c1ce8) — not right after the strike —
+## and the next action's scan no longer sees that attack (0x4c1ce8 is cleared when an
+## action starts).
+
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+
+const SCENARIO_PATH := "res://content/battles/battle_051.json"
+
+
+func run_event_cadence() -> void:
+	_round_event_after_first_completed_action()
+	_wait_rereads_after_poison_tail()
+	_item_use_rereads_and_decides()
+	_one_event_per_scan()
+	_exec_winfail_process_rescans()
+	_attack_read_by_completion_scan()
+
+
+func _battle() -> Dictionary:
+	var loop := BattlePlayLoop.create([], "", BattleScenario.load_file(SCENARIO_PATH), 7)
+	_assert_true(bool(loop.get("scenario_ok", false)), "battle_051 PlayLoop creates (%s)" % str(loop.get("scenario_error", "")))
+	return BattlePlayLoop.begin_battle(loop)
+
+
+func _complete_action(loop: Dictionary) -> Dictionary:
+	## One completed action: the player's Wait, or an AI slot ended without a decision
+	## (deterministic; no RNG, no strike, so no attack-context scan interferes).
+	match str(loop.get("interaction", "")):
+		"action_menu":
+			return BattlePlayLoop.begin_wait_resolution(loop)
+		"ai_resolving":
+			return BattlePlayLoop._advance_current_actor(loop)
+	_assert_true(false, "no completable action in %s (%s)" % [str(loop.get("interaction", "")), str(loop.get("scenario_error", ""))])
+	return loop
+
+
+func _fired(loop: Dictionary) -> Array:
+	return (loop.get("winfail_runtime", {}) as Dictionary).get("fired", [])
+
+
+func _fired_entry(loop: Dictionary, key: String) -> Dictionary:
+	for entry in _fired(loop):
+		if str((entry as Dictionary).get("key", "")) == key:
+			return entry
+	return {}
+
+
+func _reach_player(loop: Dictionary) -> Dictionary:
+	var next := loop
+	for _step in range(64):
+		if str(next.get("interaction", "")) == "action_menu":
+			return next
+		next = _complete_action(next)
+	_assert_true(false, "the player's action menu is reached")
+	return next
+
+
+func _round_event_after_first_completed_action() -> void:
+	## WINFAIL051 event 2 = actCheckRoundNumber 4 (waiting lines), event 3 =
+	## actCheckRoundNumber 6 (objective switch arming both win statuses).
+	var loop := _battle()
+	for spec in [[4, "event_2"], [6, "event_3"]]:
+		var round_number: int = spec[0]
+		var key: String = spec[1]
+		var guard := 0
+		while int(loop.get("turn", 1)) < round_number and guard < 256:
+			_assert_true(_fired_entry(loop, key).is_empty(), "%s has not fired during round %d" % [key, int(loop.get("turn", 1))])
+			loop = _complete_action(loop)
+			guard += 1
+		_assert_eq(int(loop.get("turn", 1)), round_number, "the queue wrapped into round %d" % round_number)
+		_assert_true(_fired_entry(loop, key).is_empty(), "%s does not fire at the round-%d boundary (the boundary scan still reads %d)" % [key, round_number, round_number - 1])
+		if key == "event_3":
+			_assert_eq(loop.get("win_statuses", []), [], "the round-6 win statuses are not armed before round 6's first action")
+		var fired_before := _fired(loop).size()
+		loop = _complete_action(loop)
+		var entry := _fired_entry(loop, key)
+		_assert_true(not entry.is_empty(), "%s fires after round %d's first completed action" % [key, round_number])
+		_assert_eq(int(entry.get("turn", 0)), round_number, "%s records round %d" % [key, round_number])
+		_assert_eq(_fired(loop).size(), fired_before + 1, "%s is the only status that first action fires" % key)
+		if key == "event_3":
+			_assert_eq((loop.get("win_statuses", []) as Array).size(), 2, "round 6's first action arms both win statuses")
+
+
+func _fired_keys(loop: Dictionary, from: int = 0) -> Array:
+	var keys: Array = []
+	for entry in _fired(loop).slice(from):
+		keys.append(str((entry as Dictionary).get("key", "")))
+	return keys
+
+
+func _one_event_per_scan() -> void:
+	## WINFAIL051 event 0 (actCheckEnemyNumber SID_ENEMY021 3) and event 1
+	## (actCheckEnemyNumber SID_ENEMY026 2) both hold once three of the five 021 and one
+	## of the two 026 are down. The original's scan starts event 0 only (first armed slot);
+	## its recruit refills 021 to three, so the next completed action starts event 1.
+	var loop := _reach_player(_battle())
+	var downed := {"Enemy021": 3, "Enemy026": 1}
+	for unit in loop["units"]:
+		var class_id := str(unit.get("class_id", ""))
+		if int(downed.get(class_id, 0)) > 0:
+			BattlePlayLoop._set_unit_defeated(loop, str(unit["id"]), true)
+			downed[class_id] = int(downed[class_id]) - 1
+	_assert_eq(downed, {"Enemy021": 0, "Enemy026": 0}, "three 021 and one 026 are down")
+	_assert_eq(loop.get("event_statuses", []), [0, 1, 2, 3], "both reinforcement events are armed")
+	var before := _fired(loop).size()
+	loop = _complete_action(loop)
+	_assert_eq(_fired_keys(loop, before), ["event_0"], "one completed action starts only the first holding event (0x44ee20 returns after it)")
+	_assert_eq(WinfailScenarioRules.spawned_reinforcement_count(loop, "Enemy026"), 0, "the 026 recruit is not asked for in the same scan")
+	_assert_eq(WinfailScenarioRules.spawned_reinforcement_count(loop, "Enemy021"), 1, "event 0's recruit landed")
+	before = _fired(loop).size()
+	loop = _complete_action(loop)
+	_assert_eq(_fired_keys(loop, before), ["event_1"], "the next completed action starts event 1")
+	_assert_eq(WinfailScenarioRules.spawned_reinforcement_count(loop, "Enemy026"), 1, "event 1's recruit landed one action later")
+
+
+func _exec_winfail_process_rescans() -> void:
+	## Four unconditional events on one completion. Event 50 ends in
+	## actExecWinFailProcess (case 0x44 → 0x4c1d44), so its chain's end rescans and
+	## starts event 51; event 51 does not, so events 52 and 53 wait for the next two
+	## completed actions.
+	var loop := _custom_rules(_reach_player(_battle()), [
+		_section_event_cadence("event", 50, [["actTRUE"], ["actExecWinFailProcess"]]),
+		_section_event_cadence("event", 51, [["actTRUE"], ["actMessage", "SID_PLAYER0", 1, 777]]),
+		_section_event_cadence("event", 52, [["actTRUE"], ["actMessage", "SID_PLAYER0", 1, 778]]),
+		_section_event_cadence("event", 53, [["actTRUE"], ["actMessage", "SID_PLAYER0", 1, 779]]),
+	])
+	loop = _complete_action(loop)
+	_assert_eq(_fired_keys(loop), ["event_50", "event_51"], "actExecWinFailProcess rescans once after its chain; the plain chain stops the scan")
+	_assert_eq(loop.get("event_statuses", []), [52, 53], "the other holding events stay armed")
+	var before := _fired(loop).size()
+	loop = _complete_action(loop)
+	_assert_eq(_fired_keys(loop, before), ["event_52"], "the next completed action starts the next armed event only")
+	before = _fired(loop).size()
+	loop = _complete_action(loop)
+	_assert_eq(_fired_keys(loop, before), ["event_53"], "and the one after starts the last")
+
+
+func _attack_read_by_completion_scan() -> void:
+	var loop := _custom_rules(_reach_player(_battle()), [
+		_section_event_cadence("event", 60, [["actCheckPlayerAttacked", "SID_PLAYER0", "SID_ENEMY021"], ["actMessage", "SID_PLAYER0", 1, 780]]),
+	])
+	var armed := BattlePlayLoop.choose_command(loop, "attack")
+	var target_id := ""
+	for cell in BattlePlayLoop.attack_cells(armed, "leonard"):
+		if BattlePlayLoop.unit_id_at_coord(armed, cell) == "":
+			for unit in armed["units"]:
+				if str(unit.get("class_id", "")) == "Enemy021" and not bool(unit.get("defeated", false)):
+					target_id = str(unit["id"])
+					BattlePlayLoop._set_unit_coord(armed, target_id, cell)
+					unit["max_hp"] = 9999  # survives the strike: no loot settlement to close first
+					unit["hp"] = 9999
+					break
+			break
+	_assert_true(target_id != "", "a 021 stands in Leonard's attack range")
+	var turn_before := int(armed.get("turn", 1))
+	var struck := BattlePlayLoop.attack_target(armed, target_id, zero)
+	_assert_true(not (struck.get("last_attack", {}) as Dictionary).is_empty(), "Leonard's strike settled")
+	_assert_true(_fired_entry(struck, "event_60").is_empty(), "the strike itself scans nothing (the original has no per-strike scan)")
+	var done := BattlePlayLoop.finish_exhausted_action(struck)
+	var entry := _fired_entry(done, "event_60")
+	_assert_true(not entry.is_empty(), "the attack action's completion scan reads the attacker and fires the attacked event")
+	_assert_eq(str(entry.get("context", "")), "attack", "the completion scan of an attack action runs in the attack context")
+	_assert_eq(int(entry.get("turn", 0)), turn_before, "it precedes the queue advance")
+	_assert_eq(_fired_keys(done).count("event_60"), 1, "an attack action is scanned once")
+	var rearmed := BattlePlayLoop.copy(done)
+	(rearmed["event_statuses"] as Array).append(60)
+	var before := _fired(rearmed).size()
+	rearmed = _complete_action(rearmed)
+	_assert_eq(_fired_keys(rearmed, before), [], "the next action's completion scan no longer sees Leonard's attack (0x4c1ce8 is cleared when an action starts)")
+
+
+func _custom_rules(loop: Dictionary, sections: Array) -> Dictionary:
+	## Replace the level's script with a fixture program on the same PlayLoop (the
+	## opening bindings keep SID_PLAYER0/1 → leonard).
+	var seed := {"schema": "hsl_battle_seed.v1", "level": 999, "evidence_tier": "test-fixture", "script_objects": [],
+		"scripts": {"story": {"sections": []}, "winfail": {"sections": sections}}}
+	var next := BattlePlayLoop.copy(loop)
+	var rules := WinfailScenarioRules.rules_from_seed(seed)
+	next["winfail_script_rules"] = rules
+	for kind in ["win", "fail", "event"]:
+		next["%s_statuses" % kind] = []
+	for status in rules["statuses"]["event"]:
+		(next["event_statuses"] as Array).append(int(status["code"]))
+	return next
+
+
+func _section_event_cadence(name: String, code: int, commands: Array) -> Dictionary:
+	var actions: Array = []
+	for command in commands:
+		var args: Array = []
+		for arg in command.slice(1):
+			args.append(str(arg))
+		actions.append({"primary": str(command[0]), "chain": [{"name": str(command[0]), "args": args}]})
+	return {"index": 0, "name": name, "codes": [str(code)], "messages": [], "actions": actions}
+
+
+func _wait_rereads_after_poison_tail() -> void:
+	## Leonard at 60 % HP carries poison worth a fifth of his max HP. His Wait's tail
+	## ticks him to 40 %; the completion scan that follows reads the new HP and fires
+	## the HP-low event in the same action, before the queue advances.
+	var loop := _custom_rules(_reach_player(_battle()), [_section_event_cadence("event", 40, [["actCheckPlayerHPLow", "SID_PLAYER0", 1, 50], ["actMessage", "SID_PLAYER0", 1, 777]])])
+	_assert_eq(str(loop.get("selected_unit_id", "")), "leonard", "Leonard holds the action menu")
+	var leonard := BattlePlayLoop._unit(loop, "leonard")
+	var max_hp := int(leonard["max_hp"])
+	leonard["hp"] = max_hp * 6 / 10
+	var poisoned := StatusEffectRules.apply(leonard, "poison", 2, max_hp / 5)
+	_assert_true(bool(poisoned.get("ok", false)), "Leonard is poisoned (%s)" % str(poisoned.get("reason", "")))
+	leonard.merge(poisoned.get("changes", {}), true)
+	var turn_before := int(loop.get("turn", 1))
+	var after := BattlePlayLoop.choose_command(loop, "wait")
+	_assert_true(int(BattlePlayLoop.unit(after, "leonard")["hp"]) * 100 <= 50 * max_hp, "the Wait's poison tick drops Leonard to half HP or below")
+	var entry := _fired_entry(after, "event_40")
+	_assert_true(not entry.is_empty(), "the HP-low event fires after the poisoned Wait completes")
+	_assert_eq(int(entry.get("turn", 0)), turn_before, "the scan precedes the queue advance (fired in round %d)" % turn_before)
+	_assert_eq(str(entry.get("context", "")), "round", "a non-attack completion scans in the non-attack context")
+
+
+func _item_use_rereads_and_decides() -> void:
+	## Leonard moves onto a cell and drinks a potion. The item completion scans the
+	## arrival event, whose chain arms an unconditional win: the battle is decided in
+	## that action, in the same round, without waiting for a strike or a boundary.
+	var loop := _reach_player(_battle())
+	var leonard := BattlePlayLoop._unit(loop, "leonard")
+	var cells: Array = BattlePlayLoop.movement_cells(BattlePlayLoop.choose_command(loop, "move"), "leonard")
+	var destination: Vector2i = leonard["coord"]
+	for cell in cells:
+		if cell != leonard["coord"]:
+			destination = cell
+			break
+	_assert_true(destination != leonard["coord"], "Leonard has a cell to move to")
+	var px := destination.x * 32
+	var py := destination.y * 32
+	loop = _custom_rules(loop, [
+		_section_event_cadence("event", 41, [["actCheckPlayerArrivePos", "SID_PLAYER0", 1, px, py, px + 31, py + 31], ["actInsertWinStatus", 0]]),
+		_section_event_cadence("win", 0, [["actTRUE"]]),
+	])
+	leonard = BattlePlayLoop._unit(loop, "leonard")
+	leonard["hp"] = maxi(1, int(leonard["max_hp"]) / 2)
+	var inventory: Array = leonard["inventory"]
+	if not inventory.has(241):
+		inventory[inventory.find(0)] = 241
+	loop = BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop, "move"), destination)
+	_assert_eq(BattlePlayLoop.unit(loop, "leonard")["coord"], destination, "Leonard moved onto the arrival cell")
+	_assert_true(_fired_entry(loop, "event_41").is_empty(), "moving alone completes no action and scans nothing")
+	var turn_before := int(loop.get("turn", 1))
+	loop = BattlePlayLoop.use_item(loop, "241")
+	_assert_true(int(loop.get("item_use_sequence", 0)) > 0, "the potion was used")
+	var entry := _fired_entry(loop, "event_41")
+	_assert_true(not entry.is_empty(), "the arrival event fires after the item use completes")
+	_assert_eq(int(entry.get("turn", 0)), turn_before, "the item completion scan precedes the queue advance")
+	_assert_true(BattleOutcome.won(loop), "the win status the event armed decides in the same action")
+	_assert_eq(int(loop.get("turn", 1)), turn_before, "the decided battle freezes before the queue advance")
+
+
+# ---- run_winfail_rules_tests.gd ----
+## Winnability census (lane R6-L8): every registered battle of content/battles/campaign.json
+## must have a script path to victory that the remake can actually take — independent of how
+## well any bot plays. Read from the scenario's own compiled winfail program
+## (WinfailCompiler) and the same condition reader the interpreter uses (WinfailConditions),
+## over the battle's "cast": the units fielded at first control plus every actor its script
+## can create (script_actor_source templates).
+##
+## A status is *fireable* when each leading condition can hold for some play: attack
+## conditions name a unit that exists, an HPLow target reaches the threshold at the lowest
+## HP it can stand at (an undead unit revives at 1 HP, BattleLoopCombat._undead_revives), a
+## count of listed ids has enough countable ids, an arrival zone is reachable on foot with
+## every mid-battle ClearWall open, round numbers are finite, static enemy objects the remake
+## never destroys stay counted. From the statuses the STORY arms (plus STORY select events)
+## the census follows the insert actions of fireable statuses; the battle is winnable in
+## principle when a fireable win status, or a fireable event that hands off the campaign
+## (actSetNextPlayLevelEvent: 73／78／900), is reached.
+##
+## Defect classes it guards, each over all battles:
+## 1. HPLow threshold (static-derived, 0x450840 case 0x41): `ratio 0` holds at HP ≤ 1, so the
+##    undead bosses of 41／59／75–79 and the undead-gated events of 30–37 can fire.
+##    Ablation: the pre-R6-L8 reading (ratio 0 ⇒ HP ≤ 0) leaves 41／59／75／76／77／79 without a
+##    win path and fails `_hp_low_undead_targets`.
+## 2. Condition ids the remake cannot resolve (an unresolved token never counts): STORY029
+##    renames 梅爾／凱文 to 1000／1001 with actChangePlayerID. Ablation: without the binding
+##    the level-29 death events name nobody.
+## 3. Missing script actors: a win path gated on a unit neither fielded nor creatable.
+##    KNOWN_BLOCKED lists what is still open, with its reason; a battle leaving or entering
+##    the list fails the suite. Lane R6-L10 fielded STORY037's guardians (066／067, the
+##    pillar-5 chain to Enemy052) and level 80's 怨念體 068. Ablation: without those units
+##    level 37 has no win path and level 80's wall event holds at first control.
+## 4. Conditions on static enemy objects (drawn, never destroyed): KNOWN_STATIC_CONDITIONS.
+## 5. Referenced-but-unbuilt actors: every SID_ENEMYnnn token a battle's WINFAIL statuses or
+##    STORY actions name resolves to a unit of the cast (fielded, script template, or an
+##    opening-only actor the STORY deletes) except KNOWN_UNBUILT.
+
+const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
+const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
+const ROUND_REACHABLE := 999
+const HANDOFF_ACTION := "actSetNextPlayLevelEvent"
+## Battles whose win path is still blocked in the remake, with the missing piece.
+const KNOWN_BLOCKED := {}
+## Conditions naming a static enemy object the remake draws without a unit (provisional
+## boundary: static_enemy_counts in the scenario) — token per battle.
+const KNOWN_STATIC_CONDITIONS := {}  # ACTORS100 (2026-09-27): Enemy101 hulls／Enemy100 doors are registered actors like the original's; no static conditions remain.
+## Tokens a battle's scripts name that no unit of the cast answers to, with the reason.
+const KNOWN_UNBUILT := {
+	# Enemy101 船殼 hulls (12／26) and STORY018's 門 (Enemy100) became PLAYERS 100／101 actors in ACTORS100
+	# (2026-09-27): pmALL door 0x40bb80, hull 0x850000 enemy target, no_attack 0x43f413, no_showshape 0x4420ef.
+	# WINFAIL533's actCheckEnemy lists 024／027, classes its EVEF never places (counted as fallen,
+	# 0x450840 case 0x26 — docs/evidence_packets/static_reverse/original_check_targets.md).
+	"533": ["SID_ENEMY024", "SID_ENEMY027"],
+}
+
+var verbose := OS.get_environment("HSL_WINNABILITY_VERBOSE") != ""
+## HPLow threshold the census reads (max_hp, ratio) -> HP; the ablation swaps in the old one.
+var hp_low_threshold: Callable = WinfailConditions.hp_low_threshold
+## Battle key -> [loop, scenario, arrival floods] of the first pass, reused by the ablations.
+var boards := {}
+
+
+func run_winnability_census() -> void:
+	var campaign := CampaignProgress.load_campaign()
+	var blocked := {}
+	var static_conditions := {}
+	var unbuilt := {}
+	var battles := 0
+	for key in campaign.get("battles", {}):
+		var entry: Dictionary = campaign["battles"][key]
+		if entry.has("kind"):
+			continue
+		battles += 1
+		var scenario := BattleScenario.load_file(str(entry.get("scenario", "")))
+		var loop := BattlePlayLoop.create([], "", scenario, 1)
+		_assert_true(bool(loop.get("scenario_ok", false)), "battle %s creates a PlayLoop (%s)" % [key, str(loop.get("scenario_error", ""))])
+		if not bool(loop.get("scenario_ok", false)):
+			continue
+		var cast := cast_battle(loop)
+		boards[str(key)] = [loop, scenario, arrival_floods(cast, loop["winfail_script_rules"])]
+		var report := census(loop, scenario, boards[str(key)][2])
+		for problem in report["unresolved"]:
+			check(false, "battle %s: %s" % [key, problem])
+		for problem in report["hp_low"]:
+			check(false, "battle %s: %s" % [key, problem])
+		if report["path"].is_empty():
+			blocked[str(key)] = true
+		if not report["static_tokens"].is_empty():
+			static_conditions[str(key)] = report["static_tokens"]
+		var missing := unbuilt_tokens(loop, scenario)
+		if not missing.is_empty():
+			unbuilt[str(key)] = missing
+		if verbose:
+			print("WINNABILITY level=%s path=%s blocked_by=%s" % [key, ",".join(report["path"]), JSON.stringify(report["blocked_by"])])
+	_assert_eq(battles, 128, "the census covers every registered battle")
+	var known_blocked := KNOWN_BLOCKED.keys()
+	known_blocked.sort()
+	var found_blocked := blocked.keys()
+	found_blocked.sort()
+	_assert_eq(found_blocked, known_blocked, "battles with no remake path to victory are exactly KNOWN_BLOCKED")
+	_assert_eq(static_conditions, KNOWN_STATIC_CONDITIONS, "conditions on static enemy objects are exactly KNOWN_STATIC_CONDITIONS")
+	_assert_eq(unbuilt, KNOWN_UNBUILT, "script tokens without a unit of the cast are exactly KNOWN_UNBUILT")
+	_hp_low_threshold_reading()
+	_ablations(campaign)
+
+
+## One battle: {path: status keys from an armed status to the win (empty = blocked),
+## blocked_by: unfireable statuses and why, unresolved: condition tokens naming nobody,
+## hp_low: undead HPLow targets the condition misses at 1 HP, static_tokens}.
+func census(loop: Dictionary, scenario: Dictionary, arrivals: Variant = null) -> Dictionary:
+	var cast := cast_battle(loop)
+	var rules: Dictionary = loop["winfail_script_rules"]
+	var undead := undead_ids(cast, rules)
+	if arrivals == null:
+		arrivals = arrival_floods(cast, rules)
+	var report := {"path": [], "blocked_by": {}, "unresolved": [], "hp_low": [], "static_tokens": []}
+	var statics: Dictionary = loop["winfail_runtime"].get("static_enemy_counts", {})
+	var fireable := {}
+	for status in WinfailCompiler.all_statuses(rules):
+		var why := unfireable_reason(cast, status, undead, arrivals)
+		fireable[str(status["key"])] = why == ""
+		if why != "":
+			report["blocked_by"][str(status["key"])] = why
+		for token in WinfailConditions.condition_tokens(status):
+			if WinfailConditions.token_source(cast, str(token)) == "unresolved":
+				report["unresolved"].append("%s condition token %s names no unit" % [status["key"], token])
+			if statics.has(str(token)) and WinfailConditions.units_for_token(cast, str(token)).is_empty() and not report["static_tokens"].has(str(token)):
+				report["static_tokens"].append(str(token))
+		for condition in status.get("conditions", []):
+			if str(condition["name"]) != "actCheckPlayerHPLow":
+				continue
+			for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions._arg(condition["args"], 0), WinfailConditions._int_arg(condition["args"], 1)):
+				if undead.has(unit_id) and not _holds_at(cast, unit_id, 1, false, condition):
+					report["hp_low"].append("%s %s misses undead %s at its revive HP 1" % [status["key"], str(condition["args"]), unit_id])
+	var armed: Array = []
+	var parent := {}
+	for kind in WinfailCompiler.STATUS_KINDS:
+		for code in loop.get("%s_statuses" % kind, []):
+			armed.append("%s_%d" % [kind, int(code)])
+	for key in (scenario.get("opening", {}) as Dictionary).get("select_event_timelines", {}).keys():
+		if not armed.has(str(key)):
+			armed.append(str(key))
+	var frontier := armed.duplicate()
+	while not frontier.is_empty():
+		var key: String = frontier.pop_front()
+		var status := WinfailCompiler.status_by_key(rules, key)
+		if status.is_empty() or not bool(fireable.get(key, false)):
+			continue
+		if key.begins_with("win_") or (key.begins_with("event_") and _hands_off(status)):
+			var path := [key]
+			while parent.has(path[0]):
+				path.push_front(parent[path[0]])
+			report["path"] = path
+			break
+		for next_key in armed_by(status, armed, fireable):
+			if not armed.has(next_key):
+				armed.append(next_key)
+				parent[next_key] = key
+				frontier.append(next_key)
+	report["unresolved"].sort()
+	report["static_tokens"].sort()
+	return report
+
+
+## The loop with every creatable script actor added (template id `template:<symbol>`), its
+## registered-player tokens bound: what the conditions can ever name.
+func cast_battle(loop: Dictionary) -> Dictionary:
+	var cast: Dictionary = BattlePlayLoop.copy(loop)
+	cast["units"] = (loop["units"] as Array).duplicate(true)
+	var bindings: Dictionary = cast["winfail_runtime"]["actor_bindings"]
+	var templates: Dictionary = (loop.get("script_actor_source", {}) as Dictionary).get("templates", {})
+	for symbol in templates:
+		var spec: Dictionary = templates[symbol]
+		if spec.has("insert_skip"):
+			continue
+		var actor: Dictionary = (spec["actor"] as Dictionary).duplicate(true)
+		if not WinfailConditions.unit(cast, str(actor["id"])).is_empty():
+			continue
+		actor["census_template"] = str(symbol)
+		cast["units"].append(actor)
+		for token in [spec["token"]] + spec["aliases"]:
+			if not bindings.has(str(token) + "/1"):
+				bindings[str(token) + "/1"] = str(actor["id"])
+	return cast
+
+
+## SID_ENEMYnnn tokens the battle's WINFAIL statuses and STORY actions name that resolve to
+## no unit of the cast (fielded units, one instance per script template, the opening-only
+## actors the STORY deletes before first control), sorted.
+func unbuilt_tokens(loop: Dictionary, scenario: Dictionary) -> Array:
+	var cast := cast_battle(loop)
+	var tokens := {}
+	for status in WinfailCompiler.all_statuses(loop["winfail_script_rules"]):
+		for item in status.get("conditions", []) + status.get("actions", []):
+			for arg in item["args"]:
+				if str(arg).begins_with("SID_ENEMY"):
+					tokens[str(arg)] = true
+	var seed_path := str((scenario.get("resources", {}) as Dictionary).get("battle_seed", ""))
+	if seed_path != "" and FileAccess.file_exists(seed_path):
+		var seed: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(seed_path))
+		for section in seed.get("scripts", {}).get("story", {}).get("sections", []):
+			for action in section.get("actions", []):
+				for command in action.get("chain", []):
+					for arg in command.get("args", []):
+						if str(arg).begins_with("SID_ENEMY"):
+							tokens[str(arg)] = true
+	var opening_only := {}
+	for actor in scenario.get("story_actors", []):
+		opening_only[str(actor.get("token", ""))] = true
+	var missing: Array = []
+	for token in tokens:
+		if WinfailConditions.units_for_token(cast, str(token)).is_empty() and not opening_only.has(token):
+			missing.append(str(token))
+	missing.sort()
+	return missing
+
+
+## Units that are (or the script ever makes) undead: they revive at 1 HP instead of dying.
+func undead_ids(cast: Dictionary, rules: Dictionary) -> Dictionary:
+	var ids := {}
+	for unit in cast["units"]:
+		if bool(unit.get("undead", false)):
+			ids[str(unit["id"])] = true
+	for status in WinfailCompiler.all_statuses(rules):
+		for action in status.get("actions", []):
+			if str(action["name"]) == "actSetPlayerUndead" and WinfailConditions._int_arg(action["args"], 2) != 0:
+				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions._arg(action["args"], 0), WinfailConditions._int_arg(action["args"], 1)):
+					ids[str(unit_id)] = true
+	return ids
+
+
+func unfireable_reason(cast: Dictionary, status: Dictionary, undead: Dictionary, arrivals: Dictionary) -> String:
+	var conditions: Array = status.get("conditions", [])
+	if conditions.is_empty():
+		return "no condition"
+	for condition in conditions:
+		var name := str(condition["name"])
+		var args: Array = condition["args"]
+		if not bool(condition.get("supported", false)):
+			return "unsupported %s" % name
+		match name:
+			"actFALSE":
+				return "actFALSE"
+			"actCheckRoundNumber", "actCheckRoundDisp", "actDetectRoundDispDisp":
+				if WinfailConditions._int_arg(args, 0) > ROUND_REACHABLE:
+					return "%s %s never comes" % [name, str(args)]
+			"actCheckPlayerAttacked":
+				if WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 1)).is_empty():
+					return "%s: nobody to attack as %s" % [name, WinfailConditions._arg(args, 1)]
+				if WinfailConditions._arg(args, 0) != "-1" and WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 0)).is_empty():
+					return "%s: no attacker %s" % [name, WinfailConditions._arg(args, 0)]
+			"actCheckSerialPlayerAttacked":
+				if WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 0), WinfailConditions._int_arg(args, 1)).is_empty():
+					return "%s: no %s serial %s" % [name, WinfailConditions._arg(args, 0), WinfailConditions._arg(args, 1)]
+			"actCheckPlayerHPLow":
+				var reached := false
+				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 0), WinfailConditions._int_arg(args, 1)):
+					var lowest := 1 if undead.has(unit_id) else 0
+					if _holds_at(cast, unit_id, lowest, lowest == 0, condition):
+						reached = true
+				if not reached:
+					return "%s %s: no target reaches the threshold" % [name, str(args)]
+			"actCheckEnemyNumber":
+				var token := WinfailConditions._arg(args, 0)
+				if WinfailConditions.token_source(cast, token) == "unresolved":
+					return "%s: unresolved %s" % [name, token]
+				if int(cast["winfail_runtime"].get("static_enemy_counts", {}).get(token, 0)) >= WinfailConditions._int_arg(args, 1):
+					return "%s: static objects %s are never destroyed" % [name, token]
+			"actCheckPlayer", "actCheckEnemy":
+				var needed := mini(WinfailConditions._int_arg(args, 0), args.size() - 1)
+				var countable := 0
+				for index in range(1, args.size()):
+					var token := WinfailConditions._arg(args, index)
+					var source := WinfailConditions.token_source(cast, token)
+					if source == "unresolved" or (source == "binding" and WinfailConditions.units_for_token(cast, token).is_empty()):
+						continue
+					countable += 1
+				if needed <= 0 or countable < needed:
+					return "%s %s: only %d countable ids" % [name, str(args), countable]
+			"actCheckPlayerArrivePos", "actCheckAnyPlayerArrivePos":
+				if not bool(arrivals.get(JSON.stringify([name, args]), false)):
+					return "%s %s: zone unreachable" % [name, str(args)]
+	return ""
+
+
+func _holds_at(cast: Dictionary, unit_id: String, hp: int, defeated: bool, condition: Dictionary) -> bool:
+	var probe: Dictionary = cast.duplicate()
+	probe["units"] = (cast["units"] as Array).duplicate(true)
+	var unit := WinfailConditions.unit(probe, unit_id)
+	unit["hp"] = hp
+	unit["defeated"] = defeated
+	if str(condition["name"]) == "actCheckPlayerHPLow":
+		# WinfailConditions' own reading, with the threshold routed through hp_low_threshold.
+		_assert_eq(WinfailConditions.condition_holds(probe, "actCheckPlayerHPLow", condition["args"], "round"), hp <= WinfailConditions.hp_low_threshold(int(unit.get("max_hp", 0)), WinfailConditions._int_arg(condition["args"], 2)), "census HPLow agrees with WinfailConditions for %s" % unit_id)
+		return hp <= int(hp_low_threshold.call(int(unit.get("max_hp", 0)), WinfailConditions._int_arg(condition["args"], 2)))
+	return WinfailConditions.condition_holds(probe, str(condition["name"]), condition["args"], "round")
+
+
+func _hands_off(status: Dictionary) -> bool:
+	for action in status.get("actions", []):
+		if str(action["name"]) == HANDOFF_ACTION:
+			return true
+	return false
+
+
+## Statuses the chain arms. A chain gate (actCheckEventNotExist, WinfailCompiler.CHAIN_GATE_CONDITIONS)
+## ends the chain while a listed event is still armed: the inserts behind it count only when
+## every listed event already armed can fire (and so leave the slot table) — WINFAIL037's pillar
+## 5 arms event 6 only after pillars 1–4, WINFAIL080's treasures arm win 0 only as the second.
+func armed_by(status: Dictionary, armed: Array = [], fireable: Dictionary = {}) -> Array:
+	var keys: Array = []
+	for action in status.get("actions", []):
+		var name := str(action["name"])
+		var args: Array = action["args"]
+		if bool(action.get("chain_gate", false)):
+			for index in range(1, 1 + mini(WinfailConditions._int_arg(args, 0), args.size() - 1)):
+				var listed := "event_%d" % WinfailConditions._int_arg(args, index)
+				if armed.has(listed) and not bool(fireable.get(listed, false)):
+					return keys
+			continue
+		if name.begins_with("actInsert") and WinfailCompiler.status_kind_of(name) != "" and args.size() >= 1:
+			keys.append("%s_%d" % [WinfailCompiler.status_kind_of(name), int(args[0])])
+		elif name == "actSelectInsertEvent":
+			# [id][serial][num][msg 1][event 1][msg 2][event 2]...
+			for index in range(4, args.size(), 2):
+				keys.append("event_%d" % int(args[index]))
+	return keys
+
+
+## {JSON [name, args]: reachable} for every arrival condition: some unit it names (any
+## player-side unit for actCheckAnyPlayerArrivePos, the party for a unit the script creates)
+## can walk into the zone on the map with every mid-battle ClearWall open, ignoring units.
+func arrival_floods(cast: Dictionary, rules: Dictionary) -> Dictionary:
+	var result := {}
+	var board: Dictionary = BattlePlayLoop.copy(cast)
+	board["terrain_edits"] = []
+	var cell_size := WinfailConditions.cell_size(cast)
+	for status in WinfailCompiler.all_statuses(rules):
+		for action in status.get("actions", []):
+			var args: Array = action["args"]
+			var edit: Dictionary = rules.get("story_object_terrain", {}).get(WinfailConditions._arg(args, 0), {})
+			if str(action["name"]) == "actInsertStoryObject" and edit.has("clear_flags") and args.size() >= 3:
+				TerrainEditRules.record(board, WinfailConditions._arg(args, 0), [Vector2i(floori(float(args[1]) / cell_size), floori(float(args[2]) / cell_size))], "winnability census")
+	var tiles := TerrainEditRules.tiles(board)
+	var size: Vector2i = cast["map_size"]
+	var reach_cache := {}
+	for status in WinfailCompiler.all_statuses(rules):
+		for condition in status.get("conditions", []):
+			var name := str(condition["name"])
+			var args: Array = condition["args"]
+			if name != "actCheckPlayerArrivePos" and name != "actCheckAnyPlayerArrivePos":
+				continue
+			var zone: Array = [args.slice(2, 6), args.slice(0, 4)][int(name == "actCheckAnyPlayerArrivePos")]
+			var cells := {}
+			for cell in WinfailCompiler.zone_cells(zone.map(func(value): return int(value)), cell_size):
+				cells[Vector2i(int(cell[0]), int(cell[1]))] = true
+			var walkers: Array = []
+			if name == "actCheckPlayerArrivePos":
+				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 0), WinfailConditions._int_arg(args, 1)):
+					var unit := WinfailConditions.unit(cast, unit_id)
+					walkers.append(unit if not unit.has("census_template") else {})
+			if walkers.is_empty() or walkers.has({}):
+				for unit in cast["units"]:
+					if not unit.has("census_template") and WinfailConditions.player_side(unit):
+						walkers.append(unit)
+			var reached := false
+			for unit in walkers:
+				if unit.is_empty():
+					continue
+				var id := str(unit["id"])
+				if not reach_cache.has(id):
+					var mover: Dictionary = unit.duplicate(true)
+					var envelope := TacticalGridRules.movement_reachability_envelope(mover, [], tiles, size, size.x * size.y * 16)
+					var reach := {mover["coord"]: true}
+					for coord in envelope.get("reachable_coords", []):
+						reach[coord] = true
+					reach_cache[id] = reach
+				for cell in cells:
+					if (reach_cache[id] as Dictionary).has(cell):
+						reached = true
+				if reached:
+					break
+			result[JSON.stringify([name, args])] = reached
+	return result
+
+
+## The static-derived reading itself: threshold max_hp × ratio / 100, at least 1.
+func _hp_low_threshold_reading() -> void:
+	_assert_eq(WinfailConditions.hp_low_threshold(6313, 0), 1, "ratio 0 holds at HP 1 (clamp)")
+	_assert_eq(WinfailConditions.hp_low_threshold(35, 30), 10, "35 × 30 / 100 truncates to 10")
+	_assert_eq(WinfailConditions.hp_low_threshold(3, 20), 1, "a threshold below 1 is clamped to 1")
+	var battle := {"units": [{"id": "boss", "class_id": "Enemy060", "actor_id": "060", "hp": 2, "max_hp": 6313}], "winfail_runtime": {"actor_bindings": {}}}
+	_assert_true(not WinfailConditions.condition_holds(battle, "actCheckPlayerHPLow", ["SID_ENEMY060", "1", "0"], "round"), "HP 2 of 6313 is above the ratio-0 threshold")
+	battle["units"][0]["hp"] = 1
+	_assert_true(WinfailConditions.condition_holds(battle, "actCheckPlayerHPLow", ["SID_ENEMY060", "1", "0"], "round"), "an undead boss revived at HP 1 satisfies ratio 0")
+
+
+## The census must fail without each fix: the pre-R6-L8 HPLow reading, and level 29 without
+## its actChangePlayerID bindings.
+func _ablations(campaign: Dictionary) -> void:
+	var loop_59: Dictionary = boards["59"][0]
+	var scenario_59: Dictionary = boards["59"][1]
+	var cast := cast_battle(loop_59)
+	var win: Dictionary = WinfailCompiler.status_by_key(loop_59["winfail_script_rules"], "win_0")
+	var condition: Dictionary = win["conditions"][0]
+	_assert_true(_holds_at(cast, "actor060_1", 1, false, condition), "level 59 win 0 holds on the undead boss at HP 1")
+	var report := census(loop_59, scenario_59, boards["59"][2])
+	_assert_eq(report["path"], ["win_0"], "level 59 is winnable through win 0")
+	# Ablation: the pre-R6-L8 reading (hp × 100 <= ratio × max_hp, so ratio 0 needs HP <= 0,
+	# no clamp) over every battle: the undead bosses lose their win path.
+	hp_low_threshold = func(max_hp: int, ratio: int) -> int: return max_hp * ratio / 100
+	var blocked: Array = []
+	var misses := 0
+	for key in boards:
+		var ablated := census(boards[key][0], boards[key][1], boards[key][2])
+		misses += ablated["hp_low"].size()
+		if ablated["path"].is_empty():
+			blocked.append(str(key))
+	hp_low_threshold = WinfailConditions.hp_low_threshold
+	for key in ["41", "59", "75", "76", "77", "79"]:
+		_assert_true(blocked.has(key), "ablation: the old HPLow reading leaves battle %s without a win path (blocked=%s)" % [key, str(blocked)])
+	_assert_true(misses > 0, "ablation: the old HPLow reading misses undead targets at 1 HP")
+	if verbose:
+		print("WINNABILITY_ABLATION hp_low_old blocked=%s misses=%d" % [",".join(blocked), misses])
+	var loop_29: Dictionary = boards["29"][0]
+	var scenario_29: Dictionary = boards["29"][1]
+	_assert_eq(WinfailConditions.units_for_token(loop_29, "1000", 1), ["actor023_1"], "STORY029 actChangePlayerID binds 1000 to 梅爾 (SID_ENEMY023 serial 1)")
+	_assert_eq(WinfailConditions.units_for_token(loop_29, "1001", 1), ["actor023_2"], "STORY029 actChangePlayerID binds 1001 to 凱文 (SID_ENEMY023 serial 2)")
+	var unbound: Dictionary = BattlePlayLoop.copy(loop_29)
+	unbound["winfail_runtime"] = (loop_29["winfail_runtime"] as Dictionary).duplicate(true)
+	unbound["winfail_runtime"]["actor_bindings"].erase("1000/1")
+	unbound["winfail_runtime"]["actor_bindings"].erase("1001/1")
+	_assert_true(not census(unbound, scenario_29, boards["29"][2])["unresolved"].is_empty(), "ablation: without the bindings the level-29 death events name nobody")
+	_missing_actor_ablations()
+
+
+## Lane R6-L10: level 37's win path runs through the guardians and level 80's wall waits for
+## the 怨念體; take the units out again and the census must see the old defects.
+func _missing_actor_ablations() -> void:
+	var loop_37: Dictionary = boards["37"][0]
+	var scenario_37: Dictionary = boards["37"][1]
+	var report := census(loop_37, scenario_37, boards["37"][2])
+	_assert_eq(report["path"].slice(0, 2), ["event_5", "event_6"], "level 37 wins through pillar 5 (SID_ENEMY067 serial 5) and event 6 (Enemy052)")
+	_assert_eq(WinfailConditions.units_for_token(loop_37, "SID_ENEMY067", 5), ["guard067_5"], "SID_ENEMY067 serial 5 is the fifth inserted gem")
+	var gems := 0
+	for unit in loop_37["units"]:
+		if str(unit["actor_id"]) == "067":
+			gems += 1
+			_assert_true(bool(unit.get("undead", false)) and int(unit["max_hp"]) == 1, "gem %s is undead at max HP 1 (hit_point -10000)" % unit["id"])
+	_assert_eq(gems, 5, "STORY037 fields five gems")
+	var stripped := _without_actors(loop_37, ["066", "067"])
+	_assert_true(census(stripped, scenario_37, boards["37"][2])["path"].is_empty(), "ablation: without the guardian units level 37 has no win path")
+	_assert_eq(unbuilt_tokens(stripped, scenario_37), ["SID_ENEMY066", "SID_ENEMY067"], "ablation: without the guardian units their tokens are unbuilt")
+	var loop_80: Dictionary = boards["80"][0]
+	var wall := ["1", "SID_ENEMY068"]
+	_assert_true(not WinfailConditions.condition_holds(loop_80, "actCheckEnemy", wall, "round"), "level 80's wall event waits while the 怨念體 stands")
+	var fallen: Dictionary = BattlePlayLoop.copy(loop_80)
+	fallen["units"] = (loop_80["units"] as Array).duplicate(true)
+	WinfailConditions.unit(fallen, "actor068_1")["defeated"] = true
+	_assert_true(WinfailConditions.condition_holds(fallen, "actCheckEnemy", wall, "round"), "level 80's wall event holds once the 怨念體 falls")
+	_assert_true(WinfailConditions.condition_holds(_without_actors(loop_80, ["068"]), "actCheckEnemy", wall, "round"), "ablation: without the 怨念體 unit the wall event holds at first control")
+	_level37_gem_chain(loop_37)
+	_level80_treasure_order(loop_80)
+
+
+## The pillar puzzle through the public commands: a gem refuses an ordinary attack (weapon range,
+## 0x800000), takes a spell and revives at 1 HP (undead) switched to pmPlayerEnemy. Its event
+## chain ends at the actCheckEventNotExist gate while another pillar event is still armed
+## (0x450840 case 0x72): gem 5 struck first only goes dark; struck last (pillars 1–4 already
+## struck, their events consumed) it deletes the guardians and fields Enemy052 (events 5 → 6);
+## another gem struck last resets the pillars (event 7 re-arms 8–12).
+func _level37_gem_chain(first: Dictionary) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7
+	var loop: Dictionary = BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(BattlePlayLoop.copy(first)))
+	var caster := ""
+	var skill := ""
+	for step in range(200):
+		var id := str(CoreTurnQueue.current(loop["turn_queue"]).get("id", ""))
+		if not bool(BattlePlayLoop._unit(loop, id).get("player_commandable", false)):
+			loop = BattlePlayLoop.step_ai_turn(loop, rng)
+			continue
+		var ready := BattlePlayLoop.select_player_unit(loop, id)
+		for option in BattlePlayLoop.magic_options(ready, id):
+			if option["quote"]["ok"] and not BattlePlayLoop.SkillTargetRules.is_support(option["fields"], ready["skill_target_data"]):
+				caster = id
+				skill = str(option["id"])
+				break
+		if caster != "":
+			loop = ready
+			break
+		loop = BattlePlayLoop.commit_wait(ready, rng)
+	_assert_true(caster != "", "level 37 fields a caster with an offensive spell")
+	if caster == "":
+		return
+	var adjacent := _gem_beside(loop, caster, "guard067_5")
+	var struck := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(adjacent, "attack"), "guard067_5", rng)
+	_assert_eq(str(struck.get("last_attack_reject", {}).get("reason", "")), "not_enemy", "an ordinary attack cannot select a pmMagicAttack gem")
+	var early := _cast_on_gem(loop, caster, skill, "guard067_5", rng)
+	var after := BattlePlayLoop._unit(early, "guard067_5")
+	_assert_true(int(after["hp"]) == 1 and not bool(after.get("defeated", false)), "the undead gem revives at 1 HP after a lethal spell")
+	_assert_eq(int(after.get("player_mode", 0)), 0x30000, "a struck gem goes dark (pmPlayerEnemy)")
+	var fired: Array = early["winfail_runtime"]["fired"]
+	_assert_eq(fired.map(func(entry): return entry["key"]), ["event_5"], "gem 5 struck first fires event 5 only")
+	_assert_eq(int(fired[0].get("chain_stop_index", -1)), 3, "event 5 stops at its actCheckEventNotExist gate while pillars 1–4 are armed")
+	_assert_true(not (early["event_statuses"] as Array).has(6) and _alive_of(early, ["052"]).is_empty() and _alive_of(early, ["066", "067"]).size() == 10, "gem 5 struck first leaves the guardians standing and Enemy052 absent")
+	# Pillars 1–4 already struck: their events have left the slot table.
+	var primed: Dictionary = BattlePlayLoop.copy(loop)
+	primed["event_statuses"] = (loop["event_statuses"] as Array).filter(func(code): return not [1, 2, 3, 4].has(int(code)))
+	var last := _cast_on_gem(primed, caster, skill, "guard067_5", rng)
+	_assert_eq(last["winfail_runtime"]["fired"].map(func(entry): return entry["key"]), ["event_5", "event_6"], "gem 5 struck last fires WINFAIL037 events 5 and 6")
+	_assert_true(_alive_of(last, ["066", "067"]).is_empty() and _alive_of(last, ["052"]).size() == 1 and (last["event_statuses"] as Array).has(47), "event 6 removes the ten guardians, fields Enemy052 and arms event 47")
+	# Gem 4 struck last (1, 2, 3 and 5 already struck): the pillars reset.
+	var wrong: Dictionary = BattlePlayLoop.copy(loop)
+	wrong["event_statuses"] = (loop["event_statuses"] as Array).filter(func(code): return not [1, 2, 3, 5].has(int(code)))
+	var reset := _cast_on_gem(wrong, caster, skill, "guard067_4", rng)
+	_assert_eq(reset["winfail_runtime"]["fired"].map(func(entry): return entry["key"]), ["event_4", "event_7"], "another gem struck last fires its event and the event-7 reset")
+	var rearmed := true
+	for code in [8, 9, 10, 11, 12]:
+		rearmed = rearmed and (reset["event_statuses"] as Array).has(code)
+	_assert_true(rearmed and not (reset["event_statuses"] as Array).has(6) and int(BattlePlayLoop._unit(reset, "guard067_4").get("player_mode", 0)) == 0x870000, "event 7 relights the gems (pmMagicAttack) and arms events 8–12")
+
+
+## WINFAIL080 events 0／1 (the two treasures) end at `actCheckEventNotExist 1,<other>` while the
+## other treasure event is armed: the first one reached only hands out its item, the second arms
+## win 0. The southern treasure lies behind the wall event 3 opens when the 怨念體 falls
+## (run_story_object_terrain_tests), so the win needs the boss down and both treasures.
+func _level80_treasure_order(first: Dictionary) -> void:
+	var runner := ""
+	for unit in first["units"]:
+		if bool(unit.get("player_commandable", false)):
+			runner = str(unit["id"])
+			break
+	var north := _arrive(BattlePlayLoop.copy(first), runner, Vector2i(19, 4))
+	var north_fired: Array = north["winfail_runtime"]["fired"]
+	_assert_eq(north_fired.map(func(entry): return entry["key"]), ["event_0"], "level 80: the northern treasure fires event 0")
+	_assert_true(int(north_fired[0].get("chain_stop_index", -1)) == 11 and not (north["win_statuses"] as Array).has(0) and not BattleOutcome.decided(north), "level 80: the first treasure stops at its gate (event 1 armed) — no win while the 怨念體 guards the second")
+	var south_only: Dictionary = BattlePlayLoop.copy(first)
+	WinfailConditions.unit(south_only, "actor068_1")["defeated"] = true
+	south_only = _arrive(south_only, runner, Vector2i(19, 13))
+	_assert_true(south_only["winfail_runtime"]["fired"].map(func(entry): return entry["key"]).has("event_1") and not (south_only["win_statuses"] as Array).has(0) and not BattleOutcome.decided(south_only), "level 80: the southern treasure alone does not arm win 0 either")
+	var both: Dictionary = BattlePlayLoop.copy(north)
+	WinfailConditions.unit(both, "actor068_1")["defeated"] = true
+	both = _arrive(both, runner, Vector2i(19, 13))
+	var both_fired: Array = both["winfail_runtime"]["fired"].map(func(entry): return entry["key"])
+	_assert_true(both_fired.has("event_1") and both_fired.has("event_3"), "level 80: the second treasure fires event 1, the fallen 怨念體 event 3 (%s)" % str(both_fired))
+	_assert_eq(BattleOutcome.of(both), BattleOutcome.VICTORY_SCRIPT, "level 80: both treasures arm win 0 and the battle is won")
+
+
+func _arrive(loop: Dictionary, unit_id: String, cell: Vector2i) -> Dictionary:
+	var unit := WinfailConditions.unit(loop, unit_id)
+	unit["coord"] = cell
+	unit["grid_coord"] = cell
+	return BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop))
+
+
+## `loop` with gem `gem_id` moved beside the caster (a copy).
+func _gem_beside(loop: Dictionary, caster: String, gem_id: String) -> Dictionary:
+	var next: Dictionary = BattlePlayLoop.copy(loop)
+	var gem := BattlePlayLoop._unit(next, gem_id)
+	for delta in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		if BattlePlayLoop.unit_id_at_coord(next, BattlePlayLoop._unit(next, caster)["coord"] + delta) == "":
+			gem["coord"] = BattlePlayLoop._unit(next, caster)["coord"] + delta
+			break
+	return next
+
+
+func _cast_on_gem(loop: Dictionary, caster: String, skill: String, gem_id: String, rng: RandomNumberGenerator) -> Dictionary:
+	var ready := _gem_beside(loop, caster, gem_id)
+	var cast := BattlePlayLoop.attack_target(BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(ready, "magic"), skill), gem_id, rng, BattlePlayLoop._unit(ready, gem_id)["coord"])
+	return BattlePlayLoop.finish_exhausted_action(cast)
+
+
+func _alive_of(loop: Dictionary, actor_ids: Array) -> Array:
+	return loop["units"].filter(func(unit): return str(unit["actor_id"]) in actor_ids and WinfailConditions.unit_alive(loop, str(unit["id"])))
+
+
+func _without_actors(loop: Dictionary, actor_ids: Array) -> Dictionary:
+	var stripped: Dictionary = BattlePlayLoop.copy(loop)
+	stripped["units"] = (loop["units"] as Array).filter(func(unit): return not actor_ids.has(str(unit["actor_id"])))
+	stripped["winfail_runtime"] = (loop["winfail_runtime"] as Dictionary).duplicate(true)
+	var bindings: Dictionary = stripped["winfail_runtime"]["actor_bindings"]
+	for key in bindings.keys():
+		if WinfailConditions.unit(stripped, str(bindings[key])).is_empty():
+			bindings.erase(key)
+	return stripped

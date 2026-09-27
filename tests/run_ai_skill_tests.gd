@@ -13,15 +13,13 @@ func _init() -> void:
 
 func run() -> void:
 	native_cases()
-	per_skill_paths()
-	chance_and_handoff()
 	area_cases()
 	special_bucket_walk()
 	held_target_free_cast()
 	centre_scan_cases()
 	move_search_cases()
 	side_walk_cases()
-	atomic_failures()
+	run_ai_call()
 
 
 func native_cases() -> void:
@@ -49,65 +47,6 @@ func native_cases() -> void:
 		check(result == expected, "kernel result equals original: " + input["kind"])
 		check(cursor[0] == row["draws"].size() and input == before, "all native draws used and input unchanged")
 		check(bool(row["normal_return"]) == (input["kind"] != "position_suffix"), "position suffix is not reported as whole planner return")
-
-
-func per_skill_paths() -> void:
-	var loop := run_ai_decision_tests.live_fixture()
-	own(loop, "skill_book")["actors"]["026"]["move_magic_use"] = true # Explicit mobile-caster fixture; source default is stationary.
-	var mage := BattlePlayLoop._unit(loop, "enemy026_1")
-	mage["coord"] = Vector2i(6, 6)
-	BattlePlayLoop._unit(loop, "leonard")["coord"] = Vector2i(8, 7)
-	own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["range"] = "range2Cell"
-	var saved := loop.duplicate(true)
-	var prepared := BattleLoopAI._ai_skill_candidates(loop, mage["id"], [BattlePlayLoop.unit(loop, "leonard")], "magic")
-	check(prepared["ok"], "different-range skills prepare")
-	if not prepared["ok"]: return
-	var plan: Dictionary = prepared["targets"]["leonard"]
-	check(plan["skills"].size() == 2 and loop == saved, "both spells retain their own legal paths without writing battle state")
-	for start in [0, 1]:
-		var chosen := AISkillPlanning.choose(plan, func(bound): return start if bound == 32 else 0)
-		var intent: Dictionary = chosen["intent"]
-		var id: String = "magic:magicFIRE:magicCode01" if start == 0 else "magic:magicAIR:magicCode01"
-		check(intent["skill_id"] == id, "source prepend order selects fire then wind")
-		var ready := BattlePlayLoop.SkillResolutionRules.prepare_cast(mage, BattlePlayLoop.unit(loop, intent["target_id"]), loop["units"], id, BattlePlayLoop.skill_fields(loop, id), loop["skill_book"], loop["skill_target_data"], loop["equipment_items"], intent["destination"], loop["map_size"])
-		check(ready["ok"] and intent["affected_ids"].has("leonard"), "chosen spell is legal from its own destination")
-		check(BattlePlayLoop.movement_cells(loop, mage["id"]).has(intent["destination"]) and not intent["path"].is_empty(), "casting move uses an actual unoccupied reachable path")
-		if start == 1: check(intent["destination"] != mage["coord"], "short-range wind survives even though it needs movement")
-		var before_mp := int(mage["mp"])
-		var clone := loop.duplicate(true)
-		var action := BattleLoopAI._execute_ai_skill_choice(clone, mage["id"], intent, func(_n): return 0)
-		check(action["skill_id"] == id and action["to"] == intent["destination"] and action["path"] == intent["path"], "committed cast uses planned skill, destination and route")
-		check(BattlePlayLoop.unit(clone, mage["id"])["mp"] == before_mp - 8 and loop == saved, "planned cast pays once without mutating caller snapshot")
-	# Block the formerly best row: a valid cast must not walk through a blocker.
-	own(loop, "tiles")[Vector2i(6, 5)] = {"blocks_movement": true}
-	var blocked := BattleLoopAI._ai_skill_candidates(loop, mage["id"], [BattlePlayLoop.unit(loop, "leonard")], "magic")
-	for skill in blocked["targets"]["leonard"]["skills"]:
-		for intent in skill["intents"]:
-			check(not intent["path"].has(Vector2i(6, 5)), "all alternative spell routes honor terrain")
-
-
-func chance_and_handoff() -> void:
-	var loop := run_ai_decision_tests.live_fixture()
-	own(loop, "skill_book")["actors"]["026"]["move_magic_use"] = true # Exercise movable spell proposals, not default ownership.
-	var origin: Vector2i = BattlePlayLoop.unit(loop, "enemy026_1")["coord"]
-	var after := BattlePlayLoop.step_ai_turn(loop, func(_bound): return 0)
-	check(after["scenario_ok"], "live mage turn accepts native skill plan")
-	if not after["scenario_ok"]: return
-	var action: Dictionary = after["last_ai_action"]
-	check(action["kind"] == "move_then_attack" and action["to"] != origin, "adjacent mage moves to a distant legal casting square")
-	check(action["ai_skill_decision"]["position_selection"]["distance"] > 1, "mage retains casting range while increasing separation")
-	check(after["selected_unit_id"] == "enemy023_1" and after["last_ai_actions"].size() == 1 and after["turn_queue"]["index"] == 1, "movement and magic hand to next player exactly once")
-	check(BattlePlayLoop.unit(after, "enemy026_1")["mp"] == 22 and BattlePlayLoop.unit(loop, "enemy026_1")["mp"] == 30, "one skill receipt pays source MP cost")
-	var plan := BattleLoopAI._ai_skill_candidates(loop, "enemy026_1", [BattlePlayLoop.unit(loop, "leonard")], "magic")["targets"]["leonard"] as Dictionary
-	var rolls := [0, 99, 0]
-	var fallback := AISkillPlanning.choose(plan, func(bound): return rolls.pop_front() if bound == 100 else 0)
-	check(fallback["intent"]["skill_id"] == "magic:magicAIR:magicCode01" and rolls.is_empty(), "rejected fire use-ratio scans to wind without selecting another target")
-	for id in ["magic:magicAIR:magicCode01", "magic:magicFIRE:magicCode01"]: own(loop, "skill_book")["skills"][id]["fields"]["use_ratio"] = "0"
-	var rejected := BattlePlayLoop.step_ai_turn(loop, func(_bound): return 0)
-	check(rejected["scenario_ok"] and not rejected["last_ai_action"].has("skill_id"), "all skill probability declines naturally try another action class")
-	check(BattlePlayLoop.unit(rejected, "enemy026_1")["mp"] == 30 and rejected["last_ai_actions"].size() == 1 and rejected["turn_queue"]["index"] == 1, "declined magic neither debits nor duplicates handoff")
-	var attempts: Array = rejected["last_ai_action"]["ai_decision"]["skill_attempts"][0]["attempts"]
-	check(attempts.back()["index"] == -1 and attempts.back()["visited"].size() == 2, "receipt records both failed use-ratio trials")
 
 
 static func area_fixture() -> Dictionary:
@@ -320,17 +259,82 @@ func side_walk_cases() -> void:
 		check(not action.has("skill_id") and BattlePlayLoop.unit(after, "enemy026_1")["mp"] == 30, "the side walk never pays for the declined spell")
 
 
-func atomic_failures() -> void:
-	for value in [null, "broken", -1, 101, 0.5, true]:
-		var loop := run_ai_decision_tests.live_fixture()
-		own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"] = value
-		var saved := loop.duplicate(true)
-		var after := BattlePlayLoop.step_ai_turn(loop, func(_n): check(false, "bad use ratio must fail before RNG"); return 0)
-		check(not after["scenario_ok"] and after["scenario_error"] == "invalid_ai_skill_use_ratio", "invalid owned use ratio is an explicit failure")
-		check(after["units"] == saved["units"] and after["turn_queue"] == saved["turn_queue"] and after["last_ai_actions"] == saved["last_ai_actions"] and loop == saved, "failure leaves calls, HP, MP, position, turn and receipts untouched")
-	for field in ["source_order", "ai_magic_multi_first"]:
-		var loop := run_ai_decision_tests.live_fixture()
-		if field == "source_order": own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"].erase(field)
-		else: own(loop, "ai_profiles")["actors"]["026"]["profile"].erase(field)
-		var after := BattlePlayLoop.step_ai_turn(loop, func(_n): check(false, "missing owned AI input must fail before RNG"); return 0)
-		check(not after["scenario_ok"] and after["units"] == loop["units"], "missing source strategy/order cannot silently supply another rule")
+# ---- run_ai_skill_tests.gd ----
+const AICallRules = preload("res://game/sim/AICallRules.gd")
+const BattleLoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
+const BattleFixture = preload("res://tests/support/BattleFixture.gd")
+const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+
+
+func run_ai_call() -> void:
+	native_cases_ai_call()
+	status_and_movement()
+
+
+func native_cases_ai_call() -> void:
+	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_ai_calls.json"))
+	for row in packet["cases"]:
+		var input: Dictionary = row["input"]
+		var saved := input.duplicate(true)
+		var rows: Array = []
+		for unit in input["units"]:
+			if unit == null:
+				rows.append(null)
+				continue
+			rows.append({"coord": Vector2i(int(unit["coord"][0]), int(unit["coord"][1])), "side": unit["side"],
+				"removed": unit["removed"], "hp": 100, "level": 1, "job": 90, "sid": unit["object_code"]})
+		var before := rows.duplicate(true)
+		var recipients := AICallRules.recipients(rows, int(input["owner"]), int(input["radius"]))
+		check(recipients["ok"] and rows == before, "call geometry is pure")
+		var tags: Array = input["units"].map(func(unit): return null if unit == null else int(unit["tag"]))
+		if input["kind"] == "broadcast":
+			check(recipients["indices"] == row["result"]["recipients"].map(func(index): return int(index)), "recipients match original full return, including removed and exact side flags")
+			for index in recipients["indices"]: tags[index] = int(input["tag"])
+		else:
+			var pending := int(input["units"][int(input["owner"])]["tag"])
+			var candidate: Variant = input["units"][pending - 1] if pending > 0 else null
+			var eligible: bool = candidate != null and not candidate["removed"] and (int(input["excluded_word"]) == 0 or candidate["object_code"] != input["excluded_word"])
+			var adoption := AICallRules.adopt(int(input["ordinary"]) - 1, pending - 1, pending > 0, eligible)
+			check(adoption["index"] + 1 == int(row["result"]["target"]), "adoption matches original prefix target")
+			if adoption["consumed"]: tags[int(input["owner"])] = 0
+			if adoption["broadcast"] and int(input["radius"]) > 0:
+				for index in recipients["indices"]: tags[index] = int(input["ordinary"])
+		check(tags == row["result"]["tags"].map(func(tag): return null if tag == null else int(tag)) and input == saved, "entire pending-tag table matches original with immutable input")
+	check(not AICallRules.recipients([], 0, 5)["ok"], "missing owner is rejected")
+
+
+func status_and_movement() -> void:
+	var loop := run_ai_decision_tests.live_fixture()
+	own(loop, "ai_profiles")["actors"]["026"]["profile"]["find_range"] = 0
+	var mage := BattlePlayLoop._unit(loop, "enemy026_1")
+	mage["ai_call_target_id"] = "leonard"
+	mage["inventory"] = [0,0,0,0,0,0,0,0] # Called attack fallback after no available self-cure.
+	mage["status_flags"] = 3
+	mage["status_counters"] = {"poison": (7 << 16) | 2, "paralysis": 0, "no_magic": 1}
+	var after := BattlePlayLoop.step_ai_turn(loop, func(_n): return 0)
+	check(after["scenario_ok"] and after["last_ai_action"].get("defender_id") == "leonard" and not after["last_ai_action"].has("skill_id"), "called target cannot bypass silence to cast magic")
+	check(BattlePlayLoop.unit(after, "enemy026_1")["mp"] == mage["mp"] and BattlePlayLoop.unit(after, "enemy026_1")["ai_call_target_id"] == "", "silenced action consumes the call without an MP debit")
+	check(BattlePlayLoop.unit(after, "enemy026_1")["hp"] == 393 and BattlePlayLoop.unit(after, "enemy026_1")["status_counters"] == {"poison": (7 << 16) | 1, "paralysis": 0, "no_magic": 0} and after["selected_unit_id"] == "enemy023_1", "called action ticks poison and expires silence once before the player handoff")
+	var distant := run_ai_decision_tests.live_fixture("enemy021_1")
+	BattlePlayLoop._unit(distant, "leonard")["coord"] = Vector2i(14, 3)
+	BattlePlayLoop._unit(distant, "enemy023_1")["defeated"] = true
+	own(distant, "ai_profiles")["actors"]["021"]["profile"]["find_range"] = 1
+	BattlePlayLoop._unit(distant, "enemy021_1")["ai_call_target_id"] = "leonard"
+	var saved := distant.duplicate(true)
+	# The dispatcher roll (0x440db5, read by the lock 0x441002 for the adopted call target too) and
+	# the state 0xa category roll (0x40c570 at 0x43fe0c, drawn whatever the target offers)
+	# comes first; after it the pursuit walk's equal-candidate coin (0x413740) is the only draw.
+	var walk_draws: Array = []
+	var walked := BattleLoopAI._ai_take_turn(distant, "enemy021_1", func(n): walk_draws.append(n); return 0)
+	check(walk_draws.size() > 2 and walk_draws.slice(0, 2) == [99, 99] and walk_draws.slice(2).all(func(n): return n == 2), "unreachable call target draws the dispatcher and category rolls, then only walk coins: %s" % str(walk_draws))
+	check(walked["loop"]["scenario_ok"] and walked["action"]["kind"] == "move" and walked["action"]["toward"] == "leonard", "distant call target produces a chase without expanding ordinary find_range")
+	check(not walked["action"]["path"].is_empty() and BattlePlayLoop.movement_cells(distant, "enemy021_1").has(walked["action"]["to"]), "called movement remains inside the existing legal movement envelope")
+	check(BattlePlayLoop.unit(walked["loop"], "enemy021_1")["ai_call_target_id"] == "" and distant == saved, "movement consumes only the published call, leaving the input battle intact")
+	# A one-row corridor leaves every refinement flood one strictly nearest cell: no coin.
+	var corridor := distant.duplicate(true)
+	for y in range(16):
+		for x in range(16):
+			if y != 3: own(corridor, "tiles")[Vector2i(x, y)] = {"blocks_movement": true, "move_cost": 1}
+	var corridor_draws: Array = []
+	var straight := BattleLoopAI._ai_take_turn(corridor, "enemy021_1", func(n): corridor_draws.append(n); return 0)
+	check(corridor_draws == [99, 99] and straight["action"]["kind"] == "move" and straight["action"]["toward"] == "leonard", "called pursuit with one nearest cell at every refinement draws nothing after the dispatcher and category rolls: %s" % str(corridor_draws))

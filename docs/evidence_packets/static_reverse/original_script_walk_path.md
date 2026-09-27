@@ -1,6 +1,6 @@
 # 剧情走位：逐格路径、Wait 与并行
 
-> evidence: static-derived; provisional: 同距平局次序、围死时的最近格度量、按键快进（remake-invented） · status: live · functions: 0x40eb40, 0x40ed50, 0x40f350, 0x40f440, 0x410a50, 0x411080, 0x4111d0, 0x450840, 0x453b90 · tools: run_script_walk_path_tests.gd, run_script_walk_tests.gd · updated: 2026-09-24
+> evidence: static-derived; provisional: 同距平局次序、围死时的最近格度量、按键快进（remake-invented） · status: live · functions: 0x40eb40, 0x40ed50, 0x40f350, 0x40f440, 0x410a50, 0x411080, 0x4111d0, 0x450840, 0x453b90 · tools: run_script_walk_tests.gd, run_story_object_terrain_tests.gd · updated: 2026-09-24
 
 2026-09-24，lane R5-L4。起因：第 6 关实玩反馈——队长倒下后小兵的撤退路线不对，直接穿过阶梯走掉，而且一个一个轮流撤退（复述）。本包回答两件事：原版剧情走位是否按地形走、是否顺序。全部为只读反编译（`hsl01.exe`，r2ghidra 目录 `ignored/static/hsl01/catalog/decompiled`）与 r2 反汇编，未开原作。
 
@@ -27,7 +27,7 @@
 - **撤退速度**：`BattleScriptActorPresentation` 此前不传 token 的速度参数，WINFAIL006 的 speed 8 被当成默认 4；现在按 token 形状取 `actWalk*` 第 5 参／`actWalkPrevInsertObject*` 第 3 参。
 - **按键快进（remake-invented）**：对白以外的 token 期间按 Enter／Space／左键，所有正在走的演员落到本次走位的终点、镜头滚动落位、当前等待缩到一 tick；脚本次序与落点不变。原版这里没有跳过。
 
-## 全游戏盘点（`run_script_walk_path_tests.gd`）
+## 全游戏盘点（`run_story_object_terrain_tests.gd`）
 
 对 199 个注册场景的开场时间线与全部 winfail 状态链，按静态已知位置（EVEF／绑定像素、插入像素、上一段走位终点）重放每条走位 token：
 

@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd, run_town_scene_tests.gd · updated: 2026-09-18
 
-来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=6`（`STORY_SCENE_REVIEW_PASS shots=6`；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_level_6_preview` 与 `tests/run_town_scene_tests.gd` 的 `_run_next_level_exit`）。场景文件 `content/battles/story_006.json` 由 `python3 tools/hsl.py generate story_scene:6` 生成。入口不是大地图到达：席達鎮（bigmap 点 6，Town）酒馆事件 23「席達鎮酒館沃斯菲塔士兵」以 `teSetNextPlayLevelEvent 6,6` 关闭城镇并交接进入；卡片确认回大地图仍站在点 6。
+来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=6`（`STORY_SCENE_REVIEW_PASS shots=6`；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_registered_story_sweep` 与全程剧情 explorer）。场景文件 `content/battles/story_006.json` 由 `python3 tools/hsl.py generate story_scene:6` 生成。入口不是大地图到达：席達鎮（bigmap 点 6，Town）酒馆事件 23「席達鎮酒館沃斯菲塔士兵」以 `teSetNextPlayLevelEvent 6,6` 关闭城镇并交接进入；卡片确认回大地图仍站在点 6。
 
 ## 看到什么
 

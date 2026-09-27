@@ -1,6 +1,6 @@
 # 游戏光标：原版红宝石权杖（CURSOR01–10）画在游戏画面里、每个画面都有、每 6 tick 换一帧、热点在宝石
 
-> evidence: resource-derived: 155 个原版 OBS 的 object 2「游標」字段逐项相同（SHAPE\CURSOR01.SHP、obj_Shape_Number 10、obj_Shape_Delay 5、planeCursor、defProcCursor），CURSOR01–10.SHP 尺寸与 draw origin; static-derived: 0x430410 defProcCursor 每 tick 把对象放到鼠标坐标、0x45e5a6 按 delay+1 tick 换帧、窗口过程 WM_SETCURSOR → 0x458650 SetCursor(NULL) 藏起 Windows 指针（光标只由游戏画进画面）、`[0x4c1b00] & 0x1800000` 与持物 `[0x4c1ce4]`（0x430310 画物品图标）时权杖隐藏; runtime-measured: 2026-09-24 原版录屏标题／战斗／状态页／敌方回合／系统菜单均见同一权杖，CURSOR10 每 1.151 s 出现一次 · status: live · functions: 0x403089, 0x4038a0, 0x406fc2, 0x430310, 0x430410, 0x442a90, 0x456cf0, 0x458650, 0x45e5a6 · tools: hsl_video_events.py, run_game_cursor_tests.gd · updated: 2026-09-27
+> evidence: resource-derived: 155 个原版 OBS 的 object 2「游標」字段逐项相同（SHAPE\CURSOR01.SHP、obj_Shape_Number 10、obj_Shape_Delay 5、planeCursor、defProcCursor），CURSOR01–10.SHP 尺寸与 draw origin; static-derived: 0x430410 defProcCursor 每 tick 把对象放到鼠标坐标、0x45e5a6 按 delay+1 tick 换帧、窗口过程 WM_SETCURSOR → 0x458650 SetCursor(NULL) 藏起 Windows 指针（光标只由游戏画进画面）、`[0x4c1b00] & 0x1800000` 与持物 `[0x4c1ce4]`（0x430310 画物品图标）时权杖隐藏; runtime-measured: 2026-09-24 原版录屏标题／战斗／状态页／敌方回合／系统菜单均见同一权杖，CURSOR10 每 1.151 s 出现一次 · status: live · functions: 0x403089, 0x4038a0, 0x406fc2, 0x430310, 0x430410, 0x442a90, 0x456cf0, 0x458650, 0x45e5a6 · tools: hsl_video_events.py, run_ui_class_contract_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -76,7 +76,7 @@
 
 ## 复现
 
-`python3 tools/hsl.py check game_cursor`（清单字段、十帧、`frame_ticks = delay + 1`、PNG 哈希、155 个 OBS 无分歧）；运行侧 `tools/godot.sh --headless --script tests/run_game_cursor_tests.gd`。窗口化截帧驱动已退役，回执为历史记录。
+`python3 tools/hsl.py check game_cursor`（清单字段、十帧、`frame_ticks = delay + 1`、PNG 哈希、155 个 OBS 无分歧）；运行侧 `tools/godot.sh --headless --script tests/run_ui_class_contract_tests.gd`。窗口化截帧驱动已退役，回执为历史记录。
 
 ## 边界
 
