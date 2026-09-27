@@ -4,9 +4,9 @@
 
 ## 结论
 
-- 原版：标题版本号「V1.06」常驻左下，確認「開始新故事」亮起停 0.75 s 再 0.55 s 淡黑；目标格光标（玩家选目标与敌方预告）都是 `I_RECT01.SHP` 黄框；系统卷轴的確定／取消压在卷轴中央 (256,217)、不压暗，存档完成提示在 BOARD02 (75,320)；战斗卷轴只在刚打开的玩家行动环上按 Esc／右键才开（选格、移动后的环、敌方回合、首个行动环之前、额外行动都不开），其 讀取回憶錄 开 Title031 八格读取列表；状态页开页总是属性页，状态页页按钮排在 y 387；技能页是状态窗 root mode 8／9，十行起才有滚动条；系统卷轴战斗版自静止位下方 400 px、大地图版自上方 600 px 卷入，展开每 tick 走剩余距离的 1/8（封顶 40、至少 2 px），收起 40 px/tick 回起点（runtime-measured；static-derived）。
-- 重制：`BattleSelectionCursor`／`BattleAttackCue` 画 I_RECT01，`BattleSystemMenu` 照原版位置与时长出確定／取消与完成提示，`BattleStatusPanel`／`BattleMagicPanel` 按 mode 0／1 与技能页读法落地；預備動作 开关做在 設定選項 第二行（`GameSettings.ready_action`）（runtime-measured）。
-- 差异：状态页页按钮排未做（差异清单 `status-left-column`）；回憶錄列表、標題语义与 GAME OVER 位置时长是重制读法；只有一份录屏样本的时长与未命中的声音保持 provisional（provisional）。
+- 原版：标题版本号「V1.06」常驻左下，悬停只有火花不亮起，確認「開始新故事」亮起停 0.75 s 再 0.55 s 淡黑，離開遊戲 同样先经按住计时再淡出退出，戰場記錄 无记录弹消息 12「無存檔記錄」；目标格光标（玩家选目标与敌方预告）都是 `I_RECT01.SHP` 黄框；系统卷轴打开放 ACCEPT01，確定／取消压在卷轴中央 (256,217)、无问句、不压暗，存档完成提示在 BOARD02 (75,320)；战斗卷轴只在刚打开的玩家行动环上按 Esc／右键才开（选格、移动后的环、敌方回合、首个行动环之前、额外行动都不开），其 讀取回憶錄 开 Title031 八格读取列表；状态页开页总是属性页，状态页页按钮排在 y 387；技能页是状态窗 root mode 8／9，十行起才有滚动条；系统卷轴战斗版自静止位下方 400 px、大地图版自上方 600 px 卷入，展开每 tick 走剩余距离的 1/8（封顶 40、至少 2 px），收起 40 px/tick 回起点（runtime-measured；static-derived）。
+- 重制：`BattleSelectionCursor`／`BattleAttackCue` 画 I_RECT01，`TitleScreen` 原版值悬停不亮起、三项同一亮起停留与淡黑，`BattleSystemMenu` 开卷放 ACCEPT01、照原版位置与时长出確定／取消（原版值无问句）与完成提示，`BattleStatusPanel`／`BattleMagicPanel` 按 mode 0／1 与技能页读法落地；預備動作 开关做在 設定選項 第二行（`GameSettings.ready_action`）（runtime-measured）。
+- 差异：标题悬停亮起与卷轴确认问句收进 OPT-GUIDE＝提示；标题悬停火花的字形未认定、不画；回憶錄列表、標題语义与 GAME OVER 位置时长是重制读法；只有一份录屏样本的时长与未命中的声音保持 provisional（provisional）。
 
 ## 证据
 
@@ -23,7 +23,9 @@
 | --- | --- | --- | --- | --- |
 | 版本号 | 左下常驻白字「V1.06」，定宽点阵字 8 px 步进，墨迹 (3,459)–(41,467)，整段录屏不变 | runtime-measured | 没有 | ASCFONT.15 半角字（8×15 格，墨迹行 3–11、列 1–7），格左上 (2,456)，墨迹 (3,459)–(41,467) 与原版逐像素一致 |
 | 確認「開始新故事」 | 点击后该项红色亮起字形（Title024 系）在 13.52 s 出现，停 0.75 s；14.27→14.82 s 整屏亮度线性降到黑（0.55 s） | runtime-measured | 0.6 s 直接淡黑 | 亮起停 0.75 s，再 0.55 s 淡黑（`CONFIRM_HOLD_SECONDS`／`FADE_TO_BLACK_SECONDS`）；戰場記錄 同用（provisional） |
-| 悬停 | 原版悬停只有火花，红色亮起出现在点击时 | runtime-measured | 悬停即亮起 | 不改（重制的悬停提示保留，记在标题 manifest 的 unresolved） |
+| 悬停 | 原版悬停只有火花，红色亮起出现在点击时 | runtime-measured | 悬停即亮起 | 原版值悬停不亮起；OPT-GUIDE＝提示 时悬停项亮起；方向键选中项亮起（重制键盘路径）；火花字形未认定，不画 |
+| 離開遊戲 | 标题 handler `0x423f00`：每项先经 state 3 `0x424004` 按住计时，码 2 `0x4240b2` 经 `0x42cb60`（置 `0xa0000000`）与 `0x42dc90(2)` 淡出后退出 | static-derived | 立即退出 | 同 開始新故事 亮起停 0.75 s、0.55 s 淡黑后退出（时长沿用，provisional） |
+| 戰場記錄 无记录 | 码 1 `0x42404c`：`0x42ebe0(0)` 失败时 `0x4072b0` 弹消息 11「讀取存檔失敗」或 12「無存檔記錄」（按 `0x4c43b8`） | static-derived | 底部提示字「沒有戰場記錄」1.6 s | 无可恢复进度时 BOARD02 (75,320) 消息「無存檔記錄」，出入时长沿用存档完成提示（provisional）；重制无"读取失败"路径，不出消息 11 |
 | 点击声 | 13.59 s 有一个短起点（峰值 −43.6 dB）；最高 NCC Walk0011 0.34、Accept01 0.31，都不够认定 | negative-evidence | 无声 | 无声（未认定前不加） |
 
 早先模型描述的"停约 10 s 再淡黑约 2 s"与录屏量值不符：亮起到全黑一共 1.30 s。
@@ -41,7 +43,7 @@
 
 | 项 | 原版量值 | 等级 | 重制前 | 重制后 |
 | --- | --- | --- | --- | --- |
-| 確定／取消 | Title061（128×47）压在打开的卷轴中央 (256,217)，没有问句、没有压暗；所选项在提示期间保持红色亮起。582.0 s 儲存戰場記錄（模板差 17.1）、592.5 s 回主選單（9.5） | runtime-measured | (256,300)，全屏压暗 55%，亮起项隐藏 | (256,217)，不压暗，亮起项保留；卷轴下方的问句是重制补充（remake-invented） |
+| 確定／取消 | Title061（128×47）压在打开的卷轴中央 (256,217)，没有问句、没有压暗；所选项在提示期间保持红色亮起。582.0 s 儲存戰場記錄（模板差 17.1）、592.5 s 回主選單（9.5） | runtime-measured | (256,300)，全屏压暗 55%，亮起项隐藏；卷轴下方常驻问句 | (256,217)，不压暗，亮起项保留；原版值无问句，OPT-GUIDE＝提示 时卷轴下方加问句（remake-invented） |
 | 儲存戰場記錄 | 点击后先问確定／取消（581.0 s）；確定后卷轴不关 | runtime-measured | 直接保存、关卷轴、顶部横幅 | 先问；確定后存档，卷轴保持打开 |
 | 完成提示 | 「進度儲存完成」在无头像、居中的 BOARD02 消息板上：板 (75,320)（583.5 s 模板差 13.2），582.53→582.77 s 淡入，停到 583.73 s，583.87 s 前淡出 | runtime-measured＋resource-derived | 顶部「戰鬥已保存（F9 讀取）」横幅 | BOARD02 (75,320) 居中文字，0.25 s 入、0.95 s 停、0.15 s 出 |
 | 存档声音 | 582.28 s 起点（確定 点击）最高 NCC Walk0010 0.73；582.8 s 第二个起点 Put00003 0.52 | provisional | 无声 | 无声（单一样本，未认定） |
@@ -56,7 +58,7 @@
 
 | 项 | 原版 | 等级 | 重制 |
 | --- | --- | --- | --- |
-| 两个入口 | 行动环 狀態 `0x444285`（`push 0`）→ `0x43b4e0` mode 0；点非己方指挥单位 `0x443cfa` → mode 1，且只对已知单位开（未知落到 `0x443d9d`，同点空地，[身份栏包](../../static_reverse/original_identity_bar.md#显示未知单位信息的原版界面static-derived)） | static-derived | `BattleSceneMenus` 狀態 → `show_unit(…, own_page=true)`；`BattleSceneInput` 点单位先问 `BattleStatusPanel.opens_for(known)`，再 `show_unit(…, known, false)`；OPT-INFO＝公開 时一律开 |
+| 两个入口 | 行动环 狀態 `0x444285`（`push 0`）→ `0x43b4e0` mode 0；移动选格态（phase 20 子态 0 `0x443c63`）点非己方指挥单位 `0x443cfa` → mode 1，关窗子态 11 `0x4440b7` 回选格；行动环 98／74 无点单位分支；且只对已知单位开（未知落到 `0x443d9d`，同点空地，[身份栏包](../../static_reverse/original_identity_bar.md#显示未知单位信息的原版界面static-derived)） | static-derived | `BattleSceneMenus` 狀態 → `show_unit(…, own_page=true)`；`BattleSceneInput` 只在 `MOVE_SELECT` 点非可指挥单位时，先问 `BattleStatusPanel.opens_for(known)`，再 `show_unit(…, known, false)`；OPT-INFO＝公開 时一律开 |
 | 板 | mode 0／1 同建 130 头像 (12,14)、131 WINDOW10、145–147 三条、132 WINDOW20 (12,174)、133 WINDOW30（`0x43ae70`，停靠 x 252）；mode 0 另建 134 `$:` WINDOW40（`0x43af60`，y 440）与 137 上一位／142 下一位，mode 1 跳过这三个（`in_stack_8 != 1` 分支） | static-derived | mode 1 的页不画钱框（`gold_board`／`gold_label` 随 `own_page`） |
 | 左栏 | `0x43ac10` 建根对象时 `+0x94 = 4`，WINDOW20 过程（`0x438160` case 2）按它分页：4＝属性（帧 +1 → WINDOW21，九行属性）、1＝道具（`+0x138` 八格，行高 32，悬停出说明）、2＝魔法、3＝特殊技；只有页按钮（`0x43a640` case 3 `default: root+0x94 = Data6`）改它——开页总是属性页 | static-derived＋runtime-reference | 重制左栏本来就是 WINDOW21 九项属性，与原版默认页相同，不改 |
 | 页按钮 | y 387 一排 42×42 图标（`0x43b0a0`..`0x43b230` 停靠 y 387）：mode 1 四个——狀態（141 BCMD13，Data6 4）、道具（138，1）、魔法（139，2）、特殊技（140，3）；mode 0 另加上一位（137）／下一位（142）；当前页那颗置 `0x10000000` 画暗。`06_status_and_stats_screen/frame_028`（638 px 宽）红框行 366–406、首钮列 264–304：钮心 y 386.5，与停靠 387、图标高 42 一致；接触表 frame_001..016 开页即属性页，frame_018 按 道具 后才列 回復藥×3／解毒草，frame_026／028 是 特殊技 页 | static-derived＋runtime-reference | `BattleStatusPanel.PAGE_BUTTONS`：钮心 x 按各建钮函数的 `+0xaa`——上一位 285（`0x43b0a0`）、下一位 346（`0x43b230`）、道具 407（`0x43b140`）、狀態 468（`0x43b0f0`）、魔法 529（`0x43b190`）、特殊技 590（`0x43b1e0`），y 387；图形与字样取 obj-051.obs 137–142（B_PREV1／B_NEXT1／BCMD03／BCMD13／BCMD09／BCMD10，obj_Data9 → RESOURCE 133／134／19／40／28／29）；mode 1 不出上一位／下一位；当前页画暗；道具页八格、魔法／特殊技页列表（只读，悬停出说明）；上一位／下一位在可指挥的在场单位间按名册顺序循环（换人顺序 provisional） |
@@ -92,7 +94,7 @@
 | --- | --- | --- |
 | 标题布局 | `hsltools/assets/title_assets.py` 解码 PAK `Title001／002／021–028`；`hsl_title_layout_probe.py` 对原录像参考帧模板匹配：标志 (99,12)、圆环 (197,161)、石像 (117,227)／(405,227)、宝珠／书参考位 (216,257)／(386,243)，逐 shape 平均色差 10–22 | resource-derived＋runtime-measured |
 | 宝珠与书 | 周期 1.646 s、振幅 5 px 的正弦，围绕参考位下方 3 px 往返，起始相位随机，不随选择移动（[original_title_ornaments](../original_title_ornaments/README.md)） | provisional（拟合值） |
-| 标题菜单语义 | 「戰場記錄」先恢复最近一份战斗检查点，否则接单槽战役进度；「開始新故事」清空进度，不清回憶錄与检查点；无存档时底部提示「沒有戰場記錄」约 1.6 s | provisional |
+| 标题菜单语义 | 「戰場記錄」先恢复最近一份战斗检查点，否则接单槽战役进度；「開始新故事」清空进度，不清回憶錄与检查点；无存档时出消息「無存檔記錄」（§1） | provisional |
 | GAME OVER | 原版败北无结果页（`0x42cbd0`），160 tick 无输入自回标题（`0x42aea0`）；重制败北约 0.2 s 淡黑后显示 Title011＋Title012（居中）、淡入 0.9 s、任意键淡出 0.6 s 回标题；原版败北画面无录像 | static-derived；provisional：位置与时长 |
 | 系统卷轴 | 停在 (190,67)（对原版 `05_system_scroll_menu` 帧 003 模板差 10.6）；亮起框中心对齐字行中心 (128,56)；键盘选择也亮起、確定／取消预选取消 | runtime-measured；provisional：预选 |
 | 系统卷轴卷动 | 战斗卷轴过程 `0x4253f0`：起点 y＝静止 y＋400（`0x42549b`），状态 0 每 tick `0x45e882(当前, 静止, 40)`，到达后把起点抄成目标（`0x42569b`）；状态 4 `0x45e91e(当前, 起点, 40, 0)` 收起后删对象（`0x425969`）。大地图卷轴 `0x425a90` 起点 y＝静止 y−600（`0x425b3b`），同一对步进（`0x425d22`／`0x425fbf`）。`0x45e882`：距离＝isqrt(dx²+dy²)，≤1 即对齐并返回 0，否则步长＝min(40, 距离>>3)、至少 2；`0x45e91e` 同式、右移位数取参数（此处 0），即 40 px/tick。战斗版展开 35 tick、收起 11 tick；大地图版 40／16 tick | static-derived |
@@ -100,7 +102,7 @@
 | 回憶錄列表 | Title031 居中 (87,44)，Title033 抬头，八条槽带 x 63–407、首带 y 80、间距 33，存 `user://memoir_NN.json`（槽数依 Title031，文件布局与标签为重制值）；战斗与大地图卷轴共用（§3 有原版帧，未逐像素对位） | provisional |
 | 設定選項 | Title039 居中 (142,90)，宝珠 Title027 作旋钮；場景效果＝剧情特效物件（雨／闪电／火焰／光环）是否绘制，音效音量＝Master，音樂音量＝Music 总线；原混音器未定位 | provisional：行语义 |
 
-标题 handler 未在 EXE 定位；参考帧是 638×480 简体版录像，PAK 标题字形亦为简体，重制文字沿用 RESOURCE 繁体。战斗卷轴的开启条件见 §3「开启时机」；卷轴不改战斗真相。
+标题 handler 在 `0x423f00`（子状态跳表 `0x424158`、动作表 `0x424174`）；参考帧是 638×480 简体版录像，PAK 标题字形亦为简体，重制文字沿用 RESOURCE 繁体。战斗卷轴的开启条件见 §3「开启时机」；卷轴不改战斗真相。
 
 ### 預備動作（0x477c14 bit1）
 
@@ -118,9 +120,9 @@ static-derived（hsl01.exe v1.06）。預備動作 是原版的施法／绝技�
 
 ## 重制接线
 
-- 标题：`game/title/TitleScreen.gd`（版本号、`CONFIRM_HOLD_SECONDS`／`FADE_TO_BLACK_SECONDS`、宝珠与书浮动）；布局来自 `content/imported/hsl/global/title/manifest.json`。
+- 标题：`game/title/TitleScreen.gd`（版本号、`CONFIRM_HOLD_SECONDS`／`FADE_TO_BLACK_SECONDS`、宝珠与书浮动、`_refresh_lit` 悬停亮起读 OPT-GUIDE、`show_message` 无记录消息）；布局来自 `content/imported/hsl/global/title/manifest.json`。
 - 目标格光标：`game/battle/scene/BattleSelectionCursor.gd`、`BattleAttackCue.gd`。
-- 系统卷轴：`game/battle/scene/BattleSystemMenu.gd`——timing：save notice 582.53–582.77 s in, held to 583.73 s, out by 583.87 s；任務說明 board dissolves in 577.55–577.95 s and out 579.08–579.48 s（`BattleWinFailBoard` 的 32／34 tick 溶入溶出）；卷动 `_slide`／`_slide_tick` 逐原版 tick 复现 `0x45e882`／`0x45e91e`，起点取 `SCROLL_START_OFFSET`。
+- 系统卷轴：`game/battle/scene/BattleSystemMenu.gd`——`open` 放 ACCEPT01（`runtime.play_ui_sound("confirm")`），`_ask` 出確定／取消、问句读 OPT-GUIDE；timing：save notice 582.53–582.77 s in, held to 583.73 s, out by 583.87 s；任務說明 board dissolves in 577.55–577.95 s and out 579.08–579.48 s（`BattleWinFailBoard` 的 32／34 tick 溶入溶出）；卷动 `_slide`／`_slide_tick` 逐原版 tick 复现 `0x45e882`／`0x45e91e`，起点取 `SCROLL_START_OFFSET`。
 - 状态页与技能页：`BattleStatusPanel`、`BattleMagicPanel`、`BattleSceneMenus`、`BattleSceneInput`；provenance 头写 `runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5` 等。
 - 預備動作：`game/settings/GameSettings.gd`（`ready_action`）、`game/battle/scene/AnimalCastLead.gd`（关掉时的 call 数）。
 - 重制补充（原版没有）挂在选项上，原版值下不显示：见 `content/authored/options/remake_options.json` 的 `read_points`。
@@ -133,7 +135,9 @@ static-derived（hsl01.exe v1.06）。預備動作 是原版的施法／绝技�
 
 - 战斗卷轴开启条件：开场剧情中与首个行动环之前只有静态读法（`0x4000000`／`0x2000000`），Wine 只拍了行动环、移动选格与敌方回合三态；消息框打开期间 `0x413bce` 也置 `0x2000000`，重制由 `quiet()` 覆盖。
 - 版本号的点阵字形与颜色梯度没有导入；只对齐了墨迹外框。
-- 標題 戰場記錄 的亮起停留与淡黑只量了 開始新故事 一次，戰場記錄 沿用。
+- 標題 戰場記錄／離開遊戲 的亮起停留与淡黑只量了 開始新故事 一次，二者沿用；`0x42dc90(2)` 的淡出时长未读。
+- 标题悬停火花：录屏可见，字形与位置未认定，重制不画。
+- 标题「無存檔記錄」消息的出入时长与是否等按键未读，沿用战斗卷轴存档完成提示。
 - 完成提示的淡入淡出只有一次样本；右下角小方块（录屏里 BOARD02 旁的指示）未识别，重制不画。
 - I_RECT02..08 是同一框的其他配色，何时使用未读；重制只用 01。
 - 任務說明 面板在原版里的淡入时长与开场是否相同只量到起止（577.55 出现、579.48 按键收起），重制沿用开场的 32 tick。

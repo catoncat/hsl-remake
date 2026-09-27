@@ -8,16 +8,19 @@ extends Node2D
 ##                 entering level 51 unless a re-entry flag is set — static-derived; playing it
 ##                 between the fade and the first scene, and skipping on any key, are remake readings)
 ##   戰場記錄   -> continue the saved campaign position (CampaignProgress) -> BattleSceneRuntime
-##   離開遊戲   -> quit
+##   離開遊戲   -> quit after the same lit hold and fade (handler 0x423f00: every item waits out
+##                 the hold timer, state 3 0x424004; code 2 0x4240b2 fades via 0x42cb60／0x42dc90(2))
 ## The gem (Title027) and the book (Title028) stay beside item 1 whatever is selected and bob
 ## vertically on their own sine clocks (runtime-measured on the original,
-## docs/evidence_packets/runtime_observations/original_title_ornaments/README.md). The red lit
-## item shape shows on the hovered item, or on the keyboard-selected one after an arrow key.
+## docs/evidence_packets/runtime_observations/original_title_ornaments/README.md). The original
+## lights no item on hover (the recording shows only a sparkle; the sparkle shape is not
+## identified and not drawn); OPT-GUIDE＝提示 shows the red lit shape on the hovered item. An
+## arrow key lights the keyboard-selected item (remake keyboard path).
 ## Confirming an item lights it (the red Title024-026 shape with its white flare), holds
 ## CONFIRM_HOLD_SECONDS, then fades to black over FADE_TO_BLACK_SECONDS; the version string
 ## V1.06 stays at the bottom-left corner (runtime-measured on the 2026-09-24 recording,
-## docs/evidence_packets/runtime_observations/menus_ui/README.md). The hover lit rule is a remake
-## reading (provisional) — see manifest.unresolved_semantics. The title plays the original track
+## docs/evidence_packets/runtime_observations/menus_ui/README.md). 戰場記錄 with nothing to resume
+## shows message 12「無存檔記錄」on the BOARD02 message board (0x42404c → 0x4072b0). The title plays the original track
 ## 03 (manifest.music: level 0's table track, played after the vendor logos —
 ## docs/evidence_packets/static_reverse/original_music.md §3.1; the remake has no logo stage, so it
 ## starts with the title); like every level exit it stops at once on the scene change or when the
@@ -28,28 +31,32 @@ extends Node2D
 ##   rules: remake-invented (戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
-##     (V1.06 ink box (3,459)–(41,467), 8 px glyph advance, white; not baked into Title001)
+##     (V1.06 ink box (3,459)–(41,467), 8 px advance; no-record board at (75,320))
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#01
 ##     (background／logo／ring／statue corners and first-item gem＋book measured on 01/frame_001)
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
 ##     (gem and book stay beside item 1 whatever is selected; vertical travel −2…+8 px)
-##   layout: remake-invented (lit shape on the keyboard-selected item)
+##   layout: remake-invented (lit shape on the keyboard-selected item; hover lit under OPT-GUIDE＝提示,
+##     content/authored/options/remake_options.json)
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (「V1.06」; negative-evidence: not an ASCII／UTF-16 string of hsl01.exe)
-##   strings: remake-invented (「沒有戰場記錄」hint)
+##   strings: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (無存檔記錄 message 12 via 0x4072b0)
+##     (戰場記錄 code 1 0x42404c: message 12「無存檔記錄」, 11「讀取存檔失敗」)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
 ##     (gem／book bob period ≈1.65 s, amplitude ≈5 px, no fixed phase relation)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (開始新故事 click: lit shape from 13.52 s, fade 14.27→14.82 s — 0.75 s hold, 0.55 s fade)
 ##   timing: provisional
-##     (period and amplitude are fits to 4–5 fps samples; random start phases; the same hold／fade for 戰場記錄, 1.6 s hint,
-##     hover lit rule)
+##     (period and amplitude are fits to 4–5 fps samples; random start phases; the same hold／fade for 戰場記錄
+##     and 離開遊戲; the message board reuses the save notice's in／hold／out)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
 
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
@@ -69,8 +76,14 @@ const VERSION_TEXT := "V1.06"
 const VERSION_BOX := Rect2(2, 454, 40, 16)
 const VERSION_ADVANCE := 8.0
 const VERSION_FONT_SIZE := 13
-const HINT_SECONDS := 1.6
-const NO_RECORD_HINT := "沒有戰場記錄"
+## 戰場記錄 with nothing to resume: message 12 on the BOARD02 board (0x4072b0; same board, place
+## and in／hold／out as the battle scroll's save notice, BattleSystemMenu).
+const NO_RECORD_MESSAGE := "無存檔記錄"
+const MESSAGE_AT := Vector2(75, 320)
+const MESSAGE_TEXT_Y := 44.0
+const MESSAGE_IN_SECONDS := 0.25
+const MESSAGE_HOLD_SECONDS := 0.95
+const MESSAGE_OUT_SECONDS := 0.15
 ## Gem／book bob (runtime-measured, original_title_ornaments): sine period and amplitude are
 ## fits to 4–5 fps samples (provisional). Each swings from 2 px above to 8 px below its
 ## manifest position: the reference frame 01/frame_001 caught the gem near the top of its
@@ -92,9 +105,10 @@ var _lit: Array[Sprite2D] = []
 var _gem: Sprite2D
 var _hand: Sprite2D
 var _fade: ColorRect
-var _hint: Label
+var _message: Control
+var _message_text: Label
+var _message_tween: Tween
 var _music: AudioStreamPlayer
-var _hint_token := 0
 ## Seconds of ornament bob; the gem and the book each start at their own random phase (the
 ## original's phase difference changed between samples — neither in step nor opposed).
 var ornament_clock := 0.0
@@ -138,10 +152,14 @@ func _build_scene() -> void:
 	overlay.name = "Overlay"
 	overlay.layer = 10
 	add_child(overlay)
-	_hint = BattleUISkin.label(overlay, Vector2(0, 442), 18)
-	_hint.size = Vector2(640, 28)
-	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hint.text = ""
+	_message = Control.new()
+	_message.name = "Message"
+	_message.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_message.visible = false
+	overlay.add_child(_message)
+	BattleUISkin.board(_message, "BOARD02", MESSAGE_AT)
+	_message_text = BattleUISkin.text(_message, MESSAGE_AT + Vector2(0, MESSAGE_TEXT_Y), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(489, 24))
+	_message_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_version = Control.new()
 	_version.name = "Version"
 	_version.position = VERSION_BOX.position
@@ -220,7 +238,8 @@ func ornament_offset(phase: float) -> float:
 
 
 func _refresh_lit() -> void:
-	var lit_index := _confirmed_index if _confirmed_index >= 0 else (hovered if hovered >= 0 else (selected if _keyboard_lit else -1))
+	var hover_lit := hovered if hovered >= 0 and not GameOptions.is_original("OPT-GUIDE") else -1
+	var lit_index := _confirmed_index if _confirmed_index >= 0 else (hover_lit if hovered >= 0 else (selected if _keyboard_lit else -1))
 	for index in _lit.size():
 		_lit[index].visible = index == lit_index
 
@@ -274,7 +293,7 @@ func confirm() -> Dictionary:
 			transition["start_movie"] = str(campaign.get("start_movie", ""))
 		"battle_record":
 			# A mid-battle checkpoint (the original's 戰場記錄) wins; otherwise the auto-saved
-			# campaign position (remake reading); otherwise 沒有戰場記錄.
+			# campaign position (remake reading); otherwise message 12 無存檔記錄.
 			var records: Array = CampaignProgress.battle_record_entries()
 			var saved := CampaignProgress.load_progress()
 			if not records.is_empty():
@@ -283,16 +302,14 @@ func confirm() -> Dictionary:
 				_start_transition(action, FIRST_SCENE_PATH, str(newest.get("scenario_path", "")))
 				transition["battle_record"] = str(newest.get("save_path", ""))
 			elif saved.is_empty():
-				show_hint(NO_RECORD_HINT)
+				show_message(NO_RECORD_MESSAGE)
 				transition = {"action": action, "status": "no_record"}
 			else:
 				CampaignProgress.queue_resume(saved)
 				_start_transition(action, FIRST_SCENE_PATH, str(saved.get("scenario_path", "")))
 		"quit":
 			quit_requested = true
-			transition = {"action": action, "status": "quit"}
-			if DisplayServer.get_name() != "headless":
-				get_tree().quit()
+			_start_transition(action, "")
 	return transition
 
 
@@ -311,6 +328,11 @@ func _start_transition(action: String, scene_path: String, resume_scenario: Stri
 
 
 func _on_fade_finished(scene_path: String) -> void:
+	if str(transition.get("action", "")) == "quit":
+		transition["status"] = "quit"
+		if DisplayServer.get_name() != "headless":
+			get_tree().quit()
+		return
 	if str(transition.get("action", "")) == "new_story" and str(transition.get("start_movie", "")) != "":
 		_play_intro(scene_path, str(transition["start_movie"]))
 		return
@@ -352,13 +374,17 @@ func skip_intro() -> Dictionary:
 	return intro_player.skip()
 
 
-func show_hint(text: String) -> void:
-	_hint.text = text
-	_hint_token += 1
-	var token := _hint_token
-	get_tree().create_timer(HINT_SECONDS, false).timeout.connect(func() -> void:
-		if token == _hint_token and is_instance_valid(_hint):
-			_hint.text = "")
+func show_message(text: String) -> void:
+	if _message_tween != null and _message_tween.is_valid():
+		_message_tween.kill()
+	_message_text.text = text
+	_message.modulate.a = 0.0
+	_message.visible = true
+	_message_tween = create_tween()
+	_message_tween.tween_property(_message, "modulate:a", 1.0, MESSAGE_IN_SECONDS)
+	_message_tween.tween_interval(MESSAGE_HOLD_SECONDS)
+	_message_tween.tween_property(_message, "modulate:a", 0.0, MESSAGE_OUT_SECONDS)
+	_message_tween.tween_callback(func() -> void: _message.visible = false)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -395,7 +421,7 @@ func summary() -> Dictionary:
 		"lit_visible": _lit.map(func(sprite): return sprite.visible),
 		"transition": transition.duplicate(true),
 		"quit_requested": quit_requested,
-		"hint": _hint.text if _hint != null else "",
+		"message": _message_text.text if _message != null and _message.visible else "",
 		"version_text": "".join(_version.get_children().map(func(glyph): return glyph.text)) if _version != null else "",
 		"music_stream": _music.stream.resource_path if _music != null and _music.stream != null else "",
 		"music_playing": _music.playing if _music != null else false,

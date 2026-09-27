@@ -14,9 +14,11 @@ extends Control
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
 ##   layout: runtime-measured docs/evidence_packets/static_reverse/original_dialogue_marker.md
 ##     (the □ ink: a 20×20 one-pixel outline at (605,438) on the bottom board)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
+##     (name, body and ▼ in FONT.24 via 0x413040／0x4147f1; cell top at window top + 28·row)
 ##   layout: remake-invented
-##     (protected_words.json names kept whole where the original's 38-byte break cuts them (user playtest); system font
-##     on the 24 px glyph rows; full-width colon, original half-width)
+##     (protected_words.json names kept whole where the original's 38-byte break cuts them (playtest); full-width
+##     colon, original half-width)
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
@@ -141,7 +143,7 @@ func _ready() -> void:
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		label.autowrap_mode = TextServer.AUTOWRAP_OFF
 		label.add_theme_color_override("font_shadow_color", BattleUISkin.TEXT_SHADOW)
-		# One 28 px row per line, the system font centred on the original 24 px glyph row.
+		# One 28 px row per line; FONT.24's 24 px line puts each glyph cell top on its row (0x413040).
 		label.add_theme_constant_override("line_spacing", int(ROW_PITCH) - _font_height(label))
 	continue_label = BattleUISkin.text(self, MARKER_CELL, BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(24, 24))
 	end_marker = Control.new()

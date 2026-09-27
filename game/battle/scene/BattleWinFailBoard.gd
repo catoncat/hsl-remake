@@ -24,7 +24,8 @@ extends Control
 ##   layout: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##     (board box (136,108)–(502,370) at 32.6 s)
-##   layout: remake-invented (system font centred on the 24 px glyph rows)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
+##     (rows in FONT.24 [0x4c1ae0] through 0x412ad0 from 0x413adb／0x413b13／0x413b55／0x413b89, cell top on the row y)
 ##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
 ##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md

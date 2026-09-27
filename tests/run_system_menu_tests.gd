@@ -233,7 +233,7 @@ func _run_records_and_memoir() -> void:
 	_assert_eq(result.get("status", ""), "confirm", "讀取戰場記錄 asks for confirmation")
 	_assert_eq(menu.summary().get("phase", ""), "confirm", "the confirm prompt is up")
 	_assert_eq(menu.summary().get("confirm_selected", -1), 1, "取消 is preselected")
-	_assert_true(menu.get_node("Confirm").visible and str(menu._confirm_question.text).contains("讀取戰場記錄"), "the question names the action")
+	_assert_true(menu.get_node("Confirm").visible and menu.summary().get("confirm_question", "?") == "", "the prompt shows only 確定／取消, no question (OPT-GUIDE＝原版)")
 	menu.handle_input(_key(KEY_LEFT))
 	_assert_eq(menu.summary().get("confirm_selected", -1), 0, "Left selects 確定")
 	_assert_eq(menu.get_node("Confirm/Title_confirm_buttons/ConfirmLit").position, Vector2(7, 14), "確定 is lit on its button face (glyph registration, lane R5-L5)")
@@ -357,7 +357,7 @@ func _run_world_scroll_and_memoirs() -> void:
 	# Saving again over the occupied slot asks first.
 	result = menu.activate_memoir()
 	_assert_eq(result.get("status", ""), "confirm", "saving over an occupied slot asks 確定／取消")
-	_assert_true(str(menu._confirm_question.text).contains("覆蓋回憶錄 1"), "the question names the slot")
+	_assert_true(menu.get_node("Confirm").visible and menu.summary().get("confirm_question", "?") == "", "the overwrite prompt shows no question (OPT-GUIDE＝原版)")
 	result = menu.confirm(false)
 	_assert_eq(result.get("status", ""), "cancelled", "取消 keeps the old memoir")
 	_assert_eq(menu.summary().get("phase", ""), "memoir", "the list stays up after 取消")

@@ -6,13 +6,13 @@
     "items": 101,
     "sources": 533,
     "sources_by_kind": {
-      "provenance": 217,
-      "sentence": 145,
+      "provenance": 215,
+      "sentence": 147,
       "scope": 73,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 59,
+    "layout_timing_modules": 58,
     "items_by_original_status": {
       "read_complete": 15,
       "read_partial": 60,
@@ -328,19 +328,21 @@
     },
     {
       "id": "bitmap-font",
-      "difference": "界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值；技能页名字墨迹对 Wine 帧偏移 0／0、宽 71＝原版）。AI 施法名字幕也换 FONT.24（lane UIFIX：0x43e110／0x43e1c0 的字体是 [0x4c1ae0]，对录像 14 源帧 9987 逐像素一致）。剩：重制各处字号归到原版两面（≤16→FONT.15、≥17→FONT.24）是重制定的，个别界面的字行位置未逐一对原版",
-      "original": "位图字库已解码（简体字形在繁体码位）：全角 24×24／16×15、半角 12×24／8×15（FONT.15 半角下移 2 px），前进＝格宽、无额外字距（0x42f230／0x42f308／0x4608e4）；AI 施法名字幕 0x43e110／0x43e1c0 用 [0x4c1ae0]＝FONT.24",
+      "difference": "界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。剩：对白名字后冒号仍全角（原版半角）；FONT.15 行高按 16（字格 15＋1）；四个函数（0x4264a0／0x42b2b0／0x423c90／0x42d3f0）与资料页 0x4384d5／0x438a92 两行未对上界面；法术受者条旁文字位置为重制画法",
+      "original": "位图字库已解码（简体字形在繁体码位）：全角 24×24／16×15、半角 12×24／8×15（FONT.15 半角下移 2 px），前进＝格宽、无额外字距（0x42f230／0x42f308／0x4608e4）；各界面字库由 0x460884 调用点压入的 [0x4c1ae0] FONT.24／[0x4c1adc] FONT.15 决定（逐界面表见 original_font_script）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_font_script/README.md",
         "docs/evidence_packets/runtime_observations/cutin_floaters/README.md"
       ],
-      "remake": "OriginalBitmapFont：hsl generate original_bitmap_font 从 hsl.pak 解码用到的 1837 个全角字＋半角 0x20–0x7e 成两张图集，一个 FontFile 按字号挂两面（行高 24／16、不缩放、无系统字回退）；SimplifiedDisplay 启动时按 OPT-FONT 换默认主题字体；BattleAttackCue 施法名字幕用主题字体 24 号正文面",
+      "remake": "OriginalBitmapFont：hsl generate original_bitmap_font 从 hsl.pak 解码用到的全角字＋半角 0x20–0x7e 成两张图集，一个 FontFile 按字号挂两面（行高 24／16、不缩放、无系统字回退）；各窗按原版表请求 FONT_BODY／FONT_SMALL；BattleUISkin.label 默认 @1 白＋0x8430 阴影；MagicImpactPresentation 条旁数字与 WorldMapRuntime 地点名改 FONT.15 白＋阴影（地点名居中、点上 25 px）",
       "remake_code": [
         "game/text/OriginalBitmapFont.gd:install",
         "game/common/BattleUISkin.gd",
+        "game/battle/scene/BattleDialogue.gd",
         "game/battle/scene/BattleWinFailBoard.gd",
         "game/battle/scene/BattleAttackCue.gd",
-        "game/battle/scene/MagicImpactPresentation.gd"
+        "game/battle/scene/MagicImpactPresentation.gd",
+        "game/world/WorldMapRuntime.gd"
       ],
       "original_status": "read_partial",
       "visibility": "every_battle",
@@ -350,7 +352,6 @@
       "sources": [
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/BattleWinFailBoard.gd|layout|remake-invented|",
         "provenance:game/battle/scene/MagicImpactPresentation.gd|layout|remake-invented|",
         "provenance:game/common/BattleUISkin.gd|layout|remake-invented|",
         "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|"
@@ -474,7 +475,7 @@
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
-      "remake": "各面板 strings 为 remake-invented；移动选格的说明（移動後不能施法、占地3×3）只在 OPT-GUIDE=提示 时出（OPTIONS-S4），其余面板两条路径都有",
+      "remake": "各面板 strings 为 remake-invented；移动选格的说明（移動後不能施法、占地3×3）与系统卷轴確定／取消的问句只在 OPT-GUIDE=提示 时出（OPTIONS-S4、MENUEXTRAS），其余面板两条路径都有",
       "remake_code": [
         "game/battle/scene/BattleItemPanel.gd",
         "game/battle/scene/BattleItemText.gd",
@@ -498,15 +499,16 @@
     {
       "id": "status-page-extras",
       "difference": "状态页的永久加值行、属性／抗性悬停说明、「保存／讀取／待領物品／返回」按钮条是重制补充；原版点未交手单位不开页",
-      "original": "原版闲置点击 0x443cfa 对未知单位不开页；按钮条原版没有",
+      "original": "原版只在移动选格态（phase 20 子态 0 0x443c63）点非己方指挥单位开页，0x443cfa 对未知单位不开页，关窗子态 11 0x4440b7 回选格；行动环 98／74 无点单位分支；按钮条原版没有",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_identity_bar.md"
       ],
-      "remake": "原版路径照原版：没有加值行、说明与按钮条，点未交手单位不开页（BattleStatusPanel.opens_for）；OPT-INFO=公開 恢复加值行、说明与点谁都开，OPT-GUIDE=提示 恢复按钮条；「成長點」随 OPT-GROWTH 暂缓路径（有点数才显示）",
+      "remake": "原版路径照原版：没有加值行、说明与按钮条，点他人只在移动选格态开、关窗回选格，点未交手单位不开页（BattleStatusPanel.opens_for）；OPT-INFO=公開 恢复加值行、说明与点谁都开，OPT-GUIDE=提示 恢复按钮条；「成長點」随 OPT-GROWTH 暂缓路径（有点数才显示）",
       "remake_code": [
         "game/battle/scene/BattleStatusPanel.gd:show_unit",
-        "game/battle/scene/BattleStatusPanel.gd:opens_for"
+        "game/battle/scene/BattleStatusPanel.gd:opens_for",
+        "game/battle/scene/BattleSceneInput.gd:handle_pointer_left_pressed"
       ],
       "original_status": "no_original_code",
       "visibility": "every_battle",
@@ -744,13 +746,13 @@
     },
     {
       "id": "floater-extra-words",
-      "difference": "飘字已照原版只显示数字，数字用原版字形（UI6 去附加词、DIGITS 换字形）；剩没有原字形的说明字，今为白色 Label、放在数字上方：净化／增益说明与「未回復」、武器附加效果行（中毒／中毒延長…）、状态施加说明（中毒／禁魔／麻痺／衰弱／免疫／未生效）、道具的永久加成／解毒／增益／氣力行、回合末「麻痺解除」「增益結束 −N」、法术／辅助选目标的「N 個目標」",
+      "difference": "飘字已照原版只显示数字，数字用原版字形（UI6 去附加词、DIGITS 换字形）；没有原字形的说明字（净化／增益说明与「未回復」、武器附加效果行（中毒／中毒延長…）、状态施加说明（中毒／禁魔／麻痺／衰弱／免疫／未生效）、道具的永久加成／解毒／增益／氣力行、回合末「麻痺解除」「增益結束 −N」、法术／辅助选目标的「N 個目標」）原版值不显示，OPT-INFO=公開 时显示为数字上方的白色 Label",
       "original": "0x404643 只生 HP／MP 数字或 MISS，零变化的增益不出字；录屏飘字只有数字；命中率在底部面板",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/cutin_floaters/README.md",
         "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
       ],
-      "remake": "原版路径照原版（数字旁无附加词、选目标无头顶命中行），OPT-INFO=公開 时恢复改良：地图／特写数字上方的反擊／連擊 n/m／暴擊／閃避／擊倒、回复与 MP 数字旁的 HP／MP、回合末的中毒／轉化＋HP／MP、普攻与绝技选目标的「命中 N%」「2擊」（OPTIONS-S2）；两条路径都有：BattleCombatCutin.caption_feedback 的说明与武器效果行、BattlePresentation 的状态说明／道具说明／「N 個目標」、BattleTurnEndCue 的麻痺解除／增益結束",
+      "remake": "原版值只显示数字或 MISS（数字旁无附加词、选目标无头顶命中行、没有数字的说明字不出），OPT-INFO=公開 时显示改良：地图／特写数字上方的反擊／連擊 n/m／暴擊／閃避／擊倒、回复与 MP 数字旁的 HP／MP、回合末的中毒／轉化＋HP／MP、普攻与绝技选目标的「命中 N%」「2擊」（OPTIONS-S2），以及 BattleCombatCutin.caption_feedback 的说明与武器效果行、BattlePresentation 的状态说明／「N 個目標」、BattleItemUsePresentation 的道具说明、BattleTurnEndCue 的麻痺解除／增益結束",
       "remake_code": [
         "game/battle/scene/BattleCombatCutin.gd:caption_feedback",
         "game/battle/scene/BattlePresentation.gd:_present_status_effects",
@@ -764,7 +766,7 @@
       "visibility": "some_levels",
       "effort": "S",
       "category": "飘字与数字",
-      "decision": "照原版只显示数字（UI6 已去掉数字旁的附加词）；没有数字的说明字暂留（UI6 保守取舍，待定：产品决定）",
+      "decision": "默认照原版只显示数字；数字旁附加词与没有原字形的说明字都归入 OPT-INFO=公開",
       "sources": [
         "matrix:回复／驱毒与正向反馈",
         "provenance:game/battle/scene/BattleCombatCutin.gd|strings|remake-invented|",
@@ -938,12 +940,12 @@
     },
     {
       "id": "treasure-caption",
-      "difference": "发现宝箱时显示说明文字并淡出 0.45 s，可见箱另放通用确认音；原版立即处理箱子，可见箱不放声",
+      "difference": "原版值下可见箱立即处理（不淡出、不等待、不出字、不放声），隐藏箱发现时放 sfxGetTreasure 并淡出 0.45 s；OPT-TREASURE=全部畫出 时所有箱发现都显示说明文字并淡出 0.45 s，停留提示与可见箱的通用确认音一起显示",
       "original": "原版立即处置宝箱；0x445526 只对隐藏箱放 sfxGetTreasure，可见箱直接进 0x4156d0（不放声）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_treasure.md"
       ],
-      "remake": "BattleTreasurePresentation 的说明与确认音；隐藏箱在 OPT-TREASURE 原版值下不画、无提示，全部畫出 时连同悬停提示与确认音一起恢复",
+      "remake": "BattleTreasurePresentation：OPT-TREASURE 原版值下隐藏箱不画、无提示，发现时只放 sfxGetTreasure；可见箱发现时立即处理，不淡出、不等待、不出字、不放声；全部畫出 时所有箱画出，发现说明、悬停提示与确认音一起显示",
       "remake_code": [
         "game/battle/scene/BattleTreasurePresentation.gd"
       ],
@@ -2056,13 +2058,13 @@
     },
     {
       "id": "title-flow-extras",
-      "difference": "标题流程的重制安排：「戰場記錄」恢复检查点或战役位置、开场动画放在标题与首战之间、任意键跳过、画面放大方式、「沒有戰場記錄」提示",
+      "difference": "标题流程的重制安排：「戰場記錄」恢复检查点或战役位置、开场动画放在标题与首战之间、任意键跳过、画面放大方式；OPT-GUIDE=提示 时悬停项亮起（原版悬停只有火花）",
       "original": "原版在进入 level 51 时播放开场动画；原跳过行为未定位",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_movies_playback/README.md"
       ],
-      "remake": "TitleScreen／MoviePlayer",
+      "remake": "TitleScreen／MoviePlayer；原版值悬停不亮起、離開遊戲亮起停留淡黑后退出、戰場記錄无记录弹消息 12「無存檔記錄」（MENUEXTRAS）",
       "remake_code": [
         "game/title/TitleScreen.gd",
         "game/title/MoviePlayer.gd"
@@ -2076,7 +2078,8 @@
         "provenance:game/title/MoviePlayer.gd|rules|remake-invented|",
         "provenance:game/title/TitleScreen.gd|rules|provisional|",
         "provenance:game/title/TitleScreen.gd|rules|remake-invented|",
-        "provenance:game/title/TitleScreen.gd|strings|remake-invented|"
+        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#830f5a56f1",
+        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#9030f7008c"
       ]
     },
     {

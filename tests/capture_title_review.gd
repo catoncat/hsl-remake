@@ -1,6 +1,6 @@
 extends SceneTree
 ## Windowed review of the title screen: the framed title (item 1 selected, V1.06 bottom-left), the mouse
-## hovering 戰場記錄 (red lit shape), keyboard selection on 離開遊戲, the 沒有戰場記錄 hint,
+## hovering 戰場記錄 (no lit shape under OPT-GUIDE＝原版), keyboard selection on 離開遊戲, the 無存檔記錄 message,
 ## the confirmed 開始新故事 holding lit, the fade into the intro film (movie.pak start.ani paged from the WebP
 ## sheets), the skipped film handing over to the product opening, and the ending film.
 ## Output: ignored/title-review/*.png + manifest.json (visual review input, not parity proof).
@@ -34,14 +34,15 @@ func run() -> void:
 	# The real pointer would keep re-deciding hover in a window; drive it by hand for the shot.
 	scene.set_process_unhandled_input(false)
 	scene.hover_at(Vector2(197 + 50 + 70, 161 + 113 + 18))
-	await shot("01-hover-battle-record-lit")
+	await shot("01-hover-battle-record")
 	scene.hover_at(Vector2(10, 10))
 	scene.select(2)
 	await shot("02-select-quit")
 	scene.select(1)
 	scene.confirm()
-	await shot("03-no-record-hint")
-	await create_timer(scene.HINT_SECONDS + 0.2).timeout
+	await create_timer(scene.MESSAGE_IN_SECONDS + 0.1).timeout
+	await shot("03-no-record-message")
+	await create_timer(scene.MESSAGE_HOLD_SECONDS + scene.MESSAGE_OUT_SECONDS + 0.2).timeout
 	scene.select(0)
 	scene.confirm()
 	await create_timer(scene.CONFIRM_HOLD_SECONDS * 0.5).timeout

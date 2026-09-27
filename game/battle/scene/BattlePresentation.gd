@@ -14,9 +14,10 @@ extends Node2D
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   strings: remake-invented
-##     (objective board, status／cure captions beside the numbers, the magic／support 「N 個目標」 targeting line)
+##     (objective board)
 ##   strings: remake-invented docs/OPTIONS.md
-##     (OPT-INFO=公開 only: 命中 N%／2擊 line, 反擊／連擊／暴擊／閃避／擊倒 and HP／MP words over the numbers, strips never masked)
+##     (OPT-INFO=公開 only: status／cure captions, 「N 個目標」 line, 命中 N%／2擊 line, 反擊／連擊／暴擊／閃避／擊倒
+##     and HP／MP words over the numbers, strips never masked)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_strike.md
@@ -89,6 +90,9 @@ var _posed_clip: Dictionary = {}
 ## OPT-INFO (docs/OPTIONS.md) for the targeting screen, read once as it is entered
 ## (preview_target): 公開 adds the 命中 N%／2擊 line and shows every strip unmasked.
 var info_public := false
+## OPT-INFO=公開 for the same screen, read with info_public: the magic／support 「N 個目標」 line
+## (kept apart from the strip mask it rides beside).
+var targets_line := false
 ## The targeting interaction info_public was read for ("" off the targeting screens).
 var _info_screen := ""
 ## OPT-INFO=公開: the strike words over the close-up (BattleCombatCutin untouched), freed when
@@ -392,7 +396,9 @@ func preview_target(loop: Dictionary, target_id: String, center_coord: Variant =
 	var screen: String = loop.get(LoopKeys.INTERACTION, "") if loop.get(LoopKeys.INTERACTION) in Interaction.TARGETING else ""
 	if screen != _info_screen:
 		_info_screen = screen
-		if screen != "": info_public = not GameOptions.is_original("OPT-INFO")
+		if screen != "":
+			info_public = not GameOptions.is_original("OPT-INFO")
+			targets_line = info_public
 	if dialogue_active() or cutin.busy():
 		return
 	if loop.get(LoopKeys.INTERACTION) not in Interaction.TARGETING:
@@ -434,6 +440,8 @@ func _preview_attack_target(loop: Dictionary, target_id: String, center_coord: V
 		if not prepared["ok"]: return ""
 		target_vitals.show_unit(target, -1, _strip_known(loop, target_id))
 		target_vitals.show()
+		# 「N 個目標」 has no original counterpart: OPT-INFO=公開 only.
+		if not targets_line: return target_id
 		combat_label.position = Vector2(358, 297)
 		var purpose := "驅毒" if fields["function"] == "magicFun_CurePoison" else "回復" if fields["function"] == "magicFun_Heal" else ""
 		if fields["function"] in ["magicFun_DefUp", "magicFun_AttUp"]: purpose = "防禦增益" if fields["function"] == "magicFun_DefUp" else "攻擊增益"
@@ -797,8 +805,9 @@ func _update_dialogue_page() -> void:
 	dialogue_view.show_message(speaker_id + ":" + str(message["message_id"]), str(dialogue_manifest["messages"][speaker_id]), str(message["text"]), actor_id)
 
 
-## `public`: OPT-INFO=公開 (read by _present_impact) adds the HP／MP word the remake put after a
-## heal／MP number before UI6, in the number's colour among the captions.
+## `public`: OPT-INFO=公開 (read by _present_impact) shows the status／cure／buff captions and adds
+## the HP／MP word the remake put after a heal／MP number before UI6, in the number's colour among
+## the captions; the original path shows the numbers alone (0x404643).
 func _present_status_effects(strike: Dictionary, public: bool = false) -> void:
 	var occupied: Array[Rect2] = []
 	var captions: Array[Array] = []
@@ -825,6 +834,8 @@ func _present_status_effects(strike: Dictionary, public: bool = false) -> void:
 				number.finished.connect(number.queue_free)
 				occupied.append(number.bounds().grow(5))
 			for part in parts:
+				# The status／cure／buff captions have no original glyph: OPT-INFO=公開 only.
+				if not public and str(part["kind"]) == "caption": continue
 				var label := Label.new()
 				label.text = str(part["text"])
 				label.mouse_filter = Control.MOUSE_FILTER_IGNORE

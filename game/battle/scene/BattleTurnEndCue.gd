@@ -8,8 +8,8 @@ extends CanvasLayer
 ## provenance:
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   layout: remake-invented (caption position over the actor)
-##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
-##   strings: remake-invented (the 麻痺解除／增益結束 captions; number kinds keep source order — original_resource_recovery.md)
+##   strings: remake-invented
+##     (the 麻痺解除／增益結束 captions, OPT-INFO=公開 only; number kinds keep source order — original_resource_recovery.md)
 ##   strings: remake-invented docs/OPTIONS.md (OPT-INFO=公開 only: 中毒／轉化 and HP／MP words over a number beat)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_resource_recovery.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
@@ -30,13 +30,13 @@ const NUMBER_OFFSET := Vector2(0, -48)
 var shown_sequence := 0
 var cursor := -1
 var elapsed := 0.0
-## The captions the original has no glyph for (麻痺解除, 增益結束); hidden on a number beat.
+## The captions the original has no glyph for (麻痺解除, 增益結束; OPT-INFO=公開 only).
 var label: Label
 ## One ResultNumberFloater per event of the receipt being shown (null for a caption event).
 var numbers: Array = []
 var _displaying := false
-## OPT-INFO=公開 for the receipt being shown (read once as it spawns): a number beat also
-## carries its words (number_words).
+## OPT-INFO=公開 for the receipt being shown (read once as it spawns): the caption beats show
+## their words and a number beat also carries its words (number_words).
 var _words := false
 
 
@@ -127,7 +127,9 @@ func refresh(loop: Dictionary, point: Vector2, allowed: bool, delta: float) -> v
 		number.draw_at(OriginalTick.ticks(now - float(index) * EVENT_SECONDS))
 	var event: Dictionary = events[cursor]
 	var caption := ""
-	if expired_status(event) != "": caption = str(StatusCatalog.ENTRIES[expired_status(event)]["cure_label"])
+	# The captions have no original glyph: OPT-INFO=公開 only (the original beat shows nothing).
+	if not _words: pass
+	elif expired_status(event) != "": caption = str(StatusCatalog.ENTRIES[expired_status(event)]["cure_label"])
 	elif event["kind"] in ["attack_up_expired", "defense_up_expired", "resist_up_expired"]:
 		caption = "%s增益結束 −%d" % [{"attack_up_expired": "攻擊", "defense_up_expired": "防禦", "resist_up_expired": "抗性"}[event["kind"]], int(event["before"]) >> 16]
 	elif _words:

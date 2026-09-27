@@ -1,26 +1,30 @@
 extends Node
 ## Shows committed discoveries only. No inventory, RNG, turn or treasure state
-## is created here. Native disposal is represented by a short remake fade.
+## is created here. A visible chest under the original value is disposed at once; a hidden chest
+## and every chest under 全部畫出 get a short remake fade.
 ## Hidden treasure (chest `hidden`: template obj_Attribute without objattrATTACKFLAG) is not
 ## drawn and gives no hover hint; its discovery plays sfxGetTreasure like 0x445526.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_treasure.md
 ##     (hidden chests not drawn: 0x415730 shape word 0xffff)
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
-##   layout: remake-invented (discovery caption)
-##   strings: remake-invented (discovery text)
+##   layout: remake-invented (discovery caption and hover hint, OPT-TREASURE=全部畫出 only)
+##   strings: remake-invented (discovery text and hover hint, OPT-TREASURE=全部畫出 only)
 ##   timing: remake-invented
-##     (0.45 s caption fade — deliberately kept remake beat; the original disposes the chest at once,
-##     docs/evidence_packets/static_reverse/original_treasure.md)
+##     (0.45 s fade: hidden chests and OPT-TREASURE=全部畫出 only; original value disposes a visible chest at once,
+##     original_treasure.md)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_treasure.md
 ##     (hidden chest: 0x4477b0(0xa05) sfxGetTreasure before 0x4156d0)
-##   audio: remake-invented (shown chest: accept sound)
+##   audio: remake-invented
+##     (shown chest accept sound, OPT-TREASURE=全部畫出 only; the original plays nothing for a visible chest,
+##     0x445526 → 0x4156d0)
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const DURATION := 0.45
 ## The one read point for whether hidden chests are drawn. false = original (hidden
-## treasure stays undrawn until found); true draws every chest closed and restores the
-## hover hint and accept sound for all of them.
+## treasure stays undrawn until found; no discovery caption, hover hint or accept sound — a
+## visible chest is disposed silently, 0x445526); true draws every chest closed and restores the
+## caption, hover hint and accept sound for all of them.
 var reveal_all_chests := false
 var runtime: Node
 var shown_sequence := 0
@@ -72,22 +76,29 @@ func tick(delta: float) -> bool:
 	if records.size() > shown_sequence:
 		var receipt: Dictionary = records[shown_sequence]
 		_active_sequence = int(receipt["sequence"])
+		var found_hidden: bool = runtime.play_loop[LoopKeys.TREASURE_SOURCE]["chests"].any(func(chest): return receipt["chest_ids"].has(chest["id"]) and not chest_drawn(chest))
+		# Original (0x445526 → 0x4156d0): a visible chest is disposed at once — no fade, no wait,
+		# no caption, no sound. The fade and its wait are the 全部畫出 remake beat.
+		if not reveal_all_chests and not found_hidden:
+			shown_sequence = _active_sequence
+			sync_boxes()
+			return false
 		_remaining = DURATION
 		_fading.clear()
 		for chest in runtime.play_loop[LoopKeys.TREASURE_SOURCE]["chests"]:
 			if receipt["chest_ids"].has(chest["id"]): _fading.append_array(box_nodes(chest))
 		label.text = "發現寶藏 · %d 件物品" % receipt["items"].size()
-		label.show()
+		label.visible = reveal_all_chests
 		runtime.camera_controller.scroll_to_grid(receipt["coord"])
-		var found_hidden: bool = runtime.play_loop[LoopKeys.TREASURE_SOURCE]["chests"].any(func(chest): return receipt["chest_ids"].has(chest["id"]) and not chest_drawn(chest))
-		runtime.play_ui_sound("get_treasure" if found_hidden else "confirm")
+		if found_hidden: runtime.play_ui_sound("get_treasure")
+		elif reveal_all_chests: runtime.play_ui_sound("confirm")
 		return true
 	sync_boxes()
 	var actor: Dictionary = runtime.BattlePlayLoop.unit(runtime.play_loop, str(runtime.play_loop.get(LoopKeys.SELECTED_UNIT_ID, "")))
 	if runtime.interaction_state in [Interaction.ACTION_MENU, Interaction.MOVE_SELECT] and not actor.is_empty() and not runtime.modal_open() and not view.battle_finished:
 		var coord: Vector2i = runtime.hovered_grid_cell if runtime.interaction_state == Interaction.MOVE_SELECT else actor["coord"]
 		var chest: Dictionary = runtime.BattlePlayLoop.Treasure.chest_at(runtime.play_loop, coord)
-		if not chest.is_empty() and chest_drawn(chest):
+		if reveal_all_chests and not chest.is_empty() and chest_drawn(chest):
 			label.text = "寶藏：停留此格，完成行動後領取"
 			label.show()
 	return false

@@ -8,9 +8,12 @@ extends RefCounted
 ##     read)
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##     (panel shade: black at level 9 of 16, map luma × 0.46 under the status page and the growth panel)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
+##     (FONT_BODY／FONT_SMALL = FONT.24／FONT.15 per window; cell top on row y; label() @1 white
+##     over 0x8430 at (+1,+1))
 ##   layout: remake-invented
-##     (button and label styling; system font centred on the original 24／16 px glyph rows; message_rows keeps a
-##     protected name whole where the 38-byte break cuts it (user playtest))
+##     (button styling and the button step-down 17→11 for remake buttons; message_rows keeps a protected name whole
+##     where the 38-byte break cuts it (playtest))
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ROOT := ContentPaths.BATTLE_UI_PREVIEWS
 const PANEL_DATA := "res://content/imported/hsl/shared/panels/manifest.json"
@@ -26,7 +29,8 @@ const TEXT_YELLOW := Color8(255, 255, 123)
 const TEXT_IVORY := Color8(255, 255, 222)
 const TEXT_SHADOW := Color8(132, 134, 132)
 ## Original FONT.24 / FONT.15 cells: 24 px (12 px half-width) body text, 16 px (8 px) small text.
-## These are requested sizes: the default UI font (OriginalBitmapFont, OPT-FONT original) draws
+## Which one a window uses follows the original's call site (font pointer [0x4c1ae0] / [0x4c1adc],
+## table in original_font_script/README.md). These are requested sizes: the default UI font (OriginalBitmapFont, OPT-FONT original) draws
 ## FONT_BODY with the FONT.24 face and FONT_SMALL with the FONT.15 face, unscaled; the system
 ## font (OPT-FONT system) draws them at 22／14 px.
 const FONT_BODY := 22
@@ -105,11 +109,10 @@ static func board(parent: Node, resource: String, at: Vector2) -> TextureRect:
 	return image
 
 
-## Text in an original window: the cell is the original's 24 px / 16 px bitmap glyph row and
-## the remake text is centred on it (the bitmap font's line is the cell). A system-font line
-## taller than the cell (FONT_BODY 22 is ~31 px) grows the Label, so the cell is widened
-## symmetrically about its centre instead of downwards — otherwise every such value sat ~3.5 px
-## below its row (lane R5-L5).
+## Text in an original window: the cell is the original's 24 px / 16 px bitmap glyph row, whose
+## top is the y the original passes 0x460884 (the bitmap font's line is the cell, so the glyphs
+## sit exactly there). A system-font line (OPT-FONT system) taller than the cell grows the
+## Label, so the cell is widened symmetrically about its centre instead of downwards.
 static func text(parent: Node, at: Vector2, color: Color = TEXT_WHITE, font_size: int = FONT_BODY, cell: Vector2 = Vector2(0, 24)) -> Label:
 	var row := label(parent, at, font_size)
 	row.add_theme_color_override("font_color", color)
@@ -134,8 +137,8 @@ static func label(parent: Node, at: Vector2, font_size: int = 17) -> Label:
 	var text := Label.new()
 	text.position = at
 	text.add_theme_font_size_override("font_size", font_size)
-	text.add_theme_color_override("font_color", Color(1.0, 0.93, 0.75))
-	text.add_theme_color_override("font_shadow_color", Color(0.10, 0.08, 0.04))
+	text.add_theme_color_override("font_color", TEXT_WHITE)
+	text.add_theme_color_override("font_shadow_color", TEXT_SHADOW)
 	text.add_theme_constant_override("shadow_offset_x", 1)
 	text.add_theme_constant_override("shadow_offset_y", 1)
 	parent.add_child(text)

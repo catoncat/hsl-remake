@@ -1,11 +1,12 @@
 # 原版如何显示简体：Big5 文本＋简体字形的位图字库
 
-> evidence: static-derived: 码位→字形表与绘制循环; resource-derived: 字库字形与逐字审读; runtime-measured: 2026-09-24 原版录像全简体; negative-evidence: EXE 无 Big5→GB 转换; provisional: 鍾針魘三字未判读 · status: live · functions: 0x42f230, 0x45f798, 0x4608e4, 0x460ace · tools: hsltools/assets/workteam_simplified.py, hsltools/checks/simplified_display.py, hsltools/data/simplified_chars.py, hsltools/sources/original_font.py · updated: 2026-09-27
+> evidence: static-derived: 码位→字形表与绘制循环、各界面字库（0x460884 全部 70 个调用点的字库指针）; resource-derived: 字库字形与逐字审读; runtime-measured: 2026-09-24 原版录像全简体; negative-evidence: EXE 无 Big5→GB 转换; provisional: 鍾針魘三字未判读 · status: live · functions: 0x411d70, 0x412060, 0x4123b0, 0x412ad0, 0x413040, 0x42f230, 0x45f798, 0x460884, 0x4608e4, 0x460ace · tools: hsltools/assets/workteam_simplified.py, hsltools/checks/simplified_display.py, hsltools/data/simplified_chars.py, hsltools/sources/original_font.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版：文本资源按 Big5 繁体存，hsl01.exe 显示时不做 Big5→GB 转换；简体来自位图字库 `DATA\FONT.24`／`DATA\FONT.15`——按 Big5 码位排字形，绝大多数繁体码位上画的是简体字形；2026-09-24 原版录像里标题菜单、对白、状态页、关卡标题卡都是简体（static-derived；resource-derived；runtime-measured）。
 - 重制：文字源保持繁体，显示时经唯一接缝 `game/text/SimplifiedDisplayTranslation.gd` 按 `content/generated/hsl/text/simplified_chars.json` 一字换一字，烘焙繁体字的图经 `simplified_images.json` 换成重画图（resource-derived）。
+- 原版每个界面只用两张字库之一，由各 `0x460884` 调用点传入的字库指针决定：`[0x4c1ae0]` FONT.24 画对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店／仓库行、系统设定面板、大地图状态栏、城镇台词；`[0x4c1adc]` FONT.15 画行动环图标说明、描述框、资料页按钮标签、条旁 cur/max、大地图地点名；每字先在 (+1,+1) 画阴影色再画正文（static-derived，下表）。重制各窗按同表选 `FONT_BODY`／`FONT_SMALL`，字格顶即原版传入的 y（static-derived）。
 - 差异：原版字库 `職`／`翻` 码位互换的 bug 不照搬；`噁` 的扩展 E 区字形显示为 恶；鍾 針 魘 三字字形未判读，暂用 OpenCC 候选（provisional）。
 
 ## 证据
@@ -18,6 +19,29 @@
 | 序号公式 `0x45f798`：`(lead−0x81)×157 + (trail≤0x7E ? trail−0x40 : trail−0x62)`；绘制循环 `0x4608e4`：字节 ≥0xA1 取两字节查表、画 `table[序号]` 号字形，0 号跳过 | hsl01.exe | static-derived |
 | 在 EXE 与 hsl.pak 中都没有 GB 编码表或转换代码的调用者（`imul 0x9d` 全 EXE 只此一处，唯一调用者是上面的绘制循环） | hsl01.exe objdump | negative-evidence |
 | 字库文件 `FONT.24` 998424 字节＝13867×72、`FONT.15` 416010 字节＝13867×30，无文件头；按上表取字形，`體`→体、`說`→说、`長`→长、`戰`→战；`後`、`於` 保持繁体形 | hsl.pak `@:\data\Font.24`／`Font.15`；`PYTHONPATH=tools python3 -m hsltools.sources.original_font show 體說長戰後於` | resource-derived |
+
+### 各界面用哪张字库（0x460884 调用点）
+
+`0x460884(字库, 模式, x, y, 串, 面, 前进, 颜色, …)` 是全 EXE 唯一的文字绘制入口，第一个参数是字库对象；全 EXE 70 个调用点，每个都在调用前从 `[0x4c1adc]`（FONT.15）或 `[0x4c1ae0]`（FONT.24）取这个参数，另 3 处引用是装载 `0x42f29c`／`0x42f31b`／`0x42f320`（static-derived，`objdump -d` 全文扫描）。带 `@` 色码的行由包装函数画：FONT.15 的 `0x411d70`（逐字）／`0x412060`（按宽居中），FONT.24 的 `0x4123b0`／`0x4128f0`／`0x412ad0`／`0x412d80`／`0x413040`／`0x4132f0` 等；`0x411d70`、`0x412060`、`0x4123b0` 起始色为 @1 白 `0xffff`、阴影 `0x8430`（`0x411d8e`／`0x411d96`、`0x41207f`／`0x412087`、`0x4123ce`／`0x4123d6`），阴影画在 (x+1, y+1)，前进 FONT.15 半角 8、FONT.24 半角 12。
+
+| 界面 | 字库 | 调用点与字行 |
+| --- | --- | --- |
+| 对白框（`0x414220`） | FONT.24 | 名字与正文 `0x413040`（`0x4142ff`／`0x4143aa`）、`0x412d80`（`0x414352`）；第 i 行字格顶 ＝ 文字窗顶 ＋ 28·i − 上卷量；▼／□ 直调 `0x41480a`／`0x414848`／`0x414888`，阴影 (+1,+1) `0x8430` |
+| 胜负条件面板（`0x413a80`） | FONT.24 | `0x412ad0` ×4（`0x413adb`／`0x413b13`／`0x413b55`／`0x413b89`），行 x＋20，标题 y＋17、胜利行 y＋51 起、失败标题 y＋145、失败行 y＋179 起，行距 28 |
+| 施法名字幕（`0x43e110`／`0x43e1c0`） | FONT.24 | 阴影 (+1,+1) 黑 0、正文白（[施法叠层](../original_cast_overlays.md)） |
+| 升级窗、资料页正文与技能名（`0x437a40` 以后的窗过程） | FONT.24 | `0x4123b0` ×10、`0x4132f0` ×7（悬停重画） |
+| 得物窗、商店（`0x414c00`） | FONT.24 | `0x4123b0`（`0x415371`）、`0x4128f0`（`0x414f6e`）、`0x4132f0`（`0x4155f8`） |
+| 仓库窗（`0x4285e0`） | FONT.24／FONT.15 | 行 `0x4123b0` ×7、`0x4132f0` ×7；另 `0x411d70`（`0x428fb4`）与直调 `0x42a3ec`／`0x42a41e` 用 FONT.15 |
+| 系统设定面板（`0x424680`） | FONT.24 | 直调 `0x4251ac`／`0x4251e4`／`0x425216`／`0x42524b` |
+| 大地图状态栏（`0x427230`） | FONT.24 | 直调 `0x427309`／`0x42733b`／`0x427399`／`0x4273ca` |
+| 大地图地点名（point 过程 `0x427df0`） | FONT.15 | `0x427e99`（阴影 `0x8430`，(x+1, y+1)）、`0x427ee0`（白）；x ＝ 点 x − 8·⌊字节数/2⌋，y ＝ 点 y − 25 |
+| 城镇台词（`0x454e20`） | FONT.24 | 直调 `0x4562ec`／`0x4563a5` |
+| 行动环图标说明字（`0x43e5d0`） | FONT.15 | `0x43e686`／`0x43e6b4`（[原生表现辅助](../native_presentation_helpers.md)） |
+| 物品描述框（`0x436d70`） | FONT.15 | `0x412060(x+8, y+12, …, 45 半角, 行高 16)`（`0x436e20`） |
+| 资料页按钮标签（`0x43a640`） | FONT.15 | 直调 `0x43a6f1`／`0x43a723`，(中心x − 21 + (42 − 8·字节数)/2, 中心y + 13) |
+| 条旁 cur/max（`0x4365f0`） | FONT.15 | `0x411d70`（`0x4366cf`），条对象 `+0x80` 位 0x100 置位时 |
+| 资料页另两行（`0x4384d5`／`0x438a92`） | FONT.15 | `0x411d70(x+0x16／x+0x1e, y+0x82, …, 行距 28)`，所画内容未读 |
+| 未对应界面 | — | `0x4264a0`（FONT.24：`0x412680`／`0x412760`／`0x413040`）、`0x42b2b0`（FONT.24：`0x4123b0`）、`0x423c90`（FONT.15 直调 `0x423f22`）、`0x42d3f0`（FONT.15 直调 `0x42d713`／`0x42d762`） |
 
 ### 逐字审读（glyph_review.json）
 
@@ -43,7 +67,11 @@
 
 字串盘点（不分方向，可复跑）：`PYTHONPATH=tools python3 -m hsltools.checks.simplified_display inventory`——某次基线扫描 902 个文件的 67 583 条玩家可见字串，762 个文件含仅繁体字，共 598 个不同的仅繁体字，仅简体字 0 个。
 
-provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_font_script/README.md`（`SimplifiedDisplay.gd`、`SimplifiedDisplayTranslation.gd`）。
+### 各窗字库
+
+`game/text/OriginalBitmapFont.gd` 一个 FontFile 挂两面，请求字号 `BattleUISkin.FONT_BODY` 画 FONT.24、`FONT_SMALL` 画 FONT.15；各窗按上表选：`BattleDialogue`（名字、正文、▼）、`BattleWinFailBoard`、`BattleAttackCue`、`BattleGrowthPanel`、各面板金额与行名用 `FONT_BODY`；`BattleCommandMenu` 说明字、各面板描述框（行 (8, 12＋16i)）、资料页按钮标签（中心 y＋13）、`BattleItemUsePresentation` 与 `MagicImpactPresentation` 的条旁 cur/max、`WorldMapRuntime` 地点名用 `FONT_SMALL`。`BattleUISkin.text` 把字格顶放在原版传入的 y（FONT.24 行高 24 ＝ 字格）；`BattleUISkin.label` 默认色为 @1 白＋`0x8430` 阴影 (+1,+1)。没有原版对应物的重制窗（重製選項页、标题提示、续玩提示、重制按钮）沿用两面之一，属 remake-invented。
+
+provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_font_script/README.md`（`SimplifiedDisplay.gd`、`SimplifiedDisplayTranslation.gd`；各窗字库与字行同一写法）。
 
 ## 复现
 
@@ -52,6 +80,7 @@ provenance 写法：`static-derived docs/evidence_packets/static_reverse/origina
 ## 边界
 
 
-- 不声明原版字形的笔画外观：重制仍用系统字体（原版位图字库未导入为重制字体，见 `docs/PROJECT.md` 第 5 行）。
+- 原版字形已导入为重制默认字体（OPT-FONT 原版值），系统字体只是改良值。
+- 上表"未对应界面"四个函数与资料页 `0x4384d5`／`0x438a92` 两行画什么未读（provisional，替换证据：读出其串来源或 Wine 帧对上）；`MagicImpactPresentation` 条旁文字的位置、`WorldMapRuntime` 地点名的显示条件（`0x427df0` 开头的判断）未读。
 - 不声明原版对扩展区以外所有 13867 个码位的画法；只审读了重制文本源用到的 672 个仅繁体字。
 - 烘焙在素材图里的文字不经过字库，另见 [`image_inventory.json`](image_inventory.json)。

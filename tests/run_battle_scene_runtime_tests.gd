@@ -706,6 +706,30 @@ func _test_status_inspection_no_turn_cost() -> void:
 	await process_frame
 	scene.start_dev_first_control_harness()
 	scene.menus.choose_command("move")
+	# 0x443c63: another unit's page opens from move-select only.
+	var select_before: Dictionary = scene.play_loop.duplicate(true)
+	for actor_id in ["026", "023"]:
+		for target in scene.play_loop["units"]:
+			if target["actor_id"] != actor_id:
+				continue
+			scene.center_camera_on_grid(target["coord"])
+			var point: Vector2 = scene.grid_cell_center_to_logical_position(target["coord"])
+			scene.scene_input.handle_pointer_left_pressed(point)
+			if actor_id == "026":
+				# 0x443cfa: an unknown unit's page does not open (the mask itself is covered by
+				# run_presentation_contract_tests.identity_mask_contracts).
+				_assert_true(not scene.status_panel.visible, "clicking an enemy the player has not fought opens no status page")
+				_assert_eq(scene.play_loop, select_before, "the refused inspection preserves pending movement and turn state")
+				break
+			_assert_true(scene.status_panel.visible, "clicking another unit must open its status")
+			_assert_true(scene.status_panel.portrait.texture.resource_path.ends_with("portraits/%s.png" % actor_id), "inspection must switch to the clicked actor portrait")
+			_assert_eq(scene.status_panel.vitals.values["role"].text, scene.status_panel.UISkin.data()["actors"][actor_id]["title"], "original title field must follow the clicked actor, not replace it with a faction label")
+			if actor_id == "023":
+				_assert_eq(scene.status_panel.vitals.values["hp"].text, "%d / %d" % [int(target["hp"]), int(target["max_hp"])], "a friendly unit's status page is in the clear (pmPlayer actors are born known)")
+			_dispatch_key(scene, KEY_ESCAPE)
+			_assert_eq(scene.play_loop, select_before, "ally inspection must preserve move-select and turn state")
+			_assert_eq(scene.interaction_state, preload("res://game/sim/Interaction.gd").MOVE_SELECT, "closing another unit's page returns to move-select (0x4440b7 sub 11 → 0)")
+			break
 	var cells: Array = scene.BattlePlayLoop.movement_cells(scene.play_loop, "leonard")
 	scene.move_selected_actor_to_grid(cells[0])
 	await create_timer(0.4).timeout
@@ -719,37 +743,16 @@ func _test_status_inspection_no_turn_cost() -> void:
 	_dispatch_key(scene, KEY_ESCAPE)
 	_assert_true(not scene.status_panel.visible, "Esc should close Status")
 	_assert_eq(scene.play_loop, before, "closing Status must not cancel movement or spend turn")
-	for actor_id in ["026", "023"]:
-		for target in scene.play_loop["units"]:
-			if target["actor_id"] != actor_id:
-				continue
-			scene.center_camera_on_grid(target["coord"])
-			var point: Vector2 = scene.grid_cell_center_to_logical_position(target["coord"])
-			scene.scene_input.handle_pointer_left_pressed(point)
-			if actor_id == "026":
-				# 0x443cfa: an unknown unit's page does not open (the mask itself is covered by
-				# run_presentation_contract_tests.identity_mask_contracts).
-				_assert_true(not scene.status_panel.visible, "clicking an enemy the player has not fought opens no status page")
-				_assert_eq(scene.play_loop, before, "the refused inspection preserves pending movement and turn state")
-				break
-			_assert_true(scene.status_panel.visible, "clicking another unit must open its status")
-			_assert_true(scene.status_panel.portrait.texture.resource_path.ends_with("portraits/%s.png" % actor_id), "inspection must switch to the clicked actor portrait")
-			_assert_eq(scene.status_panel.vitals.values["role"].text, scene.status_panel.UISkin.data()["actors"][actor_id]["title"], "original title field must follow the clicked actor, not replace it with a faction label")
-			if actor_id == "023":
-				_assert_eq(scene.status_panel.vitals.values["hp"].text, "%d / %d" % [int(target["hp"]), int(target["max_hp"])], "a friendly unit's status page is in the clear (pmPlayer actors are born known)")
-			_dispatch_key(scene, KEY_ESCAPE)
-			_assert_eq(scene.play_loop, before, "ally inspection must preserve pending movement and turn state")
-			break
 	var controllable_ally: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "actor023_1")
 	controllable_ally["player_commandable"] = true
 	controllable_ally["battle_actor_role"] = scene.BattlePlayLoop.ROLE_PLAYER
 	before = scene.play_loop.duplicate(true)
 	scene.center_camera_on_grid(controllable_ally["coord"])
 	scene.scene_input.handle_pointer_left_pressed(scene.grid_cell_center_to_logical_position(controllable_ally["coord"]))
-	_assert_true(scene.status_panel.visible, "a controllable non-current ally remains inspectable after support magic")
-	_assert_eq(scene.status_panel.vitals.values["hp"].text, "%d / %d" % [int(controllable_ally["hp"]), int(controllable_ally["max_hp"])], "inspected ally shows its current HP")
-	_dispatch_key(scene, KEY_ESCAPE)
-	_assert_eq(scene.play_loop, before, "inspecting a controllable ally cannot switch the acting unit or alter pending movement")
+	# The action ring (98／74 → 0x4447a7) has no unit-click branch, and a player-commanded unit
+	# (+0xa0 & 0x10) never opens the page even from move-select.
+	_assert_true(not scene.status_panel.visible, "clicking a unit from the action ring opens no status page")
+	_assert_eq(scene.play_loop, before, "clicking a controllable ally cannot switch the acting unit or alter pending movement")
 	scene.queue_free()
 	await process_frame
 	await create_timer(0.1).timeout

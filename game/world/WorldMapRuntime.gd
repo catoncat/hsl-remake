@@ -23,6 +23,8 @@ extends Node2D
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
 ##     (status bar subtracted, text rows, grid lines visible; walker at battle size, frame 01)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
+##     (point name: FONT.15 white over 0x8430 at (+1,+1), x − 8·(bytes/2), y − 25 — 0x427df0 → 0x427e99／0x427ee0)
 ##   layout: remake-invented (not-remade card; point name labels only under OPT-GUIDE=提示)
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_world_town.md
 ##   strings: remake-invented (card texts)
@@ -943,11 +945,17 @@ func _refresh_labels() -> void:
 		var label := Label.new()
 		label.name = "PointLabel%02d" % point_id
 		label.text = Rules.point_label(world_map, point_id)
-		label.add_theme_font_size_override("font_size", 13)
-		label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82) if point_id == current_point() else Color(0.92, 0.92, 0.92))
-		label.add_theme_color_override("font_outline_color", Color(0.1, 0.07, 0.03))
-		label.add_theme_constant_override("outline_size", 4)
-		label.position = Rules.point_position(world_map, point_id) + Vector2(12.0, -8.0)
+		# As the original point proc 0x427df0 draws a name: FONT.15, white over the 0x8430 shadow
+		# at (+1,+1), centred by Big5 bytes (8 px each) on the point, cell top 25 px above it.
+		label.add_theme_font_size_override("font_size", BattleUISkin.FONT_SMALL)
+		label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
+		label.add_theme_color_override("font_shadow_color", BattleUISkin.TEXT_SHADOW)
+		label.add_theme_constant_override("shadow_offset_x", 1)
+		label.add_theme_constant_override("shadow_offset_y", 1)
+		var name_bytes := 0
+		for character in label.text:
+			name_bytes += 1 if character.unicode_at(0) < 0x80 else 2
+		label.position = Rules.point_position(world_map, point_id) - Vector2(8.0 * floorf(name_bytes / 2.0), 25.0)
 		label.z_index = 4
 		_layer.add_child(label)
 		label_nodes[point_id] = label

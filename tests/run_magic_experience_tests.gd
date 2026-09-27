@@ -227,6 +227,9 @@ func presentation_cases() -> void:
 	var casting := selected(loop, FIRE)
 	scene.apply_loop(casting, "test")
 	presentation.preview_target(casting, "", Vector2i(10, 8))
+	# 「N 個目標」 is OPT-INFO=公開 only; the strip keeps the original mask.
+	presentation.targets_line = true
+	presentation.preview_target(casting, "", Vector2i(10, 8))
 	check(presentation.target_vitals.visible and presentation.target_vitals.values["hp"].text == "???" and presentation.combat_label.text.ends_with("個目標"), "the casting-target strip masks an enemy the player has not fought")
 	var revealed := casting.duplicate(true)
 	revealed[preload("res://game/sim/LoopKeys.gd").KNOWN_UNIT_IDS].append("enemy021_1")

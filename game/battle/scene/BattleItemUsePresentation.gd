@@ -38,6 +38,7 @@ const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
 
 ## 0x409e98: 0x408b20 gets (x, y − 0x34); 0x409eb6 lifts it 16 more for a large target (0x446ad0).
@@ -411,8 +412,9 @@ func _drop_bars() -> void:
 
 
 ## The receipt's rows without an original glyph (cure／permanent／buff／stamina): a white caption
-## above the numbers (remake text; no original counterpart).
+## above the numbers (remake text; no original counterpart) — OPT-INFO=公開 only.
 func _show_caption(bottom: float) -> void:
+	if GameOptions.is_original("OPT-INFO"): return
 	var captions: Array[String] = []
 	for row in preload("res://game/battle/scene/BattleItemText.gd").feedback(effect).split("\n", false):
 		var words := row.split(" ")

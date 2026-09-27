@@ -1,12 +1,13 @@
 # 悬停身份栏与"已知"字节：0x434d10 的 ??? 规则与 0x4c6d80 的写入者
 
-> evidence: static-derived; runtime-measured; negative-evidence; provisional · status: live · functions: 0x407cc0, 0x407ec0, 0x430020, 0x434d10, 0x436490, 0x4364e0, 0x43ede0, 0x443c63, 0x446b00, 0x446b30, 0x450710 · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/native/image.py, hsltools/probes/_known_byte_trace.py · updated: 2026-09-27
+> evidence: static-derived; runtime-measured; negative-evidence; provisional · status: live · functions: 0x407cc0, 0x407ec0, 0x430020, 0x434d10, 0x436490, 0x4364e0, 0x43ede0, 0x443c63, 0x4440b7, 0x4447a7, 0x446b00, 0x446b30, 0x450710 · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/native/image.py, hsltools/probes/_known_byte_trace.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版身份栏文字块 `0x434d10` 按三谓词遮罩：已知字节 `0x4c6d80[obj+0xa2]` 为 0、模板 `no_attack` 位、等级 > 99；未知单位的等级／经验／HP／MP／姓名／状态／抗性印 `???`，稱號与種族照印；HP／MP 条由独立对象 `0x4364e0` 按真实比例画，不读已知字节（static-derived）。
 - 已知字节在单位被任何一方选为武器／魔法／绝技目标时（`0x430020`，击前）或死亡时（`0x43ef5b`，切入之后）写 1，反击不揭示；下标按演员模板行共用；未知单位点击不开状态页（static-derived＋runtime-measured）。
-- 重制 `BattlePlayLoop.unit_known`／`known_unit_ids`、`BattleVitals.mask`／`show_unit`、`BattleStatusPanel.opens_for`、`BattleCombatCutin.play(…, known)` 照此实现（static-derived）。
+- 点他人单位开状态页只在**移动选格态**（外层 `+0x8e` = 20，子态 0 `0x443c63`）：点非玩家指挥的已知单位开 mode 1 页、子态 10 等待，关窗子态 11 `0x4440b7` 回子态 0 选格；行动环（98）与移动后行动环（74）走默认 `0x4447a7`，没有点单位分支；玩家指挥单位在选格态也不开页（static-derived＋runtime-measured）。
+- 重制 `BattlePlayLoop.unit_known`／`known_unit_ids`、`BattleVitals.mask`／`show_unit`、`BattleStatusPanel.opens_for`、`BattleCombatCutin.play(…, known)` 照此实现；`BattleSceneInput` 只在 `MOVE_SELECT` 点非可指挥单位开页，关窗仍在选格态（static-derived）。
 - 差异：位 0x100（条上印数字）的置位者未读、氣力条是重制自创（差异清单 `identity-bar-bits`，provisional）；受伤且未知的敌人未在原版实机采到（negative-evidence）。
 
 ## 证据
@@ -48,7 +49,9 @@
 | 状态全页（WINDOW20，`0x43b4e0` mode 1） | `0x436490(…, 0, 0)`；`param_2 != 3` 的属性行 `0x434bf0` 全部 bVar22‖bVar21 → `???` | 三谓词＋属性行；装备表不遮 | `BattleStatusPanel.show_unit(unit, known)`：身份栏＋九行属性 `???`，装备可读 |
 | 切入镜头身份栏（mode 3） | AnimalAttack phase 100（`0x4027ce`）／AnimalDefense 命中刷新（`0x4040d5`）等 | 三谓词 | `BattleCombatCutin.play(…, known)`，`_show_shot` 按镜头内单位查 `known[unit_id]` |
 
-**`0x443cfa`：未知单位不开状态页**。它是玩家对象过程空闲态（`0x443c4a` 按 `+0x8c` 分派，state 0 = `0x443c63`）的确认键分支（不在施法序列 `0x442a90` 内）：光标格 `0x411c40 & 0x70000` 有单位 → `0x407800` 取角色 → `0x446b30(actor)`（模板 `+0xa0 & 0x10`）为真走 `0x443d4e`（`0x410a50` 通过则 state 1、`+0x9c = 0x80000`，己方选中）；为假时 `*0x4c1cec = actor`、`+0x80 |= 输入位`，**已知字节为 1 才** `0x436490(+0xa0, 0, 0)` ＋ `0x43b4e0(actor, 1, self)` 开状态页并置 state 10；已知字节为 0 直接落到 `0x443d9d`（等同点空格）。点单位开的是 mode 1：`0x43b4e0` case 0／1 在 `in_stack_8 == 1` 时跳过 `0x43af60`（134 `$:` 钱框）与 `0x43b0a0`／`0x43b230`（上一位／下一位）；行动环 狀態（`0x444285` `push 0`）是 mode 0，有钱框。
+**`0x443cfa`：未知单位不开状态页**。它是玩家对象过程**移动选格态**（外层 `+0x8e` = 20 → `0x443c4a` 按 word `+0x8c` 查子表 `0x445820`，子态 0 = `0x443c63`）的确认键分支（不在施法序列 `0x442a90` 内）：光标格 `0x411c40 & 0x70000` 有单位 → `0x407800` 取角色 → `0x446b30(actor)`（模板 `+0xa0 & 0x10`）为真走 `0x443d4e`（`0x410a50` 通过则 state 1、`+0x9c = 0x80000`，己方选中）；为假时 `*0x4c1cec = actor`、`+0x80 |= 输入位`，**已知字节为 1 才** `0x436490(+0xa0, 0, 0)` ＋ `0x43b4e0(actor, 1, self)` 开状态页并置 state 10；已知字节为 0 直接落到 `0x443d9d`（等同点空格）。点单位开的是 mode 1：`0x43b4e0` case 0／1 在 `in_stack_8 == 1` 时跳过 `0x43af60`（134 `$:` 钱框）与 `0x43b0a0`／`0x43b230`（上一位／下一位）；行动环 狀態（`0x444285` `push 0`）是 mode 0，有钱框。
+
+**开页的状态与关窗去向**。子态 10 等窗关；关窗后子态 11 `0x4440b7` 把 `[0x4c2ae4]` 写回自己的 `+0xa0`、word `+0x8c` 置 0，外层仍是 20——回到选格，移动范围照旧。玩家指挥单位（`+0xa0 & 0x10`）在选格态走 `0x443d4e`，目标格被占或就是原格时 `0x410a50` 不通过，落到 `0x443d9d`，不开页。行动环等待（低态表 98）与移动后行动环（74）经字节表 `0x445758`→指针表 `0x445694` 都落默认 `0x4447a7`，没有 `0x407800` 取点击单位的分支，所以行动环里点谁都不开页。
 
 ### 身份栏 HP／MP 条的画法（static-derived）
 
@@ -79,7 +82,7 @@ r2 对 `hsl01.exe` 全文检索 `/ad/ dword [e.. + 0xd8]` 得 47 处 HP 读点�
 | `0x42ca37` | 新游戏初始化 | `rep stosd` 清 200 字节 |
 | `0x42e3f4`／`0x42e9d7` | 存档写／读第 3 节 | 见 [原存档格式](original_save_format.md) §3 |
 | `0x434d9d` | 身份栏 `0x434d10` | 读（上表 `bVar22`） |
-| `0x443cfa` | 玩家过程空闲态确认键分支（`0x443c63`） | 读：已知才开 WINDOW20 状态页（`0x436490(0)`＋`0x43b4e0(1)`、state 10），未知不开页 |
+| `0x443cfa` | 玩家过程移动选格态确认键分支（phase 20 子态 0 `0x443c63`） | 读：已知才开 WINDOW20 状态页（`0x436490(0)`＋`0x43b4e0(1)`、state 10），未知不开页 |
 
 `0x430020` 的调用点（`call rel32` 全文扫描）共 10 处：`0x444388`／`0x445166`／`0x44544b`（玩家对象过程的武器攻击目标确认：光标格 → `0x40fab0` 射程内 → `0x411c40 & 0x60000` 敌方位 → `0x407800` 取角色 → `0x430020`）、`0x441878`／`0x441b82`／`0x441e8c`（技能目标选择函数：`0x4104d0` 枚举覆盖格内目标后逐个压入；`0x441878` 走 MAGIC 表 `0x4c2ca0`，`0x441b82` 走 SPECIAL 表 `0x4c3920`）、`0x442b3c`／`0x442ed5`／`0x443262`（施法序列 `0x442a90` 的首个／后续目标）、`0x440279`（AI 过程 `0x43ede0` 的攻击目标确认：`0x440272` 置 `[0x4c1ce8]`＝攻方、压入 `[0x4c1cec]`＝AI 目标，位于卷动检查 `0x45e882` 之后、交锋 `0x4423c0` 之前；AI 武器攻击走此处，AI 施法走 `0x441878`→`0x442b3c`，与玩家同）。反击系列不调 `0x430020`。
 
@@ -93,6 +96,13 @@ r2 对 `hsl01.exe` 全文检索 `/ad/ dword [e.. + 0xd8]` 得 47 处 HP 读点�
 - 同态，光标停在 `(430,300)` 的友军 一般兵：`等級:1 經驗:0/100 生命力:29/29 魔法力:0/0 姓名:???`——该行 PLAYERS 模板姓名为空串时原版也印 `???`，与已知字节无关；稱號 一般兵、種族 人類、狀態 正常、抗性 06%／04%／03%／07%／02%。
 - 光标停在门口士兵的头部格 `(300,30)` 无身份栏：触发按身体（脚）格判定。
 - 行动环打开（未进入移动／攻击选择）时悬停单位不出现身份栏。
+
+**第四次 Wine 会话（2026-09-28，标题载入 戰場記錄，玩家第 1 场 · 棄卒（LEVEL051）；存档四个 SAV 前后 sha256 一致）**，拉爾斯帝國兵 先被击杀一名使该模板已知：
+
+- 行动环（98）点已知的 拉爾斯帝國兵：不开页，环不变；移动后行动环（74）点敌人同样不开页。
+- 行动环选 移動 进入选格，点该敌人所在格：开 mode 1 状态页（`姓名:???` `稱號:一般兵`，九行属性可读，无 `$:` 框）。
+- 右键关窗：回到移动选格，蓝色移动范围照旧，行动单位未动。
+- 帧（未入库，`ignored/statusclick/`）：`original-1-ring-click-enemy.png`、`original-2-select-click-enemy.png`、`original-3-close-returns.png`。
 
 **第二次 Wine 会话（2026-09-25，9.6 分钟：标题 (318,296) 两击载入 戰場記錄 → 雷歐納德 三次 待機 (367,322) 放 AI 行动 → 移动选择态悬停；`hsl_win32_memread.exe` 读 `*0x4c1bc8` 记录表与 `0x4c6d80`；存档未写）**：
 
@@ -123,7 +133,7 @@ r2 对 `hsl01.exe` 全文检索 `/ad/ dword [e.. + 0xd8]` 得 47 处 HP 读点�
 - `BattleCheckpoint.validate` 要求该键为数组且每项是唯一的现存单位 id（`invalid_saved_known_units`）；缺该键的 v3 快照由 `missing_saved_array` 拒绝。
 - `game/battle/scene/BattleVitals.gd`：`mask(unit, known)`＝唯一遮罩策略——`hp`＝bVar22、`identity`＝bVar22‖bVar21（读单位 `no_attack`，模板位 0x2 的 live 镜像，`actSetPlayerNoAttack` 可改）、`level`＝二者之一‖等级>99；`show_unit(unit, hp, known)` 先按 live 值写 `hp_bar`／`mp_bar` 再套遮罩；`state_text(flags)` 照「狀態欄」拼单字；姓名读单位 `display_name`（安装字／`actSetPlayerName` 写入的 +0x04，逐字）或 `actor_panels.json` 行的 `name`（`portraits.panel_name`，逐字）。provenance strings：0x434d10 谓词——已知字节清零 → 等级 ??、经验／HP／MP／姓名／状态／抗性 ???；抗性 "%02d%" 或 80 起 "MAX"（0x435616／0x43563b）；0x446b00 no_attack 位 → 同上但不含 HP；模板等级 > 99 → 等级 ??。
 - 攻击选择态的目标预览、魔法／支援目标预览、状态全页、切入身份栏都经同一遮罩（`BattlePresentation.preview_hovered_unit`／`preview_target`、`BattleStatusPanel.show_unit`、`BattleCombatCutin.play`）；切入栏按交锋回执的 `strip_known_ids`（目标确认后、结算前的 known 快照）遮罩，被反击打死的未知攻方在两段切入里都是 `???`；施法回执无快照、读结算后的 loop。
-- `BattleSceneInput` 点非己方指挥单位时先问 `BattleStatusPanel.opens_for(unit_known)`，未知就当点空地、不开页；OPT-INFO＝公開 一律视为已知照开（改良选项）。点单位开的状态页不画钱框。
+- `BattleSceneInput.handle_pointer_left_pressed`：只在 `MOVE_SELECT` 点非可指挥单位（`is_player_commandable_unit` 为假，对应 `+0xa0 & 0x10` 为 0）时开页，交互状态不变，关窗即回选格；选格态点可指挥单位不做事（同 `0x443d9d`）；行动环点单位不开页。开页前先问 `BattleStatusPanel.opens_for(unit_known)`，未知就当点空地、不开页；OPT-INFO＝公開 一律视为已知照开（改良选项）。点单位开的状态页不画钱框。
 - **肖像绑定（resource-derived）**：120×144 肖像由 PLAYERS.TXT `picture` 字段绑定 PAK 内 SHP——001→`SHAPE\FACE0000.SHP`（不是 FACE0001）、021／023／024／026→`FACE0021／0023／0024／0026.SHP`；`hsltools/assets/portraits.py` 生成 `content/imported/hsl/chapter01/portraits/manifest.json`（`python3 tools/hsl.py check actor_portraits`）。战中按对白 speaker ID、开场按 STORY actor token 选头像。肖像 manifest 的 `name`（交付视图、队伍页、战败句的列表标签）按稱號补名，是重制显示选择。
 - provenance 写法：`runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured`。
 
@@ -136,3 +146,4 @@ r2 对 `hsl01.exe` 全文检索 `/ad/ dword [e.. + 0xd8]` 得 47 处 HP 读点�
 - 仍未读：位 0x100 数字文本的置位者、氣力条（重制自创，未知时仍空）。
 - 受伤且未知的敌人未在原版实机采到；条按真实比例的结论来自静态（条渲染器无已知字节读者）加两类已知／未知样本。
 - 剧情 `actSetPlayerMode`（`0x4507f0`）、读档路径的写入只有静态枚举。
+- 选格态开页的实机样本只有敌方已知单位一例；非玩家指挥的已知友军走同一分支，是静态推出来的。行动环点单位不开页有两态实机样本（98／74）。

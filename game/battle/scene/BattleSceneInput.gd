@@ -155,15 +155,17 @@ func handle_pointer_left_pressed(logical_position: Vector2) -> void:
 			runtime.attack_selected_coord(runtime.hovered_grid_cell)
 		return
 	if runtime.hovered_unit_id != "":
-		if runtime.interaction_state == Interaction.ACTION_MENU and (not runtime.is_player_commandable_unit(runtime.hovered_unit_id) or not BattlePlayLoop.is_current_actor(runtime.play_loop, runtime.hovered_unit_id)):
-			# 0x443cfa: the page (mode 1, no gold box) opens only for a known unit; an unknown
-			# one falls to 0x443d9d like a click on empty ground (OPT-INFO=公開 knows everyone).
+		if runtime.interaction_state == Interaction.MOVE_SELECT and not runtime.is_player_commandable_unit(runtime.hovered_unit_id):
+			# Move-select (phase 20 sub 0 0x443c63) is the only state with a unit-click branch:
+			# 0x443cfa opens the page (mode 1, no gold box) for a known unit the player does not
+			# command; an unknown one falls to 0x443d9d like a click on empty ground (OPT-INFO=公開
+			# knows everyone). The action ring (98／74 → default 0x4447a7) has no such branch.
+			# The state stays MOVE_SELECT, so closing returns to move-select (sub 11 0x4440b7 → 0).
 			var known := BattlePlayLoop.unit_known(runtime.play_loop, runtime.hovered_unit_id)
 			if not preload("res://game/battle/scene/BattleStatusPanel.gd").opens_for(known):
 				return
 			runtime.status_panel.show_unit(BattlePlayLoop.unit(runtime.play_loop, runtime.hovered_unit_id), known, false, runtime.play_loop)
-			runtime.menus.set_action_menu_visible(false)
-		else:
+		elif runtime.interaction_state != Interaction.MOVE_SELECT:
 			runtime.select_actor(runtime.hovered_unit_id)
 
 

@@ -15,8 +15,8 @@ extends CanvasLayer
 ##   strings: resource-derived content/imported/hsl/shared/first_skill/manifest.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   strings: remake-invented
-##     (cure labels, stat-buff captions, 未回復 and the weapon-effect line on the result line — effects the original shows
-##     no glyph for)
+##     (OPT-INFO=公開 only: cure labels, stat-buff captions, 未回復 and the weapon-effect line on the result line — effects
+##     the original shows no glyph for)
 ##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
@@ -30,6 +30,9 @@ extends CanvasLayer
 ## first whose matches(strike) is true presents the clip; a strike none claims is an ordinary
 ## strike, or the borrowed 氣刃斬 staging when it carries a skill_name.
 var presenters: Array[SkillPresenter] = []
+## OPT-INFO=公開 (read as a queue starts): the result line's captions without an original glyph
+## (caption_feedback, the weapon-effect line); the original path shows the numbers alone.
+var captions_public := false
 var skill_effects: SkillEffectScriptPlayer
 signal impact(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counter: bool)
 signal released(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counter: bool)
@@ -246,6 +249,7 @@ func play(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counte
 		_reported_unconfigured = true
 		push_error("Combat cut-in played without a combat manifest: the scenario declares no resources.combat_animation")
 	if clips.is_empty():
+		captions_public = not GameOptions.is_original("OPT-INFO")
 		var pace_value := GameOptions.value("OPT-PACE")
 		pace = float(Timing.PACE_CUTIN.get(pace_value, 1.0))
 		if cutin_hidden != (pace_value == Timing.PACE_HIDDEN_CUTIN):
@@ -548,7 +552,7 @@ func _show_ordinary_shot(clip: Dictionary, actor: Dictionary, schedule: Dictiona
 	var number_time := impact_time + Timing.scaled(OriginalTick.seconds(Timing.HIT_TO_NUMBER_TICKS))
 	if elapsed >= number_time:
 		show_result(clip["strike"], OriginalTick.ticks((elapsed - number_time) / Timing.PLAYBACK_SPEED), ORDINARY_NUMBER_POINT, ordinary_result_spawns(clip["strike"]))
-	if clip["impact_emitted"]:
+	if clip["impact_emitted"] and captions_public:
 		var effects := preload("res://game/sim/WeaponEffectRules.gd").feedback(clip["strike"].get("weapon_effects", {}), not defeated)
 		if effects != "": result.text += ("\n" if result.text != "" else "") + effects
 
@@ -641,7 +645,7 @@ static func strike_feedback(strike: Dictionary) -> String:
 ## (ResultNumberFloater spawns; null = result_spawns, aniShowHitResult) in the original glyphs,
 ## and on the result line the captions that have no glyph (caption_feedback).
 func show_result(strike: Dictionary, age_ticks: float, point: Vector2 = SCRIPT_NUMBER_POINT, entries: Variant = null) -> void:
-	result.text = caption_feedback(strike)
+	result.text = caption_feedback(strike) if captions_public else ""
 	result.add_theme_color_override("font_color", ShowNumberStyle.CAPTION)
 	var spawns: Array[Dictionary] = result_spawns(strike) if entries == null else entries
 	var key := [spawns, point]

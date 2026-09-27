@@ -16,9 +16,11 @@ extends RefCounted
 ##     (glyph bitmaps, cells and the character → glyph slot table)
 ##   layout: static-derived tools/hsltools/assets/original_bitmap_font.py
 ##     (advances = cell widths, zero extra gap, half-glyph drop 2 px in FONT.15: hsl01.exe 0x42f230／0x42f308／0x4608e4)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
+##     (the face each original window draws with, from the font pointer of its 0x460884 calls)
 ##   layout: remake-invented
-##     (small line 16 px = 15 px cell + 1; the face per remake font size, SMALL_SIZES／BODY_SIZES; aliases ・ − ▶ › drawn
-##     as ‧ - → >)
+##     (small line 16 px = 15 px cell + 1; requested sizes as the carrier of the face, SMALL_SIZES／BODY_SIZES, for
+##     windows without an original counterpart; aliases ・ − ▶ › drawn as ‧ - → >)
 
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")

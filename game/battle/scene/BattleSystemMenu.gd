@@ -19,6 +19,9 @@ extends Control
 ## dissolving the win／fail board (BattleWinFailBoard) in over the scroll. 讀取回憶錄 opens the Title031
 ## eight-slot load list in both variants (battle proc 0x4253f0 item 2 → 0x423bd0(…, 0), Wine frame
 ## menus_ui §3); 整理裝備 hands off to the host's PartyEquipmentScreen.
+## Opening either scroll plays ACCEPT01 (RESOURCE 398): battle defProcBattleBOSS, big map
+## walker state 10 0x427c41. The 確定／取消 prompt carries no question; OPT-GUIDE＝提示 adds a
+## question line under the scroll (remake).
 ## Under the untouched Title039 panel a 重製選項 entry (remake) opens RemakeOptionsPage, the
 ## second page of the remake's own options (docs/OPTIONS.md); Down past 音樂音量 reaches it.
 ## provenance:
@@ -32,7 +35,7 @@ extends Control
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (Title061 at (256,217), no shade; save notice on BOARD02 at (75,320), no portrait; 任務說明 = WINDOW60 at (136,108))
 ##   layout: provisional (memoir list position)
-##   layout: remake-invented (the confirm question line under the scroll)
+##   layout: remake-invented (the confirm question line under the scroll, OPT-GUIDE＝提示 only)
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md (「進度儲存完成」)
 ##   strings: remake-invented (memoir labels, confirm questions)
@@ -41,6 +44,9 @@ extends Control
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (save notice ≈0.24 s in, ≈1 s held, ≈0.14 s out; 任務說明 board dissolves ≈0.4 s each way (32／34 ticks))
 ##   timing: remake-invented (1.6 s 沒有戰場記錄 hint — deliberately kept remake beat)
+##   audio: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (ACCEPT01 on open: 0x4082ab, 0x427c41)
+##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json (confirm = ACCEPT01)
 
 ## World variant 整理裝備: the host opens the between-battle party equipment screen
 ## (game/world/PartyEquipmentScreen) with the carried party; the scroll itself closes.
@@ -70,7 +76,7 @@ const SCROLL_SECONDS := 40 * OriginalTick.TICK_SECONDS
 const HINT_SECONDS := 1.6
 ## Battle scroll items that ask 確定／取消 first. The 2026-09-24 recording shows the prompt for
 ## 儲存戰場記錄 (581.0 s) and 回主選單 (592.5 s); the others share it (provisional). The
-## question text is the remake's.
+## question text is the remake's, shown only under OPT-GUIDE＝提示 (the original shows none).
 const CONFIRM_ACTIONS := {
 	"save_record": "儲存戰場記錄？",
 	"load_record": "讀取戰場記錄，覆蓋目前進度？",
@@ -88,7 +94,7 @@ const SAVE_NOTICE_TEXT_Y := 44.0
 const SAVE_NOTICE_IN_SECONDS := 0.25
 const SAVE_NOTICE_HOLD_SECONDS := 0.95
 const SAVE_NOTICE_OUT_SECONDS := 0.15
-## The confirm question under the scroll (remake-invented; the original shows none).
+## The confirm question under the scroll (remake-invented, OPT-GUIDE＝提示 only; the original shows none).
 const CONFIRM_QUESTION_Y := 446.0
 const BattleWinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
 const MEMOIR_HINTS := {"empty": "空的回憶錄", "saved": "回憶錄已儲存", "no_record": "沒有可儲存的進度"}
@@ -182,7 +188,7 @@ func _ready() -> void:
 ## _ready phase: the 確定／取消 prompt.
 func _build_confirm(layout: Dictionary) -> void:
 	# 確定／取消 prompt (Title061 + lit 062/063) over the open scroll, unshaded as in the
-	# original; the remake adds a one-line question under the scroll.
+	# original; OPT-GUIDE＝提示 adds a one-line question under the scroll (_ask).
 	_confirm_box = Control.new()
 	_confirm_box.name = "Confirm"
 	_confirm_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -356,6 +362,8 @@ func open() -> Dictionary:
 	phase = "opening"
 	visible = true
 	selected = 0
+	if runtime != null and runtime.has_method("play_ui_sound"):
+		runtime.play_ui_sound("confirm")
 	_panel.position = _panel_closed_position
 	_show_lit(selected)
 	_slide(_panel_open_position, SCROLL_OPEN_SHIFT, func() -> void: phase = "menu")
@@ -695,9 +703,7 @@ func activate_memoir() -> Dictionary:
 			pending_slot = slot
 			phase = "confirm"
 			confirm_selected = 1
-			_confirm_question.text = "覆蓋回憶錄 %d？" % (slot + 1)
-			_show_confirm_lit(confirm_selected)
-			_confirm_box.visible = true
+			_ask("覆蓋回憶錄 %d？" % (slot + 1))
 			result["status"] = "confirm"
 			last_result = result
 			return result
@@ -711,9 +717,7 @@ func activate_memoir() -> Dictionary:
 	pending_slot = slot
 	phase = "confirm"
 	confirm_selected = 1
-	_confirm_question.text = "讀取回憶錄 %d，放棄目前進度？" % (slot + 1)
-	_show_confirm_lit(confirm_selected)
-	_confirm_box.visible = true
+	_ask("讀取回憶錄 %d，放棄目前進度？" % (slot + 1))
 	result["status"] = "confirm"
 	last_result = result
 	return result
@@ -754,12 +758,18 @@ func activate() -> Dictionary:
 		pending_action = action
 		phase = "confirm"
 		confirm_selected = 1
-		_confirm_question.text = str(confirm_table[action])
-		_show_confirm_lit(confirm_selected)
 		# The chosen item stays lit under the prompt (user recording 582.0 s, 592.5 s).
-		_confirm_box.visible = true
+		_ask(str(confirm_table[action]))
 		return {"ok": true, "status": "confirm", "action": action}
 	return _perform(action)
+
+
+## Shows the 確定／取消 prompt; the question line only under OPT-GUIDE＝提示.
+func _ask(question: String) -> void:
+	_confirm_question.text = question
+	_confirm_question.visible = not GameOptions.is_original("OPT-GUIDE")
+	_show_confirm_lit(confirm_selected)
+	_confirm_box.visible = true
 
 
 func confirm(accept: bool) -> Dictionary:
@@ -1028,6 +1038,7 @@ func summary() -> Dictionary:
 		"selected": selected,
 		"selected_id": str(items[selected].get("id", "")) if selected < items.size() else "",
 		"confirm_selected": confirm_selected,
+		"confirm_question": _confirm_question.text if _confirm_question != null and _confirm_question.visible and _confirm_box.visible else "",
 		"pending_action": pending_action,
 		"panel_position": _panel.position if _panel != null else Vector2.ZERO,
 		"lit_visible": _lit != null and _lit.visible,

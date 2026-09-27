@@ -619,6 +619,8 @@ func skill_effect_contracts() -> void:
 	untaken.merge({"hit": false, "stat_effects": []}, true)
 	check(BattleCombatCutin.strike_feedback(untaken) == "MISS", "a stat receipt where nothing took reads as the miss (0x404643 kind 5, NUM513 MISS), not 0 or empty")
 	cutin.play(focus, caster, caster, false)
+	# The buff captions have no original glyph: OPT-INFO=公開 only.
+	cutin.captions_public = true
 	var focus_result := ""
 	while cutin.busy():
 		cutin._process(1.0 / 60.0)

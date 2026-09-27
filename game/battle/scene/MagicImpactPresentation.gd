@@ -9,11 +9,14 @@ extends Node2D
 ## provenance:
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V08
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
-##   layout: remake-invented (42×7 bar)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
+##     (the cur/max text face and shadow: FONT.15 [0x4c1adc] white, 0x8430 at (+1,+1), 0x4365f0 → 0x411d70)
+##   layout: remake-invented (42×7 bar; the text's place beside it)
 ##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: runtime-reference docs/evidence_packets/static_reverse/original_magic_damage.md
 ##     (bar beats read from the 2026-09-24 recording at 19.4 ms／tick: before-HP 21, number 29, bars 60 ticks)
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
@@ -91,9 +94,13 @@ func _bar(parent: Control, value: int, maximum: int, top: float, color: Color) -
 	var fill := _rect(bar, Vector2.ONE, Vector2.ZERO, color)
 	var text := Label.new()
 	text.position = Vector2(47, top - 3)
-	text.add_theme_font_size_override("font_size", 12)
-	text.add_theme_constant_override("outline_size", 3)
-	text.add_theme_color_override("font_outline_color", Color.BLACK)
+	# FONT.15 white over the 0x8430 shadow at (+1,+1): the original's only number beside a bar
+	# is 0x4365f0's cur/max through the FONT.15 helper 0x411d70.
+	text.add_theme_font_size_override("font_size", BattleUISkin.FONT_SMALL)
+	text.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
+	text.add_theme_color_override("font_shadow_color", BattleUISkin.TEXT_SHADOW)
+	text.add_theme_constant_override("shadow_offset_x", 1)
+	text.add_theme_constant_override("shadow_offset_y", 1)
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(text)
 	var parts := {"fill": fill, "text": text}
