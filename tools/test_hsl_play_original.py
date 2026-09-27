@@ -20,6 +20,7 @@ def snapshot(saves: Path) -> dict[str, bytes]:
     return {path.name: path.read_bytes() for path in sorted(saves.iterdir()) if path.is_file()}
 
 
+@unittest.skipIf(os.name == "nt", "bash Wine launcher for macOS/Linux (bash on Windows is the WSL launcher)")
 class PlayOriginalRestoreTests(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()

@@ -191,14 +191,15 @@ def base_env() -> dict[str, str]:
     return env
 
 
-MISSING_PATH = re.compile(r"No such file or directory: '([^']+)'|((?:content|docs/evidence_packets)/[^\s'\":,)\]]+)")
+# Windows prints backslash separators, and repr() doubles them inside the quoted OSError path.
+MISSING_PATH = re.compile(r"No such file or directory: '([^']+)'|((?:content|docs[\\/]evidence_packets)[\\/][^\s'\":,)\]]+)")
 SKIP_ORIGINAL_ABSENT = "PYTHON_UNIT_FILE_SKIP original-absent"
 
 
 def names_absent_original(output: str) -> bool:
     """The failure log names an original-derived path this checkout lacks (hsltools.original_content)."""
     for quoted, bare in MISSING_PATH.findall(output):
-        path = Path(quoted or bare)
+        path = Path(quoted.replace("\\\\", "\\") if quoted else bare.replace("\\", "/"))
         relative = path.relative_to(ROOT) if path.is_absolute() and path.is_relative_to(ROOT) else path
         if not (ROOT / relative).exists() and (original_content.is_original_derived(relative.as_posix())
                                                or original_content.stands_in(relative.as_posix())):

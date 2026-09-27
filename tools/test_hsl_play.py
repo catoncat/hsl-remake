@@ -9,6 +9,7 @@ import unittest
 LAUNCHER = Path(__file__).resolve().parent / "play.sh"
 
 
+@unittest.skipIf(os.name == "nt", "bash launcher; Windows runs tools/play.ps1 (bash there is the WSL launcher)")
 class PlayLauncherTests(unittest.TestCase):
     def run_launcher(self, mode):
         with tempfile.TemporaryDirectory() as folder:

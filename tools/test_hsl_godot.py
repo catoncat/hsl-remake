@@ -9,6 +9,7 @@ import unittest
 WRAPPER = Path(__file__).with_name("godot.sh")
 
 
+@unittest.skipIf(os.name == "nt", "bash wrapper; Windows runs tools/godot.ps1 (bash there is the WSL launcher)")
 class GodotRunnerTests(unittest.TestCase):
     def run_godot(self, diagnostic="", exit_code=0, marker=None):
         with tempfile.TemporaryDirectory() as folder:

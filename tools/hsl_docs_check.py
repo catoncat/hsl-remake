@@ -100,7 +100,8 @@ def markdown_files(root: Path) -> list[Path]:
         ["git", "ls-files", "-co", "--exclude-standard", "-z", "--", "*.md"], cwd=root,
     )
     paths = {root / os.fsdecode(item) for item in raw.split(b"\0") if item}
-    return sorted(path for path in paths if path.is_file())
+    # Sort by the POSIX string: WindowsPath ordering is case-insensitive, so plain sorted() differs by OS.
+    return sorted((path for path in paths if path.is_file()), key=Path.as_posix)
 
 
 def check_files(root: Path, files: list[Path], absent: list[str] | None = None) -> tuple[list[str], int]:

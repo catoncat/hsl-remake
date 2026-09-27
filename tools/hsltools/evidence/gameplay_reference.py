@@ -32,7 +32,8 @@ def sha256(path: Path) -> str:
 
 def local_file(root: Path, value: str) -> Path:
     path = Path(value)
-    if path.is_absolute() or '..' in path.parts or not path.parts:
+    # anchor, not is_absolute(): on Windows '/tmp/x' is rooted but not absolute (no drive).
+    if path.anchor or '..' in path.parts or not path.parts:
         raise ValueError(f'Invalid packet path: {value}')
     result = (root / path).resolve()
     if not result.is_relative_to(root.resolve()) or not result.is_file():
