@@ -12,13 +12,12 @@ extends Node2D
 ##   timing: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
 ##     (highlight pulse word +0x38 −30..30 per lit tick, 0x43dcdd)
 ##   timing: static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md
+##     (script shape: delay + 1 ticks a frame, looping; held after a keep-pose arrival)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##     (idle 6 × 11 ticks, 4 px per tick = 8 ticks per cell, 3 ticks per walk frame, 16 ms tick)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##     (actMoveDispWait keep-pose move: 0x45e5a6 every tick, shape delay from the speed)
-##   timing: provisional
-##     (actChangeShape sets cycle at the standing cadence — the actor state during a script shape override is unread)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: provisional (script walks step at relative frames 0／3)
 
@@ -125,12 +124,15 @@ var _scripted_walk_audio := false
 var _idle_elapsed := 0.0
 ## Script shape override (STORY actChangeShape/actRestoreShape): a looping frame
 ## set drawn instead of the walk/idle frames until cleared. Frame pixels and draw
-## origins come from the level manifest; the cycle rate is the standing cadence.
+## origins come from the level manifest; the cycle rate is the caller's (actChangeShape:
+## the script delay + 1 ticks a frame). `_override_held`: after a keep-pose move the
+## 0x1000 bit stays set and the idle path (0x4420df／0x4455d4) skips 0x45e5a6.
 var _override_textures: Array[Texture2D] = []
 var _override_origins: Array[Vector2] = []
 var _override_fps := IDLE_FRAMES_PER_SECOND
 var _override_pos := 0
 var _override_elapsed := 0.0
+var _override_held := false
 var _highlights: Dictionary = {}
 var _highlight_kind := ""
 ## 0x40ba20's side word (player_mode & 0x870000) picking the highlight colour.
@@ -241,6 +243,8 @@ func _process(delta: float) -> void:
 		_apply_magic_pose_frame()
 		return
 	if has_shape_override():
+		if _override_held:
+			return
 		_override_elapsed += maxf(delta, 0.0)
 		var override_steps := int(floor(_override_elapsed * _override_fps))
 		if override_steps > 0 and _override_textures.size() > 1:
@@ -403,6 +407,7 @@ func set_shape_override(frames: Array, fps: float = IDLE_FRAMES_PER_SECOND) -> i
 	_override_fps = maxf(fps, 0.1)
 	_override_pos = 0
 	_override_elapsed = 0.0
+	_override_held = false
 	if not _override_textures.is_empty():
 		_apply_override_frame()
 	return _override_textures.size()
@@ -413,6 +418,7 @@ func clear_shape_override() -> void:
 		return
 	_override_textures = []
 	_override_origins = []
+	_override_held = false
 	if not _current_sequence.is_empty():
 		_apply_frame_index(_current_sequence[_current_sequence_pos])
 	else:
@@ -566,14 +572,17 @@ func _finish_keep_pose_move() -> void:
 	if _frame_tween != null:
 		_frame_tween.kill()
 		_frame_tween = null
+	# Arrival writes state 0 (0x454262) with 0x1800 still set: the frame holds.
+	_override_held = has_shape_override()
 
 
-## A script shape keeps looping at the move's rate (the 0x1800 bits stay set after arrival);
-## the actor's own sequence steps once per `frame_ticks` ticks over the move.
+## A script shape loops at the move's rate while moving (0x453ba3 ticks 0x45e5a6 under
+## 0x1800); the actor's own sequence steps once per `frame_ticks` ticks over the move.
 func _start_keep_pose_frames(duration_seconds: float, frame_ticks: int) -> int:
 	var interval := OriginalTick.TICK_SECONDS * float(frame_ticks)
 	if has_shape_override():
 		_override_fps = 1.0 / interval
+		_override_held = false
 		return 0
 	if _current_sequence.size() <= 1 or duration_seconds <= 0.0:
 		return 0

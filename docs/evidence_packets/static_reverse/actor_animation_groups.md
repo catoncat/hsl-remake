@@ -34,6 +34,34 @@ Live `ActorRuntime` advances standing frames from its process delta using the ex
 
 Verification covers all five actor types: hold duration, frame advance, complete six-frame wrap, fixed world foot point, walking isolation, and return to the standing loop. A real 640×480 Godot recording (`ignored/idle-review/idle.mp4`) shows Leonard at world `(496,560)` while standing sources progress through frames 1, 2, 4 and 6 in successive samples. Rendered frames were inspected; the original cadence and complete sprite/color parity remain unproven.
 
+## 脚本换形期间的帧推进
+
+**结论**
+- 原版：`actChangeShape` 把演员的帧换成脚本给的形状段，第三参数是延迟 D，每帧停 D＋1 tick，按段内帧数循环；朝向与站立状态号不动（static-derived）。
+- 原版：随后的 `actMoveDispWait` 移动途中按速度延迟循环；到位后回到状态 0，0x1800 仍置位，帧停在到位时那一帧，直到 `actRestoreShape`（static-derived）。
+- 原版：`actRestoreShape` 让站立组从第一帧、延迟 10 重新载入（static-derived）。
+- 重制：换形按脚本延迟推进（玩家第 3 场 · 逃出克萊恩城（LEVEL053）緹娜绳索形 D＝4，每帧 5 tick；士兵 023 形 D＝2，每帧 3 tick）；保形移动到位后停帧；恢复时站立序列从头开始（static-derived）。
+
+**证据**（EXE SHA-256 同上节）
+- VM 分派 `0x4508a1` 查表 `0x4537f4`：opcode 13／14（actChangeShape／Wait）→ `0x451aa3`，把 code、serial、延迟、形状号、帧数存进 VM `+0x98／+0x94／+0x9c／+0xa0／+0xa4`，逐帧 `0x460058` 预载，VM 状态 ＝ opcode；opcode 17（actRestoreShape）→ `0x451b92`。
+- VM 状态分派 `0x45086e`（字节表 `0x453768` → 跳表 `0x453708`）：状态 13／14／17 同入 `0x453370`，调 `0x4502f0(code, serial, 延迟, 形状号, 帧数, Wait 时 VM)`；17 传全 0。
+- `0x4502f0` 帧数非 0：只在演员 `+0x8c == 0`（站立）或状态高字 0x34 时生效，否则不写（VM 照常继续）；写 `+0x78／+0x7a` ＝ 帧数（当前／重装计数）、`+0x30` ＝ 形状号（当前帧）、`+0x7c／+0x7e` ＝ 延迟；Wait 版另置 `+0x8c = 0x340000`、`+0x50 = VM`。帧数 0（恢复）：`+0x90 = 0xffff`、`+0x80 &= ~0x1800`、`+0x8c = 0`。
+- 站立时的推进：两条演员过程的状态 0 走公共尾（`0x4420ba..0x442169`；`0x4447a7 → 0x4455d4..0x44561f`）：期望形态值（0，或某标志下 6）与 `+0x90` 相同则只调 `0x45e5a6`，不同才 `0x446c40(类型, 值, 值 0 时延迟 10 否则 2)` 重载。换形不动 `+0x90`（普通走位到位时 `0x45420b` 已写 0），所以每 tick 用脚本延迟循环；恢复把 `+0x90` 写成 −1，下一 tick 必重载站立组。
+- 公共尾在 `+0x80 & 0x1000` 置位时整段跳过（`0x4420e5`、`0x4455da`），且状态 0 不调 `0x453b90`（其 `0x453ba3` 的 0x1800 每 tick 推进只在脚本状态里跑）。`actMoveDispWait` 末子状态 `0x454262` 写 `+0x8c = 0` 并放行 VM，于是到位后帧不再推进。
+- Wait 版状态 0x34 用 `0x45e575`（播到末帧即停在末帧、计数置 1）走一遍后放行 VM、回状态 0；第一章 0 处使用。
+
+**重制接线**
+- `OpeningStoryObjects._change_shape` 读第三参数为延迟，以 `TICKS_PER_SECOND／(D＋1)` 传给 `ActorRuntime.set_shape_override`，帧数按第五参数截取；`_restore_shape` 清换形后站立序列从第一帧重来。
+- `ActorRuntime._finish_keep_pose_move` 置 `_override_held`，保形移动到位后停帧；再次移动或清除时解除。provenance：`timing: static-derived` 本篇。
+
+**复现**
+
+`r2 -q -e scr.color=0 -c 'pxw 20 @ 0x453828; pd 30 @ 0x453370; pd 40 @ 0x4502f0; pd 40 @ 0x4420ba; pd 20 @ 0x4455c9; pd 8 @ 0x454262' hsl01.exe`
+
+**边界**
+- 演员在走动（状态非 0、非 0x34）时原版忽略换形；重制不判此条，照常换（provisional）。
+- 公共尾里「值 6」的触发标志（`[esp+0x30] & 0x800`）未读；若脚本演员带该标志，换形可能被站立重载覆盖（provisional）。
+
 ## 复现
 
 `python3 tools/hsl.py check actor_walk_manifest:chapter01 actor_walk_manifest:shared`（SHAPEDEF 字段、帧数与摘要）；静态部分 `r2 -q -e scr.color=0 -c 'pd 12 @ 0x442139; pd 20 @ 0x446c40; pd 18 @ 0x45e5a6' hsl01.exe`。

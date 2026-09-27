@@ -15,6 +15,8 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##     (actMoveDispWait: walk state 0x32 with +0x80 0x1800 keeps pose, loops frames, no footsteps)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_random_position.md
+##   rules: provisional docs/evidence_packets/static_reverse/actor_animation_groups.md
+##     (actChangeShape applies while the actor walks; 0x4502f0 ignores it outside state 0／0x34)
 ##   rules: provisional docs/evidence_packets/static_reverse/original_random_position.md
 ##     (random-position slots in table order instead of the native shuffle)
 ##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json
@@ -25,6 +27,8 @@ extends RefCounted
 ##     (walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over
 ##     the following actDelay)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##   timing: static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md
+##     (actChangeShape: script delay + 1 ticks a frame; actRestoreShape restarts the stand loop)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
@@ -555,8 +559,7 @@ func _unroll_range_object(sprite: Sprite2D, anchor: Vector2, origin: Array) -> D
 
 
 func _change_shape(event: Dictionary) -> void:
-	## actChangeShape,token,inst,?,first_member,count: swap the actor's frames for
-	## the decoded script shape set that starts at first_member.
+	## Swap the actor's frames for the decoded script shape set that starts at first_member.
 	var args: Array = event.get("args", [])
 	var bound := _bound_actor(event, 0)
 	var actor: Node = bound[1]
@@ -565,8 +568,16 @@ func _change_shape(event: Dictionary) -> void:
 	if actor == null or entry.is_empty():
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "actor_shape_change", "reason": "unbound_actor" if actor == null else "shape_set_not_imported"})
 		return
-	var loaded: int = actor.set_shape_override(entry.get("frames", []))
-	coordinator.story_records.append({"kind": "actor_shape_change", "source_event_id": str(event.get("id", "")), "unit_id": bound[0], "first_member": first_member, "frames_loaded": loaded})
+	# actChangeShape,code,serial,delay,first_member,count: 0x4502f0 writes the script delay
+	# into +0x7e/+0x7c and the count into +0x7a/+0x78; the idle actor path ticks 0x45e5a6
+	# every tick, so each frame holds delay + 1 ticks and the set loops.
+	var delay := maxi(int(args[2]), 0) if args.size() > 2 else ActorRuntime.IDLE_FRAME_TICKS - 1
+	var frames: Array = entry.get("frames", [])
+	var count := int(args[4]) if args.size() > 4 else 0
+	if count > 0 and count < frames.size():
+		frames = frames.slice(0, count)
+	var loaded: int = actor.set_shape_override(frames, OriginalTick.TICKS_PER_SECOND / float(delay + 1))
+	coordinator.story_records.append({"kind": "actor_shape_change", "source_event_id": str(event.get("id", "")), "unit_id": bound[0], "first_member": first_member, "frames_loaded": loaded, "frame_ticks": delay + 1})
 
 
 func _restore_shape(event: Dictionary) -> void:
@@ -576,6 +587,10 @@ func _restore_shape(event: Dictionary) -> void:
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "actor_shape_restore", "reason": "unbound_actor"})
 		return
 	actor.clear_shape_override()
+	# 0x4502f0 with count 0 sets +0x90 = 0xffff, so the idle path reloads the stand group
+	# from its first frame with delay 10 (0x446c40(…, 0, 10)).
+	if str(actor.get("animation_state")) == "idle":
+		actor.play_state("idle", str(actor.get("facing")))
 	coordinator.story_records.append({"kind": "actor_shape_restore", "source_event_id": str(event.get("id", "")), "unit_id": bound[0]})
 
 

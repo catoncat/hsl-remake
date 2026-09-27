@@ -680,17 +680,17 @@
     },
     {
       "id": "shape-override-cadence",
-      "difference": "剧情换形（actChangeShape）期间的动画节拍按站立节拍，原版此状态未读",
-      "original": "脚本换形期间的演员状态未读",
+      "difference": "演员走动中收到 actChangeShape：原版不换形（0x4502f0 只在站立或 0x34 状态生效），重制照换",
+      "original": "0x4502f0 的状态门：+0x8c 为 0 或高字 0x34 才写帧、计数与延迟（static-derived）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/actor_animation_groups.md"
       ],
-      "remake": "ActorRuntime 按站立周期",
+      "remake": "OpeningStoryObjects 不判演员是否在走，换形照常生效；帧节拍已照原版（脚本延迟＋1 tick 一帧、保形到位停帧）",
       "remake_code": [
-        "game/battle/runtime/ActorRuntime.gd:set_shape_override"
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_change_shape"
       ],
-      "original_status": "unread",
-      "visibility": "some_levels",
+      "original_status": "read_complete",
+      "visibility": "rare",
       "effort": "S",
       "category": "地图人物演出"
     },
@@ -2018,9 +2018,6 @@
     },
     "provenance:game/battle/runtime/ActorRuntime.gd|layout|provisional|": {
       "item": "draw-depth-states"
-    },
-    "provenance:game/battle/runtime/ActorRuntime.gd|timing|provisional|": {
-      "item": "shape-override-cadence"
     },
     "provenance:game/common/BattleCameraController.gd|rules|remake-invented|": {
       "item": "home-recenter"
@@ -3542,6 +3539,9 @@
     "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#c405918b68": {
       "item": "level-specific-placement",
       "text": "未读：沙羅尼亞近郊（LEVEL034）037_2 终点 (36,17)、禁忌之魂・墳場地下（LEVEL080）嚎 终点 (5,22) 四邻全是 0xff，`0x44fbd0` 原指令留在原格，原版却分别站 (34,17)、(5,19)（离行走起点一侧最近的可达格）；"
+    },
+    "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/actor_animation_groups.md": {
+      "item": "shape-override-cadence"
     }
   }
 }

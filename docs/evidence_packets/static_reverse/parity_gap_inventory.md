@@ -14,16 +14,16 @@
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 23 |
+| 已读完只差照做 | 24 |
 | 读了一部分 | 47 |
-| 未读 | 6 |
+| 未读 | 5 |
 | 原版无对应代码 | 17 |
 
 | 可见度 | 条数 |
 | --- | --- |
 | 每场都看得到 | 16 |
-| 部分关卡 | 33 |
-| 少见 | 39 |
+| 部分关卡 | 32 |
+| 少见 | 40 |
 | 看不见 | 5 |
 
 | 建议归入的类 | 条数 |
@@ -161,8 +161,8 @@
 | `draw-depth-states` | 单位与建筑的遮挡顺序：魔法效果阶段施法者与脚印内单位 +23 已照做；飞行单位封顶 22、32 px 同桶先后、planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模 | 32 px 行排序、同桶先后、两段全局状态分支（0x400000 特写／窗口、0x1000000 魔法效果阶段）已读；其余效果过程是否改 +0xc 未读<br>[original_draw_order.md](../../../docs/evidence_packets/static_reverse/original_draw_order.md) | ActorRuntime.depth_index 按像素行排序，魔法切入期间 cast_lift 抬起脚印内与施法姿势单位；fixed_plane_depth 只覆盖最低／最高固定 plane<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `depth_index`、[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `fixed_plane_depth`、[BattleSceneStage.gd](../../../game/battle/scene/BattleSceneStage.gd) `sync_cast_depth` | 读了一部分 | 部分关卡 | S | provenance 1、sentence 2 |
 | `highlight-colours` | 高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定 | 0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮<br>[dialogue_death/README.md](../../../docs/evidence_packets/runtime_observations/dialogue_death/README.md) | ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 全场点亮<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `set_highlight`、[BattleSceneOverlays.gd](../../../game/battle/scene/BattleSceneOverlays.gd) `sync_unit_highlights` | 读了一部分 | 部分关卡 | S | provenance 1、scope 1 |
 | `ai-move-preview-timing` | 敌方移动预告已照原版分追击 12／站位 24 tick，起步动作数据下不可达已照；只剩录屏范围消失后约 0.18 s 才起步的来源未读 | 0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 查 SHAPEDEF prepare，66 条均无，恒直接走<br>[original_action_state_machine.md](../../../docs/evidence_packets/static_reverse/original_action_state_machine.md)、[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattleAiMovePreview.preview_ticks 按 purpose 取 12／24，预告结束即起步（与原版无 prepare 时一致）<br>[BattleAiMovePreview.gd](../../../game/battle/scene/BattleAiMovePreview.gd) `preview_ticks` | 已读完只差照做 | 少见 | S | sentence 4、video 1 |
+| `shape-override-cadence` | 演员走动中收到 actChangeShape：原版不换形（0x4502f0 只在站立或 0x34 状态生效），重制照换 | 0x4502f0 的状态门：+0x8c 为 0 或高字 0x34 才写帧、计数与延迟（static-derived）<br>[actor_animation_groups.md](../../../docs/evidence_packets/static_reverse/actor_animation_groups.md) | OpeningStoryObjects 不判演员是否在走，换形照常生效；帧节拍已照原版（脚本延迟＋1 tick 一帧、保形到位停帧）<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_change_shape` | 已读完只差照做 | 少见 | S | provenance 1 |
 | `job-018-frames` | 018 形态原版没有 SHAPEDEF 行，重制沿用 009 的帧 | 018 无 SHAPEDEF 行（negative-evidence）<br>[original_town_job_up.md](../../../docs/evidence_packets/static_reverse/original_town_job_up.md) | 转职到 018 时保留 009 帧<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) | 读了一部分 | 少见 | S | scope 2、matrix 1 |
-| `shape-override-cadence` | 剧情换形（actChangeShape）期间的动画节拍按站立节拍，原版此状态未读 | 脚本换形期间的演员状态未读<br>[actor_animation_groups.md](../../../docs/evidence_packets/static_reverse/actor_animation_groups.md) | ActorRuntime 按站立周期<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `set_shape_override` | 未读 | 部分关卡 | S | provenance 1 |
 
 ### 城镇与大地图（6）
 

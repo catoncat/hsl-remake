@@ -14,15 +14,15 @@
     },
     "layout_timing_modules": 53,
     "items_by_original_status": {
-      "read_complete": 23,
+      "read_complete": 24,
       "read_partial": 47,
-      "unread": 6,
+      "unread": 5,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 16,
-      "some_levels": 33,
-      "rare": 39,
+      "some_levels": 32,
+      "rare": 40,
       "invisible": 5
     },
     "items_by_category": {
@@ -1444,6 +1444,25 @@
       ]
     },
     {
+      "id": "shape-override-cadence",
+      "difference": "演员走动中收到 actChangeShape：原版不换形（0x4502f0 只在站立或 0x34 状态生效），重制照换",
+      "original": "0x4502f0 的状态门：+0x8c 为 0 或高字 0x34 才写帧、计数与延迟（static-derived）",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/actor_animation_groups.md"
+      ],
+      "remake": "OpeningStoryObjects 不判演员是否在走，换形照常生效；帧节拍已照原版（脚本延迟＋1 tick 一帧、保形到位停帧）",
+      "remake_code": [
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_change_shape"
+      ],
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "地图人物演出",
+      "sources": [
+        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/actor_animation_groups.md"
+      ]
+    },
+    {
       "id": "title-ornaments",
       "difference": "宝珠／书浮动、点击声、菜单自下方滑入、悬停／点击火花、点宝珠开設定選項与点书开回憶錄已照原版（TITLE2）；剩：Menu_Star 未写 Shape_Delay 按 0、星点逐颗落点用重制随机流、宝珠／书点击后不等按住计时即开窗、回憶錄读入沿用战斗列表的確定／取消且淡出前不停留",
       "original": "defProcMainMenuItem 0x424360 逐 tick trunc(6·sin) 浮动、初角 rand()%255；点击放 ACCEPT01；0x423cd0 首帧低 300 px、0x45e882 速度 40 滑回；0x4241a0 悬停每 6 tick 撒 788、点击撒 789＋788（0x423aa0／0x415c10，effProcFlyUpShape 0x41f5db）；码 10／11 开設定選項（792，0x423b90）／回憶錄列表（790，0x423bd0(…,0)），窗开期间菜单不收输入",
@@ -2153,25 +2172,6 @@
         "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#e031171e6a",
         "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#1495d62199",
         "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#8c48bcd290"
-      ]
-    },
-    {
-      "id": "shape-override-cadence",
-      "difference": "剧情换形（actChangeShape）期间的动画节拍按站立节拍，原版此状态未读",
-      "original": "脚本换形期间的演员状态未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/actor_animation_groups.md"
-      ],
-      "remake": "ActorRuntime 按站立周期",
-      "remake_code": [
-        "game/battle/runtime/ActorRuntime.gd:set_shape_override"
-      ],
-      "original_status": "unread",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "地图人物演出",
-      "sources": [
-        "provenance:game/battle/runtime/ActorRuntime.gd|timing|provisional|"
       ]
     },
     {
