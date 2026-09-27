@@ -20,7 +20,7 @@ Checked: 2026-09-27
 
 ## 在跑
 
-三份审计（`docs/audits/` 的 DOCS／CODE／TOOLS，整理项按审计推荐执行）的整理 lane：文档两条（过程文档进 internal／PROJECT 瘦身／AGENTS 刷新；改游戏文档合并）已合并；砍测试（Godot 套件 96→78、Python 测试 139→74、检查任务分 modder／parity／maintainer 三层）、状态效果目录表（`game/sim/StatusCatalog.gd`）、README 入口重写已合并；拆 4 个超长解释器函数为 token 表、tools/README 按读者重排已合并；规则核心已进 `game/sim/loop/`（共用件 `game/common/`）；技能效果族登记表（`SkillResolutionRules.EFFECTS`）已合并；术语改名＋测试别名统一已合并；三份审计的整理项全部落地。
+三份审计（`docs/audits/` 的 DOCS／CODE／TOOLS，整理项按审计推荐执行）的整理 lane：文档两条（过程文档进 internal／PROJECT 瘦身／AGENTS 刷新；改游戏文档合并）已合并；砍测试（Godot 套件 96→78、Python 测试 139→74、检查任务分 modder／parity／maintainer 三层）、状态效果目录表（`game/sim/StatusCatalog.gd`）、README 入口重写已合并；拆 4 个超长解释器函数为 token 表、tools/README 按读者重排已合并；规则核心已进 `game/sim/loop/`（共用件 `game/common/`）；技能效果族登记表（`SkillResolutionRules.EFFECTS`）已合并；术语改名＋测试别名统一已合并；三份审计的整理项全部落地。第二批（在跑）：合并重复小工具并把跨文件调用的私有函数改公开（CODE3）；测试按断言再砍一轮——只留钉原版事实与守玩家可见回归的（TESTCUT3）；270 篇证据包逐份处置方案（EVCLASS，只读审计，随后按目录分 4–5 条执行 lane 重写为研究附录）。
 
 <a id="next-steps"></a>
 
