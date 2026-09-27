@@ -22,7 +22,7 @@ extends "res://tests/support/TestSuite.gd"
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
-const ScriptWalkPath = preload("res://game/battle/runtime/opening/ScriptWalkPath.gd")
+const ScriptWalkPath = preload("res://game/sim/ScriptWalkPath.gd")
 const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
@@ -172,7 +172,7 @@ func _reaches(cells: Array, hole: Dictionary) -> bool:
 
 
 # ---- run_story_object_terrain_tests.gd ----
-## Scripted walk routes (game/battle/runtime/opening/ScriptWalkPath.gd): the original steps
+## Scripted walk routes (game/sim/ScriptWalkPath.gd): the original steps
 ## a script walker cell by cell along a four-neighbour path over the terrain (0x453b90 →
 ## 0x4111d0 path buffer), so no scripted entrance, retreat or story walk may glide through
 ## a wall. Unit cases pin the terrain tests; the census replays every walk token of every

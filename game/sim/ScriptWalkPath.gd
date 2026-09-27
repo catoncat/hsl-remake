@@ -13,8 +13,8 @@ extends RefCounted
 ## extra budget after arrival. Cells outside the map read as the previous height with no
 ## flags (0x40eb40); a walk starting outside the map enters it at no height cost unless the
 ## cell is height 0xff (0x40f200 passes 0x80 as the source height).
-## Unit occupancy (0x413740 skips cells with 0x70000) is not read: script walks are
-## presentation of committed PlayLoop results. The two random branches of 0x413740 (an
+## Unit occupancy (0x413740 skips cells with 0x70000) is not read: the chain runs over the
+## terrain only (opening presentation, battle-time commit). The two random branches of 0x413740 (an
 ## equal-distance cell replaces the kept one when 0x458c10 is odd; a candidate with three
 ## blocked neighbours is dropped when rand(100) < 80) resolve to keep-first and accept.
 ## provenance:
@@ -87,6 +87,15 @@ static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target:
 	if reached and not points.is_empty():
 		points[points.size() - 1] = target
 	return {"status": "grid_path" if reached else "nearest_reachable", "cells": cells, "points": points}
+
+
+## The cell a walk from `start_cell` to `target_cell` stops on: 0x453b90 registers the cell
+## the chain ends on (0x411a30 at 0x4541a1), the target when reached, else the nearest
+## reachable end. Rule side: ScriptActorCreationRules commits battle-time walks with it.
+static func stop_cell(tiles: Dictionary, map_size: Vector2i, start_cell: Vector2i, target_cell: Vector2i, cell_size: int, flying: bool) -> Vector2i:
+	var size := Vector2(cell_size, cell_size)
+	var result := route(tiles, map_size, cell_centre(start_cell, size), cell_centre(target_cell, size), size, flying)
+	return target_cell if result["status"] == "no_terrain" else result["cells"].back()
 
 
 ## One 0x411080 call from `origin`: the cells walked (without `origin`), empty when the

@@ -8,6 +8,8 @@ extends RefCounted
 ##   rules: remake-invented (atomic whole-event install; the landing is checked once, at the final cell)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_entry.md
 ##     (blocked landing 0x44fbd0: flood 12, nearest Manhattan, row-major, rand&1 ties)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
+##     (a walk commits the cell its 0x453b90 chain stops on, 0x411a30 at 0x4541a1)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 ##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
 ##     (birth: carry 0x407c86 on the global stream, then level adjustment 0x40e92c)
@@ -27,6 +29,7 @@ const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
+const ScriptWalkPath = preload("res://game/sim/ScriptWalkPath.gd")
 ## 0x44fbd0 -> 0x40f440(copy, 12, mode): the blocked-landing flood radius.
 const LANDING_FLOOD_RADIUS := 12
 const MOVE_ABSOLUTE := ["actWalk", "actWalkWait"]
@@ -240,11 +243,23 @@ static func _place_touched(loop: Dictionary, runtime: Dictionary, receipt: Dicti
 		# (0x450ee2) and every walk destination pass through it.
 		var landing := {"ok": true, "coord": requested, "draws": []} if last.has("install") and str(last["name"]) in RANDOM_INSERTS else nearest_landing(actor, requested, occupants, loop)
 		if not landing["ok"]: return landing
+		# The walker 0x453b90 walks the 0x44fbd0-fixed destination along the 0x4111d0 chain and
+		# registers the cell it stops on (0x411a30 at 0x4541a1): a ground walker the chain cannot
+		# bring there stops short; a flying one (mode 6) reaches it. A 3x3 body keeps its landing
+		# (large footprint not ported); an occupied stop cell keeps the landing.
+		var walk_stop := Vector2i(-1, -1)
+		if last.has("motion") and int(actor.get("traversal", {}).get("size_type", 0)) == 0:
+			var from_cell: Vector2i = Vector2i(last["motion"]["from"]) / TacticalGridRules.CELL_PIXELS
+			var stop := ScriptWalkPath.stop_cell(TerrainEditRules.tiles(loop), loop["map_size"], from_cell, landing["coord"], TacticalGridRules.CELL_PIXELS, bool(actor.get("traversal", {}).get("flying", false)))
+			if stop != landing["coord"] and not AINavigationRules.SkillTargetRules.Footprint.occupants(occupants).has(stop):
+				walk_stop = landing["coord"]
+				landing["coord"] = stop
 		actor["coord"] = landing["coord"]
 		actor["grid_coord"] = actor["coord"]
 		if receipt["created_ids"].has(id): actor["ai_home_coord"] = actor["coord"]
 		occupants.append(actor)
 		receipt["placements"].append({"unit_id": id, "requested": requested, "coord": actor["coord"], "adjusted": requested != actor["coord"], "draws": landing["draws"]})
+		if walk_stop.x >= 0: receipt["placements"].back()["walk_stop_from"] = walk_stop
 		# The last visual move ends at the committed cell. Earlier cinematic paths
 		# remain source pixels and do not write back to gameplay state.
 		if last.has("motion"): last["motion"]["to"] = TacticalGridRules.cell_pixel(actor["coord"])

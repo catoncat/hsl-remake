@@ -5,9 +5,9 @@
 ## 结论
 
 - 原版：剧情走位 token 经 `0x4111d0 → 0x411080` 依次洪泛半径 18、16、14、12（`0x40f350`，脚本模式不查地图边界，只受 (2r+1)² 缓冲限制）；前三级只把目的格挪到洪泛内曼哈顿最近格（`0x413740` 行主序），末级由 `0x410a50`／`0x410730` 严格下降深搜取路；走完未到目的格再调，`0x410a50` 无路可走即停。非 Wait 变体写完目的格即放行 VM，只有 Wait 变体走完才放行（static-derived，反汇编与反编译读法；60 条走位原指令执行逐格对照）。
-- 重制：`game/battle/runtime/opening/ScriptWalkPath.gd` 移植整条链；`BattleOpeningCoordinator` 默认不阻塞，只有 Wait 变体经 `_block_on(unit_id)` 等自己的走位者（static-derived）。
+- 重制：`game/sim/ScriptWalkPath.gd` 移植整条链；`BattleOpeningCoordinator` 默认不阻塞，只有 Wait 变体经 `_block_on(unit_id)` 等自己的走位者（static-derived）。
 - 原版走完的位置提交：目的格在写入时已经 `0x44fbd0` 修过；`0x453b90` 走完（到目的格或再调 `0x4111d0` 返回 0）就在所站格 `0x411a30` 登记，不再替代。飞行（`0x446ad0`）走 mode 6，0xff 不挡，走到终点；地面走位者终点 0xff 且四邻无落点时停在链停格（static-derived；原指令实跑 runtime-measured）。
-- 重制：生成器 `script_walk_stop` 让这类地面走位者开局落链停格，演出对记录了 `0x44fbd0` 落点的终点朝落点寻路，PlayLoop 格与演出停点一致（static-derived）。
+- 重制：生成器 `script_walk_stop` 让这类地面走位者开局落链停格，演出对记录了 `0x44fbd0` 落点的终点朝落点寻路，PlayLoop 格与演出停点一致（static-derived）。战中 WINFAIL 走位同规则：`ScriptActorCreationRules._place_touched` 取 `0x44fbd0` 落点后从走位起点跑 `ScriptWalkPath.stop_cell`，提交链停格（static-derived）。
 - 差异：`0x413740` 的两处随机分支取定值；按键快进是 remake-invented（provisional，差异清单 `script-walk-path`／`script-fast-forward`）。
 
 ## 证据
@@ -60,14 +60,28 @@ SCRIPT_WALK_ROUTES scenarios=199 walks=1817 routed=1375 straight_crossed=167 nea
 
 **runtime-measured**（unicorn 原指令跑 `round_sort_machine` 开局，g0；钩 `0x44fbd0` 前后、`0x4111d0` 的两个调用点、`0x40f350` 模式、`0x4541a1` 登记，停在首个 `0x407340`）：五关的登记格与快照格一致——LEVEL019 雷特 (32,23)、LEVEL021 雷特 (19,16) 模式 6、LEVEL034 037_2 (34,17)／037_3 (37,20)、LEVEL038 034_2 (13,11)、LEVEL080 嚎 (5,19)。
 
+**战中走位同规则**（static-derived）：WINFAIL VM 与剧情 VM 的 actWalk*／actWalkPrevInsertObject* 都写 +0x4a／+0x48 后进同一行走者过程 `0x453b90`（[入场读法](original_script_entry.md)），所以战中走位的提交格也是链在 `0x44fbd0` 修过的目的格上停下的格。核对：同一条链的 Python 移植 `script_walk_stop` 静态普查全部 WINFAIL 的 `actInsertObject`→`actWalkPrevInsertObject*`（飞行按 `initial_book` traversal），另有 32 关自动对局里实际触发的 20 条战中走位。
+
+| 关与单位 | 起点 → 目的 | 改前（落点） | 改后（链停格） |
+| --- | --- | --- | --- |
+| 巴瀚納海峽（LEVEL012）event 7 弓兵 048 ×4（地面，静态） | (14,y) → (18,y)，y＝23／33／34／42 | (18,y) | (14,y)：城墙高 16，下一格高 3，高差 ≥ 3 走不下 |
+| 巴瀚納海峽（LEVEL012）event 7 弓兵 048 ×4（地面，静态） | (31,y) → (28,y)，y＝16／24／34／41 | (28,y) | (30,y) |
+| 利魯瑪山地（LEVEL019）event 4／5 增援 038／041／043（静态） | 图外 (24,−3) 等 → 图内 | 目的格 | 目的格（飞行 mode 6，不变） |
+| 沙羅尼亞近郊（LEVEL034）增援 023／044（实跑 9 条） | 图外 (36,−1) → (35,11) 等 | 落点 | 同落点（不变） |
+| 棄卒（LEVEL051）021／026（实跑 4 条） | (8,6) → (9,7) | (9,7)／(10,7)／(8,7) | 同（不变） |
+| 曼多力亞　對峙（LEVEL900）062 ×3（实跑） | (29,26) → (18,34) 等 | 目的格 | 同（不变） |
+
+其余关的静态普查与实跑走位，链都走到落点，提交格不变。
+
 SCRIPTWALKPATH 记的「雷特停旁格」与「LEVEL019 续走」来自普查按 `actors/006.json`（不带 traversal）把雷特当地面单位；按 PlayLoop 的 traversal（`skills/initial_book.json`）重跑后雷特五条都到终点，续走删去。
 
 ## 重制接线
 
-- provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_script_walk_path.md`：`game/battle/runtime/opening/ScriptWalkPath.gd`、`game/battle/runtime/opening/OpeningStoryObjects.gd`、`game/battle/runtime/BattleOpeningCoordinator.gd`。
+- provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_script_walk_path.md`：`game/sim/ScriptWalkPath.gd`、`game/battle/runtime/opening/OpeningStoryObjects.gd`、`game/battle/runtime/BattleOpeningCoordinator.gd`、`game/sim/ScriptActorCreationRules.gd`。
 - `ScriptWalkPath.route`：战斗读 PlayLoop tiles，剧情场景读关卡 WRD；`_flood`／`_flood_step` 对应 `0x40f200`／`0x40ed50`，`_nearest` 对应 `0x413740`，`_descend`／`_descend_step` 对应 `0x410a50`／`0x410730`（失败按格与方向记忆，结果不变），`_segment` 对应一次 `0x411080`；不读单位占用（剧情走位是已提交结果的表现）。
 - `BattleScriptActorPresentation` 取 `actWalk*` 第 5 参／`actWalkPrevInsertObject*` 第 3 参为速度。
 - 按键快进（remake-invented）：见差异清单 `script-fast-forward`。
+- 战中位置提交：`game/sim/ScriptActorCreationRules.gd` `_place_touched` 对最后一步是走位的单位，`nearest_landing`（`0x44fbd0`）后调 `ScriptWalkPath.stop_cell`（起点＝该走位的 `from` 格），停格不同且无人占时提交停格并记 `placements[].walk_stop_from`；演出 `_move_actor` 沿同一链走到提交格。
 - 位置提交：`tools/hsltools/levels/battle.py` `script_walk_stop` 是同一条链的 Python 移植，只用于终点 0xff 且 `0x44fbd0` 无落点的走位者（记 `position_source.story_walk_stop_from`）；`OpeningStoryObjects._fixed_destination` 读 `story_endpoint_landing_from` 把该终点换成落点再寻路。
 
 ## 复现
@@ -78,5 +92,5 @@ SCRIPTWALKPATH 记的「雷特停旁格」与「LEVEL019 续走」来自普查�
 
 - `0x413740` 的随机分支：同距候选重制保留先到的一格，三邻被挡的候选重制接受；原版分别以 `0x458c10 & 1`、`rand(100) < 80` 决定。
 - 普查只列目标不可达的走位；它不套 `0x44fbd0`，034_2 与 037_3 仍按原终点列出。
-- 战中 winfail 走位的落格仍由 `ScriptActorCreationRules._place_touched` 取 `0x44fbd0` 落点，没有接链停格（本节只核开局剧情走位）。
+- 战中走位只对每个单位事件内的最后一步走位跑链；同一事件里更早的走位仍按脚本像素记起点（原版每步各自走链）。链停格被别的单位占着时保留落点（原版照登记，重制不叠格）；3×3 体型保留落点。LEVEL012 城墙弓兵的停格只有静态普查，自动对局没有触发该事件。
 - 大体型演员（记录 +0x2c，`0x411990` 标周围 8 格与 `0x40ecc0` 分支）与单位占用未移植。

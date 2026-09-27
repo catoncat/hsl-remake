@@ -36,7 +36,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [ShowNumberStyle](../game/battle/runtime/ShowNumberStyle.gd) | n/a | resource-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md) | static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md) | n/a | n/a |
 | [StoryEffectObjects](../game/battle/runtime/StoryEffectObjects.gd) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); remake-invented | n/a | static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); provisional | resource-derived [scripts](../content/imported/hsl/chapter01/scripts); static-derived [first_battle_audio.md](../docs/evidence_packets/static_reverse/first_battle_audio.md) |
 
-#### game/battle/runtime/opening (5)
+#### game/battle/runtime/opening (4)
 
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
@@ -44,7 +44,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [OpeningEndCard](../game/battle/runtime/opening/OpeningEndCard.gd) | static-derived [original_ending_dispatch.md](../docs/evidence_packets/static_reverse/original_ending_dispatch.md); remake-invented | remake-invented | remake-invented | n/a | n/a |
 | [OpeningSelectPrompt](../game/battle/runtime/opening/OpeningSelectPrompt.gd) | static-derived [original_select_insert_event.md](../docs/evidence_packets/static_reverse/original_select_insert_event.md) | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); remake-invented | resource-derived [message_text_evidence.json](../content/imported/hsl/chapter01/message_text_evidence.json) | n/a | n/a |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); static-derived [original_fixpos_fly_prev_insert.md](../docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md); static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); provisional; static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md); provisional [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md) | resource-derived [opening_timeline.json](../content/imported/hsl/chapter01/battle052/opening_timeline.json); resource-derived [map_object_alignment.json](../content/imported/hsl/chapter01/map_object_alignment.json); static-derived [original_draw_order.md](../docs/evidence_packets/static_reverse/original_draw_order.md); provisional; static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) | n/a | static-derived [original_script_camera_scroll.md](../docs/evidence_packets/static_reverse/original_script_camera_scroll.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) | resource-derived [actor_audio.json](../content/imported/hsl/chapter01/actor_audio.json) |
-| [ScriptWalkPath](../game/battle/runtime/opening/ScriptWalkPath.gd) | static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); provisional | n/a | n/a | n/a | n/a |
 
 #### game/battle/scene (53)
 
@@ -134,7 +133,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | n/a | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [remake_options.json](../content/authored/options/remake_options.json) | remake-invented [remake_options.json](../content/authored/options/remake_options.json) | n/a | n/a |
 
-#### game/sim (89)
+#### game/sim (90)
 
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
@@ -198,8 +197,9 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [ReinforcementGrowthRules](../game/sim/ReinforcementGrowthRules.gd) | static-derived [original_auto_growth.md](../docs/evidence_packets/static_reverse/original_auto_growth.md); static-derived [original_ai_navigation.md](../docs/evidence_packets/static_reverse/original_ai_navigation.md); static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md) | n/a | n/a | n/a | n/a |
 | [RepeatedSpecialRules](../game/sim/RepeatedSpecialRules.gd) | static-derived [original_moon_dance.md](../docs/evidence_packets/static_reverse/original_moon_dance.md) | n/a | n/a | n/a | n/a |
 | [ResourceRecoveryRules](../game/sim/ResourceRecoveryRules.gd) | static-derived [original_resource_recovery.md](../docs/evidence_packets/static_reverse/original_resource_recovery.md); static-derived [original_damage_random.md](../docs/evidence_packets/static_reverse/original_damage_random.md) | n/a | n/a | n/a | n/a |
-| [ScriptActorCreationRules](../game/sim/ScriptActorCreationRules.gd) | static-derived [original_player_install.md](../docs/evidence_packets/static_reverse/original_player_install.md); static-derived [original_campaign_actors.md](../docs/evidence_packets/static_reverse/original_campaign_actors.md); remake-invented; static-derived [original_script_entry.md](../docs/evidence_packets/static_reverse/original_script_entry.md); static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md); runtime-measured [_reward_rng_trace.py](../tools/hsltools/probes/_reward_rng_trace.py); resource-derived [winfail051.txt](../content/imported/hsl/chapter01/battle051/source_texts/winfail051.txt) | n/a | n/a | n/a | n/a |
+| [ScriptActorCreationRules](../game/sim/ScriptActorCreationRules.gd) | static-derived [original_player_install.md](../docs/evidence_packets/static_reverse/original_player_install.md); static-derived [original_campaign_actors.md](../docs/evidence_packets/static_reverse/original_campaign_actors.md); remake-invented; static-derived [original_script_entry.md](../docs/evidence_packets/static_reverse/original_script_entry.md); static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md); runtime-measured [_reward_rng_trace.py](../tools/hsltools/probes/_reward_rng_trace.py); resource-derived [winfail051.txt](../content/imported/hsl/chapter01/battle051/source_texts/winfail051.txt) | n/a | n/a | n/a | n/a |
 | [ScriptWaitRules](../game/sim/ScriptWaitRules.gd) | static-derived [original_script_wait.md](../docs/evidence_packets/static_reverse/original_script_wait.md) | n/a | n/a | n/a | n/a |
+| [ScriptWalkPath](../game/sim/ScriptWalkPath.gd) | static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); provisional | n/a | n/a | n/a | n/a |
 | [SharedRecordRules](../game/sim/SharedRecordRules.gd) | static-derived [original_player_mode_sides.md](../docs/evidence_packets/static_reverse/original_player_mode_sides.md); provisional | n/a | n/a | n/a | n/a |
 | [SkillResolutionRules](../game/sim/SkillResolutionRules.gd) | static-derived [shared_skill_resolution.md](../docs/evidence_packets/static_reverse/shared_skill_resolution.md); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); static-derived [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md); static-derived [original_weapon_ranges.md](../docs/evidence_packets/static_reverse/original_weapon_ranges.md); provisional | n/a | n/a | n/a | n/a |
 | [SkillResourceRules](../game/sim/SkillResourceRules.gd) | static-derived [original_skill_resources.md](../docs/evidence_packets/static_reverse/original_skill_resources.md) | n/a | n/a | n/a | n/a |
@@ -431,7 +431,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | — | follow walk reading |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md) | random-position slots in table order instead of the native shuffle |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | layout | — | walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over the following actDelay |
-| [ScriptWalkPath](../game/battle/runtime/opening/ScriptWalkPath.gd) | rules | — | 0x413740 random branches fixed keep-first／accept |
 | [AnimalCastLead](../game/battle/scene/AnimalCastLead.gd) | layout | — | units in the shadow's bucket 0x17 stay under it; planeEffect2 < 0x32 by PROCESS.DEF order |
 | [AnimalCastLead](../game/battle/scene/AnimalCastLead.gd) | timing | — | ±1 call where the afterimage order differs |
 | [BattleAftermath](../game/battle/scene/BattleAftermath.gd) | timing | — | one $ float per action with its recipient — the original keeps a second total 0x4c2978 for the counter |
@@ -464,6 +463,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [ActorRoleRules](../game/sim/ActorRoleRules.gd) | rules | — | fixture／team fallbacks, role-implied side for units without player_mode |
 | [BattleRewardRules](../game/sim/BattleRewardRules.gd) | rules | — | the drops ahead of a StealItem take in one receipt's collection is remake order, unproven |
 | [ItemUseRules](../game/sim/ItemUseRules.gd) | rules | — | default no-effect refusal kept for AI and script actUseItem callers |
+| [ScriptWalkPath](../game/sim/ScriptWalkPath.gd) | rules | — | 0x413740 random branches fixed keep-first／accept |
 | [SharedRecordRules](../game/sim/SharedRecordRules.gd) | rules | — | only HP is pooled — status, side word and stats stay per unit; a piece left at 0 stays down, the others keep the last positive pool |
 | [SkillResolutionRules](../game/sim/SkillResolutionRules.gd) | rules | — | area policies over the current grid |
 | [SkillTargetRules](../game/sim/SkillTargetRules.gd) | rules | — | battle-role adapter, support same-side as overlap, unsupported effects refused |
@@ -493,7 +493,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 32 | 70 | 41 | 10 | 29 | 182 |
-| static-derived | 242 | 102 | 19 | 102 | 23 | 488 |
+| static-derived | 243 | 102 | 19 | 102 | 23 | 489 |
 | runtime-measured | 17 | 33 | 4 | 17 | 2 | 73 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
