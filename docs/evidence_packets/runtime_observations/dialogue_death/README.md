@@ -1,12 +1,13 @@
 # 对白与阵亡演出：原版录屏三路测量（灵魂飞升与死亡音、hit 帧、遗言选句、对白框开合、单位高亮）
 
-> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）按源帧率量的像素轨迹与音轨互相关; static-derived: 死亡入口姿势 0x446c40 状态 6、遗言选句 0x43ef91..0x43efcb 的 r2 读法; resource-derived: SHAPEDEF hit 帧、dead0003.wav; provisional: 说话人／目标／行动者高亮的颜色与脉动只来自这一份录屏 · status: live · functions: 0x43ef91, 0x446c40, 0x458c10 · tools: hsl_video_events.py, run_combat_aftermath_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）按源帧率量的像素轨迹与音轨互相关，2026-09-28 Wine 原版（v1.06，cnc-ddraw 游戏窗截图）第 1 场开场对白与行动菜单、选攻击目标各帧; static-derived: 死亡入口姿势 0x446c40 状态 6、遗言选句 0x43ef91..0x43efcb 的 r2 读法、单位高亮 0x43db70／0x43dcb9 与阵营色 0x407cc0; resource-derived: SHAPEDEF hit 帧、dead0003.wav; provisional: 选魔法／道具目标与选移动格时谁亮未拍 · status: live · functions: 0x407cc0, 0x40ba20, 0x4145e7, 0x43db70, 0x43dcb9, 0x43ef91, 0x446c40, 0x458c10 · tools: hsl_original_control.py, hsl_video_events.py, run_combat_aftermath_tests.gd, run_original_hsl.sh · updated: 2026-09-28
 
 ## 结论
 
 - 原版阵亡：阵亡者遗言期间换成 SHAPEDEF `hit` 帧，遗言框溶解收起后灵魂加法拉伸上升与 `dead0003.wav` 同起；遗言按 live `+0x14` 两半与全局 PRNG 一位选句；对白框逐帧溶解开合、正文逐行擦出（runtime-measured＋static-derived＋resource-derived）。
 - 重制 `BattleAftermath`（`show_hit_pose`、`choose_dead_message`）、共用对白视图 `BattleDialogue` 与 `ActorRuntime.set_highlight` 按这些量值与读法实现（runtime-measured 对照）。
-- 差异：遗言选句的奇偶来源是重制散列（remake-invented）；高亮颜色与周期只来自一两个样本（provisional，差异清单 `highlight-colours`）。
+- 原版单位高亮：说话人、行动菜单里的当前行动者、以及选攻击目标期间**全场所有单位**按阵营色亮起脉动（我方蓝 80,80,255、敌方粉 255,100,160、其余黄 255,255,80；颜色每 tick 减 5·|p|，p 在 −30..30 循环）；画法是先以该色 engGLASS 半混合、再叠 10/16 加色的原精灵（static-derived＋runtime-measured，§5）。AI 回合没有高亮来源。
+- 差异：遗言选句的奇偶来源是重制散列（remake-invented）；高亮已照原版（差异清单 `highlight-colours` resolved），选魔法／道具目标与选移动格按攻击目标帧推定（provisional）。
 
 ## 证据
 
@@ -52,26 +53,42 @@
 
 ### 5. 单位高亮
 
-| 场景 | 原版量值 | 等级 |
+**static-derived**（r2／objdump 阅读 `hsl01.exe` sha256 `f0b5f835…`）
+
+| 项 | 原版读法 | 地址 |
 | --- | --- | --- |
-| 说话人 | 23.87 s 起说话的一般兵像素从约 (117,111,96) 变到 (153,152,206)（蓝白增色），亮度差 25→49（0.25 s）→20（0.6 s）后保持到消息结束；20.2 s 另一名说话人 20→52（0.57 s）→21（0.9 s）；两次都从消息开始亮起 | runtime-measured（两个样本） |
-| 瞄准目标 | 176.7–178.2 s 被瞄准的敌兵约 (183,123,131) 偏粉，亮度差 28–38 间约每 0.5 s 起伏一次 | runtime-measured（一个样本） |
-| 当前行动者 | 139.72–139.77 s 与 140.91 s 雷歐納德约 (138,150,201) 蓝白 | runtime-measured（与灵魂光重叠） |
+| 绘制 | 敌我单位每 tick 的空闲尾（敌 `0x442173`、我 `0x445628`）调 `0x43db70(obj)`；它走到 `0x43dcb9`：`+0x80 & 0x100` 或全局 `0x4c1b00 & 0x200000` 时亮，并清 `+0x80` 的 0x100（每帧一次） | `0x43dcb9–0x43dcd7` |
+| 说话人 | 对白框过程每 tick 给说话对象（`+0xa8`，无人脸台词）置 `+0x80 \|= 0x100`，所以亮到对白框注销为止 | `0x4145d3–0x4145f0` |
+| 全场亮 | `0x4c1b00 \|= 0x200000` 只有玩家状态机两处（`0x4442ef`、`0x444bf0`），`0x4444e5` 清；敌方过程与剧本不写 | `0x4442ef`、`0x444bf0`、`0x4444e5` |
+| 颜色 | 出生 `0x407cc0` 按 `0x40ba20` 侧字（live `+0x28 & 0x870000`）写 `+0x3a..+0x3c`：恰为 0x10000 → (80,80,255)；恰为 0x20000 → (255,100,160)；其余 → (255,255,80) | `0x407de6–0x407e4e` |
+| 脉动 | 字 `+0x38` 每次亮时 +1，>30 回 −30（61 tick 一周）；三通道各减 `5·\|p\|`、下限 0，按 RGB565 打包 | `0x43dcdd–0x43dd34` |
+| 画法 | 同形状在单位上方（z＋1）画两次：模式 `0x40000000`（engGLASS）带上述颜色，再以 `0x24000000`（engADDCOLOR_MIX）层级 10 | `0x43dd29–0x43dda6` |
+
+**runtime-measured**（2026-09-28 Wine 原版，第 1 场开场对白→行动菜单→攻擊，`hsl_original_control.py` 游戏窗截图，存档 sha 前后不变）
+
+| 场景 | 原版帧 | 等级 |
+| --- | --- | --- |
+| 说话人 | 雷歐納德说话时整身蓝白、连拍 5 帧亮度起伏；换成一般兵说话后雷歐納德恢复原色、一般兵变蓝 | runtime-measured |
+| 画法拟合 | 同一动画帧的亮／不亮像素对：`(o + C)/2 + o·10/16`（C＝蓝色减 5·\|p\|）每像素三通道平均误差 11.4–12.7（RGB565 量化级），层级扫 6／8／10／12／16 以 10 最优；纯色替换与加法两种画法误差都更大 | runtime-measured |
+| 行动菜单 | 只有当前行动者（雷歐納德）亮，其余我方与敌方原色 | runtime-measured |
+| 选攻击目标 | 点攻擊后全场单位都亮：我方蓝、敌方粉，光标下的单位没有额外标记 | runtime-measured |
+
+录屏旧样本（说话一般兵 (117,111,96)→(153,152,206)、被瞄准敌兵偏粉、行动者蓝白）与上述读法相容。
 
 ## 重制接线
 
 - `BattleAftermath.show_hit_pose`：死亡 job 开始（遗言前）用 `ActorRuntime.set_shape_override` 换 hit 帧，`_dispose` 复原；hit 帧导入 `content/imported/hsl/shared/actor_hit_poses/`（任务 `actor_hit_poses`：61 个走行帧演员键里 59 个有 hit 帧、4 个 hit＝站立帧、作者关的 102／103 无行）。拉伸按 16 tick（0.256 s）。
 - `BattleAftermath.choose_dead_message`（结构 static-derived）＋`dead_message_roll`（remake-invented：交锋序号与受害者 id 的字符串散列奇偶；不消耗战斗 RNG，读档同一句）。替换方案：从 PlayLoop 随机流取一位（更接近原版共用流，但改变之后全部战斗随机结果）。
 - `BattleDialogue`（战斗对白、开场／剧本、城镇、谢幕共用；`BattlePresentation.dialogue_view`、OpeningOverlay、`TownRuntime`、`GameClearScreen` 都实例化它）：溶解开合与逐行擦出为纯视觉，消息、页码与 `visible` 立即切换。
-- `ActorRuntime.set_highlight(kind, on)`：色调乘在精灵 `self_modulate`，同一时刻只显示一种（说话人＞目标＞行动者），亮度按周期起伏（说话人／行动者 0.9 s、低位 0.4；目标 0.5 s、低位 0.7）；说话人随 `BattleDialogue.set_speaker_actor`，目标＝选目标光标下的合法目标与 AI 起手受击者，行动者＝选命令期间的当前单位；对白、交锋与结果期间不点。
+- `ActorRuntime.set_highlight(kind, on)`：三种来源画法相同——精灵换着色器 `(src + C)/2 + src·10/16`，C 取 `highlight_side`（`BattleSceneStage.highlight_side`＝`side_mask | player_mode & 0x800000`）的阵营色减 5·|p|，脉动字每原版 tick +1 在 −30..30 循环、跨高亮保留。说话人随 `BattleDialogue.set_speaker_actor`；`BattleSceneOverlays.sync_unit_highlights`：`attack_select`（攻击／魔法／绝技／道具选目标）时全场可见单位都亮，行动者＝选命令期间的当前单位；对白、交锋、结果与 AI 回合不点。没有阵营的剧情演员按我方色（provisional）。
 - 阵亡以外的 hit 帧（`0x407230` 受击态 60 tick）由 `MapHitState` 接上。
 
 ## 复现
 
-不可再生：原版侧唯一记录。重制侧 `tools/godot.sh --headless --script res://tests/run_combat_aftermath_tests.gd`（`dead_message_choice` 等）。
+录屏不可再生。高亮 Wine 帧：`tools/run_original_hsl.sh` 启动（不换存档） → 開始新故事 → 空格跳片头 → 对白中截图 → 空格到行动菜单 → 点攻擊 (308,210)；帧与拟合脚本在 `ignored/highlight/`（不入库）。重制侧 `tools/godot.sh --headless --script res://tests/run_combat_aftermath_tests.gd`（`dead_message_choice` 等）。
 
 ## 边界
 
-- 高亮颜色与周期来自一两个样本；原版高亮的绘制过程未读；阵亡者说遗言时是否也亮未量（重制不点）。替换证据：原版对象绘制模式里说话人／选中标志的静态读，或更多录屏样本。
+- 高亮：engGLASS 的像素内核未逐条读，画法 `(dst + C)/2` 由 Wine 帧拟合；选魔法／道具目标与选移动格时是否全场亮未拍（`0x4442ef`／`0x444bf0` 两处写入各对应哪个选格态未分清）；剧情演员的阵营字未接到重制视图；阵亡者说遗言时说话人高亮不亮（遗言走构造器、`+0xa8` 是阵亡者本身，是否亮未量，重制不点）。替换证据：engGLASS 内核的静态读、魔法／道具选目标的 Wine 帧。
 - 灵魂时长保留静态读出的 16 tick（0.256 s）；录屏量到 0.27–0.32 s，差值在帧率与 tick 抖动量级内。
 - 同一说话人翻页在本段录屏的阵亡片段外才有样本（见 original_dialogue_board）。

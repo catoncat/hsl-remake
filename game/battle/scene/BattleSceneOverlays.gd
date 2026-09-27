@@ -17,7 +17,10 @@ extends RefCounted
 ##   layout: provisional
 ##     (a self-centred special shows its footprint as the reach layer, in the skill palette)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
-##     (sync_unit_highlights: the original lights the targeted and the acting unit; when is provisional)
+##     (Wine frames: acting unit lit at the action menu, every actor at attack targeting)
+##   timing: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##     (0x4c1b00 & 0x200000 written only by the player state machine, read by the actor draw 0x43dcc4)
+##   timing: provisional (magic／item target and move selection follow the attack frame; not captured)
 
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
@@ -178,28 +181,28 @@ static func footprint_palette(selected_attack: String) -> String:
 			return "attack"
 
 
-## The shared map-actor highlight (ActorRuntime.set_highlight) for the target and the acting
-## unit, recomputed every frame from the runtime's state (the dialogue board lights speakers
-## itself). Target: the legal target under the player's target cursor, or an AI strike's
-## defender during its lead-in "target" hold. Actor: the unit whose command the player is
-## choosing (action menu, move or target selection), not while a dialogue, exchange or AI
-## turn is on. runtime-measured colours／pulse in ActorRuntime.HIGHLIGHTS (provisional).
+## The shared map-actor highlight (ActorRuntime.set_highlight), recomputed every frame from
+## the runtime's state (the dialogue board lights speakers itself). Target selection: every
+## actor on the field lights in its side colour while the player picks a target — the
+## original's player state machine holds 0x4c1b00 & 0x200000 then (0x4442ef／0x444bf0) and the
+## actor draw 0x43dcc4 lights every actor on it (Wine frame: allies blue, enemies pink after
+## 攻擊). Actor: the unit whose command the player is choosing (action menu, move or target
+## selection; Wine frame: only the acting unit lit at the action menu), not while a dialogue,
+## exchange or AI turn is on. The AI's turn sets neither (no 0x200000 writer outside the
+## player machine, no +0x80 0x100 writer in the enemy process).
 func sync_unit_highlights() -> void:
 	if runtime.actors_root == null: return
 	var view: Node = runtime.get_node_or_null("BattlePresentation")
-	var target_id := ""
+	var targeting := false
 	var actor_id := ""
 	var opening: bool = runtime.opening_coordinator != null and runtime.opening_coordinator.active
 	if view != null and not runtime.play_loop.is_empty() and not opening:
 		var busy: bool = view.dialogue_active() or view.combat_busy(runtime.play_loop) or view.battle_finished
-		if view.attack_cue.visible and view.attack_cue.stage() == "target":
-			target_id = view.attack_cue.target_unit_id
-		elif not busy and runtime.interaction_state == Interaction.ATTACK_SELECT:
-			target_id = view.previewed_target_id
+		targeting = not busy and not runtime.ai_playback_active and runtime.interaction_state == Interaction.ATTACK_SELECT
 		if not busy and not runtime.ai_playback_active and runtime.interaction_state in Interaction.PLAYER_CONTROL:
 			actor_id = runtime.selected_unit_id
 	for actor in runtime.actors_root.get_children():
 		if not actor.has_method("set_highlight"): continue
 		var id: String = actor.unit_id
-		actor.set_highlight("target", id != "" and id == target_id)
+		actor.set_highlight("target", targeting and id != "" and actor.visible)
 		actor.set_highlight("actor", id != "" and id == actor_id)

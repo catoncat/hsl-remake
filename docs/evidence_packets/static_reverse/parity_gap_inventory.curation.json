@@ -530,13 +530,14 @@
     },
     {
       "id": "learning-notice",
-      "difference": "学会新技能时的提示文字与颜色是重制的",
-      "original": "原版学技提示未录",
+      "difference": "原版预设已不飘学技提示（与原版一致）；OPT-INFO=公開 时在受者头上飘学技提示，文字与颜色是重制的",
+      "original": "原版只在升级窗 WINDOW31（0x437c30，學會魔法）／WINDOW50（0x437ec0，學會特殊技）印学到的技能；交锋回执 0x442720 不飘字，学技路径不放声",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_growth_lifecycle.md"
+        "docs/evidence_packets/static_reverse/original_growth_window.md"
       ],
-      "remake": "BattleRewardFloater 的学技提示",
+      "remake": "BattleAftermath.prepare 只在 OPT-INFO=公開 时排 BattleRewardFloater 的学技飘字",
       "remake_code": [
+        "game/battle/scene/BattleAftermath.gd:prepare",
         "game/battle/scene/BattleRewardFloater.gd"
       ],
       "original_status": "no_original_code",
@@ -784,17 +785,18 @@
     },
     {
       "id": "highlight-colours",
-      "difference": "说话人／目标／行动者高亮的颜色与脉动只量自一份录屏，原版高亮绘制过程未读",
-      "original": "一份录屏的颜色样本",
+      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定",
+      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
       ],
-      "remake": "ActorRuntime.set_highlight 周期起伏",
+      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 全场点亮",
       "remake_code": [
-        "game/battle/runtime/ActorRuntime.gd:set_highlight"
+        "game/battle/runtime/ActorRuntime.gd:set_highlight",
+        "game/battle/scene/BattleSceneOverlays.gd:sync_unit_highlights"
       ],
       "original_status": "read_partial",
-      "visibility": "every_battle",
+      "visibility": "some_levels",
       "effort": "S",
       "category": "地图人物演出"
     },
@@ -2392,11 +2394,17 @@
     "provenance:game/battle/scene/BattlePresentation.gd|timing|provisional|": {
       "item": "map-strike-effects"
     },
-    "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|": {
+    "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|docs/OPTIONS.md": {
       "item": "learning-notice"
     },
-    "provenance:game/battle/scene/BattleRewardFloater.gd|strings|remake-invented|": {
+    "provenance:game/battle/scene/BattleRewardFloater.gd|strings|remake-invented|docs/OPTIONS.md": {
       "item": "learning-notice"
+    },
+    "provenance:game/battle/scene/BattleAftermath.gd|strings|remake-invented|docs/OPTIONS.md": {
+      "item": "learning-notice"
+    },
+    "provenance:game/battle/scene/BattleSceneOverlays.gd|timing|provisional|": {
+      "item": "highlight-colours"
     },
     "provenance:game/battle/scene/BattleSceneInput.gd|rules|remake-invented|": {
       "item": "home-recenter"
@@ -2959,10 +2967,6 @@
       "item": "panel-slide-formula",
       "text": "**静态**：未找到面板滑动的 EXE 常数（系统卷轴的 `0x45e80d` 消费者未读）；"
     },
-    "sentence:docs/evidence_packets/runtime_observations/dialogue_death/README.md#2b1345e3f4": {
-      "item": "highlight-colours",
-      "text": "原版高亮的绘制过程未读；"
-    },
     "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#9ca377ec04": {
       "item": "cast-overlay-rules",
       "text": "I_RECT02..08 是同一框的其他配色，何时使用未读；"
@@ -3174,7 +3178,7 @@
       "resolved": "use_magic 施法抬手（R7-POSE：ActorRuntime.play_use_magic，法术引导末／用道具／升级；map_pose_floaters）与 hit 跪姿（R6-P1）"
     },
     "video:7": {
-      "item": "highlight-colours"
+      "resolved": "单位高亮照原版：阵营色、脉动字与 engGLASS＋10/16 加色画法（0x43dcb9，HIGHLIGHT 2026-09-28 Wine 帧，dialogue_death §5）"
     },
     "video:8": {
       "resolved": "对白框顶槽照原版：只有 actShapeMessage／城镇 shape 台词（旗标 0x4000，0x414220）在 y 20，其余在底部，旁白框居中 x 75（R7-DLG 框位提交，original_dialogue_board）"
@@ -3241,7 +3245,7 @@
     "provenance:game/battle/scene/BattleDialogue.gd|timing|remake-invented|": {
       "item": "dialogue-timing"
     },
-    "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|说话人／目标／行动者高亮的颜色与脉动只来自这一份录屏": {
+    "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|选魔法／道具目标与选移动格时谁亮未拍": {
       "item": "highlight-colours"
     },
     "provenance:game/battle/scene/DamageNumberFloater.gd|timing|provisional|": {

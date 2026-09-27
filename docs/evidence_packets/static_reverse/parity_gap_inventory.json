@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 104,
-    "sources": 538,
+    "sources": 539,
     "sources_by_kind": {
-      "provenance": 222,
-      "sentence": 144,
+      "provenance": 224,
+      "sentence": 143,
       "scope": 74,
       "matrix": 85,
       "video": 13
@@ -20,8 +20,8 @@
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 24,
-      "some_levels": 36,
+      "every_battle": 23,
+      "some_levels": 37,
       "rare": 39,
       "invisible": 5
     },
@@ -46,7 +46,7 @@
     },
     "in_progress": 0,
     "no_visible_effect_sources": 53,
-    "resolved_sources": 14
+    "resolved_sources": 15
   },
   "top": [
     "dialogue-timing",
@@ -65,10 +65,10 @@
     "effect-origin",
     "footprint-preview-style",
     "growth-window-timing",
-    "highlight-colours",
     "magic-impact-bar",
     "map-death-blend",
-    "move-path-overlay"
+    "move-path-overlay",
+    "panel-captions"
   ],
   "items": [
     {
@@ -439,27 +439,6 @@
       ]
     },
     {
-      "id": "highlight-colours",
-      "difference": "说话人／目标／行动者高亮的颜色与脉动只量自一份录屏，原版高亮绘制过程未读",
-      "original": "一份录屏的颜色样本",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
-      ],
-      "remake": "ActorRuntime.set_highlight 周期起伏",
-      "remake_code": [
-        "game/battle/runtime/ActorRuntime.gd:set_highlight"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "地图人物演出",
-      "sources": [
-        "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|说话人／目标／行动者高亮的颜色与脉动只来自这一份录屏",
-        "sentence:docs/evidence_packets/runtime_observations/dialogue_death/README.md#2b1345e3f4",
-        "video:7"
-      ]
-    },
-    {
       "id": "magic-impact-bar",
       "difference": "法术命中时原版先在受者旁画 HP／MP 两条再出数字（原录像 V08 14_tactical_map_magic_aoe frame_041 画 HP 24/43、MP 0/0，frame_046 才出数字 19）；重制同样先亮血条，只有 0.45 s 时长是重制估值、多目标血条互相避让是重制自加。数字本身已是原版字形与出现点（目标 (x, y−0x34)，lane DIGITS）",
       "original": "原版法术命中先画受者 HP／MP 条，之后 0x40aba0 在目标 (x, y−0x34) 生成 kind 0／5 数字（V08 frame_041→046 约 5 帧）",
@@ -817,6 +796,27 @@
         "provenance:game/sim/StatusCatalog.gd|strings|remake-invented|",
         "sentence:docs/evidence_packets/static_reverse/original_ordinary_special.md#8018317ded",
         "video:9"
+      ]
+    },
+    {
+      "id": "highlight-colours",
+      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定",
+      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
+      "original_evidence": [
+        "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
+      ],
+      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 全场点亮",
+      "remake_code": [
+        "game/battle/runtime/ActorRuntime.gd:set_highlight",
+        "game/battle/scene/BattleSceneOverlays.gd:sync_unit_highlights"
+      ],
+      "original_status": "read_partial",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "地图人物演出",
+      "sources": [
+        "provenance:game/battle/scene/BattleSceneOverlays.gd|timing|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|选魔法／道具目标与选移动格时谁亮未拍"
       ]
     },
     {
@@ -1851,13 +1851,14 @@
     },
     {
       "id": "learning-notice",
-      "difference": "学会新技能时的提示文字与颜色是重制的",
-      "original": "原版学技提示未录",
+      "difference": "原版预设已不飘学技提示（与原版一致）；OPT-INFO=公開 时在受者头上飘学技提示，文字与颜色是重制的",
+      "original": "原版只在升级窗 WINDOW31（0x437c30，學會魔法）／WINDOW50（0x437ec0，學會特殊技）印学到的技能；交锋回执 0x442720 不飘字，学技路径不放声",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_growth_lifecycle.md"
+        "docs/evidence_packets/static_reverse/original_growth_window.md"
       ],
-      "remake": "BattleRewardFloater 的学技提示",
+      "remake": "BattleAftermath.prepare 只在 OPT-INFO=公開 时排 BattleRewardFloater 的学技飘字",
       "remake_code": [
+        "game/battle/scene/BattleAftermath.gd:prepare",
         "game/battle/scene/BattleRewardFloater.gd"
       ],
       "original_status": "no_original_code",
@@ -1865,8 +1866,9 @@
       "effort": "S",
       "category": "重制新增（原版没有）",
       "sources": [
-        "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/BattleRewardFloater.gd|strings|remake-invented|"
+        "provenance:game/battle/scene/BattleAftermath.gd|strings|remake-invented|docs/OPTIONS.md",
+        "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|docs/OPTIONS.md",
+        "provenance:game/battle/scene/BattleRewardFloater.gd|strings|remake-invented|docs/OPTIONS.md"
       ]
     },
     {
@@ -2957,6 +2959,10 @@
       {
         "source": "video:6",
         "reason": "use_magic 施法抬手（R7-POSE：ActorRuntime.play_use_magic，法术引导末／用道具／升级；map_pose_floaters）与 hit 跪姿（R6-P1）"
+      },
+      {
+        "source": "video:7",
+        "reason": "单位高亮照原版：阵营色、脉动字与 engGLASS＋10/16 加色画法（0x43dcb9，HIGHLIGHT 2026-09-28 Wine 帧，dialogue_death §5）"
       },
       {
         "source": "video:8",

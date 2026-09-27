@@ -7,8 +7,10 @@ extends Node2D
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
 ##   layout: provisional (pixel foot Y instead of the original's 32 px row buckets;
 ##     fixed planes planeObject2..30 compare against a camera-relative row — unmodelled)
-##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
-##     (speaker／target／actor highlight tint and pulse, one recording — provisional)
+##   layout: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##     (map-actor highlight: side colour 0x407cc0, engGLASS＋engADDCOLOR_MIX level 10 at 0x43dcb9)
+##   timing: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##     (highlight pulse word +0x38 −30..30 per lit tick, 0x43dcdd)
 ##   timing: static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md
@@ -46,21 +48,38 @@ const FIXED_PLANE_BELOW_Z := 0
 const FIXED_PLANE_ABOVE_Z := 3900
 const FIXED_PLANE_EFFECT_Z := 4000
 const CELL_PIXELS := 32
-## One highlight for the three cases the original lights a map actor: the speaker of the shown
-## message, the unit under a target cursor, the actor whose turn it is (R6-P1, runtime-measured
-## on the 2026-09-24 original recording: a speaker's pixels went from about (117,111,96) to
-## (153,152,206) — a blue-white tint — at the message start, pulsed up and back within ≈0.9 s;
-## a targeted enemy read about (183,123,131), pinkish, pulsing ±5 luma about every 0.5 s; the
-## acting Leonard read about (138,150,201)). Colour is the tint at full level, level swings
-## between low and 1.0 with the period; the tint multiplies the sprite (self_modulate), so
-## node modulate (fades, dimming) stays its owners'. Priority: speaker, target, actor.
-## provisional: one recording, one or two samples each; the original's highlight handler is not read.
-const HIGHLIGHTS := {
-	"speaker": {"color": Color(1.31, 1.37, 2.15), "low": 0.4, "period": 0.9},
-	"target": {"color": Color(1.55, 1.1, 1.25), "low": 0.7, "period": 0.5},
-	"actor": {"color": Color(1.2, 1.3, 1.9), "low": 0.4, "period": 0.9},
+## The map-actor highlight (static-derived, 0x43db70 → 0x43dcb9; frames in
+## docs/evidence_packets/runtime_observations/dialogue_death/README.md §5). The original lights
+## an actor when its +0x80 has 0x100 (the dialogue board sets it on the speaker every tick,
+## 0x4145e7; the draw clears it) or while the player's state machine holds 0x4c1b00 & 0x200000
+## (target selection: every actor on the field lights). Colour: the actor's init 0x407cc0 stores
+## +0x3a..+0x3c by 0x40ba20's side word — exactly 0x10000 (80,80,255), exactly 0x20000
+## (255,100,160), anything else (255,255,80). Pulse: word +0x38 steps once per lit tick
+## −30..30 and wraps (61 ticks), the colour is side − 5·|p| per channel floored at 0. The shape
+## is drawn twice over the sprite: engGLASS in that colour — (dst + C)/2 — then engADDCOLOR_MIX
+## level 10 — + src·10/16 (Wine frames fit this at level 10). Which kind lit it is only
+## bookkeeping; all three draw the same.
+const HIGHLIGHT_KINDS := ["speaker", "target", "actor"]
+const HIGHLIGHT_ORDER := HIGHLIGHT_KINDS
+const HIGHLIGHT_PLAYER_SIDE := 0x10000
+const HIGHLIGHT_ENEMY_SIDE := 0x20000
+const HIGHLIGHT_SIDE_COLOURS := {
+	HIGHLIGHT_PLAYER_SIDE: Color8(80, 80, 255),
+	HIGHLIGHT_ENEMY_SIDE: Color8(255, 100, 160),
 }
-const HIGHLIGHT_ORDER := ["speaker", "target", "actor"]
+const HIGHLIGHT_OTHER_COLOUR := Color8(255, 255, 80)
+const HIGHLIGHT_PULSE_HALF := 30
+const HIGHLIGHT_PULSE_STEP := 5
+const HIGHLIGHT_MIX_LEVEL := 10
+const HIGHLIGHT_SHADER_CODE := """shader_type canvas_item;
+uniform vec3 glass = vec3(0.0);
+uniform float mix_level = 0.625;
+void fragment() {
+	vec4 src = texture(TEXTURE, UV);
+	COLOR = vec4(min((src.rgb + glass) * 0.5 + src.rgb * mix_level, vec3(1.0)), src.a) * COLOR;
+}
+"""
+static var _highlight_shader: Shader = null
 ## The map casting pose (0x4071e0 → 0x446c40(actor, SID, 7, 3)): the SHAPEDEF use_magic frames
 ## at delay 3 — 4 ticks a frame — played once forward (0x45e575), the last frame held 40 ticks
 ## (+0x92), played back to the first (0x45e660), then the standing loop again (+0x90 = −1
@@ -104,7 +123,13 @@ var _override_pos := 0
 var _override_elapsed := 0.0
 var _highlights: Dictionary = {}
 var _highlight_kind := ""
-var _highlight_clock := 0.0
+## 0x40ba20's side word (player_mode & 0x870000) picking the highlight colour.
+var highlight_side := 0
+## +0x38: the pulse word, kept between highlights like the original's object field.
+var _highlight_pulse := 0
+var _highlight_tick_carry := 0.0
+var _additive := false
+var _highlight_material: ShaderMaterial = null
 ## The running use_magic pose: its frames (texture, origin) and the ticks since it began.
 var _magic_pose_textures: Array[Texture2D] = []
 var _magic_pose_origins: Array[Vector2] = []
@@ -120,20 +145,35 @@ func hide_shape() -> void:
 
 
 func set_additive(on: bool) -> void:
-	var sprite := _get_or_create_sprite()
-	if on == (sprite.material != null):
+	if on == _additive:
 		return
-	if on:
-		var blend := CanvasItemMaterial.new()
-		blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-		sprite.material = blend
+	_additive = on
+	_apply_material()
+
+
+func _apply_material() -> void:
+	var sprite := _get_or_create_sprite()
+	if _highlight_kind != "":
+		if _highlight_material == null:
+			if _highlight_shader == null:
+				_highlight_shader = Shader.new()
+				_highlight_shader.code = HIGHLIGHT_SHADER_CODE
+			_highlight_material = ShaderMaterial.new()
+			_highlight_material.shader = _highlight_shader
+			_highlight_material.set_shader_parameter("mix_level", float(HIGHLIGHT_MIX_LEVEL) / 16.0)
+		sprite.material = _highlight_material
+	elif _additive:
+		if not (sprite.material is CanvasItemMaterial):
+			var blend := CanvasItemMaterial.new()
+			blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+			sprite.material = blend
 	else:
 		sprite.material = null
 
 
-## Turns one highlight kind on or off (idempotent: repeating `on` keeps the pulse's phase).
+## Turns one highlight kind on or off (idempotent; the pulse word keeps running across kinds).
 func set_highlight(kind: String, on: bool) -> void:
-	assert(HIGHLIGHTS.has(kind), "unknown actor highlight: " + kind)
+	assert(kind in HIGHLIGHT_KINDS, "unknown actor highlight: " + kind)
 	if on == _highlights.has(kind): return
 	if on: _highlights[kind] = true
 	else: _highlights.erase(kind)
@@ -145,11 +185,16 @@ func clear_highlight() -> void:
 	_refresh_highlight()
 
 
-## The pulse level (low..1.0) `clock` seconds into a highlight: starts at low, peaks mid-period.
-static func highlight_level(kind: String, clock: float) -> float:
-	var spec: Dictionary = HIGHLIGHTS[kind]
-	var wave := 0.5 - 0.5 * cos(TAU * clock / float(spec["period"]))
-	return lerpf(float(spec["low"]), 1.0, wave)
+## The engGLASS colour (0..1 per channel) for side word `side` at pulse word `pulse`.
+static func highlight_colour(side: int, pulse: int) -> Color:
+	var base: Color = HIGHLIGHT_SIDE_COLOURS.get(side, HIGHLIGHT_OTHER_COLOUR)
+	var drop := float(HIGHLIGHT_PULSE_STEP * absi(pulse)) / 255.0
+	return Color(maxf(0.0, base.r - drop), maxf(0.0, base.g - drop), maxf(0.0, base.b - drop))
+
+
+## One lit tick of the pulse word: +1, past 30 wraps to −30.
+static func next_highlight_pulse(pulse: int) -> int:
+	return -HIGHLIGHT_PULSE_HALF if pulse + 1 > HIGHLIGHT_PULSE_HALF else pulse + 1
 
 
 func _refresh_highlight() -> void:
@@ -160,22 +205,23 @@ func _refresh_highlight() -> void:
 			break
 	if kind != _highlight_kind:
 		_highlight_kind = kind
-		_highlight_clock = 0.0
+		_apply_material()
 	_apply_highlight()
 
 
 func _apply_highlight() -> void:
-	var sprite := _get_or_create_sprite()
 	if _highlight_kind == "":
-		sprite.self_modulate = Color.WHITE
 		return
-	var tint: Color = HIGHLIGHTS[_highlight_kind]["color"]
-	sprite.self_modulate = Color.WHITE.lerp(tint, highlight_level(_highlight_kind, _highlight_clock))
+	var colour := highlight_colour(highlight_side, _highlight_pulse)
+	_highlight_material.set_shader_parameter("glass", Vector3(colour.r, colour.g, colour.b))
 
 
 func _process(delta: float) -> void:
 	if _highlight_kind != "":
-		_highlight_clock += maxf(delta, 0.0)
+		_highlight_tick_carry += OriginalTick.ticks(maxf(delta, 0.0))
+		while _highlight_tick_carry >= 1.0:
+			_highlight_tick_carry -= 1.0
+			_highlight_pulse = next_highlight_pulse(_highlight_pulse)
 		_apply_highlight()
 	# Match the map objects' native anchor-depth domain, including during a walk.
 	# A constant zero put every actor behind every tree, even after walking in front.

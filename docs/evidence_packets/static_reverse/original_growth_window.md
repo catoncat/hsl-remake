@@ -82,6 +82,7 @@ mode 10：`0x43b4e0` case 10，`0x43bbca`–`0x43bd94`。对象由 `0x45e307(x,y
 
 - 703 `WINDOW31` `0x437c30`：初始化时 `0x4373f0(actor, buf)` 以存储等级+1 查职业魔法；学到 → `@3學會魔法:@1#<名>`（资源 907 + `0x4098b0`，`0x437080` 拼接）画在 (x+8,y+10)、行距 26；否则帧 −1 不画。开窗时确定。
 - 707 `WINDOW50` `0x437ec0`：每 tick `0x437a40(actor, buf)` 以当前四属性预览 → `@3學會特殊技:@1#<名>`（资源 908 + `0x4099b0`），否则隐藏；关窗（`+0x96 == -1`）时 `0x437a40(actor, NULL)` 提交。
+- 学技只在这两个框里出现：交锋回执 `0x442720` 的各阶段（EXP、$、得物窗、LEVEL UP）不印学技；`0x437080`／`0x4373f0`／`0x437a40`／`0x437c30`／`0x437ec0` 都不调放声 `0x42c180`（全 EXE 51 个调用点无一在 `0x436000–0x438000`）（negative-evidence）。重制原版预设不在地图上飘学技提示，OPT-INFO=公開 才飘（差异清单 `learning-notice`）。
 
 **negative-evidence**：[录像参考](../runtime_observations/original_gameplay_reference/README.md) manifest 无 LEVEL UP／升級 标签，没有升級窗帧；间接对照 `06/frame_006` 状态页（同一 WINDOW10、WINDOW21、`魔擊力 17%`、数值起 x≈97／638 宽，与 x=92 相容）。录像为简体字版本，重制显示资源表繁体文字。
 

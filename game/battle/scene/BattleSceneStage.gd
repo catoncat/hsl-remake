@@ -9,7 +9,10 @@ extends RefCounted
 ##   layout: resource-derived content/imported/hsl/chapter01/actor_walk_frames
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
 ##   layout: resource-derived content/imported/hsl/chapter01/map_object_alignment.json
-##   layout: provisional (combined-placement child offsets, layer hints)
+##   layout: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##     (highlight side word 0x40ba20 → colour)
+##   layout: provisional (combined-placement child offsets, layer hints; story-scene cast without a
+##     side is lit as a player)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
 ##     (mapobjCloud drift and mapobjMoveBG parallax, run by MapObjectDrift)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
@@ -17,6 +20,7 @@ extends RefCounted
 ##   audio: provisional (background sounds play map-wide at −8 dB; native attenuation not located)
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
@@ -68,6 +72,7 @@ func spawn_actor_node(unit_id: String, actor_id: String, world_position: Vector2
 	_configure_walk_audio(actor, view)
 	actor.position = world_position
 	sync_actor_depth(actor, view)
+	actor.highlight_side = highlight_side(view)
 	actor.play_state("idle", "0")
 	if bool(view.get("no_showshape", false)): actor.hide_shape()
 	runtime.actors_root.add_child(actor)
@@ -108,6 +113,7 @@ func carried_unit_view(unit_id: String, actor_id: String) -> Dictionary:
 ## loaded frame set.
 func sync_actor_row(actor: Node, unit: Dictionary) -> void:
 	sync_actor_depth(actor, unit)
+	actor.highlight_side = highlight_side(unit)
 	actor.set_additive(str(unit.get("draw_mode", "")).begins_with("engADDCOLOR"))
 	var frame_key := frame_key_for_unit(unit)
 	if frame_key == "" or str(actor.actor_id) == frame_key:
@@ -116,6 +122,16 @@ func sync_actor_row(actor: Node, unit: Dictionary) -> void:
 	_configure_walk_audio(actor, unit)
 	if not actor.is_moving():
 		actor.play_state("idle", "0")
+
+
+## The side word 0x40ba20 returns (player_mode & 0x870000), which picks the map highlight colour.
+## A story-scene cast view carries no side; it is lit as a player (provisional: the STORY
+## insert's player mode is not threaded to the view).
+func highlight_side(unit: Dictionary) -> int:
+	var side := ActorRoleRules.side_mask(unit)
+	if side == 0:
+		return ActorRoleRules.SIDE_PLAYER
+	return side | (int(unit.get("player_mode", 0)) & ActorRoleRules.MAGIC_ONLY_BIT)
 
 
 ## A flying unit draws 10 rows deeper (ActorRuntime.FLYING_DEPTH_ROWS); the flag is the

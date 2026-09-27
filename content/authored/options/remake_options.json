@@ -31,13 +31,13 @@
       "comfort_value": "public",
       "values": [
         {"id": "original", "label": "原版", "text": "原版：選目標不顯示命中率與擊數；沒交過手的敵人印 ???；飄字只有數字。"},
-        {"id": "public", "label": "公開", "text": "改良：頭頂顯示命中率與擊數、敵人數值始終可見、飄字帶暴擊、反擊、擊倒等說明。"}
+        {"id": "public", "label": "公開", "text": "改良：頭頂顯示命中率與擊數、敵人數值始終可見、飄字帶暴擊、反擊、擊倒等說明，學會新技能時頭上提示。"}
       ],
       "why": "原版命中率全靠猜，敌人要先挨一刀才知深浅；想看着数字打的玩家可以选",
       "save_effect": "none",
       "changeable": "anytime",
-      "read_points": ["game/battle/scene/BattlePresentation.gd:preview_target", "game/battle/scene/BattlePresentation.gd:_show_strike", "game/battle/scene/BattlePresentation.gd:_present_impact", "game/battle/scene/BattleStatusPanel.gd:show_unit（状态页每次打开读一次）→ public：原版值未交手单位印 ???、没有永久加值行与属性／抗性悬停说明；公開 时一律视为已知并恢复这两样", "game/battle/scene/BattleStatusPanel.gd:opens_for（点非己方指挥单位时读一次，BattleSceneInput 调）→ 原版值未交手单位不开页（0x443cfa）；公開 时一律开页", "game/battle/scene/BattleTurnEndCue.gd:_spawn"],
-      "evidence": ["floater-extra-words", "identity-bar-bits", "UI6 ea45f5b4", "KNOWN 3fad7816", "docs/evidence_packets/static_reverse/original_identity_bar.md"],
+      "read_points": ["game/battle/scene/BattlePresentation.gd:preview_target", "game/battle/scene/BattlePresentation.gd:_show_strike", "game/battle/scene/BattlePresentation.gd:_present_impact", "game/battle/scene/BattleStatusPanel.gd:show_unit（状态页每次打开读一次）→ public：原版值未交手单位印 ???、没有永久加值行与属性／抗性悬停说明；公開 时一律视为已知并恢复这两样", "game/battle/scene/BattleStatusPanel.gd:opens_for（点非己方指挥单位时读一次，BattleSceneInput 调）→ 原版值未交手单位不开页（0x443cfa）；公開 时一律开页", "game/battle/scene/BattleTurnEndCue.gd:_spawn", "game/battle/scene/BattleAftermath.gd:prepare（每次交锋回执排队时读一次）→ 原版值不排学技飘字（原版只在升级窗 WINDOW31／WINDOW50 印學會魔法／學會特殊技）；公開 时在受者头上飘学技提示"],
+      "evidence": ["floater-extra-words", "learning-notice", "identity-bar-bits", "UI6 ea45f5b4", "KNOWN 3fad7816", "docs/evidence_packets/static_reverse/original_identity_bar.md"],
       "work": "M"
     },
     {

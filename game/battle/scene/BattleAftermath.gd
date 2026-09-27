@@ -14,6 +14,7 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ##   strings: resource-derived content/imported/hsl/chapter01/battle051/message_text_evidence.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   strings: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
+##   strings: remake-invented docs/OPTIONS.md (OPT-INFO=公開 only: the learning float over the recipient)
 ##   strings: remake-invented
 ##     (the roll is a hash of exchange sequence and victim instead of the original global PRNG: no combat RNG spent, a
 ##     reload speaks the same line)
@@ -38,6 +39,7 @@ signal level_up_presented(growth: Dictionary)
 signal disposal_started(unit: Dictionary)
 
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 ## The native disposal of a fallen actor (enemy process 0x43ede0's dead branch 0x43eff9..0x43f0e6,
@@ -185,8 +187,11 @@ func prepare(receipt: Dictionary, units: Array, message_texts: Dictionary = {}) 
 		var first_reward := queued.size()
 		if int(growth.get("gained", 0)) > 0:
 			queued.append({"kind": "experience", "coord": unit["coord"], "growth": growth.duplicate(true)})
-			for learned in growth.get("learning", []):
-				queued.append({"kind": "learning", "coord": unit["coord"], "text": str(learned)})
+			# The original names a learned magic／special only inside the growth window (WINDOW31／
+			# WINDOW50, original_growth_window §5); 0x442720 floats none. OPT-INFO=公開 adds the float.
+			if not GameOptions.is_original("OPT-INFO"):
+				for learned in growth.get("learning", []):
+					queued.append({"kind": "learning", "coord": unit["coord"], "text": str(learned)})
 		if gold_owner == recipient:
 			queued.append({"kind": "gold", "coord": unit["coord"], "gold": gold})
 			gold_owner = ""

@@ -42,7 +42,7 @@
 | 编号 | 名称 | 原版 → 改良 | 为什么值得给玩家选 | 影响层 | 量 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | OPT-TREASURE ★ | 宝箱显示 | 原版很多宝箱不画（已测 1／2／3／6／19 关全部隐藏，28 关 21 只里 2 只隐藏），踩上先响发现音再领 → 全部画成闭箱，并提示发现 | 不查攻略也能拿全宝物；领取规则（踩上即领、零随机、重开重置）两边完全相同 | 外观·信息 | S | `treasure-rules`、`treasure-caption`、[原宝箱](evidence_packets/static_reverse/original_treasure.md)；等 HIDDENCHEST 把原版做成默认 |
-| OPT-INFO ★ | 战斗信息公开 | 原版选目标不显示命中率和击数；没交过手的敌人面板印 ???；飘字只有数字 → 头顶「命中 N%」「2擊」、敌人数值始终可见（状态页点谁都开、带永久加值行与悬停说明）、飘字带暴擊／擊倒／反擊／連擊和中毒／麻痺等说明（法术命中先亮受者血条是原版行为，两个预设都保留，见 §9 S2） | 原版命中率全靠猜，敌人要先挨一刀才知深浅；想"看着数字打"的玩家可以选 | 演出·信息 | M | `floater-extra-words`、`magic-impact-bar`、`identity-bar-bits`、`status-page-extras`；UI6 `ea45f5b4`、KNOWN `3fad7816`、[身份栏](evidence_packets/static_reverse/original_identity_bar.md) |
+| OPT-INFO ★ | 战斗信息公开 | 原版选目标不显示命中率和击数；没交过手的敌人面板印 ???；飘字只有数字 → 头顶「命中 N%」「2擊」、敌人数值始终可见（状态页点谁都开、带永久加值行与悬停说明）、飘字带暴擊／擊倒／反擊／連擊和中毒／麻痺等说明、学会新技能时受者头上飘学技提示（原版只在升级窗印學會魔法／學會特殊技）（法术命中先亮受者血条是原版行为，两个预设都保留，见 §9 S2） | 原版命中率全靠猜，敌人要先挨一刀才知深浅；想"看着数字打"的玩家可以选 | 演出·信息 | M | `floater-extra-words`、`learning-notice`、`magic-impact-bar`、`identity-bar-bits`、`status-page-extras`；UI6 `ea45f5b4`、KNOWN `3fad7816`、[身份栏](evidence_packets/static_reverse/original_identity_bar.md) |
 | OPT-GUIDE ★ | 操作提示 | 原版移动只画范围、撤离格只在剧本插入时画、AI 待机与再次行动没提示 → 移动画路径线和「移動 3/5」费用栏与「可通過，不能停留」、撤离格常驻标记、「待機」「再次行動」提示、状态页底部「保存／讀取／待領物品／返回」按钮条（行动环图标下的说明字是原版画法，默认就画，不归本项） | 新手第一次玩看得懂该点哪里、能走到哪 | 演出·信息 | M | `move-path-overlay`、`wait-cue`、`extra-action-cue`、`status-page-extras`；ESCAPEMARK `644178ea` |
 | OPT-GROWTH ★ | 升级加点方式 | 原版每升一级一个窗，点数没分完不能关 → 一次升多级合成一个窗，可右键暂缓，状态页「成長點」随时再分 | 战斗中途不被加点窗卡住，可以看完局势再加；最终属性两边相同 | 演出 | S | `growth-point-reserve`、`growth-window-timing`、[升级窗](evidence_packets/static_reverse/original_growth_window.md)、GROWTHWIN `cc1a4709` |
 | OPT-PACE ★（快） | 演出节奏 | 原版切入特写和地图演出按原速播完，对白擦出／上卷时不收确认，剧情走位不能快进 → 三档：原版／快（演出 2 倍、对白按键立即整屏、确认键快进走位）／极快（再加跳过切入特写，直接出结果数字） | 127 场战斗反复看同样的切入很耗时间 | 演出 | M | `dialogue-timing`、`script-fast-forward`、`settings-ready-action`；`CombatPresentationTiming.gd` 已有开发用倍速开关 |
@@ -65,7 +65,7 @@
 | 全队阵亡判负 | 原版靠剧本保证不会出现这种局面，重制的兜底只在重制独有的状态下触发，不影响原版层（`party-wipe-rule`） |
 | 跨战 HP／MP 回满 | 原版跨关承接还没读清，是缺口不是选项；查清后原版层照原版（`carry-model`） |
 | 繁体显示 | 繁体要重画约 80 张图，低优先，接缝已留（`simplified-display-gaps`）；配乐已换成原版曲目，不再是选项 |
-| 重制自有界面与流程的文字 | 面板说明、续玩提示、预览关结束卡、学技提示、Home 回中：原版没有对应的东西可切换，保留（`panel-captions`、`campaign-flow-extras`、`title-flow-extras`、`opening-end-card`、`learning-notice`、`home-recenter`） |
+| 重制自有界面与流程的文字 | 面板说明、续玩提示、预览关结束卡、Home 回中：原版没有对应的东西可切换，保留（`panel-captions`、`campaign-flow-extras`、`title-flow-extras`、`opening-end-card`、`home-recenter`） |
 | 悬停身份栏规则 | 原版规则还没读完，先查（`hover-strip-rule`）；技能脚印已照原版调色板（`footprint-preview-style`） |
 
 ## 5. 三件已定的事

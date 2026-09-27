@@ -4,15 +4,16 @@ extends Node2D
 ## original object's spawn point; every glyph is a sprite placed by its SHP draw origin, as the
 ## two draw routines lay them out (reward_floats manifest `layout`). `text` names what the float
 ## shows ("KILL 3", "EXP 40", "$ 100", "LEVEL UP"); a learning notice (remake-invented, no
-## original glyphs) is the one text float.
+## original glyphs; OPT-INFO=公開 only — the original names learned skills only in the growth
+## window) is the one text float.
 ## provenance:
 ##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
 ##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##     (EXP, $ and LEVEL UP centred on x 320 with the recipient centred; KILL digit 35 px clear of the word)
-##   layout: remake-invented (the learning notice's text and colour)
+##   layout: remake-invented docs/OPTIONS.md (OPT-INFO=公開 only: the learning notice's text and colour)
 ##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
-##   strings: remake-invented (learning notice)
+##   strings: remake-invented docs/OPTIONS.md (OPT-INFO=公開 only: learning notice)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
