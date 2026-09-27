@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 107,
-    "sources": 539,
+    "sources": 540,
     "sources_by_kind": {
       "provenance": 225,
-      "sentence": 142,
+      "sentence": 143,
       "scope": 74,
       "matrix": 85,
       "video": 13
@@ -801,14 +801,15 @@
     },
     {
       "id": "draw-depth-states",
-      "difference": "单位与建筑的遮挡顺序：原版两段全局状态分支（深度封顶 22／再加 23）与同桶建立顺序未读透",
-      "original": "32 px 行排序已读；两段全局状态分支未读透",
+      "difference": "单位与建筑的遮挡顺序：原版两段全局状态分支（深度封顶 22／再加 23）与同桶建立顺序未读透；planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模",
+      "original": "32 px 行排序已读；defProcObjectMove 固定 obj_Plane 已读；两段全局状态分支与其余效果过程未读透",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_draw_order.md"
       ],
-      "remake": "ActorRuntime.depth_index 按行排序，不建模状态分支",
+      "remake": "ActorRuntime.depth_index 按像素行排序，不建模状态分支；fixed_plane_depth 只覆盖最低／最高固定 plane",
       "remake_code": [
-        "game/battle/runtime/ActorRuntime.gd:depth_index"
+        "game/battle/runtime/ActorRuntime.gd:depth_index",
+        "game/battle/runtime/ActorRuntime.gd:fixed_plane_depth"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -818,6 +819,7 @@
         "provenance:game/battle/runtime/ActorRuntime.gd|layout|provisional|",
         "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#1efdba0f01",
         "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#7f08a9d8b3",
+        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#bd9b3b702a",
         "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#e0a801182e"
       ]
     },

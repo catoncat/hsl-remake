@@ -17,6 +17,8 @@ extends RefCounted
 ##     (random-position slots in table order instead of the native shuffle)
 ##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json
 ##   layout: resource-derived content/imported/hsl/chapter01/map_object_alignment.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
+##     (defProcObjectMove objects keep obj_Plane depth)
 ##   layout: provisional
 ##     (walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over
 ##     the following actDelay)
@@ -27,6 +29,7 @@ extends RefCounted
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
+const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ScriptWalkPath = preload("res://game/battle/runtime/opening/ScriptWalkPath.gd")
 const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
@@ -502,6 +505,12 @@ func _insert_story_object(event: Dictionary) -> void:
 	var record := {"kind": "story_object_insert", "source_event_id": str(event.get("id", "")), "symbol": symbol, "anchor_world": anchor}
 	if str((spec.get("object_fields", {}) as Dictionary).get("obj_Mode", "")) == "engRANGE":
 		record.merge(_unroll_range_object(sprite, anchor, origin))
+	if str(spec.get("process", "")) == "defProcObjectMove":
+		# 0x4051d0 never rewrites the object's depth: it stays on obj_Plane instead of
+		# the y buckets (original_draw_order.md) — STORY053's 繩子 on planeObject1 draws
+		# under 緹娜 sliding down it.
+		sprite.z_index = ActorRuntime.fixed_plane_depth(str(spec.get("plane", "")), sprite.z_index)
+		record["z_index"] = sprite.z_index
 	coordinator.story_records.append(record)
 
 

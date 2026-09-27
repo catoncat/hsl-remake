@@ -5,7 +5,8 @@ extends Node2D
 ##   layout: resource-derived content/generated/hsl/chapter01/battle080_seed.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/actor_shp_draw_origin.md
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
-##   layout: provisional (pixel foot Y instead of the original's 32 px row buckets)
+##   layout: provisional (pixel foot Y instead of the original's 32 px row buckets;
+##     fixed planes planeObject2..30 compare against a camera-relative row — unmodelled)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
 ##     (speaker／target／actor highlight tint and pulse, one recording — provisional)
 ##   timing: static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md
@@ -37,6 +38,13 @@ const WALK_FRAME_SECONDS := OriginalTick.TICK_SECONDS * WALK_FRAME_TICKS
 ## roofs and trees just south of it. The remake's depth is the foot Y in pixels; a
 ## flyer adds the same 10 rows.
 const FLYING_DEPTH_ROWS := 10
+## Lowest y-sorted bucket (0x4300f0 clamps a row to 0..19, + 4 = planeObject1).
+const FIXED_PLANE_LOWEST_BUCKET := 4
+## Remake z bands for fixed-plane objects: under every foot y (over the map backdrop at
+## z 0), over every foot y, and planeEffect* and later at StoryEffectObjects.EFFECT_Z.
+const FIXED_PLANE_BELOW_Z := 0
+const FIXED_PLANE_ABOVE_Z := 3900
+const FIXED_PLANE_EFFECT_Z := 4000
 const CELL_PIXELS := 32
 ## One highlight for the three cases the original lights a map actor: the speaker of the shown
 ## message, the unit under a target cursor, the actor whose turn it is (R6-P1, runtime-measured
@@ -197,6 +205,39 @@ func _process(delta: float) -> void:
 ## z_index for a foot at world Y (the map objects' z_index is their EVEF anchor Y).
 static func depth_index(foot_y: float, flying: bool) -> int:
 	return clampi(roundi(foot_y) + (FLYING_DEPTH_ROWS * CELL_PIXELS if flying else 0), -4096, 4080)
+
+
+## PROCESS.DEF plane numbers: planeBG3..BG1 = 0..2, planeIcon = 3, planeObject1..40 =
+## 4..43; planeEffect* and later sit above planeObject40.
+static func plane_number(plane: String) -> int:
+	match plane:
+		"planeBG3":
+			return 0
+		"planeBG2":
+			return 1
+		"planeBG1":
+			return 2
+		"planeIcon":
+			return 3
+	if plane.begins_with("planeObject"):
+		return 3 + plane.trim_prefix("planeObject").to_int()
+	return 44 if plane != "" else -1
+
+
+## z for an object whose process never rewrites its depth (+0xc keeps obj_Plane; e.g.
+## defProcObjectMove 0x4051d0). Units and y-sorted stand objects take depth buckets
+## 4..23 (+10 flying), so planes up to planeObject1 draw under all of them and planes
+## above planeObject30 over all of them. Planes in between compare against a
+## camera-relative row; unmodelled, the caller's fallback z is kept.
+static func fixed_plane_depth(plane: String, fallback_z: int) -> int:
+	var number := plane_number(plane)
+	if number < 0:
+		return fallback_z
+	if number <= FIXED_PLANE_LOWEST_BUCKET:
+		return FIXED_PLANE_BELOW_Z + number
+	if number > FIXED_PLANE_LOWEST_BUCKET + 19 + FLYING_DEPTH_ROWS:
+		return FIXED_PLANE_ABOVE_Z + number if number < 44 else FIXED_PLANE_EFFECT_Z
+	return fallback_z
 
 
 func configure_from_manifest(next_unit_id: String, manifest_entry: Dictionary) -> void:

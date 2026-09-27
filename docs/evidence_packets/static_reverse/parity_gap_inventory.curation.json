@@ -851,14 +851,15 @@
     },
     {
       "id": "draw-depth-states",
-      "difference": "单位与建筑的遮挡顺序：原版两段全局状态分支（深度封顶 22／再加 23）与同桶建立顺序未读透",
-      "original": "32 px 行排序已读；两段全局状态分支未读透",
+      "difference": "单位与建筑的遮挡顺序：原版两段全局状态分支（深度封顶 22／再加 23）与同桶建立顺序未读透；planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模",
+      "original": "32 px 行排序已读；defProcObjectMove 固定 obj_Plane 已读；两段全局状态分支与其余效果过程未读透",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_draw_order.md"
       ],
-      "remake": "ActorRuntime.depth_index 按行排序，不建模状态分支",
+      "remake": "ActorRuntime.depth_index 按像素行排序，不建模状态分支；fixed_plane_depth 只覆盖最低／最高固定 plane",
       "remake_code": [
-        "game/battle/runtime/ActorRuntime.gd:depth_index"
+        "game/battle/runtime/ActorRuntime.gd:depth_index",
+        "game/battle/runtime/ActorRuntime.gd:fixed_plane_depth"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -3095,6 +3096,10 @@
     "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#1efdba0f01": {
       "item": "draw-depth-states",
       "text": "深度封顶到 22／再加 23 的两段全局状态分支未读透：推测与选中或演出状态有关，未建模。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#bd9b3b702a": {
+      "item": "draw-depth-states",
+      "text": "defProcEffectProcess1／defProcDropRain／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#e0a801182e": {
       "item": "draw-depth-states",
