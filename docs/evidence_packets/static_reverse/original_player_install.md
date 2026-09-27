@@ -1,36 +1,47 @@
-# 脚本玩家安装与条件队员
+# 脚本玩家安装：普通安装与条件队员
 
-> evidence: static-derived · status: live · functions: 0x407ec0, 0x42c700, 0x42caa0, 0x42cb30, 0x43bf30, 0x45e3ed, 0x46ee10 · tools: hsltools/probes/player_install.py · updated: 2026-09-19
+> evidence: static-derived · status: live · functions: 0x407ec0, 0x42c700, 0x42caa0, 0x42cb30, 0x43bf30, 0x45e3ed, 0x46ee10 · tools: hsltools/probes/player_install.py · updated: 2026-09-27
 
-## 来源与执行范围
+## 结论
 
-`static-derived`。可复跑工具为 `tools/hsltools/probes/player_install.py`，原始输出为 [original_player_install.json](original_player_install.json)。默认离线检查；`--execute <hsl01.exe> --write` 才执行匹配既有 EXE SHA256 的原指令。原 PAK 只读，保存的 OBJ-002／OBJ-012 记录各有原字节哈希，并与关卡 seed 的原 OBS 哈希相互核对。
+- 原版：`defProcPlayerInstall`（`0x4080b0`）以 Data9 为零起始注册槽；Data8 缺省（0）是普通安装，经 `0x42cb30` 启用该槽（空槽设 `800+slot`）后请求构造；Data8=1 是条件安装，只有已存在且启用的槽进入构造器，空槽或禁用槽走占位物删除（static-derived；51 次有界原指令执行）。
+- 重制：`game/sim/ScriptActorCreationRules.gd` 与 `game/sim/loop/BattleLoopScript.gd` 按普通安装创建脚本玩家；`game/sim/ConditionalPartyRules.gd` 让随机遭遇里标 `install_if_carried` 的九个槽只上场战役承接中持有的成员（static-derived 规则＋重制组合）。
+- 差异：「已注册但禁用」的成员未建模，承接名单代替原注册启用表；原对象调度、跨关注册表存档格式与全局 RNG 未复原（provisional）。
 
-本包包含 **30 次安装分派前段、15 次注册槽启用函数完整返回、4 次坐标初始化前段，以及2组对象清零／缺字段读取前段**。没有替换构造器、对象删除器、随机函数或被调用的字段读取函数。输入的注册槽和对象阶段是明确的合成调用条件，不是原作整场录制。
+## 证据
 
-| 路径 | 已确认行为 | 停止边界 |
+**static-derived**（[original_player_install.json](original_player_install.json)，`hsltools/probes/player_install.py`，匹配固定 SHA 的 EXE；原 PAK 只读，OBJ-002／OBJ-012 记录各带原字节哈希并与关卡 seed 的 OBS 哈希互核）
+
+| 路径 | 行为 | 执行边界 |
 | --- | --- | --- |
-| `0x4080b0` PlayerInstall | Data9（对象 `+0xac`）是零起始注册槽；Data8（`+0xa8`）区分普通安装与条件安装 | 普通消息分派停在构造器 `0x407ec0` 或待删除入口 `0x45e3ed`，未执行整次对象安装／删除 |
-| `0x42caa0` | 注册值带 `0x80000000` 时不可用，否则返回对象代码 | 在安装分派内正常返回 |
-| `0x42cb30` | 空槽设置为 `800 + slot`；已有槽取低16位，因而可重新启用被禁用的记录 | 15个完整返回，其他19槽未变 |
-| `0x42c700` | 把一个对象代码写入指定注册槽 | 上述原启用函数实际调用，不是模拟写入 |
-| `0x4080b0` 初始化消息 | 位置按 `(pixel & ~31) + 16` 对齐；清初始化位，更新形状低字 | 停在 `0x43bf30` 可视初始化前；覆盖实际插入坐标、负坐标与非对齐输入 |
-| `0x45dd2d` 与 `0x45e0d7` | OBS记录先由原 `0x46ee10` 清176字节；缺少 Data8／Data9 时原数字／字符串读取保留零 | 两段独立前段，分别停 `0x45dd3d`／`0x45e11b`；中间其他字段及整个OBS解析未执行 |
+| `0x4080b0` PlayerInstall | Data9（+0xac）零起始注册槽；Data8（+0xa8）区分普通／条件 | 30 次分派前段，停在构造器 `0x407ec0` 或删除入口 `0x45e3ed` |
+| `0x42caa0` | 注册值带 `0x80000000` 为禁用，否则返回对象代码 | 在分派内正常返回 |
+| `0x42cb30` | 空槽写 `800+slot`；已有槽取低 16 位（可重新启用禁用记录） | 15 次完整返回，其余 19 槽不变 |
+| `0x42c700` | 把对象代码写入注册槽 | 由 `0x42cb30` 实际调用 |
+| `0x4080b0` 初始化消息 | 位置 `(pixel & ~31)+16` 对齐；清初始化位、更新形状低字 | 4 次前段，停在 `0x43bf30` 前（含负坐标、非对齐输入） |
+| `0x45dd2d`、`0x45e0d7` | OBS 记录先由 `0x46ee10` 清 176 字节；缺 Data8／Data9 时读取保留 0 | 2 组前段，停 `0x45dd3d`／`0x45e11b` |
 
-所有这些受测路径都不改变原 RNG 两个状态字。这个零消耗结论只适用于被执行到的边界；后续生成、成长、装备刷新另有 [祭司](original_priest.md)、[初始成长](original_growth_lifecycle.md)及[增援成长](original_auto_growth.md)证据。
+受测路径都不改变两个 RNG 状态字。
 
-## 普通安装不是条件安装
+**resource-derived**：
+- OBJ-002 `obj_Code=7` 緹娜：`defProcPlayerInstall`、`obj_Data9=1`、无 Data8 → 普通安装启用槽 1，请求代码 801。
+- OBJ-012 代码 180–188：`obj_Data8=1` 的九个条件安装，Data9 0..8（与原名「有才產生」一致，结论来自字段与执行）。
+- STORY002／WINFAIL002 两阶段：初始 001、003 与五名 028；event0 在敌人剩一名时插入緹娜与四名 023、旧 028 离场，启用第二阶段 win0 与緹娜败北条件；`actMEssage` 与 `actMessage` 是同一 token；第二阶段胜利后进 55 营地，无撤离区。
 
-OBJ-002 中 `obj_Code=7` 的緹娜物件声明 `defProcPlayerInstall` 和 `obj_Data9=1`，没有 Data8 字段。依上述清零／缺字段路径，其普通安装分派启用槽1，并向构造器请求代码801。槽1到源角色002及模板复制已经由祭司独立证据证明，不借用029的演出身份。
+## 重制接线
 
-OBJ-012 的代码180–188是带 `obj_Data8=1` 的九个条件安装物件，Data9从0到8。**已经存在且启用的槽才进入构造器；空槽或禁用槽直接走安装占位物删除路径。** 不能因为脚本写了某位队员，就无条件赠送该队员；也不能把所有条件安装永久当成不存在。条件分支与原名字里的“有才產生”一致，但结论来自字段和实际执行，不来自名字。
+- provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_player_install.md`：`game/sim/ScriptActorCreationRules.gd`、`game/sim/loop/BattleLoopScript.gd`、`game/sim/ConditionalPartyRules.gd`。
+- `ActorInitializationRules` 准备来源；`InitialRosterGrowthRules.prepare_player` 只推导新注册玩家的初始等级；`ReinforcementGrowthRules` 从登记队伍取追兵等级基础；`ScriptActorCreationRules` 返回完整提案，PlayLoop 一次提交角色、位置与随机游标；已注册人物不重置生命、物品、装备、成长。
+- `ConditionalPartyRules`：不能上场的槽（`conditional_party.unavailable_slots`）由 `blocked_members()` 显式报出；无战役承接的开发启动上场全部槽（remake-invented）。
+- 脚本目标格被占或不可站时取最近合法格（provisional，重制落点策略）。
 
-## 戈爾山道的应用合同
+## 复现
 
-`resource-derived`：STORY002／WINFAIL002构成两阶段战斗。初始为001、003和五名028；event0在敌人剩至一名时插入緹娜及四名023、让旧028离场，启用第二阶段win0及緹娜败北条件。源文件中的 `actMEssage` 与 `actMessage` 是同一已知token，不得丢掉。第二阶段胜利剩至一名追兵，之后进入55营地；没有玩家撤离区。
+`python3 tools/hsl.py check player_install`（重执行：`--execute <hsl01.exe> --write`）。
 
-`provisional` 的重制调度：`ActorInitializationRules`统一准备真实来源；`InitialRosterGrowthRules.prepare_player`只推导新注册玩家的初始等级／派生；`ReinforcementGrowthRules`逐个创建追兵，并从已加入緹娜的登记队伍取等级基础。`ScriptActorCreationRules`只返回完整提案，PlayLoop提交所有角色、位置和随机游标。已存在的注册人物不重置生命、物品、装备或成长。条件队员的跨剧情安装尚属下一独立接入，不因本包原证据已成立而宣称产品完成。
+## 边界
 
-已提交脚本动作的可视收据与战斗状态分离：新演员仅在对应token揭示，其他人物的未来位置不提前画出；保存要求完成该脚本演出，恢复只恢复收据，不再调用生成器。源脚本目标被当前实际玩家位置占用或落在不可站地形时，记录并选择最近合法格；这是明示重制落点策略，不是原路径等价。
-
-原完整对象调度、跨关注册表保存格式、原全局RNG与墙钟未在本包恢复。这里的创建／移动原子提交顺序、保存格式和渲染节奏是重制合同，不扩大前段的原作等价范围。
+- 整次对象安装／删除、构造器与 `0x43bf30` 可视初始化未执行。
+- 已注册但禁用的成员未建模。
+- 原对象调度、跨关注册表保存格式、全局 RNG 与墙钟不在本包范围；创建顺序、保存格式与渲染节奏是重制合同。
+- 生成后的成长与装备刷新见 [original_priest.md](original_priest.md)、[original_growth_lifecycle.md](original_growth_lifecycle.md)、[original_auto_growth.md](original_auto_growth.md)。

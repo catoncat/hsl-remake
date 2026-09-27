@@ -1,8 +1,8 @@
 # 脚本等待、守备唤醒与指定对象同步
 
-> evidence: static-derived · status: live · functions: 0x450840 · tools: capture_script_wait_review.gd, hsltools/probes/script_wait.py, run_script_wait_tests.gd · updated: 2026-09-18
+> evidence: static-derived · status: live · functions: 0x450840 · tools: capture_script_wait_review.gd, hsltools/probes/script_wait.py, run_script_wait_tests.gd · updated: 2026-09-27
 
-SR-070，基线`36437b42cf9cb349df0370974c41d5d32ff99288`。本次由`ACTION.H`、已有VM／AI符号和原指令确定性定位，没有调用Jev。原EXE保持只读；[机器回执](original_script_wait.json)由`tools/hsltools/probes/script_wait.py`实际执行生成，离线检查固定原指令哈希、来源哈希、逐例结果与停止边界。
+由`ACTION.H`、已有VM／AI符号和原指令确定性定位，没有调用Jev。原EXE保持只读；[机器回执](original_script_wait.json)由`tools/hsltools/probes/script_wait.py`实际执行生成，离线检查固定原指令哈希、来源哈希、逐例结果与停止边界。
 
 ## 原指令结论
 
@@ -32,10 +32,14 @@ AI仍共用已有导航和优先级。设置等待不强行清除已锁定目标
 
 胜利／败北／撤离被确认时，结果脚本中的合法等待赋值可以随结果事务提交；终态冻结后任何重复AI／wait／收尾回调不再推进倒数、资源或演出。对象同步只阻塞可见脚本，并不保存另一个可变战斗状态。
 
-守候提示“尚餘N次”取本次已提交AI收据，0.55秒提示时长仍为已有重制可读性参数。实玩证据与失败修正见[窗口验收](../runtime_observations/script_wait/README.md)。原全局时钟、整个VM连续生命周期、story-only及世界场景同步、负数等待的无限行为不在本批等价声明内。
+守候提示“尚餘N次”取本次已提交AI收据，0.55秒提示时长仍为已有重制可读性参数。实玩证据与失败修正见[窗口验收](#复现)。原全局时钟、整个VM连续生命周期、story-only及世界场景同步、负数等待的无限行为不在本批等价声明内。
 
-```sh
-python3 tools/hsl.py check script_wait
-tools/godot.sh --headless --script res://tests/run_script_wait_tests.gd
-tools/godot.sh --screen 0 --script res://tests/capture_script_wait_review.gd
-```
+## 复现
+
+`python3 tools/hsl.py check script_wait`
+
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
+
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [script_wait](../runtime_observations/script_wait/receipt.json) | opening、guard、double_guard、wounded、silenced、paralyzed、ai_chain、event、mage、support、sync、depart、kill、victory、defeat、escape、carry | `capture_script_wait_review.gd`、`run_script_wait_tests.gd` |

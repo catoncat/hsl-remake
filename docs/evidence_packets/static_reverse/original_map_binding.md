@@ -1,6 +1,6 @@
 # 原对象指定地图：P-033／P-047
 
-> evidence: static-derived · status: live · functions: 0x430370, 0x45dc5c, 0x45fc01, 0x46dd50 · tools: hsltools/checks/source_map_binding.py, hsltools/probes/map_binding.py · updated: 2026-09-19
+> evidence: static-derived · status: live · functions: 0x430370, 0x45dc5c, 0x45fc01, 0x46dd50 · tools: hsltools/checks/source_map_binding.py, hsltools/probes/map_binding.py · updated: 2026-09-27
 
 ## 结论与范围
 
@@ -27,11 +27,6 @@
 
 背景回调 `0x430370` 另外18例：15次完整返回、3次Data9=0普通更新在`0x4303eb`绘制调用之前停止。初始化写零坐标与模式位，Data9=1保留源形状；Data9=0将形状低字设为FFFF。普通Data9=1更新只复制已记录全局字段，忽略消息不变。完整对象前后字节、调用边界和原RNG全局不变均被检查。释放消息与绘制callee没有执行，不能声称完整原背景renderer等价。
 
-```sh
-python3 tools/hsl.py check map_binding
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate map_binding --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-```
-
 较早raw回执未记录关闭符号回退的夹具标志，正式checker拒绝了它；本片重新执行上述45条有界路径并写入完整配置。没有靠给旧测量结果补字段冒称新执行。原sources指纹与指令锚点不变，旧raw保留在ignored。
 
 ## 实际接入
@@ -40,8 +35,18 @@ uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate map_bind
 
 已有 `MAP_ALIASES` 只保留旧seed的兼容注记，不再选择资源。注记与真实资源不一致时也不能写入错误地图号；新的关卡无需增加条目。离线 `hsl_battle_seed.check` 和 `python3 tools/hsl.py check source_map_binding`同时检查原OBS哈希、完整PAK路径、原SHP哈希及像素尺寸，不能用“尺寸相同”掩盖错图。
 
-独立测试只替换PAK IO，真实执行OBS解析、seed组装、SHP／WRD解码和PNG写入：红色同名诱饵与绿色声明资源证明目录不能丢；没有登记的合成关987证明不依赖别名；缺声明文件时必须报错。该合成关不注册为游戏。真实原PAK还重建55／56／60／61（现有产品数据未变），以及隔离输出32／33／66；后者不替另一线创建或覆盖章节场景。实际原场景输入／像素核对与handoff见 [渲染回执](../runtime_observations/map_binding/README.md)。
+独立测试只替换PAK IO，真实执行OBS解析、seed组装、SHP／WRD解码和PNG写入：红色同名诱饵与绿色声明资源证明目录不能丢；没有登记的合成关987证明不依赖别名；缺声明文件时必须报错。该合成关不注册为游戏。真实原PAK还重建55／56／60／61（现有产品数据未变），以及隔离输出32／33／66；后者不替另一线创建或覆盖章节场景。实际原场景输入／像素核对与handoff见 [渲染回执](#复现)。
 
 ## 未确认边界
 
 negative-evidence只针对已检查对象：000／998／999无该类记录，49走另一个控制器分支，生成器明确拒绝；不由这些个例推断全引擎不存在其他地图机制。缺字段／缺名后的完整符号回退、原PAK装载整体返回、背景释放／绘制和精确墙钟未执行，仍独立。若要扩展Data9=0或fallback，须补相应真实caller／callee边界，不能放宽当前检查。
+
+## 复现
+
+`python3 tools/hsl.py check map_binding`
+
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
+
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [map_binding](../runtime_observations/map_binding/receipt.json) | 61 营地报告、56 晨间营地、60 王座厅 | `capture_map_binding_review.gd`、`hsltools/checks/source_map_binding.py` |

@@ -1,8 +1,8 @@
 # 原作贡献、击杀与最终 EXP 发放
 
-> evidence: static-derived · status: live · functions: 0x40a5d0, 0x40aa80 · tools: hsltools/probes/experience.py, run_magic_experience_tests.gd · updated: 2026-09-17
+> evidence: static-derived · status: live · functions: 0x40a5d0, 0x40aa80 · tools: hsltools/data/progression.py, hsltools/probes/experience.py, run_magic_experience_tests.gd · updated: 2026-09-27
 
-SR-048，核对 2026-09-17。机器入口 [original_experience.json](original_experience.json)，执行器 `tools/hsltools/probes/experience.py`。SHA 锁定的原 EXE 在隔离 Unicorn 内存中实际运行：73 次 `0x40a5d0` 正常返回、30 次最终发放／击杀状态后缀、8 次新增状态贡献观察。后两类不是整函数返回，不包含 UI、操作系统或队列回调；没有替换原 callee。
+机器入口 [original_experience.json](original_experience.json)，执行器 `tools/hsltools/probes/experience.py`。SHA 锁定的原 EXE 在隔离 Unicorn 内存中实际运行：73 次 `0x40a5d0` 正常返回、30 次最终发放／击杀状态后缀、8 次新增状态贡献观察。后两类不是整函数返回，不包含 UI、操作系统或队列回调；没有替换原 callee。
 
 ## 结算单位不是整场胜利
 
@@ -46,6 +46,8 @@ actor+0xa8 的低16位是连续数，高位0x10000标记本次行动是否击杀
 
 源 `ITEM.exp_x2` 在 `0x447e40..0x447e61` 映射为0x10。最终发放后缀按这个位把整次经验乘2，再加入现有经验；多件相同位不叠成4倍。当前源物品228「幸運緞帶」已进入受支持换装，详情和确认预览显示真实经验倍率；装备本身不赠送经验，取消不改变倍率。
 
+升级门槛 `min(2000, (level+1)*50)`：`0x44b678` 把等级 `+0x9c` 加 1 后乘 5、5、2，夹到 2000 写入 `+0x8c`；升级路径 `0x43a235..0x43a243` 从 EXP `+0x88` 减去该门槛，溢出保留（static-derived；两段原字节可用 `PYTHONPATH=tools python3 -m hsltools.data.progression --check --check-exe <hsl01.exe>` 核对）。
+
 ## 当前实现与边界
 
 `ExperienceRules` 只计算提案，PlayLoop 是唯一提交者。技能全目标、经验数值及装备数据在 RNG 前验证；同一次施法不能在中途升级、修改魔击力或再次扣费。普通主攻／反击先完成本次交锋效果，再各自一次发放；被反击击倒的攻击者不获死后成长。死亡、奖励去重、物品领取、剧情与原有动作交接继续共用同一状态。
@@ -56,12 +58,8 @@ actor+0xa8 的低16位是连续数，高位0x10000标记本次行动是否击杀
 
 最终EXP、连续数、总击杀、成长预算与收据由原单战存档共同保存。F9恢复、奖励领取、重复结局判断均不重发；最终击杀所得未用点数留在终态存档，不因无法在结果页立即加点而丢弃。配置摘要变化会拒绝旧配置存档，不静默补造新字段。
 
-## 复跑
+## 复现
 
-```sh
-python3 tools/hsl.py check experience
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate experience --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-tools/godot.sh --headless --script res://tests/run_magic_experience_tests.gd
-```
+`python3 tools/hsl.py check experience`
 
 实际控件、图片和默认路线结果见 [魔法与经验验收](../runtime_observations/magic_experience/README.md)。保存的原返回检查、Godot规则通过、图证可读与全游戏等价是不同结论。

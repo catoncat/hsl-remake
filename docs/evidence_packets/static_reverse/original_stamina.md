@@ -71,7 +71,7 @@ lane STAMINA-MEASURE，2026-09-26。问题：原版把控制交给每名玩家�
 
 ### 模拟器实测（runtime-measured）
 
-- **工具与进关方式：** [`_stamina_trace.py`](../../../tools/hsltools/probes/_stamina_trace.py) 借回合裁判 `_enemy_level`（[用法](original_enemy_turn.md#11-任意关卡回合裁判-_enemy_levelpy)）。整映像机器照 WinMain 启动，以载入标志清零调 `0x42da60(level)`。
+- **工具与进关方式：** [`_stamina_trace.py`](../../../tools/hsltools/probes/_stamina_trace.py) 借回合裁判 `_enemy_level`（[用法](original_enemy_turn.md#复现)）。整映像机器照 WinMain 启动，以载入标志清零调 `0x42da60(level)`。
 - **写入观察：** 进关之前就在整张 201×0x1fc 的 live 表上挂写入钩子，记录每一次改动气力字的写入。
 - **运行条件：** 成长字按原版（growth true）。玩家回合一律待机。全局流在第 1 回合排序停点写 (1,2)。
 - **开场与首控：** 「开场」取该停点的 `install_board`；「首控」取该玩家第一次成为当前行动者时的值。

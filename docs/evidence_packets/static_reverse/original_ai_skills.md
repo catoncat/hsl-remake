@@ -1,72 +1,61 @@
-# 原作技能筛选、范围中心与施法站位
+# 原 AI：技能桶、使用概率、范围中心与施法站位
 
-> evidence: static-derived · status: live · functions: 0x407010, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0 · tools: hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-16
+> evidence: static-derived; resource-derived: 第一战法师法术定义与素材绑定 · status: live · functions: 0x407010, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0 · tools: hsltools/data/mage_magic.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-27
 
-核对日期：2026-09-16。当前入口为 [PROJECT](../../PROJECT.md#next-steps)。本包接续 [AI目标与进攻类别](original_ai_decisions.md)、[呼叫](original_ai_calls.md) 和 [自救／残血机会](original_ai_priority.md)，将原作中的技能桶、使用概率、范围先后和施法站位落实到同一 PlayLoop。没有新增战斗状态所有者或原作自动操作依赖。
+## 结论
 
-## 本批体验对照
+- 原版：`0x407010` 按 function 位把技能分到范围桶 3／单体桶 4（另有治疗、增益、状态、解除桶），`0x40c770` 在非空桶内 `rand(32)%count` 起步循环，逐项 `rand(100)+1 <= use_ratio` 才接受；`0x40d4e0` 决定单体／范围先后；`0x40c9a0` 选覆盖最多的范围中心，`0x40d200..0x40d2b0` 在最大覆盖施法格中取离威胁最远者（static-derived；202 组原指令执行：162 正常返回、40 距离后缀）。
+- 重制：`game/sim/AISkillDecisionRules.gd` 只算已证实的桶、顺序、逐项概率与距离比较；`game/sim/AISkillPlanning.gd` 为每个拥有的受支持技能准备独立合法站位与中心，选中后先最大化有效覆盖再用原距离末段选格，经 `_resolve_skill` 一次提交（static-derived 规则＋重制组合）。
+- 差异：原完整地图候选生成、空格中心、中心平分的随机流、目标锁定与辅助效果未复原；威胁选取与有效收益计数是重制组合（provisional）。
 
-| 体验 | 已有实现和证据 | 本批处理 |
+## 证据
+
+**static-derived**（[original_ai_skills.json](original_ai_skills.json)，`hsltools/probes/ai_skill.py` 有界执行；原 EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`）
+
+| 地址 | 合同 | 样例 |
 | --- | --- | --- |
-| 选择行动、敌我响应、回到下一角色 | 原类别选择、队友呼叫、自救用药和残血机会已接入；一次行动交接已有回归 | 复用；技能概率落空沿已有类别顺序继续，不能报坏数据或多交接一次 |
-| 法师选择招式 | 旧实现先合并成最少移动的一个位置，再从留下的技能均匀抽取 | 每种源授予技能保留独立合法站位、中心与范围；按源顺序和 use_ratio 筛选 |
-| 近身法师的战术手感 | 旧实现只要够得到就站在原处，短射程候选可能被另一法术的原地候选覆盖 | 已选技能先保留有效覆盖最多的计划，再使用原末段距离评分选择施法格；移动受现行WRD和占位约束 |
-| 范围魔法对集中队形的反应 | 原 `0x40c9a0` 有覆盖计数及指定目标约束；原有酸蚀幻雾已支持共同多目标事务 | 枚举可用敌人中心，允许选中目标位于效果边缘，保留它同时覆盖更多有效敌人 |
-| 扣费、状态、数值反馈 | 五个注册技能已走同一准备／提交，毒和禁魔有原指令数值证据 | 复用一次MP/ST付款、每个唯一目标结算、地图反馈和死亡／经验收尾；不引入伤害预测评分或另一套数值公式 |
-| 镜头、前摇、动效、音效与菜单 | [原录像V08](../runtime_observations/original_gameplay_reference/README.md) 的幻火是地图前摇→爆破→伤害；原素材播放和共享空间合同已有实现 | 复用正式移动和地图施法；实际Wait输入检查移动、蓄力、效果、后继菜单。状态魔法视觉仍为已声明的重制表现 |
-| 整场节奏 | 正常第一战包含开场、守住／撤离目标变更、领取和重开 | 本批改变敌方位置选择，因此重跑默认数值advance路线；可见回执与合成技能夹具分开记录 |
+| `0x407010` | 敌对 function 掩码 `0x501d` 分到范围桶 3／单体桶 4；治疗 1／2、增益 5、状态 6、解除 7 可重叠；节点前插 | 14 组正常返回 |
+| `0x40c620` | 按 type、code 升序遍历拥有技能并前插，桶内为倒序 | 字节锚点 |
+| `0x40c770` | 非空桶 `rand(32)%count` 定位，循环至多 count 个节点，`rand(100)+1 <= descriptor+0x28` 接受；空桶不取随机数；桶 5／7 语义见 [技能功能位](original_skill_function_bits.md) | 84 组正常返回（含全落空、循环、count40 合成链表） |
+| `0x44db40..0x44db5d` | MAGIC parser 读 `use_ratio` 写描述符 +0x28 | 字节锚点 |
+| `0x40d4e0` | `ai_magic_multi_first`=0 时样本 ≤30 返回范围优先，非零时 >30 返回范围优先 | 64 组正常返回 |
+| `0x40c9a0` | 枚举施法中心，分别保留含指定目标与一般候选的最高覆盖计数 | 字节锚点 |
+| `0x40cca0`（`0x40cfea` 附近） | 收集保持最大覆盖的可移动施法格 | 字节锚点，整函数未执行 |
+| `0x40d200..0x40d2b0` | 选离威胁曼哈顿距离最大的格，相等时消费原随机低位并可能替换 | 40 组后缀执行 |
+| `0x40dd80` | SPECIAL 表孪生（use_ratio 在 +0x20），进攻桶先后与 MAGIC 共用 `0x40d4e0` | 见技能功能位包 |
 
-已完成的对白、选择框、成长、遗言、经验和奖励领取不因接手重新实现。后续仍影响还原度的关键缺口是完整辅助魔法、目标锁定／等待状态、原移动候选生成及初始化、全角色行动资格、ST增长与原完整伤害／EXP；它们不被本次核验覆盖。
+**resource-derived**：
+- `use_ratio`：幻火、风刃、酸蚀幻雾 90，封魔灭杀 86；技能书经 TYPE.H 与 code 位值保存 `source_order`。固定起始选择 0 时 026 单体桶先试幻火再试风刃。
+- 第一战帝国法师（PLAYERS 026）：magic_fire=幻火、magic_wind=風刃、ai_att_magic=95。MAGIC.TXT FIRE/AIR 的 magicCode01 指向 RESOURCE 169/162，均耗 8 MP、range3CellCircle、影响 range0Cell、命中 96%，伤害字段 18–32／12–26；原始 magic_point=5 是基础字段。`effects.txt` effCode16 = AirWave1/2＋AirBlade1/2，effCode23 = FlyDrop＋FireBomb＋FireBomb2；`global.obs` 绑定 SHP 序列与 WIND0002、WIND0001、BOMB0004。`hsltools/data/mage_magic.py` 导入 24 张源图与 3 个 WAV 并校验摘要。
 
-## 原指令与字段
+**重制侧回执**（Godot 640×480，真实 Wait 输入，正常时钟；夹具设位置、HP400、倾向 100、指定技能 use_ratio 100，不代表第一战自然遇敌）：
 
-来源为 SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7` 的 hsl01.exe。结果在 [original_ai_skills.json](original_ai_skills.json)，由 [有界探针](../../../tools/hsltools/probes/ai_skill.py) 生成。202组案例中，162组到正常函数返回，40组只执行明确的站位评分后缀。全部属于 `static-derived` 的原指令执行，不是 Wine 实际战局观测。
+| 路线 | 施法移动 | MP | 结果 |
+| --- | --- | --- | --- |
+| 026 幻火 | (7,7)→(6,8) | 30→22 | 单体伤害，完成后交接 |
+| 026 风刃 | (7,7)→(7,9) | 30→22 | 单体伤害，完成后交接 |
+| 025 酸蚀幻雾 | (8,10)→(7,10) | 100→90 | 改选中间单位为中心，原目标仍覆盖，三目标各有状态结果，一次付费 |
 
-| 地址 | 已确认合同 | 验证边界 |
-| --- | --- | --- |
-| `0x407010` | 敌对function掩码`0x501d`分到范围桶3／单体桶4；治疗1／2、增益5、状态6、解除7可重叠。按节点前插保存 | 14组正常返回；识别桶不等于产品实现了治疗／增益 |
-| `0x40c620` | 按type和code升序遍历拥有的技能，调用前插构造桶；因此桶内为倒序 | 原字节锚点；完整装备／资格初始化不由本包证明 |
-| `0x40c770` | 非空桶先`rand(32)%count`定位，再循环至多count个节点；每项`rand(100)+1 <= descriptor+0x28`才接受；空桶不取随机数 | 84组桶3／4正常返回，含全部落空、循环和count40合成链表；count40仅检验模运算，不是新增源技能；桶5／7对有用行置roll=0不读use_ratio，见[技能功能位](original_skill_function_bits.md#0x40c770-magic-桶-57-的接受语义2026-09-22-lane-r12-rules-leftoversstatic-derived) |
-| `0x44db40..0x44db5d` | MAGIC parser读取字符串`use_ratio`，写入描述符`+0x28` | 原字节锚点；更正旧笔记的“ai_percent”称呼 |
-| `0x40d4e0` | `ai_magic_multi_first`为0时，1..100样本<=30返回范围优先；非零时>30返回范围优先 | 64组正常返回；不能称作血量或治疗资格检查 |
-| `0x40c9a0` | 枚举施法中心，计算范围覆盖，分别保留包含指定目标及一般候选的最高计数 | 关键计数／比较字节锚点；这是中心选择，完整移动格搜索另在`0x40cca0` |
-| `0x40cca0`的`0x40cfea`附近 | 收集保持最大覆盖的可移动施法格 | 字节锚点；没有执行整个地图搜索函数 |
-| `0x40d200..0x40d2b0` | 对已准备的格子，选离传入威胁曼哈顿距离最大的格子；相等时消费原随机低位并可能替换 | 40组后缀执行；不冒称完整`0x40cca0`正常返回 |
+默认数值第一战 advance 路线：`victory_escape`、第 7 回合、209.606 秒，Leonard 剩余 HP21。数据在 [runtime_observations/ai_skills/receipt.json](../runtime_observations/ai_skills/receipt.json)。
 
-原三类攻击魔法的`use_ratio`已在源表中；当前幻火和风刃均90，酸蚀幻雾90、封魔灭杀86。生成的技能书通过TYPE.H与code位值保存`source_order`，不再依赖字典插入顺序；这不是给角色授予新技能。固定起始选择0时，026的单体桶先试幻火，再试风刃。命中率、状态命中率和技能使用概率仍是不同字段。
+## 重制接线
 
-## 现行组合合同
+- `game/sim/AISkillDecisionRules.gd`、`game/sim/AISkillPlanning.gd`：provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_ai_skills.md`。
+- `AISkillPlanning.prepare` 产出 `skill_id / primary_target_id / target_id / destination / path / affected_ids / useful_ids`；primary 是原目标，target 是施法中心，primary 必须仍在效果内。
+- 所有源参数、技能定义、目标在任何 RNG、移动、扣费、呼叫前验证；概率全落空是正常结果，沿类别顺序继续；坏概率或缺 `source_order` 返回 `scenario_error`，状态不变。
+- 纯毒：免疫或已达上限的目标不计分，整个范围无效时不投概率、不付款。
+- 技能书加入 `source_order` 改变 BattleCheckpoint 配置指纹，旧存档在恢复入口被拒绝。
+- 法师法术重制选择（provisional）：初始 MP 30 不回复、在付得起的法术间随机、无魔法反击；1.5 秒切入、0.65 秒命中的地图演出不是原效果解释器。
+- 相邻目标状态文字按实际字体测量错开高度（重制可读性选择）。
 
-`AISkillDecisionRules`只计算已证实的桶、顺序、逐项概率与距离比较。`AISkillPlanning.prepare`读当前PlayLoop，按每个角色实际拥有的受支持技能、共享费用和范围规则，准备所有合法的`skill_id / primary_target_id / target_id / destination / path / affected_ids / useful_ids`。其中primary是AI原来选择的敌人，target是施法中心，二者不必相同；primary必须仍在效果里。
+## 复现
 
-所有源参数、技能定义和相关目标在任何RNG、移动、扣费或呼叫发布前验证。不存在“少一个字段便改用另一规则”的路径。所有概率试选失败是正常结果，继续现有进攻类别顺序；坏概率、缺源顺序或缺范围偏好则是明确scenario_error，保持单位、队列和既有收据不变。
+`python3 tools/hsl.py check ai_skill`（重执行：`uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate ai_skill --exe "$HSL_ORIGINAL_DIR/hsl01.exe"`）。
 
-技能书新增source_order及TYPE.H来源摘要会改变现有BattleCheckpoint的配置指纹；它已将skill_book纳入CONFIG_KEYS，因此旧规则存档在恢复入口明确拒绝，不会先恢复到缺字段的AI回合。本次沿用既有“同配置单战保存”边界，不提供旧存档迁移。
+## 边界
 
-选中技能之后先最大化有效敌人覆盖，再对可达施法位置消费距离比较；`_execute_ai_skill_choice → _resolve_skill`提交准确的这一个意图。原来的最短位置合并和执行时再次均匀抽法术已经删除。移动、付款、状态和伤害继续在唯一PlayLoop提交，原有地图路径／施法／收尾读取同一收据；不存在第二个AI战斗副本。
-
-纯毒使用现有有益性规则：免疫或毒强度／时长已到当前上限的目标不增加分数，整个范围无效时不投技能概率、不付款。范围计数不能跨越阵营、复活死人或重复同一目标。绝技通道由孪生 `0x40dd80`（SPECIAL 表、use_ratio 在 `+0x20`）走同样的桶 walk，进攻桶先后对与 MAGIC 共用 `0x40d4e0`（见[技能功能位](original_skill_function_bits.md#进攻绝技桶-34-的回放2026-09-22-lane-r12-rules-leftoversstatic-derived)）；未将读取MAGIC表的`0x40c770`伪用于SPECIAL。
-
-## 仍为 provisional 的部分
-
-原完整地图候选生成、空格中心和中心平分时两条随机流没有复制；当前中心必须是共享目标事务支持的活敌人，候选按行／列排序，同一位置相同覆盖取第一个中心。有效收益计数是现行状态规则的组合，不能说原作也是按毒强度预测收益。
-
-威胁由当前活敌人在八格圆内按最近曼哈顿距离选取，同距使用行／列顺序；原最近目标helper的完整改选随机流不在此处接入。距离末段本身有原指令对拍，但把它接到当前WRD可达格、稳定ID和有限技能事务后，整个AI仍为明示的重制组合。原候选上限、对象生命周期、目标锁定、wait_round、owner+0x12c初始化、辅助效果、完整特殊技能选择和全局RNG都保留边界。替换这些策略需要对应原调用链、受控输入和完整地图／目标证据。
-
-PLAYERS原包字节差异没有放宽；原先三种伤害策略和0.20秒移动仍保持现有证据等级。影片中的幻火是单体法术，目录名含aoe不构成扩大其伤害范围的依据。
-
-## 回归与可见验收
-
-[run_ai_skill_tests.gd](../../../tests/run_ai_skill_tests.gd)逐项重放202组原结果与随机消费，并检查不同射程技能均保留、障碍路径、近身退开、概率落空转其他行动、三目标中心、免疫不浪费、错误输入零变更及一次付款／交接。现有AI类别、呼叫、优先级、技能成本／范围／状态和第一战runtime套件继续覆盖组合。
-
-[可见验收](../runtime_observations/ai_skills/README.md)记录三种法术的真实Wait控件和正常时钟，以及单独的默认数值整场路线。合成025范围案例证明共享AI能力，不代表第一战默认增加了025敌人，也不是原作现场AI决策录像。自动绿灯不替代人工查看图像。
-
-最终看图发现三个相邻目标的“中毒”文字同高相连，已修复为实际字体测量、各目标水平居中和碰撞时错开高度。混合伤害／禁魔／免疫回归先失败后通过；正式WRD的真实三目标路线重新运行并人工查看，逐目标结果清楚且一次扣费／交接不变。反馈排布是重制可读性选择，既有时间和状态数值未改变。
-
-```sh
-python3 tools/hsl.py check ai_skill
-tools/godot.sh --headless --script res://tests/run_ai_skill_tests.gd
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate ai_skill --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-```
-
-仅`--execute`重放EXE；`--write`必须同时执行。普通门禁不要求安装原作或Unicorn，产品运行也不依赖原作EXE。反汇编长输出仅留ignored。
+- 原完整地图候选生成、空格中心、中心平分两条随机流未复制；重制中心必须是活敌人，候选按行／列排序。
+- 威胁取八格圆内最近活敌人，同距按行／列；原最近目标 helper 的改选随机流未接。
+- 原候选上限、对象生命周期、目标锁定、wait_round、owner+0x12c 初始化、辅助效果、完整特殊技能选择与全局 RNG 未复原。
+- 桶识别不等于重制实现了治疗／增益。
+- 原版幻火是单体法术；最终原伤害公式与 AI 法术评分不由本包证明。

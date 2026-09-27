@@ -39,7 +39,7 @@ This packet records the source-range builder used by the first-battle weapon cat
 | --- | --- | --- |
 | ① 模板 `weapon_equip` → `+0xec` | `tools/hsltools/levels/scenario.py` 单位 `weapon_code = player['weapon_equip']`；换装经 `EquipmentRules` 改写 `weapon_code` | 一致 |
 | ③ 实例字 18–23 覆盖装备槽 | `seed.py _actor_instance` 解码为 `overrides.weapon／armor／head／foot／other1／other2`，`evef_instances.json` 列为 `recorded_only_fields`，运行时不应用 | **resource-derived**：70 关 569 个演员实例的 `override_fields` 统计里这六个字均为 0 次（`totals.override_fields` 只有 ai_fixed／find_*／fixed_point／gold／level_adjust_*／stamina／wait_round）——已注册关卡没有任何实例改写装备，未应用路径对现有数据是空操作 |
-| ⑤ 武器 0 → 范围 0 | `PositionCapabilityRules.attack_pattern`：`code == 0` → `index 0, offsets []`（无普通目标，不做徒手 fallback） | 一致（17 关三名 062 `weapon_equip` 空因此不动，见[导航证据](original_ai_navigation.md#evef-实例覆盖友军护送目标与物品)） |
+| ⑤ 武器 0 → 范围 0 | `PositionCapabilityRules.attack_pattern`：`code == 0` → `index 0, offsets []`（无普通目标，不做徒手 fallback） | 一致（17 关三名 062 `weapon_equip` 空因此不动，见[导航证据](original_ai_navigation.md#证据)） |
 | ⑤ `ITEM.attack_range` → RANGE 掩码 | `weapon_code → ITEM.attack_range → RANGE.TXT` 正掩码（本包上文） | 一致；掩码之后还要经 `0x40f8b0` 地形传播（下文「地形传播」） |
 
 未在本读法内：`0x448840` 刷新如何消费 `+0xec` 之外的五个装备槽（已由[装备刷新](original_inventory_equipment.md)覆盖）；EVEF 实例字对非演员对象（宝箱 kind 0x29）的分支属[宝箱包](original_treasure.md)；`0x44cb10` 敌方槽分配在槽表满时返回 0 的调用方处理。

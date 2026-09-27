@@ -1,36 +1,23 @@
 # 第一战（level 51 棄卒）AI 走位：原版录屏逐回合对照
 
-> evidence: runtime-measured: 2026-09-24 原版录屏（34–513 s 第一战全程）逐帧读出的行动顺序、第 1–3 回合每个 AI 落点与行动、第 3 回合后行动清单; static-derived: 普通追击 0x440d5c → 0x4111a0 → 0x411080 → 0x413740 精化走法（lane R28 已读，本包接入）、0x407340／0x407660 速度排序与注册顺序、0x40d800 候选过滤、0x40d8b0／0x413390 攻击站位（lane R7-NPC）; provisional: 精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流 · status: live · functions: 0x407340, 0x407660, 0x40d800, 0x40d8b0, 0x40e870, 0x411080, 0x4111a0, 0x413390, 0x413740, 0x43ede0, 0x440d5c · tools: export_enemy_turns.gd, probe_battle051_ai_state.gd, run_ai_navigation_tests.gd, run_entry_growth_tests.gd, run_tests.gd, trace_battle051_ai.gd · updated: 2026-09-25
+> evidence: runtime-measured: 2026-09-24 原版录屏（34–513 s 第一战全程）逐帧读出的行动顺序、第 1–3 回合每个 AI 落点与行动、第 3 回合后行动清单; static-derived: 普通追击 0x440d5c → 0x4111a0 → 0x411080 → 0x413740 精化走法、0x407340／0x407660 速度排序与注册顺序、0x40d800 候选过滤、0x40d8b0／0x413390 攻击站位; provisional: 精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流 · status: live · functions: 0x407340, 0x407660, 0x40d800, 0x40d8b0, 0x40e870, 0x411080, 0x4111a0, 0x413390, 0x413740, 0x43ede0, 0x440d5c · tools: export_enemy_turns.gd, probe_battle051_ai_state.gd, run_ai_navigation_tests.gd, run_entry_growth_tests.gd, run_tests.gd, trace_battle051_ai.gd · updated: 2026-09-27
 
-起因：实玩反馈——第一关重制的走位与原版不一样（复述）。本包把原版录屏里第一战的 AI 行动逐个读出来，放进重制的同一局面里问重制 AI 会怎么走，按原因分类，并修掉查到原函数证据的一类。
+## 结论
 
-## 结论（人话）
+- 原版录屏第 1–3 回合 26 个 AI 行动全部落在重制同一局面的可产出集合内：旧「最短路走满移动力」追击有 11 个走不出，改为原版 `0x4111a0` 精化走法后剩 1 个（R3-24），按原站位函数 `0x413390` 重写后为 0（runtime-measured 对照；规则 static-derived）。
+- 行动顺序：同速时登记玩家先于 NPC（`0x407660` 注册槽），注入录屏推得的开战等级后重制队列与原版逐项相同；其余落点与顺序差别来自开战调级与 AI 随机数不同步（runtime-measured）。
+- 原版整镜像裁判注入同一 r1 棋盘：种子 1 时落点 8/11 一致；两边各 32 种子的分布里 9 处分歧有 5 处是持有目标规则（023_1／023_2 持有集合不相交，021_2／021_4／021_5 原版常持有雷歐納德而重制从不），4 处是随机（runtime-measured）。
+- 第 3 回合之后两边棋盘已不同，只列原版行动清单，不做逐格对照。
 
-- **修了一类规则差**：原版 AI 够不着目标时，是朝目标「一圈一圈收窄地挑最近的落脚格」走（与守备者回点同一个函数）；重制原来是「沿到攻击格的最短路走满移动力」。第 1–3 回合 26 个原版 AI 行动里，旧重制有 **11 个在同一局面下根本走不出来**（例：第 1 回合敌兵从 (6,9) 原版走到 (10,8)，重制只到 (9,9)）；改成原版走法后只剩 **1 个**（下表 R3-24，攻击站位）；lane R7-NPC 按原站位函数 `0x413390` 重写后它也进入重制可产出集合，26 个里现在 0 个走不出。
-- **行动顺序：一处规则差已修，其余是调级随机数**：原版第 1 回合的顺序是 021(6,9) → 023(14,19) → 021(17,6) → 021(11,7) → 021(10,9) → 021(3,11) → 雷歐納德 → 023(17,18) → 024(15,22) → 024(17,21) → 026(13,6) → 026(4,9)。两边都按实时速度稳定降序（`0x407340`），但同速时原版按注册数组顺序——登记玩家占保留槽 0..19、NPC 从槽 20 起（`0x407660`）——所以速度 14 的雷歐納德排在速度 14 的 023_1 之前；重制原来按 EVEF 顺序让 023 先动，lane R7-NPC 改为原版注册顺序（[首控队形](../../static_reverse/first_control_formation_order.md)）。其余差别来自速度本身：NPC 开战随机调级（`0x40e870`）改速度和血量。录屏 99.5 s／151.5 s 特写 023_2 为 3 级 41/41，重制新战役固定生成流下 023_2 是 1 级 29 血——同一调级规则、不同随机数：重制分布里 L3 40–41 HP 约占 1/3（[触发条件与解释](../../static_reverse/original_auto_growth.md#开战调级的触发条件)）。把录屏推得的开战等级（021_3 L2、023_2 L3、024_2 L3、其余 L1）注入重制，队列与上面的原版顺序逐项相同（`run_tests.gd` 钉住）。
-- **其余落点差别是随机数**：原版走法在等距候选之间抛 `rand(2)` 硬币（`0x413740` 的 `0x458c10 & 1`），重制同样抛，但随机流不同步，所以同一局面可能落在不同的等距格。表里「重制可产出」列给出 16 个种子下的落点分布，原版落点都在其中（R3-24 除外）。
-- 第 3 回合之后两边棋盘已经完全不同（阵亡者、血量、增援都不同），逐格对照只在第 1–3 回合做；之后列出原版行动清单与分类。
+## 证据
 
-## 从录屏读格坐标的方法与误差
+**runtime-measured：出处与读法**。来源为 2026-09-24 原版第一战录屏（605.8 s，私有档案）。每 0.25 s 取帧，游戏画面与 battle051 地图底图模板匹配得镜头左上角世界像素；用 `content/imported/hsl/chapter01/battle051/actor_walk_frames/` 的 idle 帧（含 `draw_origin`）带遮罩匹配得单位脚点格（33.5 s 开局帧 7 个单位与 `battle_051.json` EVEF 起始格逐一相同）；AI 行动前的蓝色移动范围按「到全部蓝格最大曼哈顿距离最小」求中心定行动者与起点（移动力 021／023：5，024：4，026：3），落点取下一次预告前的稳定帧。坐标只采用检出结果；攻击对象与伤害读自特写血条。
 
-来源：`录屏2026-09-24 中午12.03.22.mov`（用户录屏，私有档案）（605.8 s；时间目录 `ignored/user-video-20260924-1203/index/video_index.md` 只作导航）。读取工具与中间结果在 `ignored/ai51/`（不入库，raw 不作开发输入；本表是压缩后的结论）：
+**原版行动顺序**（每回合同序，阵亡者跳过）：021_3、023_2、021_1、021_2、021_4、021_5、雷歐納德、023_1、024_2、024_1、026_1、026_2。编号按 EVEF 起始格：021_1 (17,6)、026_1 (13,6)、021_2 (11,7)、021_3 (6,9)、021_4 (10,9)、026_2 (4,9)、021_5 (3,11)、023_1 (17,18)、023_2 (14,19)、雷歐納德 (15,17)、024_1 (17,21)、024_2 (15,22)。录屏 99.5 s／151.5 s 特写 023_2 为 3 级 41/41；推得开战等级 021_3 L2、023_2 L3、024_2 L3、其余 L1。重制种子 1 的队列：021_2、021_4、021_5、021_1、021_3、023_1、雷歐納德、023_2、024_2、026_2、024_1、026_1。
 
-1. **镜头**：每 0.25 s 取一帧，把游戏画面（640×480）与 battle051 地图底图做模板匹配，得到镜头左上角的世界像素；格坐标＝世界像素 ÷ 32。
-2. **单位**：用 battle051 演员 idle 帧（`content/imported/hsl/chapter01/battle051/actor_walk_frames/`，含各帧 `draw_origin`）在帧上做带遮罩匹配，脚点世界像素 ÷ 32 得格。校验：33.5 s 开局帧检出的 7 个单位格与 `battle_051.json` 的 EVEF 起始格逐一相同。
-3. **AI 预告**：原版每个 AI 行动前会闪蓝色移动范围；逐帧检出蓝格集合，按「与全部蓝格的最大曼哈顿距离最小」求中心，半径＝移动力（021／023：5，024：4，026：3），据此确定行动者和起点；落点取下一次预告前稳定帧的单位检出。
-4. **误差**：单位检出与蓝格同一镜头换算，格级精确；目视读帧（人物两格高、盾牌遮挡）容易差一行，**表中坐标只采用检出结果**，目视只用来认阵营和攻击对象。攻击对象和伤害读自战斗特写的血条数字。
+**第 1–3 回合逐项对照**（重制列：`probe_battle051_ai_state.gd` 把 PlayLoop 摆成原版当时棋盘，种子 1–16；「旧」为改追击走法前；持有目标不注入）
 
-## 原版行动顺序（runtime-measured）
-
-每回合同一顺序（阵亡者跳过）：021_3、023_2、021_1、021_2、021_4、021_5、雷歐納德、023_1、024_2、024_1、026_1、026_2。编号沿用重制 `battle_051.json`（按 EVEF 起始格对应：021_1 (17,6)、026_1 (13,6)、021_2 (11,7)、021_3 (6,9)、021_4 (10,9)、026_2 (4,9)、021_5 (3,11)、023_1 (17,18)、023_2 (14,19)、雷歐納德 (15,17)、024_1 (17,21)、024_2 (15,22)）。
-
-重制种子 1（R7-AI51 时）：021_2、021_4、021_5、021_1、021_3、023_1、023_2、雷歐納德、024_2、026_2、024_1、026_1。lane R7-NPC 之后同一生成流为 021_2、021_4、021_5、021_1、021_3、023_1、**雷歐納德、023_2**、024_2、026_2、024_1、026_1（同速 14 时登记玩家先于 NPC，`0x407660`）。剩余差别分类 a（调级随机数不同 → 速度不同）。
-
-## 第 1–3 回合逐项对照
-
-方法：对每个原版 AI 行动，用 [probe_battle051_ai_state.gd](../../../../tests/probe_battle051_ai_state.gd) 把重制 PlayLoop 摆成原版当时的棋盘（坐标、已知血量、阵亡），调用重制 AI 为该单位决策，种子 1–16 各一次。「旧」＝本包修复前（`bffea31f^`）的同一探针结果。持有目标不注入（原版的持有目标看不到），所以重制每次重新选目标。
-
-| # | 时刻 s | 原版 | 旧重制（16 种子） | 现重制（16 种子） | 分类 |
+| # | 时刻 s | 原版 | 旧重制 | 现重制 | 分类 |
 | --- | --- | --- | --- | --- | --- |
 | R1-01 | 34.0 | 021_3 (6,9)→(10,8) | (9,9)×16 | (10,8)×16 | b 已修 |
 | R1-02 | 35.25 | 023_2 (14,19)→(14,14) | (14,14)×16 | (14,14)×12，(13,15)×3，(12,16)×1 | a |
@@ -55,20 +42,16 @@
 | R2-21 | 143.75 | 024_1 (17,17)→(15,15) | (17,13)×16 | (15,15)×6，(17,13)×5，(13,17)×4，(14,16)×1 | b 已修→a |
 | R2-22 | 145.0 | 026_1 (11,7)→(11,9) | (11,10)×9，(14,7)×7 | (11,9)×2，(11,10)×13，(13,7)×1 | b 已修→a |
 | R2-23 | 145.75 | 026_2 (7,9)→(9,8) | (9,8)×16 | (9,8)×16 | 一致 |
-| R3-24 | 146.75 | 021_3 (12,11)→(14,11) 攻击 023_2(14,10) | (13,10)×16 | (13,10)×16；R7-NPC 后 32 种子 (13,10)×12、(14,11)×20；AI-PRIO 半格偏置距离后 (14,11) 确定 | b 已修→a（攻击站位 `0x413390`） |
+| R3-24 | 146.75 | 021_3 (12,11)→(14,11) 攻击 023_2(14,10) | (13,10)×16 | 半格偏置距离排序后 (14,11) 确定 | b 已修（`0x413390`） |
 | R3-25 | ≈155 | 023_2 原地攻击 021_3(14,11) | 同×7，(13,9)打021_1×9 | 同左 | a（选目标概率） |
 | R3-26 | 162.5 | 021_1 (12,9)→(13,10) 攻击 023_2 | 同×16 | 同×16 | 一致 |
 | R3-27 | 170.75 | 021_5 (9,9)→(12,11) | (12,11)×16 | (12,11)×16 | 一致 |
 | — | 173–196 | 雷歐納德 (15,16)→(15,11)，攻击 021_3(14,11) 击杀 | 玩家输入 | 玩家输入 | — |
 | R3-29 | 196.5 | 023_1 (16,14)→(13,12) | (14,11)×16 | (13,12)×9，(14,11)×7 | b 已修→a |
 
-原版血量注入：R2-16 后 023_1 16、021_4 10；R3-24 后 023_2 27；R3-25 后 021_3 7；R3-26 后 023_2 17（读自特写血条；重制最大血量不同，只注入不超上限的值）。
+分类：a＝随机数（等距硬币、选目标概率、调级）；b＝规则差。注入血量：R2-16 后 023_1 16、021_4 10；R3-24 后 023_2 27；R3-25 后 021_3 7；R3-26 后 023_2 17。R2-20 的停点差别不来自尸体占格（[original_death_disposal.md](../../static_reverse/original_death_disposal.md)）。
 
-**R3-24（lane R7-NPC 已修）**：021_3 从 (12,11) 打 (14,10) 的 023_2，两个等距站位 (13,10)／(14,11)。旧重制按「路径最便宜、再横移最少」固定取 (13,10)。原版站位由普通进攻的 `0x40d8b0` → `0x413390` 决定：移动范围 ∩ 目标射程格的空格行主序收集，按离目标距离降序插入排序、只有与紧前一项等距时 `rand() & 1` 交换，取第一个；state 0xb sub 7（旧称「state 7」）只是走到后再判射程并攻击（[候选过滤与攻击站位](../../static_reverse/original_ai_navigation.md#候选过滤与攻击站位)，static-derived）。这里两个站位等距，(13,10) 先收，抽到 1 就换成 (14,11)——原版这次抽到了 1。现重制同一局面 32 个种子 (13,10)×12、(14,11)×20（`probe_battle051_ai_state.gd`），原版落点在可产出集合内；`run_ai_navigation_tests.gd` `attack_station_cases` 钉住并可消融。
-
-## 第 3 回合之后（原版行动清单）
-
-第 3 回合末两边已不是同一棋盘：原版 021_2／021_4／021_3 已阵亡、023 血量与重制调级不同、第 4 回合起脚本增援（WINFAIL051 event 2 `actCheckRoundNumber 4`）从城门出现；第 6 回合事件（event 3）让城门前敌兵撤入城门并换胜利条件（390–404 s）。重制没有同一棋盘可比，这些行动分类为 **a 级联**（前面随机数与调级不同 → 棋盘不同），不单独判规则差。原版行动（时刻＝预告或特写开始；数字＝特写伤害）：
+**第 3 回合之后原版行动**（时刻＝预告或特写开始；数字＝特写伤害）
 
 | 时刻 s | 原版行动 |
 | --- | --- |
@@ -102,54 +85,38 @@
 | 489.5 | 023 攻击 026（21），026 反击（3），026 升级 |
 | 502.5 | 024 击杀 026（18）→ 胜利（513 s 后转入下一关剧情） |
 
-## 修了什么
-
-- `BattleLoopAI._ai_pursuit`：够不着目标时改走 `AINavigationRules.approach_point`（从 `approach_home` 抽出的同一精化核：半径 max(18, 移动力) 洪泛 → 曼哈顿最近可停格、等距抛 rand(2) → 半径 −2 重复到移动力），目标点＝持有目标所在格；回执 `ai_decision.pursuit_approach` 记录每级半径／目标／选格。静态依据：`0x43ede0` state 0xb sub 0 在 `0x40fb20` 为零时 `0x440d5c..0x440d84` 调 `0x4111a0(actor, 目标像素, 0x12, 移动力)`，与守备回点同入口同参数（[original_ai_navigation](../../static_reverse/original_ai_navigation.md)「普通追击也走同一条精化链」）。「目标是否可追」仍由重制的可达攻击格判定（`approaches`），没有可达攻击格的目标照旧 `unreachable_target` 待機。**收窄（provisional）**：R28 读出的是武器射程的 state 0xb 路径；没有普通攻击（`no_attack`）、只能去施法位的单位保留重制「沿路线走向最近施法位」的前缀（否则 `run_position_equipment_tests` 的「移动后下一行动施法」会走到施法范围外）。替换证据：读 `0x43ede0` 法术进攻状态在本回合无施法站位时的移动分支（是否同样调 `0x4111a0`、目标点取什么）。
-- 回归：[run_ai_navigation_tests.gd](../../../../tests/run_ai_navigation_tests.gd) `pursuit_walk_cases`——R1-01 八个种子都落 (10,8)、回执半径 18→5；R1-03 的十六个种子同时出现 (12,6) 与 (13,7)。把追击换回最短路前缀，三项全部失败。[run_ai_decision_tests.gd](../../../../tests/run_ai_decision_tests.gd) 与 [run_ai_skill_tests.gd](../../../../tests/run_ai_skill_tests.gd)（被呼叫单位追击）的单目标追击允许且只允许 rand(2) 硬币这一种抽样（旧断言要求零抽样，负责人 2026-09-25 批准改为只放行 bound 2；依据 `0x4111a0` → `0x413740` 等距 `0x458c10 & 1`），并新增单行走廊局面：每级精化只有一个最近格时全程零抽样（把硬币改成每格都抽则失败）。
-
-## 敌人回合导出（enemy_turn_v1）
-
-[export_enemy_turns.gd](../../../../tests/diagnostics/export_enemy_turns.gd) 是模拟器里原版敌人回合的重制对应端：给定关卡开局、各随机流起点和可选的局面注入，逐个 NPC 跑完一回合，每回合一行 JSON（`actor`、`from`→`to`、`action`、`target`、`skill`、`draws`＝AI 决策点每次抽取的 `site`／`n`／`value`）。Wait 的 `target` 是持有追击目标（`ai_target_id`，对应原版对象 `+0x88`）；`call` 在重制里是任意行动附带的广播，不单列；麻痹跳过等记 `other`。只加诊断，不改规则：抽取记录靠把 AI 源 RNG 包成 Callable，`--check` 用裸 RNG 复跑核对动作相同。
-
-录屏种子拿不到（原版 AI 流按时钟播种、与伤害流分开），所以对照用「按回合注入录屏棋盘＋扫 AI 种子」：棋盘在 [recorded_round_boards.json](recorded_round_boards.json)（模板阵容＋`run_tests.gd` 钉住的开局速度；第 2、3 回合加录屏坐标、血量、阵亡），期望在 [recorded_enemy_turns.jsonl](recorded_enemy_turns.jsonl)（上表 26 个行动；录屏看不到的 Wait 持有目标写 null、不比）。
+**录屏棋盘扫种子**（`export_enemy_turns.gd`；棋盘 [recorded_round_boards.json](recorded_round_boards.json)，期望 [recorded_enemy_turns.jsonl](recorded_enemy_turns.jsonl)，录屏看不到的 Wait 持有目标写 null 不比）
 
 | 局面 | 期望 | 扫种子 | 全吻合 | 示例种子 |
 | --- | --- | --- | --- | --- |
-| r1 第 1 回合开局 | 11 个 | 1–2000 | 19 | 10 |
-| r2 第 2 回合开局 | 10 个 | 1–5000 | 0（最长前缀 6：1817、4968） | — |
-| r2_after_023_1 第 2 回合 023_1 行动后 | 后 4 个 | 1–3000 | 36 | 128 |
-| r3 第 3 回合开局（前缀） | 5 个 | 1–400 | 27 | 1 |
-| first_control 原版样本近似 | 5 个 | 1–2000 | 170 | 14 |
+| r1 第 1 回合开局 | 11 | 1–2000 | 19 | 10 |
+| r2 第 2 回合开局 | 10 | 1–5000 | 0（最长前缀 6：1817、4968） | — |
+| r2_after_023_1 | 后 4 | 1–3000 | 36 | 128 |
+| r3 第 3 回合开局（前缀） | 5 | 1–400 | 27 | 1 |
+| first_control 原版样本近似 | 5 | 1–2000 | 170 | 14 |
 
-- 第 2 回合断在 #7：种子 1817 下 023_1 的攻击没打死 021_4（录屏里 021_4 这回合阵亡），024_2 于是改去打 021_4。这是交手结果（重制 AI 决策与本次交手的命中／伤害同一个源、模板等级不等于录屏等级），不是走位；从录屏的「023_1 之后」棋盘接着跑，后 4 个落点有 36 个种子全吻合。所以 26 个录屏行动都在重制的可产出集合里，但没有单个种子一口气跑出第 2 回合。
-- first_control：原版侧 lane 用存档样本 [HSLBAT_first_control.SAV](../../static_reverse/original_save_format.md) 自带的随机数状态跑出 5 条走位（[original_first_control_turn.jsonl](original_first_control_turn.jsonl)，协调者 2026-09-25 转达；023_2 未报告，`skip` 不比）。重制棋盘用样本 live record 的速度（021_2／021_3／021_5 16、021_1／021_4 15、023_x 与雷歐納德 14、026_1 13、026_2／024_x 12），雷歐納德之前行动的 021_x 位置**按录屏第 1 回合假定**（样本的对象坐标在未解码的战场尾段），从雷歐納德之后开始。重制队列同速按注册槽，雷歐納德（槽 0）先于 023_1／023_2，与样本「023_2 排在雷歐納德之后」一致；录屏里 023_2 速度 16 所以排在他之前。队列下标以样本载入后的队列为准（[original_enemy_turn](../../static_reverse/original_enemy_turn.md) §7）：下标 0..4 是五名 021，**下标 5 是雷歐納德**（样本的当前行动者，`0x4c6e48`=5），023_1 是下标 6、023_2 是下标 7；重制同一开局队列同为 5／6／7（`run_tests.gd` `_test_real_equal_speed_pairs_follow_registration_slots`）。「023_2 在队列下标 5」的说法有误（lane SLOTORDER 2026-09-25 更正）。
-- 原版一侧（lane ORACLE2 2026-09-25）：[`_enemy_level.py`](../../static_reverse/original_enemy_turn.md#11-任意关卡回合裁判-_enemy_levelpy) 让原版从 0x42da60 进关，在首个 0x407340 前把同一份 r1 棋盘写进原版内存，再跑第 1 回合。r1、种子 1 时两端 `ORACLE_MATCH total agree=2/11 order=11/11`，落点 8/11 一致。按两边各 32 个种子的分布，9 处分歧里 5 处是规则：023_2、023_1 的持有目标集合与重制不相交；021_2、021_4、021_5 在原版常持有雷歐納德，重制从不。另外 4 处是随机，注入缺口 0。录屏 r1 的 Wait 持有目标写 null、不比，所以上表「19 个种子全吻合」没有覆盖这类差异。导出器加了 `--decisions`：每个 AI 行动多印一行 `TURNDUMP_DECISION`（目标选择、候选过滤、锁定检查、呼叫采纳），只进 stdout，导出行不变。
+- r2 断在 #7：种子 1817 下 023_1 没打死 021_4（交手结果，非走位）；从「023_1 之后」棋盘接着跑有 36 个种子全吻合。
+- first_control：原版存档样本 [HSLBAT_first_control.SAV](../../static_reverse/original_save_format.md) 自带随机状态跑出 5 条走位（[original_first_control_turn.jsonl](original_first_control_turn.jsonl)，023_2 未报告）；样本 live 速度 021_2／021_3／021_5 16、021_1／021_4 15、023_x 与雷歐納德 14、026_1 13、026_2／024_x 12；载入后队列下标 0..4 是五名 021，下标 5 雷歐納德（`0x4c6e48`=5），023_1 为 6、023_2 为 7（[original_enemy_turn](../../static_reverse/original_enemy_turn.md) §7）。
+- 原版整镜像裁判：[`_enemy_level.py`](../../static_reverse/original_enemy_turn.md#复现) 从 `0x42da60` 进关，首个 `0x407340` 前写入 r1 棋盘；种子 1 `ORACLE_MATCH total agree=2/11 order=11/11`，落点 8/11。
 
-## 剩余与对齐所需
+**static-derived**：追击 `0x43ede0` state 0xb sub 0 在 `0x40fb20` 为零时 `0x440d5c..0x440d84` 调 `0x4111a0(actor, 目标像素, 0x12, 移动力)`；站位 `0x40d8b0`→`0x413390`；排序与注册 `0x407340`／`0x407660`；候选过滤 `0x40d800`（读法见 [original_ai_navigation.md](../../static_reverse/original_ai_navigation.md#证据)、[initial_battle_initiative.md](../../static_reverse/initial_battle_initiative.md)）。
 
-| 项 | 分类 | 要什么才能对齐 |
-| --- | --- | --- |
-| 各单位等级／血量／速度（从而行动顺序） | a | 调级规则两边相同、注册顺序已对齐（R7-NPC）；只差原版全局生成器 `0x458c10`（状态 `0x4795d4`／`0x4795d8`；`0x40e870` 抽取点 `0x40e92c`／`0x40e938`，模拟器实测）在开战时的抽样顺序与种子来源。lane RNG-A（2026-09-25）起重制也从全局流 `global_rng`（`GlobalRandomStream`，同一生成器）抽，但种子是产品时钟／`HSL_RNG_SEED`，开场前的其它全局抽取次数也未对齐，所以不冒称同一序列（此前误写成伤害流 `0x4c3040`／`0x4c3044`，lane ORACLE 2026-09-25 更正） |
-| 等距落点、选目标概率 | a | AI 随机数 `0x458c10`／`0x458c80`（状态 `0x4795d4`／`0x4795d8`）的初值和全局消耗顺序；与伤害 RNG `0x42c780` 分开，两边目前都不同步。给定起点后原版逐次抽取可由[敌人回合裁判](../../static_reverse/original_enemy_turn.md)在模拟器里重放；抽取点对照表 SITE_MAP 已把原版调用点对到重制 `Script.function`，但原版每个 NPC 先抽优先级链（`choose_check`／`low_hp_target`／`self_recovery`／`area_order`／`next_check`），重制大多不抽，两端抽取次序因此对不上（§11.3） |
-| 精化的洪泛度量与候选遍历顺序 | provisional | 对 `0x411080`／`0x413740` 做 51 关 WRD／占位的有界执行，逐级对照选格（`0x40d800` 80% 拒绝已由 R7-NPC 接入） |
-| 无普通攻击单位的追击走法 | provisional | `0x43ede0` 法术进攻状态的移动分支（见上「收窄」） |
-| 攻击站位的两条支线 | provisional | 魔法进攻无目标时的 11% 支线 `0x43feba` 未单独建模；`0x40d8b0` 逐槽换目标自 lane AI-PRIO 起接入（R3-24 本身已由 `0x413390` 解释） |
-| 第 3 回合后 | a 级联 | 前两项对齐后才可能逐格比 |
+## 重制接线
 
-## 复跑
+- `BattleLoopAI._ai_pursuit` → `AINavigationRules.approach_point`（与 `approach_home` 同核），回执 `ai_decision.pursuit_approach`；是否可追仍由可达攻击格（`approaches`）判定，无可达格时 `unreachable_target` 待機。
+- `CoreTurnQueue.rebuild` 同速按 `registration_slot`。
+- 回归钉点：`run_ai_navigation_tests.gd` `pursuit_walk_cases`（R1-01 八种子都落 (10,8)、半径 18→5；R1-03 同时出现 (12,6) 与 (13,7)）与 `attack_station_cases`；`run_ai_decision_tests.gd`、`run_ai_skill_tests.gd` 单目标追击只放行 bound 2 的硬币抽样；`run_tests.gd` 钉住注入等级后的队列。
+- `tests/diagnostics/export_enemy_turns.gd`：每回合一行 JSON（`actor`、`from`→`to`、`action`、`target`、`skill`、`draws`），`--decisions` 另印 `TURNDUMP_DECISION`，`--check` 用裸 RNG 复跑核对；只加诊断不改规则。
 
-```sh
-# 原版局面注入（cases 由录屏表生成，格式见脚本头）
-tools/godot.sh --headless --script res://tests/probe_battle051_ai_state.gd -- CASES.json 16
-# 重制按原版前三回合玩家操作自走（默认计划＝本包雷歐納德前三回合），逐行打印 AI 行动
-tools/godot.sh --headless --script res://tests/trace_battle051_ai.gd -- 1
-tools/godot.sh --headless --script res://tests/run_ai_navigation_tests.gd
-# 敌人回合导出：开局前 3 个 NPC 回合（任意关卡 --battle NNN；选项见脚本头）
-tools/godot.sh --headless --script res://tests/diagnostics/export_enemy_turns.gd -- --battle 051 --turns 3 --seed 1 --check
-# 录屏对照（上表示例种子；--search 1-2000 代替 --seed 扫种子）
-B=docs/evidence_packets/runtime_observations/battle_051_ai_moves
-tools/godot.sh --headless --script res://tests/diagnostics/export_enemy_turns.gd -- --turns 1 --seed 10 --state $B/recorded_round_boards.json --state-key r1 --plan "move:15/21,wait" --expect $B/recorded_enemy_turns.jsonl
-tools/godot.sh --headless --script res://tests/diagnostics/export_enemy_turns.gd -- --turns 1 --seed 128 --state $B/recorded_round_boards.json --state-key r2_after_023_1 --expect $B/recorded_enemy_turns.jsonl
-tools/godot.sh --headless --script res://tests/diagnostics/export_enemy_turns.gd -- --turns 1 --seed 1 --state $B/recorded_round_boards.json --state-key r3 --plan "move:15/11,attack:14/11" --expect $B/recorded_enemy_turns.jsonl
-tools/godot.sh --headless --script res://tests/diagnostics/export_enemy_turns.gd -- --turns 1 --seed 14 --state $B/recorded_round_boards.json --state-key first_control --expect $B/original_first_control_turn.jsonl
-```
+## 复现
+
+不可再生：原版侧唯一记录。重制侧对照：`tools/godot.sh --headless --script res://tests/diagnostics/export_enemy_turns.gd -- --turns 1 --seed 10 --state docs/evidence_packets/runtime_observations/battle_051_ai_moves/recorded_round_boards.json --state-key r1 --plan "move:15/21,wait" --expect docs/evidence_packets/runtime_observations/battle_051_ai_moves/recorded_enemy_turns.jsonl`。
+
+## 边界
+
+- 开战等级／血量／速度：调级规则两边相同，但原版全局流 `0x458c10`（状态 `0x4795d4`／`0x4795d8`，`0x40e870` 抽取点 `0x40e92c`／`0x40e938`）的开战抽样顺序与种子来源未对齐；重制全局流 `GlobalRandomStream` 以时钟／`HSL_RNG_SEED` 播种，不称同一序列。
+- 等距落点与选目标概率：AI 随机数初值与全局消耗顺序两边不同步；原版每个 NPC 先抽优先级链，重制多数不抽，抽取次序对不上（见 [original_enemy_turn](../../static_reverse/original_enemy_turn.md) §11.3）。
+- 精化的洪泛度量与候选遍历顺序：替换证据为对 `0x411080`／`0x413740` 用 51 关 WRD／占位做有界执行。
+- 无普通攻击单位的追击仍走「沿路线走向最近施法位」前缀；替换证据为 `0x43ede0` 法术进攻状态无施法站位时的移动分支。
+- 魔法进攻无目标时的 11% 支线另见 [original_ai_navigation.md](../../static_reverse/original_ai_navigation.md)。
+- 第 3 回合后属级联差异，前两项对齐后才可能逐格比较。

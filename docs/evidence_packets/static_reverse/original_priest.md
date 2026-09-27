@@ -1,6 +1,6 @@
 # 玩家槽1的002祭司：绑定、成长与资源行动链
 
-> evidence: static-derived; resource-derived · status: live · functions: 0x409e40, 0x42c700, 0x42caa0, 0x42cac0, 0x448840, 0x44cb10 · tools: hsltools/data/priest.py, hsltools/probes/mana_item.py, hsltools/probes/priest.py, hsltools/probes/priest_motion.py, run_support_magic_tests.gd · updated: 2026-09-26
+> evidence: static-derived; resource-derived · status: live · functions: 0x409e40, 0x42c700, 0x42caa0, 0x42cac0, 0x448840, 0x44cb10 · tools: hsltools/data/priest.py, hsltools/probes/mana_item.py, hsltools/probes/priest.py, hsltools/probes/priest_motion.py, run_support_magic_tests.gd · updated: 2026-09-27
 
 证据等级为`static-derived`（有界原指令）与`resource-derived`（源表／程序）。本批先核对第三战受控角色，发现“029／jobWise就是战斗緹娜”的旧路由假设错误，未把演出头像或模型候选当作战斗模板证据。
 
@@ -27,7 +27,7 @@ MP = 110*m/100 + c/4
 地/水/风/火/心的百分比、除数为(40,3)/(46,2)/(24,3)/(38,4)/(32,3)
 ```
 
-之后走已验证公共刷新：源加值、等级攻击补正、当前装备、当前HP/MP夹取、抗性总上限80、移动0..12。换装／升级不回满资源，source mode不换成临时控制权，本轮队列不追溯重排。Python独立模型与Godot分别对拍原返回。002手动五点分配沿用当前玩家成长合同，不冒充原自动入队加点或动态学技。
+之后走已验证公共刷新：源加值、等级攻击补正、当前装备、当前HP/MP夹取、抗性总上限80、移动0..12。换装／升级不回满资源，source mode不换成临时控制权，当前队列不追溯重排。Python独立模型与Godot分别对拍原返回。002手动五点分配沿用当前玩家成长合同，不冒充原自动入队加点或动态学技。
 
 ## 完整普通程序与回魔物品
 
@@ -54,12 +54,14 @@ MP = 110*m/100 + c/4
 
 029仍用于离场演出，jobWise87不因旧候选被错误启用；月花圓舞未实现，按既有命令合同隐藏，不借用氣刃斬。第一／第二战授予不变；开发场景的附加库存、受伤同伴及站位明确标注。PLAYERS原包字节差异和固定NPC策略继续保持。
 
-```sh
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate priest --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate priest_motion --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate mana_item --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-tools/godot.sh --headless --script res://tests/run_all.gd -- run_support_magic_tests.gd
-tools/godot.sh --screen 0 res://game/battle/development/PriestTrial.tscn
-```
+三个探针默认离线检查，只有显式execute才重新运行固定EXE，写回另需write。原文件只读，未调用候选模型。[十一条实玩及截图](#复现)按具名路线、后续构图补拍和未知旧进程退出码分别记录；最终完整门禁退出码写本批提交说明。当前Godot测试不升级为全职业、正式第三战或原全局初始化等价。
 
-三个探针默认离线检查，只有显式execute才重新运行固定EXE，写回另需write。原文件只读，未调用候选模型。[十一条实玩及截图](../runtime_observations/priest/README.md)按具名路线、后续构图补拍和未知旧进程退出码分别记录；最终完整门禁退出码写本批提交说明。当前Godot测试不升级为全职业、正式第三战或原全局初始化等价。
+## 复现
+
+`python3 tools/hsl.py check priest`
+
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
+
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [priest](../runtime_observations/priest/receipt.json) | manual、healing_growth、mana_extra、phase_mobility、melee_series、ai_heal、ai_silence、ai_paralysis、victory、defeat、escape | `capture_priest_review.gd`、`run_support_magic_tests.gd` |

@@ -1,8 +1,8 @@
 # 战内道具：解除禁魔、气力恢复与临时攻防
 
-> evidence: resource-derived; static-derived; negative-evidence: item+0xa0 位 0x80 无消耗品来源 · status: live · functions: 0x409e10, 0x409e40, 0x40a31f, 0x40c1b0, 0x40c230, 0x447fe2, 0x448840 · tools: hsltools/data/tactical_items.py, hsltools/probes/item_cure_route.py, hsltools/probes/item_magic.py, hsltools/probes/tactical_items.py, run_tactical_items_tests.gd · updated: 2026-09-22
+> evidence: resource-derived; static-derived; negative-evidence: item+0xa0 位 0x80 无消耗品来源 · status: live · functions: 0x409e10, 0x409e40, 0x40a31f, 0x40c1b0, 0x40c230, 0x447fe2, 0x448840 · tools: hsltools/data/tactical_items.py, hsltools/probes/item_cure_route.py, hsltools/probes/item_magic.py, hsltools/probes/tactical_items.py, run_tactical_items_tests.gd · updated: 2026-09-27
 
-本包沿确定性ITEM字段、字符串xref与已确认`0x409e40`道具函数推进，未调用Jev。源表是`resource-derived`；隔离原指令是`static-derived`，不是原版完整运行录像。机器证据为[道具应用／采样／扫描](original_tactical_items.json)、[AI自用或友援入口](original_item_cure_route.json)及[低强度道具与魔法合并／到期](original_item_magic.json)。后者只添加本批新输入，不重做SR-064已充分验证的旧样例。
+本包沿确定性ITEM字段、字符串xref与已确认`0x409e40`道具函数推进，未调用Jev。源表是`resource-derived`；隔离原指令是`static-derived`，不是原版完整运行录像。机器证据为[道具应用／采样／扫描](original_tactical_items.json)、[AI自用或友援入口](original_item_cure_route.json)及[低强度道具与魔法合并／到期](original_item_magic.json)。
 
 ## 四种源道具
 
@@ -15,7 +15,7 @@
 
 四者均为原`itemTypeUse`／`jobAll`。注册并不修改001／002的默认八槽库存，也不追加默认技能。`TacticalItemsTrial.tscn`有明确的道具包与原StatMagicTrial演练技能，初始气力0；它是演练场景，不能据此声称某关卡天然赠送四道具。
 
-## 解衰弱（R27 读法；R32 有界原生执行，static-derived＋native receipt）
+## 解衰弱（static-derived：有界原生执行）
 
 | 编号／名称 | 原字段与内存 | 效果 |
 | --- | --- | --- |
@@ -77,13 +77,14 @@ AI自救保留现有HP／濒死／解除的适配次序，在已拥有的驱毒�
 
 `BattleItemText`为描述、目标预览和实际反馈共用文字来源。首次显示范围，确认后显示真实强度；重复显示原强度和延长到的回数；破魔咒明确保留其他状态，气力按实际增量显示。沿用既有原道具图标／使用音和有限上浮提示，居中宽度随实际文本；播放及回合尾部提示完成后才开放后继菜单。没有伪造新法术音效或把道具强化写成“+0HP”。
 
-实际操作及过程边界见[战内道具验收](../runtime_observations/tactical_items/README.md)。当前原全局RNG、渲染时钟、完整AI类别选择、永久属性药、复活、武器MP打击和未支持职业仍分别未完成；后续必须为它们取独立证据，不能按本批相邻字段推断。
+实际操作及过程边界见[战内道具验收](#复现)。当前原全局RNG、渲染时钟、完整AI类别选择、永久属性药、复活、武器MP打击和未支持职业仍分别未完成；后续必须为它们取独立证据，不能按本批相邻字段推断。
 
-```sh
-python3 tools/hsl.py check tactical_items
-python3 tools/hsl.py check item_cure_route
-python3 tools/hsl.py check item_magic
-python3 tools/hsl.py check tactical_items_data
-tools/godot.sh --headless --script res://tests/run_tactical_items_tests.gd
-tools/godot.sh --screen 1 res://game/battle/development/TacticalItemsTrial.tscn
-```
+## 复现
+
+`python3 tools/hsl.py check tactical_items`
+
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
+
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [tactical_items](../runtime_observations/tactical_items/receipt.json) | manual、repeat、expiry、mixed、dispel、cure、stamina、melee、growth、movement、ai_self、ai_ally、paralysis、invalid、victory、defeat、escape | `capture_tactical_items_review.gd`、`run_tactical_items_tests.gd` |

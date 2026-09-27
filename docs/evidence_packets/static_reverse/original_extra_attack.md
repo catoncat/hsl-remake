@@ -1,60 +1,49 @@
-# 追加攻击与完整普通交锋
+# 追加攻击：`double_attack` 一次追加打击与完整普通交锋
 
-> evidence: static-derived · status: live · functions: 0x4092a0, 0x4423c0 · tools: hsltools/probes/extra_attack.py, run_extra_attack_tests.gd · updated: 2026-09-17
+> evidence: static-derived · status: live · functions: 0x4092a0, 0x4423c0 · tools: hsltools/probes/extra_attack.py, run_extra_attack_tests.gd · updated: 2026-09-27
 
-2026-09-17，接续导航提交`634138e`。本批恢复源`double_attack`的一次追加打击，接入玩家／AI、普通攻击／反击、逐击显示、最终EXP、死亡／领取、成长和存档。源字段、原指令边界与重制表现分别说明；不将追加打击解释为额外回合。
+## 结论
 
-## 系统对照与选择
+- 原版效果 `0x8000`（装备 `double_attack` 或角色天赋 capability `0x200` 映射而来，二者 OR 不叠成第三击）让一个普通系列最多两击；主攻与反击系列都可追加；目标死亡立即截断余击与反击；中间一击不积气，最后一击命中才按其 queued 伤害积气（static-derived）。
+- 重制 `game/sim/CombatSequenceRules.gd` 的 `attack_count` 给出 1／2，`BattlePlayLoop._resolve_attack_series` 在同一战斗状态逐击结算，收据以 `followups`／`counter` 分记，全交锋结束后每参与者一次 EXP 入账（static-derived）。
+- 一致：43 组原指令结果（7+6 组完整返回、30 组有界前段／后缀）与重制合同相符；逐击说明文字（連擊1/2 等）为重制反馈（provisional）。命中附带状态等其他被动未随本调度恢复（未读）。
 
-对照输入为[导航及选点](original_ai_navigation.md)、[四邻移动](original_movement.md)、[普通／氣刃斬](original_ordinary_special.md)、[最终EXP](original_experience.md)、[原录像观察](../runtime_observations/original_gameplay_reference/README.md)和当前实现。导航已有完整门禁、十二条实际输入、三条移动支援及默认胜败回执，本批复用。
+## 证据
 
-| 体验维度 | 新批次前的差距 | 本批接入 |
-| --- | --- | --- |
-| 战斗节奏／敌人规则 | 普通和反击都只能打一击，源追加攻击没有效果 | 一个普通系列最多两击，逐击命中／暴击；主系列结束才进入反击系列，死亡立即截断 |
-| 操作／装备 | 極光之劍因尚未支持被动而拒绝装备 | 原子换装／取消、当前与提案次数对比；选敌显示2擊（UI6 起照原版去掉头顶提示），移动后沿同一事务执行 |
-| 移动／AI选点 | 上一批已接通合法目标、完整路径和行动回退 | 已选中的普通攻击复用该系列；不为额外一击增加另一轮AI决策或移动 |
-| 数值／成长 | 只读第一击会漏掉第二击的伤害、EXP与击杀；简单复制整次攻击会重复积气或提前升级 | 每击收据保留queued／impact／actual及贡献；系列末积气、全交锋结束后每参与者一次EXP入账与成长 |
-| 镜头／动画／音效 | 原尺寸单人出招／受击只排主击与反击两个clip | 按实际击数排队，每击源帧与声音各播放一次；逐击HP/ST快照，全部结束后才遗言／奖励／后继 |
-| 胜败／撤离／保存 | 第一击非致死而第二击致死时，旧收据遍历无法发现死亡 | 死亡、经验、掉落和表现共用序列遍历；完整状态判断终局，保存后不重放、不重发 |
-| 初始化及其他被动 | 源天赋、装备效果、`action_twice`和特殊范围是不同合同 | 仅登记已核实追加位；第一战默认授予／装备不变，其他未支持字段继续拒绝 |
-
-该批的收益来自一次交锋的完整闭环，而非调整默认难度。其他移动flags、角色初始化、额外行动及命中附带状态仍由[PROJECT](../../PROJECT.md#next-steps)维护后续顺序。
-
-## 来源与原指令
-
-[hsltools/probes/extra_attack.py](../../../tools/hsltools/probes/extra_attack.py)只读取SHA锁定的原EXE；[original_extra_attack.json](original_extra_attack.json)保存43组原指令结果、停止地址、随机调用和九段字节锚点。探针没有修改函数、替换返回值或为未知回调造stub。7组flag查询及6组无效果收尾正常返回，其余30组为有界前段／后缀。
+**static-derived**（SHA 锁定 EXE，未改函数、未替换返回、未 stub；[original_extra_attack.json](original_extra_attack.json) 存 43 组结果、停止地址、随机调用与九段字节锚点）
 
 | 范围 | 原路径 | 确认内容 |
 | --- | --- | --- |
-| 7组效果查询 | `0x4092a0`完整返回 | 效果`0x8000`产生一次追加；`8`、`0x200`或`0x10000`本身不等于该效果 |
-| 12组天赋映射 | `0x448747 → 0x44875b` | 装备应用阶段把角色capability`0x200`映射为`0x8000`；和装备来源OR，不叠成第三击 |
-| 8组系列初始化 | `0x4423c0 → 0x442641/0x4426f2` | 清旧额外击／反击状态，再取追加次数；此步骤在判断反击模式之前，两种系列都可追加 |
-| 16组完成状态 | `0x4423c0`的state4，含原EXP调用 | 存活且有余击时先重开动画；死亡清余击与反击；最后有贡献的击才到状态／气力回调，无贡献分支正常返回 |
+| 7 组效果查询 | `0x4092a0` 完整返回 | `0x8000` 产生一次追加；`8`、`0x200`、`0x10000` 本身不是该效果 |
+| 12 组天赋映射 | `0x448747 → 0x44875b` | 装备应用阶段把 capability `0x200` 映射为 `0x8000`，与装备来源 OR |
+| 8 组系列初始化 | `0x4423c0 → 0x442641/0x4426f2` | 先清旧额外击／反击状态再取追加次数，早于反击模式判断 |
+| 16 组完成状态 | `0x4423c0` state4（含原 EXP 调用） | 存活且有余击先重开动画；死亡清余击与反击；最后有贡献的击才到状态／气力回调；无贡献分支正常返回（另 6 组无效果收尾完整返回） |
+| 积气时机 | `0x4424be` 追加分支跳回动画，绕过 `0x442483` 之后的状态／积气尾部 | 最后一击落空不补发中间一击的气力 |
 
-源ITEM中12（極光之劍）、55、69声明`double_attack`；当前只有12的其他字段全部受支持，55仍含`action_twice`和未知范围，69仍含未知范围。ITEM loader`0x447fea`生成`0x8000`；另一个`action_twice`字段在`0x447e1f`生成`8`，本批没有实现额外行动。PLAYERS的019／057声明天赋，loader`0x44c46b`生成capability`0x200`；非空装备应用的映射边界沿原路径保留。第一战001／021／023／024／026没有被额外赋予天赋。
+源数据：ITEM 12（極光之劍）、55、69 声明 `double_attack`，只有 12 其余字段全支持（55 含 `action_twice` 与未知范围，69 含未知范围）；loader `0x447fea` 生成 `0x8000`，`action_twice` 在 `0x447e1f` 生成 `8`。PLAYERS 019／057 声明天赋，loader `0x44c46b` 生成 capability `0x200`；第一战 001／021／023／024／026 无天赋。
 
-普通checker验证已保存结果和来源，不代表重新运行原程序：
+## 重制接线
 
-```sh
-python3 tools/hsl.py check extra_attack
-# 只有显式execute才重新运行原字节；不启动Wine或修改原作。
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate extra_attack --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-```
+- `game/sim/CombatSequenceRules.gd`：读当前装备与源声明，返回 1／2，缺失或非布尔声明在 RNG 前拒绝；provenance 头写 `rules: static-derived docs/evidence_packets/static_reverse/original_extra_attack.md`。
+- `game/sim/loop/BattlePlayLoop.gd` `_resolve_attack_series`：逐击调用原伤害／命中／暴击与经验换算；第一击落空仍可追加、落空补偿进入第二击；HP 归 0 即停，不抽第二击、不执行已排反击。收据字段 `strike_number`、`series_size`、`planned_strikes`；死亡、掉落与播放共用序列遍历。
+- EXP：每参与者全部击先汇总，再应用幸運緞帶一次加倍；主攻升级不影响未结算的反击；死于末击反击者不作死后成长。击杀链在系列完成时更新，实际击杀只加一次总击杀、连续数与掉落。
+- 表现：每实际击一条原尺寸出招／受击 clip（原帧序、挥击声、命中／落空声），impact 后显示本击暴击与 actual_damage；特写从每击 immutable before 构造 HP/ST 快照；全部 clip 结束前菜单、经验、死亡、结果由 busy 门禁阻塞（provisional：阶段文字）。
+- Wait、撤离、免费换装、法术、氣刃斬不获额外行动或复制费用；存档恢复不再抽样或发奖。
 
-## 共同事务与逐击结果
+## 复现
 
-`CombatSequenceRules.attack_count`读取当前装备和源声明，明确返回1／2，缺失或非布尔声明在RNG之前拒绝。`BattlePlayLoop._resolve_attack_series`在同一battle state依次调用已有原伤害／命中／暴击和经验换算；第一击落空仍可追加，落空补偿进入第二击。目标HP变0即停止，不再抽第二击伤害，也不再执行已排定反击。
+`python3 tools/hsl.py check extra_attack`
 
-`0x4424be`的追加分支先跳回动画，绕过`0x442483`后面的状态／积气尾部。因此中间一击没有气力增长；系列最后一击命中才按其queued伤害计算气力，最后一击落空不补发中间一击的气力。每击贡献已经在此前独立换算EXP，这两个时机不能混为一谈。原命中附带状态回调的其他被动未随此调度一并恢复。
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
 
-根收据保留第一击本身，`followups`保存后续击；`counter`是另一参与者的系列。`strike_number`、实际`series_size`和计划`planned_strikes`分别记录实际／预定次数；不会将两击合成一个虚假的伤害数字。死亡、掉落和播放读取共同的序列遍历。每参与者全部击的EXP先汇总，再应用幸運緞帶一次加倍；主攻击的升级不会改变尚未结算的反击属性。死于末击反击的角色不作死后成长。
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [extra_attack](../runtime_observations/extra_attack/receipt.json) | equip_move、double_counter、early_kill、late_kill、counter_defeat、ai_move、miss、special、final_kill、escape | `capture_extra_attack_review.gd`、`run_extra_attack_tests.gd`、`run_first_battle_playthrough.gd` |
 
-击杀链在系列完成时才更新：第一反击未杀不能提前清掉第二反击击杀所需的原连续数。实际击杀只增加一次总击杀、一次连续数和一次掉落；目标／呼叫失效清理仍沿既有死亡提交。Wait、撤离、免费换装、法术和氣刃斬不会因此获得额外行动或复制费用。配置摘要包含源／装备声明，存档恢复不再抽样或再次发奖。
+## 边界
 
-## 表现与回归
-
-每个实际击生成原尺寸出招／受击clip，使用已有帧序、挥击声、命中／落空声和时钟。界面以“連擊1/2”“反擊 · 連擊2/2”区分阶段，在impact后才显示本击暴击与actual_damage；这些说明文字是重制反馈，并非原录像证明的精确UI。KILL仍是击杀连续数，不能用它替代打击次数。
-
-系列测试复现了第一击提前显示第二击气力的问题：旧逻辑在第一击无`stamina_gain`时借用counter.before，该字段实际已经包含第二击所得气力。现在特写入口从每击immutable before构造显示副本，实际收据不再借后续反击补值；旧无快照的合成clip保留其原测试合同。所有clips结束前，菜单、经验、死亡和结果仍由既有busy门禁阻塞。显式开发快进根据实际clip数清空，不再假设最多两个。
-
-定向回归在[run_extra_attack_tests.gd](../../../tests/run_extra_attack_tests.gd)，实际控件、截图和夹具边界在[追加攻击验收](../runtime_observations/extra_attack/README.md)。本批不声称原完整dispatcher、全部附带状态、全局RNG、所有角色初始化或逐帧时钟等价；这些限制不影响本批已经接通的追加攻击合同。
+- 原完整 dispatcher 未执行；30 组为有界前段／后缀。
+- 命中附带状态回调的其他被动未恢复。
+- 原全局 RNG、全部角色初始化、逐帧时钟不在本包。
+- 追加打击不是额外回合；额外行动见 [original_extra_action.md](original_extra_action.md)。
+- 首战默认授予与装备不变。

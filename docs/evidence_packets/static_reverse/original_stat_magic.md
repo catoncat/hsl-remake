@@ -1,63 +1,60 @@
 # 攻防增益、退魔与最终行动计时
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c2d0, 0x40c480, 0x40dcf0, 0x448840 · tools: hsltools/data/stat_magic.py, hsltools/probes/ai_stat.py, hsltools/probes/stat_magic.py, run_support_magic_tests.gd · updated: 2026-09-18
+> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c2d0, 0x40c480, 0x40dcf0, 0x448840 · tools: hsltools/data/stat_magic.py, hsltools/probes/ai_stat.py, hsltools/probes/stat_magic.py, run_support_magic_tests.gd · updated: 2026-09-27
 
-本包区分源表、隔离原指令、当前游戏事务和表现。`resource-derived`字段来自tracked MAGIC／PLAYERS／mag-spc.h；`static-derived`数值来自原EXE有界执行，不是Jev或函数目录判断。机器回执为[original_stat_magic.json](original_stat_magic.json)与[original_ai_stat.json](original_ai_stat.json)。后者不是完整AI dispatcher的等价声明。
+## 结论
 
-## 源身份与数值
+- 原版地精守護／灼熱波動给当前防御／攻击固定数值加值（高 16 位强度、低 16 位剩余回数），重复施加强度取 `max(旧, floor((旧+新)/2))`、回数相加封顶 9；退魔不抽命中、只清攻防两项增益并刷新派生值；最后一回由 `0x40b910` 清除（static-derived）。
+- 重制 `StatEnhancementRules`／`StatMagicRules` 提案、`SkillResolutionRules` 一次准备生成收据，PlayLoop 唯一写入；AI 加持／退魔目标按原有用性与扫描规则选择（static-derived）。
+- 一致：61 组应用前段、128 次派生刷新、16 次计时与 AI helper 返回均与重制对上；粒子位置与播放时钟为重制取值（provisional）。
 
-| 技能 | 原身份／function | 费用／施放范围 | 当前初始拥有权 |
+## 证据
+
+**resource-derived**（MAGIC／PLAYERS／mag-spc.h）
+
+| 技能 | 原身份／function | 费用／范围 | 初始拥有 |
 | --- | --- | --- | --- |
-| 地精守護 | EARTH code06／0x20 | 12MP／range3CellCircle；单目标 | 按PLAYERS逐角色声明，045有声明 |
-| 灼熱波動 | FIRE code05／0x40 | 19MP／range3CellCircle；单目标 | 按PLAYERS逐角色声明，045有声明 |
-| 退魔 | MIND code06／0x4000 | 18MP／range4CellCircle；单目标 | 027等源声明拥有，002不因此获得 |
+| 地精守護 | EARTH code06／0x20 | 12MP／range3CellCircle，单目标 | 按 PLAYERS 逐角色；045 有 |
+| 灼熱波動 | FIRE code05／0x40 | 19MP／range3CellCircle，单目标 | 按 PLAYERS 逐角色；045 有 |
+| 退魔 | MIND code06／0x4000 | 18MP／range4CellCircle，单目标 | 027 等源声明；002 没有 |
 
-三项均沿现有减耗、禁魔、麻痺、移动后施法资格和共同技能事务。正式第一战及002默认授予不变；`StatMagicTrial.tscn`明确向002提供三技能、向026提供退魔，并声明额外资源／装备与遭遇设置。该开发场景不是原关卡或动态学技的证明。
+源 damage 范围：防御 16～24、攻击 12～24。原图 37 帧、原声 9 段，见 `content/imported/hsl/chapter01/stat_magic/manifest.json`；退魔 MIN12 按 PAK 连续成员 01～03、11～13、21～23、31～33 取帧。
 
-增益是当前攻击／防御上的**固定数值加值**，不是百分比，也不是每次刷新继续累加一层。应用前段保留原数值helper的全部调用和命中补偿：防御先proc1，攻击先proc3，随后均`rand(4)+2`采样2～5回，再以proc3采样实际强度。第二次proc3不把等级、精神、魔攻或元素抗性乘进强度。源damage范围分别16～24与12～24，但应用器还有自己的归一规则：防御低值以12为步长抬升、高于100以10递减；攻击低值以16抬升、高于96以8递减。不是简单clamp。helper主命中失败返回0后，也继续原应用路径；归一可得到最低强度，不另造“未命中则立即取消增益”的分支。
+**static-derived**（[original_stat_magic.json](original_stat_magic.json)、[original_ai_stat.json](original_ai_stat.json)；未 stub 原 callee）
 
-高16位保存强度、低16位保存剩余回数。重复施加保留`max(旧强度, floor((旧强度+新强度)/2))`，剩余回数相加后封顶9；不会把两个完整加值相加。每目标支援贡献为实际新增回数×2；无新增回数不凭空发放刷新经验。原经验helper仍处理等级差、随机折减和装备最终加倍，游戏在本次技能交锋收尾统一发放并开放成长，不在整场胜利再次奖励。
-
-退魔原分支不再抽主命中随机数，只清攻击flag0x10／word+0x40与防御flag0x20／word+0x44，再调用派生刷新。毒、禁魔、麻痺的位与完整计数字保持不变；每个清除效果贡献`12×(原剩余回数+1)`。无增益的玩家目标在准备阶段拒绝，无费用、无随机数、无队列推进。法术本身既不扣HP，也不回复MP。
-
-## 原指令边界
-
-| 路径 | 回执与停止点 | 支持的结论 |
+| 路径 | 回执与停止点 | 结论 |
 | --- | --- | --- |
-| `0x40aa80`目标应用，含`0x40b01c/0x40b112/0x40b299` | 61组前段，在`0x40b831`后续EXP转换前停止；内部实际执行helper与`0x448840` | 源随机调用、合并、清除、贡献及HP／MP／气力／EXP不被该段越权修改 |
-| `0x448840`派生刷新 | 64种输入各执行两次，128次正常返回 | 四当前职业、不同等级／装备、单独／共同增益；已有派生值不被第二次刷新再叠加 |
-| `0x40b910`最终计时 | 16次完整返回，含需要的真实刷新调用 | 剩余回数递减、最后一回清word／flag并恢复派生攻防 |
-| `0x440e3d`辅助优先级 | 96个有界后缀，到下一阶段入口前停止 | 回复／解除之后，`ai_help_attack`使用独立attempted0x10和mode6 |
-| `0x40dcf0`、`0x40c480`及`0x40c2d0` | 48次有用性与16次连续扫描正常返回；getter在扫描内真实运行 | 已有对应正向状态不再成为该技能的AI加持目标；同阵营、8格方形邻域、排除自己、扫描游标延续 |
+| `0x40aa80` 目标应用（内部分支 `0x40b01c`／`0x40b112`／`0x40b299`） | 61 组前段，停在 `0x40b831` EXP 转换前 | 防御先 proc1、攻击先 proc3，再 `rand(4)+2` 取 2～5 回，再以 proc3 取强度（不乘等级、精神、魔攻或抗性）；归一：防御低值以 12 为步长抬升、高于 100 以 10 递减，攻击低值以 16 抬升、高于 96 以 8 递减；主命中失败仍走应用路径 |
+| 同上，退魔分支 | 同上 | 清攻击 flag 0x10／word +0x40 与防御 flag 0x20／word +0x44 后刷新；毒、禁魔、麻痺位与计数不变；每项贡献 `12×(原剩余回数+1)` |
+| 贡献 | 同上 | 每目标实际新增回数 ×2；无新增回数无贡献；HP／MP／气力／EXP 不被该段修改 |
+| `0x448840` 派生刷新 | 64 种输入 × 2，128 次正常返回 | 四职业、不同等级／装备、单独／共同增益；第二次刷新不叠加 |
+| `0x40b910` 最终计时 | 16 次完整返回 | 剩余回数递减；最后一回清 word／flag 并恢复派生攻防 |
+| `0x440e3d` 辅助优先级 | 96 个有界后缀，到下一阶段入口前停 | 回复／解除之后，`ai_help_attack` 用独立 attempted 0x10 与 mode6 |
+| `0x40dcf0`、`0x40c480`、`0x40c2d0` | 48 次有用性、16 次连续扫描正常返回 | 已有同类正向状态不再成为加持目标；同阵营、8 格方形邻域、排除自己、扫描游标延续 |
 
-探针原文件SHA和字节锚点哈希固定，离线checker会拒绝修改应用后派生值、到期后派生值、返回边界和锚点字节。没有stub原callee、无审查外调用、无跳过失败的“正常返回”。合成角色内存／原技能字段覆盖范围、未覆盖条件分别保存在JSON limits中。
+`known_functions` 中 `0x40aa80` 名为 `apply_skill_target_effects`（旧名 `turn_tick` 有误）。
 
-`known_functions`纠正旧`0x40aa80 turn_tick`路由名为`apply_skill_target_effects`；已正常返回的计时与三个AI helper登记到本包。`0x40b01c/0x40b112/0x40b299`是函数内部应用分支，不伪装成新的独立函数入口。目录构建复用已有判断，不因此重新调用Jev。
+## 重制接线
 
-## 当前可玩事务
+- `game/sim/StatEnhancementRules.gd`（packed 状态）、`game/sim/StatMagicRules.gd`（单目标结果）、`game/sim/SkillResolutionRules.gd`（一次核对对象与费用）；自施法时 MP 付款单独归施法者。
+- `game/sim/AISupportRules.gd`：加持 AI 从缺同类状态的友军选，退魔 AI 从有增益的敌人选；第二行动重建候选。
+- 装备与职业属性每次重算只加一次有效强度；`double_attack` 不多施一次，`action_twice` 不早减回数。最终行动尾部先完整提案、校验后一次提交；麻痺跳过仍执行一次尾部；终态后不再结算。Checkpoint v4 保存尾部与技能配置，篡改派生加值或收据会被拒绝。
+- `game/battle/development/StatMagicTrial.tscn`：开发场，向 002 提供三技能、026 提供退魔及额外资源；不是原关卡。
+- provenance 头写 `rules: static-derived docs/evidence_packets/static_reverse/original_stat_magic.md`。
 
-`StatEnhancementRules`只提案packed状态，`StatMagicRules`只提案单目标结果，`SkillResolutionRules`在一次准备中核对所有对象和费用，再产生不可变收据。PlayLoop仍是唯一写入者。对自身施法仅提交目标状态／派生攻防，MP付款单独归施法者，避免目标刷新覆盖已经支付的MP。
+## 复现
 
-当前装备和底层职业属性每次重算时只加一次有效强度；装卸、升级、恢复均使用同一来源。普通／暴击反击与双击读取当前物理攻防，风火魔法和治疗仍用原魔法数值。`double_attack`不多施一次增益，`action_twice`不早减一次回数。第二行动新建当前候选；加持AI从尚缺的同类状态中选友军，退魔AI从当前有增益的敌人中选目标，首行动清除后第二行动不再次支付无效退魔。
+`python3 tools/hsl.py check stat_magic`
 
-最终行动尾部先生成完整毒伤／资源／计时提案；增益到期需刷新派生值时，在写回任何HP／MP／RNG／队列前完成校验。之后一次提交并交接。麻痺跳过一个角色槽仍执行一次尾部；武器取消未来槽沿其既有无尾部语义。死亡清理增益及占格，胜利／败北／撤离后禁止再结算尾部。Checkpoint保存v4尾部与新技能配置，回放校验只验证不重施；篡改派生加值或收据会被拒绝。
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
 
-## 原图、声音与重制表现
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [stat_magic](../runtime_observations/stat_magic/receipt.json) | manual、repeat、expiry、dispel、movement、melee、growth、empty_mp、silence、paralysis、ai_buff、ai_dispel、ai_blocked、victory、defeat、escape | `capture_stat_magic_review.gd`、`run_support_magic_tests.gd` |
 
-三法术提升37张原图帧、9段原声音到`content/imported/hsl/chapter01/stat_magic/manifest.json`。退魔的MIN12按原PAK连续成员01～03、11～13、21～23、31～33取帧，不把“连续成员”错读成文件名01～12。资源检查保留原文本binding和每张图／每段音频哈希。
+## 边界
 
-粒子位置、100效果tick映射和共同0.4播放倍率是明确重制时钟，不声称原秒数。数值在impact回调出现、最后粒子淡出后才交接；状态页显示总攻防及`(+增益)`、剩余回数，最后独立行动才计时。到期有明确减少值提示。自动检查不能代替实玩图证；实际回执见[增益／退魔验收](../runtime_observations/stat_magic/README.md)。
-
-## 系统对照与仍有边界
-
-本批补上了此前普通伤害已经读取当前攻防、却没有完整正向状态来源／反制／到期和AI调度的缺口。已有移动、施法资源、经验、成长、双击、两次行动与3×3占地直接复用，没有为新法术创建第二套状态机。
-
-剩余主要差异是其它高位效果与原初始化自动成长，尤其MP打击／吸收和弱化等仍未接装备字段。原全局随机流、完整dispatcher、原粒子时钟、全部职业和动态学习未由本批证明；扩展须独立追踪真实callee和调用边界，不能按相邻位或函数目录标签推断。
-
-```sh
-python3 tools/hsl.py check stat_magic
-python3 tools/hsl.py check ai_stat
-python3 tools/hsl.py check stat_magic_data
-tools/godot.sh --headless --script res://tests/run_all.gd -- run_support_magic_tests.gd
-tools/godot.sh --screen 0 res://game/battle/development/StatMagicTrial.tscn
-```
+- 粒子位置、100 效果 tick 映射与 0.4 播放倍率是重制时钟。
+- MP 打击／吸收、弱化等高位效果未接装备字段。
+- 原全局随机流、完整 AI dispatcher、全部职业与动态学习未证明。
+- 合成角色内存与未覆盖条件记录在 JSON limits。

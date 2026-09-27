@@ -1,67 +1,62 @@
-# 白光之翼与连续两次行动
+# 额外行动：白光之翼与同一角色连续两次行动
 
-> evidence: static-derived · status: live · functions: 0x40e240, 0x40e2b0 · tools: hsltools/probes/extra_action.py · updated: 2026-09-17
+> evidence: static-derived · status: live · functions: 0x40e240, 0x40e2b0 · tools: hsltools/probes/extra_action.py, run_extra_attack_tests.gd · updated: 2026-09-27
 
-2026-09-17，基线`902e13a`。本批在额外攻击、成长／装备移动、单格通行与原法术／EXP链之后，接入源`action_twice`。核心区别是：同一角色先完成一个完整行动，再立即获得一个独立行动；并非复制一次打击或在队列里插入另一个角色。
+## 结论
 
-## 新一轮系统对照
+- 原版装备效果 bit8（源 ITEM227 白光之翼 `action_twice=1`）让同一角色在完成一次完整行动后立即重新进入自己的菜单／AI 决策；第一次重入跳过毒伤、状态递减与队列推进，第二次完成才走最终出口；已授予的第二次不因卸装消失，也不会叠出第三次（static-derived）。
+- 重制 `game/sim/ExtraActionRules.gd` 提出授予，`game/sim/loop/BattlePlayLoop.gd` 的 `extra_action`（owner_id、pending、sequence）是唯一状态，`game/battle/scene/BattleExtraActionCue.gd` 在前一段反馈结束后提示“再次行動”（static-derived；提示文字与 0.55 秒为 provisional）。
+- 一致：5 组 getter 完整返回与 20 组玩家／AI 收尾前段均与重制合同相符；完整高位 dispatcher 资格与原全局 RNG 未读（static-derived）。
 
-| 体验 | 当前基础 | 本批连贯改进 |
+## 证据
+
+**static-derived**（SHA 锁定 EXE；原代码与 getter 均未替换或 stub；[original_extra_action.json](original_extra_action.json)）
+
+| 项 | 锚点 | 读法 |
 | --- | --- | --- |
-| 行动节奏 | 普通／反击各最多两击，攻法援物后统一交接 | 源白光之翼能使同一角色连续行动两次；第一次的完整演出、经验、领取和成长后再开放第二次控制 |
-| 操作与站位 | 当前装备预算、移动取消、共同通行和路径反馈 | 第二次从当前已确认位置重新获得移动／攻击预算；取消第二段只撤销本段，保留前一段及已确认装备 |
-| 敌人／AI | 目标持有、援助、物品、攻击／施法回退 | AI第二次重新准备目标、路径、MP与友军伤势，不重放第一条意图；已经恢复健康的队友不会强制再治疗 |
-| 状态／气力／经验 | 原毒伤／时间、连杀与交锋气力和最终EXP | 两次独立交锋分别结算气力／EXP，最后一次行动后才扣本角色的状态时间和毒伤；第二次驱毒可以避免最终毒伤 |
-| 装备／成长／保存 | 原子装卸、成长派生刷新、单战恢复 | 第一次完成时读取现装备；第二次卸装、重新装备、成长或恢复都不能刷新次数；保存完整当前角色和已用第一次的事实 |
-| 视听与UI | 原出招、地图施法、伤害／回复、遗言／奖励及菜单 | 两个行动各播放自身收据和原音效；“再次行動”在前一轮反馈完结后显示，菜单恢复前短暂停顿，并避开原菜单完整范围 |
+| 字段 loader | `0x447e1f` | ITEM `action_twice` → 装备效果 bit8；`double_attack` 是另一位（`0x447fea` → `0x8000`），可独立存在 |
+| getter | `0x40e2b0` → `0x40e240` | 读当前角色装备效果 mask8 |
+| 玩家收尾门 | `0x443a86`，最终 phase `0x10003` | 用原全局计数 `0x4c1cf0` |
+| AI 收尾门 | `0x441f08`，最终 phase `0x640001` | 同上 |
+| 下游（第一次重入不经过） | 毒 HP `0x443ad1`；kill-chain 清理、状态递减、队列推进 `0x443c09`、`0x442080` | 最后一次行动才处理 |
 
-注册本批能力不改变首战默认装备／角色。大型体型、其他职业初始化、命中附带状态和其他未支持装备效果仍按[PROJECT](../../PROJECT.md#next-steps)接续。
-
-## 原字段与指令依据
-
-源ITEM227为**白光之翼**，类别Other，可装备职业取自原use_job；其`action_twice=1`由`0x447e1f`一段loader写入装备效果bit8。`double_attack`是另一个位，两者可以独立存在。227的其余字段均已被现有装备系统支持，因此本批开放正常换装；53／55／57／58虽也有源声明，仍因各自未知附带字段或不支持的范围等保持拒绝，不能一概开放。
-
-原getter `0x40e2b0`调用`0x40e240`读取当前角色装备效果mask8。玩家收尾`0x443a86`与AI收尾`0x441f08`使用原全局计数`0x4c1cf0`，经本批原指令执行确认：
-
-| 已使用额外行动 | 当前装备bit8 | 原分支结果 |
+| 已用额外行动 | 当前装备 bit8 | 原分支 |
 | --- | --- | --- |
-| 否 | 无 | 进入最终状态／队列出口 |
-| 否 | 有 | 标记已进入第二次，角色phase回0，立即重新进入同一角色菜单／AI决策 |
-| 是 | 任意 | 清除标记并进入最终出口；不再次读取装备getter |
+| 否 | 无 | 最终状态／队列出口 |
+| 否 | 有 | 置已进入第二次，phase 回 0，立即重入同一角色菜单／AI |
+| 是 | 任意 | 清标记进最终出口，不再调 getter |
 
-玩家最终phase为`0x10003`，AI为`0x640001`。毒HP处理在玩家`0x443ad1`等下游；最后kill-chain清理、状态递减与队列推进在`0x443c09`及`0x442080`等下游。第一次repeat分支不经过这些块。由此，第一次后禁魔仍然有效，毒既不扣HP也不减时间；最后一次才沿原已恢复的公共状态与队列处理。无效果物品／取消／免费装卸不会调用成功行动出口。
+- 原菜单初始化不重置该标记：第一段后卸下白光之翼，第二次仍在；第二段再装备不产生第三次。
+- 第一次后禁魔仍有效，毒不扣 HP 也不减时间；无效果物品／取消／免费装卸不调用成功行动出口。
+- 源 ITEM 53／55／57／58 也声明 `action_twice`，但含未知附带字段或不支持的范围，保持拒绝装备；227 其余字段均已支持。
 
-原菜单初始化路径不重置这次repeat标记。第一段刚结束后卸下白光之翼，已授予第二次仍然存在；第二段再装备也不会产生第三次。普通攻击系列及魔法在每个独立行动中继续使用既有规则和各自真实费用；本批不倍增伤害、经验或现有费用。
-
-## 可复现原指令结果
-
-[hsltools/probes/extra_action.py](../../../tools/hsltools/probes/extra_action.py)读取锁定SHA的原EXE，原代码和被调用getter都未替换／stub，结果保存在[original_extra_action.json](original_extra_action.json)。
-
-| 结果类别 | 覆盖 | 不能据此声明 |
+| 执行类别 | 覆盖 | 不能据此声明 |
 | --- | --- | --- |
-| getter正常返回 | 5组：无flag、仅bit8、仅double_attack、二者、复合mask；返回／栈／输入不变均核对 | 不是整个装备loader／角色初始化已经运行 |
-| 玩家／AI收尾前段 | 20组：两类入口×五种效果×首次／第二次；第二次getter调用数为0，角色HP／状态／kill-chain和队列游标不变 | 停在共同dispatcher尾前，不是完整回合、UI、状态或渲染函数返回 |
-| 原字节锚点 | 8段：字段loader、getter、两类门、毒处理、最终出口与菜单重入 | 下游状态／队列沿复用证据，不声称本工具重放整场 |
+| getter 完整返回 | 5 组：无 flag、仅 bit8、仅 double_attack、二者、复合 mask；返回／栈／输入不变 | 整个装备 loader／角色初始化已运行 |
+| 玩家／AI 收尾前段 | 20 组：两入口 × 五种效果 × 首次／第二次；第二次 getter 调用数 0，HP／状态／kill-chain／队列游标不变 | 完整回合、UI、状态或渲染返回 |
+| 原字节锚点 | 8 段：loader、getter、两类门、毒处理、最终出口、菜单重入 | 下游状态／队列沿既有证据复用 |
 
-普通checker核对保存输入覆盖、指令预算、完整返回／prefix边界、锚点字节SHA与原ITEM表SHA；篡改原结果、stop或字节会失败。只有`--execute`才重新执行原指令：
+## 重制接线
 
-```sh
-python3 tools/hsl.py check extra_action
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate extra_action --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-```
+- `game/sim/ExtraActionRules.gd`：装备查询、状态校验与 repeat 提案；provenance 头写 `rules: static-derived docs/evidence_packets/static_reverse/original_extra_action.md`。
+- `game/sim/loop/BattlePlayLoop.gd`：`extra_action` 在同一战斗字典；pending 只属当前存活行动者，死亡、剧情离场与三种终态清空；首次完成按现装备授予并重置本段移动／攻击资格，再次完成经 `game/sim/CoreTurnQueue.gd` 原出口。每段新 sequence；旧 `finish_exhausted_action` 在新段无效。
+- AI 两段各自重新规划（目标死亡、已治愈、MP 耗尽、禁魔走当前合法动作或 Wait），不重放第一段意图。
+- `game/battle/runtime/BattleCheckpoint.gd`：F5/F9 保留第二段、现装备与已确认位置，读取不调用授予入口（重制存档格式，不兼容原作存档）。
+- `game/battle/scene/BattleExtraActionCue.gd`：读 pending 与 sequence，前一段移动／交锋／遗言／EXP／领取／成长结束后显示，0.55 秒后开放菜单，避开 `BattleCommandMenu.layout_bounds()`；不加新音效（provisional：文字与时长）。
 
-## 共同事务与恢复
+## 复现
 
-`ExtraActionRules`只提供装备查询、状态校验和repeat提案。PlayLoop的`extra_action`保存owner_id、pending和唯一sequence，属于同一战斗字典；没有第二份队列或UI-owned行动次数。pending只能属于当前存活行动者，终态必须清空owner。首次合法完成按当前装备授予，重置本段移动／攻击资格并返回同角色；再次完成才经过状态／kill-chain与CoreTurnQueue原出口。
+`python3 tools/hsl.py check extra_action`
 
-每次攻法援仍先完整准备并一次提交，新的sequence区分两次独立交锋。旧`finish_exhausted_action`在新段旗标已经清空后无效，不能立刻消费第二段；运行时还用短暂可见提示阻止旧菜单输入跨段误入。AI两次分别生成新计划，友军已治疗、目标死亡、MP耗尽或禁魔会走当前合法动作或Wait，不保留可直接再次执行的旧意图。
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
 
-死亡、剧情离场和胜利／败北／撤离清掉相应pending；结果不授予剩余行动。F5/F9保留第二段、现装备及已确认位置，读取不调用授予入口；移除再装备也不能超过两次。恢复只重置表现游标到该快照sequence，回读较早存档后下一个新repeat仍能正常显示。多人连续行动及队尾第二次才回合wrap有回归；这些是已恢复原门与现有稳定ID／快照工程的组合，不冒称兼容原作存档格式。
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [extra_action](../runtime_observations/extra_action/receipt.json) | wait_status、equip_restore、move_attack_cast、double_series、growth_kill、support_cure、ai_cast、ai_support、ai_no_mp、ai_silence、victory、defeat、escape | `capture_extra_action_review.gd`、`run_extra_attack_tests.gd`、`run_first_battle_playthrough.gd` |
 
-## 表现、验证与边界
+## 边界
 
-`BattleExtraActionCue`读取PlayLoop pending和sequence，在前一轮移动／交锋／遗言／EXP／领取／成长结束后显示“再次行動”。0.55秒后菜单开放；标签避开`BattleCommandMenu.layout_bounds()`的完整原布局及文字范围。选格、模态和后继隐藏提示。提示不增加新音效，所有声音来自两次独立动作本来对应的原资源。文字与0.55秒为重制可读性取舍，原时钟／逐帧UI未声称等价。
-
-实玩已暴露并修正本轮装备预览分支嵌套导致缺少1次→2次提示、持续提示与移动菜单重叠两项可见问题；源菜单位置算法没有改写。成长后读档的夹具自动点击撞上菜单展开期，改为等待原菜单可点击后继续；未放宽产品输入门。AI连续支援的夹具必须保持仍符合原伤势门槛，另有恢复满HP后第二次Wait的实质回归，不能把第二次不再治疗直接判成错误。
-
-实际输入与精简回执见[额外行动验收](../runtime_observations/extra_action/README.md)。首次原AI／玩家高位完整dispatcher资格、其他未实现异常与被动、原全局RNG及全部初始化仍有边界；正常首战没有新增白光之翼。通过受控双行动案例不等于全部原战斗系统或长期难度已经等价。
+- 玩家／AI 高位完整 dispatcher 资格未执行，收尾只跑到共同 dispatcher 尾前。
+- 原全局 RNG、全部角色初始化与其他未实现异常／被动不在本包。
+- 原时钟与逐帧 UI 未读；“再次行動”提示是重制反馈。
+- 首战默认不授予白光之翼。

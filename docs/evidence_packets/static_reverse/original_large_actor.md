@@ -1,69 +1,60 @@
-# 大型角色的占地、通行与单一目标身份
+# 大型角色：3×3 占地、四邻整块通行与单一目标身份
 
-> evidence: static-derived · status: live · functions: 0x407800, 0x409090, 0x40ecc0, 0x40ed50, 0x40f200, 0x40f440, 0x4104d0, 0x411940, 0x411990, 0x411ae0, 0x411b90, 0x448840, 0x46dd50, 0x46de70 · tools: hsltools/data/large_actor.py, hsltools/probes/large_actor.py, run_large_actor_tests.gd · updated: 2026-09-18
+> evidence: static-derived · status: live · functions: 0x407800, 0x409090, 0x40ecc0, 0x40ed50, 0x40f200, 0x40f440, 0x4104d0, 0x411940, 0x411990, 0x411ae0, 0x411b90, 0x448840, 0x46dd50, 0x46de70 · tools: hsltools/data/large_actor.py, hsltools/probes/large_actor.py, run_large_actor_tests.gd · updated: 2026-09-27
 
-2026-09-18。接续已提交的移动后施法 `a8d9ae3` 与麻痺 `e2cdc84`；本包只补它们尚未覆盖的空间合同，不重新宣称证明旧完整战斗链。
+## 结论
 
-## 来源与有界原指令
+- 原版 `size_type` 非零的对象以格中心为锚占周围 3×3 九格，但仍是一个对象、一个 HP、一个队列身份；地面整块扩展只走上下左右四邻，不借友军／no_block 例外挤过窄缝；武器范围索引 +17 夹到 20；区域命中同一大对象只返回一次（static-derived）。
+- 重制 `game/sim/FootprintRules.gd`（几何）、`game/sim/ActorTraversalRules.gd`（占用／通行上下文）、`game/sim/TacticalGridRules.gd`（可停／仅通行目的格、费用、路径）供玩家与 AI 共用；原 039 海輝魔只在开发场景 `LargeActorTrial` 可玩（static-derived）。
+- 一致：54 次命中查询、56 次完整 flood、8 次刷新等正常返回与重制合同相符；全图最短路径的等价择一是重制组合，不等同原递归缓存访问次序（provisional）。旧单格包曾写的“大型八方向扩展”是误读，已由 flood 更正。
 
-[探针](../../../tools/hsltools/probes/large_actor.py)只读固定 SHA 的原 EXE，在合成地图／对象表上执行原指令及原被调函数，不替换指令、不 stub 未知调用。结果与原字节在 [JSON](original_large_actor.json)。普通 checker 是离线重核既存回执，不是再次运行原作游戏。
+## 证据
 
-| 范围 | 实际执行 | 边界 |
+**static-derived**（SHA 锁定 EXE，合成地图／对象表，不替换指令、不 stub；[original_large_actor.json](original_large_actor.json)；主空间锚点拼接 SHA-256 `93af4ac92f6384742952f664de6413c1b8003ea5aecc4095c997248cb433c848`，十二段 AI loader 字节拼接 `2ed055ef5675211d8c0159bd49cd892adc80c0a7ac2bd27b4243650f7648f65f`）
+
+| 范围 | 执行 | 读法与边界 |
 | --- | --- | --- |
-| `0x407800` 位置命中查询 | 54 次正常返回 | 单格／3×3、中心／边缘／外侧、重叠时普通阻挡对象优先，最后一个 no_block 为后备；这是已注册对象查询，本函数没有死亡 HP 检查 |
-| `0x411ae0`／`0x411b90` | 6 组写入与清除 | 分别经 `0x411940`／`0x411990` 更新整块占格；地图边界裁剪，保留不属于此次修改的位 |
-| `0x40f440` → `0x40f200` → `0x40ed50`／`0x40ecc0` | 56 次完整 flood 正常返回 | 阵营／飞行、普通／不阻挡占用、整块障碍、上下坡与边缘。逐格覆盖／剩余预算对照独立模型，并检查原 wrapper 只清除自己的外围占用标记 |
-| `0x4104d0` | 3 组枚举直到返回零 | 输入明确为已生成的区域 mask；多个格子命中同一大对象只返回一次。不是完整区域生成／传播的重新证明 |
-| `0x448840` 原039/job94 | 4 组各刷新两次，8 次完整返回 | 一级模板、升级、属性变化与装备后重刷；现有三职业公式复用，不把合成一级输入当作原现场 NPC 等级选择 |
-| `0x44c93a` 等六段 AI 字段 loader | 12 次有界前段 | 每段用两种脏输出初值，真实调用 `0x46de70` → `0x46dd50` 的缺字段路径；调用者先清零、未找到时最终写零，然后停在下一字段之前。不是完整 PLAYERS loader 返回 |
+| `0x407800` 位置命中 | 54 次正常返回 | 单格／3×3、中心／边缘／外侧；重叠时普通阻挡对象优先，最后一个 no_block 为后备；本函数无死亡 HP 检查 |
+| `0x411ae0`／`0x411b90` | 6 组写入与清除 | 经 `0x411940`／`0x411990` 更新整块占格；地图边界裁剪，保留无关位 |
+| `0x40f440 → 0x40f200 → 0x40ed50`／`0x40ecc0` | 56 次完整 flood | 阵营／飞行、普通／不阻挡占用、整块障碍、上下坡与边缘；逐格覆盖／剩余预算对照独立模型；wrapper 只清自己的外围占用标记。`0x40ecc0` 检查周围九格，不允许对角移动 |
+| `0x4104d0` | 3 组枚举至返回零 | 输入为已生成区域 mask；多格命中同一大对象只返回一次 |
+| `0x448840`，039／job94 | 4 组 × 2 次，8 次完整返回 | 一级、升级、属性变化、装备后重刷 |
+| `0x44c93a` 等六段 AI 字段 loader | 12 次有界前段 | 两种脏初值，真实调用 `0x46de70 → 0x46dd50` 缺字段路径：调用者先清零、未找到最终写零 |
+| `0x409090` 大型武器范围 | 原字节 | 索引 +17 夹到 20：普通一格武器读索引 18 `range2CellFull`，范围饰品到 19，20 封顶（getter 样例见 [original_position_equipment.md](original_position_equipment.md)） |
 
-主空间锚点拼接 SHA-256 为 `93af4ac92f6384742952f664de6413c1b8003ea5aecc4095c997248cb433c848`；十二段 AI loader 字节拼接为 `2ed055ef5675211d8c0159bd49cd892adc80c0a7ac2bd27b4243650f7648f65f`。checker 同时核对输入覆盖、原入口／停止位置、正常返回与前段标记、原表 SHA 和结果，不只检查 PASS 文本。
+空间规则：
+- 地面整块检查 `0x74000` 占用／硬障碍与高度 255；飞行整块可经普通占用，但覆盖值带 `0x80` 的目的锚不能停，整块硬障碍拒绝。源锚须在图内，外围格按原地图查询裁剪。
+- 法术施放范围仍以施法者锚点与原法术矩阵计算，不因体型扩大；目标身体边缘可被施放与效果范围命中。
 
-```sh
-python3 tools/hsl.py check large_actor
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate large_actor --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-python3 tools/hsl.py check large_actor_data
-tools/godot.sh --headless --script res://tests/run_large_actor_tests.gd
-```
+**resource-derived**
+- [039 模板](../../../content/generated/hsl/actors/039.json)：PLAYERS 海輝魔、`jobBeastWarrior=94`、`classBeast`、武器 40 觸手、移动 4；`kill_exp=300`、金币 600。缺失的 `ai_att_magic`、`ai_att_special`、三种友军支持概率与 `ai_magic_multi_first` 取 loader 零值。
+- 30 张地图站立／四向行走帧、5 张交锋姿势、头像与行走／攻击／死亡声；TYPE／RESOURCE 关联“海輝魔／獸族”。`SHAPE\I_CLAW.SHP` 为 36 字节、0×0 的原空图，SHA-256 `50ffd4edfc78024d3da5fd92de322915e3bf46204bc9692e6dea0146354c8ce0`。
+- `resource.h` 六种通常武器命中音效中没有 claw 别名。
 
-此次全部由已有符号、caller、原表和 grep 定位；没有发起新的 Jev 判定。确认函数登记回 `known_functions.json`，离线目录继续保留既有候选路由结果；模型标签不构成本包证据。
+## 重制接线
 
-## 恢复的空间合同
+- `game/sim/FootprintRules.gd`、`ActorTraversalRules.gd`、`TacticalGridRules.gd`：玩家确认／撤销、AI 攻法援物选点与执行前复核共用；只接入 `size_type` 0／1。provenance 头写 `rules: static-derived docs/evidence_packets/static_reverse/original_large_actor.md`。
+- 技能区域先枚举效果格再按角色身份去重；点身体边缘保留点击中心，空格中心保持空格；一次支付、每目标一次效果／贡献、动作末一次 EXP 汇总；死亡同时释放九格。
+- `game/battle/runtime/ActorRuntime.gd`：一个角色按原锚点移动，镜头／遮挡／音效不复制九份；移动预览显示路径、花费与 3×3 落点（边框为 provisional）。
+- 初始化、增援与存档先验证身体与源声明再查位置；重叠占格拒绝保存；恢复不重授能力、不补扣毒伤、不重发经验。
+- 觸手攻击用角色声明的 ATTACK08 一次（provisional：声音编排）；面板保留“觸手”文字、记为 empty 资源。
+- `tools/hsltools/data/large_actor.py` 生成 039 数据；开发场景 `game/battle/development/LargeActorTrial.tscn`（[content/battles/large_actor_trial.json](../../../content/battles/large_actor_trial.json)，原 051 地图，Leonard 与可控海輝魔）；一级／零 EXP 为开发模板策略，正式编队不含大型角色。
 
-原对象坐标以 32 像素格中心为锚。`size_type` 原 word 为非零时，命中／占格包含中心周围 `[-1,1] × [-1,1]` 的九格；live 只接入已声明的 0／1，而不是任意自定义长宽。场景中仍只有一个对象、一个 HP、一个状态集合和一个队列身份。
+## 复现
 
-大型地面角色的扩展先检查整块 `0x74000` 占用／硬障碍和高度255；与单格的阵营通行不同，不能借普通友军或 no_block 例外挤过不足宽度的空隙。飞行整块可经过普通占用，但原覆盖值带 `0x80` 的目的锚不能停留；整块硬障碍仍拒绝。源锚必须在图内，边缘外围格按原地图查询裁剪，不额外编造“整个九格都必须在地图内”的原规则。
+`python3 tools/hsl.py check large_actor`
 
-**大型移动仍走上／下／左／右四邻扩展。** 旧单格包与导航入口文字曾把大体型的外围检查或接近候选误写成“大型八方向扩展”；本包的完整 flood 明确更正该说法。`0x40ecc0` 检查周围九格，不是允许对角移动。中心高度、高差与邻接继续扩展的成本复用已证明的四邻规则。全图最短路径与等价路径的稳定择一仍是重制组合，不等同于原递归缓存的所有访问次序。
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
 
-`0x409090` 的大型武器范围使用正常索引加17并夹到20，字节见本包，原 getter 样例复用 [位置装备](original_position_equipment.md)。普通一格武器因此读取 **索引18 `range2CellFull`**，范围饰品提升到19，再到20封顶；不要把索引18误称为 `range1CellFull`。法术的施放范围仍以施法者锚点和原法术矩阵计算，不因身体大而凭空扩大；目标身体边缘可以被该范围及效果范围命中。
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| `large_actor/`（目录已删，见 Git 历史） | trial、movement、edge_series、giant_combat、empty_area、support、cure_item、skip_resume、ai_resource、ai_retarget、victory、defeat、escape | `capture_large_actor_review.gd`、`run_large_actor_tests.gd` |
 
-技能区域先枚举源效果格，再按角色身份去重。点到身体边缘保留实际点击中心；空格中心保持空格，不偷偷移回目标中心。一次区域施放只有一次支付、每目标一次效果／贡献、一次动作末 EXP 汇总。普通攻击和反击也读取同一个身体覆盖关系，死亡后所有占格同时释放。
+## 边界
 
-## 原039数据、显示和可玩入口
-
-[039模板](../../../content/generated/hsl/actors/039.json)来自 PLAYERS 的海輝魔、`jobBeastWarrior=94`、`classBeast`、武器40觸手、移动4和原能力声明。一级／零初始 EXP 是明确的开发模板策略；源 `kill_exp=300` 与金币600原样保留，因此一次击杀的真实升级不应在验收里硬编码为恰好一级。六个既有模板、正式第一战／第二战编队不因此获得大型角色或新道具。
-
-缺失的 `ai_att_magic`、`ai_att_special`、三种友军支持概率和 `ai_magic_multi_first` 使用本次实际验证的 loader 零值；不从其他角色复制策略。策略、搜索半径等未证明的必要字段仍要求源声明。039 可以正常移动／普通攻击，不因原表没有施法概率而把整个 AI 初始化判为坏数据。
-
-30张原地图站立／四向行走帧、5张原交锋姿势、原头像与行走／攻击／死亡声音进入共同资源目录，原 SHP 绘制锚点保持。身份标题和种族通过 TYPE／RESOURCE 关联为“海輝魔／獸族”，不继续硬写人类。`SHAPE\I_CLAW.SHP` 实际是 **36字节、0×0** 的原空图，SHA-256 `50ffd4edfc78024d3da5fd92de322915e3bf46204bc9692e6dea0146354c8ce0`；面板记录明确的 empty 资源，保留“觸手”文字而不杜撰一张武器图，也不把空图当缺失文件反复报错。
-
-`resource.h`列出六种通常武器的命中音效，没有同名 claw 别名。当前明确让觸手使用角色声明的 ATTACK08 攻击声音一次，不额外借用剑命中声；此声音编排是重制选择，不据“别名不存在”宣称原完整声音 dispatcher 沉默。
-
-```sh
-tools/godot.sh --screen 0 res://game/battle/development/LargeActorTrial.tscn
-```
-
-[开发场景](../../../content/battles/large_actor_trial.json)在原051地图上让 Leonard 与可控海輝魔面对敌人，使用正式 PlayLoop、原始资源、正常输入／存档和既有场景事件。这是独立的空间演练，不是新增原剧情编队。自动化中大型施法者、手动成长、特殊初始 HP／资源或额外天赋均须逐路线写明，尤其039/job94不能佩戴施法者专用的232／236，不能为了验收绕过源职业资格；合成大法师案例使用明确声明的原已证明固有能力。
-
-## 事务与表现接入
-
-`FootprintRules`只做当前输入的几何查询；`ActorTraversalRules`生成只读占用／通行上下文，`TacticalGridRules`返回互斥的可停目的格与仅能通行目的格、唯一费用和路径。玩家确认、撤销、AI攻法援物选点与执行前复核共用它们。不能把只含锚点的旧 `_unit_grid_coords` 映射当作命中索引。
-
-身体边缘的鼠标命中、目标状态栏和实际攻击共用点击格；移动预览显示路径、当前花费与完整3×3落点，未到达／受阻的整块位置有明确提示。边框是可读性重制选择，非原 UI 逐像素复现。一个 ActorRuntime 用原锚点移动，镜头／遮挡／音效不另建九份角色。
-
-初始化、增援候选和存档先验证当前身体与源声明，再检查位置。坏类型不能进入几何函数后抛脚本错误；重叠占格拒绝保存。恢复保持当前锚、已移动资格、第二行动次数和状态尾部序号，不重新授予能力、不补扣毒伤／资源、不重发经验。死亡清除唯一对象的占用；胜利／败北／撤離冻结尚未执行的行动与尾部。
-
-身体边缘道具／给予的最近格邻接、地图停止标记在整个 footprint 上的适配、AI候选的有效收益和平分选择属于当前共同规则组合；原全部道具 dispatcher、全图 flags 生命周期、完整区域传播、全局 RNG、未知职业／形态与精确演出时钟仍各自保留边界。不能用本批通过的当前游戏测试扩大原函数的实际执行范围。
-
-实际控件、正常时钟与三终态／恢复／重开见[十三条具名路线](../runtime_observations/large_actor/README.md)。回执区分已有四条PASS、后续失败进程中先完成的三条与修正后的六条exit0，不把无退出码或途中失败的进程记为完整通过；最终完整门禁结果另记本批提交说明。
+- `0x4104d0` 只证枚举，完整区域生成／传播未重新执行。
+- AI loader 12 次是前段，不是完整 PLAYERS loader 返回。
+- 合成一级 039 不是原现场 NPC 等级；现场等级见 [original_auto_growth.md](original_auto_growth.md)。
+- 全部道具 dispatcher、全图 flags 生命周期、全局 RNG、未知职业／形态与精确演出时钟未读。
+- 身体边缘道具／给予的最近格邻接、停止标记在 footprint 上的适配、AI 候选平分选择是重制组合。
+- 任意自定义长宽不支持。

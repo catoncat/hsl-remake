@@ -51,7 +51,7 @@ goto code_r0x004527a0;                        // 无一在场：条件成立，�
 
 含义核对：WINFAIL010 event 7／8 为 `actCheckEnemyNumber SID_ENEMY034,1`／`SID_ENEMY035,1`（该兵种归零才触发）；WINFAIL026 fail 2 `SID_ENEMY101,26` 与 WINFAIL012 fail 2 `SID_ENEMY101,62` 对应 EVEF 恰好放置 26／62 枚 船殼（Enemy101，`defProcEnemy` 静态敌方对象）——"少于全部即失败"读作"任一船殼被破坏即失败"，而旧的 `<=` 读法会让这两关在武装后立即失败。
 
-重制接入：`WinfailConditions.condition_holds` 的 `actCheckEnemyNumber` 改为 `registered < num`，其中 registered ＝ 该 token 的存活单位数（＋运行时 `winfail_runtime.static_enemy_counts[token]`，组装器已不再产生）。12／26 关 Enemy101 船殼、18 关 Enemy100 門、80 关 068 现在都是 PlayLoop 单位（lane ACTORS100，读法见 [阵营位包](original_player_mode_sides.md#门players-100与船壳players-101是登记演员lane-actors100static-derivedruntime-measured)），船殼被敌方普通攻击打倒即注销、计数下降——WINFAIL012／026 的「任一船殼被破坏即失败」由此可以发生（船殼共用一份 live 记录，HP 由 `SharedRecordRules` 并池，lane SMALLTAILS）。歐姆村（level 1）由手写 `FirstBattleScenarioRules` 承接，其 `actCheckEnemyNumber SID_ENEMY028,3` 的读法未随本次改动。
+重制接入：`WinfailConditions.condition_holds` 的 `actCheckEnemyNumber` 改为 `registered < num`，其中 registered ＝ 该 token 的存活单位数（＋运行时 `winfail_runtime.static_enemy_counts[token]`，组装器已不再产生）。12／26 关 Enemy101 船殼、18 关 Enemy100 門、80 关 068 现在都是 PlayLoop 单位（lane ACTORS100，读法见 [阵营位包](original_player_mode_sides.md#证据)），船殼被敌方普通攻击打倒即注销、计数下降——WINFAIL012／026 的「任一船殼被破坏即失败」由此可以发生（船殼共用一份 live 记录，HP 由 `SharedRecordRules` 并池，lane SMALLTAILS）。歐姆村（level 1）由手写 `FirstBattleScenarioRules` 承接，其 `actCheckEnemyNumber SID_ENEMY028,3` 的读法未随本次改动。
 
 不在本读法内：opcode 的执行时机（每回合几次、在哪个阶段扫描 status）、`0x44fad0` 对负数 code 特殊分支（-1／-2／-3）的调用方、`0x44fa80` 取 code 的字段位置（R5-L4c 已读：角色记录字 `+0x84`，`actChangePrevInsertObjectID` 写同一字，见[28／80 开墙按事件](original_story_object_terrain.md#2880-开墙按事件lane-r5-l4c2026-09-25)）。
 

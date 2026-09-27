@@ -1,8 +1,6 @@
 # First Battle Runtime Visual Evidence Index
 
-> evidence: runtime-measured · status: record-only · tools: hsltools/evidence/visual_index.py · updated: 2026-09-01
-
-Checked: 2026-09-01
+> evidence: runtime-measured · status: live · tools: hsltools/evidence/visual_index.py · updated: 2026-09-27
 
 本文件索引第一战第一场景的**本机原版 runtime 视觉证据**。所有当前可用图片已经收敛到：
 
@@ -14,7 +12,7 @@ docs/evidence_packets/runtime_observations/first_battle_visuals/
 
 ```text
 docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.json
-/opt/homebrew/bin/python3 tools/hsl.py check visual_evidence_index
+python3 tools/hsl.py check visual_evidence_index
 ```
 
 ## 证据恢复说明

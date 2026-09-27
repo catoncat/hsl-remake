@@ -1,51 +1,50 @@
 # 脚本离场、角色在场资格与演出游标
 
-> evidence: static-derived · status: live · functions: 0x407720, 0x411b90, 0x44cb90, 0x44fad0, 0x44fbd0, 0x450410, 0x450450, 0x453b90, 0x45e3ed · tools: capture_departure_review.gd, hsltools/probes/departure.py, run_departure_tests.gd · updated: 2026-09-18
+> evidence: static-derived · status: live · functions: 0x407720, 0x411b90, 0x44cb90, 0x44fad0, 0x44fbd0, 0x450410, 0x450450, 0x453b90, 0x45e3ed · tools: capture_departure_review.gd, hsltools/probes/departure.py, run_departure_tests.gd · updated: 2026-09-27
 
-本包收口SR-068。`hsltools/probes/departure.py`执行已固定哈希的原EXE指令；[机器回执](original_script_departure.json)含56组状态前段／返回、12次删除请求完整返回与16次行走删除请求完整返回。函数名称是本项目标签，函数目录／Jev没有参与事实判定。Godot实玩与自动门禁分别记录，不把有界执行称为整个原脚本VM或整场录像等价。
+## 结论
 
-## 原请求与注销次序
+- 原版脚本删除（`0x450410`）与行走删除（`0x450450`）按 code／serial 找已注册对象并置删除状态；删除阶段先置 16 逻辑 tick 再递减，最后一 tick 才依次清地图占用、行动队列、模板记录头与对象链接；HP／库存等记录字节不变，不走伤害、经验或死亡奖励（static-derived）。
+- 重制 `game/sim/BattlePresenceRules.gd` 由唯一 PlayLoop 提交 `departed`、来源序号与队列移除，所有行动与 AI 共用同一在场查询；`BattleScriptPresentation`／`BattleDepartureView` 播放离场，快照保存已消费游标（static-derived）。
+- 差异：16 tick 无秒数，淡出 0.24 秒为重制取值；障碍替代目的地搜索与逐 tick 交错未恢复（provisional）。
 
-| 地址 | 已确认范围 |
+## 证据
+
+**static-derived**（固定哈希原 EXE；[original_script_departure.json](original_script_departure.json)：56 组状态前段／返回、12 次删除请求与 16 次行走删除请求完整返回，另 4 组组合执行；未替换 callee）
+
+| 地址 | 结论 |
 | --- | --- |
-| `0x450410`，调用`0x44fad0` | 按已注册对象的code／serial查找，设置对象状态`0x350000`并关联脚本父对象。serial0和1选首个，超出匹配数量时选最后一个；无匹配返回0。12次正常返回，未替换callee。 |
-| `0x450450` | 行走删除仅接收空闲对象；写入目标坐标、速度参数和父对象，进入`0x360063`。16次正常返回覆盖两个code、有／无匹配、空闲／忙碌和两组坐标／速度。目的地均为合法空地；障碍时的替代目的地搜索不由这16例证明。 |
-| `0x453b90`中的`0x454286`、`0x4542a7` | 删除阶段0x35、行走删除阶段0x36的相应子阶段先置16逻辑tick，再递减；仅最后tick执行注销。计时尚未结束时不提前清除地图和队列。 |
-| `0x411b90`→`0x407720`→`0x44cb90`→`0x45e3ed` | 依次清除地图占用、行动注册／队列、模板记录头和对象链接。1格及3×3均走同一清理顺序；移除当前队列项选下一个有效项，移除其他项保留当前项。 |
+| `0x450410` → `0x44fad0` | 按已注册对象 code／serial 查找，置状态 `0x350000` 并关联脚本父对象；serial 0 与 1 选首个，超出匹配数选最后一个，无匹配返回 0 |
+| `0x450450` | 只接收空闲对象；写目标坐标、速度参数与父对象，进入 `0x360063`；16 例覆盖两个 code、有／无匹配、空闲／忙碌、两组坐标／速度，目的地均为合法空地 |
+| `0x44fbd0` | 16 例只经过其无修正返回分支 |
+| `0x453b90` 中 `0x454286`、`0x4542a7` | 阶段 0x35／0x36 相应子阶段先置 16 逻辑 tick 再递减，仅最后 tick 注销；计时未完不清地图与队列 |
+| `0x411b90` → `0x407720` → `0x44cb90` → `0x45e3ed` | 依次清地图占用、行动注册／队列、模板记录头、对象链接；1 格与 3×3 同序；移除当前队列项选下一有效项，移除其他项保留当前项 |
 
-56组状态覆盖0x35子阶段0／1、0x36子阶段7／8／99，当前／非当前对象、1格／3×3和有／无父对象。非当前对象分支完整返回；当前对象注销后在`0x4542ff`停住，随后renderer/reset不执行。回执明确区分这两种边界。原对象记录头之后的HP／MP／气力／EXP／库存／装备／状态字节保持不变，未调用伤害、经验或死亡奖励路径。
+56 组状态覆盖 0x35 子阶段 0／1、0x36 子阶段 7／8／99，当前／非当前对象、1 格／3×3、有／无父对象：非当前对象完整返回；当前对象注销后停在 `0x4542ff`（其后 renderer/reset 未执行）。4 组组合执行先注销一个同 code 对象，再以 serial 0／1／2／9 删除，确认后续查找只计尚注册对象。
 
-`0x44fbd0`只在上述空地行走请求中经过其无修正返回分支。它的障碍替代位置搜索、对象后续全部移动阶段、全局时钟与内存槽复用不在本包的等价声明内。原16tick不提供秒数，本次淡出0.24秒为明示重制取值。
+## 重制接线
 
-另4组组合执行先完整注销一个同code对象，再按serial0／1／2／9调用删除请求，确认后续查找只在尚注册的对象中计数；已退场对象不能因静态开场绑定再次被选中。重制以本次`firing_index`／原token参数／稳定unit ID确定离场表现，战斗专用`BattleScriptCoordinator`只扩展绑定查询，原世界／故事协调器不读取这层记录。
+- `game/sim/BattlePresenceRules.gd`：离场不伪造成 HP0 或击杀；大型角色一次释放九格；过期目标在付款与 RNG 前拒绝；当前角色离场撤销待移动／额外行动，保留资源、状态计时与已完成收据；其他角色离场不消耗当前行动。
+- `game/sim/WinfailActions.gd`：记录每次触发的身份与 `firing_index`，PlayLoop 消费一次；玩家与 AI 新交锋序号进入攻击后事件入口，等待／物品／旧收据不重触发。
+- `game/battle/scene/BattleScriptCoordinator.gd`：只扩展战斗绑定查询，以 `firing_index`／原 token 参数／稳定 unit ID 确定离场对象；story-only／世界／城镇不读战斗离场记录。
+- `game/battle/scene/BattleScriptPresentation.gd`、`game/battle/scene/BattleDepartureView.gd`：交锋、死亡／EXP／领取／成长与用药完成后才播脚本，第二行动提示在脚本之后；演出期间阻塞控制。
+- `game/sim/loop/BattleLoopScript.gd`：快照保存规则执行记录与已消费游标，配置摘要绑定状态脚本、timeline 与对象绑定；未播完的脚本不是存档边界；旧版缺字段快照拒绝；重开清除离场与游标；战役 carry 不承接离场。
+- provenance 头写 `rules: static-derived docs/evidence_packets/static_reverse/original_script_departure.md`。
 
-## 已接入的玩家行为
+## 复现
 
-`BattlePresenceRules`从唯一PlayLoop提交`departed`、来源／序号和队列移除；角色历史留在roster，用稳定unit ID标识，不把离场伪造成HP0或击杀。攻击、法术、回复／驱毒、物品、AI扫描／续追、地图占用、移动和输入都使用同一在场查询。大型角色一次释放九格；对过期目标的直接调用在付款和RNG前拒绝。当前角色离场撤销其待移动／额外行动，保留当时资源、状态计时和已完成的交锋／经验收据；其他角色离场不消耗当前行动。
+`python3 tools/hsl.py check departure`
 
-Winfail解释器记录每次触发的具体身份与`firing_index`，PlayLoop消费一次。玩家交锋和AI的新交锋序号均进入现有攻击后事件入口；等待／物品／旧收据不重新触发。在场变化先提交、演出再读取历史，演出期间阻塞后续控制；这是重制原子事务实现，不能推导原VM所有逐tick交错与之相同。
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
 
-`BattleScriptPresentation`为待播脚本保留离场图像、预留对白页并持有输入；走位／直接删除结束委托`BattleDepartureView`淡出，完成后同步隐藏。先前交锋、死亡／EXP／领取／成长与用药完成后才播脚本，第二行动提示置于脚本之后。协调器仅按P-031授权在三处可空委托，story-only／世界／城镇不读取战斗离场记录。
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [script_departure](../runtime_observations/script_departure/receipt.json) | walk、delete、giant、second、blocked、mage、support、ai、paralysis、kill、victory、defeat、escape、carry、rearm | `capture_departure_review.gd`、`run_departure_tests.gd`、`run_first_battle_playthrough.gd` |
 
-## 保存、重开与跨战
+## 边界
 
-完整战斗快照保存规则执行记录及已消费演出游标；配置摘要同时绑定状态脚本、timeline和对象绑定。未播或正在播放的脚本不是静默存档边界，F5不会覆盖上一个安全存档；已完成脚本恢复不再重播。新开场的F9先进入保存控制器，停止旧协调器、旧镜头tween及离场淡出后恢复一次完整快照。恢复时不生成已离场节点，不仅是关闭其菜单。
-
-旧版本缺少在场策略或脚本配置摘要的快照明确拒绝兼容，不猜测迁移游标；没有删除旧存档。重开创建新战斗、清除本战离场与游标。战役carry继续只承接其既有持久字段，当前战场离开不等于永久离队；新战斗按新场景定义决定角色是否出现，旧离场／临时状态／事件游标不作为成长值带入。跨战回血和阵容承接仍是既有重制策略。
-
-## 验证与已修正回归
-
-[实际输入与截图](../runtime_observations/script_departure/README.md)覆盖事件前后保存、1格／3×3离场、边缘攻击与释放格移动、移动法术／支援、第二行动、AI、麻痺／毒／禁魔、资源回退、击杀升级、三种终态及重开。定向检查独立覆盖队列相对位置、无剩余角色、陈旧AI目标、九格释放、收据不变、游标和配置篡改拒绝以及跨战模型。
-
-本轮修复了无开场的脚本场景缺少协调器、AI漏交攻击后事件、开场F9被对白吞掉、已消费游标未持久化及已离場图像恢复残留。演练同时修正了不支持的激活token、未完整声明的AI策略、复制后修改旧角色引用三个夹具问题；失败进程与之后具名通过范围分别记录，未把局部PASS升级为整批完成。
-
-重复激活事件实际暴露了规则和表现两处静态serial绑定残留，均改为当前在场实例及该次提交身份。终态补验修复脚本隐藏重开按钮后未恢复，以及无专用结果板时显示了错误主角姓名。最终十五条具名路线另附默认第一战正常整场；已有三终态早期图片不替代修正后的最终按钮／姓名验收。
-
-```sh
-python3 tools/hsl.py check departure
-tools/godot.sh --headless --script res://tests/run_departure_tests.gd
-tools/godot.sh --screen 1 --script res://tests/capture_departure_review.gd
-tools/verify.sh
-```
-
-原EXE只读重跑时显式传`--execute`及路径；离线检查不会执行原作或模型。完整门禁真实日志、退出码与提交范围列入提交说明。
+- `0x44fbd0` 的障碍替代位置搜索未执行。
+- 对象后续全部移动阶段、全局时钟与内存槽复用不在等价声明内。
+- 原 16 tick 不提供秒数；0.24 秒淡出为重制取值。
+- 在场变化先提交、演出后读取是重制原子事务，不推导原 VM 逐 tick 交错相同。
+- 跨战回血与阵容承接是重制策略。

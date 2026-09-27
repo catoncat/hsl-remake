@@ -2926,13 +2926,10 @@
     "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|": {
       "item": "timing-estimates"
     },
-    "scope:docs/evidence_packets/static_reverse/first_battle_experience.md|provisional|": {
-      "resolved": "升级门槛已由原刷新读法替换旧 provisional 公式（本包）"
-    },
     "scope:docs/evidence_packets/static_reverse/first_battle_initial_skill.md|provisional|": {
       "resolved": "20×expend 换算已由 original_skill_resources.md 证实（本包后继段）"
     },
-    "scope:docs/evidence_packets/static_reverse/first_battle_template_stats.md|provisional|合成初始化": {
+    "scope:docs/evidence_packets/static_reverse/original_job_stats.md|provisional|合成初始化": {
       "item": "npc-level-policy"
     },
     "scope:docs/evidence_packets/static_reverse/original_ai_navigation.md|provisional|固定点逐格路线": {
@@ -3037,9 +3034,6 @@
     "scope:docs/evidence_packets/static_reverse/second_battle_opening_script.md|provisional|": {
       "item": "winfail-readings"
     },
-    "scope:docs/evidence_packets/static_reverse/second_battle_template_stats.md|provisional|synthetic initialization": {
-      "item": "npc-level-policy"
-    },
     "scope:docs/evidence_packets/static_reverse/town_event_semantics.md|provisional|": {
       "item": "town-event-timing"
     },
@@ -3068,10 +3062,6 @@
     "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#9ca377ec04": {
       "item": "cast-overlay-rules",
       "text": "I_RECT02..08 是同一框的其他配色，何时使用未读；"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/mobile_jobs/README.md#6781815418": {
-      "no_visible_effect": "说明句：原 10% 命中下限已实现，句中的\"未读取\"指不能把缺字段当落空",
-      "text": "命中有原10%下限，不能把一个未读取的字段当成保证落空；"
     },
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/README.md#54ea50ee96": {
       "item": "timing-estimates",
@@ -3144,10 +3134,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#283487b0af": {
       "item": "ai-skill-buckets",
       "text": "原桶的全部技能与评分仍未复原；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_navigation.md#f5a73113c6": {
-      "item": "ai-first-battle-moves",
-      "text": "仍是 provisional 的只有走位的度量与两处未复刻分支——**lane R23 已在 `AINavigationRules.approach_home` 复刻上述精化**：半径 `r = max(18, 移动力)` 起以重制移动代价洪泛（对应 `0x40f440`），取可停格中到目标格曼哈顿最近者（含单位的格与自身格跳过，等距 `rand(2)` 换新，对应 `0x413740` 的 `0x458c10 & 1`），`r −= 2`（下限移动力）以该格为新目标重复，`r == 移动力` 时的选格即终点；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#28465aadbe": {
       "item": "cast-overlay-rules",
@@ -3352,10 +3338,6 @@
     "scope:docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md|provisional|精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流": {
       "item": "ai-first-battle-moves"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_navigation.md#985b42434b": {
-      "item": "ai-first-battle-moves",
-      "text": "**未复刻**（provisional）：原 `0x410a50` 走向自身格的返回值未执行（重制把站位即自身格当原地攻击，到站复查照做：地形下自身格可在目标覆盖里而目标不在自身覆盖里，此时结束回合）；"
-    },
     "provenance:game/battle/scene/EffectObjectMotion.gd|layout|provisional|": {
       "item": "effect-motion"
     },
@@ -3533,14 +3515,6 @@
       "item": "item-use-rules",
       "text": "原版 bucket-7 直接查对症药，抽签未读。"
     },
-    "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#6a4e60983f": {
-      "item": "item-use-rules",
-      "text": "AI 用药 (b)(d) 两处未读（上文）。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#8efd6bb198": {
-      "item": "item-use-rules",
-      "text": "原版 0x40d530 的搜索未读。"
-    },
     "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读）、法术通道 0x40aa80 的计数位里 MP 伤害位是否计入": {
       "item": [
         "effect-origin",
@@ -3549,6 +3523,57 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|0x407230 写的三个显示字（+0x92=60、+0x98=0x300、+0x80 置 0x800）＝受击态：hit 帧＋60 tick 抖动，读法见 original_map_strike.md（STRIKEFX）；烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；0x407230 抖动期间行动者过程写的局部状态 6 的消费者未追": {
       "item": "poison-gas-presentation"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_growth_refresh.md#1f3e9c1039": {
+      "item": "job-model-gaps",
+      "text": "转职如何改变 job 与上限未读。"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_ohm_village.md|negative-evidence|STORY001／WINFAIL001 無增援與撤離勝利": {
+      "no_visible_effect": "事实说明：原第一战脚本没有增援与撤离胜利分支，重制同样不做"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_actor_traversal.md#42eb9c6e80": {
+      "item": "ai-skill-buckets",
+      "text": "原版 AI 是否为悬崖上的目标另选接近格未读；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_extra_action.md#baf31c74a3": {
+      "item": "dispatcher-scheduling",
+      "text": "完整高位 dispatcher 资格与原全局 RNG 未读（static-derived）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_extra_action.md#dd086872a0": {
+      "item": "timing-estimates",
+      "text": "原时钟与逐帧 UI 未读；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_extra_attack.md#94d912d8b4": {
+      "item": "dispatcher-scheduling",
+      "text": "命中附带状态等其他被动未随本调度恢复（未读）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_growth_lifecycle.md#3d5d239d14": {
+      "item": "job-model-gaps",
+      "text": "转职当刻不升级时是否另有补学入口未读（原 caller 只在升级／分配时调学习函数）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#5a394b291f": {
+      "item": "growth-window-timing",
+      "text": "`0x4071e0` 角色演出内容未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#90132e5c4e": {
+      "item": "growth-window-timing",
+      "text": "`exp ≥ next && 0x439f70(actor) != 0` → `0x4071e0(actor)`（`0x446c40(actor,+0xa2,7,3)` 角色演出，内容未读）→ `0x4084e0(...,6)` LEVEL UP 浮字"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_large_actor.md#3bc365c4a1": {
+      "item": "dispatcher-scheduling",
+      "text": "全部道具 dispatcher、全图 flags 生命周期、全局 RNG、未知职业／形态与精确演出时钟未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_water_strike.md#a893bce200": {
+      "item": "effect-motion",
+      "text": "原随机粒子生成器与对象 opcode 语义未还原。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_weapon_effects.md#5bca2d0cb2": {
+      "item": "job-model-gaps",
+      "text": "复活未开放（未读）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_weapon_effects.md#8c5128a2fe": {
+      "item": "dispatcher-scheduling",
+      "text": "完整战斗 dispatcher、所有职业、原全局 RNG、精确演出时间未读。"
     },
     "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#55f6ecc336": {
       "item": "cast-lead-compositing",
@@ -3613,6 +3638,66 @@
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#d003b16b63": {
       "item": "closeup-object-timing",
       "text": "守方 AnimalDefense `0x4038a0` 读出（[tick 计数包 §6](../../static_reverse/original_tick_counts.md#6-普攻切入的守方对象-defprocanimaldefense0x4038a0slot-23受击停留)），TARGET_PAUSE／hurt_hold 落 A，RECOVERY 仍 B（屏幕过渡 `0x46098f` 未读）"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_calls.md#2b2ea0eb84": {
+      "item": "ai-first-battle-moves",
+      "text": "原引擎分帧目标获取、锁定、等待与辅助处理时序未复刻。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_calls.md#b01234ec40": {
+      "item": "ai-first-battle-moves",
+      "text": "原分帧目标获取、锁定、等待时序未复刻（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#698c63af0e": {
+      "item": "ai-skill-buckets",
+      "text": "原整体 16 状态机、目标锁定／等待、引擎标记清理与槽复用、治疗与辅助优先级、麻痺 wake/skip、ai_fixed、完整原路径选择、NPC 动态等级初始化未复原。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#86c3599d3c": {
+      "item": "ai-skill-buckets",
+      "text": "差异：原整体 16 状态 AI、目标锁定／等待、原路径选择与技能评分未复原；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_navigation.md#05ce00ef64": {
+      "item": "ai-first-battle-moves",
+      "text": "洪泛的原生代价度量与候选遍历顺序、奇数移动力最后一级收缩方式未复刻；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_navigation.md#6b6ec30b58": {
+      "item": "ai-first-battle-moves",
+      "text": "**未复刻**（provisional）：原 `0x410a50` 走向自身格的返回值未执行；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_navigation.md#74a32d797b": {
+      "item": "ai-first-battle-moves",
+      "text": "差异：洪泛的原生代价度量与候选遍历顺序、奇数移动力最后一级收缩、`0x410a50` 走向自身格的返回值未复刻（provisional）；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_priority.md#9b430cd2a3": {
+      "item": "ai-skill-buckets",
+      "text": "完整地图／辅助筛选、目标锁定／wait_round、owner+0x12c、可行动状态未复原。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_priority.md#ee5f326d2e": {
+      "item": "ai-skill-buckets",
+      "text": "差异：原完整辅助、target-lock、等待与整回合 RNG 序列未复原；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_skills.md#3ae11d8fb6": {
+      "item": "ai-skill-buckets",
+      "text": "差异：原完整地图候选生成、空格中心、中心平分的随机流、目标锁定与辅助效果未复原；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_skills.md#fabdb02c10": {
+      "item": "ai-skill-buckets",
+      "text": "原候选上限、对象生命周期、目标锁定、wait_round、owner+0x12c 初始化、辅助效果、完整特殊技能选择与全局 RNG 未复原。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_ai_support.md#43889a45cf": {
+      "item": "ai-skill-buckets",
+      "text": "原空格中心、全地图遍历与全局随机流未复原（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_movement.md#b6f556c0c5": {
+      "item": "ai-first-battle-moves",
+      "text": "原 250 项缓存的执行节流与完整平分路径顺序未复刻；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_player_install.md#0c538f300c": {
+      "item": "dispatcher-scheduling",
+      "text": "原对象调度、跨关注册表存档格式与全局 RNG 未复原（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f": {
+      "item": "winfail-readings",
+      "text": "原版查找在注销后失败，但扫描是否早于 `0x43ef36` 注销未读。"
     }
   }
 }

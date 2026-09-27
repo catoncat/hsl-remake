@@ -1,6 +1,6 @@
 # 永久能力道具、原始抗性与派生刷新
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x409e10, 0x409e40, 0x448840 · tools: hsltools/data/permanent_items.py, hsltools/probes/permanent_items.py · updated: 2026-09-26
+> evidence: resource-derived; static-derived · status: live · functions: 0x409e10, 0x409e40, 0x448840 · tools: hsltools/data/permanent_items.py, hsltools/probes/permanent_items.py · updated: 2026-09-27
 
 证据等级：原表字段为`resource-derived`；固定EXE内的有界执行为`static-derived`。独立随机流、开发库存和战役承接属于明示重制策略。与临时攻防状态的规则见[战斗道具](original_tactical_items.md)及[攻防增益／退魔](original_stat_magic.md)。
 
@@ -26,13 +26,6 @@
 
 每一步比较九个持久字段、攻击／防御／魔击／速度、HP／MP上限、移动和五抗性。还逐字节确认四基础属性、现有异常、装备、库存、EXP及当前HP／MP／ST未被道具前段误改。后续刷新前故意污染缓存派生值，确认从持久来源恢复；不能依赖上一帧的派生值。
 
-```sh
-python3 tools/hsl.py check permanent_items
-python3 tools/hsl.py check permanent_items_data
-# 只有明确重取证据时才运行原指令并写回：
-uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate permanent_items --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
-```
-
 ## Godot的同一来源链
 
 `PermanentCapabilityRules`保存九个具名`permanent_gains`，与不可变`growth_profile.source`分开；纯`effective_profile`将二者组合后交给已有四职业`JobStatsRules`，再合并当前装备与临时状态。所有当前单位和增援模板初始化为空收益；获得仅发生在实际库存物使用被接受时。升级／装卸／到期／退魔使用相同重算入口，不能把收益反写到模板或叠加上次派生值。
@@ -43,12 +36,20 @@ uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate permanen
 
 Checkpoint保存获得值和原item收据，恢复只验证、不再次施加或抽样。九个字段、非负整数、原始抗性及派生一致性受校验；1000000是重制的保存输入安全上界，不宣称原EXE不存在整数溢出。原始抗性已满时原指令仍抽样、再夹回同一个80，物品照常消耗一件（`0x444aba`，见[物品命令包](original_item_actions.md)）。当前正式初始库存不加这些稀有物；[公开演练](../../../game/battle/development/PermanentItemsTrial.tscn)使用声明的额外库存，按实际002／024角色编号分配。
 
-战役承接把`permanent_gains`作为独立字段捕获、写入JSON，再应用到相同ID／原角色编号的新单位；先校验数值和来源，再规范JSON整数表示并共同刷新。不会把临时攻防、旧RNG／物品收据或上次派生缓存当作永久来源。第二战重开恢复本战进入值，新战役从原始模板开始；独立队伍不接收另一角色的收益。HP/MP回满与队伍承接仍是既有重制策略，不作为原作跨关handler的证据。实际跨进程范围见[补充验收](../runtime_observations/permanent_items/README.md#跨战斗与跨进程补充)。
+战役承接把`permanent_gains`作为独立字段捕获、写入JSON，再应用到相同ID／原角色编号的新单位；先校验数值和来源，再规范JSON整数表示并共同刷新。不会把临时攻防、旧RNG／物品收据或上次派生缓存当作永久来源。第二战重开恢复本战进入值，新战役从原始模板开始；独立队伍不接收另一角色的收益。HP/MP回满与队伍承接仍是既有重制策略，不作为原作跨关handler的证据。实际跨进程范围见[补充验收](#复现)。
 
 ## 实际体验与后续边界
 
 已支持战斗但尚未实现职业成长的角色可以保留全零永久账本并继续既有行为；缺少原始来源时永久道具明确拒绝。非零取得值没有对应来源、或已有来源结构损坏时仍拒绝，不能用零值或另一个职业补齐。这项兼容边界由已有027友援路线和新增无消费回归共同检查。
 
-GUI与原指令证据分开，见[永久道具实际输入与截图](../runtime_observations/permanent_items/README.md)。未验证范围包括负区间道具、原溢出行为、所有职业、原全局随机序列、自然取得这九件物品的完整关卡路线及主动稀有道具AI。扩展这些能力需要对应原caller／职业的独立验证；本批不以现有四职业和合成演练替代它们。
+GUI与原指令证据分开，见[永久道具实际输入与截图](#复现)。未验证范围包括负区间道具、原溢出行为、所有职业、原全局随机序列、自然取得这九件物品的完整关卡路线及主动稀有道具AI。扩展这些能力需要对应原caller／职业的独立验证；本批不以现有四职业和合成演练替代它们。
 
-本轮对照优先修复了“永久道具仅有资源记录、取得值会被刷新覆盖”的完整来源问题。接续候选是已被关卡扩展需要的盗贼／翼战士职业初始化、成长与装备资格：目前仍明确拒绝未证明职业，须先核对原分支及默认角色装备／能力，再接入可玩流程。其它高位状态、武器MP打击和原表现时钟仍按各自来源逐项验证。
+## 复现
+
+`python3 tools/hsl.py check permanent_items`
+
+重制侧实际输入回执（Godot 正常时钟、真实控件；夹具与进程边界见各回执 JSON）：
+
+| 重制回执 | 路线 | 驱动 |
+| --- | --- | --- |
+| [permanent_items](../runtime_observations/permanent_items/receipt.json) | manual、repeat、magic、melee、growth、movement、resistance、cap、details、mixed、paralysis、ai、speed、victory、defeat、escape | `capture_permanent_carry_review.gd`、`capture_permanent_items_review.gd`、`run_permanent_items_tests.gd`；`run_permanent_carry_tests.gd` 驱动已退役，回执为历史记录 |
