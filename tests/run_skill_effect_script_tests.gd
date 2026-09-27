@@ -185,6 +185,12 @@ func every_row_compiles() -> void:
 ## and sound imported, positions are displacements (static, with a fade tail), the impact
 ## mark never after completion, deterministic under one seed, eff_proc_Global／damage read
 ## from the row, and hit／miss identical (effCode scripts carry no hit-only verbs).
+## Frames of one seed variant of a tracked object (variant 0 is the row itself).
+func _variant_frames(object_name: String, variant: int) -> int:
+	var row: Dictionary = motion["objects"][object_name]
+	return int(row["frames"]) if variant == 0 else int(row["variants"][variant - 1]["frames"])
+
+
 func every_magic_row_compiles() -> void:
 	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
@@ -209,7 +215,7 @@ func every_magic_row_compiles() -> void:
 			objects += 1
 			if motion["objects"].has(event["object"]):
 				# A natively tracked object plays its tree: it lives exactly the track's frames.
-				check(event["motion"] == "native" and not event.has("fade_tick") and int(event["expire"]) == int(event["tick"]) + int(motion["objects"][event["object"]]["frames"]) and bool(event["anchored"]) == (motion["objects"][event["object"]]["motion"] == "anchored"), "a tracked effect object plays its native track for exactly its frames: " + skill_id)
+				check(event["motion"] == "native" and not event.has("fade_tick") and int(event["expire"]) == int(event["tick"]) + _variant_frames(str(event["object"]), int(event["variant"])) and bool(event["anchored"]) == (motion["objects"][event["object"]]["motion"] == "anchored"), "a tracked effect object plays its native track for exactly its frames: " + skill_id)
 			else:
 				# The 13 objects stopped at an unreviewed callee keep the provisional static hold.
 				check(motion["unrestored"].has(event["object"]), "an untracked effect object is listed unrestored: " + str(event["object"]))
@@ -445,7 +451,7 @@ func magic_timelines() -> void:
 	check(supreme["global"] and supreme["impact_tick"] == 600 and supreme["complete_tick"] == _derived_complete(supreme, 680), "極 (eff_proc_Global) plays at the screen centre; its waits sum to 680 ticks, its impact is the last batch at 600 (%s)" % str([supreme["impact_tick"], supreme["complete_tick"]]))
 	var quake: Dictionary = player.compile_row("magic:magicEARTH:magicCode04", true, 1)  # 怒濤地裂崩
 	var lasers: Array = quake["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Effect_EarthLaser2")
-	check(lasers.size() == 10 and lasers.all(func(event): return event["motion"] == "native" and int(event["expire"]) - int(event["tick"]) == int(motion["objects"]["obj_Effect_EarthLaser2"]["frames"])) and quake["complete_tick"] == _derived_complete(quake, 372), "EarthLaser2's shape_delay 30000 no longer needs clamping: its program ends the laser after its native frames (%s)" % str(quake["complete_tick"]))
+	check(lasers.size() == 10 and lasers.all(func(event): return event["motion"] == "native" and int(event["expire"]) - int(event["tick"]) == _variant_frames("obj_Effect_EarthLaser2", int(event["variant"]))) and quake["complete_tick"] == _derived_complete(quake, 372), "EarthLaser2's shape_delay 30000 no longer needs clamping: its program ends the laser after its native frames (%s)" % str(quake["complete_tick"]))
 	# Scripts without random insertion have fixed completions, read off the tracks by hand:
 	# 封魔滅殺 (effCode30) inserts obj_Effect_MindBall at 0 and waits 120 — the ball's tree (the
 	# ball and its 7 sparks) lasts 162 frames, so the clip ends at 162; 生命之水 (effCode14)

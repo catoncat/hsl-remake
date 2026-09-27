@@ -169,8 +169,10 @@ static func _materialize_script_pressure(loop: Dictionary) -> void:
 			recruit["hit_bonus_accum"] = 0
 			recruit["ai_call_target_id"] = ""
 			AINavigationRules.initialize(recruit, loop["ai_profiles"]["actors"][recruit["actor_id"]]["profile"])
-			# The birth 0x407cc0 rolls a pmEnemy's carry (0x407c40) before its level adjustment 0x40e870.
+			# The birth 0x407cc0 draws the frame delay (0x407dba), rolls a pmEnemy's carry (0x407c40),
+			# then its level adjustment 0x40e870 draws.
 			recruit["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
+			ScriptActorCreationRules.InitialRosterGrowthRules.draw_frame_delay(loop, recruit)
 			BattleLoopRewards.initial_carry(loop, recruit)
 			var insertion := ScriptWait.next_insert(loop, class_id)
 			if insertion >= 0:

@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 93,
-    "sources": 495,
+    "sources": 492,
     "sources_by_kind": {
       "provenance": 204,
-      "sentence": 121,
+      "sentence": 118,
       "scope": 72,
       "matrix": 85,
       "video": 13
@@ -225,7 +225,7 @@
     },
     {
       "id": "level-specific-placement",
-      "difference": "已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剧情插入的替代抽数已排在 NPC 出生之前；剩开局快照报告待重生成、开局生成器替代不抽随机（等距取行主序靠后格）",
+      "difference": "已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剧情插入的替代抽数已排在 NPC 出生之前，出生张延迟 rand(24) 已抽（玩家在安装当时、NPC 在出生时先于携带）；剩开局快照报告待重生成、开局生成器替代不抽随机（等距取行主序靠后格）",
       "original": "0x44fbd0 在这两格无候选；0x453b90 走完在链停格 0x411a30 登记（0x4541a1），原指令实跑登记格即快照格",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_entry.md"
@@ -266,7 +266,7 @@
     },
     {
       "id": "npc-level-policy",
-      "difference": "NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同）",
+      "difference": "NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；出生张延迟 rand(24) 0x407dba 已照原版（BIRTHDELAY：玩家与 NPC 出生都抽、排在携带之前，开场玩家先于 NPC）；剩余＝开场前后其它全局抽取次数与原版不同，调级所在的全局流仍不同步",
       "original": "出生调级走对象初始化分支 0x43eed1／0x44341b，无全局条件；0x4c1d48 只由 opcode 73 置位（全库仅 STORY006），0x43f3a5／0x4438d4 是脚本全员重调；出生 0x407cc0 内先 0x407dba rand(24) 张延迟，pmEnemy 再 0x407c40 携带（0x407c86 rand(101)），然后才 0x40e870（模拟器实测）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_auto_growth.md",
@@ -274,7 +274,7 @@
         "docs/evidence_packets/runtime_observations/battle_006/README.md",
         "docs/evidence_packets/static_reverse/battle_reward_inputs.md"
       ],
-      "remake": "InitialRosterGrowthRules 先登记玩家、再按阵容顺序出生（出生队伍按组装器的 opening_birth 只取已登记玩家），每个敌方 NPC 在调级前掷携带（BattleRewardRules.install_carry，剧情插入同序），opcode 73 关再全员重调一次（entry_readjust）",
+      "remake": "InitialRosterGrowthRules 先登记玩家、再按阵容顺序出生（出生队伍按组装器的 opening_birth 只取已登记玩家），每个出生先抽张延迟（draw_frame_delay，玩家全部先抽），敌方 NPC 再在调级前掷携带（BattleRewardRules.install_carry，剧情插入同序），opcode 73 关再全员重调一次（entry_readjust）",
       "remake_code": [
         "game/sim/InitialRosterGrowthRules.gd",
         "game/sim/ReinforcementGrowthRules.gd",
@@ -973,12 +973,12 @@
     },
     {
       "id": "effect-motion",
-      "difference": "13 个法术效果对象（9 个 effProc 程序）仍是静帧＋淡出；有原生轨迹的 131 个对象里，随机程序每法术只回放一个样本（同类对象火花方向相同），画到 hsl.pak 缺失的帧时按系列循环",
-      "original": "effProc* 程序已逐 tick 原指令执行（131／144 对象、73＋2／84 程序）；剩余卡在运行时合成形状 0x460541、自绘 0x4607f9、屏幕波纹 0x46164b、镜头跟随 0x43bf30",
+      "difference": "法术效果对象全部按原生轨迹运动；剩 OtherBBall1 的镜头跟随与 FireBGSet／IconBGSet1 的屏幕波纹已记入轨迹但重制未画，随机程序用至多 4 个种子变体代替共享随机流，画到 hsl.pak 缺失的帧时按系列循环",
+      "original": "effProc* 程序已逐 tick 原指令执行（144／144 对象、84／84 程序）；合成形状 0x460541＋0x45f141 旋转、自绘 0x4607f9、屏幕波纹 0x46164b／0x461687、镜头跟随 0x43bf30 已读并接入探针",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_effect_motion.md"
       ],
-      "remake": "EffectObjectMotion 回放原生轨迹；未复原对象走 SkillEffectScriptPlayer 的静帧＋最短 48 tick＋24 tick 淡出",
+      "remake": "EffectObjectMotion 回放原生轨迹（合成形状按 angle 列旋转、自绘伪实例、重复插入轮换种子变体）；镜头跟随与屏幕波纹未画",
       "remake_code": [
         "game/battle/scene/EffectObjectMotion.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd"
@@ -993,12 +993,9 @@
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
         "scope:docs/evidence_packets/runtime_observations/effect_motion/README.md|provisional|六团火的随机位置与落光摆动相位",
-        "scope:docs/evidence_packets/static_reverse/original_effect_motion.md|provisional|随机样本、±1 帧、缺帧循环、未复原的 13 个对象",
+        "scope:docs/evidence_packets/static_reverse/original_effect_motion.md|provisional|种子变体、±1 帧、缺帧循环、镜头跟随与屏幕波纹未在重制画出",
         "scope:docs/evidence_packets/static_reverse/original_support_magic.md|provisional|AI 自救组合顺序与粒子／时钟",
         "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#4bd2900257",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#9291b94b98",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#a08f1a2b2d",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#b151ec46d8",
         "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#c69f8f3f04",
         "sentence:docs/evidence_packets/static_reverse/original_field_coverage.md#77614f92b7",
         "sentence:docs/evidence_packets/static_reverse/original_water_strike.md#a893bce200"
@@ -1058,13 +1055,13 @@
     },
     {
       "id": "script-entry-paths",
-      "difference": "落点只在事件末对最终格检查一次（原版每个安装／行走 token 当时检查）；替代抽数已照原版排在 NPC 出生抽数之前（链中 Wait 之后的落点与出生的交错未照做）；最终走位的停格照原版链",
-      "original": "安装无入场态，直接出现在 0x44fbd0 修过的格；替代＝洪泛 12＋行主序曼哈顿最近＋等距硬币，在插入 token 当时抽；SID_ENEMY 对象第一次 tick 才出生（0x43eed1→0x407cc0→0x40e870），SID_PLAYERn 在构造 0x40809e 里出生；离场末格 engMIX 16 级逐 tick 淡出后注销",
+      "difference": "落点只在事件末对最终格检查一次（原版每个安装／行走 token 当时检查）；替代抽数已照原版排在 NPC 出生抽数之前（链中 Wait 之后的落点与出生的交错未照做）；出生张延迟 rand(24) 0x407dba 照原版抽，站立首帧多停抽到的 tick 数；最终走位的停格照原版链",
+      "original": "安装无入场态，直接出现在 0x44fbd0 修过的格；替代＝洪泛 12＋行主序曼哈顿最近＋等距硬币，在插入 token 当时抽；SID_ENEMY 对象第一次 tick 才出生（0x43eed1→0x407cc0→0x40e870），SID_PLAYERn 在构造 0x40809e 里出生；出生 0x407dba 把 rand(24) 加到站立首帧停留计数 +0x7c；离场末格 engMIX 16 级逐 tick 淡出后注销",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_entry.md",
         "docs/evidence_packets/static_reverse/original_script_departure.md"
       ],
-      "remake": "BattleScriptActorPresentation／ScriptActorCreationRules／BattleDepartureView",
+      "remake": "BattleScriptActorPresentation／ScriptActorCreationRules／BattleDepartureView；张延迟 InitialRosterGrowthRules.draw_frame_delay→ActorRuntime.delay_first_idle_frame",
       "remake_code": [
         "game/battle/scene/BattleScriptActorPresentation.gd",
         "game/sim/ScriptActorCreationRules.gd",
@@ -1084,7 +1081,7 @@
         "provenance:game/sim/loop/BattleLoopScript.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
         "scope:docs/evidence_packets/runtime_observations/first_scene_opening_choreography_packet.md|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_script_entry.md|provisional|洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、链中有 Wait 时出生与后续落点的交错",
+        "scope:docs/evidence_packets/static_reverse/original_script_entry.md|provisional|出生张延迟之后站立循环是否另有重载, 洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、链中有 Wait 时出生与后续落点的交错",
         "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#9e4d6087d9"
       ]
     },
@@ -2328,7 +2325,7 @@
     },
     {
       "id": "rng-streams",
-      "difference": "两条流的生成器都已照原版：伤害流（R7-RNGB，随单战存档与战役承接保存），以及全局流（R7-RNGA：时钟播种、不入存档、不随承接）。全局流上已有 AI 决策、NPC 开场与新援调级、脚本建角、开局随机槽、opcode 86／99 随机位置，以及（RNGC）击杀掉落 0x44f5d3、出生随机携带 0x407c86（排在出生调级之前）、opcode 121 每个对象三抽；opcode 107／108 照原版不抽随机数，放在槽位加位移处。掉落与携带同状态逐项对拍：53 关携带 32 种子、51 关掉落 32 种子、51 关自然击杀 1 次、51 关出生携带 7 次，接受项与抽后全局字全部一致。玩家可见后果：全局流不入存档，读档后掉落与携带重掷。剩余两项：① AI 决策链的抽取次数与分支未等价，51 关第 1 回合 11 个 NPC 行动逐次对拍 0/11 一致（9 个缺优先级／类别链抽取，1 个分支不同，1 个注入缺口；决策 5/11 相同）；② 出生张延迟 rand(24)（0x407dba，每个对象出生都抽，玩家方也抽）、遗言 raw 抽取、秘密人物额外抽取、大地图／城镇 randi()、opcode 106 时序未接入。所以同一时钟种子下 AI 选择、出生等级与携带的序列仍与原版不同",
+      "difference": "两条流的生成器都已照原版：伤害流（R7-RNGB，随单战存档与战役承接保存），以及全局流（R7-RNGA：时钟播种、不入存档、不随承接）。全局流上已有 AI 决策、NPC 开场与新援调级、脚本建角、开局随机槽、opcode 86／99 随机位置，以及（RNGC）击杀掉落 0x44f5d3、出生随机携带 0x407c86（排在出生调级之前）、（BIRTHDELAY）出生张延迟 rand(24) 0x407dba（玩家与 NPC 都抽、排在携带之前）、opcode 121 每个对象三抽；opcode 107／108 照原版不抽随机数，放在槽位加位移处。掉落与携带同状态逐项对拍：53 关携带 32 种子、51 关掉落 32 种子、51 关自然击杀 1 次、51 关出生携带 7 次，接受项与抽后全局字全部一致。玩家可见后果：全局流不入存档，读档后掉落与携带重掷。剩余两项：① AI 决策链的抽取次数与分支未等价，51 关第 1 回合 11 个 NPC 行动逐次对拍 0/11 一致（9 个缺优先级／类别链抽取，1 个分支不同，1 个注入缺口；决策 5/11 相同）；② 遗言 raw 抽取、秘密人物额外抽取、大地图／城镇 randi()、opcode 106 时序未接入。所以同一时钟种子下 AI 选择、出生等级与携带的序列仍与原版不同",
       "original": "全局流 0x458c10／0x458c80（状态 0x4795d4／0x4795d8，标志 0x4c1e8c 为 0 时按时钟懒播种 [t, t ^ 0xe54a231c]，不入存档）：AI 决策 0x40bd4f／0x440db5／0x40d500／0x40c138／0x40c061／0x40c58d／0x41385d 等、掉落 0x44f580（rand(100) 0x44f5d3）、出生 0x407cc0 内依次张延迟 rand(24) 0x407dba、pmEnemy 携带 0x407c40（rand(101) 0x407c86）、调级 0x40e870（模拟器实测）、脚本 0x451787／0x451ecf／0x451d0f 直接调用、opcode 121 0x450f99（0x450fe6／0x451012／0x451075），opcode 107 0x450f2c／108 0x451e64 不抽；伤害流 0x42c720／0x42c780 把自己的两个字换进同一生成器，已逐值复刻",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_damage_random.md",

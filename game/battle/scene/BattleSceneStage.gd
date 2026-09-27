@@ -80,6 +80,7 @@ func spawn_actor_node(unit_id: String, actor_id: String, world_position: Vector2
 	sync_actor_depth(actor, view)
 	actor.highlight_side = highlight_side(view)
 	actor.play_state("idle", "0")
+	actor.delay_first_idle_frame(int(view.get("birth_frame_delay", 0)))
 	if bool(view.get("no_showshape", false)): actor.hide_shape()
 	runtime.actors_root.add_child(actor)
 	return actor

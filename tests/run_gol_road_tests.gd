@@ -34,6 +34,12 @@ static func attack_fixture() -> Dictionary:
 	hu["hit_bonus_accum"] = 1000
 	var victim := BattlePlayLoop.unit_ref(loop, "actor028_2")
 	victim["hp"] = 1
+	# Pending loot without the global stream: an important item drops without a roll (0x44f580),
+	# so the lethal strike leaves loot whatever the births drew.
+	var important := 0
+	for code in loop["reward_data"]["items"]:
+		if loop["reward_data"]["items"][code]["important"]: important = int(code); break
+	victim["inventory"] = [important, 0, 0, 0, 0, 0, 0, 0]
 	for offset in BattlePlayLoop.weapon_pattern(loop, hu)["offsets"]:
 		victim["coord"] = hu["coord"] + Vector2i(int(offset[0]), int(offset[1]))
 		if BattlePlayLoop.TraversalRules.placement_error(victim, loop["units"], loop["tiles"], loop["map_size"]) == "": break

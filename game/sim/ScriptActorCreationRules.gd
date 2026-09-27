@@ -292,6 +292,8 @@ static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, fi
 		var grown := InitialRosterGrowthRules.prepare_player(actor, loop["equipment_items"])
 		if not grown["ok"]: return grown
 		actor = grown["actor"]
+		# SID_PLAYERn is born inside its construction (0x40805d), before the landing draws.
+		InitialRosterGrowthRules.draw_frame_delay(loop, actor)
 		record["player_growth"] = grown["receipt"]
 		# A carried member is already registered: no template stamina (CampaignCarryRules).
 		var carried: Dictionary = loop.get("campaign_carry_receipt", {}).get("unfielded_stamina", {})
@@ -319,12 +321,13 @@ static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, fi
 	return {"ok": true, "unit_id": id, "created": true}
 
 
-## An NPC's birth draws: 0x407cc0 rolls a pmEnemy's carry (0x407c40) on the global stream
-## before the level adjustment 0x40e870 draws. The grown record replaces the live one in place.
+## An NPC's birth draws: 0x407cc0 draws the frame delay (0x407dba), rolls a pmEnemy's carry
+## (0x407c40) on the global stream, then the level adjustment 0x40e870 draws. The grown record replaces the live one in place.
 static func _npc_birth(loop: Dictionary, id: String, request: Dictionary) -> Dictionary:
 	var index := 0
 	while str(loop["units"][index]["id"]) != id: index += 1
 	var actor: Dictionary = loop["units"][index]
+	InitialRosterGrowthRules.draw_frame_delay(loop, actor)
 	if BattleRewardRules.install_carry(loop, actor) != "": return {"ok": false, "reason": "script_carry_inventory_full"}
 	var grown := ReinforcementGrowthRules.prepare(loop, actor, request)
 	if not grown["ok"]: return grown

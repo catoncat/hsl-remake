@@ -18,6 +18,8 @@ extends Node2D
 ##     (idle 6 × 11 ticks, 4 px per tick = 8 ticks per cell, 3 ticks per walk frame, 16 ms tick)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##     (actMoveDispWait keep-pose move: 0x45e5a6 every tick, shape delay from the speed)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_script_entry.md
+##     (birth 0x407dba: first standing frame held rand(24) extra ticks, +0x7c)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: provisional (script walks step at relative frames 0／3)
 
@@ -459,6 +461,13 @@ func _play_scripted_walk_frame_sound() -> void:
 		return  # a script shape (e.g. rope climb) is not a footstep cycle
 	if _scripted_walk_audio and animation_state == "walk" and _current_sequence_pos in [0, 3]:
 		_play_walk_sound()
+
+
+## Birth frame delay (0x407dba): the birth adds rand(24) to the standing loop's first
+## shape-delay count, so the first standing frame stays `ticks` extra ticks and the actors'
+## idle loops fall out of step. Called once, right after the spawn's play_state("idle").
+func delay_first_idle_frame(ticks: int) -> void:
+	_idle_elapsed = -OriginalTick.TICK_SECONDS * float(maxi(ticks, 0))
 
 
 func play_state(next_state: String, next_facing: String) -> void:

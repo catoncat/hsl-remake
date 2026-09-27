@@ -62,6 +62,7 @@ REVIEWED = [
     (0x4010c0, 0x40113a, 'defProcShadowLeft: afterimage level countdown and destroy'),
     (0x401220, 0x401307, '0x401220／0x401290: afterimage object 179 copying shape, mode|engMIX, level 6'),
     (0x415c10, 0x415d1c, 'random spawn helper: count objects around (x, y) with growing +0xae delays'),
+    (0x415d20, 0x415d3b, '0x415d20: release the synthesised shape slots (0x46075b) and clear the slot cache 0x4c6360／0x4c1aa4'),
     (0x42dc50, 0x42dc8d, 'screen shake accumulator 0x4c1b98／0x4c1b9c add and reset'),
     (0x42dcb0, 0x42dcdf, 'integer distance'),
     (0x415d40, 0x415dc0, 'obj_Y1／obj_X2 sound wrappers 0x415d40／0x415d70／0x415d90'),
@@ -72,7 +73,23 @@ REVIEWED = [
     (0x45e642, 0x45ed46, 'geometry: angle／distance／step／velocity helpers, zoom setters'),
     (0x46e0f0, 0x46e0fb, 'sqrt'),
     (0x46e720, 0x46e747, 'float to int'),
+    (0x43bf30, 0x43c0e6, 'camera follow: scroll toward (x-320, y-192) clamped to the map, 32/16(+12) px per call via 0x45e80d／0x42dc50'),
+    (0x46be92, 0x46bf36, 'camera set 0x46be92 and per-frame camera += accumulator 0x46bede, clamped to 0x4c0958／0x4c095c'),
+    (0x46163a, 0x46170c, 'screen ripple parameters 0x46164b, on／off 0x46163a／0x461645, per-row offset table 0x461687'),
 ]
+# Seed variants: random programs replay under up to VARIANTS RNG seeds (as objcomd_motion).
+VARIANTS = 4
+# Camera bounds and the screen-row count the ripple table spans (synthetic map: large bounds, 480 rows);
+# the camera starts centred on the origin the way 0x43bf30 centres an object: (x-320, y-192).
+CAMERA_BOUND, RIPPLE_ROWS, RIPPLE_COUNT = (0x4c0958, 0x4c095c), 480, 0x4bfc44
+CAMERA_START = (ORIGIN[0] - 320, ORIGIN[1] - 192)
+RIPPLE = (0x4c08c4, 0x4c08c8, 0x4c08cc, 0x4c08d0, 0x4c08d4, 0x4c08d8)
+# Answered in Python besides the pool: 0x460541 claims n free shape slots, 0x4602d4 decodes a shape to a
+# bitmap (w, h, SHP origin, colour key out), 0x45f141 writes the bitmap rotated by angle/256 turn about the
+# origin into a slot, 0x45f4b9 resets the frame pacer; 0x4607f9 queues one sprite drawn now (mode, x, y,
+# shape, plane, level); 0x4613ea hands the scroll to the display; 0x46075b frees the synthesised slots.
+SLOTS, DECODE, ROTATE, PACER, DRAW_NOW, SCROLL, RELEASE = 0x460541, 0x4602d4, 0x45f141, 0x45f4b9, 0x4607f9, 0x4613ea, 0x46075b
+SYNTHETIC_BASE = 0x8000
 # Calls answered in Python: object pool (0x45e307 create, 0x45e3ed destroy), the sound
 # player 0x42c180 (recorded), the heap (0x457b70 alloc, 0x457c20 free), the shape registry
 # (0x45fc01 name → handle, 0x4606a9 handle → SHP origin and size, read from hsl.pak).
@@ -84,6 +101,10 @@ FIELDS = {'obj_mode': 0x00, 'obj_plane': 0x0c, 'obj_x1': 0x10, 'obj_y1': 0x14, '
           'obj_collide_x1': 0x68, 'obj_collide_y1': 0x6c, 'obj_collide_x2': 0x70, 'obj_collide_y2': 0x74,
           'obj_shape_delay': 0x7c, 'obj_attribute': 0x80, 'obj_score': 0x84, 'obj_hitpoint': 0x88,
           **{f'obj_data{i}': 0x8c + 4 * (i - 1) for i in range(1, 10)}}
+
+
+def seed(variant: int) -> tuple[int, int]:
+    return ((SEED[0] + 0x9e3779b9 * variant) & 0xffffffff, (SEED[1] ^ (0x7f4a7c15 * variant)) & 0xffffffff)
 
 
 def digest(data: bytes) -> str:
@@ -123,7 +144,7 @@ class Machine:
     reviewed = REVIEWED
     processes = (EFFECT_PROCESS, SHADOW_PROCESS)
 
-    def __init__(self, exe_image, templates: 'Templates', sounds: dict[int, str], metrics):
+    def __init__(self, exe_image, templates: 'Templates', sounds: dict[int, str], metrics, variant: int = 0):
         from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_HOOK_CODE
         base, mapped = exe_image
         self.m = Uc(UC_ARCH_X86, UC_MODE_32)
@@ -133,7 +154,17 @@ class Machine:
         self.registry = templates
         self.templates, self.sounds, self.metrics = templates.bytes, sounds, metrics
         self.write(RNG_SEEDED, 1)
-        self.write(RNG_STATE[0], SEED[0]); self.write(RNG_STATE[1], SEED[1])
+        first, second = seed(variant)
+        self.write(RNG_STATE[0], first); self.write(RNG_STATE[1], second)
+        self.write(CAMERA_BOUND[0], 4000); self.write(CAMERA_BOUND[1], 4000)
+        self.write(CAMERA[0], CAMERA_START[0]); self.write(CAMERA[1], CAMERA_START[1])
+        self.write(RIPPLE_COUNT, RIPPLE_ROWS)
+        self.synthetic: dict[int, tuple[int, int]] = {}   # slot handle → (source handle, angle)
+        self.next_slot = SYNTHETIC_BASE
+        self.buffers: dict[int, int] = {}                  # decoded bitmap → source handle
+        self.direct: dict[tuple[int, int], dict] = {}      # (object id, call order) → drawn-now pseudo instance
+        self.direct_order = 0
+        self.ripple_last: list[int] | None = None
         self.planes: dict[int, list[dict]] = {}
         self.objects: list[dict] = []
         self.next_object = OBJ_BASE
@@ -178,9 +209,9 @@ class Machine:
         from unicorn.x86_const import UC_X86_REG_ESP
         if at == STOP:
             m.emu_stop(); return
-        if at in (CREATE, DESTROY, SOUND, ALLOC, FREE, SHAPE_BY_NAME, SHAPE_METRICS):
+        if at in (CREATE, DESTROY, SOUND, ALLOC, FREE, SHAPE_BY_NAME, SHAPE_METRICS, SLOTS, DECODE, ROTATE, PACER, DRAW_NOW, SCROLL, RELEASE):
             esp = m.reg_read(UC_X86_REG_ESP)
-            args = [self.read(esp + 4 + 4 * index) for index in range(4)]
+            args = [self.read(esp + 4 + 4 * index) for index in range(9)]
             value = 0
             if at == CREATE:
                 child = self.create(args[0], args[1], args[2])
@@ -194,14 +225,41 @@ class Machine:
             elif at == SHAPE_BY_NAME:
                 name = bytes(m.mem_read(args[0] & 0xffffffff, 64)).split(b'\0')[0].decode('ascii')
                 value = self.registry.shape(name)
+            elif at == SLOTS:
+                value = self.next_slot; self.next_slot += max(args[0], 1)
+            elif at == DECODE:
+                source = self.source(args[1] & 0xffff)
+                origin_x, origin_y, width, height = self.metrics(self.registry.member(source[0]))
+                for pointer, word in zip(args[2:7], (width, height, origin_x, origin_y, 0)):
+                    self.write(pointer & 0xffffffff, word)
+                value = self.next_heap; self.next_heap += 16
+                self.buffers[value] = args[1] & 0xffff
+            elif at == ROTATE:
+                source, angle = self.source(self.buffers[args[4] & 0xffffffff])
+                self.synthetic[args[8] & 0xffff] = (source, (angle + args[0]) & 0xff)
+                value = 1
+            elif at == DRAW_NOW:
+                key = (self.current['id'], self.direct_order); self.direct_order += 1
+                if key not in self.direct:
+                    self.direct[key] = {'address': 0, 'code': self.current['code'], 'plane': args[4], 'id': -1, 'drawn_now': True,
+                                        'parent': self.current['id'], 'born': self.frame, 'dead': None, 'samples': []}
+                self.direct[key]['samples'].append([self.frame, args[1] - ORIGIN[0], args[2] - ORIGIN[1], args[3] & 0xffff,
+                                                    args[0] & 0xffffffff, args[5], 0x10000, 0x10000])
             elif at == SHAPE_METRICS:
-                origin_x, origin_y, width, height = self.metrics(self.registry.member(args[0] & 0xffff))
+                source, angle = self.source(args[0] & 0xffff)
+                origin_x, origin_y, width, height = self.metrics(self.registry.member(source))
+                if angle:
+                    origin_x, origin_y, width, height = rotated_box(origin_x, origin_y, width, height, angle)
                 for pointer, word in zip(args[1:4] + [self.read(esp + 20)], (origin_x, origin_y, width, height)):
                     self.write(pointer & 0xffffffff, word)
             self._return(value)
             return
         if not any(low <= at < high for low, high, _ in self.reviewed):
             raise Unreviewed(at, self.current['code'] if self.current else -1, self.frame)
+
+    def source(self, handle: int) -> tuple[int, int]:
+        """A shape handle → (registry handle, rotation in 1/256 turn): synthetic slots written by 0x45f141."""
+        return self.synthetic.get(handle, (handle, 0))
 
     def destroy(self, address: int) -> None:
         """0x45e3ed: clear the live bit, unlink the chain (+0x5c／+0x60), leave the plane list."""
@@ -230,20 +288,30 @@ class Machine:
             raise ValueError(f'object {obj["code"]} did not return at frame {self.frame}')
 
     def step(self) -> None:
-        """One frame: the process walk (next link read before each call), then the draw walk."""
+        """One frame: the process walk (next link read before each call), then the draw walk, then
+        camera += the scroll accumulator (0x42d600 frame body: 0x45f5f7, then 0x46bede)."""
+        self.write(SHAKE[0], 0); self.write(SHAKE[1], 0)
         for plane in sorted(self.planes):
             chain = self.planes[plane]
             index = 0
             while index < len(chain):
                 obj = chain[index]
                 following = chain[index + 1] if index + 1 < len(chain) else None
+                self.direct_order = 0
                 self.process(obj)
                 if following is None:
                     break
                 index = chain.index(following) if following in chain else len(chain)
-        camera = [self.read(CAMERA[0]), self.read(CAMERA[1]), self.read(SHAKE[0]), self.read(SHAKE[1])]
+        shake = [self.read(SHAKE[0]), self.read(SHAKE[1])]
+        for word, bound, delta in zip(CAMERA, CAMERA_BOUND, shake):
+            self.write(word, min(max(self.read(word) + delta, 0), self.read(bound)))
+        camera = [self.read(CAMERA[0]) - CAMERA_START[0], self.read(CAMERA[1]) - CAMERA_START[1], *shake]
         if camera != [0, 0, 0, 0]:
             self.events.append([self.frame, 'camera', camera])
+        ripple = [self.read(word) for word in RIPPLE]
+        if ripple != [0] * 6 and ripple != self.ripple_last:
+            self.events.append([self.frame, 'ripple', ripple])
+        self.ripple_last = ripple
         for plane in sorted(self.planes):
             for obj in self.planes[plane]:
                 address = obj['address']
@@ -266,6 +334,9 @@ class Machine:
         for _ in range(FRAME_LIMIT):
             self.step()
             if all(obj['dead'] is not None for obj in self.objects):
+                for pseudo in self.direct.values():
+                    pseudo['id'] = len(self.objects); pseudo['dead'] = pseudo['samples'][-1][0] + 1
+                    self.objects.append(pseudo)
                 return
         raise ValueError(f'object {code} still alive after {FRAME_LIMIT} frames')
 
@@ -343,6 +414,17 @@ def compact(values: list[int]) -> list[list[int]]:
     return runs
 
 
+def rotated_box(origin_x: int, origin_y: int, width: int, height: int, angle: int) -> tuple[int, int, int, int]:
+    """0x45f141's output frame: the four corners rotated by angle/256 turn about the origin; the new
+    origin keeps the pivot (−min x, −min y)."""
+    import math
+    turn = angle * math.tau / 256
+    xs, ys = [], []
+    for x, y in ((-origin_x, -origin_y), (width - origin_x, -origin_y), (-origin_x, height - origin_y), (width - origin_x, height - origin_y)):
+        xs.append(round(x * math.cos(turn) - y * math.sin(turn))); ys.append(round(x * math.sin(turn) + y * math.cos(turn)))
+    return -min(xs), -min(ys), max(xs) - min(xs), max(ys) - min(ys)
+
+
 def encode_instances(machine: Machine, members: dict[str, int]) -> list[dict]:
     instances = []
     for obj in machine.objects:
@@ -352,20 +434,25 @@ def encode_instances(machine: Machine, members: dict[str, int]) -> list[dict]:
             continue
         start, end = samples[0][0], samples[-1][0]
         by_frame = {sample[0]: sample for sample in samples}
-        columns: dict[str, list[int]] = {key: [] for key in ('x', 'y', 'member', 'mode', 'level', 'zoom_x', 'zoom_y')}
+        columns: dict[str, list[int]] = {key: [] for key in ('x', 'y', 'member', 'mode', 'level', 'zoom_x', 'zoom_y', 'angle')}
         for frame in range(start, end + 1):
             sample = by_frame.get(frame)
             if sample is None:
-                row = [0, 0, -1, 0, 0, 0, 0]
+                row = [0, 0, -1, 0, 0, 0, 0, 0]
             else:
-                member = machine.registry.member(sample[3])
-                row = [sample[1], sample[2], members.setdefault(member, len(members)), sample[4], sample[5], sample[6], sample[7]]
+                source, angle = machine.source(sample[3])
+                member = machine.registry.member(source)
+                row = [sample[1], sample[2], members.setdefault(member, len(members)), sample[4], sample[5], sample[6], sample[7], angle]
             for key, value in zip(columns, row):
                 columns[key].append(value)
         instance = {'code': obj['code'], 'parent': obj['parent'], 'born': obj['born'], 'dead': obj['dead'], 'start': start,
                     'x': columns['x'], 'y': columns['y']}
         for key in ('member', 'mode', 'level', 'zoom_x', 'zoom_y'):
             instance[key] = compact(columns[key])
+        if any(columns['angle']):
+            instance['angle'] = compact(columns['angle'])   # 0x45f141 rotation of the drawn shape, 1/256 turn
+        if obj.get('drawn_now'):
+            instance['drawn_now'] = True                     # queued by the program itself through 0x4607f9
         instances.append(instance)
     return instances
 
@@ -418,19 +505,33 @@ def execute_packet(exe: Path) -> dict:
         try:
             first = Machine(exe_image, templates, sound_names, metrics); first.run_root(code, (0, 0))
             second = Machine(exe_image, templates, sound_names, metrics); second.run_root(code, DISPLACEMENT)
+            base = encode_instances(first, members)
+            variants = []
+            for variant in range(1, VARIANTS):
+                other = Machine(exe_image, templates, sound_names, metrics, variant); other.run_root(code, (0, 0))
+                encoded = {'frames': other.frame, 'instances': encode_instances(other, members)}
+                if encoded['instances'] != base and encoded not in variants:
+                    variants.append(encoded)
         except Unreviewed as stop:
             unrestored[name] = {'code': code, 'effect_process': entry['effect_process'], 'callee': f'{stop.callee:#x}', 'reason': str(stop)}
             continue
         objects[name] = {'code': code, 'effect_process': entry['effect_process'], 'motion': motion_class(first, second),
-                         'frames': first.frame, 'instances': encode_instances(first, members),
+                         'frames': first.frame, 'instances': base,
                          'sounds': [[event[0], event[3]] for event in first.events if event[1] == 'sound'],
                          'camera': [[event[0], *event[2]] for event in first.events if event[1] == 'camera']}
+        ripple = [[event[0], *event[2]] for event in first.events if event[1] == 'ripple']
+        if ripple:
+            objects[name]['ripple'] = ripple
+        if variants:
+            objects[name]['variants'] = variants
     by_process: dict[str, list[bool]] = {}
     for name, entry in scope_objects().items():
         by_process.setdefault(entry['effect_process'], []).append(name in objects)
     return {'schema': SCHEMA, 'exe_sha256': EXE_SHA, 'native_execution': True, 'evidence_tier': 'static-derived',
             'sources': {'global_obs': digest(obs), 'process_def': digest(process_def), 'obj_051_obs': digest(level_obs)},
             'origin': list(ORIGIN), 'displacement_probe': list(DISPLACEMENT), 'seed': [f'{SEED[0]:#010x}', f'{SEED[1]:#010x}'],
+            'variant_seeds': [[f'{a:#010x}', f'{b:#010x}'] for a, b in map(seed, range(VARIANTS))],
+            'camera_start': list(CAMERA_START), 'ripple_fields': ['phase', 'row_phase_step', 'rows_per_step', 'frame_phase_step', 'amplitude', 'flag_0x4c08d8'],
             'engine_modes': {name: defines[name] for name in sorted(defines) if name.startswith('eng')},
             'reviewed': [[f'{low:#x}', f'{high:#x}', note] for low, high, note in REVIEWED],
             'members': sorted(members, key=members.get),
@@ -438,10 +539,11 @@ def execute_packet(exe: Path) -> dict:
                           'partial': sorted(p for p, flags in by_process.items() if any(flags) and not all(flags)),
                           'unrestored': sorted(p for p, flags in by_process.items() if not any(flags))},
             'objects': objects, 'unrestored': unrestored,
-            'limits': ['One RNG seed per root object: random programs (spray angles, sway phase, spawn offsets) are one '
-                       'sample of the original distribution, replayed identically for every instance.',
-                       'The effect origin is fixed at (320,240) with the camera at (0,0); camera words written by quake '
-                       'programs are recorded (camera), not applied here.',
+            'limits': ['Random programs run under up to four RNG seeds (variants): samples of the original distribution '
+                       'standing in for the one shared RNG stream the original draws every instance from.',
+                       'The effect origin is fixed at (320,240), the camera starts centred on it (camera_start) inside a '
+                       'large synthetic map; camera rows are the camera relative to that start plus the frame\'s scroll '
+                       'accumulator; ripple rows are the 0x46164b parameters whenever they change.',
                        'A child appended behind the tail of its plane list is processed from the next frame '
                        '(0x45f5f7 reads the next link before each call); the root is created before frame 0 as if by an '
                        'interpreter in a lower plane — ±1 frame where the real list order differs.',
@@ -478,11 +580,12 @@ def check(packet: dict) -> None:
             raise ValueError(f'{name}: code／effect process differ from the scope')
         if row['motion'] not in ('translates', 'anchored', 'mixed', 'reshaped'):
             raise ValueError(f'{name}: unknown motion class')
-        for instance in row['instances']:
+        for instance in [one for tree in [row] + row.get('variants', []) for one in tree['instances']]:
             if instance['start'] < 0:
                 continue
             length = len(instance['x'])
-            if len(instance['y']) != length or any(sum(count for _, count in instance[key]) != length for key in ('member', 'mode', 'level', 'zoom_x', 'zoom_y')):
+            keys = ('member', 'mode', 'level', 'zoom_x', 'zoom_y') + (('angle',) if 'angle' in instance else ())
+            if len(instance['y']) != length or any(sum(count for _, count in instance[key]) != length for key in keys):
                 raise ValueError(f'{name}: instance columns differ in length')
             if any(value >= len(packet['members']) for value, _ in instance['member']):
                 raise ValueError(f'{name}: member index out of range')

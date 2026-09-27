@@ -15,7 +15,9 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 ##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
 ##     (birth per object: frame delay 0x407dba, pmEnemy carry 0x407c86, adjustment 0x40e92c, all global)
-##   rules: remake-invented (creation order, fill to maxima; the frame-delay rand(24) is not drawn)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_entry.md
+##     (0x407dba: every birth adds rand(24) to the shape-delay word +0x7c, players first)
+##   rules: remake-invented (creation order among players and among NPCs, fill to maxima)
 const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const ReinforcementGrowthRules = preload("res://game/sim/ReinforcementGrowthRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
@@ -35,8 +37,11 @@ static func prepare(loop: Dictionary) -> Dictionary:
 	var carried: Array = next.get("campaign_carry_receipt", {}).get("applied_unit_ids", [])
 	# Registered players provide the level baseline before unregistered instances.
 	# Their order is a declared remake scheduling choice, not native object-table order.
+	# Players are born inside their construction (0x40805d → 0x44341b → 0x407cc0), NPCs on
+	# their first tick, so every player's frame delay 0x407dba is drawn before any NPC birth.
 	for actor in next["units"]:
 		if actor["growth_profile"]["allocation"] != "manual": continue
+		draw_frame_delay(next, actor)
 		if carried.has(actor["id"]): receipt["carried"].append(actor["id"]); continue
 		if actor.has("entry_growth") or int(actor["pending_stat_points"]) != 0 or not actor.get("learned_skills", []).is_empty(): return {"ok": false, "reason": "already_progressed_initial_actor"}
 		var born := prepare_player(actor, next["equipment_items"])
@@ -49,7 +54,9 @@ static func prepare(loop: Dictionary) -> Dictionary:
 		# A pre-baked STORY insert carries its actSetPrevInsertObjectAdjustLevel halves
 		# (`script_insert.adjust_level`, opcode 56) exactly like a runtime insert request;
 		# other units fall back to the PLAYERS template / EVEF override inside ReinforcementGrowthRules.prepare.
-		# The birth 0x407cc0 rolls a pmEnemy's carry (0x407c40) on the same stream just before.
+		# The birth 0x407cc0 draws the frame delay (0x407dba), then rolls a pmEnemy's carry
+		# (0x407c40) on the same stream, before the adjustment.
+		draw_frame_delay(next, actor)
 		if BattleRewardRules.install_carry(next, actor) != "": return {"ok": false, "reason": "initial_carry_inventory_full"}
 		var born := ReinforcementGrowthRules.prepare(next, actor, actor.get("script_insert", {}), "initial_roster")
 		if not born["ok"]: return born
@@ -70,6 +77,16 @@ static func prepare(loop: Dictionary) -> Dictionary:
 	if not readjusted.is_empty(): receipt["readjusted"] = readjusted
 	next["initial_roster_growth"] = receipt
 	return {"ok": true, "loop": next}
+
+
+## Birth frame delay 0x407dba: 0x407cc0 sets the standing loop (0x446c40, delay 10) and adds
+## rand(24) on the global stream to the shape-delay word +0x7c, so the first standing frame
+## is held that many extra ticks (`birth_frame_delay`, read by ActorRuntime). Players and
+## NPCs alike; the only callers are the birth branches 0x43eef6 and 0x44343e.
+static func draw_frame_delay(loop: Dictionary, actor: Dictionary) -> void:
+	var draw := GlobalRandomStream.rand(loop[GlobalRandomStream.LOOP_KEY], 24)
+	loop[GlobalRandomStream.LOOP_KEY] = draw["state"]
+	actor["birth_frame_delay"] = int(draw["value"])
 
 
 static func prepare_player(template: Dictionary, equipment: Dictionary) -> Dictionary:

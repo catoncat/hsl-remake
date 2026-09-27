@@ -13,8 +13,8 @@ extends RefCounted
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   layout: provisional
-##     (one RNG seed per root: random spark angles and spawn offsets replay identically for every instance; a member
-##     hsl.pak lacks cycles the series' existing members like the untracked player)
+##     (up to four RNG seed variants stand in for the one shared stream; a member hsl.pak lacks cycles the series'
+##     existing members like the untracked player)
 ##   timing: static-derived content/generated/hsl/skills/effect_motion.json
 ##   timing: provisional (±1 frame where the original plane-list order differs from the probe's)
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
@@ -46,21 +46,30 @@ static func tracked(object_name: String) -> bool:
 ## The decoded tree of one tracked object: `motion` (translates／anchored／mixed／reshaped —
 ## how the probe's displaced run related to the plain one), `frames` (frames until the last
 ## instance is gone) and `instances` (start frame plus per-frame arrays).
-static func track(object_name: String) -> Dictionary:
-	if _decoded.has(object_name):
-		return _decoded[object_name]
+## Random programs carry seed variants (`variants`); `variant` picks one, wrapping.
+static func track(object_name: String, variant: int = 0) -> Dictionary:
+	var key := "%s#%d" % [object_name, variant % variants(object_name)]
+	if _decoded.has(key):
+		return _decoded[key]
 	var row: Dictionary = packet()["objects"][object_name]
+	var chosen: Dictionary = row if variant % variants(object_name) == 0 else row["variants"][variant % variants(object_name) - 1]
 	var instances: Array = []
-	for instance in row["instances"]:
+	for instance in chosen["instances"]:
 		if int(instance["start"]) < 0:
 			continue
 		instances.append({"code": int(instance["code"]), "start": int(instance["start"]),
 			"x": PackedInt32Array(instance["x"]), "y": PackedInt32Array(instance["y"]),
 			"member": _expand(instance["member"]), "mode": _expand(instance["mode"]), "level": _expand(instance["level"]),
-			"zoom_x": _expand(instance["zoom_x"]), "zoom_y": _expand(instance["zoom_y"])})
-	var decoded := {"motion": str(row["motion"]), "frames": int(row["frames"]), "instances": instances}
-	_decoded[object_name] = decoded
+			"zoom_x": _expand(instance["zoom_x"]), "zoom_y": _expand(instance["zoom_y"]),
+			"angle": _expand(instance.get("angle", []))})
+	var decoded := {"motion": str(row["motion"]), "frames": int(chosen["frames"]), "instances": instances}
+	_decoded[key] = decoded
 	return decoded
+
+
+## Seed variants of a tracked object (1 when its program draws no random numbers that matter).
+static func variants(object_name: String) -> int:
+	return 1 + (packet()["objects"][object_name].get("variants", []) as Array).size()
 
 
 ## Run-length pairs [value, count] → one value per frame.
@@ -76,7 +85,9 @@ static func _expand(runs: Array) -> PackedInt32Array:
 ## drawn instance — `member` (SHP name), `offset` (from the effect origin), `scale`, `alpha`
 ## and `blend` (`add`／`sub`／`mix`). engZOOM scales by the 16.16 zoom (a negative one
 ## mirrors); engMIX weights the source by level／16; engADDCOLOR／engSUBCOLOR pick the
-## saturating add／subtract kinds, otherwise a plain draw.
+## saturating add／subtract kinds, otherwise a plain draw. `rotation` (radians) is the turn of a
+## shape the program synthesised at run time (0x460541 slots written by 0x45f141: the SHP
+## rotated by angle/256 turn about its origin).
 static func sprites_at(decoded: Dictionary, frame: int) -> Array:
 	var members: Array = decoded.get("members", packet()["members"])
 	var sprites: Array = []
@@ -95,6 +106,8 @@ static func sprites_at(decoded: Dictionary, frame: int) -> Array:
 		if mode & ENG_MIX:
 			alpha = clampf(float(instance["level"][index]) / LEVELS, 0.0, 1.0)
 		var blend := "add" if mode & ENG_ADDCOLOR else ("sub" if mode & ENG_SUBCOLOR else "mix")
+		var angles: PackedInt32Array = instance.get("angle", PackedInt32Array())
+		var rotation := TAU * float(angles[index]) / 256.0 if index < angles.size() else 0.0
 		sprites.append({"member": str(members[member]), "offset": Vector2(instance["x"][index], instance["y"][index]),
-			"scale": scale, "alpha": alpha, "blend": blend})
+			"scale": scale, "alpha": alpha, "blend": blend, "rotation": rotation})
 	return sprites

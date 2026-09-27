@@ -301,9 +301,10 @@ func spawn_and_restore() -> void:
 	var unadjusted:=fixture("026",[0,0])
 	var zero_start:Array=stream_of(unadjusted, "global").duplicate()
 	BattleLoopScript.maintain_script_pressure(unadjusted)
-	# The birth 0x407cc0 still rolls the pmEnemy carry (0x407c86, global stream) before the
-	# suppressed adjustment 0x40e870: the stream moves by exactly those carry draws and no more.
-	var carry_only:Array=BattleRewardRules.carry(unadjusted["reward_data"]["actors"]["026"]["carry_items"], zero_start)["state"]
+	# The birth 0x407cc0 still draws the frame delay rand(24) (0x407dba) and rolls the pmEnemy
+	# carry (0x407c86, global stream) before the suppressed adjustment 0x40e870: the stream moves
+	# by exactly those draws and no more.
+	var carry_only:Array=BattleRewardRules.carry(unadjusted["reward_data"]["actors"]["026"]["carry_items"], GlobalRandomStream.advance(zero_start, 1))["state"]
 	check(created(unadjusted)[0]["entry_growth"]["draws"].is_empty() and stream_of(unadjusted, "global")==carry_only,"explicit source zero suppresses randomized adjustment and preserves inferred level; only the birth carry roll draws")
 
 func layering_and_rewards() -> void:

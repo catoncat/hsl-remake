@@ -432,12 +432,17 @@ static func compile_effect(lines: Array, seed: int, data: Dictionary, row: Dicti
 					timeline["unimplemented"].append(op)
 	timeline["impact_tick"] = last_cue
 	var complete := cursor
+	var seed_order := {}
 	for event in timeline["events"]:
 		if event["kind"] == "object":
 			if EffectObjectMotion.tracked(str(event["object"])):
 				# The native tree: frame f of the track shows at insertion tick + f, until its
 				# last instance is gone; an anchored program drives itself from the origin.
-				var native: Dictionary = EffectObjectMotion.track(str(event["object"]))
+				# Repeated insertions of one object cycle its seed variants.
+				var order: int = seed_order.get(str(event["object"]), 0)
+				seed_order[str(event["object"])] = order + 1
+				event["variant"] = order % EffectObjectMotion.variants(str(event["object"]))
+				var native: Dictionary = EffectObjectMotion.track(str(event["object"]), int(event["variant"]))
 				event["motion"] = "native"
 				event["anchored"] = str(native["motion"]) == "anchored"
 				event["expire"] = int(event["tick"]) + int(native["frames"])
@@ -900,7 +905,7 @@ func _draw_native(event: Dictionary, tick: float, origins: Array, used: int) -> 
 	var frame := int(tick - float(event["tick"]))
 	var displacement: Vector2 = Vector2.ZERO if bool(event["anchored"]) else event["position"]
 	var entries: Array = ObjcomdMotion.sprites_at(str(event["object"]), int(event["variant"]), frame) if event.get("source", "") == "objcomd" \
-		else EffectObjectMotion.sprites_at(EffectObjectMotion.track(str(event["object"])), frame)
+		else EffectObjectMotion.sprites_at(EffectObjectMotion.track(str(event["object"]), int(event.get("variant", 0))), frame)
 	for entry in entries:
 		var member := _native_member(str(entry["member"]))
 		if member == "":
@@ -912,7 +917,7 @@ func _draw_native(event: Dictionary, tick: float, origins: Array, used: int) -> 
 			sprite.texture = texture(member)
 			sprite.centered = false
 			sprite.offset = -Vector2(record["draw_origin"][0], record["draw_origin"][1])
-			sprite.rotation = 0.0
+			sprite.rotation = float(entry.get("rotation", 0.0))
 			sprite.scale = entry["scale"]
 			sprite.z_index = int(event["z"])
 			sprite.material = materials[str(entry["blend"])]
