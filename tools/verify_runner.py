@@ -428,6 +428,7 @@ def gd_reference_tokens(relpath: str) -> list[re.Pattern]:
 
 
 SCENE_CONTRACT_SUITE = "run_presentation_contract_tests.gd"
+ASSET_IMPORT_SUFFIXES = (".wav", ".png", ".ogg", ".mp3", ".tres", ".tscn", ".ttf", ".otf")
 
 
 def affected_godot_suites(changed: list[str], requested: list[str]) -> tuple[dict[str, str], dict[str, str], list[str]]:
@@ -578,6 +579,16 @@ def cmd_affected(args) -> int:
         jobs.append(godot_suite_job(f"{SWEEP_SUITE}#levels", SWEEP_SUITE, {"HSL_SWEEP_LEVELS": ",".join(levels)}, (), fixed_fps))
     if jobs:
         import shutil
+        # New content assets (a lane's imported wav／png) load only after a Godot import; the
+        # fast gate imports first, the affected stage used to skip it and every suite that
+        # touched the asset failed with "No loader found".
+        assets = sorted(path for path in changed if path.startswith("content/") and path.lower().endswith(ASSET_IMPORT_SUFFIXES) and (ROOT / path).exists())
+        if assets:
+            print(f"LANE_AFFECTED_IMPORT assets={len(assets)} first={assets[0]}", flush=True)
+            import_proc = subprocess.run([str(ROOT / "tools" / "godot.sh"), "--headless", "--import"], cwd=ROOT, capture_output=True, text=True)
+            if import_proc.returncode != 0:
+                print(import_proc.stdout[-2000:] + import_proc.stderr[-2000:], flush=True)
+                failed.append("import")
         for name, _argv, _env in jobs:
             shutil.rmtree(GATE_HOMES / name, ignore_errors=True)
             (GATE_HOMES / name).mkdir(parents=True, exist_ok=True)
