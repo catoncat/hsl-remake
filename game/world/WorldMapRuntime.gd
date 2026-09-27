@@ -88,6 +88,10 @@ var _layer: Node2D
 var _card: Control
 var _card_kind := ""
 var _travel_tween: Tween
+## The walk in progress (0x427070's chain 0x4c59e0): chosen destination, its tracks in order.
+var _route_target := 0
+var _route_tracks: Array[int] = []
+var _route_trigger := ""
 var _marker_textures: Dictionary = {}
 var town_runtime: Control
 var town_records: Array[Dictionary] = []
@@ -202,8 +206,8 @@ func handle_input(event: InputEvent) -> void:
 		input_records.append({"kind": "cancel", "status": "system_menu_opened" if bool(opened.get("ok", false)) else "system_menu_" + str(opened.get("reason", "refused"))})
 
 
-## Player choice of a point: travel when one visible track joins it to the current
-## point, otherwise record why. Clicking the current point only re-enters a town:
+## Player choice of a point: travel along the route 0x427070 finds (any number of
+## phase-2 tracks, WorldMapRules.route_between), otherwise record why. Clicking the current point only re-enters a town:
 ## walker 0x427420 sub-state 3 finds no track to itself (0x427070(a,a) = 0), then
 ## 0x42779c..0x4277e8 opens the town (event non-zero and Town bit) and every other
 ## case clears the click target at 0x4276fd; a Battle / General point is not
@@ -218,20 +222,29 @@ func select_point(point_id: int, trigger: String = "select") -> Dictionary:
 			return {"status": "current_point_ignored", "point_id": point_id}
 		input_records.append({"kind": "reenter", "trigger": trigger, "point_id": point_id})
 		return _resolve_arrival(point_id)
-	var track_id := Rules.track_between(state, world_map, current_point(), point_id)
-	if track_id <= 0:
+	var route := Rules.route_between(state, world_map, current_point(), point_id)
+	if route.is_empty():
 		input_records.append({"kind": "unreachable", "trigger": trigger, "point_id": point_id})
 		return {"status": "unreachable", "point_id": point_id}
-	return _begin_travel(point_id, track_id, trigger)
+	_route_target = point_id
+	_route_tracks = route
+	_route_trigger = trigger
+	var first := Rules.track_other_end(world_map, route[0], current_point())
+	var record := _begin_travel(first, route[0], trigger)
+	record["destination"] = point_id
+	record["route_tracks"] = route.duplicate()
+	return record
 
 
-func _begin_travel(point_id: int, track_id: int, trigger: String) -> Dictionary:
-	var path := Rules.travel_polyline(world_map, track_id, current_point())
+func _begin_travel(point_id: int, track_id: int, trigger: String, from_point: int = -1) -> Dictionary:
+	if from_point < 0:
+		from_point = current_point()
+	var path := Rules.travel_polyline(world_map, track_id, from_point)
 	var seconds := maxf(Rules.polyline_length(path) / maxf(travel_pixels_per_second, 1.0), 0.05)
 	var record := {
 		"kind": "travel",
 		"trigger": trigger,
-		"from_point": current_point(),
+		"from_point": from_point,
 		"to_point": point_id,
 		"track_id": track_id,
 		"path_point_count": path.size(),
@@ -250,8 +263,12 @@ func _begin_travel(point_id: int, track_id: int, trigger: String) -> Dictionary:
 	return record
 
 
-func _arrive(point_id: int, _track_id: int) -> void:
+func _arrive(point_id: int, track_id: int) -> void:
 	traveling = false
+	if _route_target > 0 and point_id != _route_target and _pass_point(point_id, track_id):
+		return
+	_route_target = 0
+	_route_tracks = []
 	# The original reads the point's flags before it marks Visit (0x427ab3 then the
 	# Visit write), so the arrival branch is taken on the pre-visit state.
 	var before: Dictionary = state
@@ -263,6 +280,37 @@ func _arrive(point_id: int, _track_id: int) -> void:
 	_persist_state()
 	_refresh_labels()
 	_resolve_arrival(point_id, before)
+
+
+## A point on the way to the chosen destination (0x427a86..0x427bd2): the walker runs the
+## arrival dispatch 0x427ab3 on it as not-selected — a Town is passed, event 0 is passed, a
+## General / Battle point with an event requests its level exactly as at a destination
+## (the same encounter-ratio and 0..2 draws, in route order) and the walk ends there; the
+## party then stands at that point (0x42cc10 keeps it in 0x4c1ba8, 0x42f7a4 restores it).
+## A passed point is neither marked Visit nor has its tracks revealed, and the current
+## point 0x4c1ba4 is written only when the walk ends. False when the point is the last one.
+func _pass_point(point_id: int, track_id: int) -> bool:
+	var index := _route_tracks.find(track_id)
+	var outcome := Rules.arrival(state, world_map, point_id, false, encounter_sample)
+	travel_records.append({"kind": "pass_point", "point_id": point_id, "outcome": outcome.duplicate()})
+	if str(outcome.get("kind", "")) == "level":
+		_route_target = 0
+		_route_tracks = []
+		state = Rules.visit(state, world_map, point_id)
+		_apply_provisional_unlocks(point_id)
+		if marker != null:
+			marker.position = Rules.point_position(world_map, point_id)
+		_reveal_from(point_id)
+		_persist_state()
+		_refresh_labels()
+		arrival_records.append(outcome)
+		_enter_level_event(point_id, int(outcome.get("level", 0)))
+		return true
+	if index < 0 or index + 1 >= _route_tracks.size():
+		return false
+	var next_track := _route_tracks[index + 1]
+	_begin_travel(Rules.track_other_end(world_map, next_track, point_id), next_track, _route_trigger, point_id)
+	return true
 
 
 ## Town-tree rewrites the scripts never issue but the story needs (world scene

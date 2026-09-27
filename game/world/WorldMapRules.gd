@@ -47,6 +47,9 @@ const MODE_REVEALING := 1
 const MODE_SHOWN := 2
 ## Named points minus one is the completion denominator (0x427200).
 const COMPLETION_DENOMINATOR_OFFSET := 1
+## Route search bounds (0x427070): 100 point slots, unreached cost 600000 (0x927c0).
+const ROUTE_SLOTS := 100
+const ROUTE_UNREACHED_COST := 600000
 
 
 static func load_world_map(path: String) -> Dictionary:
@@ -294,6 +297,78 @@ static func track_between(state: Dictionary, world_map: Dictionary, a: int, b: i
 		if track_other_end(world_map, track_id, a) == b and not track_hidden(state, world_map, track_id) and track_shown(state, world_map, track_id):
 			return track_id
 	return 0
+
+
+## The walker's route search 0x427070(from, to) (static-derived, original_world_town.md
+## 「寻路与行走」): a label-correcting shortest path over the point table. Every point
+## starts at 600000 (0x927c0), the origin at 0 and active; passes sweep the point slots
+## in order, and each active point relaxes its record's track slots (+0x18..+0x24) through
+## 0x426fc0 — only tracks in show phase 2 (0x426c50), cost = the track's TRACK.TXT
+## polyline length as the sum of |dx|+|dy| (0x44e006), a relaxation taken only when it is
+## below both the neighbour's cost and the best cost to `to` so far (strict) — then goes
+## inactive; passes repeat while anything relaxed. Neither point Hidden nor point phase is
+## checked. The track ids in walking order, empty when `to` is not reached or equals
+## `from` (0x42708a).
+static func route_between(state: Dictionary, world_map: Dictionary, from_point: int, to_point: int) -> Array[int]:
+	var result: Array[int] = []
+	if from_point == to_point or from_point <= 0 or to_point <= 0 or from_point >= ROUTE_SLOTS or to_point >= ROUTE_SLOTS:
+		return result
+	var slots: Array = []
+	for point_value in world_map.get("points", []):
+		var entry: Dictionary = point_value
+		var tracks: Array[int] = []
+		for raw in (entry.get("raw_track_fields", []) as Array) + [entry.get("raw_field9", 0)]:
+			if int(raw) > 0:
+				tracks.append(int(raw))
+		slots.append([int(entry.get("slot", entry.get("id", 0))), tracks])
+	slots.sort_custom(func(a, b): return int(a[0]) < int(b[0]))
+	var cost: Dictionary = {from_point: 0}
+	var active: Dictionary = {from_point: true}
+	var previous: Dictionary = {}
+	var via: Dictionary = {}
+	var best := ROUTE_UNREACHED_COST
+	var relaxed := true
+	while relaxed:
+		relaxed = false
+		for slot in slots:
+			var node := int(slot[0])
+			if not bool(active.get(node, false)):
+				continue
+			for track_id in slot[1]:
+				if track_mode(state, world_map, track_id) != MODE_SHOWN:
+					continue
+				var entry := track(world_map, track_id)
+				var neighbour := int(entry.get("to_point", 0)) if int(entry.get("from_point", 0)) == node else int(entry.get("from_point", 0))
+				var candidate := int(cost[node]) + track_route_cost(world_map, track_id)
+				if candidate >= best or int(cost.get(neighbour, ROUTE_UNREACHED_COST)) <= candidate:
+					continue
+				cost[neighbour] = candidate
+				active[neighbour] = true
+				previous[neighbour] = node
+				via[neighbour] = track_id
+				relaxed = true
+				if neighbour == to_point:
+					best = candidate
+			active[node] = false
+	if not previous.has(to_point):
+		return result
+	var node := to_point
+	while node != from_point:
+		result.push_front(int(via[node]))
+		node = int(previous[node])
+	return result
+
+
+## A track's route cost as the original track loader stores it at +8 (0x44e006..0x44e061):
+## the sum of |dx| + |dy| between successive TRACK.TXT polyline points.
+static func track_route_cost(world_map: Dictionary, track_id: int) -> int:
+	var total := 0
+	var polyline: Array = track(world_map, track_id).get("polyline", [])
+	for index in range(1, polyline.size()):
+		var a: Array = polyline[index - 1]
+		var b: Array = polyline[index]
+		total += absi(int(b[0]) - int(a[0])) + absi(int(b[1]) - int(a[1]))
+	return total
 
 
 ## TRACK.TXT polyline oriented so it starts at from_point (the table stores each

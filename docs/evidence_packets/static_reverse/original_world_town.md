@@ -1,11 +1,12 @@
 # 世界地图与城镇：初始化、bigmap 三字段、到达分支、路线揭示与 te 条件
 
-> evidence: static-derived; resource-derived; negative-evidence: 独立默认 level 表、路线红白插值、买卖 handler 执行回执 · status: live · functions: 0x426b70, 0x426bb0, 0x426bf0, 0x426c70, 0x426ce0, 0x426e40, 0x427070, 0x427200, 0x427420, 0x427df0, 0x4280d0, 0x42c1c0, 0x42cc10, 0x42d090, 0x44e0e0, 0x454650, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20, 0x4606a9 · tools: hsltools/data/world_map.py, hsltools/probes/world_town.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived; runtime-measured: Wine 原版多跳旅行两趟（0x4c59c4／0x4c1ba8／0x4c1bac 读数）; negative-evidence: 独立默认 level 表、路线红白插值、买卖 handler 执行回执 · status: live · functions: 0x426b70, 0x426bb0, 0x426bf0, 0x426c70, 0x426ce0, 0x426e40, 0x426fc0, 0x427070, 0x427200, 0x427420, 0x427df0, 0x4280d0, 0x42c1c0, 0x42cc10, 0x42d090, 0x44de20, 0x44e0e0, 0x4545a0, 0x454650, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20, 0x4606a9 · tools: hsltools/data/world_map.py, hsltools/probes/world_town.py · updated: 2026-09-27
 
 ## 结论
 
 - 原版城镇菜单是 `0x454a20` 按 town id 建立的可变 100×264 字节记录，新游戏只有歐姆村／米蘭多／席達鎮有初始树；bigmap 点与路线各有展示阶段、类型位、可变 event 三个独立字段；到达按当前 event 与类型分支，没有独立默认 level 表（static-derived，原指令有界执行；negative-evidence）。
 - 重制 `game/world/WorldMapRuntime.gd`、`WorldMapRules.gd`、`TownRuntime.gd` 与 `game/sim/TownEventRules.gd` 按这些字段、新游戏隐藏点线、到达分支、M_PNT 三帧、命中框 ±16、状态栏与揭示排序实现（static-derived 输入）。
+- 寻路与行走：点任何点都由 `0x427070` 在展示阶段 2 的路线上求最短路（代价＝折线 |dx|+|dy|），不查点与路线的 Hidden、不查点的展示阶段；行走者逐段走，每到一个点都跑到达分派 `0x427ab3`（非目的点不进城），途中点的 Battle／General 带 event 就在该点进关并停在那里；路过的点不标 Visit、不揭示路线。Wine 两趟实录印证；重制 `WorldMapRules.route_between` 与 `WorldMapRuntime` 逐段行走照此（static-derived；runtime-measured）。
 - 点自己所在的点：点对象过程 `0x427df0` 不比当前点，只写点击目标；行走者子状态 3 找不到自身路线后，仅 event 非 0 且带 Town 位时进城，Battle／General（及 event 0）清掉点击、不分派到达，不会重打该点关卡；重制 `select_point` 当前点分支照此（static-derived）。
 - 差异：旅行速度、揭示触发外的时钟、遭遇抽样比较方向、镜头滑行步长为重制值；差异清单 `town-event-timing`、`town-layout-extras`（provisional）。
 
@@ -38,6 +39,30 @@
 
 新游戏 `0x42c86e..0x42ca2a` 将点 1 设 mode2，并 OR Hidden：点 11–16、22、25–28、31–34、38、43；路线 10–14、20、23–26、29–34、37、43。
 
+### static-derived＋runtime-measured：寻路与行走
+
+点对象过程 `0x427df0` 只写点击目标 `0x4c1ab8`；行走者 `0x427420` 子状态 3 调 `0x427070(当前 0x4c1ba4, 目标)`，非 0 即进 `0x4277ed` 起步（速度 `+0x88=0x20000`）。
+
+| 环节 | 原版 | 地址 |
+| --- | --- | --- |
+| 寻路范围 | 整张点表（100 槽）的最短路，不是单条路线查找：节点表 `0x4c59e0` 每点 24 字节（活动、代价、入边路线、首路线、前驱、后继），代价初值 600000（`0x927c0`），起点 0 且活动 | `0x427070..0x4270c6` |
+| 松弛 | 按点槽顺序反复扫；活动点依次取自身记录 `+0x18..+0x24` 的路线经 `0x426fc0` 松弛后置不活动；有任何松弛就再扫一遍 | `0x4270e0..0x427165` |
+| 路线条件 | 只收展示阶段 ＝2 的路线（`0x426c50`）；邻点＝路线另一端（`+8` 等于本点取 `+0xc`，否则取 `+8`）；新代价严格小于邻点代价且小于已知到目标最优（`0x4c59c8`）才写；不查路线／点的 Hidden、不查点的展示阶段 | `0x426fc0..0x42705b` |
+| 路线代价 | 路线装载把 TRACK 折线相邻点的 \|dx\|+\|dy\| 累加存 `[0x4c1b64]+track*12+8` | `0x44e006..0x44e061` |
+| 结果 | 从目标沿前驱倒推，给每点写后继（`+0x14`）与出边路线（`+0xc`），返回起点的出边路线；目标未达或起点＝终点返回 0 | `0x427170..0x4271b2`、`0x42708a` |
+| 逐段行走 | 子状态 4 取 `[walker+0x90]` 的出边路线，按与折线首点距离 >6 决定反向，逐点走完（子状态 5／6）；镜头每 tick 经 `0x43bf30` 跟随行走者 | `0x427866..0x427a80` |
+| 每到一个点 | 取出边路线另一端，直接跑到达分派 `0x427ab3`，选定＝该点等于 `0x4c1ab8`；分派成立（关卡请求或进城）即停，`[walker+0x90]` 改成该点 | `0x427a86..0x427bad` |
+| 途中点 | event 0 与 Town 路过；General 未访问、Battle（带 event）请求关卡，General 已访问先过 encounter ratio（`0x4545a0` 读 `0x4c27e0` 的 short）与 1..100 抽样，成立再抽 0..2——与目的点同一段代码，抽取按路线顺序每点一次；关卡请求 `0x42cc10(点, level)` 把点记 `0x4c1ba8`，回大地图时 `0x42f7a4` 把它写回当前点 | `0x427ab3..0x427b95`、`0x42cc41`、`0x42f7bf` |
+| 路过不做的事 | 不标 Visit（`0x426d60` 只在分派成立时调）、不揭示路线（`0x426e40` 只在目的点 `0x427d36` 调）、不写 `0x4c1ba4`（子状态 2 才写） | `0x427bb3..0x427bd2` |
+| 目的点 | 分派不成立（event 0、未抽中遭遇）时 `0x427d36` 揭示目的点路线、回子状态 1；随后子状态 2 写当前点 | `0x427d36..0x427d50`、`0x42772a` |
+
+runtime-measured（2026-09-27，Wine 原版 v1.06，读回憶錄第 3 行 兩棲族部落 完成度 31%，存档 sha 前后一致）：
+
+| 趟 | 操作与路线（0x427070 同算法离线复算） | 读数与画面 |
+| --- | --- | --- |
+| 1 | 当前点 14 兩棲族部落 点 11 薛維斯港：路线 13→12→11，经 龍之息（Town，event 0）与 巴瀚納海峽（General 已访问，ratio 10） | 点击后 `0x4c1ab8`＝11；行走者经 巴瀚納海峽 未进关；约 1 s 内 `0x4c59c4`＝11、薛維斯港 城镇菜单打开；离城后 `0x4c1ba4`＝11 |
+| 2 | 当前点 11 点 8 菲納斯河畔：路线 10→8，经点 9 廢都 曼多利亞（General 未访问，event 900，展示阶段 0，路线 10 带 Hidden 位但阶段 2） | `0x4c1ab8`＝8，`0x4c1ba8`＝9、`0x4c1bac`＝900（0x384）：在途中点 9 请求关卡，随即进入该关（曼多利亞 废墟场景、一般兵对白），没有走到 8 |
+
 ### static-derived：到达
 
 `0x427ab3` 先读目的点当前 `+8` 再读类型；General 判断在 Battle 之前；关卡请求走 `0x42cc10`（探针止于 `0x427b3e`）。
@@ -49,6 +74,8 @@
 | General，已 Visit | 先过 encounter ratio 与 1..100 抽样，再在 event 上加 0..2 |
 | Battle | 未访问用 event；已访问加 0..2，不走 encounter 检查 |
 | Town | 仅当它是选定目的点时写城镇 id、进 phase15、标 Visit；路过不进城 |
+
+这张表对路线上的每个点都执行（见上节「每到一个点」）。
 
 点自己所在的点（不经 `0x427ab3`）：点对象过程 `0x427df0` 在 `0x427ffc` 见按下位 `0x40000`、点击目标 `0x4c1ab8` 为 −1 且 `0x4c1b00` 无 `0x40000000` 时放音并把本点号写 `0x4c1ab8`，不比较当前点 `0x4c1ba4`。行走者 `0x427420` 子状态 3 先调 `0x427070(当前,目标)`，同点在 `0x42708a` 直接返回 0（无路线），随后：
 
@@ -93,6 +120,7 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 ## 重制接线
 
 - 数据：`tools/hsltools/data/world_map.py` → `content/imported/hsl/global/world_map/`（[结构](world_map_data.md)）；场景 `content/world/world_map_scene.json`（`level_kind: world_map`）。
+- `game/world/WorldMapRules.gd` `route_between`／`track_route_cost`：照 `0x427070`／`0x426fc0` 的扫描顺序、阶段 2 条件、严格比较与 |dx|+|dy| 代价给出路线序列；`WorldMapRuntime.gd` `select_point` 走整条路线，`_pass_point` 在每个途中点以 `arrival(selected=false)` 分派，关卡则在该点停下进关（标 Visit、当前点改为该点），否则接着走，目的点才走原有到达。
 - `game/world/WorldMapRuntime.gd`：`select_point` 当前点分支只对 Town 且 event 非 0 重新进城，其余记 `current_point_ignored`；`_build_status_bar`（(0,412) 整张减法混合，「完成度：」x 6、数字 x 114、时间右对齐 x 634），`_advance_show_sequence`（按上表排序，揭示期间丢弃点击）；`game/world/WorldMapRules.gd`（到达分支）；`game/world/WorldScriptActions.gd`（脚本写入）。
 - 城镇：`game/world/TownRuntime.gd`、`TownShopScreen.gd`、`game/sim/TownEventRules.gd`（[读法表](town_event_semantics.md)）、`game/world/WorldPartyRules.gd`（买卖）；文字／头像／货表由 `tools/hsltools/assets/town_assets.py` 生成；初始根菜单 `content/world/town_initial_trees.json`。
 - 重制值：旅行速度 96 px/s、揭示动画节奏、遭遇抽样比较方向、镜头滑行步长 32、Leonard 贴图作队伍标记、TOWNDEF if_wait=0 仍逐句等确认、`teDelay`／`tePlaySound` 只记录（provisional）。
@@ -106,5 +134,7 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 - 探针止于地图新游戏设置、到达请求、失败对白创建、速度设置与状态栏绘制准备等具名边界；关卡加载、UI 与请求后的 Visit 写入未执行。
 - 完整菜单对象创建、焦点／返回导航与后期所有树变更未执行；UI 应从当前城镇／根的现有子项生成，不从 TOWNDEF 注释归类。
 - 大地图上 `0x43bf30` 是否走剧情步长 16 未读；if_wait=0 是否仍需输入、全转职成功链、secret 阈值的所有设定入口未读。
+- 脚本行走 `teSetBMWalkToPoint`（写 `0x4c1bb4`，子状态 2 转成点击目标）同样经 `0x427070` 多跳寻路；重制 `_consume_pending_walk` 仍只走一条直连路线、否则瞬移（未改）。
+- 目的点分派不成立时原版不标 Visit，重制 `_arrive` 仍总标 Visit；Town 且 event 0 的目的点原版不进城，重制 `arrival` 仍进城（均未改）。
 - 点 16 命運的神殿在 bigmap.dat 没有路线相连，进入方式未读。
 - 夹具的金额、指针、角色与阶段是显式输入，不是实际存档快照。
