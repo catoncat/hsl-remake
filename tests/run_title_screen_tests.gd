@@ -65,6 +65,7 @@ func _boot() -> Node:
 	root.add_child(scene)
 	current_scene = scene
 	await process_frame
+	scene.finish_slide_in() # the 0x45e882 slide-in lands before the layout checks
 	return scene
 
 

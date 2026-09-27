@@ -215,6 +215,7 @@ func _new_story_case() -> void:
 	root.add_child(title)
 	current_scene = title
 	await process_frame
+	title.finish_slide_in() # the menu takes input once its 0x45e882 slide-in lands
 	title.select(0)
 	var transition: Dictionary = title.confirm()
 	check(str(transition.get("action", "")) == "new_story" and str(transition.get("start_scenario_path", "")) == SCENARIO_PATH and str(transition.get("start_movie", "")) == "", "開始新故事 on a campaign whose start_level is 200 names level 200 and no film: " + str(transition))
@@ -246,6 +247,7 @@ func _enter_from_title() -> Node:
 	root.add_child(title)
 	current_scene = title
 	await process_frame
+	title.finish_slide_in() # the menu takes input once its 0x45e882 slide-in lands
 	title.select(1)
 	var transition: Dictionary = title.confirm()
 	check(str(transition.get("action", "")) == "battle_record" and str(transition.get("resume_scenario_path", "")) == SCENARIO_PATH, "戰場記錄 resumes into level 200: " + str(transition))

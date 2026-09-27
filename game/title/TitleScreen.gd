@@ -12,10 +12,13 @@ extends Node2D
 ##                 the hold timer, state 3 0x424004; code 2 0x4240b2 fades via 0x42cb60／0x42dc90(2))
 ## The gem (Title027) and the book (Title028) stay beside item 1 whatever is selected and bob
 ## vertically on their own angle counters: defProcMainMenuItem 0x424360 (static-derived,
-## docs/evidence_packets/runtime_observations/original_title_ornaments/README.md). The original
-## lights no item on hover (the recording shows only a sparkle; the sparkle shape is not
-## identified and not drawn); OPT-GUIDE＝提示 shows the red lit shape on the hovered item. An
-## arrow key lights the keyboard-selected item (remake keyboard path).
+## docs/evidence_packets/runtime_observations/original_title_ornaments/README.md). The menu
+## (ring, items, statues, gem, book) opens 300 px low and slides up at 0x45e882 speed 40 before
+## it takes input. The original lights no item on hover: the hovered item, gem or book throws
+## Menu_Star sparkles (object 788) every 6 ticks, a click adds Menu_Star2 (789); OPT-GUIDE＝提示
+## shows the red lit shape on the hovered item. Clicking the gem opens 設定選項 and the book the
+## 讀取回憶錄 list (BattleSystemMenu.open_standalone); the menu stays drawn and inert until the
+## window goes back. An arrow key lights the keyboard-selected item (remake keyboard path).
 ## Clicking an item plays ACCEPT01 (RESOURCE 398, defProcMainMenuString 0x4242d6). Confirming an item lights it (the red Title024-026 shape with its white flare), holds
 ## CONFIRM_HOLD_SECONDS, then fades to black over FADE_TO_BLACK_SECONDS; the version string
 ## V1.06 stays at the bottom-left corner (runtime-measured on the 2026-09-24 recording,
@@ -29,6 +32,8 @@ extends Node2D
 ##   rules: static-derived docs/evidence_packets/resource_inventory/original_movies.md
 ##   rules: provisional (0x4c1ae4 read as a re-entry marker)
 ##   rules: remake-invented (戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene)
+##   rules: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
+##     (gem code 10 → 設定選項 0x423b90, book code 11 → memoir list 0x423bd0; menu inert meanwhile)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (V1.06 ink box (3,459)–(41,467), 8 px advance; no-record board at (75,320))
@@ -45,11 +50,12 @@ extends Node2D
 ##     (無存檔記錄 message 12 via 0x4072b0)
 ##     (戰場記錄 code 1 0x42404c: message 12「無存檔記錄」, 11「讀取存檔失敗」)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
-##     (angle +3 of 256 per tick; start angle rand()%255 per object, 0x424389)
+##     (bob angle +3／tick, 0x424389; slide 0x45e882 speed 40; sparkles 0x4241a0／0x41f5db)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (開始新故事 click: lit shape from 13.52 s, fade 14.27→14.82 s — 0.75 s hold, 0.55 s fade)
 ##   timing: provisional
 ##     (the same hold／fade for 戰場記錄 and 離開遊戲; the message board reuses the save notice's in／hold／out)
+##     (Menu_Star's unset Shape_Delay taken as 0; memoir load fades without a hold)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
 ##   audio: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
@@ -98,6 +104,38 @@ const ORNAMENT_ANGLE_START_MODULO := 255
 ## One full swing: 256 / 3 ticks.
 const ORNAMENT_BOB_PERIOD := 256.0 / ORNAMENT_ANGLE_STEP * OriginalTick.TICK_SECONDS
 const INTERFACE_AUDIO_PATH := "res://content/imported/hsl/shared/interface_audio/manifest.json"
+## Menu slide-in (static-derived, original_title_ornaments): defProcMainMenu 0x423cd0 first frame
+## puts the menu (ring, the three items, both statues, gem and book) 300 px below its rest
+## (0x423d06); state 0 steps it back with 0x45e882 speed 40 (each tick min(40, distance >> 3),
+## at least 2, landing inside 1 px) and 0x45efce carries the children; the menu takes input only
+## after it lands (state 1 arms 0x10000). Background and logo do not move.
+const MENU_SLIDE_DISTANCE := 300
+const MENU_SLIDE_CAP := 40
+const MENU_SLIDE_SHIFT := 3
+const MENU_SLIDE_MIN := 2
+## Sparkles (static-derived): every title object (the three items, gem and book: 0x4241a0) under
+## the mouse while the menu waits for input counts +0x90 down from 6 each tick and at zero spawns
+## 4 Menu_Star (object 788) per 32 px column (0x423aa0 → 0x415c10); a click spawns 24 Menu_Star2
+## (789) and 16 Menu_Star per column. Both run effProcFlyUpShape (0x41f5db): random start shape of
+## 3, held; straight up at (rand & 0x1f000) + Data6 (16.16 px a tick); held Shape_Delay + 6..13 + 1
+## ticks, then effProcFlyUp2's fade (0x422c9a) one of 16 additive levels a tick.
+const SKILL_EFFECTS_PATH := "res://content/imported/hsl/shared/skill_effects/manifest.json"
+const STAR_KINDS := {
+	"hover": {"frames": ["MAGIC\\EAR24_22.SHP", "MAGIC\\EAR24_23.SHP", "MAGIC\\EAR24_24.SHP"], "width": 48, "jitter": 6, "speed_base": 0, "shape_delay": 0},
+	"click": {"frames": ["MAGIC\\EAR24_21.SHP", "MAGIC\\EAR24_22.SHP", "MAGIC\\EAR24_23.SHP"], "width": 64, "jitter": 1, "speed_base": 0x8000, "shape_delay": 2},
+}
+const HOVER_SPARK_TICKS := 6
+const HOVER_SPARK_COUNT := 4
+const CLICK_SPARK2_COUNT := 24
+const CLICK_SPARK_COUNT := 16
+const STAR_COLUMN_PITCH := 32
+const STAR_LEVELS := 16
+## Gem and book carry codes 10 and 11 (Data9): 0x424037 opens 設定選項 (0x423b90) and the
+## 讀取回憶錄 list (0x423bd0(…, 0)); the menu stays drawn but takes no input until the window
+## writes its result back (states 4／5: 0x424101／0x424117).
+const ORNAMENT_CODES := {10: "cursor_gem", 11: "cursor_hand"}
+const WINDOW_OF_CODE := {10: "options", 11: "memoir"}
+const BattleSystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
 
 var manifest: Dictionary = {}
 var items: Array = []
@@ -129,6 +167,21 @@ var _confirmed_index := -1
 var _version: Control
 ## The intro film while it plays (開始新故事 after the fade); null otherwise.
 var intro_player: CanvasLayer
+## Pixels the menu still sits below its rest (MENU_SLIDE_DISTANCE on open, 0 once landed).
+var menu_slide := MENU_SLIDE_DISTANCE
+## "" or the window a gem／book click opened ("options" | "memoir").
+var window_open := ""
+## Code of the title object under the mouse: 0..2 the items, 10 gem, 11 book, -1 none.
+var hover_code := -1
+var _menu_rest: Dictionary = {}
+var _tick_clock := 0.0
+var _spark_counters: Dictionary = {}
+var _stars: Array = []
+var _star_layer: Node2D
+var _star_material: CanvasItemMaterial
+var _star_frames: Dictionary = {}
+var _rng := RandomNumberGenerator.new()
+var _system: Control
 
 
 func _ready() -> void:
@@ -138,11 +191,10 @@ func _ready() -> void:
 		return
 	manifest = parsed
 	items = manifest.get("items", [])
-	var rng := RandomNumberGenerator.new()
-	rng.randomize()
-	ornament_phases = Vector2i(rng.randi() % ORNAMENT_ANGLE_START_MODULO, rng.randi() % ORNAMENT_ANGLE_START_MODULO)
+	_rng.randomize()
+	ornament_phases = Vector2i(_rng.randi() % ORNAMENT_ANGLE_START_MODULO, _rng.randi() % ORNAMENT_ANGLE_START_MODULO)
 	_build_scene()
-	_place_ornaments()
+	_apply_menu_slide()
 	_refresh_lit()
 
 
@@ -156,6 +208,15 @@ func _build_scene() -> void:
 		_lit.append(lit)
 	_gem = _sprite("cursor_gem", _layout_top_left("cursor_gem"))
 	_hand = _sprite("cursor_hand", _layout_top_left("cursor_hand"))
+	for node in [_sprites["ring"], _sprites["statue_left"], _sprites["statue_right"]] + _lit:
+		_menu_rest[node] = node.position
+	_star_layer = Node2D.new()
+	_star_layer.name = "MenuStars"
+	add_child(_star_layer)
+	_star_material = CanvasItemMaterial.new()
+	_star_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	var effects: Variant = ContentPaths.read_json(SKILL_EFFECTS_PATH)
+	_star_frames = (effects.get("frames", {}) as Dictionary) if typeof(effects) == TYPE_DICTIONARY else {}
 	var overlay := CanvasLayer.new()
 	overlay.name = "Overlay"
 	overlay.layer = 10
@@ -180,6 +241,11 @@ func _build_scene() -> void:
 		glyph.add_theme_constant_override("shadow_offset_x", 0)
 		glyph.add_theme_constant_override("shadow_offset_y", 0)
 		glyph.text = VERSION_TEXT[index]
+	_system = BattleSystemMenu.new()
+	_system.name = "TitleWindows"
+	_system.runtime = self
+	overlay.add_child(_system)
+	_system.standalone_closed.connect(_on_window_closed)
 	_fade = ColorRect.new()
 	_fade.name = "Fade"
 	_fade.size = Vector2(640, 480)
@@ -228,16 +294,129 @@ func _layout_top_left(role: String) -> Vector2:
 
 func _process(delta: float) -> void:
 	ornament_clock += delta
+	_tick_clock += maxf(delta, 0.0)
+	while _tick_clock >= OriginalTick.TICK_SECONDS:
+		_tick_clock -= OriginalTick.TICK_SECONDS
+		_tick()
 	_place_ornaments()
 
 
+## One original tick: the slide step (0x45e882), hover sparkles (0x4241a0) and the stars.
+func _tick() -> void:
+	if menu_slide > 0:
+		menu_slide = 0 if menu_slide <= 1 else menu_slide - clampi(menu_slide >> MENU_SLIDE_SHIFT, MENU_SLIDE_MIN, MENU_SLIDE_CAP)
+		_apply_menu_slide()
+	if hover_code >= 0 and menu_armed():
+		var left := int(_spark_counters.get(hover_code, HOVER_SPARK_TICKS)) - 1
+		if left <= 0:
+			left = HOVER_SPARK_TICKS
+			spawn_sparkles(hover_code, "hover", HOVER_SPARK_COUNT)
+		_spark_counters[hover_code] = left
+	_tick_stars()
+
+
+## The menu waits for input: landed, no window up, not leaving (state 2, +0x80 & 0x10000).
+func menu_armed() -> bool:
+	return menu_slide == 0 and window_open == "" and not menu_locked
+
+
+func _apply_menu_slide() -> void:
+	for node in _menu_rest:
+		node.position = _menu_rest[node] + Vector2(0, menu_slide)
+	_place_ornaments()
+
+
+## test hook: land the menu at once (the harness checks the rest layout).
+func finish_slide_in() -> void:
+	menu_slide = 0
+	_apply_menu_slide()
+
+
 ## The original gem and book never move sideways and do not follow the selection: both bob
-## about their spawn positions beside item 1.
+## about their spawn positions beside item 1 (carried along by the slide-in, 0x424360).
 func _place_ornaments() -> void:
 	if _gem == null or _hand == null:
 		return
-	_gem.position = ornament_spawn_top_left("cursor_gem") + Vector2(0, ornament_offset(ornament_phases.x))
-	_hand.position = ornament_spawn_top_left("cursor_hand") + Vector2(0, ornament_offset(ornament_phases.y))
+	_gem.position = ornament_spawn_top_left("cursor_gem") + Vector2(0, ornament_offset(ornament_phases.x) + menu_slide)
+	_hand.position = ornament_spawn_top_left("cursor_hand") + Vector2(0, ornament_offset(ornament_phases.y) + menu_slide)
+
+
+## Shape rect of a title object by code (items 0..2 by their lit shape, gem 10, book 11).
+func code_rect(code: int) -> Rect2:
+	if ORNAMENT_CODES.has(code):
+		var sprite := _gem if code == 10 else _hand
+		return Rect2(sprite.position, sprite.texture.get_size() if sprite.texture != null else Vector2.ZERO)
+	return item_rect(code)
+
+
+## 0x423aa0: columns from the shape's left + 16 every 32 px across its width; each column
+## 0x415c10 drops `count` stars at (column, top + 16) + folded rand offsets (x within the kind's
+## width, y within 2 × (height − 16)), the n-th star delayed by the sum of n rand(jitter) + 1.
+func spawn_sparkles(code: int, kind: String, count: int) -> void:
+	var rect := code_rect(code)
+	var spec: Dictionary = STAR_KINDS[kind]
+	var span_y := 2 * int(rect.size.y - 16)
+	var x := rect.position.x + 16
+	while x < rect.end.x:
+		var delay := 0
+		for index in count:
+			_add_star(Vector2(x + _fold(int(spec["width"])), rect.position.y + 16 + _fold(span_y)), kind, delay)
+			delay += _rng.randi() % int(spec["jitter"]) + 1
+		x += STAR_COLUMN_PITCH
+
+
+## 0x415c10 offset: r = rand() % n, folded to n/2 − r past n/2.
+func _fold(n: int) -> int:
+	if n <= 0:
+		return 0
+	var r := _rng.randi() % n
+	return r if r <= n / 2 else n / 2 - r
+
+
+func _add_star(at: Vector2, kind: String, delay: int) -> void:
+	var sprite := Sprite2D.new()
+	sprite.centered = false
+	sprite.material = _star_material
+	sprite.visible = false
+	_star_layer.add_child(sprite)
+	_stars.append({"sprite": sprite, "kind": kind, "at": at, "delay": delay, "started": false, "speed": 0.0, "life": 0, "fading": false, "level": STAR_LEVELS})
+
+
+## Per star each tick: the effect prologue (0x415dc0) waits out +0xae; the first drawn tick runs
+## effProcFlyUpShape's setup; later ticks run effProcFlyUp2 (move, then count the held shape down
+## or fade one level; deleted at level 0).
+func _tick_stars() -> void:
+	var alive: Array = []
+	for star in _stars:
+		var sprite: Sprite2D = star["sprite"]
+		star["delay"] = int(star["delay"]) - 1
+		if int(star["delay"]) > 0:
+			alive.append(star)
+			continue
+		var spec: Dictionary = STAR_KINDS[star["kind"]]
+		if not bool(star["started"]):
+			star["started"] = true
+			var frame: Dictionary = _star_frames.get(spec["frames"][_rng.randi() % 3], {})
+			var origin: Array = frame.get("draw_origin", [0, 0])
+			sprite.texture = load(str(frame.get("res_path", ""))) if frame.has("res_path") else null
+			sprite.offset = -Vector2(float(origin[0]), float(origin[1]))
+			star["speed"] = float((_rng.randi() & 0x1f000) + int(spec["speed_base"])) / 65536.0
+			star["life"] = int(spec["shape_delay"]) + 6 + (_rng.randi() & 7)
+			sprite.visible = true
+		else:
+			star["at"] = (star["at"] as Vector2) - Vector2(0, float(star["speed"]))
+			if bool(star["fading"]):
+				star["level"] = int(star["level"]) - 1
+			else:
+				star["life"] = int(star["life"]) - 1
+				star["fading"] = int(star["life"]) < 0
+		if int(star["level"]) <= 0:
+			sprite.queue_free()
+			continue
+		sprite.position = (star["at"] as Vector2).floor()
+		sprite.modulate.a = float(star["level"]) / STAR_LEVELS
+		alive.append(star)
+	_stars = alive
 
 
 ## Top-left of the ornament's shape at its spawn position (object position minus draw origin).
@@ -283,6 +462,11 @@ func hover_at(logical_point: Vector2) -> int:
 	for index in items.size():
 		if item_rect(index).has_point(logical_point):
 			found = index
+	hover_code = found
+	if found < 0:
+		for code in ORNAMENT_CODES:
+			if code_rect(code).has_point(logical_point):
+				hover_code = code
 	if found != hovered:
 		hovered = found
 		if found >= 0 and not menu_locked:
@@ -298,7 +482,7 @@ func selected_item_id() -> String:
 
 ## Runs the selected item. Returns the transition record (also kept in `transition`).
 func confirm() -> Dictionary:
-	if items.is_empty() or menu_locked:
+	if items.is_empty() or not menu_armed():
 		return {}
 	var action := selected_item_id()
 	match action:
@@ -332,15 +516,16 @@ func confirm() -> Dictionary:
 	return transition
 
 
-func _start_transition(action: String, scene_path: String, resume_scenario: String = "") -> void:
+func _start_transition(action: String, scene_path: String, resume_scenario: String = "", lit_hold := true) -> void:
 	menu_locked = true
-	_confirmed_index = selected
+	_confirmed_index = selected if lit_hold else -1
 	_refresh_lit()
 	transition = {"action": action, "scene": scene_path, "status": "fading"}
 	if resume_scenario != "":
 		transition["resume_scenario_path"] = resume_scenario
 	var tween := create_tween()
-	tween.tween_interval(CONFIRM_HOLD_SECONDS)
+	if lit_hold:
+		tween.tween_interval(CONFIRM_HOLD_SECONDS)
 	# The music keeps its volume: the original stops it at once on leaving the level (§3.1).
 	tween.tween_property(_fade, "color:a", 1.0, FADE_TO_BLACK_SECONDS)
 	tween.finished.connect(_on_fade_finished.bind(scene_path))
@@ -406,8 +591,43 @@ func show_message(text: String) -> void:
 	_message_tween.tween_callback(func() -> void: _message.visible = false)
 
 
+## Gem (code 10) → 設定選項, book (11) → the 讀取回憶錄 list (0x424037 → 0x423b90／0x423bd0).
+func open_window(code: int) -> Dictionary:
+	if not menu_armed() or not WINDOW_OF_CODE.has(code):
+		return {}
+	var result: Dictionary = _system.open_standalone(WINDOW_OF_CODE[code])
+	if bool(result.get("ok", false)):
+		window_open = WINDOW_OF_CODE[code]
+		hover_code = -1
+		hovered = -1
+		_refresh_lit()
+	return result
+
+
+func _on_window_closed(_kind: String) -> void:
+	window_open = ""
+
+
+## The memoir list's slot confirmed (0x424117: result 1 → load and leave the title): arm the
+## record like 戰場記錄 and fade out without a lit item.
+func resume_memoir_record(record: Dictionary) -> void:
+	_system.hide_now()
+	_system.standalone = ""
+	window_open = ""
+	CampaignProgress.queue_resume(record)
+	_start_transition("load_memoir", FIRST_SCENE_PATH, str(record.get("scenario_path", "")), false)
+
+
+## BattleSystemMenu's logical mapping; the title has no camera.
+func viewport_to_logical_position(position: Vector2) -> Vector2:
+	return get_canvas_transform().affine_inverse() * position
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if menu_locked or items.is_empty():
+	if _system != null and _system.active():
+		_system.handle_input(event)
+		return
+	if not menu_armed() or items.is_empty():
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		var key := (event as InputEventKey).keycode
@@ -423,9 +643,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion:
 		hover_at(get_global_mouse_position())
 	elif event is InputEventMouseButton and event.pressed and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
-		if hover_at(get_global_mouse_position()) >= 0:
+		var index := hover_at(get_global_mouse_position())
+		if hover_code >= 0:
 			play_click_sound()
+			spawn_sparkles(hover_code, "click", CLICK_SPARK2_COUNT)
+			spawn_sparkles(hover_code, "hover", CLICK_SPARK_COUNT)
+		if index >= 0:
 			confirm()
+		elif WINDOW_OF_CODE.has(hover_code):
+			open_window(hover_code)
 
 
 ## defProcMainMenuString 0x4242d6: a click on an item plays ACCEPT01 (RESOURCE 398).
@@ -454,6 +680,10 @@ func summary() -> Dictionary:
 		"gem_position": _gem.position if _gem != null else Vector2.ZERO,
 		"hand_position": _hand.position if _hand != null else Vector2.ZERO,
 		"ornament_phases": ornament_phases,
+		"menu_slide": menu_slide,
+		"hover_code": hover_code,
+		"stars": _stars.size(),
+		"window": window_open,
 		"lit_visible": _lit.map(func(sprite): return sprite.visible),
 		"transition": transition.duplicate(true),
 		"quit_requested": quit_requested,

@@ -51,6 +51,8 @@ extends Control
 ## World variant 整理裝備: the host opens the between-battle party equipment screen
 ## (game/world/PartyEquipmentScreen) with the carried party; the scroll itself closes.
 signal arrange_equipment_requested
+## A window opened on its own (open_standalone, the title's gem／book) went back.
+signal standalone_closed(kind: String)
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const TITLE_SCENE_PATH := "res://game/title/TitleScreen.tscn"
@@ -148,6 +150,8 @@ var _slide_target := Vector2.ZERO
 var _slide_shift := -1
 var _slide_done: Callable
 var _slide_clock := 0.0
+## "" or the window opened without the scroll: "options" (設定選項) or "memoir" (讀取回憶錄 list).
+var standalone := ""
 
 
 func _ready() -> void:
@@ -368,6 +372,36 @@ func open() -> Dictionary:
 	_show_lit(selected)
 	_slide(_panel_open_position, SCROLL_OPEN_SHIFT, func() -> void: phase = "menu")
 	return {"ok": true}
+
+
+## The title's gem and book (defProcMainMenu 0x424037 codes 10／11) open 設定選項 (object 792,
+## 0x423b90) or the 讀取回憶錄 list (object 790, 0x423bd0(…, 0)) with no scroll behind them; the
+## window's back hides everything and reports standalone_closed (the menu re-arms, 0x424101／0x424117).
+func open_standalone(kind: String) -> Dictionary:
+	if phase != "closed" or not kind in ["options", "memoir"]:
+		return {"ok": false, "reason": phase}
+	standalone = kind
+	visible = true
+	_panel.visible = false
+	if kind == "options":
+		select_option(0)
+		_show_options()
+	else:
+		memoir_selected = 0
+		_show_memoir_list("load")
+	return {"ok": true, "status": kind + "_shown"}
+
+
+func _close_standalone() -> void:
+	var kind := standalone
+	standalone = ""
+	_confirm_box.visible = false
+	_memoir_box.visible = false
+	_options_box.visible = false
+	_panel.visible = true
+	phase = "closed"
+	visible = false
+	standalone_closed.emit(kind)
 
 
 ## Scroll back down and hide.
@@ -742,7 +776,10 @@ func _resume_memoir_slot(slot: int) -> Dictionary:
 	var record := CampaignProgress.load_memoir(slot)
 	var result: Dictionary = {"ok": true, "action": "load_memoir", "slot": slot, "status": "memoir_resumed", "scenario_path": str(record.get("scenario_path", ""))}
 	last_result = result
-	runtime.campaign_progress.resume_saved_progress(record)
+	if runtime.has_method("resume_memoir_record"):
+		runtime.resume_memoir_record(record)
+	else:
+		runtime.campaign_progress.resume_saved_progress(record)
 	return result
 
 
@@ -1012,11 +1049,11 @@ func _back() -> void:
 			_mission_board.fade_out()
 			_lit.visible = true
 			phase = "menu"
-		"memoir":
+		"memoir", "options":
+			if standalone != "":
+				_close_standalone()
+				return
 			_memoir_box.visible = false
-			_lit.visible = true
-			phase = "menu"
-		"options":
 			_options_box.visible = false
 			_lit.visible = true
 			phase = "menu"

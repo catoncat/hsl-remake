@@ -29,6 +29,7 @@ func run() -> void:
 	root.add_child(scene)
 	current_scene = scene
 	await process_frame
+	scene.finish_slide_in()
 	await process_frame
 	await shot("00-title-framed")
 	# The real pointer would keep re-deciding hover in a window; drive it by hand for the shot.
