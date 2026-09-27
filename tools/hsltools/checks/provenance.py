@@ -20,9 +20,8 @@ what the remake itself decided:
               space); every line is at most MAX_LINE_CHARS (120) characters
   term        `<tag> [<path>[#<anchor>]] [(<note>)]`; the same tag may recur with different paths,
               never twice for one path
-  legacy      the pre-09-27 form still parses (a dimension line whose value is `n/a`, or several
-              terms on one line separated by ";" outside parentheses, such a line exempt from the
-              line width) so older fixtures load; game/ headers use the form above
+  rejected    the pre-09-27 form: a dimension line whose value is `n/a` (omit the dimension
+              instead) or several terms on one line separated by ";" (one term per line)
   tag         resource-derived / static-derived / runtime-measured / user-confirmed /
               user-hypothesis / provisional / negative-evidence (AGENTS.md tiers), plus
               runtime-reference (recreated by eye from original frames, no measurement) and
@@ -156,8 +155,11 @@ def parse_value(value: str, root: Path) -> list[dict]:
     if not value:
         raise HeaderError("empty value")
     if value == NOT_APPLICABLE:
-        return []
-    terms = [parse_term(raw, root) for raw in split_terms(value)]
+        raise HeaderError("`n/a` is not written any more; omit the dimension instead")
+    raw_terms = split_terms(value)
+    if len(raw_terms) > 1:
+        raise HeaderError("one term per line; put each further term on its own `##   <dimension>:` line")
+    terms = [parse_term(raw, root) for raw in raw_terms]
     keys = [(term["tag"], term["path"]) for term in terms]
     if len(keys) != len(set(keys)):
         raise HeaderError(f"tag listed twice for the same path in {value!r}")
@@ -197,9 +199,8 @@ def parse_module(root: Path, path: Path) -> dict:
                               f"each dimension's lines together; {name!r} comes after {seen[-1]!r}")
         if not seen or seen[-1] != name:
             seen.append(name)
-        legacy = len(split_terms(value)) > 1
         for line_index in indices:
-            if not legacy and len(lines[line_index]) > MAX_LINE_CHARS:
+            if len(lines[line_index]) > MAX_LINE_CHARS:
                 raise HeaderError(f"line {line_index + 1}: {len(lines[line_index])} characters, over {MAX_LINE_CHARS}"
                                   " — continue the note on a `##     ` line")
         try:
