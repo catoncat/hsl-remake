@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 104,
-    "sources": 537,
+    "sources": 538,
     "sources_by_kind": {
-      "provenance": 220,
-      "sentence": 145,
+      "provenance": 222,
+      "sentence": 144,
       "scope": 74,
       "matrix": 85,
       "video": 13
@@ -45,7 +45,7 @@
       "飘字与数字": 5
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 52,
+    "no_visible_effect_sources": 53,
     "resolved_sources": 14
   },
   "top": [
@@ -204,7 +204,7 @@
     },
     {
       "id": "cursor-hide-item-icon",
-      "difference": "原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标原版在确认后的下一 tick（0x444aba）清、重制确认当帧撤，差一 tick；原版在用药窗点道具即持物、窗口收起期间已换图标，重制页面滑出后才挂图标",
+      "difference": "原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标点道具当帧出现、确认后多留一 tick 已照原版（ITEMFX2）",
       "original": "0x430410：[0x4c1b00] & 0x1800000 时不画权杖，持物 [0x4c1ce4] 时 0x430310 画物品图标并藏权杖；0x1000000 由施法例程 0x442a90 状态 4／7／0x17／0x19 置位、9／0x1c 清除；0x800000 由 AnimalDefense 0x4038dd 在特写开演时置位、0x403089／0x406fc2 清除；恢复时从 CURSOR01 重新转",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/game_cursor/README.md"
@@ -213,7 +213,8 @@
       "remake_code": [
         "game/cursor/GameCursor.gd:suppressed",
         "game/battle/scene/BattlePresentation.gd:hides_game_cursor",
-        "game/battle/scene/BattleItemPanel.gd:_hold_selected_item"
+        "game/battle/scene/BattleItemPanel.gd:_hold_selected_item",
+        "game/battle/scene/BattleItemPanel.gd:_release_held_icon"
       ],
       "original_status": "read_complete",
       "visibility": "some_levels",
@@ -315,6 +316,7 @@
       "effort": "S",
       "category": "飘字与数字",
       "sources": [
+        "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|provisional|",
         "provenance:game/battle/scene/DamageNumberFloater.gd|timing|provisional|",
         "provenance:game/battle/scene/LevelUpStars.gd|timing|provisional|",
         "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点、加色层级混合的 alpha 读法"
@@ -736,14 +738,15 @@
     },
     {
       "id": "ai-item-use-presentation",
-      "difference": "用药演出已照原版（ITEMFX；玩家选目标是地图选格、确认后范围格／光标／身份栏／持物图标原地消失，HEALTAIL、ITEMTARGET）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光，之后目标下方 HP／MP 小条与数字；剩气力／永久／临时加成三类效果的 0x401390 画面没画（只按等待时长）、小条的 cur/max 文字没画、引导与玩家选格的射程格按四邻近似",
-      "original": "AI 低字 7–14（0x440132，表 0x4422a0）：射程 12 tick、滑行、目标停留 12 tick，0x4071e0＋0x409e40（sfxUseItem 402、0x408b20 按效果种类生成 Show_Magic_Star，首个带等待），0x43b3f0 小条＋数字，末个数字第 32 tick 放行，0x43b4c0 撤条；玩家 0x69／0x6a／108 同一套无引导",
+      "difference": "用药演出已照原版（ITEMFX、ITEMFX2；玩家选目标是地图选格、确认后范围格／光标／身份栏原地消失，HEALTAIL、ITEMTARGET）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光与气力／永久／临时加成三类 0x401390 星点，之后目标下方 HP／MP 小条（条右印 cur/max）与数字；剩引导与玩家选格的射程格按四邻近似",
+      "original": "AI 低字 7–14（0x440132，表 0x4422a0）：射程 12 tick、滑行、目标停留 12 tick，0x4071e0＋0x409e40（sfxUseItem 402、0x408b20 按效果种类生成 Show_Magic_Star 与 0x401390 的 396／397／398 星点，首个带等待），0x43b3f0 小条＋位 0x100 的 cur/max 文字（0x4365f0 → 0x411d70），末个数字第 32 tick 放行，0x43b4c0 撤条；玩家 0x69／0x6a／108 同一套无引导",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_item_use_presentation.md"
       ],
-      "remake": "BattleItemUsePresentation 三段（lead／effect／numbers），玩家与 AI 共用；BattleAttackCue.begin_item 画引导；玩家选格 BattleSceneMenus._begin_item_pick／BattleSceneOverlays.show_item_range；case 5／6／7 只等不画，小条不印数字",
+      "remake": "BattleItemUsePresentation 三段（lead／effect／numbers），玩家与 AI 共用；BattleAttackCue.begin_item 画引导；玩家选格 BattleSceneMenus._begin_item_pick／BattleSceneOverlays.show_item_range；case 5／6／7 由 _emit／star_state 画 FlyUp2 上飘与 CollectFadeShape 聚拢星点，小条右侧印 cur/max；射程格仍是四邻近似 use_cells",
       "remake_code": [
-        "game/battle/scene/BattleItemUsePresentation.gd",
+        "game/battle/scene/BattleItemUsePresentation.gd:use_cells",
+        "game/battle/scene/BattleItemUsePresentation.gd:_emit",
         "game/battle/scene/BattleAttackCue.gd:begin_item"
       ],
       "original_status": "read_partial",
@@ -752,8 +755,7 @@
       "category": "地图人物演出",
       "sources": [
         "provenance:game/battle/scene/BattleItemUsePresentation.gd|layout|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 发射器（气力／永久／临时加成三类效果的画面）未读，重制只按它们的等待时长；0x43b3f0 小条的 cur/max 文字（位 0x100，0x411d70）未画；AI 引导与玩家选格的射程格按\"自身格＋四邻无敌对占位\"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高",
-        "sentence:docs/evidence_packets/static_reverse/original_item_use_presentation.md#b4d171bb0c"
+        "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 三类效果对象的加色＋engMIX 按\"加色 × 层级/16\"画、随机数用重制种子；AI 引导与玩家选格的射程格按\"自身格＋四邻无敌对占位\"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高"
       ]
     },
     {
@@ -2733,6 +2735,10 @@
       {
         "source": "matrix:逐单位击杀金钱覆盖（EVEF 实例字 0）",
         "reason": "覆盖值只在 53 关且同值，玩家不可见"
+      },
+      {
+        "source": "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|",
+        "reason": "用药三类效果星点的位置、延迟、速度与张由重制按本次用药种子抽取，分布与数量照 0x401390／effProcFlyUp2／effProcCollectFadeShape，只是逐颗落点与原版全局随机流不同"
       },
       {
         "source": "provenance:game/battle/scene/BattleSceneRuntime.gd|rules|remake-invented|",

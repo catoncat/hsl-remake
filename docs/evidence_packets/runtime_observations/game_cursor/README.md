@@ -74,7 +74,7 @@
 - `game/cursor/GameCursor.gd`（autoload）：root 视口 CanvasLayer 1025（高于内嵌弹窗画布 1024，对应 planeCursor）上的 Sprite2D，源尺寸、最近邻；stretch mode viewport 下 root 视口坐标就是逻辑坐标，热点落在指针所在逻辑像素。位置每帧取 `get_mouse_position`；always 处理，换帧只在树运行时走（每 `OriginalTick.TICK_SECONDS` 一 tick、6 tick 一帧）。
 - 系统指针只在「窗口有焦点且指针在画面内」时隐藏（`MOUSE_MODE_HIDDEN`，对应 `SetCursor(NULL)`）；信箱黑边、窗外、失焦时系统箭头回来、权杖不画；启动后第一次移动指针前不画（`_pointer_moved`）。
 - 隐藏：`GameCursor.suppressed()` 每帧问组 `game_cursor_hiders`；`BattlePresentation.hides_game_cursor()` 在战斗特写或地图魔法效果播放（`cutin.busy()`，0x800000／0x1000000）时为真；剧本演出（落雷、噴人沼氣、对白）原版不置这两位，权杖照常显示。
-- 持物：战利品面板与商店的持物图标（`hand_icon`，以物品 SHP draw origin 为锚）加入组 `game_cursor_held_items`，任一可见时权杖不画；隐藏期间翅膀不转，再显示从 CURSOR01 开始。OPT-CURSOR=系統硬體游標 时同样条件下隐藏系统指针。战斗道具面板用药选格页（`BattleItemPanel._show_use_pick`，地图选格见 [用药演出](../../static_reverse/original_item_use_presentation.md#重制接线)）把选中道具图标 `HeldItem` 挂在页根、每帧跟指针、同组，确认、右键放回或面板隐藏即消失。
+- 持物：战利品面板与商店的持物图标（`hand_icon`，以物品 SHP draw origin 为锚）加入组 `game_cursor_held_items`，任一可见时权杖不画；隐藏期间翅膀不转，再显示从 CURSOR01 开始。OPT-CURSOR=系統硬體游標 时同样条件下隐藏系统指针。战斗道具面板用药选格页（`BattleItemPanel._show_use_pick`，地图选格见 [用药演出](../../static_reverse/original_item_use_presentation.md#重制接线)）在点道具当帧把选中道具图标 `HeldItem` 挂在页根（`z_index` 1，压在收窗快照之上，窗口滑出期间已在指针处）、每帧跟指针、同组；右键放回即消失，确认（面板随之隐藏）后移到面板父节点再留一个原版 tick（`BattleItemPanel._release_held_icon`，对应 `0x444aba`）。
 - provenance 头写 `static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md`。
 
 ## 复现
@@ -85,4 +85,4 @@
 
 - 录屏没有大地图与城镇；那两处用同一对象的依据是 §1 的 OBS 普查。
 - 帧 1→10 的宝石明暗只由 SHP 像素给出，没有单独的闪光程序。
-- 用药持物：原版确认后下一 tick 清持物，重制确认当帧撤，差一 tick；原版点道具即持物、窗口收起期间已画图标，重制页面滑出后才挂（provisional）；给予流程原版同样经 `[0x4c1ce4]` 持物（`0x438c86`），重制给予先选对象、未接持物图标。
+- 给予流程原版同样经 `[0x4c1ce4]` 持物（`0x438c86`），重制给予先选对象、未接持物图标。

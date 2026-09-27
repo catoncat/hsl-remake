@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (193 modules, 143 remake-invented cells, 77 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (193 modules, 144 remake-invented cells, 78 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (193)
 
@@ -64,7 +64,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleGrowthPanel](../game/battle/scene/BattleGrowthPanel.gd) | static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); runtime-measured [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md) `#8-录屏对照r7-ui` | resource-derived [OBJ-ALL.H](../content/imported/hsl/global/tables/OBJ-ALL.H); static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md) | n/a | n/a |
 | [BattleItemPanel](../game/battle/scene/BattleItemPanel.gd) | static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); static-derived [original_give_exchange.md](../docs/evidence_packets/static_reverse/original_give_exchange.md) | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#07`; static-derived [game_cursor/README.md](../docs/evidence_packets/runtime_observations/game_cursor/README.md); remake-invented | resource-derived [items.json](../content/generated/hsl/equipment/items.json); resource-derived [consumables.json](../content/imported/hsl/chapter01/consumables.json); remake-invented | n/a | n/a |
 | [BattleItemText](../game/battle/scene/BattleItemText.gd) | n/a | n/a | remake-invented; static-derived [original_item_actions.md](../docs/evidence_packets/static_reverse/original_item_actions.md) | n/a | n/a |
-| [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | n/a | static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); resource-derived [skill_effects/manifest.json](../content/imported/hsl/shared/skill_effects/manifest.json); resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); provisional | n/a | static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md) | static-derived [first_battle_audio.md](../docs/evidence_packets/static_reverse/first_battle_audio.md) |
+| [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | n/a | static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); resource-derived [skill_effects/manifest.json](../content/imported/hsl/shared/skill_effects/manifest.json); resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); resource-derived [global.obs](../content/imported/hsl/shared/first_skill/global.obs); provisional | n/a | provisional; remake-invented; static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md) | static-derived [first_battle_audio.md](../docs/evidence_packets/static_reverse/first_battle_audio.md) |
 | [BattleLootPanel](../game/battle/scene/BattleLootPanel.gd) | n/a | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#16`; remake-invented | resource-derived [OBJ-ALL.H](../content/imported/hsl/global/tables/OBJ-ALL.H); remake-invented | n/a | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md) |
 | [BattleMagicPanel](../game/battle/scene/BattleMagicPanel.gd) | n/a | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5`; static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md) `#描述框-0x436d70`; runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | resource-derived [MAGIC.TXT](../content/imported/hsl/global/tables/MAGIC.TXT); resource-derived [SPECIAL.TXT](../content/imported/hsl/global/tables/SPECIAL.TXT); resource-derived [RESOURCE.TXT](../content/imported/hsl/chapter01/source_texts/RESOURCE.TXT); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5`; runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | n/a |
 | [BattleMovementPreview](../game/battle/scene/BattleMovementPreview.gd) | n/a | remake-invented | n/a | n/a | n/a |
@@ -267,7 +267,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (143)
+### remake-invented 清单 (144)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -299,6 +299,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleItemPanel](../game/battle/scene/BattleItemPanel.gd) | layout | scrollable lists, preview rows |
 | [BattleItemPanel](../game/battle/scene/BattleItemPanel.gd) | strings | captions and refusals |
 | [BattleItemText](../game/battle/scene/BattleItemText.gd) | strings | receipt descriptions; effect values are the settled receipt's |
+| [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | timing | the draws come from a presentation RNG seeded by the use, not the original global 0x458c10 stream |
 | [BattleLootPanel](../game/battle/scene/BattleLootPanel.gd) | layout | scroll arrows for more than five codes; disabled 離開 while holding |
 | [BattleLootPanel](../game/battle/scene/BattleLootPanel.gd) | strings | 再按一次 discard confirmation and its tooltip |
 | [BattleMovementPreview](../game/battle/scene/BattleMovementPreview.gd) | layout | route line drawn over the shared grid projection |
@@ -417,7 +418,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | bought item to a chosen member's first empty slot instead of the hand cursor; dropped receipt when the party has no room |
 
-### provisional 疑点 (77)
+### provisional 疑点 (78)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -446,7 +447,8 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleCombatCutin](../game/battle/scene/BattleCombatCutin.gd) | layout | — | window composition scale, hurt-frame binding, the identity board hidden during the zoom draws — the original builds the strip text at the overlay switch, the board's own draw is unread |
 | [BattleCombatCutin](../game/battle/scene/BattleCombatCutin.gd) | timing | — | 0.12 s attack-flash hold until defProcAttackFlash is read in ticks |
 | [BattleDropLightningPresentation](../game/battle/scene/BattleDropLightningPresentation.gd) | layout | — | planeEffect6 drawn over planeEffect2 |
-| [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | layout | — | range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36; the bars' cur/max text is not drawn |
+| [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | layout | — | range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36 |
+| [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | timing | — | the 0x401390 objects' engADDCOLOR under engMIX drawn as additive at level／16, as LevelUpStars |
 | [BattlePanelMotion](../game/battle/scene/BattlePanelMotion.gd) | timing | — | the per-tick formula is a fit of the frames, the EXE helper is unread |
 | [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | layout | — | the same strip for any living unit under the cursor in weapon／magic／special selection, legal target or not — user request 2026-09-23, the original's per-state rule is unread |
 | [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | timing | — | a caster without an m_shape lead poses at clip start beside the Cast_Star ring |
@@ -505,15 +507,15 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
-| resource-derived | 32 | 68 | 42 | 10 | 27 | 179 |
+| resource-derived | 32 | 69 | 42 | 10 | 27 | 180 |
 | static-derived | 237 | 75 | 16 | 86 | 17 | 431 |
 | runtime-measured | 17 | 32 | 3 | 20 | 2 | 74 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 33 | 16 | 0 | 25 | 3 | 77 |
+| provisional | 33 | 16 | 0 | 26 | 3 | 78 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
-| remake-invented | 53 | 40 | 35 | 14 | 1 | 143 |
+| remake-invented | 53 | 40 | 35 | 15 | 1 | 144 |
 | n/a | 60 | 115 | 143 | 134 | 163 | 615 |
 
 <!-- provenance:end -->

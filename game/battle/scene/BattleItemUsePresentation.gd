@@ -16,9 +16,13 @@ extends Node2D
 ##   layout: resource-derived content/imported/hsl/shared/skill_effects/manifest.json (WAT04／WAT01 frames)
 ##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json (NUM510)
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json (BAR_HP4..6)
+##   layout: resource-derived content/imported/hsl/shared/first_skill/global.obs (objects 396／397／398)
 ##   layout: provisional
-##     (range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36;
-##     the bars' cur/max text is not drawn)
+##     (range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36)
+##   timing: provisional
+##     (the 0x401390 objects' engADDCOLOR under engMIX drawn as additive at level／16, as LevelUpStars)
+##   timing: remake-invented
+##     (the draws come from a presentation RNG seeded by the use, not the original global 0x458c10 stream)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
 ##     (12／12 lead ticks, 25-tick effect stagger, 16 sparks 1..3 ticks apart × 24 ticks, 32-tick flash, number release)
 ##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
@@ -66,13 +70,46 @@ const SPARK_FRAME_NAMES := {KIND_HP: "MAGIC\\WAT04_%02d.SHP", KIND_MP: "MAGIC\\W
 ## scale grows 0x4000／0x6400 per tick, then level 16→0 while it shrinks; deleted at level 0.
 const FLASH_LEVELS := 16
 const FLASH_GROW := Vector2(0.25, 0.390625)
-## Kinds 5／6 (0x408bf2／0x408c5b) and 7 (0x408cc4): a 0x401390 emitter (not drawn here) and a
-## flagged Show_Magic_Star that only releases after +0xa8 = delay + 108 (5／6) or + 90 (7).
+## Kinds 5／6 (0x408bf2／0x408c5b) and 7 (0x408cc4): 0x401390 emitters and a flagged
+## Show_Magic_Star that only releases after +0xa8 = delay + 108 (5／6) or + 90 (7).
 const WAIT_ONLY_TICKS := {KIND_STAMINA: 108, KIND_PERMANENT: 108, KIND_STAT: 90}
+## 0x401390(x, y, code, w, h, delay, jitter, count): `count` objects at (x + rand(w), y + rand(h))
+## folded to (−w/2, w/2], +0xae = delay growing by 1 + rand(jitter). Rows: y offset from the
+## effect point, code, w, h, delay offset, jitter, count — 5／6: (y + 0x30, 397／398, 68, 16, d, 6,
+## 32); 7: (y + 0x10, 396, 8, 8, d, 1, 12) then (…, d + 12, 1, 8).
+const EMITTERS := {KIND_STAMINA: [[0x30, 397, 68, 16, 0, 6, 32]], KIND_PERMANENT: [[0x30, 398, 68, 16, 0, 6, 32]],
+	KIND_STAT: [[0x10, 396, 8, 8, 0, 1, 12], [0x10, 396, 8, 8, 12, 1, 8]]}
+## global.obs: 397 Cast_Star_Add_ST (WAT04) and 398 Cast_Star_Add_Misc (WAT01), 4 shapes, delay
+## 16, effProcFlyUp2; 396 Cast_Star_Add_Misc2 (WAT01), effProcCollectFadeShape.
+const EMITTER_FRAMES := {396: "MAGIC\\WAT01_%02d.SHP", 397: "MAGIC\\WAT04_%02d.SHP", 398: "MAGIC\\WAT01_%02d.SHP"}
+## effProcFlyUp2 (0x416d04) first call: speed (rand & obj_Data5 0xf000) + obj_Data6 0x8000 (16.16
+## px a tick) at angle 0xc0 (up), +0x7c += 6 + (rand & 7); every call moves, then 0x45e575 steps
+## the 4 shapes (the first held 16 + that + 1 ticks, the rest 17); at the end it sets engMIX and
+## 0x422c9a takes +0x28 from 16 down one a tick, deleted at 0.
+const FLY_SPEED_MASK := 0xf000
+const FLY_SPEED_BASE := 0x8000
+const FLY_SHAPE_DELAY := 16
+const FLY_HOLD_BASE := 6
+const FLY_HOLD_MASK := 7
+## effProcCollectFadeShape (0x41f43b, table 0x4231b0[80]) first call: shape + rand(4) held, engMIX,
+## level 0, angle rand & 0xff, radius obj_Data5 64 px + rand(|Data6 − Data5| >> 16 = 64), speed
+## obj_Data3 1.5 px; then per tick level + 1 every 2 ticks up to 16 (engMIX cleared at 16) and
+## radius − 1.5 down to 1 px (0x415e94), where engMIX is set and level drops one a tick to 0.
+const COLLECT_RADIUS := 64
+const COLLECT_RADIUS_RANGE := 64
+const COLLECT_SPEED := 1.5
+const COLLECT_MIN_RADIUS := 1.0
+const COLLECT_LEVEL_TICKS := 2
+const LEVELS := 16
 ## 0x43b3f0: Bar_HP at (x − 21, min(y + 8, [0x4c094c] − 36)), Bar_MP 16 below, shape +3.
 const BAR_OFFSET := Vector2(-21, 8)
 const BAR_PITCH := 16.0
 const BAR_BOTTOM_MARGIN := 36.0
+## 0x4364e0 with +0x80 bit 0x100 (set on both bars by 0x43b3f0): the live "cur/max" (0x45b6de,
+## no padding) in FONT.15 via 0x411d70 at (fill x + fill width 39 + 5, bar y − 6), white with the
+## 0x8430 shadow at (+1, +1).
+const BAR_TEXT_OFFSET := Vector2(39 + 5, -6)
+const BAR_TEXT_CELL := Vector2(0, 16)
 
 ## BattlePresentation (attack cue, pose, map config) and its parent runtime (actors, camera, audio).
 var view: Node
@@ -86,6 +123,9 @@ var target_point := Vector2.ZERO
 var effect_point := Vector2.ZERO
 var sparks: Array[Dictionary] = []
 var flashes: Array[int] = []
+## 0x401390 objects (396／397／398) with their precomputed draw parameters.
+var stars: Array[Dictionary] = []
+var bar_labels: Array[Label] = []
 var release_tick := 0
 var visual_end_tick := 0
 var numbers_tick := -1
@@ -111,8 +151,8 @@ func _ready() -> void:
 		_art[key] = {"texture": load(str(assets[key]["res_path"])), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
 	var flash: Dictionary = BattleRewardFloater.manifest()["assets"]["damage_flash"]
 	_art["flash"] = {"texture": load(str(flash["res_path"])), "origin": Vector2(float(flash["draw_origin"][0]), float(flash["draw_origin"][1]))}
-	for kind in SPARK_FRAME_NAMES:
-		for frame in range(SPARK_FRAMES): _frame(str(SPARK_FRAME_NAMES[kind]) % (frame + 1))
+	for member in SPARK_FRAME_NAMES.values() + EMITTER_FRAMES.values():
+		for frame in range(SPARK_FRAMES): _frame(str(member) % (frame + 1))
 	set_process(false)
 
 
@@ -147,7 +187,8 @@ func finish() -> void:
 	stage = "idle"
 	sparks.clear()
 	flashes.clear()
-	bars.clear()
+	stars.clear()
+	_drop_bars()
 	for number in numbers:
 		if is_instance_valid(number): number.free()
 	numbers.clear()
@@ -204,7 +245,7 @@ func _process(delta: float) -> void:
 		_start_numbers(tick)
 	if stage == "numbers" and tick >= release_tick:
 		# 0x440437／state 0x75: the last number released the action; 0x43b4c0 drops the bars.
-		bars.clear()
+		_drop_bars()
 		stage = "trailing"
 		queue_redraw()
 	if stage == "trailing" and tick >= visual_end_tick:
@@ -260,7 +301,55 @@ func _spawn(kind: int, delay: int, rng: RandomNumberGenerator) -> int:
 		flashes.append(start)
 		visual_end_tick = maxi(visual_end_tick, start + 2 * FLASH_LEVELS)
 		return start + 2 * FLASH_LEVELS
+	for row in EMITTERS.get(kind, []):
+		_emit(row, delay, rng)
 	return maxi(delay + int(WAIT_ONLY_TICKS.get(kind, 0)) - 1, 0)
+
+
+## One 0x401390 call: the objects' spawn points and delays, then each object's first-call draws.
+func _emit(row: Array, delay: int, rng: RandomNumberGenerator) -> void:
+	var code := int(row[1])
+	var width := int(row[2])
+	var height := int(row[3])
+	var object_delay := delay + int(row[4])
+	for _index in range(int(row[6])):
+		var dx := rng.randi_range(0, width - 1)
+		if dx > width / 2: dx = width / 2 - dx
+		var dy := rng.randi_range(0, height - 1)
+		if dy > height / 2: dy = height / 2 - dy
+		var star := {"code": code, "start": maxi(object_delay - 1, 0), "at": Vector2(dx, int(row[0]) + dy)}
+		if code == 396:
+			var angle := TAU * float(rng.randi() & 0xff) / 256.0
+			var radius := float(COLLECT_RADIUS + rng.randi_range(0, COLLECT_RADIUS_RANGE - 1))
+			var arrive := int(ceilf((radius - COLLECT_MIN_RADIUS) / COLLECT_SPEED))
+			star.merge({"frame": rng.randi_range(0, SPARK_FRAMES - 1), "direction": Vector2(cos(angle), sin(angle)), "radius": radius,
+				"arrive": arrive, "arrive_level": mini(arrive / COLLECT_LEVEL_TICKS, LEVELS)})
+			star["life"] = arrive + int(star["arrive_level"])
+		else:
+			var speed := float((rng.randi() & FLY_SPEED_MASK) + FLY_SPEED_BASE) / 65536.0
+			var hold := FLY_SHAPE_DELAY + FLY_HOLD_BASE + (rng.randi() & FLY_HOLD_MASK)
+			star.merge({"speed": speed, "hold": hold, "end": hold + (SPARK_FRAMES - 1) * (FLY_SHAPE_DELAY + 1)})
+			star["life"] = int(star["end"]) + LEVELS
+		stars.append(star)
+		visual_end_tick = maxi(visual_end_tick, int(star["start"]) + int(star["life"]))
+		object_delay += 1 + rng.randi_range(0, int(row[5]) - 1)
+
+
+## A 0x401390 object `age` ticks after its first call: {frame, offset from its spawn point, level}
+## (level 0 = not drawn).
+static func star_state(star: Dictionary, age: int) -> Dictionary:
+	if int(star["code"]) == 396:
+		var level := 0
+		if age <= int(star["arrive"]):
+			level = mini(age / COLLECT_LEVEL_TICKS, LEVELS)
+		else:
+			level = int(star["arrive_level"]) - (age - int(star["arrive"]))
+		var radius := maxf(float(star["radius"]) - COLLECT_SPEED * age, COLLECT_MIN_RADIUS)
+		return {"frame": int(star["frame"]), "offset": (Vector2(star["direction"]) * radius).floor(), "level": maxi(level, 0)}
+	var hold := int(star["hold"])
+	var frame := 0 if age < hold else mini(1 + (age - hold) / (FLY_SHAPE_DELAY + 1), SPARK_FRAMES - 1)
+	return {"frame": frame, "offset": Vector2(0, -floorf(float(star["speed"]) * (age + 1))),
+		"level": clampi(LEVELS - maxi(age - int(star["end"]), 0), 0, LEVELS)}
 
 
 ## Positions relative to the effect point for the setup tick and each running tick.
@@ -288,6 +377,11 @@ func _start_numbers(tick: int) -> void:
 	if not target.is_empty():
 		bars = [{"at": bar_at, "fill": "bar_hp5", "value": int(target.get("hp", 0)), "max": int(target.get("max_hp", 0))},
 			{"at": bar_at + Vector2(0, BAR_PITCH), "fill": "bar_hp6", "value": int(target.get("mp", 0)), "max": int(target.get("max_mp", 0))}]
+		for bar in bars:
+			var text := BattleUISkin.text(self, Vector2(bar["at"]) + BAR_TEXT_OFFSET, BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, BAR_TEXT_CELL)
+			text.name = "ItemUseBarText"
+			text.text = "%d/%d" % [int(bar["value"]), int(bar["max"])]
+			bar_labels.append(text)
 	var written: Dictionary = effect.get("heal_numbers", {})
 	var entries: Array[Dictionary] = []
 	for pair in [["restored_hp", "hp", "heal"], ["restored_mp", "mp", "mp"]]:
@@ -306,6 +400,14 @@ func _start_numbers(tick: int) -> void:
 	for number in numbers: last_life = maxi(last_life, number.life_ticks())
 	visual_end_tick = maxi(visual_end_tick, tick + last_life)
 	_show_caption(bottom)
+	queue_redraw()
+
+
+func _drop_bars() -> void:
+	bars.clear()
+	for text in bar_labels:
+		if is_instance_valid(text): text.free()
+	bar_labels.clear()
 	queue_redraw()
 
 
@@ -367,6 +469,18 @@ func _draw_effects() -> void:
 		_effect_layer.draw_set_transform(effect_point, 0.0, Vector2.ONE + FLASH_GROW * grown)
 		_effect_layer.draw_texture(_art["flash"]["texture"], -_art["flash"]["origin"], Color(level, level, level))
 		_effect_layer.draw_set_transform(Vector2.ZERO)
+	for star in stars:
+		var age: int = tick - int(star["start"])
+		if age < 0 or age >= int(star["life"]):
+			continue
+		var state := star_state(star, age)
+		if int(state["level"]) <= 0:
+			continue
+		var record := _frame(str(EMITTER_FRAMES[int(star["code"])]) % (int(state["frame"]) + 1))
+		if record.is_empty():
+			continue
+		var level := float(state["level"]) / LEVELS
+		_effect_layer.draw_texture(record["texture"], effect_point + Vector2(star["at"]) + Vector2(state["offset"]) - record["origin"], Color(level, level, level))
 
 
 func _frame(member: String) -> Dictionary:

@@ -34,6 +34,7 @@ const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 var rows: VBoxContainer
 var menu: Control
 var page_root: Control
@@ -258,11 +259,25 @@ func _show_use_pick() -> void:
 func _end_pick() -> void:
 	if picking:
 		picking = false
+		if not visible and is_instance_valid(held_icon):
+			_release_held_icon.call_deferred(held_icon)
+			held_icon = null
 		use_pick_ended.emit()
 
 
-## The icon lives on the pick page, so leaving the page drops it (0x444aba clears the slot the
-## tick after the confirm, 0x444a81 on cancel); GameCursor hides the sceptre while it shows.
+## The confirmed pick hides the panel on the confirm tick, but the held slot is only cleared on
+## the next tick (state 106 0x444aba), so the icon stays where it is for one more tick.
+func _release_held_icon(icon: TextureRect) -> void:
+	if not is_instance_valid(icon) or not is_inside_tree():
+		return
+	icon.reparent(get_parent())
+	get_tree().create_timer(OriginalTick.TICK_SECONDS).timeout.connect(func(): if is_instance_valid(icon): icon.queue_free())
+
+
+## Picking the item puts it in the held slot at once (0x439997 -> 0x437020), so the icon is on
+## the pointer, above the page's close snapshot, while the window slides out. The icon lives on
+## the pick page, so leaving the page drops it (0x444a81 on cancel; a confirm keeps it one tick,
+## _release_held_icon); GameCursor hides the sceptre while it shows.
 func _hold_selected_item() -> void:
 	var icon := str(EquipmentCatalog.items().get(selected_item, {}).get("icon", ""))
 	if icon == "":
@@ -273,6 +288,7 @@ func _hold_selected_item() -> void:
 	held_icon.add_to_group("game_cursor_held_items")
 	held_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	held_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	held_icon.z_index = 1
 	BattleUISkin.show_shape(held_icon, BattleUISkin.texture(icon))
 	held_icon.set_meta("origin", Vector2(float(record["draw_origin"][0]), float(record["draw_origin"][1])))
 	page_root.add_child(held_icon)
