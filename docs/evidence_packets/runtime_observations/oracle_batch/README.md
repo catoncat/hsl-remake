@@ -4,7 +4,7 @@
 
 ## 结论
 
-- 回放判定：批量分类器标出的规则候选所在 49 关 × 3 种子，原版首轮 1965 行喂原版抽签回放，**确证规则差异 0 行**（一致 1859、随机 46、口径 42、未走到 18）（runtime-measured）。
+- 回放判定：批量分类器标出的规则候选所在 49 关 × 3 种子，原版首轮 1965 行喂原版抽签回放，**确证规则差异 0 行**（一致 1877、随机 46、口径 42、未走到 0）（runtime-measured）。
 - 行动种类频率（127 关，原版 11067 次对重制 11056 次行动，3 回合）：按关分层合计普攻、待机、追击、守候 p 0.7–0.94；唯一 p<0.01 的法术进攻（34 对 65）由两簇 16 种子复跑归为抽样误差（四关合计 25 对 33，p=0.36）（runtime-measured）。
 - 重制：AI 规则不因本批改动；「原版偏持雷歐納德」类候选在回放中全部一致，是两边生成器不同而非规则（runtime-measured）。
 - 队列同速排序：原版 `0x407340` 按 (−速度, 登记槽) 排，古代神殿遺跡 · 守護者之戰（LEVEL037）的守卫登记槽即 STORY037 插入序；重制同序，原先 18 行未走到是按开场格命名的口径（runtime-measured）。
@@ -12,7 +12,7 @@
 
 ## 证据
 
-**回放判定**（报表 [ai_replay.md](../../../../content/generated/hsl/development/ai_replay.md)，任务 `ai_replay`）。分类器在这 49 关重跑出规则行 74 行，回放结论：
+**回放判定**（报表 [ai_replay.md](../../../../content/generated/hsl/development/ai_replay.md)，任务 `ai_replay`）。分类器在这 49 关（16／32 种子分布）重跑出规则行 74 行，回放结论：
 
 | 结果 | 行 | 内容 |
 | --- | ---: | --- |
@@ -21,15 +21,16 @@
 | 口径 | 6 | 拉格納沼地 · 毒霧中的戰鬥（LEVEL032）4 行（更早有地图抽取 0x451ecf 与噴人沼氣 0x43c8xx，中毒不回放）；巴瀚納海峽（LEVEL012）1 行；LEVEL076 s2 049_2 1 行（重制在 0x40bb80、0x413740 硬币与援助链首掷上抽得更多） |
 | 原版无此行 | 2 | 亞雷比斯 · 海上的亡靈（LEVEL026）s1 038_2、戈爾山道 · 遭遇戰（LEVEL502）s1 036_2 |
 
-未走到的 18 行都在古代神殿遺跡 · 守護者之戰（LEVEL037），是裁判命名口径：守卫由 `actInsertObjectRandomPos` 落在洗牌后的槽上，按开场格命名把原版第 1 个插入的守卫（登记槽最前）叫成了 guard066_3。`enemy_turn.remake_names` 改为随机槽单位按登记槽（插入）序命名后，LEVEL037 三种子原版首轮 17 行队列与重制逐位相同，回放 51 行全部一致（报表仍是改名前的读数）。
+未走到的 18 行都在古代神殿遺跡 · 守護者之戰（LEVEL037），是裁判命名口径：守卫由 `actInsertObjectRandomPos` 落在洗牌后的槽上，按开场格命名把原版第 1 个插入的守卫（登记槽最前）叫成了 guard066_3。`enemy_turn.remake_names` 改为随机槽单位按登记槽（插入）序命名后，LEVEL037 三种子原版首轮 17 行队列与重制逐位相同，回放 51 行全部一致；全量重跑后报表未走到 0 行（49 关原版批跑与重制分布重导出）。
 
 回放做法（`tests/diagnostics/replay_ai_actions.gd`＋`tools/hsltools/probes/ai_replay.py`）：原版 `_enemy_level.py batch --turns 1 --align --mix 20`，meta 含 `action_after`（hp 增量、行动后 +0x88、每次全局抽取的调用地址）与 `handoff_after`；重制按原版队列逐槽走，AI 抽签由 Feeder 按 (site, n) 各一条 FIFO 取原版同槽的下一个值，盘面每槽前后对齐原版 `from`／`to`、持有目标与 hp 增量。每行四种喂法：first（全部原版值）、final（去掉优先级链回跳的轮次，即第一个到最后一个 0x440db5 之间）、low／high（final 上把用尽答成 0／n−1）；原版第一个链抽取之前的值只喂重制链前抽签（曼多力亞 · 對峙（LEVEL900）s1 027_1 链前抽了 85 枚 0x41385d）。first 一致记一致；否则三种任一一致记随机；四种都不一致时有 `board_event`／探针缺口／死亡不符记口径，first 或 final 未用尽记规则，都用尽记口径。映射补充：`0x440a86`（增益援助硬币）→ `AISupportPlanning.choose` 的 special_first；`BattleLoopAI._ai_lock_check` 新掷骰 → 原版本槽最后一个链掷骰。唯一无原版对应的重制抽取点是 `AISupportPlanning.choose/99`（用尽 185 行）；其余用尽为重制多抽（0x413740 硬币 70、0x40bb80 硬币 34、法术表 14／10、类别 13、侧走 11）；非 AI 全局抽取 49 个站点不喂。
 
 结果行：
 
-- `BATCH levels=49 seeds=3 jobs=2 original_wall=109.0s total_wall=109.0s`
-- `BATCH_RULES levels=49 dist_levels=49 actions=1975 agree=1013 rule=74 random=873 injection=0 caliber=12 pending=3`
-- `AI_REPLAY_CHECK_PASS levels=49 runs=147 rows=1965 agree=1859 random=46 rule=0 caliber=42 unreached=18 batch_rule=74 batch_rule_confirmed=0`
+- `BATCH levels=49 seeds=3 jobs=2 original_wall=109.0s total_wall=109.0s`；全量重跑 `BATCH levels=49 seeds=3 jobs=5 original_wall=44.9s total_wall=44.9s`
+- `BATCH_RULES levels=49 dist_levels=49 actions=1975 agree=1013 rule=74 random=873 injection=0 caliber=12 pending=3`（上表 74 行所据：改名前、主线 32／其余 16 种子分布）
+- `AI_REPLAY_CHECK_PASS levels=49 runs=147 rows=1965 agree=1877 random=46 rule=0 caliber=42 unreached=0 batch_rule=43 batch_rule_confirmed=0`（全量重跑；分布 49 关一律 32 种子，分类器规则行 74→43、均未确证）
+- `BATCH_RULES levels=49 dist_levels=49 actions=1975 agree=1015 rule=43 random=905 injection=0 caliber=12 pending=0`
 
 **行动种类频率**（报表 [ai_action_frequency.md](../../../../content/generated/hsl/development/ai_action_frequency.md)；原版 `_enemy_level.py batch --turns 3 --align --mix 20 --no-remake`，127 关（200 关除外）× 种子 1–3，growth false、每种子独立全局流与伤害流、LEVEL900 开场菜单选第 2 项；重制 `ai_action_frequency.py export` 以 adjust_level [0,0] 出生、`--select 900=1`）
 
@@ -62,7 +63,7 @@
 **注入缺口与探针口径**：
 
 - 注入缺口：18 关开局事件在停点后又挪了单位（36 行）；53 关 enemy023_2／023_3 在停点后才由事件装上（12 行）。
-- 探针口径：37 关 guard067_1／2／4／5 的回合在同一帧内走完、探针按帧看不到；73、75 关原版首轮内战斗结束；12、26 关船壳 actor101_x 零帧回合（026 s1 首轮 47 项中 26 个 101，各过一次 `0x407510`），两边船壳行都去掉；装备 action_twice 的单位（59 关 060_1、76／78 关 058_1、79 关 057_1）重制两行合为一行；麻痺跳过在重制按原地待机计。
+- 探针口径：37 关宝石 guard067_2–067_5 与 067_1 在同一帧内各过一次 `0x407510` 后回合结束，探针按帧只记 067_1（`_turn_queue_trace.py` 三种子读数，原版首轮在 067_5 后结束，与重制相同）；73、75 关原版首轮内战斗结束；12、26 关船壳 actor101_x 零帧回合（026 s1 首轮 47 项中 26 个 101，各过一次 `0x407510`），两边船壳行都去掉；装备 action_twice 的单位（59 关 060_1、76／78 关 058_1、79 关 057_1）重制两行合为一行；麻痺跳过在重制按原地待机计。
 - 裁判读法：`0x409e40(target, code, user, 0)` 在 `0x409e55` 读 `target+0xa4` 的活记录号，AI 路径 `0x440375` 传入的 `[0x4c1cec]`＝`0x4c42a0` 是装着目标记录号的静态对象，`enemy_turn.EnemyTurn.item_target` 按记录号还原单位（玩家第 2 场 · 惡夢的終曲（LEVEL052）s1 ally024_1 的 241 → ally023_2，HP +11）。
 - 帧循环中途经 `0x4602d4` 载资源时资源号超过表长 `[0x4bbb38]`，`0x45fd4b` 返回句柄 0；`_enemy_level.EmptyFiles` 把未知句柄当空文件，之后在 `0x4603ca` 停机（31 局），停机那一回合截掉，532 s1 首轮内停机不比。
 

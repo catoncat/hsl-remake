@@ -1,6 +1,6 @@
 # 原版敌人回合裁判：在模拟器里跑原帧体，输出 enemy_turn_v1
 
-> evidence: runtime-measured: 整个 hsl01.exe 映像在 unicorn 中执行——载入 51 关样本存档后的敌人回合（落点、动作、目标、每次抽取）、0x407340 四种速度下的队列、帧桩消融、0x4c1bbc 回合计数从 1 走到 2、0x40e870 出生调级只抽全局流、任意关卡经 0x42da60 进关并在首个 0x407340 前注入局面后原版跑整回合; static-derived: 0x460a06 转场步进与 [0x4bbb5a]、0x458c10／0x458c80 与伤害流换入 0x42c780／0x42c720、0x407340 插入排序; provisional: 全局流的样本起点（来自模拟器时钟桩）、玩家回合结束从 +0x8c=0x10000 起跑（不经待機菜单输入）、call／other 两类动作从不产出、抽取点对照表 SITE_MAP（逐站点反汇编对照，未逐值对拍） · status: live · functions: 0x407340, 0x407510, 0x407cc0, 0x409e40, 0x40a7b0, 0x40c9a0, 0x40e870, 0x42c720, 0x42c780, 0x42ce10, 0x42d280, 0x42d600, 0x42da60, 0x42e640, 0x43e110, 0x43e1c0, 0x4423c0, 0x458c10, 0x458c80, 0x460799, 0x4607f9, 0x460884, 0x460a06, 0x461479 · tools: hsl_original_probe_units.py, hsltools/probes/_enemy_level.py, hsltools/probes/enemy_turn.py, test_hsl_enemy_level.py · updated: 2026-09-27
+> evidence: runtime-measured: 整个 hsl01.exe 映像在 unicorn 中执行——载入 51 关样本存档后的敌人回合（落点、动作、目标、每次抽取）、0x407340 四种速度下的队列、帧桩消融、0x4c1bbc 回合计数从 1 走到 2、0x40e870 出生调级只抽全局流、任意关卡经 0x42da60 进关并在首个 0x407340 前注入局面后原版跑整回合; static-derived: 0x460a06 转场步进与 [0x4bbb5a]、0x458c10／0x458c80 与伤害流换入 0x42c780／0x42c720、0x407340 插入排序; provisional: 全局流的样本起点（来自模拟器时钟桩）、玩家回合结束从 +0x8c=0x10000 起跑（不经待機菜单输入）、call／other 两类动作从不产出、抽取点对照表 SITE_MAP（逐站点反汇编对照，未逐值对拍） · status: live · functions: 0x407340, 0x407510, 0x407cc0, 0x409e40, 0x40a7b0, 0x40c9a0, 0x40e870, 0x42c720, 0x42c780, 0x42ce10, 0x42d280, 0x42d600, 0x42da60, 0x42e640, 0x43e110, 0x43e1c0, 0x4423c0, 0x458c10, 0x458c80, 0x460799, 0x4607f9, 0x460884, 0x460a06, 0x461479 · tools: hsl_original_probe_units.py, hsltools/probes/_enemy_level.py, hsltools/probes/_turn_queue_trace.py, hsltools/probes/enemy_turn.py, test_hsl_enemy_level.py · updated: 2026-09-27
 
 ## 结论
 
@@ -8,6 +8,7 @@
 - 早先出手等待的根因是没调转场步进 `0x460a06`：守方特写 phase 101 以 `0x46098f(1)` 置 `[0x4bbb5a]`=1，只有 `0x460a06` 清零；桩掉它等待原样复现（runtime-measured 消融）。
 - `0x407340` 按注册槽收集后插入排序，等于按 (−速度, 槽) 排序；`0x40e870` 出生调级只抽全局流 `0x458c10`，不碰伤害流（runtime-measured）。
 - 任意关卡裁判 `_enemy_level.py`：原版经 `0x42da60` 进关，在首个 `0x407340` 前注入重制局面后跑整回合；51 关 r1 种子 1 落点 8/11 一致，分歧按 32 种子分布归为持有目标规则 5 处、随机 4 处（runtime-measured）。
+- 古代神殿遺跡 · 守護者之戰（LEVEL037）首轮在 guard067_5 之后结束，与重制相同：原版首轮队列 30 项，最后五项是速度 0 的宝石 guard067_1–067_5（登记槽 31／33／35／37／39），三种子各自 30 次 `0x407510` 交接，067_1–067_5 五次在同一帧内走完、不抽全局流；067_5 交接后 `0x4074a0` 找不到待行动项，`0x4074ec` 调 `0x407340` 重建、`0x4074f1` 回合计数 +1。`_enemy_level.py` 按帧看队列当前项，同一帧里连走的零帧回合只记第一个，故原版行只到 067_1；重制首轮同为 066_1–066_5 后 067_1–067_5 各待机、不抽签（runtime-measured，`_turn_queue_trace.py --level 37 --turns 1 --seed 1／2／3`）。
 - 两端逐值对拍目前对不上：原版每个 NPC 先抽优先级链，重制多数不抽（provisional，差异清单 `ai-first-battle-moves`）。
 
 ## 证据
@@ -141,5 +142,6 @@ ORACLE_DRAWS site=AINavigationRules._nearest_stoppable original=353 remake=320
 - 绝技与道具在原版一侧未出现过；call／other 不产出。
 - SITE_MAP 只按反汇编对照站点，未逐值对拍；原版先抽优先级链，重制多数不抽，第一个分歧落在第 1–6 次抽取。
 - 死亡注入不跑死亡字幕／事件 `0x446b60/0x446c40`，不给击杀者经验与金钱；当前行动者不能注入死亡。
+- 按帧采样：同一帧内连走的多个零帧回合（LEVEL037 的宝石 067、LEVEL012／026 的船壳 101）只记第一个；要看全部交接用 `_turn_queue_trace.py`。
 - 魔法入场对象身份未查。
 - 四个画面桩必须保留；去掉需要真正解码形状与提供表面。
