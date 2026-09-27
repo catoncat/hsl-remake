@@ -20,17 +20,15 @@ Checked: 2026-09-27
 
 ## 在跑
 
-三份审计（`docs/audits/` 的 DOCS／CODE／TOOLS，整理项按审计推荐执行）的整理 lane：文档两条（过程文档进 internal／PROJECT 瘦身／AGENTS 刷新；改游戏文档合并）已合并；砍测试（Godot 套件 96→78、Python 测试 139→74、检查任务分 modder／parity／maintainer 三层）、状态效果目录表（`game/sim/StatusCatalog.gd`）、README 入口重写已合并；拆 4 个超长解释器函数为 token 表、tools/README 按读者重排已合并；规则核心已进 `game/sim/loop/`（共用件 `game/common/`）；技能效果族登记表（`SkillResolutionRules.EFFECTS`）已合并；术语改名＋测试别名统一已合并；三份审计的整理项全部落地。第二批（在跑）：合并重复小工具并把跨文件调用的私有函数改公开（CODE3）；测试按断言再砍一轮已合并（Godot 套件 74→50、Python 74→31）；证据包按逐份处置方案（`docs/audits/EVIDENCE_AUDIT_2026-09-27.md`）分 5 条执行 lane 重写为研究附录：EV4 表现／界面／时序 49 篇、EV3 成长／职业 63 篇、EV2 AI／回合 30 篇已合并，EV1 关卡／剧情／城镇 88 篇、EV5 道具／技能／状态 40 篇已合并，证据包 270→212 篇、capture 77→23，研究附录重整完成；工具函数合并与私有转公开（Values.gd、read_json、70 个函数去下划线）、测试专用函数归位与 20 个超长函数拆分已合并。第二批整理到此全部落地。
+整理收口后回到产品与最后两件代码小事：CODE5（`CampaignProgress`／`BattleCameraController` 搬 `game/common/`，删无产品调用的 `can_job_up`）；LV200（龍脊隘口（LEVEL200）自动对局 3 回合败与 MODDING_LEVELS 说法对不上，查数据还是机器人）；UI7（状态页按钮排列、说明框只在悬停、气力条只在原版脉动的窗口脉动）；AIDIST（支援 AI 的 99 号补抽分支；古代神殿遺跡（LEVEL037）的随机落点与行动队列顺序，用原版裁判闭合）。
 
 <a id="next-steps"></a>
 
 ## 排队
 
-1. 龍脊隘口（LEVEL200）自动对局 3 回合败，而 [MODDING_LEVELS](MODDING_LEVELS.md) 写"机器人 4 回合打赢"——先查是机器人还是数据。
-2. 界面小项：状态页页按钮排列、说明框悬停、其他窗口的气力条脉动。
-3. AI 分布口径剩两处：`AISupportPlanning.choose` 的 99 号分支；古代神殿遺跡（LEVEL037）的随机落点与行动队列顺序。
-4. 开源剩余：137 个不可再生文件（原版证据帧 104 张迁私有档案等）。
-5. 审计剩余：CODE 9 条（约 8–9 小时，规则核心移 `game/sim/loop` 改动面最大）、TOOLS 8 条、DOCS 的参考区／研究附录（可选）与入口层重写。
+1. 人工通关验收：从标题打到 玩家第 3 场 · 逃出克萊恩城（LEVEL053）以后，按 [PLAYTEST](PLAYTEST.md) 格式回报，按类修。
+2. 开源剩余：137 个不可再生文件（原版证据帧 104 张迁私有档案等）。
+3. 测试断言再减：胜负脚本与技能结算两套件里原版语义与输入校验混写的用例（约 250 处）可拆开只留原版语义。
 
 ## 待拍板
 
