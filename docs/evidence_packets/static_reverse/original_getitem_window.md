@@ -1,12 +1,13 @@
 # 獲得物品窗：战利品拾取的绘制、输入与三个按钮
 
-> evidence: static-derived; resource-derived: 窗体资源、文字表与音效表; runtime-measured: 录像 16 段四帧对照 · status: live · functions: 0x414c00, 0x42aad0, 0x430710, 0x436d70, 0x436e30, 0x438160, 0x43a640, 0x43b4e0, 0x442720, 0x44f2d0, 0x44f430, 0x44f4d0 · tools: run_battle_reward_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: 窗体资源、文字表与音效表; runtime-measured: 录像 16 段四帧对照 · status: live · functions: 0x414c00, 0x42aad0, 0x430710, 0x436d70, 0x436e30, 0x438160, 0x43a640, 0x43b4e0, 0x442720, 0x44ef70, 0x44f100, 0x44f2d0, 0x44f430, 0x44f4d0 · tools: capture_battle_reward_review.gd, run_battle_reward_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：击杀后金钱浮字之后、升級判定之前，玩家击杀者且待领池非空时打开状态窗 mode 0xb；接收者固定为击杀者；左栏背包 8 格、右栏 WINDOW90 待领 5 行、下方 丟棄／倉庫／離開；手持一次一件，重要物品不能从池拾起；离开时剩余全部进队伍仓库，不丢物（static-derived；录像 16 段四帧 runtime-measured）。
-- 重制：`game/battle/scene/BattleLootPanel.gd` 与 `BattleSettlementController.gd` 同坐标、同资源绘制，拾取经 `claim_reward`，离开经 `finish_rewards`（static-derived）。
-- 差异：重要物品可拾入包；丟棄为两次点击放弃全部剩余；倉庫即放回待领池；交换时换出物直接回池；空手点背包格无动作；字体为系统字（provisional）。
+- 五钮原版语义（static-derived，`0x43a640` 按钮 Data6 与 `0x414c00` 列表点击）：重要物品行空手点不拾（`0x40e690`）；丟棄只丢手上一件、重要物与空手无效；倉庫把手上一件按重要／普通加入队伍仓库表（`0x44ef70`／`0x44f100`），空手无效；手持点有物背包格为交换、格物进手；空手点背包格拾起该物（`0x436e80`，录像 `frame_019`）；離開只在空手有效，池中剩余全部入仓库表（`0x42aad0`）。
+- 重制：`game/battle/scene/BattleLootPanel.gd` 与 `BattleSettlementController.gd` 同坐标、同资源绘制；拾取经 `claim_reward`，丟棄经 `discard_reward`，倉庫与離開经 `store_reward`（写入 `PartyStorageRules` 的队伍倉庫 `party_storage`），五钮语义与原版相同（static-derived）。
+- 差异：拿起的背包物点待领列表或别的背包格时回到原格（原版前者放入池、后者交换）；Esc／右键放回原格（原版放首空格）；字体为系统字（provisional）。
 
 ## 证据
 
@@ -70,21 +71,21 @@
 | 接收者 = 击杀者／开箱者 | 按 `kills[0].attacker_id`／`owner_id`；从状态页重开时 = 所看成员；无成员下拉 |
 | 坐标、资源、字号级 | 同坐标同资源；字号 24／15 → 系统字 22／14（无 FONT.24 位图导入，provisional） |
 | 行 = 名字 + 数量 | 逐件实例按 code 归并显示；拾起取该 code 首个实例 |
-| 重要物品不能拾 | 可拾入包（provisional） |
-| 手持点有物格交换进手 | `claim_reward(slot,code)`，换出物直接回待领池 |
-| 空手点背包格拾起 | 无动作（PlayLoop 无背包→池命令） |
-| 右键／Esc 手持放首空格；空手不关 | 同（`quick_place`） |
-| 丟棄只丢一件 | 手持且池中无重要物时两次点击 `finish_rewards(abandon)` 放弃全部剩余，已入包与金钱保留（provisional） |
-| 倉庫 | 放回待领池（重制无第二套存储） |
-| 離開：剩余进仓库 | `finish_rewards(defer = 池非空)`，剩余留池，可从状态页／结果页重开 |
+| 重要物品不能拾 | `BattleLootPanel` 行点击跳过 `important` 物（规则层 `claim_reward` 不设限，供非界面路线） |
+| 手持点有物格交换进手 | `claim_reward(slot,code)` 把格物换入池同一条目，控制器随即 `hold_entry` 把它放到手上 |
+| 空手点背包格拾起 | `BattleLootPanel._lift`：格内显示清空、物品随游标；落地由丟棄／倉庫提交，点列表或别的格回原格（重制读法） |
+| 右键／Esc 手持放首空格；空手不关 | 池来源同（`quick_place`）；背包来源回原格 |
+| 丟棄只丢一件 | `BattlePlayLoop.discard_reward`：池条目或背包格一件，重要物拒，记 `settlement.abandoned` |
+| 倉庫 | `BattlePlayLoop.store_reward`：同上两种来源，`PartyStorageRules.put` 入 `loop.party_storage`（重要表／普通表、同种叠数），记 `settlement.stored`；随 `CampaignCarryRules` 的 loop 键带出战斗 |
+| 離開：剩余进仓库 | `BattleSettlementController._finish`：逐件 `store_reward` 后 `finish_rewards` 关闭；池空后无可重开的待领物 |
 | 音 399／400／398 | `take_up`／`put_down`／`confirm`（`interface_audio`） |
 
 ## 复现
 
-`python3 tools/hsl.py check gameplay_reference`；重制侧 `tools/godot.sh --headless --script tests/run_battle_reward_tests.gd`。
+`python3 tools/hsl.py check gameplay_reference`；重制侧 `tools/godot.sh --headless --script tests/run_battle_reward_tests.gd`（`hand_command_cases`：逐件丢弃、存倉庫、池守恒），界面 `tools/godot.sh --script tests/capture_battle_reward_review.gd -- prepare`（重要行不可拾、背包拿起→丟棄／倉庫、離開入倉庫）再 `-- resume`。
 
 ## 边界
 
-- 录像未覆盖重要物品行、红字行、满包、滚动、丟棄／倉庫按下与離開后仓库。
+- 录像未覆盖重要物品行、红字行、满包、滚动、丟棄／倉庫按下与離開后仓库；五钮语义为 static-derived，未经原版实拍。
+- 手持背包物点待领列表（原版 `0x44f2d0` 放入池）与点别的背包格（原版交换）重制未做，回原格；需背包→池命令。
 - 原版队伍仓库表的读取窗口不在本包，见 [original_storage_window.md](original_storage_window.md)。
-- 逐件丢弃需要 PlayLoop 新命令，重制目前没有。

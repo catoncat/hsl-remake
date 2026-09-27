@@ -158,6 +158,13 @@ var opening_timeline_mode: String = "first_control"
 var interaction_state: String = "idle"
 var selected_unit_id: String = ""
 var pending_move_revert: bool = false
+## The original's glide back to the actor before the ring opens (state 0 0x443a1d → 0x43bf30,
+## which returns 0 until landed): set while that glide runs; the ring stays shut and the
+## player's pan waits (BattleSceneMenus.set_action_menu_visible).
+var ring_camera_return := false
+## A move chosen while the camera is off the walker: movement state 1 (0x443e34) glides the
+## camera back first and walks only once it lands (Interaction.NO_CELL when none).
+var pending_walk_grid := Interaction.NO_CELL
 var pending_move_original_grid: Vector2i = Vector2i.ZERO
 var cancel_evidence_id: String = ""
 var last_move_result: Dictionary = {}
@@ -306,7 +313,7 @@ func _process(delta: float) -> void:
 			resume_turn_presentation()
 			return
 	tick_ai_playback(delta)
-	if interaction_state in Interaction.PLAYER_CONTROL and not has_actor_motion():
+	if interaction_state in Interaction.PLAYER_CONTROL and not has_actor_motion() and not ring_camera_return:
 		var pan := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		if pan == Vector2.ZERO and camera_controller != null:
 			pan = camera_controller.edge_direction(pointer_logical_position, pointer_inside_window and get_window().has_focus())
@@ -421,6 +428,7 @@ func select_actor(unit_id: String) -> void:
 
 
 func cancel_current_interaction() -> void:
+	if pending_walk_grid != Interaction.NO_CELL: return
 	if interaction_state == Interaction.MOVE_SELECT or interaction_state == Interaction.ATTACK_SELECT:
 		if not play_loop.is_empty():
 			apply_loop(BattlePlayLoop.cancel_interaction(play_loop), "cancel_interaction")
@@ -450,6 +458,12 @@ func move_selected_actor_to_grid(target_grid: Vector2i) -> void:
 		return
 	# The walk starts before the mirror step so the actor tweens from its origin
 	# instead of snapping to the settled cell (apply_loop leaves moving actors alone).
+	# 0x443e34: the camera glides back to the actor first; the walk starts once it lands.
+	pending_walk_grid = Interaction.NO_CELL
+	focus_camera_on_grid(original_grid)
+	if camera_controller != null and camera_controller.is_scrolling():
+		pending_walk_grid = target_grid
+		return
 	var path := _world_path(grid_path)
 	last_move_result = actor.move_along(path, path.size() * MOVE_CELL_PRESENTATION_SECONDS)
 	apply_loop(next, "move_unit_to")
@@ -670,7 +684,7 @@ func tick_ai_playback(delta: float) -> void:
 
 
 func has_actor_motion() -> bool:
-	if ai_move_preview.busy():
+	if ai_move_preview.busy() or pending_walk_grid != Interaction.NO_CELL:
 		return true
 	for actor in actors_root.get_children():
 		if actor is ActorRuntime and actor.is_moving():
@@ -1152,6 +1166,10 @@ func advance_camera(delta: float) -> void:
 	if camera_controller != null and camera_controller.advance(delta):
 		if interaction_state in Interaction.PLAYER_CONTROL: scene_input.update_pointer_hit(pointer_logical_position)
 		menus.update_action_menu_anchor()
+	if pending_walk_grid != Interaction.NO_CELL and (camera_controller == null or not camera_controller.is_scrolling()):
+		var target := pending_walk_grid
+		pending_walk_grid = Interaction.NO_CELL
+		if interaction_state == Interaction.MOVE_SELECT: move_selected_actor_to_grid(target)
 
 
 func play_growth_sound(growth: Dictionary) -> void:

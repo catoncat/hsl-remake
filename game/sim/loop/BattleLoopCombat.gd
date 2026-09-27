@@ -33,6 +33,7 @@ const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const StaminaRules = preload("res://game/sim/StaminaRules.gd")
 const SkillResolutionRules = preload("res://game/sim/SkillResolutionRules.gd")
+const AISkillPlanning = preload("res://game/sim/AISkillPlanning.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
@@ -205,7 +206,7 @@ static func resolve_skill(loop: Dictionary, attacker_id: String, defender_id: St
 	if loop["skill_book"]["skills"].get(skill_id, {}).get("channel") == "magic" and BattlePlayLoop.magic_position_error(loop, attacker) != "": return {}
 	var stream_before: Variant = loop.get(DamageRandomStream.LOOP_KEY)
 	var source: Variant = rng if rng != null else DamageRandomStream.loop_source(loop)
-	var result := SkillResolutionRules.resolve_cast(attacker, defender, loop["units"], skill_id, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"], origin, loop["map_size"], source, center_coord, skill_context(loop))
+	var result := SkillResolutionRules.resolve_cast(attacker, defender, loop["units"], skill_id, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"], origin, loop["map_size"], source, center_coord, skill_context(loop, attacker, origin))
 	if not result["ok"]:
 		loop[DamageRandomStream.LOOP_KEY] = stream_before
 		return {}
@@ -248,10 +249,13 @@ static func _undead_revives(loop: Dictionary, unit_id: String) -> bool:
 ## Queue-dependent skill gates (天鳴覺醒 ActiveAgain / 獅子吼 CancelActive) read the live queue.
 ## A player's command cast also carries `range_terrain` (BattlePlayLoop.player_cast_terrain:
 ## cast range 0x40f8b0 mode -1, effect area 0x4100e0 mode 2／3 over the map words), so it
-## settles over the footprint skill_cast_footprint previews; an AI cast stays flat.
-static func skill_context(loop: Dictionary) -> Dictionary:
+## settles over the footprint skill_cast_footprint previews; any other cast (the AI's) settles
+## over AISkillPlanning.cast_terrain from its cast cell `origin`, the terrain its planner read.
+static func skill_context(loop: Dictionary, caster: Dictionary = {}, origin: Variant = null) -> Dictionary:
 	var context := {"turn_queue": loop.get("turn_queue", {}), "gold": loop.get("gold", 0), "reward_data": loop.get("reward_data", {})}
 	var terrain := BattlePlayLoop.player_cast_terrain(loop)
+	if terrain.is_empty() and not caster.is_empty():
+		terrain = AISkillPlanning.cast_terrain(caster, origin if origin is Vector2i else caster["coord"], AISkillPlanning.lifted_words(loop, caster))
 	if not terrain.is_empty(): context["range_terrain"] = terrain
 	return context
 

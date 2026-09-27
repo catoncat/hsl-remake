@@ -48,19 +48,21 @@ func run() -> void:
 		var before: Dictionary = scene.play_loop.duplicate(true)
 		check(panel._recipient == "leonard", "the killer owns the get-item window like the original")
 		await click(panel.rows[0])
+		check(scene.play_loop == before and not panel.holding(), "an important pool row cannot be picked up")
+		await click(panel.slots[0])
 		await shot("claim-preview")
+		check(panel.holding() and panel.drop_button.disabled == false, "an empty hand lifts a bag item")
+		await click(panel.drop_button)
+		check(BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].count(241) == 2 and scene.play_loop["settlement"]["abandoned"].size() == 1 and not panel.holding(), "丟棄 drops only the held item")
+		await click(panel.slots[0])
 		await click(panel.storage_button)
-		check(scene.play_loop == before and not panel.holding(), "倉庫 returns the held item to the pool without moving inventory")
-		await click(panel.rows[0])
-		await key(KEY_ESCAPE)
-		check(scene.play_loop["settlement"]["pending"].size() == 1 and BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].count(281) == 1, "Esc drops the held item into the first free bag slot, claiming exactly one instance")
+		check(scene.play_loop["party_storage"]["normal"] == [{"code": 241, "qty": 1}] and scene.play_loop["settlement"]["pending"].size() == 2, "倉庫 stores the held item in the party storage")
 		await key(KEY_F5)
 		check(not FileAccess.file_exists(PATH), "F5 is refused while loot is still pending (Loop.loot_waiting is not a quiet boundary)")
 		await shot("partial-save-refused")
-		await click(panel.rows[0])
-		await click(panel.slots[RuntimeReadback.first_empty_slot(panel)])
-		await shot("fully-claimed")
 		await click(panel.finish_button)
+		check(scene.play_loop["settlement"]["pending"].is_empty() and (scene.play_loop["party_storage"]["important"] as Array).size() == 2, "離開 stores the rest in the party storage")
+		await shot("fully-claimed")
 		for _attempt in range(400): # the LEVEL UP float plays first (in-process: no restore skip)
 			if scene.growth_panel.visible: break
 			await create_timer(0.025).timeout
@@ -141,42 +143,16 @@ func full_inventory() -> void:
 	await attack_to_loot("full")
 	var panel = scene.settlement_controller.panel
 	var before: Dictionary = scene.play_loop.duplicate(true)
-	await click(panel.rows[0])
-	check(panel.holding() and RuntimeReadback.first_empty_slot(panel) < 0, "full bag leaves the picked item in hand with no free slot")
+	await click(panel.slots[3])
+	check(panel.holding() and RuntimeReadback.first_empty_slot(panel) < 0, "full bag: the lifted item leaves its slot")
 	await key(KEY_ESCAPE)
-	check(scene.play_loop == before and panel.holding(), "Esc cannot auto-place into a full bag; the item stays in hand")
-	await click(panel.storage_button)
-	check(scene.play_loop == before and not panel.holding(), "returned item preserves both pools")
-	await click(panel.rows[0])
-	await click(panel.slots[0])
-	check(BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].has(281) and scene.play_loop["settlement"]["pending"][0]["code"] == 241, "displaced medicine remains in loot after exchange")
-	await shot("full-exchanged")
-	await click(panel.rows[1])
-	await click(panel.slots[1])
-	check(not panel.drop_button.disabled, "only ordinary displaced medicine remains")
-	await click(panel.drop_button)
-	await shot("abandon-confirmation")
-	await click(panel.rows[0])
-	await click(panel.storage_button)
-	check(scene.play_loop["settlement"]["pending"].size() == 2 and not panel._abandon_armed, "leaving the 丟棄 icon cancels the discard and retains both medicines")
+	check(scene.play_loop == before and not panel.holding(), "Esc puts a lifted bag item back")
 	await click(panel.finish_button)
 	for _attempt in range(400): # the LEVEL UP float plays before the growth window
 		if scene.growth_panel.visible: break
 		await create_timer(0.025).timeout
 	if scene.growth_panel.visible: scene.growth_panel.hide() # harness skip seam
-	for _attempt in range(200):
-		if scene.action_menu.get_node("StatusCommand").is_visible_in_tree(): break
-		await create_timer(0.025).timeout
-	await create_timer(0.2).timeout
-	# 待領物品 is an OPT-GUIDE 提示 button (the original status page has no button bar).
-	preload("res://game/settings/GameOptions.gd").environment_preset = "comfort"
-	await click(scene.action_menu.get_node("StatusCommand"))
-	await click(scene.status_panel.rewards_button)
-	preload("res://game/settings/GameOptions.gd").environment_preset = ""
-	check(panel.visible and panel.rows.size() == 1 and scene.play_loop["settlement"]["pending"].size() == 2, "next actor can reopen deferred items through Status as one (code, 2) row")
-	await click(panel.drop_button)
-	await click(panel.drop_button)
-	check(scene.play_loop["settlement"]["abandoned"].size() == 2 and scene.play_loop["gold"] == 100 and BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].has(282), "confirmed abandonment preserves accepted items and wallet")
+	check(not panel.visible and scene.play_loop["settlement"]["pending"].is_empty() and (scene.play_loop["party_storage"]["important"] as Array).size() == 2 and scene.play_loop["gold"] == 100, "離開 left nothing to reopen: the pool is in the party storage")
 
 
 func terminal_loot() -> void:
@@ -188,9 +164,6 @@ func terminal_loot() -> void:
 	await attack_to_loot("terminal")
 	check(scene.play_loop["battle_outcome"] == BattleOutcome.VICTORY_ENEMIES_CLEARED, "last-enemy kill commits the actual scenario victory")
 	var panel = scene.settlement_controller.panel
-	while not panel.rows.is_empty():
-		await click(panel.rows[0])
-		await click(panel.slots[RuntimeReadback.first_empty_slot(panel)])
 	await click(panel.finish_button)
 	for _attempt in range(600):
 		await create_timer(0.025).timeout

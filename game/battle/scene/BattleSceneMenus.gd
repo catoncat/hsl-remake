@@ -118,7 +118,28 @@ func set_action_menu_visible(visible: bool) -> void:
 	visible = visible and not ScriptPresentation.pending(runtime) and not ScriptPresentation.active(runtime)
 	if runtime.action_menu != null:
 		update_action_menu_anchor()
-		runtime.action_menu.visible = visible and not BattlePlayLoop.loot_waiting(runtime.play_loop) and not runtime.has_actor_motion() and not runtime.ai_playback_active and not (runtime.growth_panel != null and runtime.growth_panel.visible) and not runtime.get_node("BattlePresentation").combat_busy(runtime.play_loop) and not runtime.get_node("BattlePresentation").dialogue_active()
+		visible = visible and not BattlePlayLoop.loot_waiting(runtime.play_loop) and not runtime.has_actor_motion() and not runtime.ai_playback_active and not (runtime.growth_panel != null and runtime.growth_panel.visible) and not runtime.get_node("BattlePresentation").combat_busy(runtime.play_loop) and not runtime.get_node("BattlePresentation").dialogue_active()
+		runtime.action_menu.visible = visible and _ring_camera_ready(visible)
+
+
+## State 0 (0x443a1d → 0x43bf30) glides the camera back to the actor before every ring opening
+## — first selection, a cancelled move／attack pick (100, move 9), a closed status page or item
+## sub-ring (71) — and opens the ring (0x443a3c) only once the glide lands.
+func _ring_camera_ready(opening: bool) -> bool:
+	var camera = runtime.camera_controller
+	if not opening:
+		runtime.ring_camera_return = false
+		return true
+	if runtime.ring_camera_return:
+		if camera != null and camera.is_scrolling(): return false
+		runtime.ring_camera_return = false
+		return true
+	if runtime.action_menu.visible or camera == null or runtime.selected_unit_id == "":
+		return true
+	if camera.is_scrolling() and camera.scroll_mode == "follow": return false
+	runtime.focus_camera_on_grid(runtime.unit_grid_coord(runtime.selected_unit_id))
+	runtime.ring_camera_return = camera.is_scrolling()
+	return not runtime.ring_camera_return
 
 
 func choose_command(command_id: String) -> void:

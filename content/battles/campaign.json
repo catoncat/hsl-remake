@@ -669,7 +669,8 @@
       "con"
     ],
     "loop_keys": [
-      "gold"
+      "gold",
+      "party_storage"
     ],
     "restore_vitals": true,
     "note": "Remake campaign policy: the controlled party keeps level, experience, allocated attributes, unspent points, equipment, inventory and gold between battles; HP/MP restore to the refreshed maxima; a carried member enters at 0 ST (original 0x407632) unless the finished level ran actKeepPlayerST (keep_stamina: each record keeps its stamina), while a first-registered member takes its PLAYERS template stamina. Original inter-level persistence is not proven. Entries marked party: separate (level 53, 緹娜) neither receive nor overwrite the carried party; the carry passes through to the next scenario."

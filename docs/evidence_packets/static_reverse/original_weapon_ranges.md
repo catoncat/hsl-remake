@@ -1,12 +1,13 @@
 # 武器射程：武器字来源、RANGE 掩码与地形传播
 
-> evidence: static-derived; resource-derived: EVEF 装备字为零; provisional: AI 技能规划与 AI 施放仍平铺、大型角色锚点 · status: live · functions: 0x409090, 0x40bab0, 0x40bb00, 0x40eb80, 0x40f5d0, 0x40f8b0, 0x40fa80, 0x40fab0, 0x40fb20, 0x40fc90, 0x40fdc0, 0x4100e0, 0x411a30, 0x411b90, 0x42bd50, 0x4423c0, 0x442a90, 0x4477c0, 0x44b980, 0x44cb10 · tools: audit_range_propagation_impact.gd, hsltools/data/attack_ranges.py, hsltools/probes/range_terrain.py, run_ai_navigation_tests.gd, run_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: EVEF 装备字为零; provisional: AI 接近目标格平铺、大型角色锚点 · status: live · functions: 0x409090, 0x40bab0, 0x40bb00, 0x40c9a0, 0x40cca0, 0x40d340, 0x40eb80, 0x40f5d0, 0x40f8b0, 0x40fa80, 0x40fab0, 0x40fb20, 0x40fc90, 0x40fdc0, 0x4100e0, 0x4119f0, 0x411a30, 0x411b90, 0x42bd50, 0x43f79b, 0x441779, 0x441a73, 0x4423c0, 0x442a90, 0x4477c0, 0x44b980, 0x44cb10 · tools: audit_range_propagation_impact.gd, hsltools/data/attack_ranges.py, hsltools/probes/range_terrain.py, run_ai_navigation_tests.gd, run_autoplay_sweep_tests.gd, run_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：射程读 live 角色记录 +0xec 的武器字（PLAYERS `weapon_equip` 复制而来，EVEF 非零实例字可覆盖），武器 0 → 范围 0；`ITEM.attack_range` 选 RANGE 记录，但目标格不是正掩码本身——武器与施放范围由 `0x40f8b0` 从起点四向深度优先传播，效果区域由 `0x4100e0` 矩阵分支调 `0x40fdc0`；只读地图字（WRD `0x4000` 与占位者侧位），不读高度；`0x4000` 格停线且不写，障碍前方检查使本格照写但不外传（static-derived；354 次完整执行逐字节对拍）。
-- 重制：`RangePropagationRules`（`weapon_coverage`／`area_coverage`／`line_coverage`）由玩家武器格、反击资格、敌方武器格显示、玩家施放范围与效果区域、AI 武器站位共用；`PositionCapabilityRules.attack_pattern` 选掩码（static-derived）。
-- 差异：AI 技能规划、AI 施放与 `approach_goals` 仍读平铺掩码；大型角色以 `FootprintRules` 锚点为传播起点（provisional）。
+- 原版 AI 施放：规划与出手同一套传播——施放范围 `0x40f8b0(施放格, 射程, −1, 0)`（与玩家施放同 mode），效果区域 `0x4100e0(行动者, x, y, 区域, mode)`，mode 由 AI 分支写进 `0x4c2c78`：进攻 `0x40bab0`（P 2、E 3、N 7），援助 `0x40bb00`（P 8、E 9、N 10）；规划逐个候选格先抹自身占位再把自身写到候选格（static-derived）。
+- 重制：`RangePropagationRules`（`weapon_coverage`／`area_coverage`／`line_coverage`）由玩家武器格、反击资格、敌方武器格显示、玩家施放范围与效果区域、AI 武器站位、AI 进攻与援助施放的规划和结算共用；`PositionCapabilityRules.attack_pattern` 选掩码（static-derived）。
+- 差异：`approach_goals`（重制的接近目标格收据，无原版对应调用）仍读平铺掩码；大型角色以 `FootprintRules` 锚点为传播起点（provisional）。
 
 ## 证据
 
@@ -37,6 +38,17 @@
 
 调用方：玩家武器 `0x442a90` 内 `0x444156`（`0x40fa80`→`0x40f8b0`，mode 2、flag 1）；反击 `0x4423c0` 内 `0x4426b0`（守方 `0x40bab0` mode、flag 1，`0x409090`→`0x40fa80` 建覆盖，`0x40fab0` 查攻方格，命中在 `0x4c4320` 置 `0x10000`；门槛 `test byte [ecx+0x24], 4` 与 [ecx+0x19e]）；玩家施放 `0x444eb7`／`0x445075`／`0x44508f`；玩家效果区域 `0x444f08`／`0x4450e0`（mode 2 攻击、3 支援）；AI 站位 `0x40d8b0` 先 `0x411b90` 抹自身占位（`0x40d8c3`），普通目标 `0x40fa80(目标, 射程, mode, 0)`（`0x40dbe6..0x40dbfa`），3×3 目标逐身体格 `0x40f8b0(px±32, py±32, …)`；「目标在射程内」`0x40fa80(行动者, 射程, mode, 1)` → `0x40fb20`（`0x440d2d`、`0x440c62`、`0x43fca5`）；到站复查 `0x441311..0x441369`（清 `0x10000`、`0x411a30` 放回占位、为零 `je 0x441eb8` 不出手）。AI 技能侧 `0x40f8b0` 调用方 `0x40cca0`、`0x40d340`、`0x40d530`、`0x40df70`，`0x4100e0` 调用方 `0x40ca71`、`0x4417a6`、`0x4418fd`、`0x441aa0`、`0x441c02`，`0x40fa80` 调用方 `0x441779`、`0x441a73`。
 
+AI 施放（`hsl01.exe` 指令读法）：
+
+| 步骤 | 锚点 | 读法 |
+| --- | --- | --- |
+| 进攻分支写 mode | `0x43f851`／`0x43f8d4`／`0x43fe3f`／`0x43febb` `call 0x40bab0` → `mov [0x4c2c78], eax`，同值作第 5 参给 `0x40df70`（SPECIAL）／`0x40d340`（MAGIC） | 进攻区域 mode＝P 2、E 3、N 7 |
+| 援助分支写 mode | `0x43fad6`／`0x43faf9`／`0x440adb`／`0x440af8` `call 0x40bb00` → `mov [0x4c2c78], eax`；`0x40bb00` 读 player_mode：`0x10000`→8、`0x20000`→9、`0x40000`→10，否则返回 `0x20000` | 援助区域 mode＝P 8、E 9、N 10 |
+| 规划：移动施放格 | `0x40cca0`：候选格字 `& 0x74000` 非零跳过（`0x40cf34`）；`0x411b90` 抹自身占位（`0x40cf47`）、`0x4119f0` 写到候选格（`0x40cf55`）；`0x4097d0`／`0x409830` 取射程后 `0x40f8b0(px, py, 射程, −1, 0)`（`0x40cfb0`）；`0x40c9a0` 评估后 `0x411a10`／`0x411a30` 复原 | 施放范围从候选格传播，mode −1、flag 0 |
+| 规划：原地 | `0x40d340` 内 `0x40d459` `0x40f8b0(自身格, 射程, −1, 0)`，`0x40d47e` 调 `0x40c9a0`，第 6 参＝`0x40d340` 第 5 参（mode） | 同上 |
+| 规划：区域计数 | `0x40c9a0` 遍历 `*0x4c1b48` 已写格，`0x40ca71` `0x4100e0(行动者, x, y, 区域, 第 6 参)`；再遍历 `*0x4c1b4c`，字 `& 0x70000` 非零且非 pmALL 计一（`0x40cb06..0x40cb14`） | 效果区域按 mode 传播 |
+| 出手 | MAGIC `0x441779` `0x40fa80(行动者, 射程, −1, 0)`、`0x4417a6`／`0x4418fd` `0x4100e0(…, [0x4c2c78])`；SPECIAL `0x441a73` 同 −1、0，`0x441aa0`／`0x441c02` 同 `[0x4c2c78]` | 结算读同一组格 |
+
 **resource-derived**：RANGE.H range3CellCircle 10、range3CellThrust 15、range5CellCircle 12、range6CellShoot 7、range0Cell 0；ITEM 32（Gulu 008）与 53（Enemy057）→ range3CellCircle，57（Enemy058）→ range0Cell（注释掉的 range3CellCircle 行不用）。普通武器接受 range0Cell、range1Cell、range2Cell、range3／4／5CellShoot、range3CellCircle、range3CellThrust、range5CellCircle，其余拒绝。70 关 569 个 EVEF 演员实例的 `override_fields` 中装备六字均为 0 次，未应用实例覆盖对现有数据是空操作。
 
 **runtime-measured**（重制侧影响面，`tests/diagnostics/audit_range_propagation_impact.gd`，139 个战场、63 种地图）
@@ -50,7 +62,7 @@
 | 任一非墙格起算的施放范围 | 43／831 | 9 |
 | 任一非墙中心的效果区域 | 27／742 | 9 |
 
-开场武器格变化 481／2516 个单位，主要是 mode 2 不写 P 侧占位格与敌方 mode 3 不写同侧格；5 场自动对局（51、1、3、504、80）胜负、回合数不变。
+开场武器格变化 481／2516 个单位，主要是 mode 2 不写 P 侧占位格与敌方 mode 3 不写同侧格；5 场自动对局（51、1、3、504、80）胜负、回合数不变。AI 施放改传播前后各跑一次全量 128 场自动对局（种子 1）：`results.json` 逐字节相同（win 19、fail 109），无胜负翻转。
 
 ## 重制接线
 
@@ -62,7 +74,8 @@
 | 玩家武器、反击、敌方武器显示 | `BattlePlayLoop.weapon_cells` → `attack_cells`，按 `offensive_mode`；`BattleLoopCombat` 反击读 `Loop.attack_cells(loop, defender_id)` |
 | 玩家施放与效果区域 | `SkillTargetRules.cells(…, terrain)`、`BattlePlayLoop.skill_terrain`／`player_cast_terrain`；`BattleLoopCombat._skill_context` 放进 `range_terrain`，悬停自绘格、目标行、`magic_target_id_at_coord`、`RepeatedSpecialRules.prepare` 读同一份 |
 | AI 武器 | `AINavigationRules.weapon_terrain` → `attack_stations(…, terrain)`；`BattleLoopAI._ai_station_attack` 到站 `target_in_range`，不含目标回 `move`，`wait_reason = station_out_of_range` |
-| AI 技能与接近 | `AISkillPlanning` 施放位与效果格、`approach_goals` 仍平铺（provisional）；AI 施放走 resolver，`player_cast_terrain` 返回空 |
+| AI 技能 | `AISkillPlanning.cast_terrain`（抹自身占位后写到施放格；`cast_mode` −1，`area_modes` 进攻 `offensive_mode`、援助 `support_mode`）交给 `AISkillPlanning`／`AISupportPlanning` 的 `SkillTargetRules.cells`、`target_for_center` 与 `prepare_cast`；出手 `BattleLoopCombat.skill_context(loop, 施放者, 施放格)` 取同一份 |
+| AI 接近 | `AINavigationRules.approach_goals` 仍平铺（provisional，重制收据） |
 | 自动对局 | `tests/support/Autoplay.gd` `_destination` 落脚格按落脚后的武器洪泛判定 |
 
 ## 复现

@@ -1132,6 +1132,14 @@ static func finish_rewards(loop: Dictionary, sequence: int, revision: int, aband
 	return BattleLoopRewards.finish_rewards(loop, sequence, revision, abandon, defer)
 
 
+static func discard_reward(loop: Dictionary, sequence: int, revision: int, entry_id: String, recipient_id: String = "", slot: int = -1, expected_code: int = 0) -> Dictionary:
+	return BattleLoopRewards.discard_reward(loop, sequence, revision, entry_id, recipient_id, slot, expected_code)
+
+
+static func store_reward(loop: Dictionary, sequence: int, revision: int, entry_id: String, recipient_id: String = "", slot: int = -1, expected_code: int = 0) -> Dictionary:
+	return BattleLoopRewards.store_reward(loop, sequence, revision, entry_id, recipient_id, slot, expected_code)
+
+
 static func reopen_rewards(loop: Dictionary) -> Dictionary:
 	return BattleLoopRewards.reopen_rewards(loop)
 

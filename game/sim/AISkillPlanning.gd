@@ -14,6 +14,8 @@ const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 const Values = preload("res://game/sim/Values.gd")
 const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
+const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 
 
 static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: String, fields_by_id: Dictionary, envelope: Dictionary) -> Dictionary:
@@ -93,13 +95,15 @@ static func _collect_offense_intents(ctx: Dictionary, id: Variant, fields: Dicti
 	var targeting: Dictionary = ctx["targeting"]
 	var envelope: Dictionary = ctx["envelope"]
 	var origin: Vector2i = ctx["origin"]
+	var lifted := lifted_words(loop, actor)
 	for cell in ctx["cells"]:
-		var cast_cells := SkillTargetRules.cells(cell, fields, targeting, loop["map_size"])
+		var terrain := cast_terrain(actor, cell, lifted)
+		var cast_cells := SkillTargetRules.cells(cell, fields, targeting, loop["map_size"], terrain)
 		for coord in SkillTargetRules.candidate_centers(actor, loop["units"], fields, targeting, loop["map_size"], cell):
 			if not cast_cells.has(coord): continue
 			# The shared resolver validates every footprint member before any RNG.
-			var center := target_for_center(actor, loop["units"], fields, targeting, loop["map_size"], cell, coord)
-			var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, ctx["book"], targeting, loop["equipment_items"], cell, loop["map_size"], coord)
+			var center := target_for_center(actor, loop["units"], fields, targeting, loop["map_size"], cell, coord, terrain)
+			var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, ctx["book"], targeting, loop["equipment_items"], cell, loop["map_size"], coord, {"range_terrain": terrain})
 			if not ready["ok"]:
 				if ready["reason"] not in ["out_of_range", "not_enemy", "target_unavailable", "skill_has_no_effect"]: return ready
 				continue
@@ -119,6 +123,39 @@ static func _collect_offense_intents(ctx: Dictionary, id: Variant, fields: Dicti
 					"useful_ids": useful, "score": useful.size(), "movement_cost": 0 if cell == origin else int(route["cost"]),
 					"path": [] if cell == origin else route["path"]})
 	return {}
+
+
+## 0x40bb00: the support builder mode from the actor's player_mode (P 8, else E 9, else
+## N 10); a sideless actor gets the value 0x20000, which no table lists.
+static func support_mode(actor: Dictionary) -> int:
+	var side := RangePropagationRules.side_word(actor)
+	if side & RangePropagationRules.P: return 8
+	if side & RangePropagationRules.E: return 9
+	if side & RangePropagationRules.N: return 10
+	return 0x20000
+
+
+## The map words with the caster's own occupancy lifted (0x40cca0 runs 0x411b90 before it
+## tries a cast cell, 0x40cf47).
+static func lifted_words(loop: Dictionary, actor: Dictionary) -> Dictionary:
+	return RangePropagationRules.cell_words(TerrainEditRules.tiles(loop), loop["units"].filter(func(unit): return unit["id"] != actor["id"]))
+
+
+## The AI's skill terrain from `cell` (SkillTargetRules／SkillResolutionRules range_terrain):
+## the caster placed on the cell (0x4119f0, 0x40cf55); cast range 0x40f8b0(cell, range, -1, 0)
+## (planner 0x40cfb0／0x40d459, execution 0x441779 MAGIC／0x441a73 SPECIAL via 0x40fa80);
+## effect area 0x4100e0(actor, x, y, range, mode) (planner 0x40ca71 in 0x40c9a0, execution
+## 0x4417a6／0x4418fd／0x441aa0／0x441c02 reading 0x4c2c78) with the mode the AI branch
+## stored there: offensive 0x40bab0 (0x43f851／0x43f8d4／0x43fe3f／0x43febb), support
+## 0x40bb00 (0x43fad6／0x43faf9／0x440adb／0x440af8).
+static func cast_terrain(actor: Dictionary, cell: Vector2i, lifted: Dictionary) -> Dictionary:
+	var words := lifted.duplicate()
+	var placed := actor.duplicate()
+	placed["coord"] = cell
+	var side := RangePropagationRules.side_word(placed) | RangePropagationRules.ACTOR
+	for point in SkillTargetRules.Footprint.cells(placed): words[point] = int(words.get(point, 0)) | side
+	return {"words": words, "cast_mode": RangePropagationRules.PLAYER_CAST_MODE,
+		"area_modes": {"offensive": RangePropagationRules.offensive_mode(actor), "support": support_mode(actor)}}
 
 
 static func target_plan(primary_id: String, channel: String, profile: Dictionary, actor: Dictionary, foes: Array) -> Dictionary:
@@ -299,8 +336,8 @@ static func centre_scan(intents: Array, held_id: String, rng: Variant, draws: Ar
 	return {"intent": chosen, "count": best}
 
 
-static func target_for_center(actor: Dictionary, units: Array, fields: Dictionary, targeting: Dictionary, map_size: Vector2i, origin: Vector2i, center: Vector2i) -> Dictionary:
-	var footprint := SkillTargetRules.effect_cells(center, fields, targeting, map_size, origin)
+static func target_for_center(actor: Dictionary, units: Array, fields: Dictionary, targeting: Dictionary, map_size: Vector2i, origin: Vector2i, center: Vector2i, terrain: Dictionary = {}) -> Dictionary:
+	var footprint := SkillTargetRules.effect_cells(center, fields, targeting, map_size, origin, terrain)
 	var first := {}
 	for unit in units:
 		if not BattlePresenceRules.living(unit) or unit.get("battle_actor_role") not in SkillTargetRules.ROLES or not SkillTargetRules.side_matches(actor, unit, fields, targeting): continue

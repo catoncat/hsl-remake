@@ -2,15 +2,19 @@ extends Control
 ## Original 獲得物品 window (status mode 0xb, docs/evidence_packets/static_reverse/original_getitem_window.md).
 ## Immutable snapshots and one uncommitted held item only. All transfers use PlayLoop.
 ## provenance:
+##   rules: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
+##     (five button semantics)
+##   rules: remake-invented (a lifted bag item goes back to its slot from the list／another slot)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#16
 ##     (frame_003／frame_006 held-item and green hover)
 ##   layout: remake-invented (scroll arrows for more than five codes; disabled 離開 while holding)
 ##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
-##   strings: remake-invented (再按一次 discard confirmation and its tooltip)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
 signal claim_requested(request: Dictionary)
 signal finish_requested(request: Dictionary)
+signal discard_requested(request: Dictionary)
+signal store_requested(request: Dictionary)
 signal cue_requested(event: String)
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
@@ -49,7 +53,6 @@ var _recipient := ""
 var _hand: Dictionary = {}
 var _groups: Array = []
 var _scroll := 0
-var _abandon_armed := false
 var _epoch := 0
 var _key := ""
 var _pointer := Vector2.ZERO
@@ -96,7 +99,6 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	var available: Array = _actors.map(func(actor): return str(actor["id"]))
 	_recipient = recipient_id if available.has(recipient_id) else ("" if available.is_empty() else str(available[0]))
 	_hand = {}
-	_abandon_armed = false
 	_epoch += 1
 	for child in get_children(): remove_child(child); child.queue_free()
 	hand_icon = null
@@ -146,16 +148,23 @@ func _build_bag() -> void:
 		button.name = "Bag_%d" % index
 		button.set_meta("inventory_index", index)
 		button.set_meta("item_code", code)
+		var icon := Control.new()
+		icon.name = "Content"
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(icon)
 		if code > 0:
-			BattleUISkin.anchored_asset(button, str(_catalog[str(code)]["icon"]), Vector2(24, 8))
-			var label := BattleUISkin.text(button, Vector2(48, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(160, BAG_ROW))
+			BattleUISkin.anchored_asset(icon, str(_catalog[str(code)]["icon"]), Vector2(24, 8))
+			var label := BattleUISkin.text(icon, Vector2(48, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(160, BAG_ROW))
 			label.text = str(_catalog[str(code)]["name"])
 			button.mouse_entered.connect(_show_description.bind(code, label))
 			button.mouse_exited.connect(_hide_description.bind(label))
 		var epoch := _epoch
 		button.pressed.connect(func():
-			if not visible or epoch != _epoch or not holding(): return
-			_place(index, code))
+			if not visible or epoch != _epoch: return
+			if not holding():
+				if code > 0: _lift(index, code)
+			elif _hand.has("slot"): cancel()
+			else: _place(index, code))
 		slots.append(button)
 
 
@@ -175,7 +184,7 @@ func _rebuild_rows() -> void:
 	_arrows.clear()
 	_groups = []
 	for item in _state["pending"]:
-		if holding() and str(item["id"]) == str(_hand["entry_id"]): continue
+		if holding() and str(item["id"]) == str(_hand.get("entry_id", "")): continue
 		var code := int(item["code"])
 		var group: Dictionary = {}
 		for candidate in _groups:
@@ -210,7 +219,7 @@ func _rebuild_rows() -> void:
 		button.pressed.connect(func():
 			if not visible or epoch != _epoch: return
 			if holding(): cancel()
-			else: _take(group))
+			elif not bool(_catalog[str(group["code"])]["important"]): _take(group))
 		rows.append(button)
 	if _groups.size() > VISIBLE_ROWS:
 		for step in [-1, 1]:
@@ -235,21 +244,17 @@ func _build_buttons() -> void:
 	storage_button = _icon_button("storage", "BCMD15_1", "倉庫")
 	finish_button = _icon_button("exit", "BCMD14_1", "離開")
 	var epoch := _epoch
+	# 丟棄 drops only the held item (never an important one); 倉庫 stores the held item; 離開 needs
+	# an empty hand and stores whatever is left in the pool (0x42aad0).
 	drop_button.pressed.connect(func():
-		if not visible or epoch != _epoch or drop_button.disabled: return
-		if not _abandon_armed:
-			_abandon_armed = true
-			_refresh_buttons()
-			return
-		var request := _request({"abandon": true, "defer": false})
-		if accepts(request):
-			_hand = {}
-			finish_requested.emit(request))
+		if not visible or epoch != _epoch or drop_button.disabled or not holding(): return
+		discard_requested.emit(_hand_request()))
 	storage_button.pressed.connect(func():
-		if visible and epoch == _epoch and holding(): cancel())
+		if not visible or epoch != _epoch or not holding(): return
+		store_requested.emit(_hand_request()))
 	finish_button.pressed.connect(func():
 		if not visible or epoch != _epoch or holding(): return
-		var request := _request({"abandon": false, "defer": not _state["pending"].is_empty()})
+		var request := _request({"store_rest": true})
 		if accepts(request): finish_requested.emit(request))
 
 
@@ -267,17 +272,8 @@ func _icon_button(key: String, resource: String, caption: String) -> TextureButt
 	label.set_meta("caption", caption)
 	button_labels[key] = label
 	button.mouse_entered.connect(func(): if not button.disabled: label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
-	button.mouse_exited.connect(func():
-		# Remake safety: 丟棄 discards the whole remaining pool, so the second press must stay on the icon.
-		if key == "drop" and _abandon_armed: disarm_abandon()
-		label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
+	button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
 	return button
-
-
-func disarm_abandon() -> void:
-	if not _abandon_armed: return
-	_abandon_armed = false
-	_refresh_buttons()
 
 
 func _row_button(at: Vector2, dimensions: Vector2) -> Button:
@@ -292,15 +288,9 @@ func _row_button(at: Vector2, dimensions: Vector2) -> Button:
 
 
 func _refresh_buttons() -> void:
-	var pending: Array = _state.get("pending", [])
-	var important := pending.any(func(item): return bool(_catalog[str(item["code"])]["important"]))
-	_set_enabled(drop_button, not pending.is_empty() and not important)
+	_set_enabled(drop_button, holding() and not bool(_catalog[str(_hand["code"])]["important"]))
 	_set_enabled(storage_button, holding())
 	_set_enabled(finish_button, not holding())
-	var drop_label: Label = button_labels["drop"]
-	drop_label.text = "再按一次" if _abandon_armed else str(drop_label.get_meta("caption"))
-	drop_label.add_theme_color_override("font_color", BattleUISkin.TEXT_RED if _abandon_armed else BattleUISkin.TEXT_WHITE)
-	drop_button.tooltip_text = "重製版一次放棄全部剩餘物品（%d 件）；已入包與金錢保留。" % pending.size() if _abandon_armed else ""
 
 
 func _set_enabled(button: TextureButton, enabled: bool) -> void:
@@ -309,9 +299,27 @@ func _set_enabled(button: TextureButton, enabled: bool) -> void:
 
 
 func _take(group: Dictionary) -> void:
-	var code := int(group["code"])
-	_hand = {"entry_id": str(group["entry_ids"][0]), "code": code}
-	_abandon_armed = false
+	_grab({"entry_id": str(group["entry_ids"][0]), "code": int(group["code"])})
+	cue_requested.emit("take_up")
+
+
+## An empty hand clicking a bag item lifts it (0x436e80, sound 399); the slot shows empty until the
+## item is dropped, stored or put back.
+func _lift(slot: int, code: int) -> void:
+	_grab({"slot": slot, "code": code})
+	slots[slot].get_node("Content").hide()
+	cue_requested.emit("take_up")
+
+
+## After an exchange the displaced bag item (now pool entry `entry_id`) is in the hand (0x42923b).
+func hold_entry(entry_id: String) -> void:
+	for item in _state.get("pending", []):
+		if str(item["id"]) == entry_id: _grab({"entry_id": entry_id, "code": int(item["code"])}); return
+
+
+func _grab(hand: Dictionary) -> void:
+	_hand = hand
+	var code := int(hand["code"])
 	# Sound 399 TAKEUP01: the picked item travels with the cursor; the list row loses one count.
 	var record: Dictionary = BattleUISkin.data()["assets"][str(_catalog[str(code)]["icon"])]
 	BattleUISkin.show_shape(hand_icon, BattleUISkin.texture(str(_catalog[str(code)]["icon"])))
@@ -321,14 +329,14 @@ func _take(group: Dictionary) -> void:
 	description_box.hide()
 	_rebuild_rows()
 	_refresh_buttons()
-	cue_requested.emit("take_up")
 
 
-## Original: clicking the list (or 倉庫) while holding puts the item back into the pool.
+## Original: clicking the list while holding puts the item back into the pool; a lifted bag item
+## goes back to its slot (remake).
 func cancel() -> void:
 	if not holding(): return
+	if _hand.has("slot"): slots[int(_hand["slot"])].get_node("Content").show()
 	_hand = {}
-	_abandon_armed = false
 	hand_icon.hide()
 	_rebuild_rows()
 	_refresh_buttons()
@@ -337,11 +345,18 @@ func cancel() -> void:
 
 ## Original right click / Esc while holding (0x438160 root case 1): drop into the first free bag slot.
 func quick_place() -> void:
-	if holding(): _place(-1, 0)
+	if _hand.has("slot"): cancel()
+	elif holding(): _place(-1, 0)
 
 
 func _place(slot: int, expected_code: int) -> void:
 	claim_requested.emit(_request({"entry_id": _hand["entry_id"], "recipient_id": _recipient, "slot": slot, "expected_code": expected_code}))
+
+
+func _hand_request() -> Dictionary:
+	if _hand.has("slot"):
+		return _request({"entry_id": "", "recipient_id": _recipient, "slot": int(_hand["slot"]), "expected_code": int(_hand["code"])})
+	return _request({"entry_id": str(_hand["entry_id"]), "recipient_id": "", "slot": -1, "expected_code": 0})
 
 
 func _request(extra: Dictionary) -> Dictionary:

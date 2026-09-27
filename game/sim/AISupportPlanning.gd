@@ -170,13 +170,15 @@ static func _collect_support_intents(ctx: Dictionary, id: Variant, entry: Dictio
 	var actor: Dictionary = ctx["actor"]
 	var envelope: Dictionary = ctx["envelope"]
 	var fields: Dictionary = entry["fields"]
+	var lifted := AISkillPlanning.lifted_words(loop, actor)
 	for cell in ctx["cells"]:
 		if cell != actor["coord"] and entry["channel"] == "magic" and not ctx["capability"]["effects"]["move_magic_use"]: continue
-		var cast_cells := SkillTargetRules.cells(cell, fields, loop["skill_target_data"], loop["map_size"])
+		var terrain := AISkillPlanning.cast_terrain(actor, cell, lifted)
+		var cast_cells := SkillTargetRules.cells(cell, fields, loop["skill_target_data"], loop["map_size"], terrain)
 		for coord in SkillTargetRules.candidate_centers(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell):
 			if not cast_cells.has(coord): continue
-			var center := AISkillPlanning.target_for_center(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell, coord)
-			var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, ctx["book"], loop["skill_target_data"], loop["equipment_items"], cell, loop["map_size"], coord)
+			var center := AISkillPlanning.target_for_center(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell, coord, terrain)
+			var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, ctx["book"], loop["skill_target_data"], loop["equipment_items"], cell, loop["map_size"], coord, {"range_terrain": terrain})
 			if not ready["ok"]:
 				if ready["reason"] in ["out_of_range", "skill_has_no_effect"]: continue
 				return ready

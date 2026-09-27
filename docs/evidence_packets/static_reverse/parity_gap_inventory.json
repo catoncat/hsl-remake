@@ -3,11 +3,11 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 100,
-    "sources": 531,
+    "items": 101,
+    "sources": 533,
     "sources_by_kind": {
       "provenance": 217,
-      "sentence": 143,
+      "sentence": 145,
       "scope": 73,
       "matrix": 85,
       "video": 13
@@ -15,14 +15,14 @@
     "layout_timing_modules": 59,
     "items_by_original_status": {
       "read_complete": 15,
-      "read_partial": 59,
+      "read_partial": 60,
       "unread": 9,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 20,
-      "some_levels": 37,
-      "rare": 38,
+      "some_levels": 36,
+      "rare": 40,
       "invisible": 5
     },
     "items_by_category": {
@@ -39,7 +39,7 @@
       "标题与过场": 4,
       "特写与施法演出": 10,
       "重制新增（原版没有）": 16,
-      "镜头": 2,
+      "镜头": 3,
       "面板与界面": 11,
       "音频": 3,
       "飘字与数字": 4
@@ -1114,8 +1114,8 @@
     },
     {
       "id": "loot-panel",
-      "difference": "战利品领取窗的滚动箭头、持物时禁用「離開」、再按一次丢弃是重制交互；胜利结束时带不走的奖励池先重开领取窗（分队关卡提示原因）",
-      "original": "原版獲得物品窗按商店分支读法；取物暂持／取消 handler 未恢复",
+      "difference": "獲得物品窗五钮已照原版（lane LOOTHAND：重要物不可从池拾、丟棄只丢手上一件、倉庫存进队伍倉庫、交换换出物进手、空手点背包格拿起、離開剩余进倉庫）；剩重制读法：滚动箭头、持物时禁用「離開」、拿起的背包物点列表或别的格回原格（原版入池／交换）、Esc 放回原格；胜利结束时带不走的奖励池先重开领取窗（分队关卡提示原因）",
+      "original": "原版獲得物品窗 0x43a640 三钮 Data6=6/7/8、0x414c00 列表点击、0x44ef70／0x44f100 入仓库表、0x42aad0 離開剩余入表已读（static-derived）；五钮按下未经原版实拍",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_getitem_window.md",
         "docs/evidence_packets/static_reverse/battle_reward_inputs.md"
@@ -1134,10 +1134,11 @@
         "provenance:game/battle/runtime/GrowthCampaignProgress.gd|rules|remake-invented|",
         "provenance:game/battle/runtime/GrowthCampaignProgress.gd|strings|remake-invented|",
         "provenance:game/battle/scene/BattleLootPanel.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/BattleLootPanel.gd|strings|remake-invented|",
+        "provenance:game/battle/scene/BattleLootPanel.gd|rules|remake-invented|",
         "provenance:game/sim/BattleRewardRules.gd|rules|remake-invented|",
         "provenance:game/sim/loop/BattleLoopRewards.gd|rules|remake-invented|",
-        "sentence:docs/evidence_packets/static_reverse/battle_reward_inputs.md#0533437cf8"
+        "sentence:docs/evidence_packets/static_reverse/battle_reward_inputs.md#0533437cf8",
+        "sentence:docs/evidence_packets/static_reverse/original_getitem_window.md#31b216cb50"
       ]
     },
     {
@@ -1224,7 +1225,7 @@
     },
     {
       "id": "skill-area-policies",
-      "difference": "技能区域：玩家施放范围（0x40f8b0 mode −1，墙挡施放）与效果区域（0x4100e0／0x40fdc0 mode 2 攻／3 援，墙旁停线、直线遇墙整条结束、效果不落玩家侧占位格）都按原版传播，结算、悬停自绘格与可选目标读同一组格；AI 技能规划与 AI 施放仍平铺；敌我适配与未支持效果拒绝施放是重制",
+      "difference": "技能区域：玩家与 AI 的施放范围（0x40f8b0 mode −1，墙挡施放）与效果区域（0x4100e0／0x40fdc0；玩家 mode 2 攻／3 援，AI 进攻 0x40bab0、援助 0x40bb00；墙旁停线、直线遇墙整条结束、效果不落排除侧占位格）都按原版传播，规划、结算、悬停自绘格与可选目标读同一组格；剩敌我适配与未支持效果拒绝施放是重制，0x40fc90 找到角色的分支是指令读法",
       "original": "目标模式、单格覆盖、0x4100e0／0x40fdc0 矩阵传播与直线分支已读，230 次区域返回逐字节对拍；0x40fc90 找到角色的分支是指令读法",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_skill_targets.md",
@@ -1232,13 +1233,14 @@
         "docs/evidence_packets/static_reverse/original_weapon_ranges.md",
         "docs/evidence_packets/static_reverse/original_line_ranges.md"
       ],
-      "remake": "SkillResolutionRules／SkillTargetRules；BattlePlayLoop.player_cast_terrain 只在玩家指令施放时把 RangePropagationRules 的施放与区域地形交给 prepare_cast（BattleLoopCombat._skill_context 的 range_terrain）与 skill_cast_footprint",
+      "remake": "SkillResolutionRules／SkillTargetRules；玩家指令施放取 BattlePlayLoop.player_cast_terrain，AI 施放取 AISkillPlanning.cast_terrain（规划与 BattleLoopCombat.skill_context 结算同一份），都经 range_terrain 交给 prepare_cast 与 skill_cast_footprint",
       "remake_code": [
         "game/sim/SkillResolutionRules.gd",
         "game/sim/SkillTargetRules.gd",
         "game/sim/RangePropagationRules.gd:area_coverage",
         "game/sim/loop/BattlePlayLoop.gd:player_cast_terrain",
-        "game/sim/loop/BattleLoopCombat.gd:skill_context"
+        "game/sim/loop/BattleLoopCombat.gd:skill_context",
+        "game/sim/AISkillPlanning.gd:cast_terrain"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -1251,7 +1253,6 @@
         "provenance:game/sim/SkillTargetRules.gd|rules|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|效果区域接线",
         "scope:docs/evidence_packets/static_reverse/original_skill_function_bits.md|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_weapon_ranges.md|provisional|AI 技能规划与 AI 施放仍平铺、大型角色锚点",
         "sentence:docs/evidence_packets/static_reverse/original_poison_arrow.md#f6aa67864e",
         "sentence:docs/evidence_packets/static_reverse/original_skill_targets.md#e70a1b321e"
       ]
@@ -1289,32 +1290,6 @@
         "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#a3bbaaf4ae",
         "sentence:docs/evidence_packets/static_reverse/world_map_data.md#79d6ecfe5d",
         "sentence:docs/evidence_packets/static_reverse/world_map_data.md#8eb537d377"
-      ]
-    },
-    {
-      "id": "weapon-range-semantics",
-      "difference": "武器射程：玩家武器格、反击与敌方武器格显示已按原 0x40f8b0 地形传播（0x4000 停线、前方检查、同侧格不写）；AI 选位与出手仍按平铺掩码，墙后的目标 AI 仍打得到；大型角色的传播起点与局部框裁剪未验证",
-      "original": "0x40f8b0／0x40f5d0 传播、0x40eb80 前方检查、步进表与 0x40bab0 调用方 mode 已读，354 次原函数返回逐字节对拍；AI 调用方 0x40cca0／0x40d340／0x40d530／0x40d8b0／0x40df70 已定位",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_weapon_ranges.md",
-        "docs/evidence_packets/static_reverse/original_line_ranges.md"
-      ],
-      "remake": "RangePropagationRules 传播，BattlePlayLoop.weapon_cells 接玩家武器、反击与敌方武器格；AI 仍用 TacticalGridRules 平铺投影",
-      "remake_code": [
-        "game/sim/RangePropagationRules.gd:weapon_coverage",
-        "game/sim/loop/BattlePlayLoop.gd:weapon_cells",
-        "game/sim/TacticalGridRules.gd:attack_pattern_cells"
-      ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "M",
-      "category": "战斗规则",
-      "sources": [
-        "matrix:攻击范围",
-        "provenance:game/sim/RangePropagationRules.gd|rules|remake-invented|",
-        "provenance:game/sim/TacticalGridRules.gd|rules|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_weapon_ranges.md|provisional|AI 技能规划与 AI 施放仍平铺、大型角色锚点",
-        "sentence:docs/evidence_packets/static_reverse/original_weapon_ranges.md#d25c396c21"
       ]
     },
     {
@@ -1563,6 +1538,26 @@
         "provenance:game/battle/scene/BattleAiMovePreview.gd|timing|provisional|",
         "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#be73cbb995",
         "video:5"
+      ]
+    },
+    {
+      "id": "camera-return-pan",
+      "difference": "开环前与移动起步前镜头已照原版先滑回行动者、到位才开环／起步；滑回期间重制不接边缘／方向键平移，原版边缘滚动是否同时生效未读",
+      "original": "state 0 0x443a1d→0x43bf30 未到位返回 0、0x443a3c 才开环（取消选格 100／移动 9、关窗 71、右键 99 都经此）；移动 1 0x443e34 同式；边缘滚动 0x43e4a0 与之的先后未读",
+      "original_evidence": [
+        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
+      ],
+      "remake": "BattleSceneMenus._ring_camera_ready 在环打开那一拍滑回、未到位不显示环；BattleSceneRuntime.move_selected_actor_to_grid 记 pending_walk_grid 待落位起步；两段期间不平移",
+      "remake_code": [
+        "game/battle/scene/BattleSceneMenus.gd:_ring_camera_ready",
+        "game/battle/scene/BattleSceneRuntime.gd:move_selected_actor_to_grid"
+      ],
+      "original_status": "read_partial",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "镜头",
+      "sources": [
+        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#9bfa3e0a50"
       ]
     },
     {
@@ -2168,8 +2163,8 @@
     },
     {
       "id": "party-equipment-screen",
-      "difference": "「整理裝備」已照原版换成共用状态窗模式 0（lane PARTYEQUIP：同一套板、九钮位置与按页显隐、当前页钮画暗、初始页 狀態、只有裝備页可换装、关窗回卷轴；原版帧 15–17 版面偏移 0）；倉庫 页、丟棄／使用、换人保留手持已照原版（lane EQUIPSCREEN：队伍存储 carry.loop.party_storage 两表叠数、重要物取不出，帧 18–24）；拿起即离包（0x436e80）、空手卸下与换下的旧件进手（0x437020／0x436f30）已照原版（lane SHOPHAND）；剩重制读法：满包时空手卸下被拒（原版进手不需空位）；使用 只结算 HP／MP／状态、永久与属性类拒用；列表即时按重要在前排序（原版关窗才分表）；战后獲得物品窗的 倉庫 仍进待领池；魔法／特殊技列表用普通 WINDOW20 板、无悬停说明与滚动条；裝備页手持移入装备板时左板暂显狀態（0x40a）没做；狀態页黄字属性与裝備页背包红字未做",
-      "original": "系统卷轴项 0＝defProcBigMapMenu 0x425a90 调 0x42ab40(0,…)（0x425e89），与 actEnterStorageWindow（0x450840 case 0x8b）同一入口；九钮模板 724–735 字样、flags、行为（0x42a330）、子窗落点（0x428410）、各页内容（0x4289e0）已读，倉庫两表 0x44ef70／0x44f100／0x44efe0／0x44f170／0x44f670、开关窗 0x42aa50／0x42aad0、列表点击 0x414c00、存读档 0x44f720／0x44f8a0 已读，原版帧 15–24 核对；魔法／特殊技页板（形状表项 5／10）、悬停描述格式、属性黄字与背包红字的条件未读",
+      "difference": "「整理裝備」已照原版换成共用状态窗模式 0（lane PARTYEQUIP：同一套板、九钮位置与按页显隐、当前页钮画暗、初始页 狀態、只有裝備页可换装、关窗回卷轴；原版帧 15–17 版面偏移 0）；倉庫 页、丟棄／使用、换人保留手持已照原版（lane EQUIPSCREEN：队伍存储 carry.loop.party_storage 两表叠数、重要物取不出，帧 18–24）；拿起即离包（0x436e80）、空手卸下与换下的旧件进手（0x437020／0x436f30）已照原版（lane SHOPHAND）；开窗子窗与按钮滑入、关窗滑出已照原版（lane WINSLIDE：0x428410／0x4285e0 起点偏 400，0x45e882 速度 40，0x45e80d 步 20 容差 4；按钮按下放 ACCEPT01、←／→ 换人，0x42a68f）；剩重制读法：满包时空手卸下被拒（原版进手不需空位）；使用 只结算 HP／MP／状态、永久与属性类拒用；列表即时按重要在前排序（原版关窗才分表）；魔法／特殊技列表用普通 WINDOW20 板、无悬停说明与滚动条；裝備页手持移入装备板时左板暂显狀態（0x40a）没做；狀態页黄字属性与裝備页背包红字未做",
+      "original": "系统卷轴项 0＝defProcBigMapMenu 0x425a90 调 0x42ab40(0,…)（0x425e89），与 actEnterStorageWindow（0x450840 case 0x8b）同一入口；九钮模板 724–735 字样、flags、行为（0x42a330）、子窗落点与滑入起点（0x428410）、按钮起点（0x4285e0）、滑入滑出（0x414c00 state 0／2、0x42a330 子状态 0／4）、各页内容（0x4289e0）已读，倉庫两表 0x44ef70／0x44f100／0x44efe0／0x44f170／0x44f670、开关窗 0x42aa50／0x42aad0、列表点击 0x414c00、存读档 0x44f720／0x44f8a0 已读，原版帧 15–24 核对；魔法／特殊技页板（形状表项 5／10）、悬停描述格式、属性黄字与背包红字的条件未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_storage_window.md",
         "docs/evidence_packets/runtime_observations/original_world_town/README.md",
@@ -2194,6 +2189,32 @@
         "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#1c89d9216a",
         "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#88ed916591",
         "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#be57cdaf93"
+      ]
+    },
+    {
+      "id": "weapon-range-semantics",
+      "difference": "武器射程：玩家武器格、反击、敌方武器格显示、AI 站位与出手都按原 0x40f8b0 地形传播（0x4000 停线、前方检查、同侧格不写），墙后目标 AI 打不到；剩重制的接近目标格收据 approach_goals 仍读平铺掩码（无原版对应调用），大型角色的传播起点与局部框裁剪未验证",
+      "original": "0x40f8b0／0x40f5d0 传播、0x40eb80 前方检查、步进表与 0x40bab0 调用方 mode 已读，354 次原函数返回逐字节对拍；AI 调用方 0x40cca0／0x40d340／0x40d530／0x40d8b0／0x40df70 已定位",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_weapon_ranges.md",
+        "docs/evidence_packets/static_reverse/original_line_ranges.md"
+      ],
+      "remake": "RangePropagationRules 传播，BattlePlayLoop.weapon_cells 接玩家武器、反击与敌方武器格，AINavigationRules.weapon_terrain 接 AI 站位与到站复查；approach_goals 仍用平铺偏移",
+      "remake_code": [
+        "game/sim/RangePropagationRules.gd:weapon_coverage",
+        "game/sim/loop/BattlePlayLoop.gd:weapon_cells",
+        "game/sim/AINavigationRules.gd:approach_goals"
+      ],
+      "original_status": "read_partial",
+      "visibility": "rare",
+      "effort": "M",
+      "category": "战斗规则",
+      "sources": [
+        "matrix:攻击范围",
+        "provenance:game/sim/RangePropagationRules.gd|rules|remake-invented|",
+        "provenance:game/sim/TacticalGridRules.gd|rules|provisional|",
+        "scope:docs/evidence_packets/static_reverse/original_weapon_ranges.md|provisional|AI 接近目标格平铺、大型角色锚点",
+        "sentence:docs/evidence_packets/static_reverse/original_weapon_ranges.md#d25c396c21"
       ]
     },
     {

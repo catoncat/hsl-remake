@@ -1,7 +1,8 @@
 extends RefCounted
 ## Battle loop settlement: the once-per-exchange reward commit (`commit_rewards`: shared
 ## gold, instantiated pending loot, death de-duplication, kill tallies), the pending-loot
-## interaction (`loot_waiting`, `claim_reward`, `finish_rewards`, `reopen_rewards`), the
+## interaction (`loot_waiting`, `claim_reward`, `discard_reward`, `store_reward`,
+## `finish_rewards`, `reopen_rewards`), the
 ## enemy installation carry roll (`initial_carry`), the completed-action experience award
 ## with its level-up learning (`award_experience`) and the player's manual growth
 ## allocation (`allocate_growth`), plus the reward/experience input validators. Static
@@ -16,6 +17,8 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode.md
 ##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
 ##     (carry and drops draw the global stream 0x458c10)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
+##     (丟棄 drops the one held item, 倉庫 puts it into the party storage)
 ##   rules: remake-invented
 ##     (claim／defer／abandon interaction, sequence／revision guards —
 ##     docs/architecture/BATTLE_SYSTEMS.md#rewards-and-checkpoints)
@@ -32,6 +35,7 @@ const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 const Treasure = preload("res://game/sim/TreasureRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const Values = preload("res://game/sim/Values.gd")
+const PartyStorageRules = preload("res://game/sim/PartyStorageRules.gd")
 
 
 ## `ended`: a reason the action ended before its completion award (the exchange's undead
@@ -202,6 +206,59 @@ static func finish_rewards(loop: Dictionary, sequence: int, revision: int, aband
 	next["settlement"]["closed"] = true
 	next["settlement"]["revision"] += 1
 	return next
+
+
+## 獲得物品 丟棄 (Data6=6): the one held item — a pool entry (`entry_id`) or the recipient's bag
+## slot `slot` holding `expected_code` — is dropped (`*0x4c1ce4 = 0`); important items refuse
+## (0x40e690). Recorded in settlement.abandoned.
+static func discard_reward(loop: Dictionary, sequence: int, revision: int, entry_id: String, recipient_id: String = "", slot: int = -1, expected_code: int = 0) -> Dictionary:
+	if not _claim_current(loop, sequence, revision): return BattlePlayLoop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
+	var item := _lift(next, entry_id, recipient_id, slot, expected_code)
+	if item.is_empty() or InventoryRules.discard_error(int(item["code"]), loop["reward_data"]["items"]) != "": return BattlePlayLoop.copy(loop)
+	next["settlement"]["abandoned"].append(item)
+	next["settlement"]["revision"] += 1
+	next["item_revision"] += 1
+	return next
+
+
+## 獲得物品 倉庫 (Data6=7): the one held item (same sources as discard_reward) goes into the
+## party storage (0x44ef70 important／0x44f100 otherwise; PartyStorageRules.put), recorded in
+## settlement.stored. 離開 stores what is left in the pool the same way (0x42aad0).
+static func store_reward(loop: Dictionary, sequence: int, revision: int, entry_id: String, recipient_id: String = "", slot: int = -1, expected_code: int = 0) -> Dictionary:
+	if not _claim_current(loop, sequence, revision): return BattlePlayLoop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
+	var item := _lift(next, entry_id, recipient_id, slot, expected_code)
+	if item.is_empty(): return BattlePlayLoop.copy(loop)
+	var stored: Variant = loop.get(PartyStorageRules.LOOP_KEY)
+	var put := PartyStorageRules.put(stored if PartyStorageRules.valid(stored) else PartyStorageRules.empty(), int(item["code"]), loop["reward_data"]["items"])
+	if not put["ok"]: return BattlePlayLoop.copy(loop)
+	next[PartyStorageRules.LOOP_KEY] = put["storage"]
+	if not next["settlement"].get("stored") is Array: next["settlement"]["stored"] = []
+	next["settlement"]["stored"].append(item)
+	next["settlement"]["revision"] += 1
+	next["item_revision"] += 1
+	return next
+
+
+## Takes the held item out of `next`: the pool entry `entry_id`, or else bag slot `slot` of a loot
+## recipient holding `expected_code` (0x436e80: the bag closes the gap). {} when stale.
+static func _lift(next: Dictionary, entry_id: String, recipient_id: String, slot: int, expected_code: int) -> Dictionary:
+	var pending: Array = next["settlement"]["pending"]
+	if entry_id != "":
+		for index in range(pending.size()):
+			if str(pending[index]["id"]) == entry_id:
+				var item: Dictionary = pending[index].duplicate(true)
+				pending.remove_at(index)
+				return item
+		return {}
+	if not loot_recipients(next).has(recipient_id) or expected_code <= 0 or slot < 0 or slot >= InventoryRules.CAPACITY: return {}
+	var owner := BattlePlayLoop.unit_ref(next, recipient_id)
+	if int(owner["inventory"][slot]) != expected_code: return {}
+	var removed := InventoryRules.remove(owner["inventory"], slot, expected_code)
+	if not removed["ok"]: return {}
+	owner["inventory"] = removed["inventory"]
+	return {"code": expected_code, "source_id": "backpack", "source_slot": slot, "recipient_id": recipient_id}
 
 
 static func reopen_rewards(loop: Dictionary) -> Dictionary:

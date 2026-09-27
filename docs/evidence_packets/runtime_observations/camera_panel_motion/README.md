@@ -4,7 +4,7 @@
 
 ## 结论
 
-- 原版镜头每 tick 每轴走剩余距离的一半（战斗上限 32 px、剧情 16 px），被对准的点落在画面 (320,192)；结算前先滑到受益者；走路时镜头与走路的人同步平移、不追终点（runtime-measured＋static-derived）。
+- 原版镜头每 tick 每轴走剩余距离的一半（战斗上限 32 px、剧情 16 px），被对准的点落在画面 (320,192)；结算前先滑到受益者；每次开行动环与移动起步前先滑回行动者、到位才开环／起步；走路时镜头与走路的人同步平移、不追终点（runtime-measured＋static-derived）。
 - 原版面板按所在一侧滑入、每帧去剩余约 1/8（约 0.62 s），关闭原路约 20 px／帧滑出（约 0.23 s），压暗并行淡入淡出；胜负条件面板 WINDOW60 32 tick 溶解淡入、等按键、34 tick 淡出，溶解是含字面板整体 16 级交叉淡化（`0x4699fd`）；敌方移动前先铺蓝色移动范围 0.20–0.48 s；普攻切入的白光球在地图之上放大（runtime-measured；static-derived：`0x413a80`）。
 - 重制 `BattleCameraController`、`BattlePanelMotion`、`BattleWinFailBoard`、`BattleAiMovePreview`、`BattleCombatCutin._show_opening` 按这些量值实现（static-derived／runtime-measured）。
 - 差异：面板滑动曲线与压暗层级是录屏拟合（provisional，差异清单 `panel-slide-formula`）；移动预告用一个 16 tick 固定值（provisional，`ai-move-preview-timing`）；面板部件按矩形分侧（remake-invented）；actWalkFollow(Wait) 的镜头规则未读（`cam-script-walk-variants`）。
@@ -41,6 +41,10 @@
 **静态**（`0x442720`）：阶段 0——经验与金钱都为 0 且无待领物时整轮跳过；否则每 tick 调 `0x43bf30(受益者, 0)`（战斗步长 32、容差 4），返回 0 就等，到位才复制受益者、进 EXP（无经验时直接进 $ 阶段 2）。每位受益者一轮（攻方 `0x4447d8`／`0x4416bc`，反击方 `0x44483c`／`0x441724`）。
 
 **像素**：336 s 场 KILL 337.954 → EXP 338.371（中间是 16 tick 消散＋镜头滑动），KILL 浮字随地图上移 28 px；372 s 场 KILL 期间镜头横滑 64 px，EXP 出现时受益者在 (320,192)（[特写与飘字包](../cutin_floaters/README.md) §3）。
+
+### 开环与移动起步前镜头滑回行动者
+
+**静态**（行动状态机低位表 `0x445758`→`0x445694`，见 [行动状态机](../../static_reverse/original_action_state_machine.md)）：state 0 `0x443a0d` 每 tick 经 `0x443a1d` 调 `0x43bf30(行动者, 0)`，返回 0 就等，到位才 `0x443a3c` 调 `0x43ea30` 开环。回到 state 0 的返回点因此都先滑回：攻击选目标取消（`0x4444ef` 写 100，`0x444881` 对准后写 0）、移动选格未走动取消（`0x443dfa` 写 9，`0x444095` 对准后回外层 0）、狀態窗关闭与道具子环右键（图标 `0x43e99b` 把拥有者 70 +1 → 71 `0x444894` 写 0）。行动环上右键（`0x43e9e8` 把拥有者 98 +1 → 99 `0x444860`）对准后写 98，环图标不动，同一右键另由 defProcBattleBOSS 开战斗卷轴。移动子表 1 `0x443e34` 起步前同样 `0x43bf30` 滑回行动者，到位才进 2 沿路走。
 
 ### 走路跟随：镜头与走路的人同步走，不滑向终点
 
@@ -170,6 +174,7 @@ Godot Movie Maker 640×480、60 fps，第 51 战产品开场 → 首控 → 状�
 ## 重制接线
 
 - `game/common/BattleCameraController.gd`：`scroll_to`／`advance` 按 16 ms tick 复现 `0x45e80d`——战斗焦点（选人、移动后、取消移动、AI 行动、回合交接、行动尾部反馈、宝箱）step 32，剧情 `actScrollBGToPos`／`ToObject` 与插入演员的「拉进画面」step 16，`actScrollBGToPosSpeed` 步长＝脚本速度、容差 1（缺速度或 ≤0 报错不回退）；首帧、Home 回中与读档瞬切。`FOCUS_VIEW_POINT = (320,192)`、`focus_centre(点) = 点 + (0,48)`：战斗对准、结算对准、剧情位置 token（`script_position_camera_centre`）、`actScrollBGToObject`（先取格心）、`actSetBGToObject`、对白对准说话人与走前对准都经它，地图边夹紧照旧。`follow_walk(起点, 路径点, 每 tick 步长)` 用 `walk_follow_trace`／`walk_follow_request` 按走前位置与四个边界逐 tick 预算，再按 `0x46bede` 夹取；`finish_scroll` 直接落终点，新的聚焦／瞬切取代它。接入 `BattleAiMovePreview.finish`、`BattleSceneRuntime.move_selected_actor_to_grid`、`OpeningStoryObjects` 的 Wait 变体行走（`_start_walk`／`_walk_absolute`／`_walk_inserted_object`）。provenance timing：战斗对准逐帧 32→24→12→6→2 px；110.74–111.30 s AI 走路时镜头随路径约 4 px／tick 拐弯。
+- 开环与起步前滑回：`BattleSceneMenus.set_action_menu_visible` 在环从关到开的那一拍经 `_ring_camera_ready` 调 `focus_camera_on_grid(行动者)`，镜头仍在滑时环不显示、`runtime.ring_camera_return` 期间不接边缘／方向键平移，落位后环才出；选人、`cancel_current_interaction`、狀態窗与道具子环关闭、移动后与回合交接都经这一处。走路跟随（`follow`）未完时环也等。`BattleSceneInput._raise_system_scroll` 开卷轴成功且在行动环时同时 `focus_camera_on_grid(行动者)`（99）。`move_selected_actor_to_grid` 先 `focus_camera_on_grid(原格)`，仍在滑就记 `pending_walk_grid` 返回，`advance_camera` 在落位后再调它起步；等待期间 `has_actor_motion()` 为真（输入与环关闭照走路期），`cancel_current_interaction` 不接。
 - `BattleAftermath.prepare` 给每位受益者的第一个奖励格（EXP，或只有 $ 时的 $）标 `focus`；`advance` 进该格前 `scroll_to(focus_centre(格心), 32)`，滑动落位（或超预算直接落位）才出浮字；无经验无金钱不开轮、不动镜头。
 - `game/battle/scene/BattlePanelMotion.gd`：五个面板（`BattleSceneMenus` 的 `modal_panels` 逐个 `attach`，`BattleSettlementController` 的领取窗）共用；部件按矩形所在一侧（中心 y < 170 且宽过半 → 顶；中心 x < 246 → 左；否则右）滑入，每 tick 去剩余 1/8（至少 2 px），右先、左晚 3 tick、顶晚 9 tick；关闭抓上一帧按部件切片、原路 20 px／tick 滑出（headless 不抓）；只改 RenderingServer 绘制变换，不改 Control 位置与命中。压暗 `BattleUISkin.PANEL_SHADE_LEVEL = 9`，打开 2→9、关闭 9→2→0，每 3 tick 一级。remake-invented：部件分侧读矩形、右下框随其一侧滑入而非最后出现、加点窗关闭按侧滑出（原版向下）。provenance timing：打开约 0.62 s（260→230→202→178→156→136→120→104…，约剩余×7/8 每帧，末段 2 px），右、左 +0.05 s、顶 +0.17 s；关闭约 0.23 s、约 20 px／帧；压暗每边 8 个亮度台阶、间隔 57–60 ms（状态页 58.215–58.615／65.437–65.837 s，升级面板 340.261–340.678／350.753–351.138 s）。
 - `game/battle/scene/BattleWinFailBoard.gd`：32 tick 淡入（期间点击无效）、等按键或点击（不设超时）、34 tick 淡出；`BattleOpeningCoordinator` 在它忙时不推进时间线（开场与 winfail 事件链同一处理）；内容取当前已武装的 Win Board 标签，与 任務說明 同一 `_board_label`。面板与行字放进同一 `CanvasGroup`（`_blend`）先合成、再以 `self_modulate.a = 层级/16` 淡化，对应原版字在面板面里一起混合。remake-invented：`--script` SceneTree（测试、自动对局、capture）下开场面板等 112 tick 自行淡出（录像最长一次 2.85 s 减两段淡入淡出），游戏本身无超时。
@@ -185,6 +190,7 @@ Godot Movie Maker 640×480、60 fps，第 51 战产品开场 → 首控 → 状�
 
 - 只有待领物（无经验无金钱）时原版也会滑镜头，重制此时没有奖励格、不滑（罕见）。
 - 快进键：镜头 +12 步长与走路同 tick 走两遍未接（重制无该输入）。
+- 滑回行动者期间原版边缘滚动 `0x43e4a0` 是否同时生效未读；重制在环等镜头与移动等镜头期间不接平移（provisional）。
 - `actWalkFollow*` 的镜头规则未读，重制不跟随；
 - 移动预告两簇时长用一个固定值（provisional）。
 - 面板部件分侧、右下框出现时机、加点窗关闭方向为 remake-invented。

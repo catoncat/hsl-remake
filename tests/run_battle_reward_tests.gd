@@ -53,6 +53,7 @@ static func attack(loop: Dictionary) -> Dictionary:
 func run() -> void:
 	roll_cases()
 	settlement_cases()
+	hand_command_cases()
 	area_cases()
 	counter_and_end_cases()
 	carried_gold_cases()
@@ -137,6 +138,27 @@ func settlement_cases() -> void:
 	TestSuite.own(invalid, "reward_data")["items"]["281"]["get_ratio"] = NAN
 	var rejected := BattlePlayLoop.attack_target(invalid, "enemy021_1", func(_n): check(false, "bad reward data must reject before combat RNG"); return 0)
 	check(rejected["units"] == invalid["units"] and rejected["gold"] == 0, "invalid rewards cannot half-settle combat")
+
+
+## 獲得物品 丟棄／倉庫 on the held item; 離開 stores the rest. Pool is conserved:
+## bag + storage + dropped = original pool (plus the bag items the hand lifted).
+func hand_command_cases() -> void:
+	var loop := attack(fixture())
+	var pool: Array = loop["settlement"]["pending"].map(func(item): return int(item["code"]))
+	var important_id: String = loop["settlement"]["pending"][0]["id"]
+	check(BattlePlayLoop.discard_reward(loop, 1, 0, important_id) == loop, "丟棄 refuses an important held item")
+	var dropped := BattlePlayLoop.discard_reward(loop, 1, 0, "", "leonard", 0, 241)
+	check(BattlePlayLoop.unit(dropped, "leonard")["inventory"] == [241, 241, 246, 0, 0, 0, 0, 0] and dropped["settlement"]["abandoned"].size() == 1 and dropped["settlement"]["pending"].size() == 2, "丟棄 drops only the one lifted bag item")
+	var stored := BattlePlayLoop.store_reward(dropped, 1, 1, "", "leonard", 2, 246)
+	check(BattlePlayLoop.unit(stored, "leonard")["inventory"] == [241, 241, 0, 0, 0, 0, 0, 0] and stored["party_storage"]["normal"] == [{"code": 246, "qty": 1}], "倉庫 puts the lifted bag item into the party storage")
+	check(BattlePlayLoop.store_reward(stored, 1, 1, important_id) == stored, "stale store does nothing")
+	for index in range(2):
+		stored = BattlePlayLoop.store_reward(stored, 1, 2 + index, str(stored["settlement"]["pending"][0]["id"]))
+	check(stored["settlement"]["pending"].is_empty() and stored["party_storage"]["important"] == [{"code": 281, "qty": 1}, {"code": 282, "qty": 1}], "important pool items go to the important table")
+	var kept: Array = stored["settlement"]["stored"].filter(func(item): return item.get("source_id") != "backpack").map(func(item): return int(item["code"]))
+	check(kept == pool, "pool conserved: stored + claimed + dropped = original pool")
+	var closed := BattlePlayLoop.finish_rewards(stored, 1, 4)
+	check(not BattlePlayLoop.loot_waiting(closed) and closed["gold"] == 100, "離開 closes once the rest is stored")
 
 
 func area_cases() -> void:

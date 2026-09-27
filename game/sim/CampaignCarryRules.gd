@@ -115,6 +115,10 @@ static func separate_party_carry(incoming: Dictionary, loop: Dictionary) -> Dict
 	var carry := pass_level_entry(incoming, keeps_stamina(loop)) if not incoming.is_empty() else {}
 	if carry.get("schema") != SCHEMA: carry = {"schema": SCHEMA, "units": {}, "loop": {}, "restore_vitals": true}
 	keep_damage_stream(carry, loop)
+	# The 倉庫 tables are one per save (0x44f720), not per party: what this battle stored goes on.
+	if loop.has("party_storage"):
+		if not carry.get("loop") is Dictionary: carry["loop"] = {}
+		carry["loop"]["party_storage"] = _copy(loop["party_storage"])
 	var reserve: Dictionary = (carry[RESERVE] as Dictionary).duplicate(true) if carry.get(RESERVE) is Dictionary else {}
 	var own: Dictionary = capture(loop)["units"]
 	for unit_id in own:

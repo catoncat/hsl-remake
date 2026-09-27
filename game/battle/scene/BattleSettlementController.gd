@@ -23,6 +23,8 @@ func _ready() -> void:
 	preload("res://game/battle/scene/BattlePanelMotion.gd").attach(panel)
 	panel.claim_requested.connect(_claim)
 	panel.finish_requested.connect(_finish)
+	panel.discard_requested.connect(_hand_command.bind("discard_reward"))
+	panel.store_requested.connect(_hand_command.bind("store_reward"))
 	panel.cue_requested.connect(runtime.play_ui_sound)
 	runtime.status_panel.save_requested.connect(save_battle)
 	runtime.status_panel.load_requested.connect(load_battle)
@@ -98,11 +100,33 @@ func _claim(request: Dictionary) -> void:
 	runtime.apply_loop(next, "claim_reward")
 	runtime.play_ui_sound("put_down") # 400 PUT00003: the held item lands in the bag slot
 	_refresh_panel()
+	# An occupied slot swaps: the displaced item is now in the hand (0x42923b).
+	var returned := int(next[LoopKeys.SETTLEMENT]["claimed"].back().get("returned_code", 0))
+	if returned != 0: panel.hold_entry(request["entry_id"])
 
 
+## 丟棄／倉庫 on the held item (BattlePlayLoop.discard_reward／store_reward).
+func _hand_command(request: Dictionary, command: String) -> void:
+	if not panel.accepts(request): return
+	var next: Dictionary
+	if command == "store_reward": next = BattlePlayLoop.store_reward(runtime.play_loop, request["sequence"], request["revision"], request["entry_id"], request["recipient_id"], request["slot"], request["expected_code"])
+	else: next = BattlePlayLoop.discard_reward(runtime.play_loop, request["sequence"], request["revision"], request["entry_id"], request["recipient_id"], request["slot"], request["expected_code"])
+	if next == runtime.play_loop: return
+	runtime.apply_loop(next, command)
+	_refresh_panel()
+
+
+## 離開: what is left in the pool goes into the party storage one item at a time (0x42aad0),
+## then the window closes.
 func _finish(request: Dictionary) -> void:
 	if not panel.accepts(request): return
-	var next := BattlePlayLoop.finish_rewards(runtime.play_loop, request["sequence"], request["revision"], request["abandon"], request["defer"])
+	var next: Dictionary = runtime.play_loop
+	while not next[LoopKeys.SETTLEMENT]["pending"].is_empty():
+		var settled: Dictionary = next[LoopKeys.SETTLEMENT]
+		var stored := BattlePlayLoop.store_reward(next, int(settled["sequence"]), int(settled["revision"]), str(settled["pending"][0]["id"]))
+		if stored == next: return
+		next = stored
+	next = BattlePlayLoop.finish_rewards(next, int(next[LoopKeys.SETTLEMENT]["sequence"]), int(next[LoopKeys.SETTLEMENT]["revision"]))
 	if next == runtime.play_loop: return
 	runtime.apply_loop(next, "finish_rewards")
 	panel.close()

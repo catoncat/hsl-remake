@@ -110,7 +110,12 @@ func handle_input(event: InputEvent) -> void:
 func _raise_system_scroll() -> bool:
 	if runtime.system_menu == null or runtime.has_actor_motion() or runtime.held_command_id != "":
 		return false
-	return bool(runtime.system_menu.open().get("ok", false))
+	if not bool(runtime.system_menu.open().get("ok", false)):
+		return false
+	# State 99 (0x444860): a right click on the ring glides the camera back to the actor.
+	if runtime.interaction_state == Interaction.ACTION_MENU and runtime.selected_unit_id != "":
+		runtime.focus_camera_on_grid(runtime.unit_grid_coord(runtime.selected_unit_id))
+	return true
 
 
 func command_id_at_logical_position(logical_position: Vector2) -> String:

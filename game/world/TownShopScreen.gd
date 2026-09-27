@@ -50,9 +50,13 @@ extends Control
 ##     (boards over the undimmed big map; buttons at y 429; price right edge x 594; hover description)
 ##   layout: remake-invented
 ##     (no ↓ mark; magic／special lists on the plain WINDOW20 board — the original's shape-table boards 5／10 are
-##     not read)
+##     not read; slide side by node name／centre x; close = last-frame snapshot)
 ##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
+##   timing: static-derived docs/evidence_packets/static_reverse/original_storage_window.md
+##     (open 400 px out, 0x45e882 speed 40; close 0x45e80d step 20 tol 4)
+##   audio: static-derived docs/evidence_packets/static_reverse/original_storage_window.md
+##     (button press 398 ACCEPT01, 0x42a6f4)
 signal buy_requested(item_id: int, unit_id: String)
 signal sell_requested(unit_id: String, slot: int)
 ## Shop: the hand dropped on the goods list (0x4153b1: important → 607, else half price, 2563).
@@ -64,6 +68,7 @@ signal unequip_requested(unit_id: String, slot: String)
 signal hand_requested(action: String, args: Dictionary, hand: Dictionary)
 
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleLootPanel = preload("res://game/battle/scene/BattleLootPanel.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
@@ -161,12 +166,162 @@ var _scroll := 0
 var _loop: Dictionary = {}
 var _items: Dictionary = {}
 var _pointer := Vector2.ZERO
+## Open／close slide (0x428410／0x4285e0 start points, 0x45e882／0x45e80d steps).
+const SLIDE_DISTANCE := 400
+const SLIDE_IN_SPEED := 40
+const SLIDE_OUT_STEP := 20
+const SLIDE_OUT_TOLERANCE := 4
+const SLIDE_SPLIT_X := 252.0
+## Distance still to go on the open slide (0 = landed); every part shares it (all start 400 px out).
+var slide_remaining := 0
+var _slide_clock := 0.0
+## Close snapshots actually drawn (0 without a renderer).
+var slide_out_count := 0
+## 398 ACCEPT01 (sfxAccept), the status buttons' press sound.
+const BUTTON_SOUND := "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+var _button_sound: AudioStreamPlayer
 
 
 func _ready() -> void:
 	name = "TownShop"
 	size = Vector2(640, 480)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_process(false)
+	# Internal: _rebuild frees the window's children, not this player.
+	_button_sound = AudioStreamPlayer.new()
+	_button_sound.name = "ButtonSound"
+	_button_sound.stream = load(BUTTON_SOUND)
+	_button_sound.volume_db = -6.0
+	add_child(_button_sound, false, Node.INTERNAL_MODE_FRONT)
+
+
+## 0x45e882(cur, target, speed): distance ≤ 1 lands; else step min(speed, distance >> 3), at least 2.
+static func slide_in_step(remaining: int) -> int:
+	if remaining <= 1:
+		return 0
+	return maxi(remaining - maxi(mini(SLIDE_IN_SPEED, remaining >> 3), 2), 0)
+
+
+## 0x45e80d(cur, start, tol 4, step 20) on the one moving axis: within 4 lands; else half the
+## rest, at most 20.
+static func slide_out_step(travelled: int) -> int:
+	var rest := SLIDE_DISTANCE - travelled
+	if rest <= SLIDE_OUT_TOLERANCE:
+		return SLIDE_DISTANCE
+	return travelled + mini(rest >> 1, SLIDE_OUT_STEP)
+
+
+## The unit direction a part slides from: WINDOW10 strip from above, buttons from below, left
+## boards (WINDOW20／40) from the left, right boards (WINDOW30／90) from the right; the
+## description, message board and hand do not slide.
+func _slide_direction(part: Control) -> Vector2:
+	var key := str(part.name)
+	if key == "Vitals":
+		return Vector2.UP
+	if key.begins_with("Button_") or key.begins_with("Caption_"):
+		return Vector2.DOWN
+	if key in ["Description", "Hand", "MessageBlocker", "MessageBoard", "MessageText"]:
+		return Vector2.ZERO
+	return Vector2.LEFT if part.position.x + part.size.x * 0.5 < SLIDE_SPLIT_X else Vector2.RIGHT
+
+
+func _begin_slide_in() -> void:
+	slide_remaining = SLIDE_DISTANCE
+	_slide_clock = 0.0
+	set_process(true)
+
+
+func sliding_in() -> bool:
+	return slide_remaining > 0
+
+
+func _process(delta: float) -> void:
+	_slide_clock += maxf(delta, 0.0)
+	while _slide_clock >= OriginalTick.TICK_SECONDS and sliding_in():
+		_slide_clock -= OriginalTick.TICK_SECONDS
+		slide_remaining = slide_in_step(slide_remaining)
+		_apply_slide()
+	if not sliding_in():
+		set_process(false)
+
+
+## Draw-only offset (RenderingServer transform): layout and hit testing stay the landed ones.
+func _apply_slide() -> void:
+	for child in get_children():
+		if child is Control:
+			var part := child as Control
+			var xform := part.get_transform()
+			xform.origin += _slide_direction(part) * float(slide_remaining)
+			RenderingServer.canvas_item_set_transform(part.get_canvas_item(), xform)
+
+
+## Explicit fast-forward (tests): lands the open slide at once.
+func finish_slide() -> void:
+	slide_remaining = 0
+	_apply_slide()
+	set_process(false)
+
+
+## Close: a snapshot of the last frame's parts slides back to the start points over the host
+## (the host frees／hides the window right after close_requested).
+func _begin_slide_out() -> void:
+	if sliding_in():
+		finish_slide()
+		return
+	if DisplayServer.get_name() == "headless" or not is_inside_tree() or not is_visible_in_tree():
+		return
+	var image := get_viewport().get_texture().get_image()
+	if image == null or image.is_empty():
+		return
+	var view := Rect2(Vector2.ZERO, size)
+	var scale := Vector2(image.get_size()) / size
+	var ghost := SlideGhost.new()
+	ghost.name = "StatusWindowCloseGhost"
+	var host_layer := get_canvas_layer_node()
+	ghost.layer = (host_layer.layer if host_layer != null else 0) + 1
+	for child in get_children():
+		if not (child is Control) or not (child as Control).visible:
+			continue
+		var part := child as Control
+		var direction := _slide_direction(part)
+		var rect := part.get_global_rect().intersection(view)
+		if direction == Vector2.ZERO or rect.size.x < 1.0 or rect.size.y < 1.0:
+			continue
+		var region := Rect2i(Vector2i((rect.position * scale).floor()), Vector2i((rect.size * scale).ceil())).intersection(Rect2i(Vector2i.ZERO, image.get_size()))
+		if region.size.x <= 0 or region.size.y <= 0:
+			continue
+		var piece := TextureRect.new()
+		piece.texture = ImageTexture.create_from_image(image.get_region(region))
+		piece.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		piece.stretch_mode = TextureRect.STRETCH_SCALE
+		piece.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		piece.position = rect.position
+		piece.size = rect.size
+		ghost.add_child(piece)
+		ghost.pieces.append({"item": piece, "from": rect.position, "direction": direction})
+	if ghost.pieces.is_empty():
+		ghost.free()
+		return
+	slide_out_count += 1
+	get_tree().root.add_child(ghost)
+
+
+## The close snapshot: every piece steps as slide_out_step until it reaches its start point.
+class SlideGhost extends CanvasLayer:
+	var pieces: Array = []
+	var travelled := 0
+	var clock := 0.0
+
+	func _process(delta: float) -> void:
+		clock += maxf(delta, 0.0)
+		while clock >= OriginalTick.TICK_SECONDS and travelled < SLIDE_DISTANCE:
+			clock -= OriginalTick.TICK_SECONDS
+			var rest := SLIDE_DISTANCE - travelled
+			travelled = SLIDE_DISTANCE if rest <= SLIDE_OUT_TOLERANCE else travelled + mini(rest >> 1, SLIDE_OUT_STEP)
+			for entry in pieces:
+				(entry["item"] as TextureRect).position = entry["from"] + entry["direction"] * float(travelled)
+		if travelled >= SLIDE_DISTANCE:
+			queue_free()
 
 
 ## The held item follows the cursor (0x414c00 draws it after the window).
@@ -175,6 +330,16 @@ func _input(event: InputEvent) -> void:
 		_pointer = get_global_transform_with_canvas().affine_inverse() * event.position
 		if hand_icon != null and hand_icon.visible:
 			hand_icon.position = _pointer - hand_icon.get_meta("origin", Vector2.ZERO)
+	elif event is InputEventKey and event.pressed and not event.echo and _shown():
+		# 0x42a6d3: key bit 0x10000 presses 上一位 (id 0), 0x20000 下一位 (id 5).
+		match (event as InputEventKey).keycode:
+			KEY_LEFT: press_button("prev")
+			KEY_RIGHT: press_button("next")
+
+
+func _shown() -> bool:
+	var layer := get_canvas_layer_node()
+	return is_inside_tree() and is_visible_in_tree() and (layer == null or layer.visible)
 
 
 ## Opens over a shop: `scenario_path` names the carry's source battle for the vitals sandbox.
@@ -192,6 +357,7 @@ func open(shop_title: String, shop_goods: Array[int], next_carry: Dictionary, sh
 	_loop = {}
 	vitals_error = "" if scenario_path != "" else "unknown_source_scenario"
 	_shop_scenario = scenario_path
+	_begin_slide_in()
 	show_carry(next_carry, "")
 
 
@@ -255,6 +421,7 @@ func open_arrange(next_carry: Dictionary, loop: Dictionary, next_message: String
 	_scroll = 0
 	unit_id = ""
 	vitals_error = ""
+	_begin_slide_in()
 	show_loop(next_carry, loop, next_message)
 
 
@@ -359,6 +526,7 @@ func back() -> void:
 	elif holding():
 		put_back()
 	else:
+		_begin_slide_out()
 		close_requested.emit()
 
 
@@ -474,6 +642,8 @@ func _rebuild() -> void:
 		hand_icon.set_meta("origin", Vector2(float(origin[0]), float(origin[1])))
 		hand_icon.position = _pointer - hand_icon.get_meta("origin")
 		hand_icon.show()
+	if sliding_in():
+		_apply_slide()
 
 
 func _build_bag() -> void:
@@ -684,15 +854,30 @@ func _status_button(key: String, resource: String, caption: String, centre_x: in
 	button.self_modulate = Color(0.45, 0.45, 0.45) if current else Color.WHITE
 	button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
 	button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
+	button.pressed.connect(press_button.bind(key))
+	buttons[key] = button
+
+
+## A status button press (0x42a330 sub-state 2 → 3): the current page's button does nothing;
+## any other plays ACCEPT01 (0x18e, 0x42a6f4) and runs its action (sub-state 3 table).
+func press_button(key: String) -> void:
+	var pages: Dictionary = SHOP_PAGES if mode == MODE_SHOP else ARRANGE_PAGES
+	if message_visible() or not buttons.has(key) or int(pages.get(key, -1)) == page:
+		return
+	if _button_sound != null:
+		_button_sound.play()
 	match key:
-		"prev": button.pressed.connect(func(): if not message_visible(): step_member(-1))
-		"next": button.pressed.connect(func(): if not message_visible(): step_member(1))
-		"drop": button.pressed.connect(func(): if not message_visible() and holding(): hand_requested.emit("drop", {}, _hand.duplicate()))
-		"use": button.pressed.connect(func(): if not message_visible() and holding(): hand_requested.emit("use", {"unit_id": unit_id}, _hand.duplicate()))
+		"prev": step_member(-1)
+		"next": step_member(1)
+		"drop":
+			if holding():
+				hand_requested.emit("drop", {}, _hand.duplicate())
+		"use":
+			if holding():
+				hand_requested.emit("use", {"unit_id": unit_id}, _hand.duplicate())
 		_:
 			if pages.has(key):
-				button.pressed.connect(func(): if not message_visible(): set_page(int(pages[key])))
-	buttons[key] = button
+				set_page(int(pages[key]))
 
 
 ## The refusal board: BOARD02 over the window, the line centred; any click closes it.

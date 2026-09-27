@@ -11,6 +11,7 @@ const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
+const PartyStorageRules = preload("res://game/sim/PartyStorageRules.gd")
 const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
@@ -349,26 +350,26 @@ func _test_separate_party_loot_gate() -> void:
 	await process_frame
 	_assert_true(controller.panel.visible and BattlePlayLoop.loot_waiting(scene.play_loop), "the battle end reopens the get-item window")
 	_assert_true(not view.battle_finished, "the finished state leaves while the window is open")
-	# Take the important item into 緼娜's bag, 放棄 whatever else dropped.
+	# The important item cannot be picked from the pool (0x40e690); 離開 stores the pool in the
+	# party storage (0x42aad0).
+	var pool_codes: Array = scene.play_loop["settlement"]["pending"].map(func(item): return int(item["code"]))
 	controller.panel.rows[0].pressed.emit()
-	controller.panel.slots[RuntimeReadback.first_empty_slot(controller.panel)].pressed.emit()
+	_assert_true(not controller.panel.holding(), "the important pool row cannot be picked up")
+	controller.panel.finish_button.pressed.emit()
 	await process_frame
-	_assert_true(_unit(scene.play_loop, "tina")["inventory"].has(281), "the taken item lands in the separate party member's bag")
-	if scene.play_loop["settlement"]["pending"].is_empty():
-		controller.panel.finish_button.pressed.emit()
-	else:
-		controller.panel.drop_button.pressed.emit()
-		controller.panel.drop_button.pressed.emit() # 再按一次 confirms the abandon
+	var stored_codes: Array = scene.play_loop["settlement"].get("stored", []).map(func(item): return int(item["code"]))
+	_assert_true(stored_codes == pool_codes and PartyStorageRules.entries(scene.play_loop["party_storage"]).any(func(entry): return entry["code"] == 281), "離開 puts the separate party's pool into the party storage")
 	frames = 0
 	while not view.battle_finished and frames < 60:
 		await process_frame
 		frames += 1
-	_assert_true(scene.play_loop["settlement"]["pending"].is_empty() and bool(scene.play_loop["settlement"]["closed"]), "take / 放棄 empties and closes the pool")
+	_assert_true(scene.play_loop["settlement"]["pending"].is_empty() and bool(scene.play_loop["settlement"]["closed"]), "離開 empties and closes the pool")
 	_assert_true(view.battle_finished and not progress.hold_for_loot(), "the battle end no longer holds once the pool is empty")
 	_assert_eq(str(CampaignProgress.next_destination(progress.campaign, scene.play_loop, str(scene.scenario_path)).get("title", "")), "歐姆村", "level 53 hands off to 歐姆村")
 	progress.start_next_battle()
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/battles/ohm_village_battle.json", "the hand-off works once the pool is settled")
 	_assert_true(not (CampaignProgress.pending.get("carry", {}) as Dictionary).has("pending_rewards"), "the separate party's pass-through carry holds no reward pool")
+	_assert_true(PartyStorageRules.of_carry(CampaignProgress.pending.get("carry", {})) == scene.play_loop["party_storage"], "the party storage (one table for every party) rides the separate party's pass-through carry")
 	scene.queue_free()
 	await process_frame
 	await process_frame

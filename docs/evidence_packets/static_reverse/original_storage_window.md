@@ -1,6 +1,6 @@
 # 共用状态窗：仓库／整理裝備（模式 0）与商店（模式 1）
 
-> evidence: static-derived; resource-derived: OBJ-049 按钮／窗模板、PROCESS.DEF、RESOURCE.TXT 字样; runtime-measured: 原版帧 15–24（狀態／裝備／倉庫 三页、商店 裝備／倉庫 页与存取、换人后手持） · status: live · functions: 0x409e40, 0x414c00, 0x425a90, 0x4282c0, 0x428390, 0x428410, 0x4285e0, 0x4289e0, 0x42923b, 0x42a330, 0x42aa50, 0x42aad0, 0x42ab40, 0x434d10, 0x44ef70, 0x44efe0, 0x44f100, 0x44f170, 0x44f2d0, 0x44f430, 0x44f670, 0x44f720, 0x44f8a0, 0x450840 · updated: 2026-09-27
+> evidence: static-derived; resource-derived: OBJ-049 按钮／窗模板、PROCESS.DEF、RESOURCE.TXT 字样; runtime-measured: 原版帧 15–24（狀態／裝備／倉庫 三页、商店 裝備／倉庫 页与存取、换人后手持） · status: live · functions: 0x409e40, 0x414c00, 0x414db9, 0x414e67, 0x425a90, 0x4282c0, 0x428390, 0x428410, 0x4285e0, 0x4289e0, 0x42923b, 0x42a330, 0x42a5dd, 0x42a68f, 0x42a930, 0x42aa50, 0x42aad0, 0x42ab40, 0x434d10, 0x44ef70, 0x44efe0, 0x44f100, 0x44f170, 0x44f2d0, 0x44f430, 0x44f670, 0x44f720, 0x44f8a0, 0x450840, 0x45e80d, 0x45e882 · updated: 2026-09-28
 
 ## 结论
 
@@ -10,6 +10,8 @@
 - 原版倉庫是一份存档里的队伍存储：重要 `0x4c1d10`／普通 `0x4c1d1c` 两张 (code, qty) 表，初容量 5、满了加 5、无上限，同 code 叠数；手持点列表放入一件，空手点行取出一件（重要物品取不出）；丟棄 清掉非重要手持物，使用 ＝`0x409e40(成员, 物, 0, 1)`；商店 倉庫 页（7）与整理裝備 倉庫 页是同一份（帧 20–23）；商店 裝備 页（10）在右板显示六槽并可换装（帧 19）（static-derived；runtime-measured）。
 - 重制：`game/world/PartyEquipmentScreen.gd` 宿主＋`game/world/TownShopScreen.gd` 的 MODE_ARRANGE 窗体，规则 `game/sim/PartyEquipmentRules.gd` `hand_action`、存储 `game/sim/PartyStorageRules.gd`（carry.loop.party_storage）；商店同一窗体经 `TownRuntime.shop_hand`（static-derived）。
 - 拿起背包物即离包（`0x436e80`）、空手卸下与装上换下的旧件进手（`0x437020`／`0x436f30`）、商店买入进手持再放下（[original_shop_transaction](original_shop_transaction.md)）已照原版（lane SHOPHAND）。
+- 原版开窗滑入：`0x428410` 把子窗起点写成落点偏 400（WINDOW10 自上 y−400、WINDOW20／WINDOW40 自左 x−400、WINDOW30 与列表窗 WINDOW90 自右 x+400），`0x4285e0` 把按钮起点写成 y＋400（自下）；列表窗 state 0（`0x414db9`）与按钮子状态 0（`0x42a5dd`）每 tick `0x45e882(当前, 落点, 40)`：距离 ≤1 落位，否则走 min(40, 距离>>3)、至少 2，400 px 共 34 tick；关窗滑出 state 2（`0x414e67`）与子状态 4（`0x42a930`）每 tick `0x45e80d(当前, 起点, 容差 4, 步 20)`：逐轴走剩余一半、上限 20，剩 ≤4 落位，共 23 tick（static-derived）。
+- 重制：`TownShopScreen` 开窗（`open`／`open_arrange`）全部部件共用同一剩余距离逐 tick 走 `slide_in_step`，只改绘制变换、命中照落点；返回键关窗时把最后一帧按部件快照、按 `slide_out_step` 滑回起点（无渲染器跳过）（static-derived）。
 - 差异：使用 只结算 HP／MP／状态、拒永久加成类；列表即时按重要在前排序（原版开窗时并入一张池、关窗才分表）；魔法／特殊技页无悬停说明与滚动条；裝備页手持移入装备板暂显狀態未做；差异清单 `party-equipment-screen`（provisional）。
 
 ## 证据
@@ -31,6 +33,8 @@
 | 6 | 716 Status_Window_6 WINDOW90（`defProcBMGetItemWindow`），标题 +0xa0 = 0x135＝RESOURCE 309「倉庫」 | (252,168) | ✓ | ✓ |
 | 7 | 716 同上，标题 +0xa0 = `*0x4c28a8`（店名） | (252,168) | — | ✓ |
 
+起点（`0x428410` 写 +0xa6／+0xa4，`0x4285e0` 写按钮的同两字）：n=1 (381,−386)、n=2 (−388,168)、n=3／6／7 (652,168)、n=4 (−380,442)，按钮 (x, 829)；过程首次调用把 +0xa4 dword 抄进当前位置 +0x90（列表窗 `0x414c87`、按钮 `0x42a475`）。滑入 `0x414db9`／`0x42a5dd` 压参 (+0x92, +0x90, +0xaa, +0xa8, 0x28)，`0x45e882` 返回 0 时 +0x8c 进下一状态；滑出 `0x414e67`／`0x42a930` 压参 (+0x92, +0x90, +0xa6, +0xa4, 4, 0x14)，`0x45e80d` 返回 1 时 +0x8c 进下一状态。子窗与按钮只在 `0x42ab40`（`0x42abd4`–`0x42ae81`）一次建齐，换页不重建、不滑。
+
 `0x428570` 另建 717 HP／718 MP 于 (170,67)／(170,97)，719 ST 于 (154,116)。
 
 模式 0 九个按钮（模板 724–735，`defProcBMWindowButton`＝过程表第 55 项 `0x42a330`；字样＝obj_Data9 的 RESOURCE 号）：
@@ -47,7 +51,7 @@
 | 726 Button_Magic | BCMD09_1 | 魔法（28） | 553 | 常显 | 2：页＝2 |
 | 727 Button_Special | BCMD10_1 | 特殊技（29） | 601 | 常显 | 3：页＝3 |
 
-flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`flags & 0x7fffffff` 时隐藏。点击音 0x18e（398 ACCEPT01）；`*0x4c6390` 的 0x10000／0x20000 位另触发 上一位／下一位。
+flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`flags & 0x7fffffff` 时隐藏。按钮子状态 2（`0x42a68f`）：按钮 id＝父窗当前页（+0x94 == +0xa0）时画暗（+0x10000000）且不响应；否则点击（参数位 0x40000）或 `*0x4c6390` 位 0x10000 且 id 0（上一位）／位 0x20000 且 id 5（下一位）（`0x42a6d3`–`0x42a6ef`）进子状态 3，同时放 0x18e（398 ACCEPT01，`0x42a6f4`–`0x42a70f` 经 `0x4477b0`／`0x459990`／`0x42c180`）。
 
 各页（`defProcBMWindow`＝`0x4289e0`）：
 
@@ -88,6 +92,8 @@ flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`fl
 - `game/sim/PartyStorageRules.gd`：`hsl_party_storage.v1` 两表（important／normal，[{code, qty}]），`put` 同 code 叠数、`take` 拒重要物；存在 carry.loop.party_storage，`CampaignCarryRules` 的 loop 键让它随 carry 跨场与存档，旧 carry 读作空。
 - `PartyEquipmentRules.hand_action`：place（满包互换，换出物成散件手持）／store／retrieve（须空手）／drop（拒重要）／use（`ItemUseRules.prepare`，拒永久与属性类）／equip（外来或散件先放进该成员背包再 `change`，换下的旧件进手）／lift（拿起即离包，`0x436e80`）／unequip（空手卸下进手，`0x437020`；满包仍按 `change` 拒）／back（放回当前成员首空格；满包时散件回倉庫）。
 - `TownShopScreen.gd`：换人不清手持；商店六钮都可按，当前页画暗；裝備 页（10）右板六槽、倉庫 页（7）WINDOW90 列表（数量右对齐）；手势发 `hand_requested`，整理裝備由 `PartyEquipmentScreen` 结算、商店由 `TownRuntime.shop_hand` 结算后写回 carry；商店散件点货表由 `TownRuntime.shop_sell_hand` 卖出。
+- `TownShopScreen.press_button`：当前页按钮不响应；其余按下放 ACCEPT01（`interface_audio/confirm.wav`＝398）再走按下分派；←／→ 键按 上一位／下一位（键位对应 0x10000／0x20000 取自状态审计复核）。
+- `TownShopScreen.gd` 滑动：`slide_in_step`＝`0x45e882`、`slide_out_step`＝`0x45e80d`（单轴）；部件分边按节点：`Vitals`（WINDOW10 与 HP／MP／ST）自上，`Button_`／`Caption_` 自下，其余中心 x<252 自左、否则自右；说明框、消息板、手持不滑；关窗快照挂在宿主层之上的 CanvasLayer。
 - `game/sim/PartyEquipmentRules.gd` `change`：与 `BattlePlayLoop.change_equipment` 同序，去掉战斗阶段门与行动结算；被拒物留在手上、无消息；右键／Esc 先放回手上物再关窗。
 - 队员来源＝carry.units；城镇 Esc 是离开城镇，无系统卷轴入口。
 
@@ -103,4 +109,5 @@ flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`fl
 - 来源场景缺失的提示字是重制自拟。
 - 战后獲得物品窗的 倉庫／離開 仍把物品留在待领池（`pending_rewards`），未并入队伍存储。
 - `0x409e40` 的永久加成与属性类使用未接（重制拒用）；满包 back 的散件去向（回倉庫）是重制自拟。
+- 父窗把子窗切到滑出状态的触发点（+0x80 旗位经引擎分派）与关窗是否等子窗滑完未读；重制关窗立即交回宿主，只留快照滑出。717／718／719 HP／MP／ST 对象是否随 WINDOW10 滑动未读，重制随 `Vitals` 一起滑。
 - 商店手持散件的卖出、手持移入右板时左板暂显狀態未做。

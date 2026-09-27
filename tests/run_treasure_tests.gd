@@ -231,8 +231,14 @@ func presentation_and_restore() -> void:
 	var progress: Node = runtime.campaign_progress
 	progress._process(0.0)
 	check(not progress.deferred_rewards_ready() and controller.panel.visible,"victory's reopened loot must be explicitly finished before deferred continuation")
+	# 離開 stores the pool in the party storage (0x42aad0): nothing is left to defer and the
+	# storage rides the carry. The deferred route below uses the rule-level defer.
+	var reopened: Dictionary = runtime.play_loop.duplicate(true)
 	controller.panel.finish_button.pressed.emit()
 	controller.tick(); progress._process(0.0)
+	check(runtime.play_loop["settlement"]["pending"].is_empty() and runtime.play_loop["settlement"]["stored"].size()==won["settlement"]["pending"].size() and not progress.hold_for_loot(),"離開 stores every source item and releases the battle end")
+	check(progress.prepare_handoff()["carry"]["loop"]["party_storage"]==runtime.play_loop["party_storage"],"real campaign adapter carries the party storage")
+	runtime.apply_loop(defer_loot(reopened), "test"); controller.tick(); progress._process(0.0)
 	check(progress.deferred_rewards_ready() and not progress.hold_for_loot(),"quiet deferred victory continues with its pool without holding the battle end: quiet=%s" % controller.quiet())
 	var handoff: Dictionary = progress.prepare_handoff()
 	check(handoff["carry"].get("pending_rewards",{}).get("items",[]).size()==won["settlement"]["pending"].size(),"real campaign adapter carries every deferred source item")
