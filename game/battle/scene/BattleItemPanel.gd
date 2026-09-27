@@ -5,6 +5,8 @@ extends Control
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#07
 ##     (item sub-menu, target selection)
+##   layout: static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md
+##     (the picked item's icon rides the pointer while its use target is chosen)
 ##   layout: remake-invented (scrollable target list, recipient／preview rows)
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
 ##   strings: resource-derived content/imported/hsl/chapter01/consumables.json
@@ -45,6 +47,8 @@ var give_revision := -1
 var give_target_id := ""
 var give_target_index := -1
 var give_return_code := 0
+## The item picked for use rides the pointer while its target is chosen (held_icon; see _show_targets).
+var held_icon: TextureRect
 
 
 func _ready() -> void:
@@ -221,11 +225,43 @@ func _show_targets() -> void:
 			else: _select_give_target(str(target["id"])))
 		page_root.add_child(button)
 		target_buttons[str(target["id"])] = button
+	if operation == "use":
+		_hold_selected_item()
 	if target_buttons.is_empty():
 		var hint := BattleUISkin.label(page_root, Vector2(172, 412), 17)
 		hint.text = "附近沒有可交換的同伴"
 	if operation == "give":
 		BattleUISkin.button(page_root, "結束給予", Vector2(474, 438), Vector2(148, 34)).pressed.connect(cancel)
+
+
+## Original: picking the item in the use window moves it into the held slot [0x4c1ce4]
+## (0x439997 -> 0x437020); through target choice 0x430410 -> 0x430310 draws that item's icon at
+## the mouse and no sceptre, until 0x444aba (used) or 0x444a81 (cancel returns it) clears the slot.
+## The icon lives on the target page, so leaving the page drops it; GameCursor hides the sceptre
+## while it shows (HELD_GROUP).
+func _hold_selected_item() -> void:
+	var icon := str(EquipmentCatalog.items().get(selected_item, {}).get("icon", ""))
+	if icon == "":
+		return
+	var record: Dictionary = BattleUISkin.data()["assets"][icon]
+	held_icon = TextureRect.new()
+	held_icon.name = "HeldItem"
+	held_icon.add_to_group("game_cursor_held_items")
+	held_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	held_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	BattleUISkin.show_shape(held_icon, BattleUISkin.texture(icon))
+	held_icon.set_meta("origin", Vector2(float(record["draw_origin"][0]), float(record["draw_origin"][1])))
+	page_root.add_child(held_icon)
+	_follow_pointer()
+
+
+func _process(_delta: float) -> void:
+	if visible and is_instance_valid(held_icon):
+		_follow_pointer()
+
+
+func _follow_pointer() -> void:
+	held_icon.position = page_root.get_local_mouse_position() - held_icon.get_meta("origin", Vector2.ZERO)
 
 
 func show_give_session(unit: Dictionary, recipients: Array, revision: int, keep_target: bool = false) -> void:

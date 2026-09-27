@@ -1,11 +1,12 @@
 # 用药演出：AI 引导、Show_Magic_Star 效果、目标小条与数字
 
-> evidence: static-derived; resource-derived; provisional: 0x401390 发射器（气力／永久／临时加成三类效果的画面）未读，重制只按它们的等待时长；0x43b3f0 小条的 cur/max 文字（位 0x100，0x411d70）未画；AI 引导的射程格按"自身格＋四邻无敌对占位"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x408b20, 0x408df0, 0x409e40, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x4449a7, 0x444ab2, 0x444ac9, 0x444be4, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-27
+> evidence: static-derived; resource-derived; runtime-measured: 2026-09-27 原版玩家第 1 場「棄卒」（LEVEL051）用回復藥选目标时指针处是道具图标、无权杖; provisional: 0x401390 发射器（气力／永久／临时加成三类效果的画面）未读，重制只按它们的等待时长；0x43b3f0 小条的 cur/max 文字（位 0x100，0x411d70）未画；AI 引导的射程格按"自身格＋四邻无敌对占位"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x408b20, 0x408df0, 0x409e40, 0x437020, 0x439997, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x4448f4, 0x4449a7, 0x444a5c, 0x444ab2, 0x444aba, 0x444ac9, 0x444be4, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-27
 
 ## 结论
 
 - 原版 AI 用药有引导段：先画移动色射程 12 tick，光标从用药者滑到目标，目标亮起 12 tick，再出姿势、`0x409e40` 生效；玩家用药没有引导段，其余共用（static-derived）。
 - 玩家选用药目标是地图选格（`0x444be4` 开选格，`0x44492a..0x4449b6` 取格），不是窗口；确认直接进 0x69 `0x4449a7` 姿势，目标框原地消失，没有收窗滑出。重制确认用药时不让物品面板的收窗快照（`BattlePanelMotion`）把目标框和悬停小条滑出屏幕（static-derived）。
+- 玩家选用药目标时指针处画选中道具的图标、不画权杖，直到用药结算或取消放回（static-derived；runtime-measured）。
 - `0x409e40` 有效果就放 402 sfxUseItem，按固定顺序生成 Show_Magic_Star 等效果对象，第一个生成的带等待；随后挂目标 HP／MP 小条、浮绿／蓝数字，最后一个数字放行后撤条（static-derived）。
 - 重制：`game/battle/scene/BattleItemUsePresentation.gd` 按同一序列播放用药回执，AI 引导经 `BattleAttackCue.begin_item`（static-derived）。
 - 差异：case 5／6／7 的 `0x401390` 发射器画面与小条 cur/max 文字未做，射程格为近似；无原字形的说明行用白字 Label（差异清单 `ai-item-use-presentation`、`floater-extra-words`；provisional）。
@@ -28,6 +29,8 @@ AI 对象过程按 +0x8e 高字分派（`0x43f4cf`，字节表 `0x4421f4` → �
 
 解状态药（`0x100000` 路径）走 `0x440441` 起同型一段，取药换 `0x40c230`（`0x4404c7` 姿势、`0x4404d6` 用药）。原地自救（`0x4406d7`）同样进 7，光标一 tick 到达。玩家确认用药：状态 0x69 `0x4449a7` 姿势 → 0x6a `0x444ab2` 调 `0x409e40` → 108 `0x444ac9` 调 `0x43b3f0` 与数字 → 0x75 等数字放行。
 
+玩家持药选目标：用药窗点道具 `0x439997` → `0x437020` 把道具取进持物 `[0x4c1ce4]`；`0x4448f4` 据此建用药范围，光标对象 `0x430410` → `0x430310` 在指针处画该道具图标、权杖不画；姿势状态照旧持物，`0x444ab2` 结算后 `0x444aba` 清零，右键取消在 `0x444a81` 清零（放回 `0x436e30`）。2026-09-27 原版截帧（LEVEL051 雷歐納德 → 回復藥）：范围外与悬停本格都见回復藥布袋图标、无权杖，确认后图标与十字蓝框一起消失（详见 [游戏光标](../runtime_observations/game_cursor/README.md#证据)）。
+
 `0x409e40` 的效果：`0x409e98` 效果点 = 目标 (x, y − 0x34)，大体型（`0x446ad0`）再减 16（`0x409eb6`）。`0x40a1b9..0x40a2c8` 按 HP 加值、MP 加值、气力 +0xe8（上限 60）、永久能力（`0x448840` 刷新）、临时加成、状态解除位计效果数 edi，非零在 `0x40a349` 放 402 sfxUseItem（`WAV\MHEAL001.WAV`）；满值照样有加值字段，满血喝药也放音。调用顺序 `0x408b20(x, y, case, 等待对象, 延迟)`：解状态 2 → 临时加成 7 → 永久 6 → 气力 5 → MP 1 → HP 0；第 i 个（共 n 个）延迟 `(n − 1 − i) × 25` tick，第一个生成的带等待对象（`0x40a3c0` 压 esi）。
 
 对象 176 `Show_Magic_Star`（planeMenu2，`MAGIC\WAT04_01.SHP` 4 张）：
@@ -46,6 +49,7 @@ AI 对象过程按 +0x8e 高字分派（`0x43f4cf`，字节表 `0x4421f4` → �
 ## 重制接线
 
 - `game/battle/scene/BattleItemUsePresentation.gd`：AI 用药先 `BattleAttackCue.begin_item`（镜头 → 射程 12 tick → 滑行 → 目标高亮 12 tick，射程用移动色）；效果段姿势、`use_item` 音、按顺序生成星点／闪光，等第一个效果放行；再挂小条、浮数字，最后一个数字第 32 tick 放行、撤条。玩家用药跳过引导段；`BattleSceneMenus.use_inventory_item` 关物品面板后立即 `BattlePanelMotion.finish()`，目标页不留收窗快照。规则层不动。
+- `game/battle/scene/BattleItemPanel.gd` 用药目标页：选中道具图标 `HeldItem` 跟指针、入组 `game_cursor_held_items` 使权杖不画，面板隐藏即撤。
 - 用药规则（谁用、给谁、消耗）见 [original_item_actions.md](original_item_actions.md#证据)。
 
 ## 复现
@@ -59,3 +63,4 @@ AI 对象过程按 +0x8e 高字分派（`0x43f4cf`，字节表 `0x4421f4` → �
 - AI 引导射程格是「自身格＋四邻无敌对占位」近似，不是逐格 `0x40f440` 模式4 泛洪。
 - 小条 y 上限的 [0x4c094c] 按地图高取值，未逐关核对。
 - 玩家确认用药后的原版帧未截：选格时底部的资料板（原版选格帧可见）在确认那一 tick 是否即时撤掉，只由 `0x4449a7` 直进姿势推定（provisional）。
+- 持物图标：原版确认后姿势状态仍持物，重制确认即撤（暂定）。

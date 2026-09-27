@@ -1821,15 +1821,16 @@
     },
     {
       "id": "cursor-hide-item-icon",
-      "difference": "原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick",
+      "difference": "原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标原版在姿势状态仍画、重制确认即撤",
       "original": "0x430410：[0x4c1b00] & 0x1800000 时不画权杖，持物 [0x4c1ce4] 时 0x430310 画物品图标并藏权杖；0x1000000 由施法例程 0x442a90 状态 4／7／0x17／0x19 置位、9／0x1c 清除；0x800000 由 AnimalDefense 0x4038dd 在特写开演时置位、0x403089／0x406fc2 清除；恢复时从 CURSOR01 重新转",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/game_cursor/README.md"
       ],
-      "remake": "GameCursor.suppressed()：组 game_cursor_hiders（BattlePresentation.hides_game_cursor = cutin.busy()）或组 game_cursor_held_items（战利品面板与商店的 hand_icon）可见时不画权杖、翅膀停转、再显示从 CURSOR01 起；OPT-CURSOR=系統硬體游標 时同条件隐藏系统指针（OPTIONS-S3，读点 GameCursor._read_cursor_option）",
+      "remake": "GameCursor.suppressed()：组 game_cursor_hiders（BattlePresentation.hides_game_cursor = cutin.busy()）或组 game_cursor_held_items（战利品面板与商店的 hand_icon、战斗道具面板用药目标页的 HeldItem）可见时不画权杖、翅膀停转、再显示从 CURSOR01 起；OPT-CURSOR=系統硬體游標 时同条件隐藏系统指针（OPTIONS-S3，读点 GameCursor._read_cursor_option）",
       "remake_code": [
         "game/cursor/GameCursor.gd:suppressed",
-        "game/battle/scene/BattlePresentation.gd:hides_game_cursor"
+        "game/battle/scene/BattlePresentation.gd:hides_game_cursor",
+        "game/battle/scene/BattleItemPanel.gd:_hold_selected_item"
       ],
       "original_status": "read_complete",
       "visibility": "some_levels",
