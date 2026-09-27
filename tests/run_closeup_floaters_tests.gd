@@ -18,7 +18,7 @@ const Vitals = preload("res://game/battle/scene/BattleVitals.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const CHAPTER_MANIFEST := "res://content/imported/hsl/chapter01/combat_animation/manifest.json"
 const AUTHORED_ROOT := "res://content/generated/hsl/authored"
 ## Files that stand close-up actors; each must place them through CloseupLayout.

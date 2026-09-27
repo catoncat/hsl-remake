@@ -84,12 +84,12 @@ static func same_state(left: Dictionary, right: Dictionary) -> bool:
 ## resolution, script actors／waits／departures／reinforcement pressure), AI turn driving,
 ## the combat commit seam player and AI share (exchange／strike／skill receipts), inventory
 ## and equipment transactions (use／drop／give／equip, storage projection).
-const BattleLoopInit = preload("res://game/battle/scene/BattleLoopInit.gd")
-const BattleLoopRewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
-const BattleLoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
-const AI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const Combat = preload("res://game/battle/scene/BattleLoopCombat.gd")
-const BattleLoopInventory = preload("res://game/battle/scene/BattleLoopInventory.gd")
+const BattleLoopInit = preload("res://game/sim/loop/BattleLoopInit.gd")
+const BattleLoopRewards = preload("res://game/sim/loop/BattleLoopRewards.gd")
+const BattleLoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
+const AI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const Combat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattleLoopInventory = preload("res://game/sim/loop/BattleLoopInventory.gd")
 
 ## Rule modules re-exported for callers that reach them through this facade (`Loop.X`);
 ## the facade's own code no longer calls them — the owning module above does.

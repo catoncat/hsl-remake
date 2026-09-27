@@ -45,7 +45,7 @@ const SUMMARY_SCHEMA := "hsl_battle_opening_coordinator.v1"
 ## keeps the defaults. Walks: 0x453b90 state 0x32 maps the script speed argument through
 ## the 0x4543d8 table — 1 → 1 px per tick, 2／3 → 2, 8 → 8, 0／4／other → 4 — so
 ## `walk_pixels_per_second` is the speed-4 rate and `walk_pixels_per_tick(speed)` scales it.
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")

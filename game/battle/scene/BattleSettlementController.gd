@@ -3,7 +3,7 @@ extends Node
 ## provenance:
 ##   rules: remake-invented (F5／F9 quiet-boundary saves; the original has no in-battle checkpoint)
 ##   strings: remake-invented (save／load notices)
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
@@ -27,7 +27,7 @@ func _ready() -> void:
 	runtime.status_panel.save_requested.connect(save_battle)
 	runtime.status_panel.load_requested.connect(load_battle)
 	runtime.status_panel.rewards_requested.connect(open_rewards)
-	resume_button = preload("res://game/battle/scene/BattleUISkin.gd").button(runtime.get_node("UI"), "繼續存檔 F9", Vector2(452, 14), Vector2(172, 34))
+	resume_button = preload("res://game/common/BattleUISkin.gd").button(runtime.get_node("UI"), "繼續存檔 F9", Vector2(452, 14), Vector2(172, 34))
 	resume_button.pressed.connect(load_battle)
 	resume_button.hide()
 	var layer := CanvasLayer.new()

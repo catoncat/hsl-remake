@@ -10,7 +10,7 @@ extends RefCounted
 ##   layout: remake-invented (rows beside the dialogue board, shared with the town select)
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
 
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
 
 ## Remake layout shared with the town select: WINDOW50 rows at the right of the dialogue board.

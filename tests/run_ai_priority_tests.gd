@@ -1,7 +1,7 @@
 extends SceneTree
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const Rules = preload("res://game/sim/AIPriorityRules.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Items = preload("res://game/sim/ItemUseRules.gd")
 const Fixtures = preload("res://tests/run_ai_decision_tests.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")

@@ -1,5 +1,5 @@
 extends "res://tests/support/TestSuite.gd"
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")
 const Cases = preload("res://tests/run_tactical_items_tests.gd")
 const StatCases = preload("res://tests/run_support_magic_tests.gd")
@@ -11,7 +11,7 @@ const Carry = preload("res://game/sim/CampaignCarryRules.gd")
 const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const LoopInventory = preload("res://game/battle/scene/BattleLoopInventory.gd")
+const LoopInventory = preload("res://game/sim/loop/BattleLoopInventory.gd")
 const Campaign = preload("res://game/battle/runtime/CampaignProgress.gd")
 const CARRY_PATH := "res://ignored/permanent-carry-tests/progress.json"
 const VIEW := {"camera":Vector2(320,240),"shown_story_events":[],"story_complete":true,"growth_notified_level":1}

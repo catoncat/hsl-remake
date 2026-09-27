@@ -11,7 +11,7 @@ extends "res://tests/support/TestSuite.gd"
 const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const PanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const CONTROLLER_PATH := "res://game/battle/runtime/BattleCameraController.gd"
 ## Panels that must open and close through BattlePanelMotion (the modal list and the loot
@@ -248,7 +248,7 @@ func _test_panel_open_curve() -> void:
 ## draw transform slides; the opening ends by itself and a close stops it at once.
 func _test_status_panel_motion() -> void:
 	var loop := preload("res://tests/support/BattleFixture.gd").loop()
-	var unit: Dictionary = preload("res://game/battle/scene/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
+	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
 	var panel = preload("res://game/battle/scene/BattleStatusPanel.gd").new()
 	root.add_child(panel)
 	await process_frame
@@ -286,7 +286,7 @@ func _test_status_panel_motion() -> void:
 ## place steps 9→2 and vanishes, with or without a renderer.
 func _test_panel_shade_fade() -> void:
 	var loop := preload("res://tests/support/BattleFixture.gd").loop()
-	var unit: Dictionary = preload("res://game/battle/scene/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
+	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
 	var host := Control.new()
 	root.add_child(host)
 	var panel = preload("res://game/battle/scene/BattleStatusPanel.gd").new()

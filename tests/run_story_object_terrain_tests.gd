@@ -19,9 +19,9 @@ extends "res://tests/support/TestSuite.gd"
 ## TerrainEditRules.tiles, saved with the state. Ablation: the compiled program without the
 ## obj_Story_Block → mapobjBlock join leaves the collapsed ground walkable.
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
-const WrdTerrainTiles = preload("res://game/battle/runtime/WrdTerrainTiles.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
+const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
 const ScriptWalkPath = preload("res://game/battle/runtime/opening/ScriptWalkPath.gd")
 const Winfail = preload("res://game/sim/WinfailScenarioRules.gd")
 const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")

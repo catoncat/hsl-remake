@@ -12,8 +12,8 @@ extends "res://tests/support/TestSuite.gd"
 ## the runtime applies to each insert; the old top-left reading is the ablation.
 
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
-const WrdTerrainTiles = preload("res://game/battle/runtime/WrdTerrainTiles.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const VIEW := Vector2(640, 480)
 const CELL := 32.0
 ## A standing sprite around its cell-centre foot point (about one cell wide, two tall).

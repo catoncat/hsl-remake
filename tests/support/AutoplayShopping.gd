@@ -19,12 +19,12 @@ extends RefCounted
 ## gear the town sells; potions still stop at the bag's free slots (InventoryRules.insert).
 ## Nothing here is product behaviour or evidence about the original economy.
 
-const PlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const PartyEquipment = preload("res://game/sim/PartyEquipmentRules.gd")
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const Inventory = preload("res://game/sim/InventoryRules.gd")
 const ItemUse = preload("res://game/sim/ItemUseRules.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 
 ## Slots bought for, in priority order (weapon first, then body armor, head, foot).
 const GEAR_SLOTS := ["weapon", "armor", "head", "foot"]

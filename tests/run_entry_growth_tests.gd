@@ -1,6 +1,6 @@
 extends "res://tests/support/TestSuite.gd"
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
 const Entry = preload("res://game/sim/EntryGrowthRules.gd")
 const Birth = preload("res://game/sim/ReinforcementGrowthRules.gd")
 const Save = preload("res://game/battle/runtime/BattleCheckpoint.gd")

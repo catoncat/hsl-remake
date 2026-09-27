@@ -16,7 +16,7 @@
       ]
     },
     {
-      "path": "game/battle/scene/BattlePlayLoop.gd",
+      "path": "game/sim/loop/BattlePlayLoop.gd",
       "sha256": "5753d5e3f6d5d8dfbe3e00a8b4b35014b51cd1dd71dba7f05842a49cbdcc77bf",
       "reviewed_symbols": [
         "begin_battle",
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "path": "game/battle/runtime/BattleScenario.gd",
+      "path": "game/sim/BattleScenario.gd",
       "sha256": "bc0879e7a7341eaf2013f2f91c8971a79017f50bac3fddb18ecab027b6eb392b",
       "reviewed_symbols": [
         "units",

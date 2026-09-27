@@ -1,7 +1,7 @@
 extends "res://tests/support/TestSuite.gd"
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const Entry = preload("res://game/sim/ActionEntryRules.gd")
 const Cases = preload("res://tests/run_position_equipment_tests.gd")
 const Checkpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")

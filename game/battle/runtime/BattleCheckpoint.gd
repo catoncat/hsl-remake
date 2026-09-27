@@ -9,7 +9,7 @@ extends RefCounted
 ##   rules: remake-invented (versioned checksummed single-battle save format; the original has no in-battle save)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

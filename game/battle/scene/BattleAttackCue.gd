@@ -12,7 +12,7 @@ extends Node2D
 ##   strings: resource-derived content/imported/hsl/global/tables/MAGIC.TXT
 ##   strings: resource-derived content/imported/hsl/global/tables/SPECIAL.TXT
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const CombatPresentationTiming = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 ## OPT-PACE (docs/OPTIONS.md), read once per begin: the multiplier on advance (PACE_MAP).

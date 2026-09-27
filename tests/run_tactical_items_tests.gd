@@ -1,6 +1,6 @@
 extends "res://tests/support/TestSuite.gd"
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopInventory = preload("res://game/battle/scene/BattleLoopInventory.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopInventory = preload("res://game/sim/loop/BattleLoopInventory.gd")
 const Cases = preload("res://tests/run_support_magic_tests.gd")
 const Priest = preload("res://tests/run_support_magic_tests.gd")
 const Items = preload("res://game/sim/ItemUseRules.gd")

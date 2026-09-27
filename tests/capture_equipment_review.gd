@@ -1,7 +1,7 @@
 extends SceneTree
 ## Visible controls in a bounded synthetic inventory fixture. No original-game parity claim.
 const OUT := "res://ignored/equipment-review/"
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 var scene: Node
 var failures: Array[String] = []
 var observations: Dictionary = {}

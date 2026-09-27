@@ -1,6 +1,6 @@
 extends SceneTree
 ## Real rendered frames and normal input; all fixture grants are listed in the receipt.
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/combat-aftermath-review/"
 var scene: Node

@@ -12,7 +12,7 @@ extends Control
 signal claim_requested(request: Dictionary)
 signal finish_requested(request: Dictionary)
 signal cue_requested(event: String)
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const BattleItemText = preload("res://game/battle/scene/BattleItemText.gd")
 ## Recipient bag: WINDOW20 at (12,168), eight 32 px rows; icon anchor (44, 184+32i), name (68, 176+32i).

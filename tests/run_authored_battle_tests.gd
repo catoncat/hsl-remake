@@ -6,9 +6,9 @@ extends SceneTree
 ## BattlePlayLoop.create accepts it, the runtime boots it at first control and the
 ## fixture-free Autoplay driver plays rounds of it; a scenario missing a required key
 ## and a hand-built dictionary that skipped load_file fail with the contract's own text.
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const UnitSchema = preload("res://game/sim/UnitSchema.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")

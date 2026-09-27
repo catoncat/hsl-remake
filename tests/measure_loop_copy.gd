@@ -16,10 +16,10 @@ extends SceneTree
 ##   tools/godot.sh --headless --script res://tests/measure_loop_copy.gd            # levels 44 and 45
 ##   tools/godot.sh --headless --script res://tests/measure_loop_copy.gd -- 44 38   # chosen levels
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
-const AI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const AI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
 const Brain = preload("res://tests/support/AutoplayBrain.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

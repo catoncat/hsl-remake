@@ -82,4 +82,4 @@ The remake keeps the member's current HP/MP through the shared refresh's clamp (
 
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
-- `game/battle/scene/BattleLoopAI.gd` rules：an undeclared unit whose side meets every living unit — the level-37 gems — has nothing the 0x40bb80 scan can pick
+- `game/sim/loop/BattleLoopAI.gd` rules：an undeclared unit whose side meets every living unit — the level-37 gems — has nothing the 0x40bb80 scan can pick

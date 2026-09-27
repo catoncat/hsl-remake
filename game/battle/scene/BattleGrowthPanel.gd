@@ -18,8 +18,8 @@ extends Control
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
 signal allocation_requested(unit_id: String, allocation: Dictionary)
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
-const EquipmentCatalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const ATTRIBUTES := ["str", "dex", "mind", "con"]
 const DERIVED := ["attack", "defense", "magic", "speed", "move"]

@@ -9,7 +9,7 @@ extends SceneTree
 ##
 ##   tools/godot.sh --script res://tests/capture_growth_panel_review.gd
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
-const PlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const PanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const OUT := "res://ignored/r7-growth-review/"
 var failures: Array[String] = []

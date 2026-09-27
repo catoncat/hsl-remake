@@ -13,7 +13,7 @@ extends Node2D
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   timing: provisional
 ##     (the 0x2c000000 flash read as additive at alpha level／16, the level-blend modes as alpha level／16)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
 const DIGIT_PITCH := 14
 const DIGIT_STEP_TICKS := 10

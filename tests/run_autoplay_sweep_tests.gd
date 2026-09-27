@@ -43,7 +43,7 @@ extends SceneTree
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
 const Brain = preload("res://tests/support/AutoplayBrain.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")

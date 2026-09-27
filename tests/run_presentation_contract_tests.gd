@@ -3,11 +3,11 @@ extends SceneTree
 const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 ## One original tick (16 ms): the script player counts one tick per 1/62.5 s of real time.
-const TICK: float = preload("res://game/battle/runtime/OriginalTick.gd").TICK_SECONDS
+const TICK: float = preload("res://game/common/OriginalTick.gd").TICK_SECONDS
 const Menu = preload("res://game/battle/scene/BattleCommandMenu.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const UISkin = preload("res://game/common/BattleUISkin.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")

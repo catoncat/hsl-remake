@@ -1,8 +1,8 @@
 extends "res://tests/support/TestSuite.gd"
 const Rules = preload("res://game/sim/AICallRules.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const LoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const LoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
 const Fixtures = preload("res://tests/run_ai_decision_tests.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

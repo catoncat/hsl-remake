@@ -3,7 +3,7 @@ extends SceneTree
 ## still pending: the loot window is not a quiet boundary) and saves after the hand-off,
 ## resume loads that save with F9 in a new process. Fixtures change HP/stock/initiative,
 ## never rewards.
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Cases = preload("res://tests/run_battle_reward_tests.gd")
 const Save = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")

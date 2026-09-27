@@ -19,9 +19,9 @@ extends RefCounted
 ##     docs/architecture/BATTLE_SYSTEMS.md#inventory-and-equipment)
 ##   rules: provisional (large user Use range: body-edge distance 1 stands in for the range-2 flood)
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleLoopRewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
-const BattleLoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopRewards = preload("res://game/sim/loop/BattleLoopRewards.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const WeaponEffects = preload("res://game/sim/WeaponEffectRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")

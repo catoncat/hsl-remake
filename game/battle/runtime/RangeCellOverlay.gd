@@ -16,7 +16,7 @@ extends Node2D
 ##   timing: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured
 ##     (pulse counter 0x4c1a7c walks the 17-value triangle live)
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 const MANIFEST_PATH := "res://content/imported/hsl/shared/range_cells/manifest.json"
 const PALETTES: PackedStringArray = ["move", "attack", "magic", "special"]

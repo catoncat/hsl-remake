@@ -24,7 +24,7 @@ var _elapsed := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	caption = preload("res://game/battle/scene/BattleUISkin.gd").label(self, Vector2.ZERO, 16)
+	caption = preload("res://game/common/BattleUISkin.gd").label(self, Vector2.ZERO, 16)
 	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	caption.add_theme_color_override("font_color", Color.WHITE)
 	caption.add_theme_color_override("font_outline_color", Color.BLACK)

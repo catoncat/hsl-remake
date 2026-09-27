@@ -6,9 +6,9 @@ extends SceneTree
 
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
-const PlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")

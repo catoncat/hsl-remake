@@ -20,7 +20,7 @@ var shade: ColorRect
 var sprites: Array[Sprite2D] = []
 var sounds: Array[AudioStreamPlayer] = []
 var caption: Label
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 ## One original tick on the cut-in's scaled clock: source delays play at the original rate
 ## (instance state following Timing.PLAYBACK_SPEED; a static var in a runtime-loaded

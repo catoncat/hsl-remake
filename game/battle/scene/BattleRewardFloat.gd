@@ -15,7 +15,7 @@ extends Node2D
 ##   strings: remake-invented (learning notice)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/closeup_floaters/README.md
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const MANIFEST_PATH := "res://content/imported/hsl/shared/reward_floats/manifest.json"
 ## defProcShowNumber (kinds 1–6): level 16 for 16 ticks, then one level down every 2 ticks;
 ## deleted at level 0 (tick 46); y − 1 every other tick.

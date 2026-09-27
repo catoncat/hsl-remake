@@ -1,8 +1,8 @@
 extends "res://tests/support/TestSuite.gd"
 const Rules = preload("res://game/sim/AISkillDecisionRules.gd")
 const Planning = preload("res://game/sim/AISkillPlanning.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const Fixtures = preload("res://tests/run_ai_decision_tests.gd")
 const POISON := "magic:magicAIR:magicCode05"
 

@@ -20,9 +20,9 @@ extends RefCounted
 ##     docs/architecture/BATTLE_SYSTEMS.md#winfailscenariorulesgd)
 ##   rules: remake-invented (one-transaction materialization: a failed proposal leaves no partial actors)
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleLoopRewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
-const BattleLoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopRewards = preload("res://game/sim/loop/BattleLoopRewards.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const BattleScenarioRuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const TraversalRules = preload("res://game/sim/ActorTraversalRules.gd")

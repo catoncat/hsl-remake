@@ -35,7 +35,7 @@ var equipment_labels: Dictionary = {}
 var portraits: Dictionary
 var growth_button: Button
 var inspected_unit_id := ""
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const UISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 var vitals: Control
 var equipment_view: Control

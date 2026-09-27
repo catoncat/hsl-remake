@@ -2,7 +2,7 @@ extends "res://tests/capture_ordinary_special_review.gd"
 ## Equipment, map selection and restoration through actual controls and clocks.
 const MobilityCases = preload("res://tests/run_position_equipment_tests.gd")
 const Mobility = preload("res://game/sim/MobilityRules.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const OUTPUT := "res://ignored/equipment-mobility-review/"
 var changes: Array = []
 var landing := Vector2i.ZERO

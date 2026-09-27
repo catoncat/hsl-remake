@@ -206,7 +206,7 @@ action = actWalkPrevInsertObject,512,288,4
 | 新的切入打击程序（不借 `program_of`）、切入 s_shape／m_shape 条带 | 不在作者格式的约定内（绝技切入目前显示站立的施法者） |
 | 手写层的新音效、新界面美术、覆盖原版已有的表行 | 没有入口，见 [MODDING「现在做不到的」](MODDING.md#现在做不到的需要先改代码或工具) |
 
-改代码时的入口：场景宿主 `game/battle/scene/BattleSceneRuntime.gd` → 开场协调器 `game/battle/runtime/BattleOpeningCoordinator.gd`；战斗规则 `game/sim/`（`TacticalGridRules`、`CoreCombatRules`、`CoreTurnQueue`、`WinfailScenarioRules`…），唯一可变的战斗状态在 `game/battle/scene/BattlePlayLoop.gd`；大地图和城镇 `game/world/`；标题、GAME OVER、谢幕 `game/title/`；战斗内系统菜单 `game/battle/scene/BattleSystemMenu.gd`；设置 `game/settings/GameSettings.gd`；战役存档、交接、回憶錄、戰場記錄只经 `game/battle/runtime/CampaignProgress.gd`。新加 `game/**/*.gd` 要写 `## provenance:` 头，然后 `python3 tools/hsl.py generate provenance`（格式见 [ARCHITECTURE](ARCHITECTURE.md#provenance-headers)）。模块地图见 [ARCHITECTURE](ARCHITECTURE.md)。
+改代码时的入口：场景宿主 `game/battle/scene/BattleSceneRuntime.gd` → 开场协调器 `game/battle/runtime/BattleOpeningCoordinator.gd`；战斗规则 `game/sim/`（`TacticalGridRules`、`CoreCombatRules`、`CoreTurnQueue`、`WinfailScenarioRules`…），唯一可变的战斗状态在 `game/sim/loop/BattlePlayLoop.gd`；大地图和城镇 `game/world/`；标题、GAME OVER、谢幕 `game/title/`；战斗内系统菜单 `game/battle/scene/BattleSystemMenu.gd`；设置 `game/settings/GameSettings.gd`；战役存档、交接、回憶錄、戰場記錄只经 `game/battle/runtime/CampaignProgress.gd`。新加 `game/**/*.gd` 要写 `## provenance:` 头，然后 `python3 tools/hsl.py generate provenance`（格式见 [ARCHITECTURE](ARCHITECTURE.md#provenance-headers)）。模块地图见 [ARCHITECTURE](ARCHITECTURE.md)。
 
 ## 9. 验证
 

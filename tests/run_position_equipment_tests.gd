@@ -4,9 +4,9 @@ extends "res://tests/support/TestSuite.gd"
 ## protection／hit and the blood-robe transfer (original_casting_equipment.json) — and
 ## equipped movement (original_equipment_mobility.json). The real-scene movement readback is
 ## in run_battle_scene_runtime_tests.gd.
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const Position = preload("res://game/sim/PositionCapabilityRules.gd")
 const Roles = preload("res://tests/run_job_stats_tests.gd")
 const Resources = preload("res://tests/run_resource_recovery_tests.gd")

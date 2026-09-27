@@ -7,9 +7,9 @@ extends SceneTree
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const PlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 
 const SCENARIO_PATH := "res://content/battles/gol_road_battle.json"

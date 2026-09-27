@@ -5,7 +5,7 @@ extends SceneTree
 ##
 ##   tools/godot.sh --script res://tests/capture_skill_effects_review.gd [-- skill_id ...]
 const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/r7-skill-effects/"
 ## Element families: 天雷猛襲劍 (AIR, its own SP00_003 panel), 碎岩擊 (EARTH, the level-36 boss

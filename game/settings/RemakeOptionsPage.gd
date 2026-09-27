@@ -30,7 +30,7 @@ const GROUP := "remake_options_page"
 ## Nodes told `remake_options_changed()` when the page closes with a changed value.
 const LISTENERS := "remake_options_listeners"
 const GameOptions = preload("res://game/settings/GameOptions.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const TITLE_MANIFEST := "res://content/imported/hsl/global/title/manifest.json"
 ## Title031 (466×392) pieces: the ornamented corners, the rim between them (the top rim in two
 ## title-free spans), the stone of the bottom rim that fills the inside, and one slot band.

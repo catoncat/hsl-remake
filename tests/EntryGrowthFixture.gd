@@ -2,7 +2,7 @@ extends RefCounted
 ## Declared source-terrain encounters. All growth happens at the real spawn seam.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const T = preload("res://tests/run_entry_growth_tests.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Mobile = preload("res://tests/run_mobile_jobs_tests.gd")
 const Events = preload("res://tests/ScriptDepartureFixture.gd")
 const Rules = preload("res://game/sim/WinfailScenarioRules.gd")

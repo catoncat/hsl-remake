@@ -8,7 +8,7 @@ extends RefCounted
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md
 ##     (scroll, burst, 90／40-tick hold, 60-tick shake, smoke fade in 16 ticks then a level per 3..7 ticks)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md (the process plays no sound)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const MapHitState = preload("res://game/battle/scene/MapHitState.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")

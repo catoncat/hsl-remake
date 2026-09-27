@@ -26,7 +26,7 @@ extends RefCounted
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 ## Object ticks (shape_delay, obj_Data7, 16.16 velocities) are original ticks.
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const TICK_SECONDS := OriginalTick.TICK_SECONDS
 const DEFAULT_FRAME_TICKS := 3
 ## Effect planes draw over every actor (planeEffect*); the map is at most 1184 px tall.

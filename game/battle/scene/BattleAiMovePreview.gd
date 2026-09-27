@@ -17,7 +17,7 @@ extends RefCounted
 ##   audio: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##     (no onset while the reach shows)
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const PREVIEW_TICKS := 16
 
 var runtime: Node

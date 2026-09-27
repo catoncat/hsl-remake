@@ -17,7 +17,7 @@ extends RefCounted
 
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 
 ## Compiled-timeline event kinds (tools/hsltools/levels/timeline.py) back to
 ## the script token TownEventRules interprets.

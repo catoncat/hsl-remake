@@ -1,7 +1,7 @@
 extends SceneTree
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const Body = preload("res://game/sim/FootprintRules.gd")
 const Grid = preload("res://game/sim/TacticalGridRules.gd")
 const Save = preload("res://game/battle/runtime/BattleCheckpoint.gd")

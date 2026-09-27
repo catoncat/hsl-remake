@@ -34,9 +34,9 @@ extends SceneTree
 ## Output: AIDRAW_ACTION／AIDRAW_SEQ per action, AIDRAW_SITE per original site (draw totals
 ## over the 11 reseated actions), one AIDRAW_COMPARE summary line.
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
 const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")

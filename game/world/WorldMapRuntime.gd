@@ -37,13 +37,13 @@ const GameSettings = preload("res://game/settings/GameSettings.gd")
 const Rules = preload("res://game/world/WorldMapRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const TownRuntime = preload("res://game/world/TownRuntime.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
 const ConditionalPartyRules = preload("res://game/sim/ConditionalPartyRules.gd")
 
 const SUMMARY_SCHEMA := "hsl_world_map_runtime.v1"
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
 const EDGE_SCROLL_PIXELS_PER_SECOND := BattleCameraController.EDGE_SCROLL_PIXELS_PER_SECOND
 ## The big-map walker moves its 16.16 speed 0x20000 = 2 px per tick (0x4277ed).

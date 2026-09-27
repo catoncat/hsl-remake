@@ -13,7 +13,7 @@ extends CanvasLayer
 ##   strings: remake-invented docs/OPTIONS.md (OPT-INFO=公開 only: 中毒／轉化 and HP／MP words over a number beat)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_resource_recovery.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ShowNumberStyle = preload("res://game/battle/runtime/ShowNumberStyle.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

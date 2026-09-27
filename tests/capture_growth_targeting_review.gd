@@ -11,7 +11,7 @@ extends SceneTree
 ## HSL_RNG_SEED=1 tools/godot.sh --script res://tests/capture_growth_targeting_review.gd -- --out=/abs/dir
 ## (the seed fixes level 3's formation and rolls; unseeded runs can miss the setups)
 ## Writes PNGs of the game window only; exits 0 when every capture landed.
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 var OUT := "res://ignored/r5-l1-review/"
 var scene: Node

@@ -18,7 +18,7 @@ extends RefCounted
 ## `snap_to` (cuts). `advance(delta)` steps a running glide once per original tick;
 ## `run_camera_panel_motion_tests` checks that no other game file assigns the camera position.
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const DEFAULT_CELL_SIZE := Vector2(32.0, 32.0)
 ## 0x43e4a0 requests ±12 px per tick at the view edge (or the arrow keys) and 0x46bede

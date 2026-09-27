@@ -21,8 +21,8 @@ extends SceneTree
 ## Each count is changed/total, plus unique (map, name) combos and battles touched. Prints
 ## one WRANGE_IMPACT line; the per-battle lists go to the output JSON.
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const Prop = preload("res://game/sim/RangePropagationRules.gd")
 const Resolution = preload("res://game/sim/SkillResolutionRules.gd")
 const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")

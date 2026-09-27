@@ -25,14 +25,14 @@ extends Node
 ##   timing: provisional (the per-tick formula is a fit of the frames, the EXE helper is unread)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const VIEW := Vector2(640, 480)
 const TOP_LIMIT_Y := 170.0
 const LEFT_LIMIT_X := 246.0
 const OPEN_DELAY_TICKS := {"right": 0, "left": 3, "top": 9}
 const OPEN_MIN_STEP := 2.0
 const CLOSE_STEP := 20.0
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const SHADE_TICKS_PER_LEVEL := 3
 const SHADE_FIRST_LEVEL := 2
 

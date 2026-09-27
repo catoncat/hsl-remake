@@ -12,9 +12,9 @@ extends SceneTree
 ## "dead": [id], "targets": {id: target_id}}; ids drop the "actor" prefix ("021_3").
 ## Each case runs once per seed (default 1..8) and prints the destination/target tally.
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 
 const SCENARIO := "res://content/battles/battle_051.json"
 

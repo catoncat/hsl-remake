@@ -18,7 +18,7 @@ extends Control
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_stamina.md
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_stamina.md
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const StaminaRules = preload("res://game/sim/StaminaRules.gd")
 ## 0x436904／0x43696a／0x4369c9: the bar's stage boundaries (cmp esi, 0x14／0x28／0x3c).
 const SEGMENT_POINTS := 20
@@ -39,7 +39,7 @@ const BLEND_LEVELS := 16.0
 ## object's own counter (reload +0xa2 = 0 → one step per draw).
 const SHARED_STEP_TICKS := 5
 const OWN_STEP_TICKS := 1
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 ## True for the strips 0x43b4e0 builds in mode 2／3 (flag 0x10000); status windows set false.
 var shared_pulse := true

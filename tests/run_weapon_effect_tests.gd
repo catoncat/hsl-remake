@@ -1,6 +1,6 @@
 extends "res://tests/support/TestSuite.gd"
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const Effects = preload("res://game/sim/WeaponEffectRules.gd")
 const Large = preload("res://tests/run_large_actor_tests.gd")
 const Positions = preload("res://tests/run_position_equipment_tests.gd")

@@ -13,7 +13,7 @@ extends RefCounted
 ##     (V08 frame_041 receiver in its hit shape)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_strike.md (60 ticks, phase period 7)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_map_strike.md (0x407230 plays no sound)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const HIT_POSES_PATH := "res://content/imported/hsl/shared/actor_hit_poses/manifest.json"
 const TICKS := 60
 const AMPLITUDE := 3

@@ -9,7 +9,7 @@ extends "res://tests/support/TestSuite.gd"
 ## turn's words; the save leaves it out.
 const Global = preload("res://game/sim/GlobalRandomStream.gd")
 const Damage = preload("res://game/sim/DamageRandomStream.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Checkpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const PACKET := "res://docs/evidence_packets/static_reverse/original_damage_random.json"

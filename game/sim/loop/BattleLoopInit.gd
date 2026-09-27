@@ -19,11 +19,11 @@ extends RefCounted
 ##     callers — docs/architecture/BATTLE_CONFIG_STATE.md)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_random_position.md
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
-const WrdTerrainTiles = preload("res://game/battle/runtime/WrdTerrainTiles.gd")
-const EquipmentCatalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
+const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
+const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
 const BattleScenarioRuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")

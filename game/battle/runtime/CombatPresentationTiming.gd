@@ -10,7 +10,7 @@ extends RefCounted
 ##   timing: provisional
 ##     (CAST_LEAD_IN stands in for the m_action lead of a magic caster whose m_shape strip is not imported — the
 ##     imported ones and the 絶技 s_action lead are played by AnimalCastLead)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 ## Multiplier on the ordinary cut-in clock. The product plays the attacker's ANIMAL program
 ## at the original tick rate (1.0). The developer switch HSL_CUTIN_PLAYBACK_SPEED (e.g. 0.4)

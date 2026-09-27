@@ -48,8 +48,8 @@ extends SceneTree
 ## lines are Godot/tool chatter. `rng` holds each stream's live value when the round
 ## starts (`ai_seed`／`ai_state` for the AI source, every `*_rng` loop stream).
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
 const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")

@@ -1,6 +1,6 @@
 extends SceneTree
 ## Normal runtime control events: receive damage, earn ST, equip, and use Qi Blade.
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Rules = preload("res://game/sim/StaminaRules.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const OUT := "res://ignored/stamina-review/"

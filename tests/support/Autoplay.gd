@@ -14,7 +14,7 @@ extends RefCounted
 ## replaces only the player-turn policy; with no brain the greedy policy below runs unchanged.
 
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const ForceWin = preload("res://tests/support/BattleForceWin.gd")
 const Brain = preload("res://tests/support/AutoplayBrain.gd")

@@ -241,4 +241,4 @@ uv run --no-project --with unicorn==2.1.4 python3 tools/hsl.py generate stamina 
 
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
-- `game/battle/scene/BattleLoopCombat.gd` rules：0x44248e queued pre-critical damage into the stamina tail
+- `game/sim/loop/BattleLoopCombat.gd` rules：0x44248e queued pre-critical damage into the stamina tail

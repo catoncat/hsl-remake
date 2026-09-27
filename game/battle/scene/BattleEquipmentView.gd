@@ -9,8 +9,8 @@ extends Control
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
 ##   strings: remake-invented (detail／confirm captions)
 signal slot_requested(slot: String)
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const EquipmentCatalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
 var interactive := false
 var slot_controls: Dictionary = {}
 var labels: Dictionary = {}

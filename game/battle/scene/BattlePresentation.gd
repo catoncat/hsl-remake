@@ -45,7 +45,7 @@ var combat_label: Label
 ## autoplay read this instead of a visible page.
 var battle_finished := false
 var actors_root: Node2D
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")

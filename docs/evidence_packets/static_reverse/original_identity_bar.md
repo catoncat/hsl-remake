@@ -126,5 +126,5 @@ P3／P4 三趟 Wine 都没采到「受伤且未知」的敌人，本次改用只
 
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
-- `game/battle/scene/BattlePlayLoop.gd` rules：known_unit_ids: 0x430020 at target confirmation, 0x43ef36 on death, pmPlayer born known
+- `game/sim/loop/BattlePlayLoop.gd` rules：known_unit_ids: 0x430020 at target confirmation, 0x43ef36 on death, pmPlayer born known
 - `game/battle/scene/BattleVitals.gd` strings：0x434d10 predicates: known byte 0x4c6d80 clear → ?? level and ??? exp／HP／MP／name／state／resists; resist values "%02d%" or "MAX" from 80, 0x435616／0x43563b; 0x446b00 no_attack template bit → the same without HP; template level > 99 → ?? level

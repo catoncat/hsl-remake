@@ -62,7 +62,7 @@ const SCRIPTS_PATH := "res://content/generated/hsl/skills/special_effect_scripts
 ## same row shape, each declaring its own `presentation` — the imported manifest has no row for them.
 const AUTHORED_SCRIPTS_PATH := "res://content/generated/hsl/skills/authored_effect_scripts.json"
 const CASTING_PATH := ContentPaths.MAGE_MAGIC
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND

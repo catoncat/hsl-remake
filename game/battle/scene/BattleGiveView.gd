@@ -9,7 +9,7 @@ signal source_selected(index: int, code: int)
 signal destination_selected(index: int, code: int)
 signal back_requested
 signal finish_requested
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 var source_buttons: Array[Button] = []
 var destination_buttons: Array[Button] = []
 static var _portraits: Dictionary = {}

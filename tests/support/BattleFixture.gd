@@ -13,8 +13,8 @@ extends RefCounted
 ## original or another caller's copy. A caller-supplied roster or terrain path always runs
 ## create() (a test may rewrite the same terrain file between calls).
 
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const LoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 
 const PATH := "res://content/battles/first_battle.json"

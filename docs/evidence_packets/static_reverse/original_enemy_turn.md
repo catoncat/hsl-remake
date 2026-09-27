@@ -351,5 +351,5 @@ stop=round_end frames=2355 rounds=[1, 1] opening_frame=852 clicks=10 handoffs=1 
 
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
-- `game/battle/scene/BattleLoopInit.gd` rules：global stream `global_rng` 0x4795d4／0x4795d8: not per battle — the scene hands in the process's live words, GlobalRandomStream.session; a caller without them seeds it from reward_seed as the clock would, 0x458c10 [t, t ^ 0xe54a231c]
+- `game/sim/loop/BattleLoopInit.gd` rules：global stream `global_rng` 0x4795d4／0x4795d8: not per battle — the scene hands in the process's live words, GlobalRandomStream.session; a caller without them seeds it from reward_seed as the clock would, 0x458c10 [t, t ^ 0xe54a231c]
 - `game/sim/GlobalRandomStream.gd` rules：global words 0x4795d4／0x4795d8 outside the save, clock seed behind flag 0x4c1e8c: the lazy seed 0x458c19..0x458c28 stores [t, t ^ 0xe54a231c] over the static data words 0x12345678／0x87654321, 0x40e870 draws only here

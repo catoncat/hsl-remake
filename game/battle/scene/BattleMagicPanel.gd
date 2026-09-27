@@ -23,9 +23,9 @@ extends Control
 ##     (hovered name green 236／244 in two Wine frames)
 signal spell_selected(skill_id: String)
 signal cancelled
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 ## Left column: 0x43add0 docks WINDOW20 (object 132) at (12,174). 0x438160 case 2: first row
 ## 8 px below the top (+0x9a), 28 px rows (+0x98), nine rows per page (0x446060). Names at
 ## x+8+24 (0x4123b0); element gem MAGICON[type] at (x+15, row+2) (0x4607f9, table 0x4c3460).

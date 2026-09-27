@@ -45,4 +45,4 @@ tools/godot.sh --headless --script res://tests/run_ai_navigation_tests.gd
 
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
-- `game/battle/runtime/WrdTerrainTiles.gd` rules：0x40eb40 reads the WRD word, 0x74000 flags refuse entry
+- `game/sim/WrdTerrainTiles.gd` rules：0x40eb40 reads the WRD word, 0x74000 flags refuse entry

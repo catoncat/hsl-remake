@@ -35,8 +35,8 @@ extends "res://tests/support/TestSuite.gd"
 ##    STORY actions name resolves to a unit of the cast (fielded, script template, or an
 ##    opening-only actor the STORY deletes) except KNOWN_UNBUILT.
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")

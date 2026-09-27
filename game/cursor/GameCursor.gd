@@ -38,7 +38,7 @@ extends Node
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/game_cursor/README.md
 ##     (CURSOR10 returns every 1.151 s in the 2026-09-24 recording = 60 ticks of 19.2 ms)
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 ## RemakeOptionsPage.LISTENERS (a literal: preloading the page would pull the UI skin into the autoload).
 const OPTION_LISTENERS := "remake_options_listeners"

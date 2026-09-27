@@ -5,7 +5,7 @@ extends Node
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_script_departure.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: remake-invented (alpha ramp over the removal ticks)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const DEPARTURE_TICKS := 16
 const FADE_SECONDS := OriginalTick.TICK_SECONDS * DEPARTURE_TICKS
 var runtime: Node

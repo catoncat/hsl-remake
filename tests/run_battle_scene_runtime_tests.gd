@@ -13,13 +13,13 @@ const BattleScenarioRuleAdapter = preload("res://game/sim/BattleScenarioRuleAdap
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
-const Combat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Combat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const PositionCases = preload("res://tests/run_position_equipment_tests.gd")
 const MagicCases = preload("res://tests/run_support_magic_tests.gd")
 const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
 const Progression = preload("res://game/sim/ProgressionRules.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const LoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const LoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
 
 var failures: Array[String] = []
 
@@ -746,7 +746,7 @@ func _test_walk_audio_cues() -> void:
 ## replayed town job-up.
 func _test_job_up_reconfigures_actor_frames() -> void:
 	var JobUpRules = preload("res://game/sim/JobUpRules.gd")
-	var Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+	var Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 	var packed: PackedScene = load("res://game/battle/scene/BattleSceneRuntime.tscn")
 	var scene := packed.instantiate()
 	scene.startup_mode = "dev_first_control"
@@ -1352,7 +1352,7 @@ func _test_round_six_cutscene_and_closing_line() -> void:
 ## the current actor, removing the current actor hands off to the next slot, and repeating
 ## the departure is inert.
 func _test_departure_queue() -> void:
-	var loop_script = load("res://game/battle/scene/BattlePlayLoop.gd")
+	var loop_script = load("res://game/sim/loop/BattlePlayLoop.gd")
 	for current_id in ["leonard", "enemy021_1", "enemy026_1"]:
 		var loop: Dictionary = BattleFixture.loop()
 		for index in range(loop["turn_queue"]["slots"].size()):
@@ -2378,7 +2378,7 @@ func _test_menu_screen_bounds() -> void:
 
 
 func _test_ai_reachable_strikes() -> void:
-	var Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+	var Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 	var loop: Dictionary = BattleFixture.loop()
 	var spear: Dictionary = {}
 	var enemy: Dictionary = {}
@@ -2422,7 +2422,7 @@ func _test_ai_reachable_strikes() -> void:
 
 
 func _test_stamina_builds_from_zero() -> void:
-	var Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+	var Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 	var loop: Dictionary = BattleFixture.loop()
 	var player: Dictionary = Loop._unit(loop, "leonard")
 	_assert_eq(player["stamina"], 0, "opening must not grant a free special charge")
@@ -2446,7 +2446,7 @@ func _test_stamina_builds_from_zero() -> void:
 ## actSetPlayerUndead marker (level 3 漢克斯): 0x43ee66／0x4433b6 revive a dead-flagged
 ## undead object at 1 HP instead of removing it; the lethal hit itself settles as before.
 func _test_undead_survives_lethal_strike() -> void:
-	var Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+	var Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 	var loop: Dictionary = BattleFixture.loop()
 	var enemy: Dictionary = Loop._unit(loop, "enemy021_1")
 	enemy["hp"] = 1

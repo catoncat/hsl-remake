@@ -15,7 +15,7 @@ extends RefCounted
 ##     old save or the harness skip)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")

@@ -20,7 +20,7 @@ extends RefCounted
 ##     (claim／defer／abandon interaction, sequence／revision guards —
 ##     docs/architecture/BATTLE_SYSTEMS.md#rewards-and-checkpoints)
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CombatSequence = preload("res://game/sim/CombatSequenceRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")

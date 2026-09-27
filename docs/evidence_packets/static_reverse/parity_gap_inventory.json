@@ -307,7 +307,7 @@
       ],
       "remake": "BattlePlayLoop 阵亡当前者只调一次 CoreTurnQueue.end_turn",
       "remake_code": [
-        "game/battle/scene/BattlePlayLoop.gd:_advance_current_actor",
+        "game/sim/loop/BattlePlayLoop.gd:_advance_current_actor",
         "game/sim/CoreTurnQueue.gd"
       ],
       "original_status": "read_complete",
@@ -353,7 +353,7 @@
       "remake": "OriginalBitmapFont：hsl generate original_bitmap_font 从 hsl.pak 解码用到的 1837 个全角字＋半角 0x20–0x7e 成两张图集，一个 FontFile 按字号挂两面（行高 24／16、不缩放、无系统字回退）；SimplifiedDisplay 启动时按 OPT-FONT 换默认主题字体；BattleAttackCue 施法名字幕用主题字体 24 号正文面",
       "remake_code": [
         "game/text/OriginalBitmapFont.gd:install",
-        "game/battle/scene/BattleUISkin.gd",
+        "game/common/BattleUISkin.gd",
         "game/battle/scene/BattleWinFailBoard.gd",
         "game/battle/scene/BattleAttackCue.gd",
         "game/battle/scene/MagicImpactPresentation.gd"
@@ -366,9 +366,9 @@
       "sources": [
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/BattleUISkin.gd|layout|remake-invented|",
         "provenance:game/battle/scene/BattleWinFailBoard.gd|layout|remake-invented|",
         "provenance:game/battle/scene/MagicImpactPresentation.gd|layout|remake-invented|",
+        "provenance:game/common/BattleUISkin.gd|layout|remake-invented|",
         "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|"
       ]
     },
@@ -647,7 +647,7 @@
       ],
       "remake": "BattleUISkin／BattleSceneMenus／BattleEquipmentView／BattleItemPanel 的重制排布",
       "remake_code": [
-        "game/battle/scene/BattleUISkin.gd",
+        "game/common/BattleUISkin.gd",
         "game/battle/scene/BattleSceneMenus.gd",
         "game/battle/scene/BattleEquipmentView.gd",
         "game/battle/scene/BattleItemPanel.gd"
@@ -660,8 +660,8 @@
         "provenance:game/battle/scene/BattleEquipmentView.gd|layout|remake-invented|",
         "provenance:game/battle/scene/BattleItemPanel.gd|layout|remake-invented|",
         "provenance:game/battle/scene/BattleSceneMenus.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/BattleUISkin.gd|layout|provisional|",
-        "provenance:game/battle/scene/BattleUISkin.gd|layout|remake-invented|"
+        "provenance:game/common/BattleUISkin.gd|layout|provisional|",
+        "provenance:game/common/BattleUISkin.gd|layout|remake-invented|"
       ]
     },
     {
@@ -676,7 +676,7 @@
       ],
       "remake": "BattleLoopAI 与 AINavigationRules 的组合",
       "remake_code": [
-        "game/battle/scene/BattleLoopAI.gd",
+        "game/sim/loop/BattleLoopAI.gd",
         "game/sim/AINavigationRules.gd",
         "game/sim/AIDecisionRules.gd"
       ],
@@ -689,10 +689,10 @@
         "matrix:EVEF 演员实例字：物品、逐实例 AI 覆盖、固定点",
         "matrix:First-control formation",
         "matrix:非玩家行动",
-        "provenance:game/battle/scene/BattleLoopAI.gd|rules|provisional|",
         "provenance:game/sim/AIDecisionRules.gd|rules|provisional|",
         "provenance:game/sim/AINavigationRules.gd|rules|provisional|",
         "provenance:game/sim/TacticalGridRules.gd|rules|provisional|",
+        "provenance:game/sim/loop/BattleLoopAI.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/battle_005/README.md|provisional|机器人策略、AI 同距落点次序、WINFAIL 插入单位当回合是否行动",
         "scope:docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md|provisional|精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流",
         "scope:docs/evidence_packets/runtime_observations/battle_053/README.md|provisional|机器人策略、WINFAIL 插入单位当回合是否行动、最短路平局次序与 023 随机携带品",
@@ -1152,10 +1152,10 @@
         "matrix:金币、携带、战利品领取",
         "provenance:game/battle/runtime/GrowthCampaignProgress.gd|rules|remake-invented|",
         "provenance:game/battle/runtime/GrowthCampaignProgress.gd|strings|remake-invented|",
-        "provenance:game/battle/scene/BattleLoopRewards.gd|rules|remake-invented|",
         "provenance:game/battle/scene/BattleLootPanel.gd|layout|remake-invented|",
         "provenance:game/battle/scene/BattleLootPanel.gd|strings|remake-invented|",
-        "provenance:game/sim/BattleRewardRules.gd|rules|remake-invented|"
+        "provenance:game/sim/BattleRewardRules.gd|rules|remake-invented|",
+        "provenance:game/sim/loop/BattleLoopRewards.gd|rules|remake-invented|"
       ]
     },
     {
@@ -1204,10 +1204,10 @@
         "matrix:增援压力",
         "matrix:开场 token order",
         "matrix:敌我完整入场",
-        "provenance:game/battle/scene/BattleLoopScript.gd|rules|provisional|",
         "provenance:game/battle/scene/BattleScriptActorPresentation.gd|layout|remake-invented|",
         "provenance:game/battle/scene/BattleScriptPresentation.gd|layout|remake-invented|",
         "provenance:game/sim/ScriptActorCreationRules.gd|rules|remake-invented|",
+        "provenance:game/sim/loop/BattleLoopScript.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/battle_013/README.md|provisional|",
         "scope:docs/evidence_packets/runtime_observations/battle_028/README.md|provisional|",
         "scope:docs/evidence_packets/runtime_observations/first_scene_opening_choreography_packet.md|provisional|"
@@ -1280,8 +1280,8 @@
         "game/sim/SkillResolutionRules.gd",
         "game/sim/SkillTargetRules.gd",
         "game/sim/RangePropagationRules.gd:area_coverage",
-        "game/battle/scene/BattlePlayLoop.gd:player_cast_terrain",
-        "game/battle/scene/BattleLoopCombat.gd:_skill_context"
+        "game/sim/loop/BattlePlayLoop.gd:player_cast_terrain",
+        "game/sim/loop/BattleLoopCombat.gd:_skill_context"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -1337,7 +1337,7 @@
       "remake": "RangePropagationRules 传播，BattlePlayLoop.weapon_cells 接玩家武器、反击与敌方武器格；AI 仍用 TacticalGridRules 平铺投影",
       "remake_code": [
         "game/sim/RangePropagationRules.gd:weapon_coverage",
-        "game/battle/scene/BattlePlayLoop.gd:weapon_cells",
+        "game/sim/loop/BattlePlayLoop.gd:weapon_cells",
         "game/sim/TacticalGridRules.gd:attack_pattern_cells"
       ],
       "original_status": "read_partial",
@@ -1471,7 +1471,7 @@
       ],
       "remake": "BattleUISkin.message_rows 照 38 字节断行，只在断点落进专名时前移",
       "remake_code": [
-        "game/battle/scene/BattleUISkin.gd:message_rows"
+        "game/common/BattleUISkin.gd:message_rows"
       ],
       "original_status": "read_complete",
       "visibility": "rare",
@@ -1481,7 +1481,7 @@
       "sources": [
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/BattleUISkin.gd|layout|remake-invented|"
+        "provenance:game/common/BattleUISkin.gd|layout|remake-invented|"
       ]
     },
     {
@@ -1601,18 +1601,19 @@
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_save_format.md"
       ],
-      "remake": "CampaignProgress",
+      "remake": "CampaignProgress、CampaignResumePrompt",
       "remake_code": [
-        "game/battle/runtime/CampaignProgress.gd"
+        "game/battle/runtime/CampaignProgress.gd",
+        "game/title/CampaignResumePrompt.gd"
       ],
       "original_status": "no_original_code",
       "visibility": "rare",
       "effort": "S",
       "category": "重制新增（原版没有）",
       "sources": [
-        "provenance:game/battle/runtime/CampaignProgress.gd|layout|remake-invented|",
         "provenance:game/battle/runtime/CampaignProgress.gd|rules|remake-invented|",
-        "provenance:game/battle/runtime/CampaignProgress.gd|strings|remake-invented|"
+        "provenance:game/title/CampaignResumePrompt.gd|layout|remake-invented|",
+        "provenance:game/title/CampaignResumePrompt.gd|strings|remake-invented|"
       ]
     },
     {
@@ -1815,15 +1816,15 @@
       "remake": "玩家 Use 满值照用照扣、浮0；目标＝自己＋相邻 pmPlayer 非 no_attack，Give 不含自己；大体型 range2 未建模，AI／剧情路径保留拒绝",
       "remake_code": [
         "game/sim/ItemUseRules.gd:prepare",
-        "game/battle/scene/BattleLoopInventory.gd:_item_recipient_ids"
+        "game/sim/loop/BattleLoopInventory.gd:_item_recipient_ids"
       ],
       "original_status": "read_partial",
       "visibility": "rare",
       "effort": "S",
       "category": "战斗规则",
       "sources": [
-        "provenance:game/battle/scene/BattleLoopInventory.gd|rules|provisional|",
         "provenance:game/sim/ItemUseRules.gd|rules|provisional|",
+        "provenance:game/sim/loop/BattleLoopInventory.gd|rules|provisional|",
         "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#2fcd53a808",
         "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#6a4e60983f",
         "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#8efd6bb198",
@@ -2152,7 +2153,7 @@
       ],
       "remake": "REWARD 已对齐结算：不死攻击者被反击打死不发 EXP／金钱，不死受击者每次致死都发击杀金钱、不掷掉落、不记阵亡；BattleLoopCombat 在打击内当场复活，交换随后照常判反击",
       "remake_code": [
-        "game/battle/scene/BattleLoopCombat.gd",
+        "game/sim/loop/BattleLoopCombat.gd",
         "game/sim/BattleRewardRules.gd"
       ],
       "original_status": "read_partial",
@@ -2531,7 +2532,7 @@
       ],
       "remake": "PlayLoop 单一事务顺序",
       "remake_code": [
-        "game/battle/scene/BattlePlayLoop.gd"
+        "game/sim/loop/BattlePlayLoop.gd"
       ],
       "original_status": "read_partial",
       "visibility": "invisible",
@@ -2562,8 +2563,8 @@
       "remake": "伤害流 DamageRandomStream（loop 键 damage_rng，存档）；全局流 GlobalRandomStream（loop 键 global_rng，进程内单一实例，读档保留活字；无窗口时 HSL_RNG_SEED 代替时钟）；BattleRewardRules.carry／drops 与 WinfailActions 的 opcode 121 抽 global_rng，旧的 reward_rng 与 random_position_rng 已删除；逐次对拍用 tests/diagnostics/compare_ai_global_draws.gd",
       "remake_code": [
         "game/sim/GlobalRandomStream.gd",
-        "game/battle/scene/BattleLoopAI.gd",
-        "game/battle/scene/BattleLoopInit.gd",
+        "game/sim/loop/BattleLoopAI.gd",
+        "game/sim/loop/BattleLoopInit.gd",
         "game/sim/WinfailActions.gd",
         "game/sim/BattleRewardRules.gd",
         "game/sim/InitialRosterGrowthRules.gd"
@@ -2591,8 +2592,8 @@
         "matrix:金币、携带、战利品领取",
         "matrix:麻痺入口／解除／计时与防护",
         "provenance:game/battle/scene/BattleAftermath.gd|strings|remake-invented|",
-        "provenance:game/battle/scene/BattleLoopInit.gd|rules|remake-invented|",
         "provenance:game/sim/InitialRosterGrowthRules.gd|rules|remake-invented|",
+        "provenance:game/sim/loop/BattleLoopInit.gd|rules|remake-invented|",
         "scope:docs/evidence_packets/static_reverse/original_random_position.md|provisional|the shuffle rolls' place in the global sequence (they draw 0x458c10 on the global stream, but the global draws before them are not yet the original's), whatever 0x45e307 draws inside itself"
       ]
     },
@@ -2718,30 +2719,6 @@
         "reason": "覆盖值只在 53 关且同值，玩家不可见"
       },
       {
-        "source": "provenance:game/battle/runtime/BattleScenario.gd|rules|remake-invented|",
-        "reason": "场景 JSON 合同与归一化，是重制内部数据结构"
-      },
-      {
-        "source": "provenance:game/battle/scene/BattleLoopAI.gd|rules|remake-invented|",
-        "reason": "AI 回执字段（paralysis_skip、candidate_filters），只进日志"
-      },
-      {
-        "source": "provenance:game/battle/scene/BattleLoopCombat.gd|rules|remake-invented|",
-        "reason": "单一所有者的提交顺序与回执形状，结算结果不变"
-      },
-      {
-        "source": "provenance:game/battle/scene/BattleLoopInventory.gd|rules|remake-invented|",
-        "reason": "给予／装备的确认与版本守卫，是事务安全结构"
-      },
-      {
-        "source": "provenance:game/battle/scene/BattleLoopScript.gd|rules|remake-invented|",
-        "reason": "整事件原子安装：失败时不留半个事件，正常路径与原版同样安装全部单位"
-      },
-      {
-        "source": "provenance:game/battle/scene/BattlePlayLoop.gd|rules|remake-invented|",
-        "reason": "PlayLoop 的事务顺序与菜单面，是重制内部结构"
-      },
-      {
         "source": "provenance:game/battle/scene/BattleSceneRuntime.gd|rules|remake-invented|",
         "reason": "场景编排、开发接缝与输入门控，是重制内部结构"
       },
@@ -2772,6 +2749,10 @@
       {
         "source": "provenance:game/sim/BattleRewardRules.gd|rules|provisional|",
         "reason": "AI 同一回执既击杀又用金之手偷到物品时，两件在 0x44f600 收集里的先后（重制掉落在前）未证；只影响该 AI 包内槽位次序"
+      },
+      {
+        "source": "provenance:game/sim/BattleScenario.gd|rules|remake-invented|",
+        "reason": "场景 JSON 合同与归一化，是重制内部数据结构"
       },
       {
         "source": "provenance:game/sim/BattleScenarioRuleAdapter.gd|rules|remake-invented|",
@@ -2816,6 +2797,26 @@
       {
         "source": "provenance:game/sim/UnitSchema.gd|rules|remake-invented|",
         "reason": "单位字典合同，由生成器推导"
+      },
+      {
+        "source": "provenance:game/sim/loop/BattleLoopAI.gd|rules|remake-invented|",
+        "reason": "AI 回执字段（paralysis_skip、candidate_filters），只进日志"
+      },
+      {
+        "source": "provenance:game/sim/loop/BattleLoopCombat.gd|rules|remake-invented|",
+        "reason": "单一所有者的提交顺序与回执形状，结算结果不变"
+      },
+      {
+        "source": "provenance:game/sim/loop/BattleLoopInventory.gd|rules|remake-invented|",
+        "reason": "给予／装备的确认与版本守卫，是事务安全结构"
+      },
+      {
+        "source": "provenance:game/sim/loop/BattleLoopScript.gd|rules|remake-invented|",
+        "reason": "整事件原子安装：失败时不留半个事件，正常路径与原版同样安装全部单位"
+      },
+      {
+        "source": "provenance:game/sim/loop/BattlePlayLoop.gd|rules|remake-invented|",
+        "reason": "PlayLoop 的事务顺序与菜单面，是重制内部结构"
       },
       {
         "source": "scope:docs/evidence_packets/resource_inventory/bigmap_performances.md|negative-evidence|无 STORY／WINFAIL 关卡以大地图为底图",

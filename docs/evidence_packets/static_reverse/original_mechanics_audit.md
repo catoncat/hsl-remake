@@ -95,7 +95,7 @@
 
 [`hsltools/data/consumables.py`](../../../tools/hsltools/data/consumables.py) 只从 Leonard 的八个初始 item 字段构造当前可用库存，重复的三份回复药会合并数量，其余角色缺省空字典。原字段能证明这份模板的初始内容，不能独立证明运行时八格上限、排序策略或每件最多一个。
 
-[`BattlePlayLoop.use_item`](../../../game/battle/scene/BattlePlayLoop.gd) 目前只处理 heal_hp>0，并在成功后 `begin_wait_resolution`。`transfer_inventory_item` 也在给予／丢弃后结束行动；这个函数自己的注释明确保留原版免费操作语义未知。因此目前“有给予／丢弃按钮且库存能变化”是真进展，“原版背包完整恢复”仍不成立。
+[`BattlePlayLoop.use_item`](../../../game/sim/loop/BattlePlayLoop.gd) 目前只处理 heal_hp>0，并在成功后 `begin_wait_resolution`。`transfer_inventory_item` 也在给予／丢弃后结束行动；这个函数自己的注释明确保留原版免费操作语义未知。因此目前“有给予／丢弃按钮且库存能变化”是真进展，“原版背包完整恢复”仍不成立。
 
 已读的 `BattleItemPanel._select_item` 只处理 drop/use/give，equip 列表并无对应成功事务。当前初始库存只有耗材，过滤后为空，这个入口缺口容易被自然游玩隐藏。后续应使用合法装备库存和满包目标等正常规则边界验证，不能仅看一个空页面就认定换装工作完成。
 

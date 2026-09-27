@@ -26,14 +26,14 @@ extends RefCounted
 const SceneTimeline = preload("res://game/battle/runtime/SceneTimeline.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 ## actDarkScreen inserts obj_ScreenDarker (700) and the VM does not wait; the object's
 ## darkening cadence is unread, so the remake fades in and (actDeleteDarkScreen) out over
 ## this provisional duration.
 const DARK_SCREEN_FADE_SECONDS := 0.8
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 ## actShowSectionName (opcode 12, original_tick_counts.md §2): 0x452f32 steps sub-state
 ## +0x8c once per tick and then draws two layers at the view's (0x140, 0xf0):
 ## - layer 0x32, the SHAPE\LEVELSEC.SHP band (+0x9e level): mode 0x2000000 (0x22000000 below

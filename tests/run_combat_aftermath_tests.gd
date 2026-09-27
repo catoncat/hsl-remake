@@ -1,6 +1,6 @@
 extends SceneTree
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

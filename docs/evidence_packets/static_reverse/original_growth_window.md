@@ -142,4 +142,4 @@ tools/godot.sh --headless --script res://tests/run_presentation_contract_tests.g
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
 - `game/battle/scene/BattleGrowthPanel.gd` layout：0x4370b0 window ids, row coordinates, NUM font fields, button centres; §4 flag 0x10000000 on an unavailable ＋／－／OK; §5 the magic／special boxes only when something is learned
-- `game/battle/scene/BattleLoopRewards.gd` rules：§1: a won result still takes the final blow's manual allocation — phase 8 precedes the win scan; a lost result takes none, provisional
+- `game/sim/loop/BattleLoopRewards.gd` rules：§1: a won result still takes the final blow's manual allocation — phase 8 precedes the win scan; a lost result takes none, provisional

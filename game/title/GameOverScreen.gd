@@ -40,10 +40,10 @@ const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const INTERFACE_AUDIO_PATH := preload("res://game/sim/ContentPaths.gd").INTERFACE_AUDIO
 const TITLE_SCENE_PATH := "res://game/title/TitleScreen.tscn"
 const BATTLE_SCENE_PATH := "res://game/battle/scene/BattleSceneRuntime.tscn"
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 ## OPT-RETRY menu rows (remake layout): centred under the GAME OVER text, one 32 px pitch.
 const RETRY_ROWS := [{"id": "retry", "text": "重新挑戰本戰"}, {"id": "title", "text": "回到標題"}]
 const RETRY_MENU_TOP := 352.0

@@ -1,10 +1,10 @@
 extends SceneTree
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const Rewards = preload("res://game/sim/BattleRewardRules.gd")
 const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
-const LoopRewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
+const LoopRewards = preload("res://game/sim/loop/BattleLoopRewards.gd")
 const Save = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

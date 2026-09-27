@@ -1,8 +1,8 @@
 extends SceneTree
 ## Bounded rules audit, not a difficulty guarantee or rendered input test.
 ## Default roster/attributes; seeds 10..29; no HP/damage/EXP overrides.
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 func _initialize() -> void:

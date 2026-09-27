@@ -12,7 +12,7 @@ extends Node2D
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: remake-invented
 ##     (0.45 s receiver bar before the number — kept remake beat, the original shows the number at once)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")

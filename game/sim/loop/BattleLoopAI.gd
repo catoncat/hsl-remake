@@ -26,11 +26,11 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_level37_tokens.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleLoopRewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
-const BattleLoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
-const BattleLoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
-const BattleLoopInventory = preload("res://game/battle/scene/BattleLoopInventory.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopRewards = preload("res://game/sim/loop/BattleLoopRewards.gd")
+const BattleLoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
+const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattleLoopInventory = preload("res://game/sim/loop/BattleLoopInventory.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")

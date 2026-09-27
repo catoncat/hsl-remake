@@ -27,9 +27,9 @@ extends RefCounted
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ScriptWalkPath = preload("res://game/battle/runtime/opening/ScriptWalkPath.gd")
-const WrdTerrainTiles = preload("res://game/battle/runtime/WrdTerrainTiles.gd")
+const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const RangeCellOverlay = preload("res://game/battle/runtime/RangeCellOverlay.gd")
 

@@ -18,7 +18,7 @@ extends RefCounted
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
 const MapObjectDrift = preload("res://game/battle/runtime/MapObjectDrift.gd")
 const MapObjectFlash = preload("res://game/battle/runtime/MapObjectFlash.gd")

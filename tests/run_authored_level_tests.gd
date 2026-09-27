@@ -19,9 +19,9 @@ extends SceneTree
 const TitleScene = preload("res://game/title/TitleScreen.tscn")
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const UnitSchema = preload("res://game/sim/UnitSchema.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
 const Brain = preload("res://tests/support/AutoplayBrain.gd")
 const ForceWin = preload("res://tests/support/BattleForceWin.gd")
@@ -39,7 +39,7 @@ const AUTHORED_SPECIAL_ID := "special:magicFIRE:authoredDragonFlame"
 const AUTHORED_MAGIC_ID := "magic:magicFIRE:authoredDragonBreath"
 const AUTHORED_SKILLS_PATH := "res://content/authored/roles/skills.json"
 const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const UISkin = preload("res://game/common/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const COMBAT_MANIFEST := "res://content/generated/hsl/authored/battle200/combat_animation.json"
 ## content/authored/actors/<art>/: each authored look's folder (hsltools.assets.authored_art).

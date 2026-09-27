@@ -1,7 +1,7 @@
 extends SceneTree
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
 const Rules = preload("res://game/sim/WinfailScenarioRules.gd")
 const WinfailActions = preload("res://game/sim/WinfailActions.gd")
 const Wait = preload("res://game/sim/ScriptWaitRules.gd")

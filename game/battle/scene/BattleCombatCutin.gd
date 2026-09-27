@@ -36,7 +36,7 @@ signal released(strike: Dictionary, attacker: Dictionary, defender: Dictionary, 
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
 ## Original attack frames and delay order in a compact remake presentation. The source pose
 ## order runs at Timing.PLAYBACK_SPEED × the original tick rate (1.0 unless the developer

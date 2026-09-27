@@ -37,7 +37,7 @@ signal level_up_presented(growth: Dictionary)
 signal disposal_started(unit: Dictionary)
 
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleCameraController = preload("res://game/battle/runtime/BattleCameraController.gd")
 ## The native disposal of a fallen actor (enemy process 0x43ede0's dead branch 0x43eff9..0x43f0e6,
 ## the player process's 0x443501..0x443602 — the same steps): after its last words the actor
@@ -377,7 +377,7 @@ func _present_level_up(runtime: Node, job: Dictionary) -> void:
 
 
 static func _loot_waiting(runtime: Node) -> bool:
-	return preload("res://game/battle/scene/BattleLoopRewards.gd").loot_waiting(runtime.play_loop) if runtime != null and "play_loop" in runtime else false
+	return preload("res://game/sim/loop/BattleLoopRewards.gd").loot_waiting(runtime.play_loop) if runtime != null and "play_loop" in runtime else false
 
 
 ## Released reward floats fade out their remaining ticks, KILL floats hold their 40 ticks and

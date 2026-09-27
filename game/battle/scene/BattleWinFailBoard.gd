@@ -27,8 +27,8 @@ extends Control
 ##   audio: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##     (no onset during the three boards)
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const RuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
 
 const BOARD_SIZE := Vector2(368, 264)

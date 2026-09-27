@@ -7,7 +7,7 @@ const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
 const CastLead = preload("res://game/battle/scene/AnimalCastLead.gd")
 const PresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const PROGRAMS_PATH := "res://content/generated/hsl/animation/animal_programs.json"
 ## One dispatcher call per step, a hair over a tick so accumulated float error never lands a

@@ -28,8 +28,8 @@ extends SceneTree
 ## pair), the growth halves a birth reads, the placement source (STORY actions, the assembler's
 ## blocked-cell move, off-grid endpoint) and, per birth, its lowest／highest outcome (bounds).
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")

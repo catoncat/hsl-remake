@@ -9,8 +9,8 @@ extends SceneTree
 ##   tools/play.sh --screen 0 --write-movie ignored/r31/magic-cast.avi --fixed-fps 60 \
 ##     --disable-vsync --script res://tests/capture_magic_cast_review.gd
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const SPELL := "magic:magicAIR:magicCode01"
 var scene: Node
 var view: Node

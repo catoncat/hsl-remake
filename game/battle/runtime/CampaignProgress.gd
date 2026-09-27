@@ -9,13 +9,13 @@ extends Node
 ##   rules: remake-invented
 ##     (one-shot hand-off, resume prompt, play-time counter, not-remade chapter end returns to the title; the carry
 ##     stands in for the original registered-slot table)
-##   layout: remake-invented (resume prompt placement)
-##   strings: remake-invented (「繼續」／「從第一戰重新開始」)
 
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+## Loaded when the prompt shows, not preloaded: GameOptions preloads this module for
+## campaign_path and must not pull in the UI skin through it.
+const RESUME_PROMPT := "res://game/title/CampaignResumePrompt.gd"
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
@@ -330,27 +330,12 @@ func _offer_saved_progress() -> void:
 
 
 func _show_resume_prompt(saved: Dictionary, title: String) -> void:
-	resume_layer = CanvasLayer.new()
-	resume_layer.name = "CampaignResume"
-	resume_layer.layer = 4
-	resume_layer.process_mode = Node.PROCESS_MODE_ALWAYS
-	add_child(resume_layer)
-	var dim := ColorRect.new()
-	dim.size = Vector2(640, 480)
-	dim.color = Color(0, 0, 0, 0.72)
-	resume_layer.add_child(dim)
-	BattleUISkin.board(resume_layer, "WINDOW50", Vector2(150, 150)).size = Vector2(340, 190)
-	var heading := BattleUISkin.label(resume_layer, Vector2(0, 168), 20)
-	heading.size = Vector2(640, 30)
-	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	heading.text = "偵測到戰役進度"
-	var info := BattleUISkin.label(resume_layer, Vector2(0, 204))
-	info.size = Vector2(640, 26)
-	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	info.text = "上次進行到：%s" % title
-	resume_button = BattleUISkin.button(resume_layer, "繼續 · %s" % title, Vector2(190, 246), Vector2(260, 36))
+	var prompt_script = load(RESUME_PROMPT)
+	var prompt: Dictionary = prompt_script.build(self, title)
+	resume_layer = prompt["layer"]
+	resume_button = prompt["resume"]
 	resume_button.pressed.connect(resume_saved_progress.bind(saved))
-	restart_button = BattleUISkin.button(resume_layer, "從第一戰重新開始", Vector2(190, 290), Vector2(260, 36))
+	restart_button = prompt["restart"]
 	restart_button.pressed.connect(decline_saved_progress)
 	runtime.get_tree().paused = true
 

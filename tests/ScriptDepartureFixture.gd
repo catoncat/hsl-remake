@@ -2,7 +2,7 @@ extends RefCounted
 ## Authored status chains over the existing source-terrain/source-role trial.
 ## Setup is explicit; all later effects are triggered by ordinary player/AI acts.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Mobile = preload("res://tests/run_mobile_jobs_tests.gd")
 const Large = preload("res://tests/run_large_actor_tests.gd")
 const Rules = preload("res://game/sim/WinfailScenarioRules.gd")

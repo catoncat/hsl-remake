@@ -9,7 +9,7 @@ extends SceneTree
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const TitleScene = preload("res://game/title/TitleScreen.tscn")
 const GameOverScene = preload("res://game/title/GameOverScreen.tscn")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameClearScene = preload("res://game/title/GameClearScreen.tscn")
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const TestSuite = preload("res://tests/support/TestSuite.gd")

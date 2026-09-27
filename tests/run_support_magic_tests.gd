@@ -4,7 +4,7 @@ extends "res://tests/support/TestSuite.gd"
 ## (original_stat_magic.json, on stat_magic_trial.json), and the slot-1 priest 002 with its
 ## initial skills and MP items (original_priest.json, on priest_trial.json). The two dev trial
 ## scenes boot in run_battle_scene_runtime_tests.gd.
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Support = preload("res://game/sim/SupportMagicRules.gd")
 const Rolls = preload("res://game/sim/NativeMagicRollRules.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")

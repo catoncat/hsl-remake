@@ -15,7 +15,7 @@ const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd"
 const MapRules = preload("res://game/world/WorldMapRules.gd")
 const PartyRules = preload("res://game/world/WorldPartyRules.gd")
 const TownRules = preload("res://game/sim/TownEventRules.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const UISkin = preload("res://game/common/BattleUISkin.gd")
 const ShopScreen = preload("res://game/world/TownShopScreen.gd")
 
 const SCENE_PATH := "res://content/world/world_map_scene.json"

@@ -8,7 +8,7 @@ extends "res://tests/support/TestSuite.gd"
 ## ring beyond, so a settlement past its own footprint still hits a dummy — holds a
 ## side-matching unit. Shapes are tallied by (range, effect_range) so the report names each
 ## class (single cell, cross, Dir line, self-centred area, circles …).
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Resolution = preload("res://game/sim/SkillResolutionRules.gd")
 const Targets = preload("res://game/sim/SkillTargetRules.gd")
 const SCENARIO := "res://content/battles/battle_003.json"

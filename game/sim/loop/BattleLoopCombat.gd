@@ -22,9 +22,9 @@ extends RefCounted
 ##   rules: remake-invented
 ##     (one-owner commit ordering and receipt shape — docs/architecture/BATTLE_SYSTEMS.md#corecombatrulesgd)
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleLoopRewards = preload("res://game/battle/scene/BattleLoopRewards.gd")
-const BattleLoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopRewards = preload("res://game/sim/loop/BattleLoopRewards.gd")
+const BattleLoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const CombatSequence = preload("res://game/sim/CombatSequenceRules.gd")
 const WeaponEffects = preload("res://game/sim/WeaponEffectRules.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")

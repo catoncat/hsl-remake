@@ -11,9 +11,9 @@ extends "res://tests/support/TestSuite.gd"
 
 const Winfail = preload("res://game/sim/WinfailScenarioRules.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
-const PlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const PlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Adapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const ConditionalParty = preload("res://game/sim/ConditionalPartyRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")

@@ -22,9 +22,9 @@ extends SceneTree
 ## A participant whose level／max HP／combat words still differ from the original's live record
 ## takes the original's, each listed in `overrides` as [remake, original].
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const Combat = preload("res://game/battle/scene/BattleLoopCombat.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const Combat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")

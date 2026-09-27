@@ -11,7 +11,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##     in the combat manifest; petal／burst particle curves)
 ##   audio: resource-derived content/imported/hsl/shared/moon_dance/manifest.json
 const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const CloseupLayout = preload("res://game/battle/runtime/CloseupLayout.gd")
 ## s_action lead, 1.5 s visible on the cut-in's scaled clock; the source lead is unread in ticks.

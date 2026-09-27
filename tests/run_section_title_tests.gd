@@ -6,7 +6,7 @@ extends "res://tests/support/TestSuite.gd"
 
 const Cinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const Coordinator = preload("res://game/battle/runtime/BattleOpeningCoordinator.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const UISkin = preload("res://game/common/BattleUISkin.gd")
 const CAMPAIGN := "res://content/battles/campaign.json"
 const ZOOM_ONE := 0x10000
 

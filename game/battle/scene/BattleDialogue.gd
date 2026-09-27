@@ -27,8 +27,8 @@ extends Control
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
 ##   timing: remake-invented
 ##     (a confirm during the wipe or the scroll acts at once — the original reads no confirm until the page is still)
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## Text window (0x4142aa, 0x414360): rows start 17 px inside the board's top-left corner, 28 px
 ## apart, four in view (0x414661 splits four rows; the fifth drawn row is the one scrolling in).

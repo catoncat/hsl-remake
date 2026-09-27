@@ -30,7 +30,7 @@ extends "res://tests/support/TestSuite.gd"
 ##                  drew them as missing-glyph boxes until the explicit SC fallback was added.
 
 const SystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const UISkin = preload("res://game/common/BattleUISkin.gd")
 
 
 func _init() -> void:
@@ -148,8 +148,8 @@ func shape_scale_contracts() -> void:
 	root.add_child(view)
 	await process_frame
 	var sizes := {}
-	for code in preload("res://game/battle/runtime/EquipmentCatalog.gd").items():
-		var details: Dictionary = preload("res://game/battle/runtime/EquipmentCatalog.gd").items()[code]
+	for code in preload("res://game/sim/EquipmentCatalog.gd").items():
+		var details: Dictionary = preload("res://game/sim/EquipmentCatalog.gd").items()[code]
 		var shape := UISkin.texture(str(details["icon"]))
 		if shape != null and details.get("slot", "") == "weapon":
 			sizes[int(shape.get_size().x * 1000 + shape.get_size().y)] = int(code)
@@ -221,7 +221,7 @@ func _board(parent: Node, file: String) -> TextureRect:
 
 func panel_alignment_contracts() -> void:
 	var loop := preload("res://tests/support/BattleFixture.gd").loop()
-	var unit: Dictionary = preload("res://game/battle/scene/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
+	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
 	var panel = preload("res://game/battle/scene/BattleStatusPanel.gd").new()
 	root.add_child(panel)
 	await process_frame
@@ -348,7 +348,7 @@ func word_break_contracts() -> void:
 	var view = preload("res://game/battle/scene/BattleEquipmentView.gd").new()
 	root.add_child(view)
 	await process_frame
-	var catalog: Dictionary = preload("res://game/battle/runtime/EquipmentCatalog.gd").items()
+	var catalog: Dictionary = preload("res://game/sim/EquipmentCatalog.gd").items()
 	checked_wraps = 0
 	var with_names := 0
 	for code in catalog:

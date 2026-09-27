@@ -445,12 +445,12 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `magic` | consumed | `tools/hsltools/sources/wrd.py:decode_wrd` | — | "WORL" | — |
 | `version` | passthrough | `tools/hsltools/sources/wrd.py:decode_wrd` | — | 版本（全部 3） | — |
 | `flags` | passthrough | `tools/hsltools/sources/wrd.py:decode_wrd` | — | 头旗（全部 0） | — |
-| `width` | consumed | `game/battle/runtime/WrdTerrainTiles.gd:load_tiles` | — | 格宽 | — |
-| `height` | consumed | `game/battle/runtime/WrdTerrainTiles.gd:load_tiles` | — | 格高 | — |
+| `width` | consumed | `game/sim/WrdTerrainTiles.gd:load_tiles` | — | 格宽 | — |
+| `height` | consumed | `game/sim/WrdTerrainTiles.gd:load_tiles` | — | 格高 | — |
 | `element_size` | consumed | `tools/hsltools/sources/wrd.py:decode_wrd` | — | 4 | — |
-| `t` | passthrough | `game/battle/runtime/WrdTerrainTiles.gd:load_tiles` | — | bits 0..23 tile id → tiles\[].tile_id | 无运行时读者；地图用整幅 SHP 绘制，tile 索引不用于绘制或规则 |
+| `t` | passthrough | `game/sim/WrdTerrainTiles.gd:load_tiles` | — | bits 0..23 tile id → tiles\[].tile_id | 无运行时读者；地图用整幅 SHP 绘制，tile 索引不用于绘制或规则 |
 | `h` | consumed | `game/sim/ActorTraversalRules.gd:height_delta` | 非零格 43246；悬崖格 28169 | bits 24..31 源高度（0xff 悬崖；高差 >2 阻地面） | 值域 0..21／255；命中／伤害公式（0x409a60／0x409be0）无地形项 → 地形防御／回避加成 negative-evidence |
-| `b` | consumed | `game/battle/runtime/WrdTerrainTiles.gd:load_tiles` | — | h==255 派生旗 | — |
+| `b` | consumed | `game/sim/WrdTerrainTiles.gd:load_tiles` | — | h==255 派生旗 | — |
 
 ### actor_record
 

@@ -101,4 +101,4 @@ Godot以`CoreTurnQueue.cancel_pending`更新现有`slots[].enabled`，保存该�
 
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
-- `game/battle/scene/BattleLoopCombat.gd` rules：series-end cancel／protect／poison tail, 0x4075a0／0x407550 queue effects
+- `game/sim/loop/BattleLoopCombat.gd` rules：series-end cancel／protect／poison tail, 0x4075a0／0x407550 queue effects

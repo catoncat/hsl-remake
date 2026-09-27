@@ -11,10 +11,10 @@ extends SceneTree
 ##
 ##   tools/godot.sh --headless --script res://tests/capture_lead_in_review.gd            # log only
 ##   tools/play.sh --resolution 640x480 --script res://tests/capture_lead_in_review.gd -- <out_dir> [case]
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const CASES := ["player-attack", "ai-attack", "ai-cast"]
 var out_dir := ""
 var rendering := false

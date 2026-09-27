@@ -10,7 +10,7 @@ extends SceneTree
 ##
 ##   tools/godot.sh --script res://tests/capture_dialogue_board_review.gd
 const Dialogue = preload("res://game/battle/scene/BattleDialogue.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const OUT := "res://ignored/r7-dialogue-board-review/"
 var failures: Array[String] = []
 

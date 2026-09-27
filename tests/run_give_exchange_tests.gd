@@ -1,7 +1,7 @@
 extends SceneTree
 const Inventory = preload("res://game/sim/InventoryRules.gd")
 const Policy = preload("res://game/sim/ActionBudgetRules.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 var failures: Array[String] = []

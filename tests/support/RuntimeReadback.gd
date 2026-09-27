@@ -5,7 +5,7 @@ extends RefCounted
 ## state; owns and mutates nothing. Lives under tests/support so the product exposes no
 ## player-invisible summary surface (AGENTS: no long-lived test-only surface in game/).
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 
 

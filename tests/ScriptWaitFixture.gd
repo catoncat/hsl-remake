@@ -1,7 +1,7 @@
 extends RefCounted
 ## Authored encounter over existing source role/terrain data. No model decisions.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Mobile = preload("res://tests/run_mobile_jobs_tests.gd")
 const Depart = preload("res://tests/ScriptDepartureFixture.gd")
 const Rules = preload("res://game/sim/WinfailScenarioRules.gd")

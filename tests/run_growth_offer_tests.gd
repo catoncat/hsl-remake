@@ -6,8 +6,8 @@ extends SceneTree
 ## offered before, whether the member is the current actor, or whose turn it is. Level 3
 ## (雷歐納德／緹娜／琥, 琥 acts first) is the three-member formation.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const Checkpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

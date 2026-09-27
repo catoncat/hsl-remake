@@ -23,7 +23,7 @@ extends Node
 ##     (the original hides and holds clouds while [0x4c1b00] & 0x1400000 or its options bit 0x477c14 & 1 is clear; not
 ##     wired)
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 ## 0x4a35fc／0x4a39fc: 256-step cos／sin tables, each entry round(·65536).
 const ANGLE_STEPS := 256

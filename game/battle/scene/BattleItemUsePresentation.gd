@@ -23,10 +23,10 @@ extends Node2D
 ##     (12／12 lead ticks, 25-tick effect stagger, 16 sparks 1..3 ticks apart × 24 ticks, 32-tick flash, number release)
 ##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
 ##     (sfxUseItem 402 = WAV\MHEAL001.WAV, played by 0x409e40 as the item applies)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ResultNumberFloat = preload("res://game/battle/scene/ResultNumberFloat.gd")
 const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")

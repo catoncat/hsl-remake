@@ -20,7 +20,7 @@ extends RefCounted
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
 ##     (sync_unit_highlights: the original lights the targeted and the acting unit; when is provisional)
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 

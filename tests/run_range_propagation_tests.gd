@@ -4,7 +4,7 @@ extends "res://tests/support/TestSuite.gd"
 ## real battlefield cells through the player's weapon range, cast range and cast check.
 
 const Prop = preload("res://game/sim/RangePropagationRules.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Resolution = preload("res://game/sim/SkillResolutionRules.gd")
 const TerrainEdits = preload("res://game/sim/TerrainEditRules.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")

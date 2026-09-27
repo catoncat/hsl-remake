@@ -15,8 +15,8 @@ extends SceneTree
 ## the plan waits. Default plan: Leonard's first three turns in the original recording
 ## (battle_051_ai_moves README); later turns wait.
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 const SCENARIO := "res://content/battles/battle_051.json"

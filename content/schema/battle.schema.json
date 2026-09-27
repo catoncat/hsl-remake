@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "hsl_battle.v1",
   "title": "HSL battle scenario",
-  "description": "What BattlePlayLoop.create reads from a content/battles/*.json battle (rule_adapter winfail／development_battle). Required keys are the inputs no default can stand in for; every other key listed here is optional and BattleScenario.load_file fills its `default` before the loop reads it. Presentation keys (opening, view, provenance, …) are not constrained. Which script resource the adapter reads (winfail: battle_seed, development_battle: development_objectives) is checked by create() as missing_battle_script_payload. Hand-written; validated by tools/hsltools/schema/battle.py (hsl check battle_schema) and game/battle/runtime/BattleScenario.gd.",
+  "description": "What BattlePlayLoop.create reads from a content/battles/*.json battle (rule_adapter winfail／development_battle). Required keys are the inputs no default can stand in for; every other key listed here is optional and BattleScenario.load_file fills its `default` before the loop reads it. Presentation keys (opening, view, provenance, …) are not constrained. Which script resource the adapter reads (winfail: battle_seed, development_battle: development_objectives) is checked by create() as missing_battle_script_payload. Hand-written; validated by tools/hsltools/schema/battle.py (hsl check battle_schema) and game/sim/BattleScenario.gd.",
   "type": "object",
   "required": ["schema", "id", "title", "rule_adapter", "player_unit_id", "playable_units", "resources", "scenario_rules"],
   "properties": {

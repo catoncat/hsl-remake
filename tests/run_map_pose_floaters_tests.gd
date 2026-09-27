@@ -12,7 +12,7 @@ extends "res://tests/support/TestSuite.gd"
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
 const DamageNumberFloat = preload("res://game/battle/scene/DamageNumberFloat.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const WALK_MANIFEST := "res://content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json"
 const POSE_MANIFEST := "res://content/imported/hsl/shared/actor_magic_poses/manifest.json"
 

@@ -4,9 +4,9 @@ const GameOptions = preload("res://game/settings/GameOptions.gd")
 ## series — source numeric helpers have their own oracles; these cases protect composition,
 ## one award, and player-visible timing. Extra action (White Wings／action_twice): the
 ## original_extra_action.json prefixes, then the second decision and the owner-turn handoff.
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
-const LoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const LoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
 const Cases = preload("res://tests/run_ordinary_special_tests.gd")
 const Sequence = preload("res://game/sim/CombatSequenceRules.gd")
 const Cutin = preload("res://game/battle/scene/BattleCombatCutin.gd")

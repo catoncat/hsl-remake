@@ -30,7 +30,7 @@ var mp_bar: TextureProgressBar
 var st_bar: BattleStaminaBar
 var resist_values: Array[Label] = []
 var portraits: Dictionary
-const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const UISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleStaminaBar = preload("res://game/battle/scene/BattleStaminaBar.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")

@@ -7,7 +7,7 @@ extends SceneTree
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const Autoplay = preload("res://tests/support/Autoplay.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 
 const ROUNDS := 3 # HSL_TRACE_ROUNDS overrides; HSL_TRACE_SCENARIO overrides the scenario (lane R16: level 52 wait check)
 var failures: Array[String] = []

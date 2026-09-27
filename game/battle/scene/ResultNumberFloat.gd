@@ -17,7 +17,7 @@ extends Node2D
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 const DamageNumberFloat = preload("res://game/battle/scene/DamageNumberFloat.gd")
 const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 ## Result number kinds with an original glyph set (ShowNumberStyle kinds).
 const KINDS := ["damage", "heal", "mp", "miss"]
 ## The word of the NUM513 glyph.

@@ -10,7 +10,7 @@ extends RefCounted
 ##     (scroll, 11 full + 15 fading frames, strike on tick 27, 80／20-tick hold)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_drop_lightning.md
 ##     (the process plays nothing; FireBomb obj_X1 BOMB0004 as it starts)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")

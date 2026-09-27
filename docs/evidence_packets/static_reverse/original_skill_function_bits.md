@@ -257,4 +257,4 @@ DIGITS（2026-09-26，照原版字形）：数字不再是字体 Label，统一�
 RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
 
 - `game/battle/scene/BattleCombatCutin.gd` strings：result numbers carry no sign glyph — defProcShowNumber digit sets; a utility special with no HP change shows no result when its 0x40aa80 EXP return is non-zero and MISS when it is zero — 0x40485d／0x40464f, section 功能绝技的结果显示; 0x404643 spawns a number or MISS and nothing else, so the line carries the number alone — no 連擊／反擊／暴擊／擊倒 caption, no HP／MP suffix, no skill-name head, a miss reads MISS in the NUM513 colour, heal／MP in their digit colours — UI6, user 2026-09-25 照原版
-- `game/battle/scene/BattleLoopRewards.gd` rules：0x44f2d0 StealItem into the pending collection, 0x40b4e8 StealGold
+- `game/sim/loop/BattleLoopRewards.gd` rules：0x44f2d0 StealItem into the pending collection, 0x40b4e8 StealGold

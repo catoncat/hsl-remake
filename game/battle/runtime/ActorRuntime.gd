@@ -17,7 +17,7 @@ extends Node2D
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: provisional (script walks step at relative frames 0／3)
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const MOVE_SCHEMA := "hsl_actor_runtime_move.v1"
 const SUMMARY_SCHEMA := "hsl_actor_runtime_summary.v1"
 ## Actor cadence in original ticks: the standing loop reloads delay 10 (11 updates per

@@ -11,7 +11,7 @@
 | 素材（imported） | `content/imported/hsl/` | 导入器从你的正版 `GAME-PAK/`（`hsl.pak`、`music/`）解出：图片、声音、原版文本表（`global/tables/PLAYERS.TXT` 等）、剧本源文本 | 没有，本地导入 | 直接改的话，下次跑那个导入任务会被原版覆盖回去，`hsl check` 也会报和原版不一致 |
 | 手写数据（authored） | `content/authored/`、`content/battles/levels/NNN.json`、`content/battles/campaign.json`、`content/world/`、`content/schema/` | 人手写 | 有（只有 `content/authored/actors/` 下的占位 PNG 不在，那是原版帧换色） | 重跑用到它的生成任务，下游跟着变。**你的改动主要放这一层** |
 | 生成物（generated） | `content/generated/hsl/`、`content/battles/battle_NNN.json`、`story_NNN.json` | `python3 tools/hsl.py generate …` 从上面两层算出来 | 没有（只保留重制配乐 `remake_music/`、自动对局结果和清单 `original_derived_manifest.json`） | 不要手改：下次生成就覆盖了，`hsl check` 会报出来 |
-| 代码（game） | `game/` | 人写 | 有 | 规则只在 `game/sim/`；战斗画面在 `game/battle/`；大地图和城镇在 `game/world/`；标题在 `game/title/`；设置和选项在 `game/settings/` |
+| 代码（game） | `game/` | 人写 | 有 | 规则只在 `game/sim/`；全游戏共用的 tick 与界面皮肤在 `game/common/`；战斗画面在 `game/battle/`；大地图和城镇在 `game/world/`；标题在 `game/title/`；设置和选项在 `game/settings/` |
 
 ```text
 你的正版 GAME-PAK/（hsl.pak、music/NN.wav）     手写数据：content/authored/、content/battles/levels/、
@@ -24,7 +24,7 @@
   content/generated/hsl/ ＋ content/battles/battle_NNN.json、story_NNN.json（运行时读的表和关卡）
             │  Godot 按 res:// 路径加载
             ▼
-  game/sim（规则；战斗里唯一可变的状态在 game/battle/scene/BattlePlayLoop.gd）
+  game/sim（规则；战斗里唯一可变的状态在 game/sim/loop/BattlePlayLoop.gd）
   → game/battle（画面与演出）、game/world、game/title、game/settings
 ```
 
@@ -71,7 +71,7 @@ tools/play.sh                                 # 先导入 Godot 资源再开游�
 
 ## 4. 改规则
 
-战斗规则全部在 `game/sim/`（80 多个 `.gd` 文件），可变状态只有 `BattlePlayLoop.gd` 一份。画面层只负责显示，不算任何规则。规则分两类：一类由数据表驱动，改表就等于改规则；另一类写死在代码里，得改 GDScript。
+战斗规则全部在 `game/sim/`，可变状态只有 `game/sim/loop/BattlePlayLoop.gd` 一份（同目录 6 个 `BattleLoop*.gd` 是操作它的静态模块）。画面层只负责显示，不算任何规则。规则分两类：一类由数据表驱动，改表就等于改规则；另一类写死在代码里，得改 GDScript。
 
 **表驱动的规则**（改完重跑右边的生成任务）：
 
@@ -124,7 +124,7 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 
 目前没有现成的"空白模板"。要彻底脱离原版，下面几类都得换成你自己的，并且保持相同的路径和 schema（或者去改代码里的路径常量）：
 
-1. **所有导入素材** `content/imported/hsl/`：`shared/`（面板、命令环、范围格、光标、界面音效、技能特效与魔法、走行帧与受击／施法姿势、战利品飘字、物件预览）；`global/title/`（标题、系统菜单、谢幕）；`global/world_map/`（大地图、城镇定义 towndef）；`global/tables/`（原版文本表）；`music/`、`movie/`、`story_corpus/`、`chapter01/`。引擎用写死的路径读 `shared/` 和部分生成表，这些路径集中在 `game/sim/ContentPaths.gd`；面板路径在 `game/battle/scene/BattleUISkin.gd`。
+1. **所有导入素材** `content/imported/hsl/`：`shared/`（面板、命令环、范围格、光标、界面音效、技能特效与魔法、走行帧与受击／施法姿势、战利品飘字、物件预览）；`global/title/`（标题、系统菜单、谢幕）；`global/world_map/`（大地图、城镇定义 towndef）；`global/tables/`（原版文本表）；`music/`、`movie/`、`story_corpus/`、`chapter01/`。引擎用写死的路径读 `shared/` 和部分生成表，这些路径集中在 `game/sim/ContentPaths.gd`；面板路径在 `game/common/BattleUISkin.gd`。
 2. **由原版表算出的生成物** `content/generated/hsl/`：`skills/`、`roles/`、`ai/`、`combat/`、`equipment/`、`text/`、`fonts/`，以及只能从原版 EXE 导出的 `static/hsl01/`。你换掉源表后重新生成，或者按同样的 schema 自己写。
 3. **看起来是手写、其实源自原版的文件**：
    - `content/authored/roles/job_formulas.json`、`learning_tables.json`：80–100 号是第一章的职业，数值由原版回执钉住（`static-derived`）。你自己的行标 `"evidence_tier": "authored"`。

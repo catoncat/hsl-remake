@@ -27,7 +27,7 @@
 | 13 | [BattleSystemMenu](../../../../game/battle/scene/BattleSystemMenu.gd) | `SCROLL_SECONDS 0.25`、`HINT_SECONDS 1.6` | B／C | 卷轴展开若沿用 `0x45e80d`（距离右移一位、步进 ≤8/tick）可算；提示 1.6 s 无原版对应 | 读系统卷轴对象过程的展开路径；`HINT` 为 C |
 | 14 | [BattleTreasurePresentation](../../../../game/battle/scene/BattleTreasurePresentation.gd) | `DURATION 0.45` 淡出 | C | 原版宝箱领取后直接处置，无淡出（[original_treasure](../../static_reverse/original_treasure.md)） | — |
 | 15 | [BattleTurnEndCue](../../../../game/battle/scene/BattleTurnEndCue.gd) | `EVENT_SECONDS 0.7`／事件 | A（间隔）／B（寿命） | HP 数字后 MP 数字延迟 **40 tick**（[original_resource_recovery](../../static_reverse/original_resource_recovery.md)）；数字寿命见 9 | 事件间隔 **0.64 s**；数字停留读 `0x408580` |
-| 16 | [BattlePlayLoop](../../../../game/battle/scene/BattlePlayLoop.gd) | `MOVE_CELL_PRESENTATION_SECONDS 0.20`／格 | A | 实测 4 px/tick → 32 px = 8 tick | **0.128 s**／格（本机体验 0.155 s） |
+| 16 | [BattlePlayLoop](../../../../game/sim/loop/BattlePlayLoop.gd) | `MOVE_CELL_PRESENTATION_SECONDS 0.20`／格 | A | 实测 4 px/tick → 32 px = 8 tick | **0.128 s**／格（本机体验 0.155 s） |
 | 17 | [BattleSceneRuntime](../../../../game/battle/scene/BattleSceneRuntime.gd) | 章节标题 `1.4 s`、结果音乐淡出 `1.2 s`、自动推进 `0.04／0.06／0.14 s`、`AI_PLAYBACK_STEP_SECONDS 0.35` | C／A | 标题淡入淡出与音乐淡出无原版对应，原章节标题停留未读；自动推进 token 步同行 10 | 自动推进 `0.016 s`／token；其余 C |
 | 18 | [MagicImpactPresentation](../../../../game/battle/scene/MagicImpactPresentation.gd) | `VITALS_SECONDS 0.45`、`FLOAT_SECONDS 0.75`（已改） | A／C | 数字为 `defProcShowNumber`：红字 kind 0 为 10×位数＋34 tick，MISS kind 5 为 46 tick；HP 条动画无原版对应 | lane DIGITS（2026-09-26）已按此落地；`VITALS` 为 C |
 | 19 | [MoonDancePresentation](../../../../game/battle/scene/MoonDancePresentation.gd) | `TICKS_PER_SECOND 100` × `PLAYBACK_SPEED 0.4` | A | moon_dance.json 的 delay 比值是 tick | `62.5` tick/s（×0.4 倍率是 C；原速取 1.0） |
@@ -53,7 +53,7 @@
 
 ## R26 处置（2026-09-23，lane R26-tick-timing）
 
-唯一常数 [`game/battle/runtime/OriginalTick.gd`](../../../../game/battle/runtime/OriginalTick.gd)：`TICK_SECONDS = 0.016`、`TICKS_PER_SECOND = 62.5`、`seconds(n)`／`ticks(s)`／`ticks_from_host_seconds(s)`（÷0.0194）。所有 A 类经它表达；B 类读出的计数写在 [original_tick_counts.md](../../static_reverse/original_tick_counts.md)；未读的保留现值标 provisional 并写函数；C 类删或如实标 remake-invented。PROVENANCE timing 列 remake-invented：基线 36（S6c 删五个魔法模块后 33）→ **10**。
+唯一常数 [`game/common/OriginalTick.gd`](../../../../game/common/OriginalTick.gd)：`TICK_SECONDS = 0.016`、`TICKS_PER_SECOND = 62.5`、`seconds(n)`／`ticks(s)`／`ticks_from_host_seconds(s)`（÷0.0194）。所有 A 类经它表达；B 类读出的计数写在 [original_tick_counts.md](../../static_reverse/original_tick_counts.md)；未读的保留现值标 provisional 并写函数；C 类删或如实标 remake-invented。PROVENANCE timing 列 remake-invented：基线 36（S6c 删五个魔法模块后 33）→ **10**。
 
 | # | 模块 | 处置 | 旧 → 新（n tick × 16 ms） |
 | --- | --- | --- | --- |

@@ -46,7 +46,7 @@ signal arrange_equipment_requested
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const TITLE_SCENE_PATH := "res://game/title/TitleScreen.tscn"
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")

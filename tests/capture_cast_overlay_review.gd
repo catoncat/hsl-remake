@@ -11,7 +11,7 @@ extends SceneTree
 ##
 ##   tools/godot.sh --headless --script res://tests/capture_cast_overlay_review.gd          # log only
 ##   tools/play.sh --screen 0 --script res://tests/capture_cast_overlay_review.gd -- <out_dir>
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const CASES := [
 	{"label": "ch1-tina-heal-water", "scenario": "res://content/battles/battle_010.json", "caster": "tina", "command": "magic", "skill_name": "治癒之水", "target": "leonard"},

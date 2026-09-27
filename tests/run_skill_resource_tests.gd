@@ -1,8 +1,8 @@
 extends "res://tests/support/TestSuite.gd"
 const ResourceRules = preload("res://game/sim/SkillResourceRules.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const Catalog = preload("res://game/battle/runtime/EquipmentCatalog.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const Catalog = preload("res://game/sim/EquipmentCatalog.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
 

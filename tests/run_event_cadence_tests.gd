@@ -18,8 +18,8 @@ extends "res://tests/support/TestSuite.gd"
 ## and the next action's scan no longer sees that attack (0x4c1ce8 is cleared when an
 ## action starts).
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const Winfail = preload("res://game/sim/WinfailScenarioRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")

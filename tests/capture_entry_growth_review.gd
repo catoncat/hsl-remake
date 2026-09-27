@@ -1,8 +1,8 @@
 extends "res://tests/capture_script_wait_review.gd"
 const BirthFixture = preload("res://tests/EntryGrowthFixture.gd")
 const BirthTests = preload("res://tests/run_entry_growth_tests.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
-const LoopScript = preload("res://game/battle/scene/BattleLoopScript.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
+const LoopScript = preload("res://game/sim/loop/BattleLoopScript.gd")
 const BIRTH_OUT := "res://ignored/entry-growth-review/"
 var created_ids: Array = []
 var birth_history := {}

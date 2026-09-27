@@ -1,7 +1,7 @@
 extends SceneTree
 ## Actual Wait input, normal runtime movement/casting/feedback and player handoff.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Cases = preload("res://tests/run_ai_skill_tests.gd")
 const Fixtures = preload("res://tests/run_ai_decision_tests.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")

@@ -124,7 +124,7 @@ CELL = {'type': 'array', 'items': INTEGER, 'minItems': 2, 'maxItems': 2}
 # land in. The value shapes belong to the rules that write them; the schema only names
 # the key and its top-level type.
 RUNTIME_PROPERTIES: dict[str, dict[str, dict]] = {'$': {
-    # game/battle/runtime/BattleScenario.gd units()
+    # game/sim/BattleScenario.gd units()
     'grid_coord': CELL, 'speed': INTEGER, 'defeated': BOOLEAN,
     # game/sim/ActorInitializationRules.gd prepare() (+ progression data merge, AINavigationRules.initialize)
     'traversal': OBJECT, 'ai_call_target_id': STRING, 'ai_target_id': STRING, 'ai_home_coord': CELL,

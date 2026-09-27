@@ -6,8 +6,8 @@ extends "res://tests/support/TestSuite.gd"
 ## Prints one `PLAYER_MODE_SIDES_ATTACK level=… round=… attacker=… defender=…` line per AI
 ## exchange so the remake column of the table is reproducible from this suite.
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const Roles = preload("res://game/sim/ActorRoleRules.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
 const WinfailActions = preload("res://game/sim/WinfailActions.gd")

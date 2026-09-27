@@ -1,7 +1,7 @@
 extends SceneTree
 ## Synthetic inventory fixtures, real viewport mouse events, one rendering window.
 const OUT := "res://ignored/give-review/"
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 var scene: Node
 var failures: Array[String] = []

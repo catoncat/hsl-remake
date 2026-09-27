@@ -18,7 +18,7 @@ extends RefCounted
 ## (evaluate). This is an exploration driver for the autoplay sweep, not a product AI and not
 ## evidence about original balance; the default greedy policy in Autoplay.gd is untouched.
 
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Combat = preload("res://game/sim/CoreCombatRules.gd")
 const ItemUse = preload("res://game/sim/ItemUseRules.gd")
 const SkillResolution = preload("res://game/sim/SkillResolutionRules.gd")

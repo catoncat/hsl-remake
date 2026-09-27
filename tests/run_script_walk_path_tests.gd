@@ -11,8 +11,8 @@ extends "res://tests/support/TestSuite.gd"
 ## walks the route changes) and lists the walled-off targets that end on the nearest cell.
 
 const ScriptWalkPath = preload("res://game/battle/runtime/opening/ScriptWalkPath.gd")
-const WrdTerrainTiles = preload("res://game/battle/runtime/WrdTerrainTiles.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const CELL := Vector2(32, 32)
 const ABSOLUTE_WALKS := ["actor_walk", "actor_walk_wait", "actor_walk_and_delete", "actor_walk_and_delete_wait"]
 const RELATIVE_WALKS := ["actor_walk_disp", "actor_walk_disp_wait"]

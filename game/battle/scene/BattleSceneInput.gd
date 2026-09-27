@@ -10,7 +10,7 @@ extends RefCounted
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md
 ##     (hit-test shares the measured grid projection; not tuned here)
 
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")

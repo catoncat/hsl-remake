@@ -19,9 +19,9 @@ extends SceneTree
 ##
 ##   tools/godot.sh --headless --script res://tests/capture_map_pose_floaters_review.gd     # log only
 ##   tools/play.sh --screen 0 --script res://tests/capture_map_pose_floaters_review.gd -- <out_dir>
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopCombat = preload("res://game/battle/scene/BattleLoopCombat.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const FIXTURE := "res://content/battles/first_battle.json"
 var out_dir := ""
 var rendering := false

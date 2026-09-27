@@ -4,7 +4,7 @@ extends SceneTree
 ## walk frames, then one ordinary cut-in shot of each drawn from their own cutin/ frames.
 ## Output: ignored/authored-art-review/*.png + manifest.json (visual review input, not parity proof).
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const OUT := "res://ignored/authored-art-review/"
 const SCENARIO_PATH := "res://content/battles/battle_200.json"
 var failures: Array[String] = []

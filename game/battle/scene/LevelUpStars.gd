@@ -11,7 +11,7 @@ extends Node2D
 ##   timing: remake-invented
 ##     (the draws come from a presentation RNG seeded by the exchange and the recipient, not the original global
 ##     0x458c10 stream)
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleRewardFloat = preload("res://game/battle/scene/BattleRewardFloat.gd")
 ## 0x408b20 case 3 → 0x415c10(x, y − 0x30 + 0x30, 0x95, 0x40, 0x18, 0, 6, 0x24, 0).
 const STAR_COUNT := 36

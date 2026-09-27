@@ -32,7 +32,7 @@ const GameOptions = preload("res://game/settings/GameOptions.gd")
 const PresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
 const RADIAL_ORDER := ["move", "attack", "item", "wait", "status", "magic", "special", "use", "equip", "drop", "give"]
 ## Source frame sequences advance once per original tick (seven calls per hover frame).
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const HOVER_UPDATES_PER_SECOND := OriginalTick.TICKS_PER_SECOND
 var frames: Dictionary = {}
 var looped: Dictionary = {}

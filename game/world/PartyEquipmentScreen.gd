@@ -18,8 +18,8 @@ signal closed(next_carry: Dictionary, changes: int)
 const SCHEMA := "hsl_party_equipment.v1"
 const Rules = preload("res://game/sim/PartyEquipmentRules.gd")
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
-const BattlePlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const StatusWindow = preload("res://game/world/TownShopScreen.gd")
 const REASONS := {
 	"wrong_job": "職業不符", "wrong_equipment_slot": "部位不符", "inventory_full": "背包已滿",

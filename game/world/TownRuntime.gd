@@ -50,13 +50,13 @@ extends Control
 
 const Rules = preload("res://game/sim/TownEventRules.gd")
 const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleDialogue = preload("res://game/battle/scene/BattleDialogue.gd")
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const TownShopScreen = preload("res://game/world/TownShopScreen.gd")
 const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 const SUMMARY_SCHEMA := "hsl_town_runtime.v1"
 ## Original frames 03／04 (席達鎮 TownBG06, 兩棲族部落 TownBG14; runtime-measured): TownBG and

@@ -1,5 +1,5 @@
 extends "res://tests/support/TestSuite.gd"
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Growth = preload("res://tests/run_growth_lifecycle_tests.gd")
 const Save = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")

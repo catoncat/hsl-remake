@@ -1,7 +1,7 @@
 extends SceneTree
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Grid = preload("res://game/sim/TacticalGridRules.gd")
 const Nav = preload("res://game/sim/AINavigationRules.gd")
 const Checkpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")

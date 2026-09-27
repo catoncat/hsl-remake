@@ -1,8 +1,8 @@
 extends SceneTree
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
-const LoopAI = preload("res://game/battle/scene/BattleLoopAI.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopAI = preload("res://game/sim/loop/BattleLoopAI.gd")
 const Nav = preload("res://game/sim/AINavigationRules.gd")
 const Decisions = preload("res://game/sim/AIDecisionRules.gd")
 const Cases = preload("res://tests/run_ai_decision_tests.gd")
@@ -12,7 +12,7 @@ const Checkpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const Initialization = preload("res://game/sim/ActorInitializationRules.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
-const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
 const POISON := "magic:magicAIR:magicCode05"
 var failures: Array[String] = []

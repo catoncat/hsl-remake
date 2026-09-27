@@ -7,7 +7,7 @@ extends Sprite2D
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: provisional (additive colour cycle)
 
-const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 var frames: Array = []
 var textures: Array[Texture2D] = []

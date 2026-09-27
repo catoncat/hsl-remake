@@ -50,7 +50,7 @@ extends Node2D
 
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
-const BattleUISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"

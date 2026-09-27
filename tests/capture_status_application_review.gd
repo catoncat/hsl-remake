@@ -1,7 +1,7 @@
 extends SceneTree
 ## Bounded real Control/map input fixture. Never sends desktop mouse or keys.
 const TestSuite = preload("res://tests/support/TestSuite.gd")
-const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const Status = preload("res://game/sim/StatusEffectRules.gd")
 const Cases = preload("res://tests/run_status_application_tests.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
