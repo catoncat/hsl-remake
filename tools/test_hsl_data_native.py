@@ -328,7 +328,7 @@ class ParalysisEvidenceTests(unittest.TestCase):
         for code in ['31','211']:
             self.assertTrue(items[code]['supported'])
             self.assertEqual(items[code]['status_effect_flags'] & 0x4000000, 0x4000000)
-        self.assertFalse(items['71']['supported'])
+        self.assertTrue(items['71']['supported'])  # range6CellShoot: 0x409090 -> ITEM+0x84, 0x40f8b0 generic flood.
         medicine = consumables()
         self.assertEqual(medicine['items']['248']['cure_paralysis'], 1)
         self.assertEqual(medicine['items']['248']['heal_hp'], 0)
@@ -433,7 +433,7 @@ class PositionEquipmentTests(unittest.TestCase):
         self.assertEqual(weapons['0'], 'range0Cell')
         self.assertEqual(weapons['61'], 'range3CellShoot')
         self.assertEqual(weapons['69'], 'range5CellShoot')
-        self.assertTrue(set(weapons.values()) <= {'range0Cell','range1Cell','range2Cell','range3CellShoot','range4CellShoot','range5CellShoot','range3CellCircle','range3CellThrust','range5CellCircle'})
+        self.assertTrue(set(weapons.values()) <= {'range0Cell','range1Cell','range2Cell','range3CellShoot','range4CellShoot','range5CellShoot','range6CellShoot','range3CellCircle','range3CellThrust','range5CellCircle'})
 
 
 # ---- from test_hsl_priest.py ----
@@ -563,7 +563,7 @@ class RoleResourceTests(unittest.TestCase):
             self.assertTrue(items[code]['supported'])
         self.assertTrue(items['145']['supported'])  # Independent casting-equipment follow-up.
         self.assertTrue(items['145']['hp_transfer_mp'])
-        self.assertFalse(items['194']['supported'])
+        self.assertTrue(items['194']['supported'])  # add_defnese: no such string in the EXE, the ITEM loader never reads it.
 
 
 # ---- from test_hsl_stat_magic.py ----

@@ -134,7 +134,7 @@ func series_transactions() -> void:
 func status_word() -> void:
 	var base := fixture(35)
 	var catalog: Dictionary = base["equipment_items"]
-	check(int(catalog["209"]["weapon_effect_flags"]) == WeaponEffectRules.RANDOM and catalog["209"]["supported"] and int(catalog["71"]["weapon_effect_flags"]) == WeaponEffectRules.RANDOM and not catalog["71"]["supported"],"random_status_error maps to 0x40000; 71 stays unsupported for its range6CellShoot range only")
+	check(int(catalog["209"]["weapon_effect_flags"]) == WeaponEffectRules.RANDOM and catalog["209"]["supported"] and int(catalog["71"]["weapon_effect_flags"]) == WeaponEffectRules.RANDOM and catalog["71"]["supported"] and catalog["71"]["attack_range"] == "range6CellShoot","random_status_error maps to 0x40000; 71 equips with range6CellShoot (0x409090 returns ITEM+0x84, 0x40f8b0 floods the row generically)")
 	check(int(catalog["51"]["weapon_effect_flags"]) == WeaponEffectRules.WEAKEN and int(catalog["66"]["weapon_effect_flags"]) == WeaponEffectRules.NO_MAGIC and int(catalog["220"]["status_effect_flags"]) == 0x2000000,"attack_weaken 0x20000 / attack_nomagic 0x80000 / avoid_weaken 0x2000000 follow the ITEM loader")
 	var ring := base.duplicate(true)
 	var actor := BattlePlayLoop.unit_ref(ring,"leonard")

@@ -48,7 +48,7 @@
 | 229 彩霞的聖石 | 同一通用防护位；`jobAllNoPlayer8` |
 | 免疫饰品 | 220（衰弱）、219（禁魔）、211（麻痺）、217（中毒）、229（0x80 全免） |
 
-ITEM 状态字非零行：51（attack_weaken）、66（attack_nomagic）、71／209（random_status_error）、220（avoid_weaken）；`attack_paralysis` 无行，随机位仍可选中麻痺。71 朧月因 `range6CellShoot` 未支持不可装。`I_STING.SHP` 为 36 字节原空图；RESOURCE.H 无 sting 命中别名。
+ITEM 状态字非零行：51（attack_weaken）、66（attack_nomagic）、71／209（random_status_error）、220（avoid_weaken）；`attack_paralysis` 无行，随机位仍可选中麻痺。71 朧月的 `range6CellShoot` 走 `0x40f8b0` 通用传播，可装。`I_STING.SHP` 为 36 字节原空图；RESOURCE.H 无 sting 命中别名。
 
 ## 重制接线
 

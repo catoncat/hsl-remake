@@ -342,7 +342,7 @@ func mobility_native_cases() -> void:
 			var prepared := MobilityRules.prepare(actor,loop["equipment_items"])
 			check(prepared["ok"] and prepared["value"] == row["native"][0]["move_point"],"live source/equipment adapter agrees with native mobility")
 	for code in [138,193,231,236]: check(loop["equipment_items"][str(code)]["supported"],"source mobility equipment is enabled: " + str(code))
-	check(not loop["equipment_items"]["194"]["supported"],"unresolved source add_defnese spelling remains rejected")
+	check(loop["equipment_items"]["194"]["supported"] and int(loop["equipment_items"]["194"]["effects"]["defense"]) == 0,"194: the misspelt add_defnese column is never read (no such string in the EXE; ITEM loader 0x4477c0 reads fields by name)")
 
 
 func equipment_growth_cases() -> void:

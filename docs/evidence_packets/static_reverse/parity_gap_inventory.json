@@ -14,15 +14,15 @@
     },
     "layout_timing_modules": 53,
     "items_by_original_status": {
-      "read_complete": 21,
-      "read_partial": 49,
+      "read_complete": 22,
+      "read_partial": 48,
       "unread": 6,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 16,
-      "some_levels": 34,
-      "rare": 38,
+      "some_levels": 33,
+      "rare": 39,
       "invisible": 5
     },
     "items_by_category": {
@@ -1289,33 +1289,6 @@
       ]
     },
     {
-      "id": "unimplemented-abilities",
-      "difference": "技能与被动已无拒绝项；带未支持字段的装备剩 3 件禁止装备（神之足、龍鱗、朧月），见审计 ABILITIES",
-      "original": "神之足错拼列原版不读；龍鱗 magic4Type 大小写解析与朧月 range6CellShoot 范围未证明",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_campaign_actors.md",
-        "docs/evidence_packets/static_reverse/original_inventory_equipment.md"
-      ],
-      "remake": "equipment.py unsupported_fields 明确拒绝装备；high_cost 与 hp_damage_half 已照原版接入",
-      "remake_code": [
-        "tools/hsltools/data/equipment.py",
-        "game/sim/EquipmentRules.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "L",
-      "category": "战斗规则",
-      "sources": [
-        "matrix:Magic/Special费用",
-        "matrix:主线25角色来源模板与十一职业",
-        "matrix:初始阵容、自动升级与动态学习",
-        "matrix:当前技能共同结算／初始与后天拥有权",
-        "provenance:game/sim/SkillTargetRules.gd|rules|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#792c820ee1",
-        "sentence:docs/evidence_packets/static_reverse/original_status_application.md#3e0e306c9d"
-      ]
-    },
-    {
       "id": "ai-move-preview-timing",
       "difference": "敌方移动预告已照原版分追击 12／站位 24 tick，起步动作数据下不可达已照；只剩录屏范围消失后约 0.18 s 才起步的来源未读",
       "original": "0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 查 SHAPEDEF prepare，66 条均无，恒直接走",
@@ -1493,6 +1466,33 @@
       "sources": [
         "provenance:game/title/TitleScreen.gd|layout|remake-invented|",
         "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）"
+      ]
+    },
+    {
+      "id": "unimplemented-abilities",
+      "difference": "技能、被动与装备已无拒绝项：神之足、龍鱗、朧月照原版可装，见审计 ABILITIES；未知字段与未识别常量仍明确拒绝，只守以后新增的行",
+      "original": "EXE 无 add_defnese 字串，错拼列不读；TYPE.H 名字经 0x46db10 以 _stricmp 匹配，不分大小写；武器射程 0x409090 取 ITEM+0x84，由 0x40f8b0 通用传播",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_campaign_actors.md",
+        "docs/evidence_packets/static_reverse/original_inventory_equipment.md"
+      ],
+      "remake": "equipment.py 忽略错拼列、常量不分大小写、武器表含 range6CellShoot；high_cost 与 hp_damage_half 已照原版接入",
+      "remake_code": [
+        "tools/hsltools/data/equipment.py",
+        "game/sim/EquipmentRules.gd"
+      ],
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "战斗规则",
+      "sources": [
+        "matrix:Magic/Special费用",
+        "matrix:主线25角色来源模板与十一职业",
+        "matrix:初始阵容、自动升级与动态学习",
+        "matrix:当前技能共同结算／初始与后天拥有权",
+        "provenance:game/sim/SkillTargetRules.gd|rules|provisional|",
+        "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#792c820ee1",
+        "sentence:docs/evidence_packets/static_reverse/original_status_application.md#3e0e306c9d"
       ]
     },
     {

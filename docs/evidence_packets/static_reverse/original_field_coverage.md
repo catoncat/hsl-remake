@@ -194,7 +194,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `cost` | consumed | `game/world/WorldPartyRules.gd:buy` | 非默认行 221；声明行 221；unsupported 物品 0 | 售价（商店买卖） | — |
 | `type` | consumed | `tools/hsltools/data/equipment.py:build` | 非默认行 239；声明行 239；unsupported 物品 0 | 物品类型（itemType*） | — |
 | `icon` | consumed | `tools/hsltools/data/equipment.py:build` | 非默认行 239；声明行 239；unsupported 物品 0 | 图标 | — |
-| `attack_range` | consumed | `tools/hsltools/data/attack_ranges.py:weapon_ranges` | 非默认行 92；声明行 92；unsupported 物品 1 | 武器射程码 | — |
+| `attack_range` | consumed | `tools/hsltools/data/attack_ranges.py:weapon_ranges` | 非默认行 92；声明行 92；unsupported 物品 0 | 武器射程码 | — |
 | `attack_damage` | consumed | `tools/hsltools/data/equipment.py:build` | 非默认行 222；声明行 223；unsupported 物品 0 | 武器伤害／防具防御／速度加值（按 type） | — |
 | `get_ratio` | consumed | `game/sim/BattleRewardRules.gd:drops` | 非默认行 226；声明行 239；unsupported 物品 0 | 掉落／被偷概率 | — |
 | `important` | consumed | `game/sim/InventoryRules.gd:discard_error` | 非默认行 5；声明行 6；unsupported 物品 0 | 重要物品不可丢 | — |
@@ -226,7 +226,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `attack_cancel` | consumed | `game/sim/WeaponEffectRules.gd:effects` | 非默认行 1；声明行 2；unsupported 物品 0 | 击中取消行动 | — |
 | `attack_weaken` | consumed | `game/sim/WeaponEffectRules.gd:resolve` | 非默认行 1；声明行 2；unsupported 物品 0 | 击中衰弱（1 行 51；item+0xa0 位 0x20000，0x409310 分支 25% → 0x409240） | R21 曾误记 dead；R27 随 random_status_error 一并接入 |
 | `attack_nomagic` | consumed | `game/sim/WeaponEffectRules.gd:resolve` | 非默认行 1；声明行 2；unsupported 物品 0 | 击中禁魔（1 行 66；位 0x80000 → 0x409210） | R21 曾误记 dead；R27 接入 |
-| `random_status_error` | consumed | `game/sim/WeaponEffectRules.gd:resolve` | 非默认行 2；声明行 3；unsupported 物品 0 | 击中随机异常（2 行 71／209；位 0x40000，0x409310 以 rand(100)+1 选衰弱／禁魔／麻痺／中毒一位替换状态字，再各 25%） | R27 接入；71 朧月 仍因 range6CellShoot 不可装 |
+| `random_status_error` | consumed | `game/sim/WeaponEffectRules.gd:resolve` | 非默认行 2；声明行 3；unsupported 物品 0 | 击中随机异常（2 行 71／209；位 0x40000，0x409310 以 rand(100)+1 选衰弱／禁魔／麻痺／中毒一位替换状态字，再各 25%） | R27 接入；71 朧月 range6CellShoot 走 0x40f8b0 通用传播，可装 |
 | `attack_paralysis` | dead | — | 非默认行 0；声明行 1；unsupported 物品 0 | 击中麻痺（位 0x100000 → 0x409110；数据 1 行为 0，随机位可选中该分支） | WeaponEffectRules.resolve 已实现分支，无数据行 |
 | `attack_poison` | consumed | `game/sim/WeaponEffectRules.gd:effects` | 非默认行 2；声明行 3；unsupported 物品 0 | 击中中毒 | — |
 | `attack_decmp` | consumed | `game/sim/WeaponEffectRules.gd:effects` | 非默认行 1；声明行 2；unsupported 物品 0 | 击中削 MP | — |
@@ -243,8 +243,8 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `add_weapon_dmgx2` | consumed | `tools/hsltools/data/equipment.py:build` | 非默认行 5；声明行 6；unsupported 物品 0 | 暴击加值 | — |
 | `magic_attack_type` | consumed | `tools/hsltools/data/equipment.py:weapon_magic` | 非默认行 17；声明行 17；unsupported 物品 0 | 武器属性伤害三元组 | — |
 | `take_off` | consumed | `tools/hsltools/data/equipment.py:build` | 非默认行 5；声明行 5；unsupported 物品 0 | 不可卸下 | — |
-| `add_resist` | consumed | `tools/hsltools/data/equipment.py:build` | 非默认行 30；声明行 30；unsupported 物品 1 | 抗性加值（属性,值） | — |
-| `add_defnese` | dead | — | 非默认行 1；声明行 1；unsupported 物品 1 | 拼写错误列（1 行；loader 无此字段名） | 原 PLAYERS/ITEM loader 按名字查字段，错拼即丢弃 |
+| `add_resist` | consumed | `tools/hsltools/data/equipment.py:build` | 非默认行 30；声明行 30；unsupported 物品 0 | 抗性加值（属性,值） | — |
+| `add_defnese` | dead | — | 非默认行 1；声明行 1；unsupported 物品 0 | 拼写错误列（1 行；loader 无此字段名） | 原 PLAYERS/ITEM loader 按名字查字段，错拼即丢弃 |
 | `cure_poison` | consumed | `game/sim/ItemUseRules.gd:prepare` | 非默认行 3；声明行 3；unsupported 物品 0 | 消耗品解毒 | — |
 | `cure_no_magic` | consumed | `game/sim/ItemUseRules.gd:prepare` | 非默认行 3；声明行 3；unsupported 物品 0 | 消耗品解封魔 | — |
 | `cure_paralysis` | consumed | `game/sim/ItemUseRules.gd:prepare` | 非默认行 3；声明行 3；unsupported 物品 0 | 消耗品解麻痹 | — |

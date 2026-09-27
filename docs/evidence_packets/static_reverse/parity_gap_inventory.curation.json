@@ -1269,20 +1269,20 @@
     },
     {
       "id": "unimplemented-abilities",
-      "difference": "技能与被动已无拒绝项；带未支持字段的装备剩 3 件禁止装备（神之足、龍鱗、朧月），见审计 ABILITIES",
-      "original": "神之足错拼列原版不读；龍鱗 magic4Type 大小写解析与朧月 range6CellShoot 范围未证明",
+      "difference": "技能、被动与装备已无拒绝项：神之足、龍鱗、朧月照原版可装，见审计 ABILITIES；未知字段与未识别常量仍明确拒绝，只守以后新增的行",
+      "original": "EXE 无 add_defnese 字串，错拼列不读；TYPE.H 名字经 0x46db10 以 _stricmp 匹配，不分大小写；武器射程 0x409090 取 ITEM+0x84，由 0x40f8b0 通用传播",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_campaign_actors.md",
         "docs/evidence_packets/static_reverse/original_inventory_equipment.md"
       ],
-      "remake": "equipment.py unsupported_fields 明确拒绝装备；high_cost 与 hp_damage_half 已照原版接入",
+      "remake": "equipment.py 忽略错拼列、常量不分大小写、武器表含 range6CellShoot；high_cost 与 hp_damage_half 已照原版接入",
       "remake_code": [
         "tools/hsltools/data/equipment.py",
         "game/sim/EquipmentRules.gd"
       ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "L",
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
       "category": "战斗规则"
     },
     {

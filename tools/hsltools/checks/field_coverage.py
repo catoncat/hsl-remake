@@ -229,7 +229,7 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'attack_cancel': ('consumed', 'game/sim/WeaponEffectRules.gd:effects', '击中取消行动', None),
         'attack_weaken': ('consumed', 'game/sim/WeaponEffectRules.gd:resolve', '击中衰弱（1 行 51；item+0xa0 位 0x20000，0x409310 分支 25% → 0x409240）', 'R21 曾误记 dead；R27 随 random_status_error 一并接入'),
         'attack_nomagic': ('consumed', 'game/sim/WeaponEffectRules.gd:resolve', '击中禁魔（1 行 66；位 0x80000 → 0x409210）', 'R21 曾误记 dead；R27 接入'),
-        'random_status_error': ('consumed', 'game/sim/WeaponEffectRules.gd:resolve', '击中随机异常（2 行 71／209；位 0x40000，0x409310 以 rand(100)+1 选衰弱／禁魔／麻痺／中毒一位替换状态字，再各 25%）', 'R27 接入；71 朧月 仍因 range6CellShoot 不可装'),
+        'random_status_error': ('consumed', 'game/sim/WeaponEffectRules.gd:resolve', '击中随机异常（2 行 71／209；位 0x40000，0x409310 以 rand(100)+1 选衰弱／禁魔／麻痺／中毒一位替换状态字，再各 25%）', 'R27 接入；71 朧月 range6CellShoot 走 0x40f8b0 通用传播，可装'),
         'attack_paralysis': ('dead', None, '击中麻痺（位 0x100000 → 0x409110；数据 1 行为 0，随机位可选中该分支）', 'WeaponEffectRules.resolve 已实现分支，无数据行'),
         'attack_poison': ('consumed', 'game/sim/WeaponEffectRules.gd:effects', '击中中毒', None),
         'attack_decmp': ('consumed', 'game/sim/WeaponEffectRules.gd:effects', '击中削 MP', None),

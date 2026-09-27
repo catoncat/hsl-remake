@@ -13,6 +13,7 @@ from pathlib import Path
 
 from hsltools.data import json_bytes
 from hsltools.registry import GeneratedFilesTask, Context
+from hsltools.data.attack_ranges import WEAPON_SELECTED
 from hsltools.sources.tables import TABLES, RESOURCE_TXT, blocks, digest, parse_table
 
 OUTPUT = Path('content/generated/hsl/equipment/items.json')
@@ -43,6 +44,9 @@ DEFENSE_FIELDS = {'hp_damage_half'}
 # high_cost: loader 0x448164 ORs item+0xa0 bit 0x800 (stored 0x4481b1, ORed into +0x18c) but no .text
 # instruction tests that bit on either word, so it carries no rule.
 INERT_FIELDS = {'high_cost'}
+# The ITEM loader 0x4477c0 only asks for field names it holds as strings (0x4466d0 / 0x46dd50 per name);
+# the EXE has no 'add_defnese' string, so the misspelt ITEM.TXT column is never read (194 神之足).
+LOADER_ABSENT_FIELDS = {'add_defnese'}
 RESISTS = {0: [0], 1: [1], 2: [2], 3: [3], 4: [4], 7: [0, 1, 2, 3, 4],
            8: [0, 1, 2, 3], 9: [1, 3], 10: [0, 3], 11: [2, 3], 12: [3, 4],
            13: [0, 1], 14: [1, 2], 15: [1, 4], 16: [0, 2], 17: [0, 4], 18: [2, 4]}
@@ -108,10 +112,17 @@ def job_mask(text, constants):
     return result
 
 
+class Defines(dict):
+    """TYPE.H names resolve case-insensitively: 0x46de00 falls back to 0x46db10, which walks the #define
+    table comparing with _stricmp 0x472ec0 (so ITEM 222 'magic4Type' is TYPE.H magic4TYPE = 8)."""
+    def __getitem__(self, key): return dict.__getitem__(self, key.lower())
+    def get(self, key, default=None): return dict.get(self, key.lower(), default)
+
+
 def build():
-    constants = {key: int(value, 0) for key, value in re.findall(
+    constants = Defines({key.lower(): int(value, 0) for key, value in re.findall(
         r'^\s*#define\s+(\w+)\s+(0x[0-9a-fA-F]+|\d+)\b',
-        (TABLES/'TYPE.H').read_bytes().decode('cp950'), re.M)}
+        (TABLES/'TYPE.H').read_bytes().decode('cp950'), re.M)})
     names = parse_table(NAMES.read_bytes())
     items = {}
     for row in blocks((TABLES/'ITEM.TXT').read_bytes(), 'item'):
@@ -128,7 +139,7 @@ def build():
         elif kind == 5:
             effects['speed'] += base
         unsupported = [key for key, value in row.items()
-                       if key not in METADATA and key not in NUMERIC and key not in STAMINA_FLAGS and key not in EXPERIENCE_FIELDS and key not in GOLD_FIELDS and key not in COMBAT_FIELDS and key not in RESOURCE_FIELDS and key not in CASTING_FIELDS and key not in CURE_FIELDS and key not in DEFENSE_FIELDS and key not in INERT_FIELDS and value != '0']
+                       if key not in METADATA and key not in NUMERIC and key not in STAMINA_FLAGS and key not in EXPERIENCE_FIELDS and key not in GOLD_FIELDS and key not in COMBAT_FIELDS and key not in RESOURCE_FIELDS and key not in CASTING_FIELDS and key not in CURE_FIELDS and key not in DEFENSE_FIELDS and key not in INERT_FIELDS and key not in LOADER_ABSENT_FIELDS and value != '0']
         weapon = weapon_magic(row, constants)
         if weapon['element'] != -1 and kind != 2:
             unsupported.append('magic_attack_type')
@@ -141,8 +152,7 @@ def build():
             else:
                 for index in RESISTS[type_code]:
                     effects['resist_by_type'][str(index)] += int(amount)
-        if kind == 2 and row.get('attack_range') not in ('range0Cell', 'range1Cell', 'range2Cell', 'range3CellShoot', 'range4CellShoot', 'range5CellShoot',
-                                                            'range3CellCircle', 'range3CellThrust', 'range5CellCircle'):
+        if kind == 2 and row.get('attack_range') not in WEAPON_SELECTED:
             unsupported.append('attack_range')
         items[code] = {'name': names[row['name']], 'icon': row['icon'], 'type_code': kind,
                        'job_mask': job_mask(row.get('use_job', ''), constants),
@@ -173,7 +183,7 @@ def build():
             'items': items,
             'limits': ['Numeric effects, st_x2/no_addst, exp_x2, gold_x2, double_attack/action_twice, mp_use_half, HP/MP automatic restoration, HP transfer, magic hit/protection, moved casting, normal-weapon range extension, strike-damage halving (hp_damage_half), ordinary-series cancellation, the 0x409310 status word (weaken/no-magic/paralysis/poison and the random_status_error pick), weaken/poison/no-magic/paralysis protection and consumable cure bits have independent live contracts; other nonzero fields reject equip.',
                        'Live base-stat refresh supports independently proven job80/85/90/94. Source job eligibility still restricts individual equipment.',
-                       'Unknown fields and unrecognized element/resistance constants remain unsupported, not silently discarded.']}
+                       'Unknown fields and unrecognized element/resistance constants remain unsupported, not silently discarded; TYPE.H names match case-insensitively (0x46db10 _stricmp).']}
 
 
 class EquipmentDataTask(GeneratedFilesTask):

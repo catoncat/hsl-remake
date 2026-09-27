@@ -49,7 +49,7 @@ AI 施放（`hsl01.exe` 指令读法）：
 | 规划：区域计数 | `0x40c9a0` 遍历 `*0x4c1b48` 已写格，`0x40ca71` `0x4100e0(行动者, x, y, 区域, 第 6 参)`；再遍历 `*0x4c1b4c`，字 `& 0x70000` 非零且非 pmALL 计一（`0x40cb06..0x40cb14`） | 效果区域按 mode 传播 |
 | 出手 | MAGIC `0x441779` `0x40fa80(行动者, 射程, −1, 0)`、`0x4417a6`／`0x4418fd` `0x4100e0(…, [0x4c2c78])`；SPECIAL `0x441a73` 同 −1、0，`0x441aa0`／`0x441c02` 同 `[0x4c2c78]` | 结算读同一组格 |
 
-**resource-derived**：RANGE.H range3CellCircle 10、range3CellThrust 15、range5CellCircle 12、range6CellShoot 7、range0Cell 0；ITEM 32（Gulu 008）与 53（Enemy057）→ range3CellCircle，57（Enemy058）→ range0Cell（注释掉的 range3CellCircle 行不用）。普通武器接受 range0Cell、range1Cell、range2Cell、range3／4／5CellShoot、range3CellCircle、range3CellThrust、range5CellCircle，其余拒绝。70 关 569 个 EVEF 演员实例的 `override_fields` 中装备六字均为 0 次，未应用实例覆盖对现有数据是空操作。
+**resource-derived**：RANGE.H range3CellCircle 10、range3CellThrust 15、range5CellCircle 12、range6CellShoot 7、range0Cell 0；ITEM 32（Gulu 008）与 53（Enemy057）→ range3CellCircle，57（Enemy058）→ range0Cell（注释掉的 range3CellCircle 行不用）。普通武器接受 range0Cell、range1Cell、range2Cell、range3／4／5／6CellShoot、range3CellCircle、range3CellThrust、range5CellCircle，其余拒绝。70 关 569 个 EVEF 演员实例的 `override_fields` 中装备六字均为 0 次，未应用实例覆盖对现有数据是空操作。
 
 **runtime-measured**（重制侧影响面，`tests/diagnostics/audit_range_propagation_impact.gd`，139 个战场、63 种地图）
 

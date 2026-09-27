@@ -14,9 +14,12 @@ from hsltools.registry import GeneratedFilesTask, Context
 SOURCE = Path('content/imported/hsl/global/tables/RANGE.TXT')
 OUTPUT = Path('content/generated/hsl/chapter01/attack_ranges.json')
 ITEM_SOURCE = Path('content/imported/hsl/global/tables/ITEM.TXT')
+# ITEM loader 0x447a5e reads attack_range through 0x4466d0 into ITEM+0x84; 0x409090 returns that index
+# (+1 with the range-extension bit, +0x11 capped 20 for large actors) and 0x40f8b0 floods the RANGE row
+# generically, so range6CellShoot (71 朧月) needs no shape of its own. Extension reaches range7CellShoot.
 WEAPON_SELECTED = ('range0Cell', 'range1Cell', 'range2Cell', 'range3CellShoot', 'range4CellShoot', 'range5CellShoot',
-                    'range3CellCircle', 'range3CellThrust', 'range5CellCircle')
-SELECTED = (*WEAPON_SELECTED, 'range2CellCircle', 'range3Cell', 'range6CellShoot', 'range2CellFull', 'range3CellFull', 'range4CellFull',
+                    'range6CellShoot', 'range3CellCircle', 'range3CellThrust', 'range5CellCircle')
+SELECTED = (*WEAPON_SELECTED, 'range2CellCircle', 'range3Cell', 'range7CellShoot', 'range2CellFull', 'range3CellFull', 'range4CellFull',
             'range4CellCircle', 'range6CellCircle', 'range1CellFull', 'range3CellDir', 'range4CellDir')
 # RANGE.H "N Line"/"E Line" symbols: size=N rows of one value. 0x4100e0 (indices 21..23) does not
 # read the rows; it writes a straight N-cell line from the chosen cell away from the caster.
@@ -50,7 +53,7 @@ def compile_ranges(text: str) -> dict:
             continue
         if size % 2 != 1 or len(rows) != size or any(len(row) != size for row in rows):
             raise ValueError(f'invalid square mask: {code}')
-        if any(value < 0 for row in rows for value in row) and code not in ('range3CellShoot','range4CellShoot','range5CellShoot','range6CellShoot'):
+        if any(value < 0 for row in rows for value in row) and code not in ('range3CellShoot','range4CellShoot','range5CellShoot','range6CellShoot','range7CellShoot'):
             raise ValueError(f'unsupported signed mask: {code}')
         center = size // 2
         # 'data' keeps the signed rows: the original 0x40f8b0/0x40f5d0 flood reads every value (a negative
