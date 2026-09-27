@@ -3,7 +3,7 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 99,
+    "items": 97,
     "sources": 532,
     "sources_by_kind": {
       "provenance": 214,
@@ -14,14 +14,14 @@
     },
     "layout_timing_modules": 58,
     "items_by_original_status": {
-      "read_complete": 14,
+      "read_complete": 12,
       "read_partial": 60,
       "unread": 8,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 18,
-      "some_levels": 36,
+      "every_battle": 17,
+      "some_levels": 35,
       "rare": 40,
       "invisible": 5
     },
@@ -31,11 +31,11 @@
       "剧情走位": 4,
       "原版调度与随机流": 3,
       "地图与物件": 7,
-      "地图人物演出": 8,
+      "地图人物演出": 7,
       "城镇与大地图": 6,
       "存档与流程": 1,
       "对白": 2,
-      "战斗规则": 13,
+      "战斗规则": 12,
       "标题与过场": 4,
       "特写与施法演出": 10,
       "重制新增（原版没有）": 16,
@@ -46,17 +46,15 @@
     },
     "in_progress": 0,
     "no_visible_effect_sources": 54,
-    "resolved_sources": 17
+    "resolved_sources": 18
   },
   "top": [
     "dialogue-timing",
-    "map-strike-effects",
     "special-skill-page",
     "status-left-column",
     "cursor-hide-item-icon",
     "drop-lightning-presentation",
     "npc-level-policy",
-    "turn-queue-semantics",
     "shop-hand-cursor",
     "battle-equip-drop-hand",
     "bitmap-font",
@@ -68,7 +66,9 @@
     "panel-captions",
     "status-page-extras",
     "wait-cue",
-    "ui-layout-readings"
+    "ui-layout-readings",
+    "ai-first-battle-moves",
+    "ai-skill-buckets"
   ],
   "items": [
     {
@@ -86,29 +86,10 @@
       "visibility": "every_battle",
       "effort": "S",
       "category": "对白",
-      "decision": "有意偏离（重制改善）：保留即时确认，不改所有对白宿主的输入（负责人 2026-09-25 批准）",
+      "decision": "有意偏离（重制改善）：保留即时确认，OPT-PACE 三档都即时整屏，不改所有对白宿主的输入",
       "sources": [
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|timing|remake-invented|"
-      ]
-    },
-    {
-      "id": "map-strike-effects",
-      "difference": "地图上普攻的挥击轨迹、法术受击染色 0.18 s、落空音延后 0.12 s 已删除照原版（STRIKEFX）",
-      "original": "地图上没有普攻效果对象：刀光（0x4021df）与击中闪光（0x40418a）都经 0x401310 建在切入层，切入路径不调地图受击态 0x407230；闪避音在闪避起步那 tick 放（0x409760 模板 +0xc），无延迟；法术落空只出 MISS 不放声",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_map_strike.md"
-      ],
-      "remake": "BattlePresentation 地图分支不画挥击轨迹、不染色；落空音在命中时刻立即放，法术落空不放",
-      "remake_code": [
-        "game/battle/scene/BattlePresentation.gd:_present_impact"
-      ],
-      "original_status": "read_complete",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "地图人物演出",
-      "sources": [
-        "provenance:game/battle/scene/BattlePresentation.gd|timing|provisional|"
       ]
     },
     {
@@ -132,7 +113,7 @@
       "visibility": "every_battle",
       "effort": "S",
       "category": "面板与界面",
-      "decision": "照原版；SKILLPAGE 重做布局，SKILLPAGE2（2026-09-26）补原版实拍核对、滚动条、列表顺序、悬停脉冲；FONT.24 点阵待导入",
+      "decision": "照原版；SKILLPAGE 重做布局，SKILLPAGE2 补原版实拍核对、滚动条、列表顺序、悬停脉冲；名字用 FONT.24 点阵（lane FONT）",
       "sources": [
         "video:4"
       ]
@@ -232,28 +213,6 @@
         "provenance:game/sim/InitialRosterGrowthRules.gd|rules|remake-invented|",
         "scope:docs/evidence_packets/runtime_observations/battle_006/README.md|provisional|敌人随机调级与携带品的逐项对照",
         "scope:docs/evidence_packets/static_reverse/original_job_stats.md|provisional|合成初始化"
-      ]
-    },
-    {
-      "id": "turn-queue-semantics",
-      "difference": "当前行动者在自己行动里阵亡（反击击杀）时原版队列连走两步，紧随其后的单位失去本轮行动；重制只走一步。待机、轮中改速度、阵亡空洞、中途插入、回合计数已与原版一致",
-      "original": "0x407720 当前项为空时 0x4074a0(1) 先走一步，死亡序列的 0x407510 再走一步（505 关种子 1 实测 036_5 失去行动，克勞蒂排末时只丢 036_5）；脚本离场同写法但脚本链中 [0x4c1ba0]=0 只走一步（未实测）",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/initial_battle_initiative.md",
-        "docs/evidence_packets/static_reverse/original_death_disposal.md"
-      ],
-      "remake": "BattlePlayLoop 阵亡当前者只调一次 CoreTurnQueue.end_turn",
-      "remake_code": [
-        "game/sim/loop/BattlePlayLoop.gd:advance_current_actor",
-        "game/sim/CoreTurnQueue.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "战斗规则",
-      "decision": "AI-PRIO-2 0ef32183（BattlePlayLoop._step_past_dead_actor）已按原版补上，未并入 pipeline-line；合并后本条改 resolved",
-      "sources": [
-        "matrix:速度行动队列"
       ]
     },
     {
@@ -421,7 +380,7 @@
     },
     {
       "id": "move-path-overlay",
-      "difference": "移动选格显示路径线、角括号、「移動 3/5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示，原版没有",
+      "difference": "原版预设已照原版：移动选格只画范围与选格角括号；OPT-GUIDE=提示 时显示路径线、「移動 3 / 5」费用栏、「可通過，不能停留」「飛行」「無法到達」提示与 AI 走位路径线（重制改良）",
       "original": "原版只画移动范围",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_actor_traversal.md"
@@ -473,7 +432,7 @@
     },
     {
       "id": "status-page-extras",
-      "difference": "状态页的永久加值行、属性／抗性悬停说明、「保存／讀取／待領物品／返回」按钮条是重制补充；原版点未交手单位不开页",
+      "difference": "原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良）",
       "original": "原版只在移动选格态（phase 20 子态 0 0x443c63）点非己方指挥单位开页，0x443cfa 对未知单位不开页，关窗子态 11 0x4440b7 回选格；行动环 98／74 无点单位分支；按钮条原版没有",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
@@ -496,7 +455,7 @@
     },
     {
       "id": "wait-cue",
-      "difference": "AI 待机／守候时重制显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」提示并停 0.55 s，原版没有",
+      "difference": "原版预设已照原版：AI 待机／守候／麻痺不显示提示、不停顿；OPT-GUIDE=提示 时显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」并停 0.55 s（重制改良）",
       "original": "原版不显示 AI 等待提示",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_wait.md"
@@ -824,7 +783,7 @@
     },
     {
       "id": "script-fast-forward",
-      "difference": "对白外按确认可快进剧情走位与镜头（重制便利）",
+      "difference": "原版预设已照原版：对白外按确认不快进，剧情走位与镜头照原速；OPT-PACE=快／極快 时确认键快进剧情走位与镜头（重制改良）",
       "original": "原版按键快进未证实",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_walk_path.md"
@@ -1008,6 +967,7 @@
       "category": "特写与施法演出",
       "sources": [
         "provenance:game/battle/runtime/CombatPresentationTiming.gd|timing|provisional|",
+        "provenance:game/battle/scene/BattlePresentation.gd|timing|provisional|",
         "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|remake-invented|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
@@ -1404,7 +1364,7 @@
       "visibility": "rare",
       "effort": "S",
       "category": "对白",
-      "decision": "有意偏离（重制改善）：用户 P9 实玩报过名字被拆，保留专名保护（负责人 2026-09-25 批准）",
+      "decision": "有意偏离（重制改善）：原版硬断会拆开专名，保留专名保护，不设选项",
       "sources": [
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|layout|remake-invented|",
@@ -1472,7 +1432,7 @@
       "visibility": "rare",
       "effort": "S",
       "category": "战斗规则",
-      "decision": "当场分完照原版（GROWTHWIN）；每级一窗照原版（GROWTHWIN2，负责人按「查清原版就照原版」派），合成一窗留作 OPT-GROWTH 改良值",
+      "decision": "当场分完照原版（GROWTHWIN）；每级一窗照原版（GROWTHWIN2），合成一窗留作 OPT-GROWTH 改良值",
       "sources": [
         "matrix:EXP/升级/转职",
         "provenance:game/battle/scene/BattleGrowthPanel.gd|rules|remake-invented|docs/OPTIONS.md",
@@ -1638,7 +1598,7 @@
     },
     {
       "id": "extra-action-cue",
-      "difference": "白光之翼的第二次行动前显示「再次行動」并停 0.55 s，原版没有",
+      "difference": "原版预设已照原版：白光之翼的第二次行动前无提示、不停顿；OPT-GUIDE=提示 时显示「再次行動」并停 0.55 s（重制改良）",
       "original": "原版无「再次行動」提示",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_extra_action.md"
@@ -1712,8 +1672,8 @@
     },
     {
       "id": "in-battle-checkpoint",
-      "difference": "重制可在战斗中 F5／F9 存读档（单战单槽），原版也能在战斗卷轴里儲存戰場記錄（HSLBAT.SAV，见 original_save_format.md），F5／F9 只是重制加的快捷键",
-      "original": "原版无战内存档；原存档格式另见存档格式包",
+      "difference": "重制可在战斗中 F5／F9 存读档（单战单槽）；原版在战斗卷轴里儲存戰場記錄（HSLBAT.SAV，见 original_save_format.md），F5／F9 快捷键与单战检查点是重制加的",
+      "original": "原版战内只有战斗卷轴的儲存戰場記錄（走確定／取消），没有快捷键；存档格式另见存档格式包",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_save_format.md"
       ],
@@ -1990,7 +1950,7 @@
     },
     {
       "id": "status-save-buttons-confirm",
-      "difference": "状态页里的存档／读档按钮与 F5／F9 立即执行、用顶部横幅提示，不走系统卷轴那样的確定／取消",
+      "difference": "状态页里的存档／读档按钮（只在 OPT-GUIDE=提示 时出现）与 F5／F9 立即执行、用顶部横幅提示，不走系统卷轴那样的確定／取消",
       "original": "原版战斗内没有这些按钮；系统卷轴写记录项都走 Title061 確定／取消",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md"
@@ -2004,7 +1964,7 @@
       "visibility": "rare",
       "effort": "S",
       "category": "重制新增（原版没有）",
-      "decision": "负责人倾向状态页按钮也走確定／取消，F5／F9 保留即时",
+      "decision": "倾向：状态页按钮也走確定／取消，F5／F9 保留即时（未做）",
       "sources": [
         "provenance:game/battle/scene/BattleSettlementController.gd|strings|remake-invented|",
         "provenance:game/battle/scene/BattleStatusPanel.gd|layout|remake-invented|docs/OPTIONS.md",
@@ -2535,7 +2495,7 @@
   "video_diff_classes": {
     "1": {
       "title": "镜头滚动",
-      "summary": "原版减速滚动、重制跳切（R6-P2 已按 0x45e80d 做逐 tick 滑动）；走路跟随 R7-CAM 已做"
+      "summary": "原版减速滚动（R6-P2 已按 0x45e80d 做逐 tick 滑动）；走路跟随 R7-CAM 已做"
     },
     "2": {
       "title": "面板开合动画",
@@ -2547,7 +2507,7 @@
     },
     "4": {
       "title": "特殊技页",
-      "summary": "原版特殊技总先开技能页、气力不足也能打开（UI6 已做）；页面照状态页式布局重做（SKILLPAGE：左栏 WINDOW20 列名、身份条、金钱框、说明框，四块板与 238.8 s 帧零偏移）；剩九行以上的滚动条美术与 FONT.24 字形"
+      "summary": "原版特殊技总先开技能页、气力不足也能打开（UI6 已做）；页面照状态页式布局重做（SKILLPAGE），滚动条、列表顺序、悬停脉冲与 FONT.24 名字已做（SKILLPAGE2、FONT）；剩滚动条只有静态读法"
     },
     "5": {
       "title": "AI 回合预告",
@@ -2575,11 +2535,11 @@
     },
     "11": {
       "title": "系统菜单细节",
-      "summary": "任務說明与存档確定／取消（R6-P4 已做）；剩状态页存读按钮与左栏证据冲突"
+      "summary": "任務說明与存档確定／取消（R6-P4 已做）；状态页左栏证据冲突已解（STATUSPAGE）；剩状态页存读按钮（OPT-GUIDE=提示 时才有）不走確定／取消"
     },
     "12": {
       "title": "游戏光标",
-      "summary": "原版 CURSOR01 游戏光标（R7-CAM 进行中）"
+      "summary": "原版 CURSOR01 游戏光标（R7-CAM 已做）；演出期间藏光标、持物换图标见 cursor-hide-item-icon"
     },
     "13": {
       "title": "法术演出",
@@ -2827,6 +2787,10 @@
         "reason": "遗言按原版奇偶选句（R6-P1 07e11772，dialogue_death §3）"
       },
       {
+        "source": "matrix:速度行动队列",
+        "reason": "当前行动者被反击击杀时队列照原版连走两步（AI-PRIO-2，BattlePlayLoop._step_past_dead_actor；initial_battle_initiative.md、original_death_disposal.md）"
+      },
+      {
         "source": "scope:docs/evidence_packets/resource_inventory/steam_classic_edition.md|negative-evidence|本机原作目录与 hsl.pak 没有 music 文件",
         "reason": "原版 18 首已从 Steam 經典版 music\\02–19.wav 导入 content/imported/hsl/music（music_import），标题 03、大地图 06、城镇 05、通关尾声 07／04／02 照 original_music.md §3 放原曲，音樂音量 默认满值（MUSIC-SHELL）"
       },
@@ -2836,7 +2800,7 @@
       },
       {
         "source": "scope:docs/evidence_packets/static_reverse/original_growth_window.md|negative-evidence|参考录像无升級窗原帧",
-        "reason": "升級窗已用用户录屏 340–351 s 逐帧对照并照做按钮隐藏（R7-UI 492c59a2，original_growth_window §8）"
+        "reason": "升級窗已用原版录屏 340–351 s 逐帧对照并照做按钮隐藏（R7-UI 492c59a2，original_growth_window §8）"
       },
       {
         "source": "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#3b94795095",

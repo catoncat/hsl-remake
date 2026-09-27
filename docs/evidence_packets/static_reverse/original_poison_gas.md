@@ -6,7 +6,7 @@
 
 - 原版 拉格納沼地（LEVEL032，场次见 [命名表](../../BATTLE_NAMES.md)）的 WINFAIL032 event 9 每 4 次交接在 9 组坐标之一放一团噴人沼氣，毒中心格及周围 8 格上不免疫的任何单位；深淵之沼（LEVEL015）的 `0x200000` 地形格在行动收尾对非飞行、不免疫者施毒（static-derived；整镜像逐值重算 43/43、5/5，runtime-measured）。
 - 重制 `game/sim/PoisonGasRules.gd`、`WinfailConditions.gd`（交接计数定时器）、`WinfailActions.gd`、`game/battle/scene/BattlePoisonGasPresentation.gd` 与 `BattlePlayLoop` 的地形毒收尾照此实现（static-derived）。
-- 差异：烟团初始化的全局流抽取次序、受击抖动局部状态 6 的消费者未对齐（provisional）；item 252 经 `ItemResolutionRules.prepare` 的 dispatcher 等价未证（provisional）。
+- 差异：烟团初始化的全局流抽取次序未对齐（provisional，原版下一 tick 抽、重制在结算时抽）；受击抖动局部状态 6 已由 `MapHitState.begin` 照原版消费（hit 帧＋左右抖 60 tick）；item 252 经 `ItemResolutionRules.prepare` 的 dispatcher 等价未证（provisional）。
 
 ## 证据
 
