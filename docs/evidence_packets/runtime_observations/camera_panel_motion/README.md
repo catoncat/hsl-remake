@@ -7,7 +7,7 @@
 - 原版镜头每 tick 每轴走剩余距离的一半（战斗上限 32 px、剧情 16 px），被对准的点落在画面 (320,192)；结算前先滑到受益者；每次开行动环与移动起步前先滑回行动者、到位才开环／起步；走路时镜头与走路的人同步平移、不追终点（runtime-measured＋static-derived）。
 - 原版面板按所在一侧滑入、每帧去剩余约 1/8（约 0.62 s），关闭原路约 20 px／帧滑出（约 0.23 s），压暗并行淡入淡出；胜负条件面板 WINDOW60 32 tick 溶解淡入、等按键、34 tick 淡出，溶解是含字面板整体 16 级交叉淡化（`0x4699fd`）；敌方移动前先铺蓝色移动范围 0.20–0.48 s；普攻切入的白光球在地图之上放大（runtime-measured；static-derived：`0x413a80`）。
 - 重制 `BattleCameraController`、`BattlePanelMotion`、`BattleWinFailBoard`、`BattleAiMovePreview`、`BattleCombatCutin._show_opening` 按这些量值实现（static-derived／runtime-measured）。
-- 差异：面板滑动曲线与压暗层级是录屏拟合（provisional，差异清单 `panel-slide-formula`）；移动预告时长照原版分追击 12／站位 24 tick，起步前的 ANI 动作 5／6 未演（`ai-move-preview-timing`）；面板部件按矩形分侧（remake-invented）；actWalkFollow(Wait) 的镜头规则未读（`cam-script-walk-variants`）。
+- 差异：面板滑动曲线与压暗层级是录屏拟合（provisional，差异清单 `panel-slide-formula`）；移动预告时长照原版分追击 12／站位 24 tick，范围消失后约 0.18 s 才起步的来源未读（不是起步动作，`ai-move-preview-timing`）；面板部件按矩形分侧（remake-invented）；actWalkFollow(Wait) 的镜头规则未读（`cam-script-walk-variants`）。
 
 ## 证据
 

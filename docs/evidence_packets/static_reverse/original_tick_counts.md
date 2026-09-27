@@ -145,5 +145,5 @@ provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/s
 - 系统卷轴展开／收起已读（`0x45e882`／`0x45e91e`，[menus_ui](../runtime_observations/menus_ui/README.md) §6）。
 - 未读（保留 provisional）：击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。
 - `mapobjFlash` 亮度步进已读：见 [地图物件闪烁](original_map_object_flash.md)。
-- §8：无脚本形态的演员走完后原版仍按移动延迟每 tick 循环当前形态，重制到位即停帧；子状态 1／4 的 `0x446c10`／形态组 5 分支与 `0x44fbd0` 目标修正在重制里未接（与 actWalk 系列相同）。
+- §8：无脚本形态的演员走完后原版仍按移动延迟每 tick 循环当前形态，重制到位即停帧；子状态 1／4 的 `0x446c10` 起步动作分支在数据下不可达（SHAPEDEF 无 `prepare`，见 [original_action_state_machine.md](original_action_state_machine.md)「起步动作」），`0x44fbd0` 目标修正在重制里未接（与 actWalk 系列相同）。
 - 反编译原文留在 `ignored/static/hsl01/decompiled/`，不入库。

@@ -1,13 +1,13 @@
 # 公共行动状态：命令分派、移动撤销、攻击完成与一次交接
 
-> evidence: static-derived · status: live · functions: 0x407340, 0x4074a0, 0x407510, 0x40b910, 0x411900, 0x411990, 0x411a30, 0x411b90, 0x43bf30, 0x43fbd6, 0x440d92, 0x441043, 0x441ad3 · tools: capture_give_review.gd, hsltools/evidence/action_state.py, hsltools/evidence/offense_completion.py, hsltools/probes/turn_select.py · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x407340, 0x4074a0, 0x407510, 0x40b910, 0x411900, 0x411990, 0x411a30, 0x411b90, 0x43bf30, 0x43fbd6, 0x440d92, 0x441043, 0x441ad3, 0x446800, 0x446c10, 0x446c40 · tools: capture_give_review.gd, hsltools/evidence/action_state.py, hsltools/evidence/offense_completion.py, hsltools/probes/turn_select.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版：13 个命令对象的 `obj_Data8` 决定低位 state；Move 进外层 20、走完进外层 21；移动后取消经 74→75→`0x44429b` 写回原坐标并重开选格；普通攻击（含落空、反击）、特殊技、Wait、Use 的正常完成都到公共出口 `0x4454a5`，不论是否先移动都结束该角色，随后 `0x407510` 选一次后继（static-derived）。
 - 队列选择器 `0x4074a0` 选中时清 ready，向后扫描再环回，环回不增加 round；全队列无 ready 才经 `0x407340` 重建并加 round（static-derived；8 组有界原函数执行）。
 - 重制：`game/sim/ActionBudgetRules.gd` 纯计算结果（保持／选移动／恢复移动／等待演出／结束），`BattlePlayLoop._settle_action → _advance_current_actor` 唯一交接；撤销移动后直接显示原位置可达格；攻击／特殊技完成在演出结束后经 `finish_exhausted_action` 交接一次（static-derived 规则；实现合同）。
-- AI 移动前等待：AI 过程（`0x43ede0`）各分支选好去向后都进同一组移动子状态（`0x440b2c` 经表 `0x44233c`），子状态 1 `0x441043` 先等镜头到行动者，再把 `[unit+0x94]` 逐 tick 减到 0、每 tick 画移动范围；追击走 `0x440d92` 写 12，走向选定站位或目标点（攻击、技能、物品、回固定点）经 `0x441ad3` 写 24。录屏两簇 0.20–0.23 s／0.40–0.48 s 即 12／24 tick（按 19.4 ms）；重制 `BattleAiMovePreview` 照此分 12／24（static-derived）。
+- AI 移动前等待：AI 过程（`0x43ede0`）各分支选好去向后都进同一组移动子状态（`0x440b2c` 经表 `0x44233c`），子状态 1 `0x441043` 先等镜头到行动者，再把 `[unit+0x94]` 逐 tick 减到 0、每 tick 画移动范围；追击走 `0x440d92` 写 12，走向选定站位或目标点（攻击、技能、物品、回固定点）经 `0x441ad3` 写 24。录屏两簇 0.20–0.23 s／0.40–0.48 s 即 12／24 tick（按 19.4 ms）；重制 `BattleAiMovePreview` 照此分 12／24（static-derived）。 起步前的 `0x446c10` 查 SHAPEDEF `prepare`，数据里 66 条均无，三处调用点恒直接起步，重制同（static-derived）。
 - 差异：Godot 的 `action_ready` 在完成时清除，原版在选中时清除，语义不同但交接次序一致（static-derived）；移动谓词与大体型占格归 [original_movement.md](original_movement.md)，异步动画与死亡／成长回调不在本包范围。
 
 ## 证据
@@ -71,7 +71,7 @@ static-derived。AI 单位更新函数 `0x43ede0` 的移动子状态（`[unit+0x
 | 子状态 | 入口 | 内容 |
 | --- | --- | --- |
 | 0 | `0x440b45`（普通攻击）等各分支首态 | `0x43bf30(unit, 0)` 把镜头滑到行动者，未到位返回 0 就不往下；到位同一 tick 选去向、`0x4111a0` 求路，写等待计数并子状态 +1 |
-| 1 | `0x441043` | 再调 `0x43bf30`（已到位即返回 1）；`[unit+0x94]` 非 0 时减一，路径缓冲 `[0x4c63c0]` 非空就 `0x411200(unit, 0x70000)` 画移动范围；为 0 时 `0x411b90` 抹原占位，`0x446c10` 查到 ANI 动作 5／6 就先播（子状态 2 `0x45e575` 等播完），否则直接子状态 6 起步 |
+| 1 | `0x441043` | 再调 `0x43bf30`（已到位即返回 1）；`[unit+0x94]` 非 0 时减一，路径缓冲 `[0x4c63c0]` 非空就 `0x411200(unit, 0x70000)` 画移动范围；为 0 时 `0x411b90` 抹原占位，`0x446c10` 查形态有起步动作（SHAPEDEF `prepare`）就 `0x446c40(unit, 形态, 5, 6)` 先播（子状态 2 `0x45e575` 等播完），否则直接子状态 6 起步；数据下恒走后者（见下「起步动作」） |
 | 2／3·6 | `0x441106`／`0x44117c` | 动作播完后逐 tick 走路（每步 4 px，镜头同向请求，`0x42dc50`） |
 
 等待计数的写入点（进子状态 1 时的 `[unit+0x94]`）：
@@ -83,8 +83,20 @@ static-derived。AI 单位更新函数 `0x43ede0` 的移动子状态（`[unit+0x
 | `0x441ad3` | 普通攻击站位 `0x440c24`／`0x440c45`／`0x440cfb`、魔法／绝技站位 `0x440627`（`0x44062e` 同值）、物品站位 `0x440541`／`0x44058f`、回固定点 `0x43fc56` | 24 |
 
 - 顺序：镜头滑动与等待**串行**——两个子状态都以 `0x43bf30` 到位为门槛，滑动期间不计数也不画范围；范围从到位后下一 tick 起画满计数值那么多 tick，计数归零那一 tick 不再画。
-- 录屏归属（[镜头与面板实测 §4](../runtime_observations/camera_panel_motion/README.md)）：0.20–0.23 s 簇＝12 tick（×19.4 ms＝0.23 s）的追击；0.40–0.48 s 簇＝24 tick（0.47 s）的站位移动。110.37–110.56 s 那段范围消失后约 0.18 s 才起步，对应子状态 2 的 ANI 动作 5／6。
+- 录屏归属（[镜头与面板实测 §4](../runtime_observations/camera_panel_motion/README.md)）：0.20–0.23 s 簇＝12 tick（×19.4 ms＝0.23 s）的追击；0.40–0.48 s 簇＝24 tick（0.47 s）的站位移动。110.37–110.56 s 那段范围消失后约 0.18 s 才起步，不是起步动作（数据里没有 `prepare`，子状态 2 不可达），来源未读（provisional）。
 - 路径为空（`[0x4c63c0]==0`）时子状态 1 直接转 7，不画范围、不等待。
+
+### 起步动作 `0x446c10`（SHAPEDEF `prepare`）
+
+static-derived。`0x446c10(形态号)` 以 `[unit+0xa2]` 为下标取形态表 `[0x4c1d00]`（每条 0x3c 字节，`0x446800` 读 SHAPEDEF.TXT 填入），`+0x2c`（`prepare` 图档）与 `+0x30`（`prepare_num` 帧数）都非 0 才返回 1。`0x446c40(unit, 形态, 动作, 参数)` 按动作号取成对字段交 `0x45e525` 播放：0 `stand`、1 `walk_up`、2 `walk_down`、3 `walk_left`、4 `walk_right`、5 `prepare`、6 `hit`（帧数固定 1）、7 `use_magic`；起步动作即动作 5，第 4 参固定传 6（含义未读）。`0x4466d0` 找不到键时返回 0。
+
+| 调用点 | 过程 | 有 `prepare` | 无 `prepare` |
+| --- | --- | --- | --- |
+| `0x4410c9` | AI 移动子状态 1 计数归零 | 播动作 5 → 子状态 2 等 `0x45e575` 播完 → 3 走；走完 4 `0x45e642` 倒放 → 5 等完 → 7 | 子状态 6 直接走 |
+| `0x443e5d` | 玩家移动子表低位 2 | 播动作 5 → 3 等完 → 4 走；走完 5／6 倒放 → 8 | 低位 7 直接走 |
+| `0x453e00` | 行走者 `0x453b90` 子状态 1／4 | 播动作 5 等完再走 | 直接走 |
+
+三处判断与参数相同。SHAPEDEF.TXT（cn 数据包）66 条 `[define]` 无一带 `prepare`／`prepare_num` 键，所以三处恒走「无」列：没有任何单位有起步动作，原版起步不插动作。重制三处都直接起步，行为一致，无需接线。
 
 ## 重制接线
 
@@ -117,5 +129,5 @@ static-derived。AI 单位更新函数 `0x43ede0` 的移动子状态（`[unit+0x
 - 反击死亡或战斗终局可进入其他流程；重制在终局后不再推进。
 - 所有技能类别、MP/ST 消耗、状态效果、反击／双击随机次序与动画时钟不由本包证明。
 - 选择器的重建支路只静态校验，未执行。
-- AI 移动等待：`0x440028`（外层 0xb 的 12 tick 支路）对应重制哪一种行动未逐项核对，重制把无攻击单位的推进也归到追击 12 tick；子状态 2 的 ANI 动作 5／6（起步前约 0.18 s）重制未演，差异清单 `ai-move-preview-timing`。
+- AI 移动等待：`0x440028`（外层 0xb 的 12 tick 支路）对应重制哪一种行动未逐项核对，重制把无攻击单位的推进也归到追击 12 tick；录屏里范围消失后约 0.18 s 才起步的来源未读（不是起步动作），差异清单 `ai-move-preview-timing`。
 - 夹具截图只证明重制后继控制，不证明原版多队友初始化或数值。

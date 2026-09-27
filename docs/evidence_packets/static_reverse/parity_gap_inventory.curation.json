@@ -737,13 +737,13 @@
     },
     {
       "id": "ai-move-preview-timing",
-      "difference": "敌方移动预告已照原版分追击 12／站位 24 tick，只剩起步前的 ANI 动作 5／6 未演",
-      "original": "0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 有动作 5／6 就先播再走",
+      "difference": "敌方移动预告已照原版分追击 12／站位 24 tick，起步动作数据下不可达已照；只剩录屏范围消失后约 0.18 s 才起步的来源未读",
+      "original": "0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 查 SHAPEDEF prepare，66 条均无，恒直接走",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_action_state_machine.md",
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "BattleAiMovePreview.preview_ticks 按 purpose 取 12／24，预告结束即起步",
+      "remake": "BattleAiMovePreview.preview_ticks 按 purpose 取 12／24，预告结束即起步（与原版无 prepare 时一致）",
       "remake_code": [
         "game/battle/scene/BattleAiMovePreview.gd:preview_ticks"
       ],
@@ -2942,6 +2942,22 @@
     },
     "video:5": {
       "item": "ai-move-preview-timing"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#119064b6dd": {
+      "item": "ai-move-preview-timing",
+      "text": "移动预告时长照原版分追击 12／站位 24 tick，范围消失后约 0.18 s 才起步的来源未读（不是起步动作，`ai-move-preview-timing`）；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_action_state_machine.md#3833946ebf": {
+      "item": "ai-move-preview-timing",
+      "text": "110.37–110.56 s 那段范围消失后约 0.18 s 才起步，不是起步动作（数据里没有 `prepare`，子状态 2 不可达），来源未读（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_action_state_machine.md#8867a098d2": {
+      "item": "ai-move-preview-timing",
+      "text": "起步动作即动作 5，第 4 参固定传 6（含义未读）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_action_state_machine.md#e96cee0d73": {
+      "item": "ai-move-preview-timing",
+      "text": "录屏里范围消失后约 0.18 s 才起步的来源未读（不是起步动作），差异清单 `ai-move-preview-timing`。"
     },
     "video:6": {
       "resolved": "use_magic 施法抬手（R7-POSE：ActorRuntime.play_use_magic，法术引导末／用道具／升级；map_pose_floaters）与 hit 跪姿（R6-P1）"

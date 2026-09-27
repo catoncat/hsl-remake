@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 95,
-    "sources": 522,
+    "sources": 526,
     "sources_by_kind": {
       "provenance": 206,
-      "sentence": 143,
+      "sentence": 147,
       "scope": 75,
       "matrix": 85,
       "video": 13
@@ -1306,13 +1306,13 @@
     },
     {
       "id": "ai-move-preview-timing",
-      "difference": "敌方移动预告已照原版分追击 12／站位 24 tick，只剩起步前的 ANI 动作 5／6 未演",
-      "original": "0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 有动作 5／6 就先播再走",
+      "difference": "敌方移动预告已照原版分追击 12／站位 24 tick，起步动作数据下不可达已照；只剩录屏范围消失后约 0.18 s 才起步的来源未读",
+      "original": "0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 查 SHAPEDEF prepare，66 条均无，恒直接走",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_action_state_machine.md",
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "BattleAiMovePreview.preview_ticks 按 purpose 取 12／24，预告结束即起步",
+      "remake": "BattleAiMovePreview.preview_ticks 按 purpose 取 12／24，预告结束即起步（与原版无 prepare 时一致）",
       "remake_code": [
         "game/battle/scene/BattleAiMovePreview.gd:preview_ticks"
       ],
@@ -1321,6 +1321,10 @@
       "effort": "S",
       "category": "地图人物演出",
       "sources": [
+        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#119064b6dd",
+        "sentence:docs/evidence_packets/static_reverse/original_action_state_machine.md#3833946ebf",
+        "sentence:docs/evidence_packets/static_reverse/original_action_state_machine.md#8867a098d2",
+        "sentence:docs/evidence_packets/static_reverse/original_action_state_machine.md#e96cee0d73",
         "video:5"
       ]
     },
