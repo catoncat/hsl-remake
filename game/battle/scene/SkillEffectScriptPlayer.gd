@@ -223,7 +223,7 @@ func compile_row(skill_id: String, hit: bool, seed: int) -> Dictionary:
 static func compile(attack_lines: Array, defense_lines: Array, hit: bool, seed: int, data: Dictionary) -> Dictionary:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed
-	var timeline := {"kind": "special", "events": [], "release_tick": 0, "impact_tick": -1, "result_tick": -1, "complete_tick": 0,
+	var timeline := {"kind": "special", "events": [], "release_tick": 0, "impact_tick": -1, "result_tick": -1, "darken_tick": 0, "complete_tick": 0,
 		"hit": hit, "sound_cues": [],
 		"hit_ticks": [], "result_ticks": [], "attack_background": "", "defense_background": "",
 		"double_page_tick": -1, "no_dark_bg": false, "show_attacker": false, "xy_disp": Vector2.ZERO, "empty_attack": false,
@@ -369,18 +369,30 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 		event["arrive"] = arrive
 		event["expire"] = arrive + event["frames"].size() * int(event["frame_ticks"])
 	# The clip ends when the script and the readable result are done; object lifetimes do not
-	# hold it. The defense script's aniOver (0x403d3d) goes straight to phase 101 (0x403d7a),
-	# whose close (0x404ada) sets the teardown bit 0x4c1404 |= 1, and every cutin effect object
-	# (slots 36–38: 0x404ffa, 0x4050a0, 0x4051d0) deletes itself on that bit — no liveness
-	# check. Objects still running then are cut at the end. Remake reading: a random-delay
-	# insert (0x401390) landing after the script's end still appears and sounds its insertion
-	# cues, so a seed never changes which objects and cues play.
-	var complete := maxi(cursor, int(timeline["result_tick"]) + RESULT_HOLD_TICKS)
+	# hold it. The defense script's aniOver (0x403d3d) goes straight to phase 101 (0x403d7a):
+	# sub 0 requests the 16-tick darken (0x404b23), sub 1 then sets the teardown bit
+	# 0x4c1404 |= 1 and deletes the 0x4c1400 objects (0x401370, 0x404ada); every cutin effect
+	# object (slots 36–38: 0x404ffa, 0x4050a0, 0x4051d0) deletes itself on that bit — no
+	# liveness check. The attack script's phase 101 (0x40298a) sets the same bit as soon as its
+	# hit flash is gone, so the attack page's objects end at the page change (the defense page
+	# clears the bit, 0x40435e). An object — a random-delay insert (0x401390) whose accumulated
+	# delay overtakes its page's teardown — never appears, and neither do the command sounds
+	# of an object past its deletion. `darken_tick` starts the shade (the remake keeps the
+	# RESULT_HOLD_TICKS stand-in for the unread aniShowHitResult block); `complete_tick` is the
+	# teardown.
+	var darken := maxi(cursor, int(timeline["result_tick"]) + RESULT_HOLD_TICKS)
+	var complete := darken + Timing.RECOVERY_TICKS
+	var cuts := {"attack": int(timeline["release_tick"]), "defense": complete}
+	var kept: Array = []
 	for event in timeline["events"]:
-		complete = maxi(complete, int(event["tick"]) + (1 if event["kind"] == "object" else 0))
-	for event in timeline["events"]:
-		if event["kind"] == "object" and (event.get("open_ended", false) or int(event["expire"]) > complete):
-			event["expire"] = complete
+		var cut: int = cuts.get(event["phase"], complete)
+		if int(event["tick"]) >= cut or int(event.get("source_tick", -1)) >= cut:
+			continue
+		if event["kind"] == "object" and (event.get("open_ended", false) or int(event["expire"]) > cut):
+			event["expire"] = cut
+		kept.append(event)
+	timeline["events"] = kept
+	timeline["darken_tick"] = darken
 	timeline["complete_tick"] = complete
 	timeline.erase("sound_cues")
 
@@ -474,19 +486,30 @@ static func _fold(rng: RandomNumberGenerator, span: int) -> int:
 ## rand(delay) + 1 ticks after the previous (+0xae accumulates, 0x401455) — 月花圓舞's 64 petals
 ## fall over about 220 ticks, not in one burst. The draws come from the clip's presentation RNG.
 static func _insert_spawner(timeline: Dictionary, data: Dictionary, rng: RandomNumberGenerator, phase: String, args: Array, centre: Vector2, cursor: int) -> void:
+	var first: int = timeline["events"].size()
 	var wait := 0
 	for _index in range(number(args[6])):
 		var offset := Vector2(_fold(rng, number(args[3])), _fold(rng, number(args[4])))
 		_insert(timeline, data, phase, str(args[0]), centre + offset, cursor + wait, cursor)
 		wait += _rand(rng, number(args[5])) + 1
+	_mark_random(timeline, first)
 
 
 static func _insert_random(timeline: Dictionary, data: Dictionary, rng: RandomNumberGenerator, phase: String, args: Array, centre: Vector2, cursor: int, base_delay: int, delay: int, fixed_delay: bool, count: int) -> void:
+	var first: int = timeline["events"].size()
 	var spread := Vector2(number(args[3]), number(args[4]))
 	for index in range(count):
 		var offset := Vector2(rng.randf_range(-spread.x / 2.0, spread.x / 2.0), rng.randf_range(-spread.y / 2.0, spread.y / 2.0)).round()
 		var wait := base_delay + (delay * index if fixed_delay else rng.randi_range(0, maxi(delay, 0)))
 		_insert(timeline, data, phase, str(args[0]), centre + offset, cursor + wait, cursor)
+	_mark_random(timeline, first)
+
+
+## Tags the events a random insert (0x401390) appended from `first` on: which of them the
+## scene teardown overtakes depends on the drawn delays.
+static func _mark_random(timeline: Dictionary, first: int) -> void:
+	for index in range(first, timeline["events"].size()):
+		timeline["events"][index]["random"] = true
 
 
 ## One object insertion; {} (and a `skipped_objects` entry) for an object the manifest cannot
@@ -496,7 +519,10 @@ static func _insert_random(timeline: Dictionary, data: Dictionary, rng: RandomNu
 ## first (`_insert_sounds`), so an object whose frames cannot be drawn still sounds.
 static func _insert(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, position: Vector2, tick: int, sound_tick: int = -1) -> Dictionary:
 	var object: Dictionary = data["objects"].get(object_name, {})
+	var first_sound: int = timeline["events"].size()
 	_insert_sounds(timeline, data, phase, object, tick, sound_tick)
+	for index in range(first_sound, timeline["events"].size()):
+		timeline["events"][index]["source_tick"] = tick
 	var frames: Array = []
 	for member in object.get("shape_members", []):
 		if data["frames"].has(member):
@@ -600,6 +626,15 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	# The script's own clock: after the lead; an empty attack script yields at once.
 	var script_tick := tick - float(lead_ticks) + (float(EMPTY_ATTACK_LEAD_TICKS) if lead_ticks > 0 and bool(timeline["empty_attack"]) else 0.0)
 	var attack_phase := script_tick < float(timeline["release_tick"])
+	var closing := clip_closing_tick(timeline, host.result_spawns(clip["strike"]))
+	if script_tick >= float(closing + Timing.CLOSING_LIGHTEN_TICKS):
+		clear()
+		return true
+	if script_tick >= float(closing):
+		# 0x404ada: teardown, 0x42c3f0(0) leaves the cut-in, 0x42dca0(1) lightens the map.
+		clear()
+		host.show_closing_lighten_ticks(script_tick - float(closing))
+		return false
 	if not attack_phase and not clip["release_emitted"]:
 		clip["release_emitted"] = true
 		host.released.emit(clip["strike"], clip["attacker_unit"], clip["defender_unit"], false)
@@ -642,22 +677,26 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	host.result.visible = shown
 	if shown:
 		host.show_result(clip["strike"], script_tick - float(timeline["result_tick"]))
-	if script_tick >= float(clip_complete_tick(timeline, host.result_spawns(clip["strike"]))):
-		clear()
-		return true
+	# 0x404b23: the defense page's phase 101 darkens 16 ticks over the running shot.
+	if script_tick >= float(timeline["darken_tick"]):
+		host._show_closing_darken(script_tick - float(timeline["darken_tick"]))
 	return false
 
 
-## The tick the special shot ends: the compiled timeline's end, and not before the numbers
-## aniShowHitResult spawned are deleted. 0x404643 (opcode 30, [esp+0x14] = 1) spawns the last
+## The tick the special shot ends: the lighten after `clip_closing_tick`.
+static func clip_complete_tick(timeline: Dictionary, spawns: Array) -> int:
+	return clip_closing_tick(timeline, spawns) + Timing.CLOSING_LIGHTEN_TICKS
+
+
+## The tick the cut-in gives way to the map lighten: the compiled teardown, and not before
+## the numbers aniShowHitResult spawned are deleted. 0x404643 (opcode 30, [esp+0x14] = 1) spawns the last
 ## number with the defender object as waiter and leaves its phase at 0x62 (0x403ecc) until that
 ## number releases it (+0x28 < 9, 0x408580) — for a red kind-0 number 27 ＋ 10×digits ticks —
 ## and the number lives on to 34 ＋ 10×digits (two digits: 47 and 54) while the shot closes. The
-## remake has no closing transition on this path, so it keeps the shot up until the last
-## number's deletion (ResultNumberFloater.life_of) instead of cutting the fade at
-## RESULT_HOLD_TICKS.
+## remake keeps the darkened shot up until the last number's deletion
+## (ResultNumberFloater.life_of) when that outlasts the teardown.
 ## `spawns` are the shot's result numbers (BattleCombatCutin.result_spawns).
-static func clip_complete_tick(timeline: Dictionary, spawns: Array) -> int:
+static func clip_closing_tick(timeline: Dictionary, spawns: Array) -> int:
 	var complete := int(timeline["complete_tick"])
 	for entry in spawns:
 		var digits := 1 if str(entry["kind"]) == "miss" else str(absi(int(entry["value"]))).length()

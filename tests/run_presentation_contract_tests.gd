@@ -630,7 +630,8 @@ func skill_effect_contracts() -> void:
 	var focus_result := ""
 	while cutin.busy():
 		cutin._process(1.0 / 60.0)
-		if cutin.busy() and cutin.result.position.y == 264: focus_result = cutin.result.text
+		# Read while the line shows: the close (0x404ada) leaves the cut-in for the map lighten.
+		if cutin.busy() and cutin.result.visible and cutin.result.position.y == 264: focus_result = cutin.result.text
 	check(focus_result == "防禦 +12 · 3回 · 攻擊 +9 · 4回", "the scripted special buff cut-in shows the buffs at aniShowHitResult, no skill-name head (UI6) (%s)" % focus_result)
 	cutin.free()
 

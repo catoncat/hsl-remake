@@ -608,6 +608,11 @@ func _show_closing_darken(tick: float) -> void:
 ## After the darken the defender hides and the cut-in flag clears (0x42c3f0(0)): the map
 ## shows under the shade while 0x4609c0(1) takes the level 16 → 1.
 func _show_closing_lighten(schedule: Dictionary) -> void:
+	show_closing_lighten_ticks(OriginalTick.ticks(elapsed - float(schedule["darkened"])))
+
+
+## The closing lighten `tick` ticks in (also the special script's close, 0x404ada).
+func show_closing_lighten_ticks(tick_in: float) -> void:
 	background.visible = false
 	scenery.visible = false
 	vitals.visible = false
@@ -616,8 +621,7 @@ func _show_closing_lighten(schedule: Dictionary) -> void:
 	defender_sprite.hide()
 	flash_sprite.hide()
 	transition_shade.show()
-	var tick := int(OriginalTick.ticks(elapsed - float(schedule["darkened"])))
-	transition_shade.color = Color(0, 0, 0, float(Timing.closing_lighten_level(tick)) / float(Timing.TRANSITION_LEVELS))
+	transition_shade.color = Color(0, 0, 0, float(Timing.closing_lighten_level(int(tick_in))) / float(Timing.TRANSITION_LEVELS))
 
 
 func _process_missing_ordinary_clip(clip: Dictionary) -> void:

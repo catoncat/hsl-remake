@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 93,
-    "sources": 526,
+    "sources": 527,
     "sources_by_kind": {
       "provenance": 204,
-      "sentence": 150,
+      "sentence": 151,
       "scope": 74,
       "matrix": 85,
       "video": 13
@@ -540,14 +540,14 @@
     },
     {
       "id": "special-object-motion",
-      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），特写在脚本与结果数字结束时收、未完对象剪断；剩收尾 16 tick 变暗未接、随机用 4 个种子变体代替共享流、角度环／龙卷列等模式插入仍是重制几何",
+      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），攻方收页剪攻方对象、守方脚本后 16 tick 变暗再拆场，拆场后才落地的随机插入实例不出现；剩攻击闪光等待未读、随机用 4 个种子变体代替共享流、角度环／龙卷列等模式插入仍是重制几何",
       "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）；守方 aniOver 直接进 phase 101，收尾不查对象，拆场位 0x4c1404 令 slot 36–38 对象自删",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
         "docs/evidence_packets/static_reverse/original_effect_object_sounds.md",
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "ObjcomdMotion 读原生轨迹，SkillEffectScriptPlayer／MoonDancePresentation／PoisonArrowPresentation 按它画；模式插入的 radial／spin 几何保留；complete_tick 不含对象寿命",
+      "remake": "ObjcomdMotion 读原生轨迹，SkillEffectScriptPlayer／MoonDancePresentation／PoisonArrowPresentation 按它画；模式插入的 radial／spin 几何保留；complete_tick＝变暗起点＋16 为拆场，随后地图变亮 16 tick",
       "remake_code": [
         "game/battle/scene/ObjcomdMotion.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd",
@@ -577,7 +577,8 @@
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#df9bc3bea0",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#e72017fdd8",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#fc8cf6cb1d",
-        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d"
+        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#c15a3a7a72"
       ]
     },
     {

@@ -141,7 +141,9 @@ func every_row_compiles() -> void:
 			var other: Dictionary = player.compile_row(skill_id, hit, 8)
 			check(timeline["unimplemented"].is_empty(), "no unimplemented verb: " + skill_id)
 			check(str(timeline) == str(again), "same seed, same timeline: " + skill_id)
-			check(timeline["events"].size() == other["events"].size(), "the seed changes placements, not the event set: " + skill_id)
+			# 0x401370／0x4c1404: the teardown deletes the objects, so a random insert (0x401390) whose drawn delay overtakes it never appears — only the script's own events are seed-independent.
+			var fixed := func(events: Array) -> int: return events.filter(func(event): return not event.get("random", false)).size()
+			check(fixed.call(timeline["events"]) == fixed.call(other["events"]), "the seed changes placements and which random inserts beat the teardown, not the script's own events: " + skill_id)
 			var release := int(timeline["release_tick"])
 			var impact := int(timeline["impact_tick"])
 			var result := int(timeline["result_tick"])
@@ -254,7 +256,7 @@ func qi_blade_timeline() -> void:
 	var bursts: Array = hit["events"].filter(func(event): return event["kind"] == "object" and event["object"] in ["obj_Special01_03", "obj_Special01_04"])
 	check(bursts.size() == 30 and bursts.all(func(event): return int(event["tick"]) >= 90 and int(event["tick"]) <= 90 + 23 * 2 and (event["position"] as Vector2).distance_to(Vector2(320, 160)) <= 90), "6 + 24 hit sparks appear within the accumulated delay range around the target centre")
 	var miss: Dictionary = player.compile_row("special:magicOTHER:magicCode01", false, 1)
-	check(miss["events"].filter(func(event): return event["kind"] == "object").size() == 2 and miss["impact_tick"] == 90 and miss["complete_tick"] == 190, "a miss keeps the blades and the marks, drops the hit-only sparks")
+	check(miss["events"].filter(func(event): return event["kind"] == "object").size() == 2 and miss["impact_tick"] == 90 and miss["complete_tick"] == 190 + 16, "a miss keeps the blades and the marks, drops the hit-only sparks")
 	check(miss["events"].filter(func(event): return event["kind"] == "sound").map(func(event): return event["member"]) == ["WAV\\SP01-001.WAV"], "a miss inserts no burst, so no landing sound")
 	var other2: Dictionary = player.compile_row("special:magicOTHER2:magicCode01", true, 1)
 	check(other2["events"].any(func(event): return event["kind"] == "sound" and event["member"] == "WAV\\BOMB0017.WAV" and int(event["tick"]) >= 90), "the magicOTHER2 row of 氣刃斬 (specCode121／122, its own obj_Special61 blades) lands with the same BOMB0017 burst")
@@ -301,8 +303,12 @@ func object_command_sounds() -> void:
 				for sound in manifest["objects"][event["object"]]["command_sounds"]:
 					if bool(sound["hit_only"]) and not hit:
 						continue
+					var at := int(event["tick"]) + int(sound["delay_ticks"])
+					# 0x4029a2／0x404ada: the object is deleted at its page's teardown, its program with it.
+					if at >= int(timeline["release_tick"] if event["phase"] == "attack" else timeline["complete_tick"]):
+						continue
 					expected += 1
-					var key := str(sound["member"]) + "@" + str(int(event["tick"]) + int(sound["delay_ticks"]))
+					var key := str(sound["member"]) + "@" + str(at)
 					check(int(cues.get(key, 0)) > 0, "%s %s: %s sounds at insertion %d + %d" % [skill_id, "hit" if hit else "miss", sound["member"], int(event["tick"]), int(sound["delay_ticks"])])
 					cues[key] = int(cues.get(key, 0)) - 1
 			if hit and expected > 0: row_has = true
@@ -372,7 +378,7 @@ func thunder_sword_timeline() -> void:
 	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var hit: Dictionary = player.compile_row("special:magicAIR:magicCode01", true, 3)
-	check(hit["release_tick"] == 70 and hit["impact_tick"] == 160 and hit["result_tick"] == 200 and hit["complete_tick"] == 240, "天雷猛襲劍 marks: %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
+	check(hit["release_tick"] == 70 and hit["impact_tick"] == 160 and hit["result_tick"] == 200 and hit["complete_tick"] == 240 + 16, "天雷猛襲劍 marks: %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
 	var sound_ticks: Array = hit["events"].filter(func(event): return event["kind"] == "sound").map(func(event): return int(event["tick"]))
 	check(sound_ticks == [0, 90, 100, 110, 140, 160], "sounds at 0 (attack) then 90／100／110 lightning, 140 shoot, 160 hit bomb: %s" % str(sound_ticks))
 	var miss: Dictionary = player.compile_row("special:magicAIR:magicCode01", false, 3)
@@ -406,9 +412,9 @@ func geometry_and_flags() -> void:
 	check(stars["hit_ticks"].size() == 1 and stars["impact_tick"] == 30 + 20 + 40 + 10, "aniProcessHitMissMulti marks the impact like aniProcessHitMiss")
 	var meteors: Array = stars["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Special24_03")
 	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd"), "meteors inserted above the stage run their objcomd.txt program's native track")
-	check(stars["result_ticks"].is_empty() and stars["result_tick"] == stars["impact_tick"] and stars["complete_tick"] == 100 + 160, "a script without aniShowHitResult shows the result on the hit mark and completes when its last delay ends")
+	check(stars["result_ticks"].is_empty() and stars["result_tick"] == stars["impact_tick"] and stars["complete_tick"] == 100 + 160 + 16, "a script without aniShowHitResult shows the result on the hit mark and completes when its last delay ends")
 	var empty: Dictionary = SkillEffectScriptPlayer.compile([], ["aniDelay,10,aniProcessHitMiss", "aniDelay,5,aniShowHitResult"], true, 1, manifest)
-	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
+	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 + 16 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
 	var unknown: Dictionary = SkillEffectScriptPlayer.compile([], ["aniSetZoom,0x10000", "aniDelay,4"], true, 1, manifest)
 	check(unknown["unimplemented"] == ["aniSetZoom"], "a verb outside the set is reported, not swallowed")
 	player.free()
