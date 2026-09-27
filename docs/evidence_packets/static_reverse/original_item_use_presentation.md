@@ -1,10 +1,11 @@
 # 用药演出：AI 引导、Show_Magic_Star 效果、目标小条与数字
 
-> evidence: static-derived; resource-derived; provisional: 0x401390 发射器（气力／永久／临时加成三类效果的画面）未读，重制只按它们的等待时长；0x43b3f0 小条的 cur/max 文字（位 0x100，0x411d70）未画；AI 引导的射程格按"自身格＋四邻无敌对占位"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x408b20, 0x408df0, 0x409e40, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x444ab2, 0x444ac9, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-27
+> evidence: static-derived; resource-derived; provisional: 0x401390 发射器（气力／永久／临时加成三类效果的画面）未读，重制只按它们的等待时长；0x43b3f0 小条的 cur/max 文字（位 0x100，0x411d70）未画；AI 引导的射程格按"自身格＋四邻无敌对占位"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x408b20, 0x408df0, 0x409e40, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x4449a7, 0x444ab2, 0x444ac9, 0x444be4, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-27
 
 ## 结论
 
 - 原版 AI 用药有引导段：先画移动色射程 12 tick，光标从用药者滑到目标，目标亮起 12 tick，再出姿势、`0x409e40` 生效；玩家用药没有引导段，其余共用（static-derived）。
+- 玩家选用药目标是地图选格（`0x444be4` 开选格，`0x44492a..0x4449b6` 取格），不是窗口；确认直接进 0x69 `0x4449a7` 姿势，目标框原地消失，没有收窗滑出。重制确认用药时不让物品面板的收窗快照（`BattlePanelMotion`）把目标框和悬停小条滑出屏幕（static-derived）。
 - `0x409e40` 有效果就放 402 sfxUseItem，按固定顺序生成 Show_Magic_Star 等效果对象，第一个生成的带等待；随后挂目标 HP／MP 小条、浮绿／蓝数字，最后一个数字放行后撤条（static-derived）。
 - 重制：`game/battle/scene/BattleItemUsePresentation.gd` 按同一序列播放用药回执，AI 引导经 `BattleAttackCue.begin_item`（static-derived）。
 - 差异：case 5／6／7 的 `0x401390` 发射器画面与小条 cur/max 文字未做，射程格为近似；无原字形的说明行用白字 Label（差异清单 `ai-item-use-presentation`、`floater-extra-words`；provisional）。
@@ -44,7 +45,7 @@ AI 对象过程按 +0x8e 高字分派（`0x43f4cf`，字节表 `0x4421f4` → �
 
 ## 重制接线
 
-- `game/battle/scene/BattleItemUsePresentation.gd`：AI 用药先 `BattleAttackCue.begin_item`（镜头 → 射程 12 tick → 滑行 → 目标高亮 12 tick，射程用移动色）；效果段姿势、`use_item` 音、按顺序生成星点／闪光，等第一个效果放行；再挂小条、浮数字，最后一个数字第 32 tick 放行、撤条。玩家用药跳过引导段。规则层不动。
+- `game/battle/scene/BattleItemUsePresentation.gd`：AI 用药先 `BattleAttackCue.begin_item`（镜头 → 射程 12 tick → 滑行 → 目标高亮 12 tick，射程用移动色）；效果段姿势、`use_item` 音、按顺序生成星点／闪光，等第一个效果放行；再挂小条、浮数字，最后一个数字第 32 tick 放行、撤条。玩家用药跳过引导段；`BattleSceneMenus.use_inventory_item` 关物品面板后立即 `BattlePanelMotion.finish()`，目标页不留收窗快照。规则层不动。
 - 用药规则（谁用、给谁、消耗）见 [original_item_actions.md](original_item_actions.md#证据)。
 
 ## 复现
@@ -57,3 +58,4 @@ AI 对象过程按 +0x8e 高字分派（`0x43f4cf`，字节表 `0x4421f4` → �
 - 小条 cur/max 文字（位 0x100，`0x411d70`）未画。
 - AI 引导射程格是「自身格＋四邻无敌对占位」近似，不是逐格 `0x40f440` 模式4 泛洪。
 - 小条 y 上限的 [0x4c094c] 按地图高取值，未逐关核对。
+- 玩家确认用药后的原版帧未截：选格时底部的资料板（原版选格帧可见）在确认那一 tick 是否即时撤掉，只由 `0x4449a7` 直进姿势推定（provisional）。

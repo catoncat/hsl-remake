@@ -280,6 +280,10 @@ func use_inventory_item(item_code: String, target_id: String) -> void:
 	runtime.apply_loop(next, "use_item")
 	var effect: Dictionary = runtime.play_loop[LoopKeys.LAST_ITEM_USE]
 	runtime.item_panel.hide()
+	# The target page is the original's map cell pick (0x444be4 → 0x44492a..0x4449b6), not a
+	# window: confirming goes straight to the use pose (state 0x69, 0x4449a7), so the target
+	# frames vanish in place — no close snapshot slides out (original_item_use_presentation.md).
+	BattlePanelMotion.attach(runtime.item_panel).finish()
 	runtime.present_item_effect(effect)
 	runtime.resume_turn_presentation()
 	if runtime.ai_playback_active:

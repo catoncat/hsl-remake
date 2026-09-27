@@ -780,7 +780,7 @@
     },
     {
       "id": "ai-item-use-presentation",
-      "difference": "用药演出已照原版（ITEMFX）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光，之后目标下方 HP／MP 小条与数字；剩气力／永久／临时加成三类效果的 0x401390 画面没画（只按等待时长）、小条的 cur/max 文字没画、引导射程格按四邻近似",
+      "difference": "用药演出已照原版（ITEMFX；玩家确认用药时目标框原地消失、不随面板收窗滑出，HEALTAIL）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光，之后目标下方 HP／MP 小条与数字；剩气力／永久／临时加成三类效果的 0x401390 画面没画（只按等待时长）、小条的 cur/max 文字没画、引导射程格按四邻近似",
       "original": "AI 低字 7–14（0x440132，表 0x4422a0）：射程 12 tick、滑行、目标停留 12 tick，0x4071e0＋0x409e40（sfxUseItem 402、0x408b20 按效果种类生成 Show_Magic_Star，首个带等待），0x43b3f0 小条＋数字，末个数字第 32 tick 放行，0x43b4c0 撤条；玩家 0x69／0x6a／108 同一套无引导",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_item_use_presentation.md"
