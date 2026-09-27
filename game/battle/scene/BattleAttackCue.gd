@@ -20,7 +20,8 @@ var pace := 1.0
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const RangeCellOverlay = preload("res://game/battle/runtime/RangeCellOverlay.gd")
 ## The yellow cell frame drawn on the cursor cell (BattleSelectionCursor.TARGET_FRAME).
-const TARGET_FRAME: Texture2D = preload("res://game/battle/scene/BattleSelectionCursor.gd").TARGET_FRAME
+const BattleSelectionCursor = preload("res://game/battle/scene/BattleSelectionCursor.gd")
+const TARGET_FRAME: Texture2D = BattleSelectionCursor.TARGET_FRAME
 
 ## AI normal attack (0x440b2c states 7–9): the setup tick loads [unit+0x94]=6 (0x441372);
 ## state 8 (0x44139d) draws the range with the cursor on the attacker for those 6 ticks, then
@@ -378,10 +379,10 @@ func _draw() -> void:
 	if range_visible():
 		_draw_cells(range_rects, range_palette, tick)
 	_draw_cells(area_rects(), area_palette, tick)
-	# The gliding target cursor is the original's yellow I_RECT01 cell frame (the same frame
-	# the player's target selection shows), not a teleport of the physical mouse.
+	# The gliding target cursor is the original's cell cursor 0x430230 (I_rect01..08, one frame
+	# per 8 drawn ticks, as the player's pick states show it), not a teleport of the mouse.
 	if cursor_visible():
-		draw_texture(TARGET_FRAME, cursor_position())
+		draw_texture_rect_region(BattleSelectionCursor.CURSOR_SHEET, Rect2(cursor_position(), TARGET_FRAME.get_size()), BattleSelectionCursor.cursor_region(tick))
 
 
 ## One palette's cells as the original drawers blit them: the ramp colour averaged over the map

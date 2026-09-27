@@ -21,6 +21,7 @@ extends RefCounted
 
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
@@ -204,6 +205,31 @@ func _choose_magic(skill_id: String) -> void:
 	runtime.mirror_interaction()
 	runtime.magic_panel.hide()
 	set_action_menu_visible(false)
+	# A row click puts the page into its slide-out (window state 1→2, 0x42946d／0x438f8e); the
+	# unit waits in 0x77 drawing nothing until the window's close state (0x428ee4) deletes it and
+	# advances the unit, then 0x78 spends one tick building the reach (0x40fa80) before 0x79
+	# draws reach, footprint, cursor and strip and reads clicks.
+	cast_pick_hold = true
+	_cast_pick_clock = 0.0
+	tick_cast_pick_hold(0.0)
+
+
+## True from a skill-row click until target selection begins (see _choose_magic): no overlay,
+## cursor or identity strip, and pointer clicks are ignored.
+var cast_pick_hold := false
+var _cast_pick_clock := 0.0
+
+
+func tick_cast_pick_hold(delta: float) -> void:
+	if not cast_pick_hold:
+		return
+	if runtime.magic_panel != null and BattlePanelMotion.attach(runtime.magic_panel).closing():
+		return
+	_cast_pick_clock += delta
+	# Headless (no close snapshot) the page is gone at once and the 0x78 tick is not waited for.
+	if _cast_pick_clock < OriginalTick.TICK_SECONDS and DisplayServer.get_name() != "headless":
+		return
+	cast_pick_hold = false
 	runtime.overlays.refresh_attack_overlay()
 
 

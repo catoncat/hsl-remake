@@ -600,11 +600,14 @@ func skill_effect_contracts() -> void:
 	idle.merge({"hit": false, "healing": 0, "defender_hp_after": 13}, true)
 	check(BattleCombatCutin.strike_feedback(idle) == "未回復" and BattleCombatCutin.support_feedback_parts(idle) == ["未回復"], "a support receipt that restored nothing reads 未回復, not MISS or 0")
 	check(BattleCombatCutin.feedback_parts({"actual_damage": 12, "status_effects": []}) == [{"text": "12", "kind": "damage"}], "a damage result is one unsigned red part; a non-support result adds no 未回復")
+	# Sampled when the number first shows: 0x404643 spawns it at aniShowHitResult and deletes it
+	# after its life (34 ＋ 10×digits ticks) while the shot runs on to the script's end — the
+	# objcomd.txt tracks of 萬息集氣法's objects outlast it — so the last busy frame shows none.
 	cutin.play(heal, caster, target, false)
 	var heal_result := ""
 	while cutin.busy():
 		cutin._process(1.0 / 60.0)
-		if cutin.busy() and cutin.result.position.y == 264: heal_result = RuntimeReadback.result_text(cutin)
+		if heal_result == "" and cutin.busy() and cutin.result.position.y == 264: heal_result = RuntimeReadback.result_text(cutin)
 	check(heal_result == "27", "the scripted special heal cut-in shows the healed amount alone at aniShowHitResult, no skill-name head or HP suffix (UI6) (%s)" % heal_result)
 	# Stat-buff specials (千羽風靈壁／激怒／精神統一) carry damage 0 and stat_effects: 0x404643 shows no
 	# number for a zero HP／MP change, so the line names each buff (power · turns) as the map does.

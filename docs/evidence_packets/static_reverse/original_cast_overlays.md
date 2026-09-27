@@ -1,13 +1,15 @@
 # 施法确认到效果结束之间的地图覆盖层：射程／范围格、光标、身份栏
 
-> evidence: static-derived; provisional · status: live · functions: 0x4010c0, 0x401220, 0x401c20, 0x402499, 0x402b68, 0x402e47, 0x402f5e, 0x403089, 0x4030b7, 0x4034c6, 0x4035ef, 0x406d20, 0x4100e0, 0x411480, 0x4116a0, 0x42dc50, 0x430230, 0x43bf30, 0x43c0f0, 0x43e110, 0x43e1c0, 0x43e570, 0x441043, 0x4423b0, 0x442a90, 0x45e307, 0x45e6da, 0x45e882, 0x45f5f7, 0x461479 · tools: run_presentation_contract_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-28
+> evidence: static-derived; provisional · status: live · functions: 0x4010c0, 0x401220, 0x401c20, 0x401d6f, 0x402499, 0x402b68, 0x402e47, 0x402f5e, 0x403089, 0x4030b7, 0x4034c6, 0x4035ef, 0x406d20, 0x4100e0, 0x411480, 0x4116a0, 0x428ee4, 0x42946d, 0x42dc50, 0x430230, 0x438f8e, 0x43bf30, 0x43c0f0, 0x43e110, 0x43e1c0, 0x43e570, 0x441043, 0x4423b0, 0x442a90, 0x443c63, 0x444e58, 0x45e307, 0x45e6da, 0x45e882, 0x45f5f7, 0x461479 · tools: run_presentation_contract_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版单位状态机里射程 `0x411480`、范围 `0x4116a0`、光标 `0x430230`、悬停信息 `0x43e570` 只在选目标状态有调用点；从确认那一 tick 起到效果、结算都不画（static-derived）。
 - 原版 AI 起手：普攻射程 6 tick＋按距离滑动＋目标 12 tick（只画光标），施法射程 24 tick＋滑动＋目标 24 tick，施法名字幕屏幕居中、上沿 y=276；玩家路径没有起手段（static-derived）。
 - 重制 `game/battle/scene/BattleAttackCue.gd` 按这些计数与覆盖层取舍演出 AI 起手（`glide_path` 移植 `0x45e882`），玩家下令时不起手；显隐细节见证据块「覆盖层 × 阶段」（static-derived）。
-- 差异：魔法／绝技选单窗的关闭时机、道具目标态、浏览态画移动范围的条件与起手计数器相位，逐条见边界（provisional）。
+- 原版技能页点行后先滑出，删窗那一 tick 才推进单位，再过 1 tick 进选目标；移动范围只在选「移動」后的选格态画；I_rect01..08 是选格光标的 8 帧（同一黄框，两处角点红色脉动），不是别的配色（static-derived）。
+- 重制照此：技能页滑出期间不画覆盖层与光标、不收点击；所有选格态画同一组光标帧（static-derived）。
+- 差异：起手计数器相位、技能页取消后回行动环的时机，见边界（provisional）。
 - 原版施法引导（对象 154 `0x401c20`）不画黑底，地图上盖一层全黑屏形状按 1..8／16 级交叉淡化成阴影底；局部图与肖像以模式 0 不透明画在桶 0x33，子状态 4 的 16＋11 call 也不淡化，同时屏幕中心叠一个 4.5 倍 BALL001 光球按级 0..16 饱和相加；法术再接 31 call 尾段，面板与阴影下的地图按级 16→1 交叉淡化、光球 15→0，末 call 摆姿势撒星，下一 call 交回主流程，阴影在效果阶段停在级 8、效果后 8 call 淡出；残影是对象 179 的 6→1 级交叉淡化，局部图残影与面板同桶、画在面板之上（static-derived）。
 - 重制 `AnimalCastLead`／`BattleCombatCutin.show_cast_lead` 照此画阴影级、不透明面板、中心光球、法术尾段与残影先后，绝技停留 11 call；效果后的阴影淡出与子状态 5 那 1 call 未单独播，见边界（provisional）。
 
@@ -21,7 +23,8 @@
 
 | 状态 | 入口 | 内容 | 覆盖层绘制调用 |
 | --- | --- | --- | --- |
-| `0x00` | `0x443a0d` | 地图浏览（下一单位） | 移动范围 `0x411200`（`0x443e0e`）、光标 `0x430230`（`0x443e22`）、悬停单位信息 `0x43e570`（`0x443e2a`） |
+| `0x00` | `0x443a0d` | 下一单位：`0x43bf30` 等镜头到位后 `0x43ea30` 开行动环、转 `0x62` | 无 |
+| 外层 20／`0x00` | `0x443c63` | 选「移動」后的选格（子表 `0x445820`） | 移动范围 `0x411200`（`0x443e0e`）、光标 `0x430230`（`0x443e22`）、悬停单位信息 `0x43e570`（`0x443e2a`） |
 | `0x50` | `0x4442e4` | 普通攻击选目标 | 攻击范围 `0x411480`（`0x44459b`）、光标（`0x4445af`）、悬停信息（`0x4445b7`） |
 | `0x51`／`0x57` | `0x444f3e` | 重置效果 VM（`0x4423b0` 清 `0x4c432c`／`0x4c4320`）后 `state+1` | 无 |
 | `0x52` | `0x4445c1` | 普通攻击执行（`0x4423c0`） | 无 |
@@ -37,6 +40,32 @@
 - **AI 施法状态**（同一函数的另一分支，表 `0x44231c`→`0x4422f4`；这一段没有输入读取，光标由 `0x45e882` 移向预先选好的目标 `0x4c2c70`／`0x4c2c74`，按计数器确认——据此判为 AI 路径）：`0x4417df` 画射程＋施法者格光标，计数见下「起手节拍」（进入时是 24 tick，`0x4417fe` 的 `0xc` 是离开时的重置值）；`0x44182a` 画射程并滑动光标；到位后 `0x441887` 调 `0x4423b0`、置 24 tick（`0x18`），`0x4418c7..0x441942` 画范围＋光标并以 `0x43c0f0` 滚屏；`0x441947` 保持 24 tick 画射程＋范围＋光标并给目标置标记位；计数到 0 转 `0x4419c6`／`0x4419f8`，每 tick 只调 `0x442a90`，不再画任何覆盖层。
 
 **推论边界**：「不画」来自调用点缺失。覆盖层是每 tick 立即绘制（范围格包：脉动计数器每次绘制调用前进一格），没有保留层；本包没有重读主循环是否每 tick 整屏重画地图，这一点由下方的参考帧佐证。
+
+### 窗与光标
+
+static-derived。技能页的窗对象（过程 `0x4289e0`，停靠子窗过程 `0x438160`）以 `+0x8c` 为窗状态：0 滑入（`0x45e882` 步长 40）、1 等输入、2 滑出（`0x45e80d` 步长 20、容差 4，目标 `+0xa4／+0xa6`）、3 关窗（`0x428ee4`：`+0x9c` 所属单位 `+0x8c` 加一、`0x45f018` 删窗、清 `0x4c1b00` 的 `0x400000`）。
+
+| 时刻 | 窗 | 单位状态 | 画什么 |
+| --- | --- | --- | --- |
+| 行点击（窗状态 1，`0x42946d` 魔法／`0x4295f3` 绝技；停靠页 `0x438f8e`／`0x439137`） | 写 `0x4c2c54`／`0x4c2c44`，父窗 1→2、`+0x96 = −1` | 仍 `0x77`（公共尾 `0x4447a7`） | 无覆盖层、无光标 |
+| 滑出各 tick | 状态 2，每 tick 20 px | `0x77` | 同上，点击不读 |
+| 到位那 tick 的下一 tick | 状态 3：推进单位、删窗 | `0x77`→`0x78` | — |
+| `0x78`（`0x444e58`）1 tick | 已删 | 选中号 ≠ −1：`0x40fa80` 写射程、`0x4c1b00 |= 0x200000`、+1；= −1（右键取消）：转 `0x64` | 无 |
+| `0x79`／`0x98` 起 | 已删 | 选目标 | 名字幕、射程、脚印、光标、身份栏（上表） |
+| 确认后 `0x7a`／`0x99`、结算 | 已删 | 效果 | 无 |
+
+| 状态 | 移动范围 `0x411200` |
+| --- | --- |
+| 外层 20／子 0（选「移動」后，`0x443c63`） | 每 tick 画（`0x443e0e`），除非这一 tick 右键（→子 9）或左键已消费 |
+| 给予选格 `0x06`（`0x444d7b`） | 画（受予者范围，同一移动配色） |
+| 下一单位（`0x00`）、行动环、魔法／绝技／攻击选目标、效果 | 不画：全 EXE 的 `E8` 调用点只有上两处与 AI 分支 `0x4401ef`／`0x440214`／`0x441084` |
+
+| 资源 | 用途 | 颜色 |
+| --- | --- | --- |
+| `I_rect01..08` | 选格光标 `0x430230`：`[0x4c1b34] + 帧`，帧字 `0x4784f8` 每 8 个绘制 tick 进一（重装字 `0x4784f6 = 8`、帧数 `0x4784fa = 8`），计时只在调用时走、全局共用 | 同一黄框（238,222,0 → 139,121,0），左上与右下 2×2 角点红 255／238／222／180／164／180／222／238 |
+| `I_rect11..48` | 移动／攻击／魔法／绝技范围格边框 | 见[范围格包](original_range_cells.md) |
+
+调用点：`0x443e22` 移动选格、`0x4445af` 攻击、`0x444fde` 魔法、`0x44527e` 绝技、`0x444d8f` 给予，均无条件（光标格合法与否都画）；AI 起手的光标同一函数。
 
 ### 起手节拍
 
@@ -78,13 +107,13 @@ S＝static-derived（上表调用点），R＝原录像观察（录像 14 外部
 
 | 覆盖层 | 目标选择 | 确认帧 → 效果 → 结算 | 下一单位 |
 | --- | --- | --- | --- |
-| 射程格（MoveOverlay `AttackCell`） | 原版 画（S）· 重制 画 | 原版 不画（S、R）· 重制 不画 | 原版 浏览态画移动范围（S，触发条件未读）· 前后 不画（显示行动环） |
+| 射程格（MoveOverlay `AttackCell`） | 原版 画（S）· 重制 画 | 原版 不画（S、R）· 重制 不画 | 原版 开行动环、不画移动范围（S）· 重制 同 |
 | 范围格（施法区域） | 原版 画（S）· 重制 画（与射程格同一 overlay） | 原版 不画（S、R）· 重制 不画 | — |
 | `BattleAttackCue` 起手 | 不画 | 玩家施法与普攻：原版无此段（`0x50`→`0x51`→`0x52`，S）· 重制 不画；AI 施法：射程 24＋滑动＋目标 24 tick；AI 普攻：射程 6＋滑动＋目标 12 tick（S）· 重制 同计数；效果开始前隐藏 | 不画 |
-| 选择光标 `BattleSelectionCursor` | 原版 画（S）· 重制 画 | 原版 不画（S、R）· 重制 确认帧 `refresh` 先隐藏 | 原版 浏览态画（S）· 重制 下一玩家单位直接开行动环 |
-| 身份栏 `BattleVitals`（悬停单位信息） | 原版 画（`0x43e570`，S）· 重制 画 | 原版 不画（S）· 重制 不画 | 原版 浏览态画（S）· 重制 悬停时画 |
+| 选择光标 `BattleSelectionCursor` | 原版 画 I_rect01..08（S）· 重制 同 | 原版 不画（S、R）· 重制 确认帧 `refresh` 先隐藏 | 原版 镜头到位后开行动环、不画光标（S）· 重制 同 |
+| 身份栏 `BattleVitals`（悬停单位信息） | 原版 画（`0x43e570`，S）· 重制 画 | 原版 不画（S）· 重制 不画 | 原版 选格态画（S）· 重制 同 |
 | 命中预览标签（重制） | 普攻／绝技不画「命中 N%」（绝技命中率在技能页说明框），法术／辅助画「N 個目標」 | 不画 | 不画 |
-| 魔法／绝技选单、行动环 | 重制 选法后关闭；原版 P（选单窗何时关未读） | 原版 P · 重制 不画 | 重制 玩家单位开行动环 |
+| 魔法／绝技选单、行动环 | 原版 选行后滑出、删窗后 1 tick 才进选目标（S）· 重制 同 | 原版 不在（S）· 重制 不画 | 原版 开行动环（S）· 重制 同 |
 | 技能名字幕 | 原版 玩家选目标画（`0x43e110`／`0x43e1c0`，S）· 重制 写在光标说明条 | 原版 AI 起手的射程／滑动／目标段画，屏幕居中 y=276（S、R 源帧 9987）· 重制 `BattleAttackCue.caption_label` 同段同位；效果期间原版不画（魔法效果 VM 阶段 0 仍画几 tick，P）· 重制 不画，结果行只有数字 | — |
 | 道具使用 | 重制 目标页在道具窗内，不画地图覆盖层；原版 P（道具目标态未定位；上述四个绘制函数在玩家分支里没有别的调用点，negative-evidence） | 重制 窗口关闭、浮字 | — |
 
@@ -107,6 +136,7 @@ S＝static-derived（上表调用点），R＝原录像观察（录像 14 外部
 | 子状态 5 进入 | 尾段末 call：`+0x8c` 加一、`+0xa0 = 16`，`0x4071e0` 施法者摆姿势、`0x408b20(x, y − h, 4, 0, 3)` 撒星、`0x4477b0(0x193)` 取声并 `0x42c180` 放声 | `0x402fb5..0x403035` |
 | 子状态 5 | 下一 call：`[0x4c1b00] &= 0xff3fffff`、`0x42c3d0`（停 `[0x4c1b38]` 声道）、父对象（`+0xa8`，行动状态机）`+0x8c` 加一交回主流程、自身 `+0x30 = 0xffff` 隐藏，进子状态 6；不画面板与光球 | `0x403089..0x4030b2` |
 | 子状态 6 | `[0x4c1b00] & 0x1000000`（魔法效果阶段，效果 VM `0x442a90`）期间原地等，`+0x90` 停在 8——阴影照画级 8；位清后每 call `+0x90` 减一再画（级 7..0，8 call），为 0 的下一 call `0x42c3f0(0)` 并删除自身 | `0x4030b7..0x4030f6` |
+| 无引导路径 | 效果 VM `0x442a90` 每条分支都以 `0x406d20` 建对象 154 kind 1（`0x442f26`；`0x442c6c`／`0x442cea` 跳 `0x442f1e`），无「不建引导」的分支；施法者 ANIMAL 记录 `+0x18`／`+0x14`（回退 `+0x24`／`+0x20`）为 0 与預備動作 关走同一跳（`0x401d6f` → `0x401ec4`）：隐藏、置 `0x1000`、初始子状态 7（`+0x90 = 0`）；子状态 7 每 call `+0x90++`，超过 8 那一 call 摆姿势撒星进子状态 5，再进子状态 6——阴影 1..8 后停级 8 过效果阶段，与伤害与否无关 | `0x442f26`、`0x401d6f`、`0x401ec4`、`0x4030f7` |
 | 残影 | `0x401220`：`0x45e307(x, y, 179)`，复制形状与缩放，模式 = 施法对象模式 `| 0x20000000`（换边时 `0x28000000`，缩放＋交叉淡化），级 6，清创建跳画位；defProcShadowLeft 每 4 call 减一级、到 0 删除 | `0x401220`、`0x4010c0` |
 | 残影深度 | 横幅残影（`0x402187`）留在模板桶 planeEffect2（resource-derived，`map_objects.json` 对象 179）；局部图残影（`0x402b68`）建后改 `+0xc = 0x33`、坐标＝局部图锚点 | `0x402b87` |
 | 同桶先后 | 施法对象在 `0x45f5f7` 第一遍（调用过程）里就提交局部图／肖像；残影对象第二遍才提交，都挂桶尾，所以桶 0x33 内残影画在活动面板之上 | `0x45f5f7`、`0x461479` |
@@ -116,7 +146,8 @@ S＝static-derived（上表调用点），R＝原录像观察（录像 14 外部
 - `BattleAttackCue.leads(strike, attacker)` 只看施放者：`player_commandable` 时返回 false（普攻与施法同一条，`BattlePresentation.refresh` 改调 `skip(sequence)`，同一帧把片段交给切入／地图效果）；AI 从不为 `player_commandable` 单位行动，所以这等于「玩家下令」。AI 的攻击与施法 `begin`：按收据有无 `skill_id` 取普攻（6／滑动／12 tick）或施法（24／滑动／24 tick），滑动逐 tick 取 `glide_path`，经 `OriginalTick` 换算。
 - 名字幕：`magic_name`／`skill_name` 进 `caption_label`（CanvasLayer 上 640 宽居中、上沿 276、20 px 白字＋1 px 黑影、字距 4＝每字前进 24 px），与起手同显同隐；`SkillEffectScriptPlayer`／`BattleCombatCutin._process_borrowed_skill` 不在顶部写名字，结果行（y=264）到 `aniShowHitResult`／impact 才出现。
 - 镜头与各段覆盖层：`BattleAttackCue` 在 `begin` 调共享的 `BattleCameraController.scroll_to_grid(行动者格)`（与其他战斗对准同一落点），镜头段长度取 `scroll_ticks − 1`；`stage()` 依次为 camera／range／cursor／target。`range_visible`／`cursor_visible`／`area_rects` 按上表取舍：镜头段不画、无字幕；普攻目标段只画光标；施法滑动与目标段按光标所在格画作用范围（`SkillTargetRules.effect_cells`，不用要求中心在射程内的 `cast_footprint`），样式照原版：射程画 `0x411480` 的攻击调色板格，作用范围画 `0x4116a0` 调色板 0（魔法，`skill_id` 以 `magic:` 开头）／1（绝技），都是半强度脉动 ramp＋`I_rect` 边框，由 `BattleAttackCue._draw_cells` 取 `RangeCellOverlay.fill_color／border_sheet／border_region`（与玩家选择态同一 manifest），脉动与换帧按起手自己的 tick。滑动段每 tick：施法调 `center_on_point(光标格点)`（与 `center_on_grid` 同一换算，含夹取），普攻按 `edge_follow_request` 把步长交给 `snap_to`（加完再夹取）。`BattleSceneRuntime._present_ai_action` 不再对 AI 攻击把镜头滑到目标（原版没有这一步）。合同：`run_presentation_contract_tests.gd` 的 `ai_cue_camera_area_contracts`（从远处起：镜头段长度与共享对准一致、此段不画；射程段；施法滑动逐 tick 镜头＝参照控制器 `center_on_point` 的结果、作用范围＝光标格的 `effect_cells` 且出现过射程外格；普攻滑动逐 tick 镜头＝夹取后的前值＋光标步长；目标段施法画射程＋范围、普攻只画光标、镜头不动；边缘规则四例）。
-- 施法引导合成：`AnimalCastLead` 每 call 状态的 `shadow` 为阴影级 0..8（aniShadowBG 那一 call 为 0）；子状态 4 的 16＋11 call `fade` 恒 0，`compile(…, magic)` 为法术（`cast_lead(clip, "magic")`）再接尾段 31 call，`fade` = 1 − 级／16，引导在进子状态 5 那一 call 结束（随后 `released`，施法姿势照旧挂在它上）；`glow` 为中心光球级，`show_cast_lead` 用开场光球精灵、加法材质、缩放 4.5、颜色×级／16 画在舞台之上；`SkillEffectScriptPlayer._present_effect` 在有引导的法术效果期间把黑层停在 8／16（子状态 6）。`BattleCombatCutin.show_cast_lead` 把黑层 alpha 设为级／16、面板 modulate 不透明、横幅残影排在横幅精灵下、局部图残影排在肖像精灵上。8 位 alpha 混合与原版 5／6 位分量截断只差末位。provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md#施法引导的合成`（AnimalCastLead layout）。
+- 施法引导合成：`AnimalCastLead` 每 call 状态的 `shadow` 为阴影级 0..8（aniShadowBG 那一 call 为 0）；子状态 4 的 16＋11 call `fade` 恒 0，`compile(…, magic)` 为法术（`cast_lead(clip, "magic")`）再接尾段 31 call，`fade` = 1 − 级／16，引导在进子状态 5 那一 call 结束（随后 `released`，施法姿势照旧挂在它上）；`glow` 为中心光球级，`show_cast_lead` 用开场光球精灵、加法材质、缩放 4.5、颜色×级／16 画在舞台之上；`SkillEffectScriptPlayer._present_effect` 在法术效果期间把黑层停在 8／16（子状态 6），无引导时引导段按 min(call + 1, 8)／16（子状态 7）。`BattleCombatCutin.show_cast_lead` 把黑层 alpha 设为级／16、面板 modulate 不透明、横幅残影排在横幅精灵下、局部图残影排在肖像精灵上。8 位 alpha 混合与原版 5／6 位分量截断只差末位。provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md#施法引导的合成`（AnimalCastLead layout）。
+- 窗与光标：`BattleSceneMenus._choose_magic` 置 `cast_pick_hold`，关窗快照（`BattlePanelMotion.closing`）滑完再等 1 tick 才 `refresh_attack_overlay`；其间 `BattleSceneRuntime` 隐藏光标与身份栏、`BattleSceneInput` 不收左右键；无渲染器时没有快照，立即进选目标。`BattleSelectionCursor` 以 `range_cells` manifest 的 `cursor` 帧表按绘制 tick 取帧，`BattleAttackCue` 共用。
 - `game/battle/scene/BattleAttackCue.gd` layout：what each lead-in stage draws: attack range stage range＋cursor, glide range＋cursor, target cursor only — 0x44142a has no 0x411480; cast range stage range＋cursor, glide and target range＋the effect area 0x4116a0 at the cursor's cell (0x4100e0 with pixel >> 5, no range test)＋cursor; the camera: cast setup 0x43bf30 to the caster (no-move attack: sub-state 1 0x441043 to the attacker), cast glide 0x43c0f0 frames the cursor every tick, attack glide 0x440233..0x44141d requests the cursor's step unless it stands in the far half-view band; AI cast caption 0x43e110／0x43e1c0: the skill name centred on the screen, top at y=276, white over a black +1 px shadow
 - provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md`（BattleAttackCue layout／timing）。
 - 合同：`run_presentation_contract_tests.gd` 的 `lead_in_contracts`、`ai_cue_camera_area_contracts`、`cast_overlay_contracts`。
@@ -131,10 +162,10 @@ S＝static-derived（上表调用点），R＝原录像观察（录像 14 外部
 - 起手时计数器 `0x4c1a80`／`0x4c1a84` 的相位（原版是全局计数，重制从起手第 0 tick 起数）未读。
 - AI 普攻目标段后的 1 tick `0x4423b0`（`0x4416ab`，无绘制）与魔法效果 VM 阶段 0（镜头回施法者期间字幕仍画）未建模——前者 16 ms，后者长度取决于镜头距离（`0x43bf30`）。
 - 玩家选目标时原版同样在屏幕 y=276 画名字幕（`0x444ec1`／`0x445099`）；重制保留 `BattleSelectionCursor` 说明条里的名字（`run_battle_scene_runtime_tests` 断言它），没有另加屏幕字幕；要对齐就把说明条的名字移到 `caption_label` 并改那两条断言。
-- 魔法／绝技选单窗在 `0x78`→`0x79` 时是否关闭未读（provisional）；替换路线：读 `0x444e58`（`0x78`）。
+- 技能页右键取消：原版同样先滑出、删窗后 `0x78` 转 `0x64`，重制取消时立即重开行动环，未改（provisional）。
+- 光标帧计时原版全局共用（玩家与 AI 同一字），重制玩家光标与 AI 起手各自计数，相位不同。
 - 道具使用的原版目标态没有定位（provisional）；替换路线：从行动环道具项的状态转移（`0x63..0x72` 段）读起。
-- 浏览态 `0x443e0e` 画移动范围的条件没有读。
 - 玩家选目标时射程红格与脚印黄／青绿格的叠画与两层各自的计数器见 [范围格包](original_range_cells.md)。
 - 施法引导：planeEffect2 的数值取自 PROCESS.DEF 的排列（planeObject40 = 43 之后），本地无该文件，横幅残影低于桶 0x32 按此推定；桶 0x17 阴影与同桶 23 的单位先后（单位第二遍提交、画在阴影之上）重制未建模，重制阴影盖住全部单位。
-- 施法引导：子状态 5 那一 call 重制没有单独留（效果从引导结束的下一 tick 起，差 1 call）；子状态 6 在效果结束后的 8 call 阴影淡出未播（重制片段在效果完成时整体收起），无引导的法术仍用 0.2 的暗层；归 `cast-lead-phase`。
+- 施法引导：子状态 5 那一 call 重制没有单独留（效果从引导结束的下一 tick 起，差 1 call）；子状态 6 在效果结束后的 8 call 阴影淡出未播（重制片段在效果完成时整体收起），无引导的法术（含没导入条带、用 Cast_Star 代替引导的施法者）同样盖级 1..8 后停级 8 的阴影，不再按伤害法术另用 0.2 暗层；归 `cast-lead-phase`。
 - 施法对象自身模式在子状态 1 是否带 `0x80000000`（挂桶头）未逐条核对；带则局部图残影会排到桶头、画在面板之下。

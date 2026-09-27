@@ -147,6 +147,8 @@ func handle_pointer_left_pressed(logical_position: Vector2) -> void:
 		runtime.move_selected_actor_to_grid(runtime.hovered_grid_cell)
 		return
 	if runtime.interaction_state == Interaction.ATTACK_SELECT:
+		if runtime.menus.cast_pick_hold:
+			return
 		if runtime.play_loop.get(LoopKeys.SELECTED_ATTACK) == "magic":
 			runtime.attack_selected_coord(runtime.hovered_grid_cell)
 		elif runtime.hovered_unit_id != "":
@@ -181,6 +183,8 @@ func handle_pointer_left_released(logical_position: Vector2) -> void:
 func handle_pointer_cancel(logical_position: Vector2) -> void:
 	update_pointer_hit(logical_position)
 	runtime.held_command_id = ""
+	if runtime.menus.cast_pick_hold:
+		return
 	if runtime.interaction_state == Interaction.MOVE_SELECT or runtime.interaction_state == Interaction.ATTACK_SELECT:
 		runtime.cancel_current_interaction()
 	elif runtime.pending_move_revert:

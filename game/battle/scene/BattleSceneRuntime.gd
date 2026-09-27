@@ -314,7 +314,11 @@ func _process(delta: float) -> void:
 			resume_turn_presentation()
 			return
 	tick_ai_playback(delta)
-	if interaction_state in Interaction.PLAYER_CONTROL and not has_actor_motion() and not ring_camera_return:
+	menus.tick_cast_pick_hold(delta)
+	if menus.cast_pick_hold:
+		$BattlePresentation.selection_cursor.hide()
+		$BattlePresentation.target_vitals.hide()
+	elif interaction_state in Interaction.PLAYER_CONTROL and not has_actor_motion() and not ring_camera_return:
 		var pan := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		if pan == Vector2.ZERO and camera_controller != null:
 			pan = camera_controller.edge_direction(pointer_logical_position, pointer_inside_window and get_window().has_focus())

@@ -211,16 +211,23 @@ func _unit_cases() -> void:
 		tiles[Vector2i(3, y)]["blocks_movement"] = true
 	var route := ScriptWalkPath.route(tiles, Vector2i(7, 5), Vector2(16, 16), Vector2(6 * 32 + 16, 16), CELL)
 	check(route["status"] == "grid_path", "a wall with a gap is walked around: %s" % route["status"])
-	check(not (route["cells"] as Array).has(Vector2i(3, 0)) and (route["cells"] as Array).has(Vector2i(3, 4)), "the detour uses the gap, not the wall: %s" % str(route["cells"]))
+	# 0x40ed50 in script mode (0x4c1a74) skips the map-bounds test, so the shorter detour
+	# runs through the outside row above the wall instead of the far gap.
+	check(not (route["cells"] as Array).has(Vector2i(3, 0)) and (route["cells"] as Array).has(Vector2i(3, -1)), "the detour goes round the wall through the outside row, not through the wall: %s" % str(route["cells"]))
 	check((route["points"] as Array).back() == Vector2(6 * 32 + 16, 16), "the walk still ends on the script pixel")
-	var hard := _open(3, 1)
-	hard[Vector2i(1, 0)]["movement_flags"] = ScriptWalkPath.HARD_BLOCK
-	var sealed := ScriptWalkPath.route(hard, Vector2i(3, 1), Vector2(16, 16), Vector2(80, 16), CELL, true)
-	check(sealed["status"] == "nearest_reachable" and (sealed["cells"] as Array).back() == Vector2i(0, 0), "the WRD 0x4000 block stops even a flyer; the walker ends on the nearest reachable cell: %s" % str(sealed))
-	var cliff := _open(3, 1)
-	cliff[Vector2i(1, 0)]["elevation"] = 3
-	check(ScriptWalkPath.route(cliff, Vector2i(3, 1), Vector2(16, 16), Vector2(80, 16), CELL)["status"] == "nearest_reachable", "a height gap above two stops a ground walker")
-	check(ScriptWalkPath.route(cliff, Vector2i(3, 1), Vector2(16, 16), Vector2(80, 16), CELL, true)["status"] == "grid_path", "a flyer ignores the height gap")
+	# Outside cells are open in script mode, so the sealed target is the centre of a 3×3
+	# map ringed by its four in-map neighbours.
+	var ring: Array[Vector2i] = [Vector2i(1, 0), Vector2i(0, 1), Vector2i(2, 1), Vector2i(1, 2)]
+	var hard := _open(3, 3)
+	for cell in ring:
+		hard[cell]["movement_flags"] = ScriptWalkPath.HARD_BLOCK
+	var sealed := ScriptWalkPath.route(hard, Vector2i(3, 3), Vector2(16, 16), Vector2(48, 48), CELL, true)
+	check(sealed["status"] == "nearest_reachable" and not (sealed["cells"] as Array).has(Vector2i(1, 1)) and not ring.has((sealed["cells"] as Array).back()), "the WRD 0x4000 block stops even a flyer; the walker ends on the nearest reachable cell: %s" % str(sealed))
+	var cliff := _open(3, 3)
+	for cell in ring:
+		cliff[cell]["elevation"] = 3
+	check(ScriptWalkPath.route(cliff, Vector2i(3, 3), Vector2(16, 16), Vector2(48, 48), CELL)["status"] == "nearest_reachable", "a height gap above two stops a ground walker")
+	check(ScriptWalkPath.route(cliff, Vector2i(3, 3), Vector2(16, 16), Vector2(48, 48), CELL, true)["status"] == "grid_path", "a flyer ignores the height gap")
 	var exit := ScriptWalkPath.route(_open(3, 3), Vector2i(3, 3), Vector2(48, 48), Vector2(48, 3 * 32 + 16), CELL)
 	check(exit["status"] == "grid_path" and (exit["cells"] as Array).back() == Vector2i(1, 3), "a retreat may leave the map through the edge (outside cells read as open): %s" % str(exit["cells"]))
 

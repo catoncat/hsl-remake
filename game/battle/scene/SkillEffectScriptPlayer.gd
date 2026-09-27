@@ -663,7 +663,7 @@ static func clip_complete_tick(timeline: Dictionary, spawns: Array) -> int:
 
 
 ## A MAGIC script on the tactical map (MAGIC.TXT eff_proc_Local): no backdrop or close-up
-## actors; the battlefield dims under damage spells. First the caster's ANIMAL m_action cast
+## actors; the cast lead's shadow darkens the map (level 8／16 through the effect). First the caster's ANIMAL m_action cast
 ## lead (AnimalCastLead through the host, `cast_lead(clip, "magic")` — banner, insets and
 ## portrait from the m_shape strip over the shadowed map, tick-driven) when the caster has an
 ## imported strip, else the shared Cast_Star ring for CAST_LEAD_IN; the cast cue sounds as the
@@ -678,8 +678,14 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	host.stage.size = Vector2(640, 480)
 	host.scenery.visible = false
 	host.vitals.visible = false
-	host.background.visible = bool(timeline["dim"])
-	host.background.color = Color(0, 0, 0, 0.2)
+	# Every map spell builds the cast lead object 154 kind 1 (0x442a90 → 0x406d20 on each branch:
+	# 0x442f26, 0x442c6c, 0x442cea); a caster with no lead frames takes the 預備動作-off jump
+	# (0x401d6f → 0x401ec4) into sub-state 7 with the shadow bit set (0x401ed4), so the map is
+	# shadowed whether or not the spell deals damage: level min(call + 1, 8) while +0x90 counts
+	# (0x4030f7), then 8 through sub-states 5 and 6 (0x4030b7).
+	host.background.visible = true
+	var lead_call := int(elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
+	host.background.color = Color(0, 0, 0, float(mini(lead_call + 1, AnimalCastLead.SHADOW_MAX_LEVEL)) / AnimalCastLead.LEVELS)
 	# The spell's name captions the AI lead-in's range (BattleAttackCue.caption), not the effect:
 	# the original's effect states (0x7a, 0x4419f8) draw no text.
 	host.result.visible = false
@@ -716,9 +722,8 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	# After the lead the attacker object stays: sub-state 5 (0x403089) hands the flow back
 	# (parent +0x8c++) and hides itself, sub-state 6 (0x4030b7) keeps its shadow at +0x90 = 8
 	# while the effect phase holds [0x4c1b00] & 0x1000000, so the map stays at level 8／16.
-	if not lead.is_empty():
-		host.background.visible = true
-		host.background.color = Color(0, 0, 0, float(AnimalCastLead.SHADOW_MAX_LEVEL) / AnimalCastLead.LEVELS)
+	# The same holds for the Cast_Star stand-in of an unimported strip.
+	host.background.color = Color(0, 0, 0, float(AnimalCastLead.SHADOW_MAX_LEVEL) / AnimalCastLead.LEVELS)
 	var seconds: float = (elapsed - lead_in) / Timing.PLAYBACK_SPEED
 	var scale: float = Timing.PLAYBACK_SPEED / TICKS_PER_SECOND
 	var complete := mark(host, clip, elapsed, {"release": lead_in,

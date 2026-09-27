@@ -1,6 +1,6 @@
 # 以 tick 计的原版时长：数字寿命、章节标题、边缘滚动、脚本行走速度
 
-> evidence: static-derived: object-process and STORY VM state machines read from hsl01.exe; runtime-measured: 2026-09-24 recording of the 棄卒 title card (§2); provisional: rows marked 未读 · status: live · functions: 0x401060, 0x401c20, 0x4038a0, 0x406d20, 0x406eb0, 0x408580, 0x409610, 0x4111d0, 0x42c3f0, 0x42d280, 0x42dc50, 0x42dc80, 0x43e270, 0x43e2a0, 0x43e2d0, 0x43e4a0, 0x43e570, 0x4423c0, 0x446c40, 0x44fbd0, 0x44fcf0, 0x4501f0, 0x45136a, 0x451818, 0x452102, 0x452123, 0x452eac, 0x452f32, 0x453111, 0x453b90, 0x45e307, 0x45e525, 0x45e5a6, 0x45e91e, 0x45f5f7, 0x45f7cb, 0x4607f9, 0x460989, 0x46098f, 0x4609c0, 0x4609f1, 0x460a06, 0x460e9c, 0x460f26, 0x460fb0, 0x4611e3, 0x461479, 0x461982, 0x462154, 0x463eeb, 0x464c22, 0x4699fd, 0x46b691, 0x46b6c1, 0x46bede · tools: hsl_exe_decompile.py · updated: 2026-09-28
+> evidence: static-derived: object-process and STORY VM state machines read from hsl01.exe; runtime-measured: 2026-09-24 recording of the 棄卒 title card (§2); provisional: rows marked 未读 · status: live · functions: 0x401060, 0x401c20, 0x4038a0, 0x406d20, 0x406eb0, 0x408580, 0x409610, 0x4111d0, 0x42c3f0, 0x42d280, 0x42dc50, 0x42dc80, 0x43b4e0, 0x43e270, 0x43e2a0, 0x43e2d0, 0x43e4a0, 0x43e570, 0x4423c0, 0x446c40, 0x44fbd0, 0x44fcf0, 0x4501f0, 0x45136a, 0x451818, 0x452102, 0x452123, 0x452eac, 0x452f32, 0x453111, 0x453b90, 0x45e307, 0x45e525, 0x45e5a6, 0x45e91e, 0x45f5f7, 0x45f7cb, 0x46067d, 0x4607f9, 0x460989, 0x46098f, 0x4609c0, 0x4609f1, 0x460a06, 0x460e9c, 0x460f26, 0x460fb0, 0x4611e3, 0x461479, 0x461982, 0x462154, 0x463eeb, 0x464c22, 0x4699fd, 0x46b691, 0x46b6c1, 0x46bede · tools: hsl_exe_decompile.py · updated: 2026-09-28
 
 ## 结论
 
@@ -106,7 +106,19 @@ VM 处理器（opcode 2–7，`0x4508a8` 等）把 `[code][serial][x][y][speed]`
 **画法（static-derived）**：
 - 被画的形状 `+0x86`：init 顶部（`0x401c89`）`+0x86 = word[+0x32]`，早于 `0x45e525(obj, 演员 shape, count, 2)` 把 `+0x30／+0x32` 改成演员形状——即 `0x45e307` 按对象类型装入的默认形状。OBJ-ALL 154 `obj_Animal_Attack` 的 `shape_resource` 为 `MAGIC\BALL001.SHP`（resource-derived，`battle*_seed.json` 对象表）：295×298、原点 (147,149) 的白心→黑边径向光球（已导入 `content/imported/hsl/chapter01/combat_animation/opening_ball.png`，manifest `opening`）。`0x4607f9(mode, x, y, shape, layer, level, zoomx, zoomy, …)` 把绘制记录排进显示表 `0x461479`（第 5 参 0x34 是绘制层，演员的公共尾部用 0x17；`[0x4bbbd4 + 层×4]` 链表），不是帧号。
 - 模式位（`0x46b691` 显示表消费者）：位 25–26 非零走表 `0x46b6b1`：`0x4000000` → 像素例程种类 8（`0x462154`：`ax = src + dst`，异或检测各通道进位后 `or` 饱和掩码 `0x4bbbec`——**RGB565 饱和加法**），`0xc000000` = 加法 ＋ 缩放（种类 9 `0x462e8b`，同一加法内核的缩放变体）；位 25–26 为零走表 `0x46b691`：`0x20000000` → 种类 4（`0x4699fd`，层级交叉淡化，见 §6）、`0x28000000` → 种类 5（缩放 ＋ 交叉淡化）。
-- 因此：缩放段 24 tick 是光球以加法混合从 1/16（18 px）长到 12.25×（3600 px，屏幕角落只到半径 22%，近白）盖满屏幕；叠层段 32 tick 是同一光球 18×（屏幕只到半径 15%）以层级 16→1 交叉淡化——**白屏淡出**，露出已恢复帧的攻方与刚生成的身份栏（原录像 `12_leonard_normal_attack/frame_001` 的泛白画面即此段）。缩放段之下：init 的 `0x42c3f0(1)` 置 `[0x4c1b20]`，帧体 `0x42d280` 据此跳过地图绘制、改 blit `[0x4c1e00]` 缓冲（行距 0x500 ＝ 640 px）；该缓冲的装入路径未追。缩放段之下是战场地图，不是切入底图 BG051（runtime-measured，[镜头与面板动效 §5](../runtime_observations/camera_panel_motion/README.md#5-切入白光光球在地图之上放大)：2026-09-24 录屏四次普攻切入 113.49–113.78、163.95–164.20、199.66–199.95、353.72–353.97 s，光球都从屏幕中心在**仍可见的战场地图**上长大，直到全白才换成特写；即 `0x4c1e00` 在缩放段装的是地图画面）。身份栏底板在缩放段是否已画未读（文字在叠层切换时才生成）。
+- 因此：缩放段 24 tick 是光球以加法混合从 1/16（18 px）长到 12.25×（3600 px，屏幕角落只到半径 22%，近白）盖满屏幕；叠层段 32 tick 是同一光球 18×（屏幕只到半径 15%）以层级 16→1 交叉淡化——**白屏淡出**，露出已恢复帧的攻方与刚生成的身份栏（原录像 `12_leonard_normal_attack/frame_001` 的泛白画面即此段）。缩放段之下：init 的 `0x42c3f0(1)` 置 `[0x4c1b20]`，帧体 `0x42d280` 据此跳过地图绘制、改 blit `[0x4c1e00]` 缓冲（行距 0x500 ＝ 640 px）；该缓冲的装入路径未追。缩放段之下是战场地图，不是切入底图 BG051（runtime-measured，[镜头与面板动效 §5](../runtime_observations/camera_panel_motion/README.md#5-切入白光光球在地图之上放大)：2026-09-24 录屏四次普攻切入 113.49–113.78、163.95–164.20、199.66–199.95、353.72–353.97 s，光球都从屏幕中心在**仍可见的战场地图**上长大，直到全白才换成特写；即 `0x4c1e00` 在缩放段装的是地图画面）。身份栏与特写黑底在缩放段不画，见下「构图」。
+
+**构图：缩放段跳过公共尾部（static-derived）**。`0x401c20` 各子状态处理完多数 `jmp 0x4034c6`（公共尾部）；缩放段两条路径直接 `jmp 0x4035eb`，**越过** `0x4034c6..0x4035eb`：子状态 0 首击分支（`0x402985`，置 1/16 缩放那 1 tick）与子状态 1 缩放分支（`0x40285d`，`+0x90 ≤ 0xd0000` 的 24 tick）。被越过的一段依次是：`[esp+0x24]`（对象 `+0x80 & 0x100`）为 0 时 `0x46067d`／`0x461479` 排入桶 0x32 的特写黑底、`0x43b4e0(+0xac, 2, +0xac)` 排入切入身份栏窗口（WINDOW10，mode 2；`0x43b4e0` 不读 `[0x4c1b00]`，身份栏每 tick 靠这一调用出现），以及位 0x40／0x20 的位移积分（`0x45eb9d`／`0x45eb75`／`0x45eb89`）。叠层段首 tick（`0x402862`：恢复帧、`0x436490` 生成文字）画完光球后走 `0x4028f2..` 落到 `0x4034c6`，**同一 tick** 起黑底与身份栏每 tick 排入，被层级 16→1 的光球盖住后渐显；反击／追加击（位 0x200）子状态 0 也落 `0x4034c6`，首 tick 即有身份栏。守方 `0x4038a0` 没有缩放段（phase 100 kind ≠ 2 直接回 0），公共尾部 `0x404ba6..0x404cc6`（黑底桶 0x2f、`0x43b4e0(+0xac, 2, +0xac)`）只在 phase 101 子 1→2 那 tick（`0x404b1e`，清切入标志、请求变亮、`+0x30 = 0xffff`）与子 2（`0x404ad5`）被越过——变亮段不画身份栏与黑底。
+
+| 段 | 攻方光球 | 特写黑底 | 身份栏（底板＋文字＋条） | 攻方／守方 |
+| --- | --- | --- | --- | --- |
+| 缩放段（首击 1 ＋ 24 tick） | 加法 1/16→12.25× | 不画 | 不画 | 攻方帧仍是对象默认形状，被帧体跳地图后的 `0x4c1e00` 缓冲与光球覆盖（见上） |
+| 叠层段（32 tick） | 18× 层级 16→1 | 画 | 画（首 tick 生成文字） | 攻方恢复帧 |
+| 程序与受击停留 | — | 画 | 画 | 守方命中 tick `+0x30 += +0x7a − 1`（`0x404015`，`+0x7a` 是 `0x45e525` 装入的该演员形状帧数）＝最后一帧，保持到对象隐藏 |
+| 变暗（16 tick） | — | 画 | 画 | 受击帧 |
+| 变亮（16 tick） | — | 不画 | 不画 | 守方隐藏 |
+
+**攻方缩放只来自程序**：`0x401c20` 对对象缩放字 `+0x20／+0x24` 的写入只有换边镜像（`0x401ddf`：−1.0／1.0）与 aniSetZoom 指令（`0x40247f`：两轴同值），没有按动作外框自动缩小的计算；演员在特写里按原尺寸（或程序给的缩放）画，身份栏窗口画在其上。
 
 ### 8. actMoveDispWait 的 `+0x80 |= 0x1800`：同一寻路，保形、无声、按速度换帧
 
@@ -133,7 +145,7 @@ provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/s
 - **§8 actMoveDispWait**：`OpeningStoryObjects._move_disp` 目标格心化后走 `_move_actor`（`ScriptWalkPath.route`，与 actWalkDispWait 同路、同速度表、Wait 居中与跟随）；`ActorRuntime.move_along(..., keep_pose_frame_ticks)` 不换朝向与行走形态、不放走步声、到位不回站立，帧按 `move_disp_frame_ticks`（7／5／2／3 tick）循环；有脚本形态时改写其循环帧率并在走完后保留（0x1800 未见清除）。
 - **§3 边缘滚动**：`BattleCameraController.EDGE_SCROLL_PIXELS_PER_TICK = 12`、`WorldMapRuntime` 同值；键盘平移与鼠标边缘共用（原版键位与边缘同一请求）。修饰键加速未接（重制无对应输入）。
 - **§6 守方受击**：`CombatPresentationTiming`：`TARGET_PAUSE_TICKS = 32`，`hurt_hold_ticks(hit, damage)` = 命中 `HIT_TO_NUMBER_TICKS 40 ＋ damage_number_release_ticks ＋ 1`／落空 `MISS_SLIDE_TICKS 15 ＋ 1 ＋ MISS_HOLD_TICKS 40`；`RECOVERY_TICKS = 16`（变黑期间受击姿态保持，static-derived）、`CLOSING_LIGHTEN_TICKS = 16`（地图上从黑变亮，切入内容已隐藏），只在交换的最后一镜或击杀镜（`closes_exchange`：`last_shot` 或 `defender_hp_after ≤ 0`）播放；`ordinary(actor, strike, first_shot, last_shot)` 返回 `opening／release／target／impact／recovery／darkened／complete`。`BattleCombatCutin` 不回到中立姿态（受击帧保持到镜头结束）。击退 105 px／残影／闪避滑动 150 px 的位移未接（重制仍用 6／24 px 的 reaction 位移，provisional）。
-- **§7 攻方开场**：`BattleCombatCutin._show_opening`、`CombatPresentationTiming.OPENING_*`：交换的第一镜（`first_shot`，`BattlePresentation._show_strike` 按 `CombatSequence.strikes` 顺序传入；反击镜与追加击镜对应位 0x200 → 无开场）先播 24 tick 加法光球（`opening_zoom_ramp()` 复现 `0x401060` 的 24 个 16.16 缩放值，`BLEND_MODE_ADD`，攻方隐藏、身份栏隐藏、特写底图与底色隐藏——光球画在地图之上）再播 32 tick 18× 光球 alpha = 层级/16（`opening_overlay_level`），光球盖住整个 640×480 含身份栏；随后程序第一条指令。缩放段隐藏身份栏底板为 provisional。
+- **§7 攻方开场**：`BattleCombatCutin._show_opening`、`CombatPresentationTiming.OPENING_*`：交换的第一镜（`first_shot`，`BattlePresentation._show_strike` 按 `CombatSequence.strikes` 顺序传入；反击镜与追加击镜对应位 0x200 → 无开场）先播 24 tick 加法光球（`opening_zoom_ramp()` 复现 `0x401060` 的 24 个 16.16 缩放值，`BLEND_MODE_ADD`，攻方隐藏、身份栏隐藏、特写底图与底色隐藏——光球画在地图之上）再播 32 tick 18× 光球 alpha = 层级/16（`opening_overlay_level`），光球盖住整个 640×480 含身份栏；随后程序第一条指令。缩放段隐藏身份栏与底板、变亮段隐藏，照「构图」表；攻方只按程序缩放（aniSetZoom）与换边镜像画，不另做外框适配；受击帧 `hurt_frame` ＝ 演员帧数 − 1（`0x404015`）。
 
 ## 复现
 

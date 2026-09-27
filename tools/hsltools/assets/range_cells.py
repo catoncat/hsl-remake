@@ -34,6 +34,9 @@ PALETTES = {
     'magic': {'drawer': '0x4116a0 palette 0', 'ramp': 0x476c1c, 'timer': 0x476c44, 'decade': 3},
     'special': {'drawer': '0x4116a0 palette 1', 'ramp': 0x476c30, 'timer': 0x476c44, 'decade': 4},
 }
+# The cell cursor 0x430230 (every pick state and the AI lead-in): no fill, the opaque frame
+# [0x4c1b34] + frame, i.e. I_rect01..08 (0x42f4ec loads the bank from I_RECT01), own timer words.
+CURSOR = {'drawer': '0x430230', 'timer': 0x4784f4, 'decade': 0}
 
 
 def _sheet_path(palette: str) -> Path:
@@ -71,9 +74,7 @@ def build(pak: Path, exe: Path) -> None:
     fill_values = set(shp_pixel_values(fill, fill_shp))
     if (int(fill_shp['width']), int(fill_shp['height'])) != (CELL, CELL) or fill_values != {0xffff}:
         raise ValueError('ICONBOX.SHP is not the solid 32×32 block the drawers blend')
-    palettes = {}
-    for name, spec in PALETTES.items():
-        ramp = _read_ramp(base, mapped, spec['ramp'])
+    def frames_of(name: str, spec: dict) -> dict:
         delay, reload, frame, count = struct.unpack_from('<HHHH', mapped, spec['timer'] - base)
         sheet = Image.new('RGBA', (CELL * FRAME_COUNT, CELL))
         frames = []
@@ -90,11 +91,8 @@ def build(pak: Path, exe: Path) -> None:
         path = _sheet_path(name)
         if not (path.is_file() and Image.open(path).convert('RGBA').tobytes() == sheet.tobytes()):
             sheet.save(path)
-        palettes[name] = {
+        return {
             'drawer': spec['drawer'],
-            'ramp_address': hex(spec['ramp']),
-            'ramp_rgb565': [f'0x{value:04x}' for value in ramp],
-            'ramp_rgb': [list(rgb565_to_rgb(value)) for value in ramp],
             'frame_timer_address': hex(spec['timer']),
             'frame_ticks': reload,
             'frame_count': count,
@@ -104,6 +102,18 @@ def build(pak: Path, exe: Path) -> None:
             'border_sheet_sha256': png_sha256(path),
             'border_frames': frames,
         }
+
+    palettes = {}
+    for name, spec in PALETTES.items():
+        ramp = _read_ramp(base, mapped, spec['ramp'])
+        palettes[name] = {
+            'drawer': spec['drawer'],
+            'ramp_address': hex(spec['ramp']),
+            'ramp_rgb565': [f'0x{value:04x}' for value in ramp],
+            'ramp_rgb': [list(rgb565_to_rgb(value)) for value in ramp],
+            **frames_of(name, spec),
+        }
+    cursor = frames_of('cursor', CURSOR)
     manifest = {
         'schema': SCHEMA,
         'evidence_tier': 'static-derived; resource-derived; runtime-measured',
@@ -130,6 +140,7 @@ def build(pak: Path, exe: Path) -> None:
         'tick_evidence': 'docs/evidence_packets/runtime_observations/original_tick_rate/README.md',
         'runtime_check': 'docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured',
         'palettes': palettes,
+        'cursor': cursor,
     }
     (OUT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
     print('RANGE_CELLS_IMPORTED', len(palettes))
@@ -144,6 +155,9 @@ def check() -> None:
     assert manifest['cell_px'] == CELL
     assert manifest['pulse']['period_ticks'] == len(manifest['pulse']['indices']) == 17
     assert set(manifest['palettes']) == set(PALETTES)
+    cursor = manifest['cursor']
+    assert cursor['drawer'] == CURSOR['drawer'] and cursor['frame_ticks'] == 8 and cursor['frame_count'] == FRAME_COUNT
+    assert png_sha256(ROOT / cursor['border_sheet'].removeprefix('res://')) == cursor['border_sheet_sha256']
     for name, palette in manifest['palettes'].items():
         assert len(palette['ramp_rgb565']) == 9, name
         assert palette['ramp_rgb'] == [list(rgb565_to_rgb(int(value, 16))) for value in palette['ramp_rgb565']], name

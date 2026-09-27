@@ -1,23 +1,32 @@
 extends RefCounted
 ## The cell route a scripted walk (actWalk*／actWalkPrevInsertObject*／actWalkFollow*)
-## follows. The original walk state 0x453b90 state 0x32 asks 0x4111d0 → 0x411080 for a
-## four-neighbour path buffer (direction codes 1..4, one per cell) from a script-mode flood
-## (0x40f350 sets 0x4c1a74, which lifts the map-pixel bounds of 0x40ed50; 0x40eb40 reads an
-## outside cell as the current height with no flags), and steps the actor cell by cell; it
-## does not glide through walls. The flood keeps the terrain rules of 0x40ed50: the source
-## height 0xff and a height gap above two stop ground walkers, the WRD 0x4000 hard block
-## stops every mode. Unit occupancy is not read here: script walks are presentation of
-## committed PlayLoop results (the existing script-departure contract ignores occupants).
-## When the target is walled off the walker ends on the reachable cell nearest to it, as
-## the original's retry at the path end (0x4111d0 returning 0) stops the walk.
+## follows, ported from the original's script path chain. Walk state 0x453b90 state 0x32
+## calls 0x4111d0(actor, dest, 0x12, 0xc) → 0x411080: floods of radius 18, 16, 14, 12
+## (0x40f350 script mode: 0x4c1a74 lifts the map bounds, only the (2r+1)² buffer of
+## 0x40f200 limits the flood); each wider flood only moves the destination to its nearest
+## flooded cell (0x413900 → 0x413740, row-major, Manhattan), the radius-12 flood then yields
+## the path by 0x410a50／0x410730 (strict-descent depth-first search, fixed direction
+## order). When that path is walked and the actor is not on the target cell the chain runs
+## again; it stops when 0x410a50 has nothing to walk (the nearest cell is the actor's own).
+## The flood keeps 0x40ed50's mode 1 (ground)／mode 6 (flying) rules: WRD 0x4000 stops both;
+## a ground step with a height gap of 3 or more stops, an uphill step of 1–2 costs that much
+## extra budget after arrival. Cells outside the map read as the previous height with no
+## flags (0x40eb40); a walk starting outside the map enters it at no height cost unless the
+## cell is height 0xff (0x40f200 passes 0x80 as the source height).
+## Unit occupancy (0x413740 skips cells with 0x70000) is not read: script walks are
+## presentation of committed PlayLoop results. The two random branches of 0x413740 (an
+## equal-distance cell replaces the kept one when 0x458c10 is odd; a candidate with three
+## blocked neighbours is dropped when rand(100) < 80) resolve to keep-first and accept.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
-##   rules: provisional (breadth-first tie order up／down／left／right, nearest-reachable fallback metric)
-const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
-
+##   rules: provisional (0x413740 random branches fixed keep-first／accept; breadth-first past a stall)
 const HARD_BLOCK := 0x4000
 const MAX_HEIGHT_STEP := 2
-const NEIGHBOURS: Array[Vector2i] = [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]
+const OUTSIDE_SOURCE := 0x80
+const RADII: Array[int] = [0x12, 0x10, 0xe, 0xc]
+const MAX_SEGMENTS := 64
+## 0x410730 direction codes: 1 up, 2 down, 3 left, 4 right.
+const STEP := {1: Vector2i(0, -1), 2: Vector2i(0, 1), 3: Vector2i(-1, 0), 4: Vector2i(1, 0)}
 
 
 static func cell_of(world: Vector2, cell_size: Vector2) -> Vector2i:
@@ -28,10 +37,9 @@ static func cell_centre(cell: Vector2i, cell_size: Vector2) -> Vector2:
 	return Vector2(cell) * cell_size + cell_size * 0.5
 
 
-## True when a walker may step from `from_cell` onto `to_cell` (both already inside the
-## search box). Cells outside the map read as the current height with no flags (0x40eb40),
-## so leaving or re-entering the map never fails the height test (see `route` for when
-## outside cells are searched at all).
+## True when a walker may step from `from_cell` onto `to_cell` under the flood's terrain
+## rules. Cells outside the map read as the current height with no flags (0x40eb40), so
+## leaving or re-entering the map never fails the height test here.
 static func can_step(tiles: Dictionary, map_size: Vector2i, from_cell: Vector2i, to_cell: Vector2i, flying: bool) -> bool:
 	if not _inside(map_size, to_cell):
 		return true
@@ -50,7 +58,7 @@ static func can_step(tiles: Dictionary, map_size: Vector2i, from_cell: Vector2i,
 ## {status, cells, points}: `cells` from the start cell to the end cell; `points` are the
 ## world points the actor walks through after its start (cell centres, the last one the
 ## script's exact target when that cell is reached). Status: `same_cell`, `grid_path`,
-## `nearest_reachable` (target walled off) or `no_terrain` (straight line).
+## `nearest_reachable` (the chain stopped short of the target) or `no_terrain`.
 static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target: Vector2, cell_size: Vector2, flying: bool = false) -> Dictionary:
 	var start_cell := cell_of(start, cell_size)
 	var target_cell := cell_of(target, cell_size)
@@ -58,56 +66,242 @@ static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target:
 		return {"status": "no_terrain", "cells": [start_cell, target_cell], "points": [target]}
 	if start_cell == target_cell:
 		return {"status": "same_cell", "cells": [start_cell], "points": [target]}
-	# Outside cells join the search only for a walk that starts or ends off the map (script
-	# entrances and exits), one cell beyond the farther endpoint; an in-map walk never
-	# detours around a wall through the map edge.
-	var low := Vector2i.ZERO
-	var high := map_size - Vector2i.ONE
-	if not _inside(map_size, start_cell) or not _inside(map_size, target_cell):
-		low = Vector2i(mini(0, mini(start_cell.x, target_cell.x)) - 1, mini(0, mini(start_cell.y, target_cell.y)) - 1)
-		high = Vector2i(maxi(map_size.x - 1, maxi(start_cell.x, target_cell.x)) + 1, maxi(map_size.y - 1, maxi(start_cell.y, target_cell.y)) + 1)
-	var previous := {start_cell: start_cell}
-	var queue: Array[Vector2i] = [start_cell]
-	var head := 0
-	var reached := false
-	while head < queue.size():
-		var cell: Vector2i = queue[head]
-		head += 1
-		if cell == target_cell:
-			reached = true
+	var cells: Array = [start_cell]
+	var current := start_cell
+	var seen := {start_cell: true}
+	for _segment_index in range(MAX_SEGMENTS):
+		if current == target_cell:
 			break
-		for offset in NEIGHBOURS:
-			var next: Vector2i = cell + offset
-			if next.x < low.x or next.y < low.y or next.x > high.x or next.y > high.y or previous.has(next):
-				continue
-			if not can_step(tiles, map_size, cell, next, flying):
-				continue
-			previous[next] = cell
-			queue.append(next)
-	var end_cell := target_cell
-	var status := "grid_path"
-	if not reached:
-		# Walled off: the reachable cell nearest the target (Manhattan, then the earlier
-		# breadth-first visit, i.e. the shorter walk).
-		status = "nearest_reachable"
-		var best := -1
-		for cell in queue:
-			var distance: int = TacticalGridRules.manhattan(cell, target_cell)
-			if best < 0 or distance < best:
-				best = distance
-				end_cell = cell
-	var cells: Array = []
-	var walk := end_cell
-	while walk != start_cell:
-		cells.push_front(walk)
-		walk = previous[walk]
-	cells.push_front(start_cell)
+		var segment := _segment(tiles, map_size, current, target_cell, flying)
+		if segment.is_empty():
+			break
+		cells.append_array(segment)
+		current = segment.back()
+		if seen.has(current):
+			break
+		seen[current] = true
+	if current != target_cell:
+		# The chain stalls on a local nearest cell although the target is reachable (玩家第 19
+		# 場's 雷特 walk stops at (35,25) under 0x4111d0 alone; the original opening snapshot
+		# has him on (32,23)): the walk goes on breadth-first to the target. The original
+		# mechanism past the stall is not read (provisional).
+		var rest := _breadth_first(tiles, map_size, current, target_cell, flying)
+		if not rest.is_empty():
+			cells.append_array(rest)
+			current = target_cell
+	var reached := current == target_cell
 	var points: Array = []
 	for index in range(1, cells.size()):
 		points.append(cell_centre(cells[index], cell_size))
 	if reached and not points.is_empty():
 		points[points.size() - 1] = target
-	return {"status": status, "cells": cells, "points": points}
+	return {"status": "grid_path" if reached else "nearest_reachable", "cells": cells, "points": points}
+
+
+## Breadth-first cells (without `from`) to `to` under the flood's terrain rules, up／down／
+## left／right, inside the map plus one outside ring beyond both endpoints; empty when
+## unreachable.
+static func _breadth_first(tiles: Dictionary, map_size: Vector2i, from: Vector2i, to: Vector2i, flying: bool) -> Array:
+	var low := Vector2i(mini(0, mini(from.x, to.x)) - 1, mini(0, mini(from.y, to.y)) - 1)
+	var high := Vector2i(maxi(map_size.x - 1, maxi(from.x, to.x)) + 1, maxi(map_size.y - 1, maxi(from.y, to.y)) + 1)
+	var previous := {from: from}
+	var queue: Array[Vector2i] = [from]
+	var head := 0
+	while head < queue.size():
+		var cell: Vector2i = queue[head]
+		head += 1
+		if cell == to:
+			var path: Array = []
+			while cell != from:
+				path.push_front(cell)
+				cell = previous[cell]
+			return path
+		for direction in [1, 2, 3, 4]:
+			var next: Vector2i = cell + STEP[direction]
+			if next.x < low.x or next.y < low.y or next.x > high.x or next.y > high.y or previous.has(next):
+				continue
+			if can_step(tiles, map_size, cell, next, flying):
+				previous[next] = cell
+				queue.append(next)
+	return []
+
+
+## One 0x411080 call from `origin`: the cells walked (without `origin`), empty when the
+## call returns 0.
+static func _segment(tiles: Dictionary, map_size: Vector2i, origin: Vector2i, target: Vector2i, flying: bool) -> Array:
+	var dest: Variant = target
+	var flood := {}
+	for radius in RADII:
+		flood = _flood(tiles, map_size, origin, radius, flying)
+		var nearest: Variant = _nearest(flood, dest)
+		if radius == RADII.back():
+			dest = nearest
+		elif nearest != null:
+			dest = nearest
+	if dest == null:
+		return []
+	return _descend(flood, dest)
+
+
+## 0x40f200／0x40ed50: each cell's arrival budget (radius + 1 at the origin, 0 unreached)
+## in the (2r+1)² buffer centred on `origin`.
+static func _flood(tiles: Dictionary, map_size: Vector2i, origin: Vector2i, radius: int, flying: bool) -> Dictionary:
+	var width := radius * 2 + 1
+	var values := PackedByteArray()
+	values.resize(width * width)
+	values[radius * width + radius] = radius + 1
+	var flood := {"origin": origin, "radius": radius, "width": width, "values": values, "tiles": tiles, "map_size": map_size, "flying": flying}
+	var source := _height(tiles, map_size, origin) if _inside(map_size, origin) else OUTSIDE_SOURCE
+	_flood_step(flood, origin + Vector2i(0, -1), radius, 0, source)
+	_flood_step(flood, origin + Vector2i(0, 1), radius, 1, source)
+	_flood_step(flood, origin + Vector2i(-1, 0), radius, 2, source)
+	_flood_step(flood, origin + Vector2i(1, 0), radius, 3, source)
+	return flood
+
+
+## 0x40ed50, flood directions 0 up, 1 down, 2 left, 3 right: a cell stores the budget it is
+## reached with when that beats its stored value, then passes on 1 + uphill extra less;
+## an up／down cell goes on, then left, right; a left／right cell goes up, down, then on.
+static func _flood_step(flood: Dictionary, cell: Vector2i, budget: int, direction: int, previous_height: int) -> void:
+	var values: PackedByteArray = flood["values"]
+	var origin: Vector2i = flood["origin"]
+	var radius: int = flood["radius"]
+	var width: int = flood["width"]
+	var tiles: Dictionary = flood["tiles"]
+	var map_size: Vector2i = flood["map_size"]
+	var flying: bool = flood["flying"]
+	while true:
+		var bx := cell.x - origin.x + radius
+		var by := cell.y - origin.y + radius
+		if bx < 0 or by < 0 or bx >= width or by >= width:
+			return
+		var index := by * width + bx
+		var inside := _inside(map_size, cell)
+		if inside and int((tiles.get(cell, {}) as Dictionary).get("movement_flags", 0)) & HARD_BLOCK:
+			return
+		var height: int = _height(tiles, map_size, cell) if inside else previous_height
+		var extra := 0
+		if not flying:
+			var gap := height - previous_height
+			extra = gap if gap >= 0 else (-gap if -gap >= 3 else 0)
+			if previous_height == OUTSIDE_SOURCE:
+				extra = 0x10 if height == 0xff else 0
+			if extra > MAX_HEIGHT_STEP:
+				return
+		if budget <= values[index]:
+			return
+		values[index] = budget
+		budget -= 1 + extra
+		if budget < 1:
+			return
+		previous_height = height
+		match direction:
+			0, 1:
+				_flood_step(flood, cell + (Vector2i(0, -1) if direction == 0 else Vector2i(0, 1)), budget, direction, height)
+				_flood_step(flood, cell + Vector2i(-1, 0), budget, 2, height)
+				cell += Vector2i(1, 0)
+				direction = 3
+			2:
+				_flood_step(flood, cell + Vector2i(0, -1), budget, 0, height)
+				_flood_step(flood, cell + Vector2i(0, 1), budget, 1, height)
+				cell += Vector2i(-1, 0)
+			_:
+				_flood_step(flood, cell + Vector2i(0, -1), budget, 0, height)
+				_flood_step(flood, cell + Vector2i(0, 1), budget, 1, height)
+				cell += Vector2i(1, 0)
+
+
+static func _value(flood: Dictionary, cell: Vector2i) -> int:
+	var origin: Vector2i = flood["origin"]
+	var radius: int = flood["radius"]
+	var width: int = flood["width"]
+	var bx := cell.x - origin.x + radius
+	var by := cell.y - origin.y + radius
+	if bx < 0 or by < 0 or bx >= width or by >= width:
+		return -1
+	return (flood["values"] as PackedByteArray)[by * width + bx]
+
+
+## 0x413740 (nearest mode): the flooded cell with the smallest Manhattan distance to `dest`,
+## scanning the buffer row by row, the first of equal cells kept; null when none.
+static func _nearest(flood: Dictionary, dest: Vector2i) -> Variant:
+	var origin: Vector2i = flood["origin"]
+	var radius: int = flood["radius"]
+	var width: int = flood["width"]
+	var values: PackedByteArray = flood["values"]
+	var best := 600000
+	var found: Variant = null
+	for by in range(width):
+		for bx in range(width):
+			if values[by * width + bx] == 0:
+				continue
+			var cell := Vector2i(origin.x - radius + bx, origin.y - radius + by)
+			var distance := absi(cell.x - dest.x) + absi(cell.y - dest.y)
+			if distance < best:
+				best = distance
+				found = cell
+	return found
+
+
+## 0x410a50／0x410730: the cells from the flood origin to `dest`, each strictly lower in the
+## buffer than the one before and not below `dest`. The first step's order follows the
+## offset's signs and sizes; a later step tries its own direction first, then the
+## perpendicular pair ordered by where `dest` lies from the origin. Empty when `dest` is
+## the origin.
+static func _descend(flood: Dictionary, dest: Vector2i) -> Array:
+	var origin: Vector2i = flood["origin"]
+	var floor_value := _value(flood, dest)
+	if floor_value <= 0 or dest == origin:
+		return []
+	var dx := dest.x - origin.x
+	var dy := dest.y - origin.y
+	var order: Array
+	if dx < 1:
+		if dy < 1:
+			order = [3, 1, 4, 2] if dy < dx else [1, 3, 2, 4]
+		else:
+			order = [3, 2, 4, 1] if dy < dx else [2, 3, 1, 4]
+	else:
+		if dy < 1:
+			order = [4, 1, 3, 2] if dy < dx else [1, 4, 2, 3]
+		else:
+			order = [4, 2, 3, 1] if dy < dx else [2, 4, 1, 3]
+	var search := {
+		"flood": flood, "dest": dest, "floor": floor_value, "failed": {},
+		"horizontal": [4, 3] if origin.x < dest.x else [3, 4],
+		"vertical": [2, 1] if origin.y < dest.y else [1, 2],
+	}
+	var start_value := _value(flood, origin)
+	for direction in order:
+		var path := _descend_step(search, origin + STEP[direction], direction, 1, start_value)
+		if not path.is_empty():
+			return path
+	return []
+
+
+## 0x410730(x, y, direction, depth, previous value). Once the value test passes the result
+## depends only on the cell and direction, so failures are remembered.
+static func _descend_step(search: Dictionary, cell: Vector2i, direction: int, depth: int, previous: int) -> Array:
+	if depth > 99:
+		return []
+	var value := _value(search["flood"], cell)
+	if value < int(search["floor"]) or value >= previous:
+		return []
+	if cell == search["dest"]:
+		return [cell]
+	var key := Vector3i(cell.x, cell.y, direction)
+	var failed: Dictionary = search["failed"]
+	if failed.has(key):
+		return []
+	var turns: Array = [direction]
+	turns.append_array(search["horizontal"] if direction <= 2 else search["vertical"])
+	for turn in turns:
+		var path := _descend_step(search, cell + STEP[turn], turn, depth + 1, value)
+		if not path.is_empty():
+			path.push_front(cell)
+			return path
+	failed[key] = true
+	return []
 
 
 ## World length of walking `points` from `start`.
@@ -124,6 +318,7 @@ static func _inside(map_size: Vector2i, cell: Vector2i) -> bool:
 	return cell.x >= 0 and cell.y >= 0 and cell.x < map_size.x and cell.y < map_size.y
 
 
+## 0x40eb40's height byte for an in-map cell: its WRD height, 0xff where it blocks movement.
 static func _height(tiles: Dictionary, map_size: Vector2i, cell: Vector2i) -> int:
 	var tile: Dictionary = tiles.get(cell, {})
 	return 255 if bool(tile.get("blocks_movement", false)) else int(tile.get("elevation", 0))

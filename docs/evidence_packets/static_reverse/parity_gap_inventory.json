@@ -3,26 +3,26 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 94,
-    "sources": 537,
+    "items": 93,
+    "sources": 531,
     "sources_by_kind": {
-      "provenance": 208,
-      "sentence": 156,
+      "provenance": 207,
+      "sentence": 151,
       "scope": 75,
       "matrix": 85,
       "video": 13
     },
     "layout_timing_modules": 53,
     "items_by_original_status": {
-      "read_complete": 17,
-      "read_partial": 54,
+      "read_complete": 18,
+      "read_partial": 52,
       "unread": 6,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 16,
       "some_levels": 34,
-      "rare": 39,
+      "rare": 38,
       "invisible": 5
     },
     "items_by_category": {
@@ -37,7 +37,7 @@
       "对白": 2,
       "战斗规则": 12,
       "标题与过场": 4,
-      "特写与施法演出": 10,
+      "特写与施法演出": 9,
       "重制新增（原版没有）": 16,
       "镜头": 3,
       "面板与界面": 9,
@@ -805,7 +805,7 @@
       "category": "重制新增（原版没有）",
       "sources": [
         "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|rules|remake-invented|",
-        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|同距平局次序、围死时的最近格度量、按键快进（remake-invented）"
+        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、链停滞时的广度优先续走、按键快进（remake-invented）"
       ]
     },
     {
@@ -1124,12 +1124,12 @@
     },
     {
       "id": "script-walk-path",
-      "difference": "剧情走位的同距平局次序、围死时的最近格度量、起点推算、地图外能走多远是重制读法",
-      "original": "原寻路 0x4111d0 读法；洪泛缓冲尺寸未读",
+      "difference": "寻路链已照原版；0x413740 两处随机分支取定值，链停在可达目标前的局部最近格时续以广度优先，走完后的停点规则未读",
+      "original": "0x4111d0→0x411080 洪泛 18/16/14/12、缓冲 (2r+1)²、行主序最近格、0x410a50 严格下降深搜；unicorn 60 条逐格一致",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_walk_path.md"
       ],
-      "remake": "ScriptWalkPath 广度优先上下左右次序",
+      "remake": "ScriptWalkPath 移植原链逐格求路；随机分支取先到先留／接受；局部停滞时广度优先续到目标",
       "remake_code": [
         "game/battle/runtime/opening/ScriptWalkPath.gd",
         "game/battle/runtime/opening/OpeningStoryObjects.gd"
@@ -1145,9 +1145,8 @@
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|",
         "provenance:game/battle/runtime/opening/ScriptWalkPath.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|走位速度、延时、镜头、地图别名的引擎 loader",
-        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|同距平局次序、围死时的最近格度量、按键快进（remake-invented）",
-        "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#b3aa4efbaf",
-        "sentence:docs/evidence_packets/static_reverse/original_script_walk_path.md#da860f002b"
+        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、链停滞时的广度优先续走、按键快进（remake-invented）",
+        "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#b3aa4efbaf"
       ]
     },
     {
@@ -1341,6 +1340,31 @@
       ]
     },
     {
+      "id": "cast-overlay-rules",
+      "difference": "已照原版：技能页点行后先滑出、删窗后 1 tick 才进选目标（其间不画覆盖层与光标、不收点击），移动范围只在选格态画，I_rect01..08 是选格光标 8 帧（角点红色脉动）；剩技能页取消后回行动环未等滑出、光标帧计时玩家与 AI 各自计数",
+      "original": "技能页窗状态 0x4289e0／0x438160（行点击 0x42946d、关窗 0x428ee4）、单位 0x77→0x78→0x79、0x411200 调用点、光标 0x430230 帧表已读（static-derived）",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_cast_overlays.md",
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
+      ],
+      "remake": "BattleSceneMenus 的 cast_pick_hold 等关窗快照滑完＋1 tick；BattleSelectionCursor／BattleAttackCue 播 I_rect01..08",
+      "remake_code": [
+        "game/battle/scene/BattleSceneOverlays.gd",
+        "game/battle/scene/BattleSceneMenus.gd",
+        "game/battle/scene/BattleSelectionCursor.gd"
+      ],
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "面板与界面",
+      "sources": [
+        "scope:docs/evidence_packets/static_reverse/original_cast_overlays.md|provisional|",
+        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#9ca377ec04",
+        "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#587e4a745c",
+        "sentence:docs/evidence_packets/static_reverse/original_range_cells.md#a4479738ba"
+      ]
+    },
+    {
       "id": "counter-gold-split",
       "difference": "反击击杀时原版有第二份金钱累加器，重制一次行动只飘一份 $（$ 字形已是原版 NUM500，lane DIGITS 未动）",
       "original": "反击方第二份金钱累加器 0x4c2978",
@@ -1490,52 +1514,6 @@
         "provenance:game/common/CampaignProgress.gd|rules|remake-invented|",
         "provenance:game/title/CampaignResumePrompt.gd|layout|remake-invented|",
         "provenance:game/title/CampaignResumePrompt.gd|strings|remake-invented|"
-      ]
-    },
-    {
-      "id": "cast-overlay-rules",
-      "difference": "施法时魔法／绝技选单窗何时关、浏览态何时画移动范围、I_RECT02..08 其他配色何时用——原版未读",
-      "original": "施法覆盖层调用点已读，选单窗关闭与浏览态触发条件未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_cast_overlays.md",
-        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
-      ],
-      "remake": "按已读部分画，未读部分用重制现状",
-      "remake_code": [
-        "game/battle/scene/BattleSceneOverlays.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "面板与界面",
-      "sources": [
-        "scope:docs/evidence_packets/static_reverse/original_cast_overlays.md|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#9ca377ec04",
-        "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#28465aadbe",
-        "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#587e4a745c",
-        "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#75288a642a",
-        "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#8caf94691b",
-        "sentence:docs/evidence_packets/static_reverse/original_range_cells.md#a4479738ba"
-      ]
-    },
-    {
-      "id": "closeup-composition",
-      "difference": "特写窗口的缩放、受击帧绑定、缩放段隐藏身份栏是读法；身份栏底板在缩放段是否已画未读",
-      "original": "原版在叠层切换时生成条文字，底板自身绘制未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md"
-      ],
-      "remake": "BattleCombatCutin 的构图",
-      "remake_code": [
-        "game/battle/scene/BattleCombatCutin.gd:_show_shot"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "特写与施法演出",
-      "sources": [
-        "provenance:game/battle/scene/BattleCombatCutin.gd|layout|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#e924ca2fa8"
       ]
     },
     {
@@ -2222,13 +2200,13 @@
     },
     {
       "id": "cast-lead-phase",
-      "difference": "施法引导子状态 5 那 1 call 没单独留（效果早 1 tick 起），子状态 6 在效果结束后 8 call 的阴影淡出未播，无引导的法术仍用 0.2 暗层",
-      "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读",
+      "difference": "施法引导子状态 5 那 1 call 没单独留（效果早 1 tick 起），子状态 6 在效果结束后 8 call 的阴影淡出未播",
+      "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；有引导的法术效果期间黑层 8/16",
+      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；地图法术效果期间黑层 8/16，无引导时引导段黑层 1..8/16",
       "remake_code": [
         "game/battle/scene/AnimalCastLead.gd",
         "game/battle/scene/BattleCombatCutin.gd",

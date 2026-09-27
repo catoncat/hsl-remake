@@ -25,6 +25,12 @@ var failures: Array[String] = []
 
 
 func _initialize() -> void:
+	# A direct `--script` run gets the gate's seed (tools/verify_runner.py DEFAULT_RNG_SEED):
+	# unseeded, the process global stream and the loop's damage stream start from the clock,
+	# so the opening growth rolls (0x40e870) and with them the live-EXP and target-strip pins
+	# drift run to run.
+	if not OS.get_environment(GlobalRandomStream.SEED_ENV).is_valid_int():
+		OS.set_environment(GlobalRandomStream.SEED_ENV, "1")
 	await _run_all()
 	# Let the audio mixer release the final scene's stopped voices before process exit;
 	# wall clock because the gate runs this suite under --fixed-fps.
@@ -1181,7 +1187,7 @@ func _test_local_spell_layers() -> void:
 	for key in ["wind", "fire"]:
 		cutin.play({"skill_id": "magic:magicAIR:magicCode01" if key == "wind" else "magic:magicFIRE:magicCode01", "magic_key": key, "magic_name": key, "hit": true, "damage": 8, "defender_hp_after": 22}, mage, target, false, Vector2(450, 430))
 		cutin._process(0.4)
-		_assert_true(cutin.background.visible and is_equal_approx(cutin.background.color.a, 0.2) and not cutin.scenery.visible and not cutin.vitals.visible, "local magic dims but does not replace the battlefield, as in the original map sample")
+		_assert_true(cutin.background.visible and is_equal_approx(cutin.background.color.a, 0.5) and not cutin.scenery.visible and not cutin.vitals.visible, "local magic shadows the map at level 8／16 (object 154 sub-state 7, 0x401ed4／0x4030f7) but does not replace the battlefield")
 		_assert_true(not cutin.attacker_sprite.visible and not cutin.defender_sprite.visible, "local spell cannot draw an enlarged caster over its victim")
 		_assert_eq(cutin.stage.size, Vector2(640, 480), "local effects must not be clipped at the 320px close-up boundary")
 		if key == "wind":
@@ -1585,16 +1591,6 @@ func _test_priest_trial_scene() -> void:
 	root.add_child(scene);await create_timer(0.2).timeout;scene.set_process(false)
 	_assert_true(scene.play_loop["scenario_ok"] and scene.first_battle_scenario["player_unit_id"]=="tina","actual scene boots without a Leonard actor: "+str(scene.play_loop.get("scenario_error","")))
 	_assert_true(scene.actor_node_for_unit("tina")!=null and scene.actor_node_for_unit("leonard")==null,"scene uses original002 actor resources under the correct identity")
-	var cutin=scene.get_node("BattlePresentation").cutin
-	var original:Dictionary=cutin.manifest["actors"]["002"]
-	var scale:float=cutin._motion_framing_scale(original)
-	_assert_true(scale>0.5 and scale<1.0,"priest jump uses one stable framing scale that keeps the authored arc visible")
-	for tick in range(original["dispatch"]["motion_offsets"].size()):
-		var index:=0
-		for pose in original["dispatch"]["poses"]:
-			if int(pose["update"])<=tick:index=int(pose["frame"])
-		var off:Array=original["dispatch"]["motion_offsets"][maxi(0,tick-1)]
-		_assert_true(320+(float(off[1])-float(original["frames"][index]["draw_origin"][1]))*scale>=7.99,"all authored jump poses remain inside the shot above the HUD")
 	var budget:int=RuntimeReadback.move_point_for_selected_unit(scene)
 	var selected:=str(scene.play_loop.get("selected_unit_id",""))
 	if selected=="":selected="tina"

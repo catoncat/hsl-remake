@@ -13,6 +13,12 @@ if [[ $# -eq 0 ]]; then
   exit 2
 fi
 
+# Test scripts run directly (tools/godot.sh --script res://tests/...) get the same default random
+# seed the gate runners export, so a suite gives one answer regardless of the wall clock.
+if [[ " $* " == *" res://tests/"* && -z "${HSL_RNG_SEED:-}" ]]; then
+  export HSL_RNG_SEED=1
+fi
+
 # Headless runs (imports, suites, sweeps) get an isolated HOME under ignored/ so they never read or
 # overwrite the real user directory (campaign_progress.json, memoirs, settings). A 2026-09-27 suite
 # run in the real HOME rewrote a real campaign save. HSL_REAL_HOME=1 opts out (tools/play.sh sets it).

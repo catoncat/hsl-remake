@@ -9,9 +9,6 @@ extends CanvasLayer
 ##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##     (the zoom grows over the battlefield map, centred (320,240), before the white-out)
-##   layout: provisional
-##     (window composition scale, hurt-frame binding, the identity board hidden during the zoom draws — the original
-##     builds the strip text at the overlay switch, the board's own draw is unread)
 ##   strings: resource-derived content/imported/hsl/shared/first_skill/manifest.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   strings: remake-invented
@@ -526,18 +523,16 @@ func _show_ordinary_shot(clip: Dictionary, actor: Dictionary, schedule: Dictiona
 	_set_frame(attacker_sprite, clip["attacker"], frame, attacker_mirrored)
 	if dispatch.has("presentation_transform_states"):
 		var transform: Dictionary = dispatch["presentation_transform_states"][mini(int(update),dispatch["presentation_transform_states"].size()-1)]
-		if not clip.has("motion_scale"): clip["motion_scale"] = _transform_framing_scale(actor)
-		var factor: float = clip["motion_scale"]
-		attacker_sprite.scale = Vector2(facing, 1) * factor * float(transform["zoom"]) / 65536.0
-		attacker_sprite.position += Vector2(facing * float(transform["offset"][0]), float(transform["offset"][1])) * factor
+		# The object's zoom words +0x20／+0x24 are written only by the side swap (0x401ddf) and
+		# aniSetZoom (0x40247f): no fit-to-frame scale; the identity window draws over the actor.
+		attacker_sprite.scale = Vector2(facing, 1) * float(transform["zoom"]) / 65536.0
+		attacker_sprite.position += Vector2(facing * float(transform["offset"][0]), float(transform["offset"][1]))
 	elif dispatch.has("motion_offsets"):
 		# The original draws before its common movement tail. Position from the
 		# preceding integration belongs to this pose, not the following update.
 		var offset: Array = dispatch["motion_offsets"][mini(maxi(0,int(update)-1), dispatch["motion_offsets"].size()-1)]
-		if not clip.has("motion_scale"): clip["motion_scale"] = _motion_framing_scale(actor)
-		var factor: float = clip["motion_scale"]
-		attacker_sprite.scale = Vector2(facing, 1) * factor
-		attacker_sprite.position += Vector2(facing * float(offset[0]), float(offset[1])) * factor
+		attacker_sprite.scale = Vector2(facing, 1)
+		attacker_sprite.position += Vector2(facing * float(offset[0]), float(offset[1]))
 	var hit: bool = clip["strike"]["hit"]
 	var defeated := hit and int(clip["strike"]["defender_hp_after"]) <= 0
 	# The hurt pose (0x404015) persists until the defender object hides itself at the
@@ -757,43 +752,6 @@ static func support_feedback_parts(result: Dictionary) -> Array[String]:
 	for part in feedback_parts(result):
 		texts.append(str(part["text"]))
 	return texts
-
-
-func _motion_framing_scale(actor: Dictionary) -> float:
-	# One stable wide-shot scale for the entire authored action, not per-frame
-	# zooming. Keep the jumping head/staff above the unchanged HUD fully visible.
-	var dispatch: Dictionary = actor["dispatch"]
-	var extent := 312.0
-	var textures := {}
-	for tick in range(dispatch["motion_offsets"].size()):
-		var index := int(dispatch["initial_frame"])
-		for pose in dispatch["poses"]:
-			if int(pose["update"]) > tick: break
-			index = int(pose["frame"])
-		var frame: Dictionary = actor["frames"][index]
-		if not textures.has(index): textures[index] = (load(frame["res_path"]) as Texture2D).get_size()
-		var delta: Array = dispatch["motion_offsets"][maxi(0,tick-1)]
-		var corner := Vector2(float(delta[0])-float(frame["draw_origin"][0]),float(delta[1])-float(frame["draw_origin"][1]))
-		extent = maxf(extent,maxf(-corner.y,maxf(-corner.x,corner.x+textures[index].x)))
-	return 312.0 / extent
-
-
-func _transform_framing_scale(actor: Dictionary) -> float:
-	var dispatch: Dictionary = actor["dispatch"]
-	var extent := 312.0
-	var textures := {}
-	for tick in range(dispatch["presentation_transform_states"].size()):
-		var index := int(dispatch["initial_frame"])
-		for pose in dispatch["poses"]:
-			if int(pose["update"]) > tick: break
-			index = int(pose["frame"])
-		var frame: Dictionary = actor["frames"][index]
-		if not textures.has(index): textures[index] = (load(frame["res_path"]) as Texture2D).get_size()
-		var transform: Dictionary = dispatch["presentation_transform_states"][tick]
-		var zoom := float(transform["zoom"]) / 65536.0
-		var corner := Vector2(transform["offset"][0],transform["offset"][1]) - Vector2(frame["draw_origin"][0],frame["draw_origin"][1]) * zoom
-		extent = maxf(extent,maxf(-corner.y,maxf(-corner.x,corner.x+textures[index].x*zoom)))
-	return 312.0 / extent
 
 
 ## Stands `actor_id`'s combat frame on `sprite`, drawn at x zoom −1 about its anchor when

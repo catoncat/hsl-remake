@@ -427,6 +427,9 @@ def gd_reference_tokens(relpath: str) -> list[re.Pattern]:
     return tokens
 
 
+SCENE_CONTRACT_SUITE = "run_presentation_contract_tests.gd"
+
+
 def affected_godot_suites(changed: list[str], requested: list[str]) -> tuple[dict[str, str], dict[str, str], list[str]]:
     """({suite: reason}, {sweep level key: reason}, [deep suites skipped]) for the changed paths.
     A suite is hit when it is itself changed, or references a changed .gd directly or through
@@ -463,6 +466,13 @@ def affected_godot_suites(changed: list[str], requested: list[str]) -> tuple[dic
             if any(pattern.search(text) for pattern in patterns):
                 hits.setdefault(name, origin[target] if target == origin[target] else f"{origin[target]} via {target}")
                 break
+    # Battle scene scripts reach the cut-in through game-to-game references the token walk does
+    # not follow (a SkillEffectScriptPlayer change once broke the heal cut-in caption unseen), so a
+    # change under game/battle/scene/ always hits the presentation contract suite.
+    for path in changed:
+        if path.startswith("game/battle/scene/") and path.endswith(".gd") and SCENE_CONTRACT_SUITE in suites:
+            hits.setdefault(SCENE_CONTRACT_SUITE, f"{path} (scene contract)")
+            break
     campaign = json.loads((BATTLES / "campaign.json").read_text(encoding="utf-8")).get("battles", {})
     levels: dict[str, str] = {}
     for key, entry in campaign.items():

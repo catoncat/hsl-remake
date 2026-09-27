@@ -163,15 +163,12 @@ def is_receiver_only(program):
 
 
 def derive_hurt_frame(program, frame_count):
-    poses = [instruction['args'][0] for instruction in program if instruction['op'] == 'aniSetShape']
-    return min((poses[-1] + 1) if poses else frame_count - 1, frame_count - 1)
+    # AnimalDefense 0x404015 adds the loaded frame count − 1 to the shape on the hit tick.
+    return frame_count - 1
 
 
 def hurt_frame_evidence(program, frame_count):
-    poses = [instruction['args'][0] for instruction in program if instruction['op'] == 'aniSetShape']
-    if poses:
-        return 'Derived from the last action aniSetShape reaction slot + 1, clamped to number - 1.'
-    return 'No action pose exists; derived from the final source frame number - 1.'
+    return 'AnimalDefense 0x404015: shape += frame count - 1 on the hit tick (last frame).'
 
 
 def compile_action(program, frame_count):

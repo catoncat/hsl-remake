@@ -66,5 +66,5 @@ tick 定义见 [original_tick_rate](../runtime_observations/original_tick_rate/R
 - 原版计数器跨战斗不复位；重制每场新建 `RangeCellOverlay`，各层从 0 起数，开场相位不同（看不出）。
 - 绝技态 `0x445060`／`0x445067`（`0x40ba80`→`0x411a30`，在 `test ebx, eax` 成立时）的用途未读。
 - 选魔法／绝技目标的叠画只有静态读法，没有原版帧读数（provisional）：第 51 战首控存档里 雷歐納德 气力不足、氣刃斬（气格消耗 1）选不中，队中无魔法角色；替换路线：用气力 ≥1 格或有魔法角色的存档截选目标帧，按上表读法核对填充 ramp 与边框首行。
-- `I_rect01..08` 与 `ICONRECT.SHP` 的用途未复现。
+- `ICONRECT.SHP` 的用途未复现；`I_rect01..08` 是选格光标帧，见 [施法覆盖层包](original_cast_overlays.md#窗与光标)。
 - 565 抹位平均与 alpha 0.5 的 ≤1 级差异未做逐像素对比。
