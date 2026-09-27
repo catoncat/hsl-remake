@@ -95,7 +95,7 @@
       "original": "0x45e80d 的卷轴消费者未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md",
-        "docs/evidence_packets/runtime_observations/system_menu/README.md"
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
       "remake": "BattleSystemMenu 固定 0.25 s 卷出",
       "remake_code": [
@@ -399,7 +399,7 @@
       "difference": "战斗卷轴的「讀取回憶錄」读作回到战役位置，回憶錄列表位置与「沒有戰場記錄」提示是重制值",
       "original": "原作系统卷轴 handler 与回憶錄列表未定位、无录像",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/system_menu/README.md",
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_storage_window.md"
       ],
       "remake": "BattleSystemMenu 的读法",
@@ -1021,7 +1021,7 @@
       "difference": "标题流程的重制安排：「戰場記錄」恢复检查点或战役位置、开场动画放在标题与首战之间、任意键跳过、画面放大方式、「沒有戰場記錄」提示",
       "original": "原版在进入 level 51 时播放开场动画；原跳过行为未定位",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/title_screen/README.md",
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_movies_playback/README.md"
       ],
       "remake": "TitleScreen／MoviePlayer",
@@ -1040,7 +1040,7 @@
       "original": "defProcGameOverBOSS 0x42aea0：首帧 GAMEOVER.WAV、60 计数、字物件 0x42afc0、phase 2 计数 160、phase 3 按键或归零经 0x42cb90 回标题，无重试；画面无录像",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_battle_end_flow.md",
-        "docs/evidence_packets/runtime_observations/title_screen/README.md"
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
       "remake": "GameOverScreen：逐 OriginalTick 走 0x42aea0 四阶段与字物件（GROWTHWIN2），任意键或 160 tick 淡出回标题；战斗收尾对白板关闭后先停 0.2 s 再 0.2 s 淡黑（BattleSceneRuntime._advance_battle_end）；OPT-RETRY=可重新挑戰本戰 时恢复 RESULTPAGE 之前的重试：原版时序走到等待后画面下方出「重新挑戰本戰／回到標題」两行、不自动离开，重新挑战用进入本战时的交接（CampaignProgress.last_entry，戰場記錄读档改为从本战开头）重进（OPTIONS-S3，读点 GameOverScreen._ready）",
       "remake_code": [
@@ -1681,7 +1681,7 @@
       "difference": "設定選項窗下多一条「重製選項」入口与二级页：原版／舒適／自定三个预设与逐项选项（说明随取值切换），默认全部照原版；任何画面按 Tab 直接开关同一页（开着时整棵树暂停，游戏不收输入、不推进）",
       "original": "原版 設定選項（Title039）只有 場景效果／預備動作／音效音量／音樂音量 四行，没有二级页；原版 Tab 未绑定",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/system_menu/README.md"
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
       "remake": "RemakeOptionsPage＋GameOptions（注册表 content/authored/options/remake_options.json，设置存 GameSettings preset／presentation）；Tab 入口是自动加载 RemakeOptionsHotkey（最高游戏层之上、SceneTree 暂停）；页关闭且值变了通知 remake_options_listeners 组；各选项接读点后的差异记在对应条目（已接：OPT-TREASURE→BattleSceneRuntime reveal_all_chests，关页即重画；OPT-PACE 快／極快 的演出时钟倍率 CombatPresentationTiming.PACE_CUTIN／PACE_MAP）",
       "remake_code": [
@@ -1912,7 +1912,7 @@
       "difference": "設定選項 的 音效音量／音樂音量 走重制的 Master／Music 总线与音量曲线（0 静音、改了立刻生效），場景效果 只管剧情特效物件（雨／闪电／火焰／光环）是否绘制；原版混音器未定位，場景效果 位的读者是地图云等背景物件过程",
       "original": "Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者是地图物件过程（0x43c337／0x43c63f／0x43cecd／0x43d13e／0x43d758，关时云不画不走）；第三行滑杆 0x4245c0 → [0x477c20]＝档×15 封顶 255；混音器未定位",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/system_menu/README.md",
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_map_object_drift.md"
       ],
       "remake": "GameSettings：sfx_volume 驱动 Master、music_volume 由补偿过的 Music 总线单独决定；scene_effects 由 StoryEffectObjects.insert 读（关云未接，见 stage-placement）",
@@ -2883,8 +2883,12 @@
     "scope:docs/evidence_packets/runtime_observations/first_scene_opening_choreography_packet.md|provisional|": {
       "item": "script-entry-paths"
     },
-    "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音": {
-      "item": "title-ornaments"
+    "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）": {
+      "item": [
+        "title-ornaments",
+        "system-scroll-speed",
+        "memoir-list"
+      ]
     },
     "scope:docs/evidence_packets/runtime_observations/original_level17_escort/README.md|provisional|item consumption and NPC movement rule": {
       "item": "ai-first-battle-moves"
@@ -2916,19 +2920,10 @@
     "scope:docs/evidence_packets/runtime_observations/story_scene_060/README.md|provisional|": {
       "item": "script-walk-path"
     },
-    "scope:docs/evidence_packets/runtime_observations/system_menu/README.md|provisional|": {
-      "item": [
-        "system-scroll-speed",
-        "memoir-list"
-      ]
-    },
     "scope:docs/evidence_packets/runtime_observations/town_scene/README.md|provisional|": {
       "item": "town-event-timing"
     },
     "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|": {
-      "item": "timing-estimates"
-    },
-    "scope:docs/evidence_packets/static_reverse/first_battle_combat_animation.md|provisional|": {
       "item": "timing-estimates"
     },
     "scope:docs/evidence_packets/static_reverse/first_battle_experience.md|provisional|": {
@@ -2936,9 +2931,6 @@
     },
     "scope:docs/evidence_packets/static_reverse/first_battle_initial_skill.md|provisional|": {
       "resolved": "20×expend 换算已由 original_skill_resources.md 证实（本包后继段）"
-    },
-    "scope:docs/evidence_packets/static_reverse/first_battle_portraits.md|provisional|306 ??? list labels shown by title (remake-invented)": {
-      "no_visible_effect": "只剩列表标签（交付视图、队伍页、战败句）按稱號显示；身份栏姓名 2026-09-26 起照原版逐字印 ???"
     },
     "scope:docs/evidence_packets/static_reverse/first_battle_template_stats.md|provisional|合成初始化": {
       "item": "npc-level-policy"
@@ -3113,10 +3105,6 @@
       "item": "map-object-flash",
       "text": "`mapobjFlash` 的 `defProcStandObject` 分支未读"
     },
-    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#fc47893fbc": {
-      "item": "closeup-object-timing",
-      "text": "**P3**：守方 AnimalDefense `0x4038a0` 读出（[tick 计数包 §6](../../static_reverse/original_tick_counts.md#6-普攻切入的守方对象-defprocanimaldefense0x4038a0slot-23受击停留lane-p3)），TARGET_PAUSE／hurt_hold 落 A，RECOVERY 仍 B（屏幕过渡 `0x46098f` 未读）"
-    },
     "sentence:docs/evidence_packets/runtime_observations/story_scene_058/README.md#12a26dfd1c": {
       "resolved": "58 → 60 → 53 → 1 的承接已接通，战役进度随 hand-off 写入（PROJECT 序章链）",
       "text": "原作 level 60 之后的承接未重制，跨关存档仍未实现。"
@@ -3136,14 +3124,6 @@
     "sentence:docs/evidence_packets/runtime_observations/story_scene_endgame_previews/README.md#6df6bf4b03": {
       "item": "job-model-gaps",
       "text": "终战本体、九槽受控与第三章职业模型未重制。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/system_menu/README.md#0ad151483e": {
-      "resolved": "設定選項 已打开 Title039，三项生效并持久化（PROJECT 标题段）",
-      "text": "設定選項 未重制，只显示「設定選項尚未重製」提示；"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/system_menu/README.md#a79e6e4a76": {
-      "resolved": "战间 整理裝備 已打开战间整理裝備画面（PROJECT 标题段）",
-      "text": "战间卷轴的 整理裝備 未重制，只提示；"
     },
     "sentence:docs/evidence_packets/runtime_observations/town_scene/README.md#d7de99b176": {
       "resolved": "level 6 席達鎮已是正式战斗（PROJECT 正式战斗）",
@@ -3225,10 +3205,6 @@
       "item": "effect-sound-timing",
       "text": "**叠声**：原版同 tick 多实例是否各占一个通道（`0x45a390` flags 0 走 `0x4593a0` 分配通道，未读完）；"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#d9cdb37705": {
-      "resolved": "次级音已由效果对象命令程序补回（R5-L2 abde33fe，310 个声音）",
-      "text": "重制此前把它们列为\"未复原的次级音\"，从不播放。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_field_coverage.md#34226366cb": {
       "item": "unconsumed-display-flags",
       "text": "表现层未读"
@@ -3244,10 +3220,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#b81101abad": {
       "item": "identity-bar-bits",
       "text": "仍未读：位 0x100 数字文本的置位者、氣力条（重制自创，未知时仍空）。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#cb09a169ee": {
-      "resolved": "原版任何一方的目标确认都揭示（AI 武器 0x440279 调 0x430020，模拟器实测）；重制 _resolve_exchange 标守方、切入栏读回执 strip_known_ids（lane KNOWN 2026-09-26）",
-      "text": "`BattleLoopCombat._resolve_exchange`（玩家与 AI 武器交锋共用）校验通过后 `_mark_known(defender)`（lane KNOWN，对应 `0x440279`／`0x444388`），反击系列不标——此前重制未复刻 AI 武器攻击的目标确认，友军 NPC 打中的敌人在切入栏、悬停与状态页都仍是 `???`，直到它死亡；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#cee04b6d63": {
       "item": "identity-bar-bits",
@@ -3359,14 +3331,6 @@
         "floater-extra-words"
       ]
     },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#2528d4c0ff": {
-      "resolved": "AI 起手的虚拟光标带镜头已复刻：施法滑动每 tick 对准光标、普攻滑动随光标平移（R7-CUE 51bcc7ec，original_cast_overlays 起手的镜头与各段覆盖层）",
-      "text": "AI 虚拟光标带镜头未复刻。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#cd0cb8923e": {
-      "resolved": "AI 起手的虚拟光标带镜头已复刻：施法滑动每 tick 对准光标、普攻滑动随光标平移（R7-CUE 51bcc7ec，original_cast_overlays 起手的镜头与各段覆盖层）",
-      "text": "另见 `0x4402dc..0x44141d`：AI 过程里一个按 `0x45e882` 步长 16 移动的虚拟光标（`0x4c2c8c／0x4c2c90`）也用同一组边界带镜头，未复刻（未判定它是哪段表现）。"
-    },
     "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#b795e0c8ea": {
       "item": "cam-script-walk-variants",
       "text": "`actWalkAndDeleteWait`（状态 0x36）、`actWalkFollow*`、`actMoveDispWait` 的镜头规则未读，重制不跟随；"
@@ -3384,10 +3348,6 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_growth_window.md|negative-evidence|参考录像无升級窗原帧": {
       "resolved": "升級窗已用用户录屏 340–351 s 逐帧对照并照做按钮隐藏（R7-UI 492c59a2，original_growth_window §8）"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#e3e5a16fca": {
-      "resolved": "0x43c0f0 每 tick 直接对准光标，不存在步长（R7-CUE 51bcc7ec）",
-      "text": "P6 记的\"步长未读\"不存在。"
     },
     "scope:docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md|provisional|精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流": {
       "item": "ai-first-battle-moves"
@@ -3589,6 +3549,70 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|0x407230 写的三个显示字（+0x92=60、+0x98=0x300、+0x80 置 0x800）＝受击态：hit 帧＋60 tick 抖动，读法见 original_map_strike.md（STRIKEFX）；烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；0x407230 抖动期间行动者过程写的局部状态 6 的消费者未追": {
       "item": "poison-gas-presentation"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#55f6ecc336": {
+      "item": "cast-lead-compositing",
+      "text": "等待期间屏幕底图未读（重制显示未压暗的地图，provisional）。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081": {
+      "item": "cast-lead-phase",
+      "text": "绝技（kind 2，`0x441d06` 插入，`0x4c1408` = 攻方 EFFECTS 程序）：不置压暗位，进子状态 8（`0x403199`）：`+0xa0 = 10`、`+0x28 = 16`、`0x4c6f70 = 0x20002`、`+0x84 = 0`，子状态 9（`0x4031c7`）与子状态 4 同形——`+0x84` 计 16 个 call、`+0xa0` 倒数 10 个 call，然后见 `0x4c1408` 非零：调 `0x4607f9`（参数含 (320,240)，未读）后以它为程序指针进 phase 103（`0x403272`，−1 则 phase 101 结束）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#08d3771dce": {
+      "no_visible_effect": "菜单悬停与展开的可见行为已按原函数执行对照接入；事件位来自哪种输入只影响命名",
+      "text": "事件位 `0x02000000`／`0x20000000` 由哪种输入产生未读，不把它们命名为已证明的 hover-enter／leave。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#9993ed8f9f": {
+      "no_visible_effect": "行动后的菜单集合由公共行动恢复包决定，本包只管集合与几何",
+      "text": "菜单事件位的完整语义、行动后留哪几项的上层选择不由本包证明（未读）。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#007f1d0195": {
+      "item": "cam-script-walk-variants",
+      "text": "部分脚本行走变体的镜头规则未读（`cam-script-walk-variants`）。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9": {
+      "item": "cast-lead-phase",
+      "text": "效果开始是否等姿势未读（`cast-lead-phase`）。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f2b15754a0": {
+      "item": "timing-estimates",
+      "text": "[docs/PROVENANCE.md](../../../PROVENANCE.md) 中 timing＝`remake-invented` 的 36 格逐格分为 A 可直接换算／B 以 tick 计但计数未读／C 与 tick 无关；"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f854695a12": {
+      "item": "timing-estimates",
+      "text": "处置后 remake-invented timing 剩 8 格有意保留（C 或产品取舍），B 类未读的保留现值标 provisional（provisional）。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md#7f6d6880bb": {
+      "item": "title-ornaments",
+      "text": "逐帧计数器未读（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#449ea52b57": {
+      "item": "closeup-object-timing",
+      "text": "loader 的隐式结束符与 m/s 资源选择未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#88c3799049": {
+      "item": "closeup-object-timing",
+      "text": "ANIMAL.TXT loader 的 token 编译、隐式结束符、m/s 资源选择与缺省未读（线索：入口对 `0x4c1b6c` 表记录与多个通道字段的选择）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#7f08a9d8b3": {
+      "item": "draw-depth-states",
+      "text": "深度封顶 22／+23 的全局状态分支未读透。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#62fdc3fe42": {
+      "item": "identity-bar-bits",
+      "text": "差异：位 0x100（条上印数字）的置位者未读、氣力条是重制自创（差异清单 `identity-bar-bits`，provisional）；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91": {
+      "item": "cam-random-scroll",
+      "text": "actScrollBGToRandomPos 未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#af0114ce30": {
+      "item": "timing-estimates",
+      "text": "差异：对象 700 渐暗、`mapobjFlash`、系统卷轴展开、击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional；"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#d003b16b63": {
+      "item": "closeup-object-timing",
+      "text": "守方 AnimalDefense `0x4038a0` 读出（[tick 计数包 §6](../../static_reverse/original_tick_counts.md#6-普攻切入的守方对象-defprocanimaldefense0x4038a0slot-23受击停留)），TARGET_PAUSE／hurt_hold 落 A，RECOVERY 仍 B（屏幕过渡 `0x46098f` 未读）"
     }
   }
 }

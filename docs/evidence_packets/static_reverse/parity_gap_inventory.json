@@ -4,11 +4,11 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 107,
-    "sources": 487,
+    "sources": 492,
     "sources_by_kind": {
       "provenance": 226,
-      "sentence": 84,
-      "scope": 79,
+      "sentence": 92,
+      "scope": 76,
       "matrix": 85,
       "video": 13
     },
@@ -45,8 +45,8 @@
       "飘字与数字": 6
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 51,
-    "resolved_sources": 28
+    "no_visible_effect_sources": 52,
+    "resolved_sources": 21
   },
   "top": [
     "damage-digit-bounce",
@@ -390,7 +390,8 @@
       "effort": "S",
       "category": "特写与施法演出",
       "sources": [
-        "provenance:game/battle/scene/AnimalCastLead.gd|layout|provisional|"
+        "provenance:game/battle/scene/AnimalCastLead.gd|layout|provisional|",
+        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#55f6ecc336"
       ]
     },
     {
@@ -803,6 +804,7 @@
       "sources": [
         "provenance:game/battle/runtime/ActorRuntime.gd|layout|provisional|",
         "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#1efdba0f01",
+        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#7f08a9d8b3",
         "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#e0a801182e"
       ]
     },
@@ -997,6 +999,7 @@
       "effort": "M",
       "category": "镜头",
       "sources": [
+        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#007f1d0195",
         "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#b795e0c8ea",
         "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#c94e71db0e"
       ]
@@ -1512,7 +1515,7 @@
       "original": "defProcGameOverBOSS 0x42aea0：首帧 GAMEOVER.WAV、60 计数、字物件 0x42afc0、phase 2 计数 160、phase 3 按键或归零经 0x42cb90 回标题，无重试；画面无录像",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_battle_end_flow.md",
-        "docs/evidence_packets/runtime_observations/title_screen/README.md"
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
       "remake": "GameOverScreen：逐 OriginalTick 走 0x42aea0 四阶段与字物件（GROWTHWIN2），任意键或 160 tick 淡出回标题；战斗收尾对白板关闭后先停 0.2 s 再 0.2 s 淡黑（BattleSceneRuntime._advance_battle_end）；OPT-RETRY=可重新挑戰本戰 时恢复 RESULTPAGE 之前的重试：原版时序走到等待后画面下方出「重新挑戰本戰／回到標題」两行、不自动离开，重新挑战用进入本战时的交接（CampaignProgress.last_entry，戰場記錄读档改为从本战开头）重进（OPTIONS-S3，读点 GameOverScreen._ready）",
       "remake_code": [
@@ -1776,6 +1779,7 @@
         "provenance:game/battle/scene/BattleStatusPanel.gd|strings|remake-invented|docs/OPTIONS.md",
         "scope:docs/evidence_packets/static_reverse/original_identity_bar.md|negative-evidence|",
         "scope:docs/evidence_packets/static_reverse/original_identity_bar.md|provisional|",
+        "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#62fdc3fe42",
         "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#88493b597d",
         "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#b81101abad",
         "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#cee04b6d63"
@@ -1966,7 +1970,7 @@
       "difference": "設定選項窗下多一条「重製選項」入口与二级页：原版／舒適／自定三个预设与逐项选项（说明随取值切换），默认全部照原版；任何画面按 Tab 直接开关同一页（开着时整棵树暂停，游戏不收输入、不推进）",
       "original": "原版 設定選項（Title039）只有 場景效果／預備動作／音效音量／音樂音量 四行，没有二级页；原版 Tab 未绑定",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/system_menu/README.md"
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
       "remake": "RemakeOptionsPage＋GameOptions（注册表 content/authored/options/remake_options.json，设置存 GameSettings preset／presentation）；Tab 入口是自动加载 RemakeOptionsHotkey（最高游戏层之上、SceneTree 暂停）；页关闭且值变了通知 remake_options_listeners 组；各选项接读点后的差异记在对应条目（已接：OPT-TREASURE→BattleSceneRuntime reveal_all_chests，关页即重画；OPT-PACE 快／極快 的演出时钟倍率 CombatPresentationTiming.PACE_CUTIN／PACE_MAP）",
       "remake_code": [
@@ -1995,7 +1999,7 @@
       "difference": "設定選項 的 音效音量／音樂音量 走重制的 Master／Music 总线与音量曲线（0 静音、改了立刻生效），場景效果 只管剧情特效物件（雨／闪电／火焰／光环）是否绘制；原版混音器未定位，場景效果 位的读者是地图云等背景物件过程",
       "original": "Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者是地图物件过程（0x43c337／0x43c63f／0x43cecd／0x43d13e／0x43d758，关时云不画不走）；第三行滑杆 0x4245c0 → [0x477c20]＝档×15 封顶 255；混音器未定位",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/system_menu/README.md",
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_map_object_drift.md"
       ],
       "remake": "GameSettings：sfx_volume 驱动 Master、music_volume 由补偿过的 Music 总线单独决定；scene_effects 由 StoryEffectObjects.insert 读（关云未接，见 stage-placement）",
@@ -2061,7 +2065,7 @@
       "difference": "标题流程的重制安排：「戰場記錄」恢复检查点或战役位置、开场动画放在标题与首战之间、任意键跳过、画面放大方式、「沒有戰場記錄」提示",
       "original": "原版在进入 level 51 时播放开场动画；原跳过行为未定位",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/title_screen/README.md",
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_movies_playback/README.md"
       ],
       "remake": "TitleScreen／MoviePlayer",
@@ -2100,8 +2104,9 @@
       "sources": [
         "provenance:game/title/TitleScreen.gd|layout|remake-invented|",
         "provenance:game/title/TitleScreen.gd|timing|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音",
-        "scope:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md|provisional|采样只有 4–5 帧／秒，周期与振幅是拟合值"
+        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）",
+        "scope:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md|provisional|采样只有 4–5 帧／秒，周期与振幅是拟合值",
+        "sentence:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md#7f6d6880bb"
       ]
     },
     {
@@ -2360,7 +2365,8 @@
       "category": "镜头",
       "sources": [
         "matrix:Camera curve",
-        "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#35c5395ff4"
+        "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#35c5395ff4",
+        "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91"
       ]
     },
     {
@@ -2368,7 +2374,7 @@
       "difference": "战斗卷轴的「讀取回憶錄」读作回到战役位置，回憶錄列表位置与「沒有戰場記錄」提示是重制值",
       "original": "原作系统卷轴 handler 与回憶錄列表未定位、无录像",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/system_menu/README.md",
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_storage_window.md"
       ],
       "remake": "BattleSystemMenu 的读法",
@@ -2383,7 +2389,7 @@
         "provenance:game/battle/scene/BattleSystemMenu.gd|layout|provisional|",
         "provenance:game/battle/scene/BattleSystemMenu.gd|rules|provisional|",
         "provenance:game/battle/scene/BattleSystemMenu.gd|timing|remake-invented|",
-        "scope:docs/evidence_packets/runtime_observations/system_menu/README.md|provisional|"
+        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）"
       ]
     },
     {
@@ -2412,7 +2418,7 @@
       "original": "0x45e80d 的卷轴消费者未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md",
-        "docs/evidence_packets/runtime_observations/system_menu/README.md"
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
       "remake": "BattleSystemMenu 固定 0.25 s 卷出",
       "remake_code": [
@@ -2424,7 +2430,7 @@
       "category": "面板与界面",
       "sources": [
         "provenance:game/battle/scene/BattleSystemMenu.gd|timing|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/system_menu/README.md|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#39ff07b5ae",
         "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#89dbd9c4c5"
       ]
@@ -2470,12 +2476,14 @@
         "matrix:UI/战斗反馈",
         "scope:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md|provisional|rows marked B",
         "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|",
-        "scope:docs/evidence_packets/static_reverse/first_battle_combat_animation.md|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_script_camera_scroll.md|provisional|16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定）",
         "scope:docs/evidence_packets/static_reverse/original_tick_counts.md|provisional|rows marked 未读",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/README.md#54ea50ee96",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#6a3f57a6e5",
-        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#705a20c6c6"
+        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#705a20c6c6",
+        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f2b15754a0",
+        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f854695a12",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#af0114ce30"
       ]
     },
     {
@@ -2496,6 +2504,8 @@
       "sources": [
         "provenance:game/battle/scene/AnimalCastLead.gd|timing|provisional|",
         "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#1151c8fef7",
+        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9",
+        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081",
         "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#89dbd9c4c5"
       ]
     },
@@ -2516,7 +2526,9 @@
       "effort": "S",
       "category": "特写与施法演出",
       "sources": [
-        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#fc47893fbc",
+        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#d003b16b63",
+        "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#449ea52b57",
+        "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#88c3799049",
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#9bca1a0d51",
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#f0c8e6287a",
         "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#1e230aa201"
@@ -2839,10 +2851,6 @@
         "reason": "预览回执（53 已是正式战斗，预览只作独立回归）"
       },
       {
-        "source": "scope:docs/evidence_packets/static_reverse/first_battle_portraits.md|provisional|306 ??? list labels shown by title (remake-invented)",
-        "reason": "只剩列表标签（交付视图、队伍页、战败句）按稱號显示；身份栏姓名 2026-09-26 起照原版逐字印 ???"
-      },
-      {
         "source": "scope:docs/evidence_packets/static_reverse/original_enemy_turn.md|provisional|全局流的样本起点（来自模拟器时钟桩）、玩家回合结束从 +0x8c=0x10000 起跑（不经待機菜单输入）、call／other 两类动作从不产出、抽取点对照表 SITE_MAP（逐站点反汇编对照，未逐值对拍）",
         "reason": "原版敌人回合裁判（模拟器）自身的取证边界，只影响对照回执，不是重制规则差异"
       },
@@ -2865,6 +2873,14 @@
       {
         "source": "sentence:docs/evidence_packets/runtime_observations/mobile_jobs/README.md#6781815418",
         "reason": "说明句：原 10% 命中下限已实现，句中的\"未读取\"指不能把缺字段当落空"
+      },
+      {
+        "source": "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#08d3771dce",
+        "reason": "菜单悬停与展开的可见行为已按原函数执行对照接入；事件位来自哪种输入只影响命名"
+      },
+      {
+        "source": "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#9993ed8f9f",
+        "reason": "行动后的菜单集合由公共行动恢复包决定，本包只管集合与几何"
       },
       {
         "source": "sentence:docs/evidence_packets/static_reverse/original_story_object_terrain.md#3b7e6437e8",
@@ -2913,14 +2929,6 @@
         "reason": "升級窗已用用户录屏 340–351 s 逐帧对照并照做按钮隐藏（R7-UI 492c59a2，original_growth_window §8）"
       },
       {
-        "source": "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#2528d4c0ff",
-        "reason": "AI 起手的虚拟光标带镜头已复刻：施法滑动每 tick 对准光标、普攻滑动随光标平移（R7-CUE 51bcc7ec，original_cast_overlays 起手的镜头与各段覆盖层）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#cd0cb8923e",
-        "reason": "AI 起手的虚拟光标带镜头已复刻：施法滑动每 tick 对准光标、普攻滑动随光标平移（R7-CUE 51bcc7ec，original_cast_overlays 起手的镜头与各段覆盖层）"
-      },
-      {
         "source": "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#90ab3e8987",
         "reason": "level 1 歐姆村已是正式战斗，53 胜利经 [1,1] 进 level 1（PROJECT 战役注册）"
       },
@@ -2941,32 +2949,12 @@
         "reason": "901 已转正式战斗（PROJECT 正式战斗注册）"
       },
       {
-        "source": "sentence:docs/evidence_packets/runtime_observations/system_menu/README.md#0ad151483e",
-        "reason": "設定選項 已打开 Title039，三项生效并持久化（PROJECT 标题段）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/runtime_observations/system_menu/README.md#a79e6e4a76",
-        "reason": "战间 整理裝備 已打开战间整理裝備画面（PROJECT 标题段）"
-      },
-      {
         "source": "sentence:docs/evidence_packets/runtime_observations/town_scene/README.md#d7de99b176",
         "reason": "level 6 席達鎮已是正式战斗（PROJECT 正式战斗）"
       },
       {
         "source": "sentence:docs/evidence_packets/runtime_observations/world_map_scene/README.md#d74d3e7de4",
         "reason": "level 1 已是正式战斗，胜利执行城镇事件 9 并回大地图（PROJECT 序章链）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#e3e5a16fca",
-        "reason": "0x43c0f0 每 tick 直接对准光标，不存在步长（R7-CUE 51bcc7ec）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#d9cdb37705",
-        "reason": "次级音已由效果对象命令程序补回（R5-L2 abde33fe，310 个声音）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#cb09a169ee",
-        "reason": "原版任何一方的目标确认都揭示（AI 武器 0x440279 调 0x430020，模拟器实测）；重制 _resolve_exchange 标守方、切入栏读回执 strip_known_ids（lane KNOWN 2026-09-26）"
       },
       {
         "source": "video:1",

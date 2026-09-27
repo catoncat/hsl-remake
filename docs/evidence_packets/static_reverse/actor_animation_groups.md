@@ -1,6 +1,6 @@
 # Original actor animation groups
 
-> evidence: resource-derived; provisional · status: live · functions: 0x446c40, 0x45e525, 0x45e5a6 · updated: 2026-09-05
+> evidence: resource-derived; provisional · status: live · functions: 0x446c40, 0x45e525, 0x45e5a6 · tools: hsltools/evidence/actor_walk_manifest.py · updated: 2026-09-27
 
 Extracted exact original PAK member `@:\data\SHAPEDEF.TXT` to `content/imported/hsl/global/tables/SHAPEDEF.TXT`. For SID_PLAYER0 and the currently imported Enemy021/023/024/026 definitions, the table explicitly maps:
 
@@ -33,3 +33,7 @@ Static-derived on EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e5
 Live `ActorRuntime` advances standing frames from its process delta using the existing manifest fps and preserves fractional elapsed time. State changes reset that elapsed time; the idle clock does not touch a walking sequence. Frame drawing continues through the existing original SHP anchors, and there are no standing footstep cues. This is a small direct presentation change with no credible additional abstraction to remove.
 
 Verification covers all five actor types: hold duration, frame advance, complete six-frame wrap, fixed world foot point, walking isolation, and return to the standing loop. A real 640×480 Godot recording (`ignored/idle-review/idle.mp4`) shows Leonard at world `(496,560)` while standing sources progress through frames 1, 2, 4 and 6 in successive samples. Rendered frames were inspected; the original cadence and complete sprite/color parity remain unproven.
+
+## 复现
+
+`python3 tools/hsl.py check actor_walk_manifest:chapter01 actor_walk_manifest:shared`（SHAPEDEF 字段、帧数与摘要）；静态部分 `r2 -q -e scr.color=0 -c 'pd 12 @ 0x442139; pd 20 @ 0x446c40; pd 18 @ 0x45e5a6' hsl01.exe`。

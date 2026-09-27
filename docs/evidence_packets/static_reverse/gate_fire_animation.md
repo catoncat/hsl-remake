@@ -1,27 +1,43 @@
-# Gate fire animation
+# 城门火焰：第 51 关 FIRE01 的帧序列与换帧节拍
 
-> evidence: resource-derived · status: record-only · functions: 0x45e5a6 · tools: hsltools/assets/fire_animation.py · updated: 2026-09-08
+> evidence: resource-derived; static-derived: defProcStandObject 的 mapobjNextShape 分支与 0x45e5a6 计数 · status: live · functions: 0x43ccf0, 0x45e5a6 · tools: hsltools/assets/fire_animation.py · updated: 2026-09-27
 
-The two level-51 fire placements (EVEF records 3 and 6) share OBJ-051 object 22. Re-reading the original PAK gives `obj_Shape_Number=10`, `obj_Shape_Delay=3`, `obj_Data9=mapobjNextShape`, `obj_Mode=engADDCOLOR_ZOOM`, and both zoom fields `0x0000a000`. These fields are resource-derived and preserved with the OBS source hash in `content/imported/hsl/chapter01/fire_animation/manifest.json`.
+## 结论
 
-All ten FIRE01 SHP frames are imported with per-frame draw origins and source/PNG hashes. `tools/hsltools/assets/fire_animation.py` regenerates them from the original installation; `--check` checks imported frame count, delay, scale and PNG integrity without Wine or the PAK.
+- 原版第 51 关两处火焰（EVEF 记录 3、6）共用 OBJ-051 对象 22：`obj_Shape_Number=10`、`obj_Shape_Delay=3`、`obj_Data9=mapobjNextShape`、`obj_Mode=engADDCOLOR_ZOOM`、两个缩放字段 `0x0000a000`（resource-derived）；立物过程 `0x43ccf0` 的 mapobjNextShape 分支每次调用 `0x45e5a6`，延迟 3 即每 4 次过程更新换一帧（static-derived）。
+- 重制 `game/battle/runtime/MapObjectAnimation.gd` 播放导入的十帧，逐帧套原绘制原点、缩放按 16.16 定点取 0.625、加色模式用 Godot 加法混合（resource-derived）。
+- 差异：过程更新按每秒 60 次（显示 15 帧／秒）、初始相位与 RGB565 饱和加法的混色结果都是重制读法。
 
-## Static sequence rule
+## 证据
 
-EXE SHA-256: `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`.
+**resource-derived**
 
-- Original PROCESS.DEF maps `defProcStandObject=2`; slot `0x477c34` points to `0x43ccf0`.
-- TYPE.H maps `mapobjNextShape=5`. The process switch decrements its selector at `0x43ce83`, so this case uses table slot `0x43d8d0`, pointing to `0x43cf96`.
-- That branch calls `0x45e5a6` at `0x43cf97`.
-- `0x45e5ad` decrements the signed word at object `+0x7c`; `0x45e5b1` keeps the frame when the result is nonnegative. Otherwise the delay is reloaded from `+0x7e`, the shape index at `+0x30` increments, and remaining frames at `+0x78` decrease. At sequence end the count reloads from `+0x7a` and the shape index wraps.
-- Therefore a recurring delay value of 3 gives four process updates between frame changes. Original wall-clock process frequency and initial phase are still unresolved.
+| 项 | 读数 |
+| --- | --- |
+| OBJ-051 对象 22 | `obj_Shape_Number=10`、`obj_Shape_Delay=3`、`obj_Data9=mapobjNextShape`、`obj_Mode=engADDCOLOR_ZOOM`、缩放 `0x0000a000`×2 |
+| 帧 | FIRE01 十张 SHP，逐帧绘制原点、源与 PNG 哈希，写入 `content/imported/hsl/chapter01/fire_animation/manifest.json`（带 OBS 源哈希） |
+| 编号 | PROCESS.DEF `defProcStandObject=2`；TYPE.H `mapobjNextShape=5` |
 
-## Live presentation and limits
+**static-derived**（EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`）
 
-`MapObjectAnimation.gd` plays the ten imported textures, applies each frame's original draw origin at a fixed world anchor, and interprets the zoom as 16.16 fixed point (0.625). It uses Godot additive blending to implement the declared add-color mode. This is not a claim of pixel-identical RGB565 arithmetic.
+| 地址 | 读法 |
+| --- | --- |
+| `0x477c34` | 过程表槽位 2 指向 `0x43ccf0` |
+| `0x43ce83` | 过程分派先把选择子减 1，mapobjNextShape 落到表项 `0x43d8d0` → `0x43cf96` |
+| `0x43cf97` | 调 `0x45e5a6` |
+| `0x45e5ad`／`0x45e5b1` | `+0x7c` 有符号字减 1，非负则不换帧；否则从 `+0x7e` 重载延迟、`+0x30` 帧号加 1、`+0x78` 剩余帧减 1，序列末从 `+0x7a` 重载并回绕 |
 
-The provisional presentation clock is 60 updates/second, giving 15 displayed frames/second. Replace it with a measured original process cadence; source delay 3 must not be mislabeled as three milliseconds or three frames/second.
+## 重制接线
 
-Live scene tests check both fire nodes, delay before a frame change, visible texture advancement, looping and stationary world anchors. Non-headless Godot captures were inspected at frames 0 and 5. The gate flames visibly change shape, remain anchored to the torches, and use the reduced size. Exact mixed color, native tick cadence and initial relative phase remain open.
+- `tools/hsltools/assets/fire_animation.py` 从原版安装导出帧与 manifest；`MapObjectAnimation.gd` 在固定世界锚点播放、加法混合直接由渲染器实现（manifest 不另记混合标签）。
+- provenance 写法：`static-derived docs/evidence_packets/static_reverse/gate_fire_animation.md`。
+- 重制读法：每秒 60 次过程更新；替换点是 [原版 tick 速率](../runtime_observations/original_tick_rate/README.md) 的过程节拍实测。延迟 3 不是 3 毫秒，也不是每秒 3 帧。
 
-A redundant manifest blend label was removed: the original OBS mode remains the source declaration and the focused fire renderer implements additive blending directly. The rendering and full gate were rerun after that simplification.
+## 复现
+
+`python3 tools/hsl.py check fire_animation`（帧数、延迟、缩放与 PNG 完整性，不需要 Wine 或 PAK）。
+
+## 边界
+
+- 原版过程的实际频率与两处火焰的初始相位未测。
+- 混色不宣称与 RGB565 算术逐像素相同。

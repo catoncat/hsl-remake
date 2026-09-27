@@ -476,7 +476,7 @@ godot --headless --path . --script res://tests/audit_first_battle_balance.gd
 
 ### Shared presentation references
 
-See `docs/evidence_packets/runtime_observations/presentation_reference/README.md` for the current coverage and reproducible commands.
+Coverage list: `docs/evidence_packets/runtime_observations/presentation_reference/cases.json`; conclusions in `docs/evidence_packets/static_reverse/native_presentation_helpers.md`.
 
 - `hsltools/assets/command_frames.py`: imports/checks every declared BCMD frame, including the five-frame Status icon.
 - `hsl_record_window.swift`: explicit Wine/Godot window recording, built-in display guard, 1–60 seconds, application audio but no microphone/whole-desktop capture; `--list` reports eligible windows; `--no-audio` records video only. Known limit (2026-09-22): against the original's Wine window ScreenCaptureKit delivered only the first ~0.9 s of frames in every attempt (Godot windows record normally); measure original timing through `hsl_win32_memread.exe --repeat` instead.

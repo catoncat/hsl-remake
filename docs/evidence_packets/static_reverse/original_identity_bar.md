@@ -2,15 +2,22 @@
 
 > evidence: static-derived; runtime-measured; negative-evidence; provisional · status: live · functions: 0x407cc0, 0x407ec0, 0x430020, 0x434d10, 0x436490, 0x4364e0, 0x43ede0, 0x443c63, 0x446b00, 0x446b30, 0x450710 · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/native/image.py, hsltools/probes/_known_byte_trace.py · updated: 2026-09-27
 
-Checked: 2026-09-25。起因：玩家记忆（user-hypothesis）——原版把光标停在单位上会显示身份栏，未接触过的敌人各栏显示 `???`，交过手才知道；重制版在移动选择态悬停不显示任何东西。本包恢复：身份栏文字块 `0x434d10` 的遮罩条件、"已知"字节表 `0x4c6d80[200]` 的全部写入者、悬停触发的状态，并在一次受控 Wine 会话核对画面。重制接线：`BattlePlayLoop.unit_known`／`known_unit_ids`（loop 状态键，进 checkpoint v3）、`BattleVitals.mask(unit, known)`／`show_unit(unit, hp, known)`（唯一遮罩策略）、`BattlePresentation.preview_hovered_unit`／`preview_target`、`BattleStatusPanel.show_unit(unit, known)`、`BattleCombatCutin.play(…, known)`。
+## 结论
 
-## 遮罩规则（static-derived，EXE SHA-256 `f0b5f835…70f7`）
+- 原版身份栏文字块 `0x434d10` 按三谓词遮罩：已知字节 `0x4c6d80[obj+0xa2]` 为 0、模板 `no_attack` 位、等级 > 99；未知单位的等级／经验／HP／MP／姓名／状态／抗性印 `???`，稱號与種族照印；HP／MP 条由独立对象 `0x4364e0` 按真实比例画，不读已知字节（static-derived）。
+- 已知字节在单位被任何一方选为武器／魔法／绝技目标时（`0x430020`，击前）或死亡时（`0x43ef5b`，切入之后）写 1，反击不揭示；下标按演员模板行共用；未知单位点击不开状态页（static-derived＋runtime-measured）。
+- 重制 `BattlePlayLoop.unit_known`／`known_unit_ids`、`BattleVitals.mask`／`show_unit`、`BattleStatusPanel.opens_for`、`BattleCombatCutin.play(…, known)` 照此实现（static-derived）。
+- 差异：位 0x100（条上印数字）的置位者未读、氣力条是重制自创（差异清单 `identity-bar-bits`，provisional）；受伤且未知的敌人未在原版实机采到（negative-evidence）。
+
+## 证据
+
+### 遮罩规则（static-derived，EXE SHA-256 `f0b5f835…70f7`）
 
 `0x434d10(actor, …)` 把 WINDOW10 身份栏的文字写进 `*0x4c1b80` 文本缓冲。开头三个谓词：
 
 | 变量 | 读法 | 含义 |
 | --- | --- | --- |
-| `bVar22` | `byte [0x4c6d80 + word obj+0xa2] == 0` | 该对象 `+0xa2` 字所指的"已知"字节为 0。`0x434d10` 的参数是**对象**（`esi+0xa4` 是记录序号、`esi+0xa2` 是索引字）；lane P4 的 Wine 采样（下文 2026-09-26）读到同一 PLAYERS 行的所有对象共用同一个 `+0xa2`（五名 021 都是 21、两名 026 都是 26、023→23、024→24、雷歐納德→0），即**已知字节按演员模板行记，不按单位** |
+| `bVar22` | `byte [0x4c6d80 + word obj+0xa2] == 0` | 该对象 `+0xa2` 字所指的"已知"字节为 0。参数是**对象**（`esi+0xa4` 是记录序号、`esi+0xa2` 是索引字）；同一 PLAYERS 行的所有对象共用同一个 `+0xa2`（第三次 Wine 会话：五名 021 都是 21、两名 026 都是 26、023→23、024→24、雷歐納德→0），即**已知字节按演员模板行记，不按单位** |
 | `bVar21` | `0x446b00(actor)` = 模板 `+0xa0 & 2` | PLAYERS `no_attack` 能力位（解析器 `0x44c2e0`） |
 | — | `template+0x9c > 99` | 等级超过两位数 |
 
@@ -23,29 +30,29 @@ Checked: 2026-09-25。起因：玩家记忆（user-hypothesis）——原版把�
 | 姓名 | `bVar22 ‖ bVar21` | `???` | `0x4477b0(+4)` |
 | 稱號、種族 | 不遮罩 | — | 模板称号／种族字串 |
 | 狀態 | `bVar22 ‖ bVar21` | `???` | 状态字 `+0x24`＝0 印 RESOURCE 124「正常」，否则按位序把每个置位的单字接在一起：1 毒（125）、2 封（126）、4 痲（127）、8 弱（128）、0x10 攻（129）、0x20 防（130）（`0x435230..0x43537b`，见下「狀態欄」） |
-| 五系抗性 | `bVar22 ‖ bVar21` | 每项 `???` | `+0x30..+0x44` |
+| 五系抗性 | `bVar22 ‖ bVar21` | 每项 `???` | `+0x30..+0x44`；值 < 80 印 `"%02d%"`（`0x43563b`），否则 `"MAX"`（`0x435616`） |
 | 后续四维／攻防等页（状态全页） | `bVar22 ‖ bVar21` | `???` | `0x434bf0(...)` |
 
-重制（lane P3 起）三谓词全部接入 `BattleVitals.mask(unit, known)`：`hp`＝bVar22、`identity`＝bVar22‖bVar21（`bVar21` 读单位 `no_attack`——模板位 0x2 的 live 镜像，`actSetPlayerNoAttack` 可改）、`level`＝二者之一‖等级>99；第一战没有 no_attack 或等级>99 的单位，由 `run_presentation_contract_tests.identity_mask_contracts` 夹具守着。`0x436490(模板序号, mode, …)` 是这块文字的生成器（`0x4364aa` 调 `0x434d10`；mode 3 = 切入身份栏，`param_2 != 3` 才生成状态全页），其调用者含 AnimalAttack／AnimalDefense 过程（`0x40288e`／`0x402959`／`0x403360`／`0x4040d5`／`0x404577`／`0x4048b3`／`0x4049e8`）——切入镜头里的身份栏同样按已知字节遮罩。装备表（缓冲 [4]，`+0x138` 八槽 → ITEM 名）与魔法／绝技表（[8]–[0xb]）无 bVar 测试：状态全页的装备对未知单位**不遮罩**。
+`0x436490(模板序号, mode, …)` 是这块文字的生成器（`0x4364aa` 调 `0x434d10`；mode 3 = 切入身份栏，`param_2 != 3` 才生成状态全页），其调用者含 AnimalAttack／AnimalDefense 过程（`0x40288e`／`0x402959`／`0x403360`／`0x4040d5`／`0x404577`／`0x4048b3`／`0x4049e8`）——切入镜头里的身份栏同样按已知字节遮罩。装备表（缓冲 [4]，`+0x138` 八槽 → ITEM 名）与魔法／绝技表（[8]–[0xb]）无 bVar 测试：状态全页的装备对未知单位**不遮罩**。姓名栏逐字印 live +0x04 name id 的 RESOURCE 文字（`0x434d10` → `0x4477b0(+4)`）；无名士兵与怪物的 PLAYERS `name` 是公用占位 306（RESOURCE `???`），即使已知也印 `???`。
 
-### 狀態欄（static-derived＋runtime-reference，lane STATUSPAGE 2026-09-27）
+### 狀態欄
 
-`0x434d10` 在遮罩分支外读 live 记录 `+0x24`（状态旗标）：为 0 时取 `0x4477b0(0x7c)`＝RESOURCE 124「正常」；非 0 时依次测位 1／2／4／8／0x10／0x20，每个置位的取 `0x4477b0(0x7d..0x82)`（毒／封／痲／弱／攻／防）直接 strcat 到同一行，没有分隔符、没有回合数或威力、也没有第二行；0x40（抗性提升）和更高位没有字。整段不读 HP：倒下的单位照样按旗标印（录屏 101–102 s 击杀镜头 `生命力 0/22 狀態 正常`，见下「录屏旁证」）。重制 `BattleVitals.state_text(flags)` 照此：此前的「戰鬥不能」、「中毒／禁魔／麻痺(N)／衰弱-N／攻↑N」两行列表与状态悬停说明都是重制写法，已删；遮罩仍印 `???`。
+`0x434d10` 在遮罩分支外读 live 记录 `+0x24`（状态旗标）：为 0 时取 `0x4477b0(0x7c)`＝RESOURCE 124「正常」；非 0 时依次测位 1／2／4／8／0x10／0x20，每个置位的取 `0x4477b0(0x7d..0x82)`（毒／封／痲／弱／攻／防）直接 strcat 到同一行，没有分隔符、没有回合数或威力、也没有第二行；0x40（抗性提升）和更高位没有字。整段不读 HP：倒下的单位照样按旗标印（录屏 101–102 s 击杀镜头 `生命力 0/22 狀態 正常`）。
 
 ### 显示未知单位信息的原版界面（static-derived）
 
 | 界面 | 生成点 | 遮罩 | 重制 |
 | --- | --- | --- | --- |
-| 移动选择态悬停身份栏（WINDOW10） | `0x434d10` via `0x436490` mode 0／1 | 三谓词 | `preview_hovered_unit`（P2） |
-| 武器／绝技目标预览、魔法／支援目标预览 | 同一文字块 | 三谓词 | `preview_target` 两处 `show_unit(target, -1, unit_known)`（P3） |
-| 状态全页（WINDOW20，`0x43b4e0` mode 1） | `0x436490(…, 0, 0)`；`param_2 != 3` 的属性行 `0x434bf0` 全部 bVar22‖bVar21 → `???` | 三谓词＋属性行；装备表不遮 | `BattleStatusPanel.show_unit(unit, known)`：身份栏＋九行属性 `???`，装备可读（P3） |
-| 切入镜头身份栏（mode 3） | AnimalAttack phase 100（`0x4027ce`）／AnimalDefense 命中刷新（`0x4040d5`）等 | 三谓词 | `BattleCombatCutin.play(…, known)`，`_show_shot` 按镜头内单位查 `known[unit_id]`（P3） |
+| 移动选择态悬停身份栏（WINDOW10） | `0x434d10` via `0x436490` mode 0／1 | 三谓词 | `preview_hovered_unit` |
+| 武器／绝技目标预览、魔法／支援目标预览 | 同一文字块 | 三谓词 | `preview_target` 两处 `show_unit(target, -1, unit_known)` |
+| 状态全页（WINDOW20，`0x43b4e0` mode 1） | `0x436490(…, 0, 0)`；`param_2 != 3` 的属性行 `0x434bf0` 全部 bVar22‖bVar21 → `???` | 三谓词＋属性行；装备表不遮 | `BattleStatusPanel.show_unit(unit, known)`：身份栏＋九行属性 `???`，装备可读 |
+| 切入镜头身份栏（mode 3） | AnimalAttack phase 100（`0x4027ce`）／AnimalDefense 命中刷新（`0x4040d5`）等 | 三谓词 | `BattleCombatCutin.play(…, known)`，`_show_shot` 按镜头内单位查 `known[unit_id]` |
 
-**`0x443cfa` 读法更正（P3）**：它不在施法序列 `0x442a90` 内，而是玩家对象过程空闲态（`0x443c4a` 按 `+0x8c` 分派，state 0 = `0x443c63`）的确认键分支：光标格 `0x411c40 & 0x70000` 有单位 → `0x407800` 取角色 → `0x446b30(actor)`（模板 `+0xa0 & 0x10`）为真走 `0x443d4e`（`0x410a50` 通过则 state 1、`+0x9c = 0x80000`，己方选中）；为假时 `*0x4c1cec = actor`、`+0x80 |= 输入位`，**已知字节为 1 才** `0x436490(+0xa0, 0, 0)` ＋ `0x43b4e0(actor, 1, self)` 开状态页并置 state 10；已知字节为 0 直接落到 `0x443d9d`（等同点空格）——原版对未知单位**不开状态页**。重制（lane STATUSPAGE 2026-09-27，照原版）：`BattleSceneInput` 点非己方指挥单位时先问 `BattleStatusPanel.opens_for(unit_known)`，未知就当点空地、不开页；OPT-INFO＝公開 一律视为已知照开（2026-09-25 负责人曾决定保留"点击即开页"，现由 OPT-INFO 改良值承接）。点单位开的是 mode 1：`0x43b4e0` case 0／1 在 `in_stack_8 == 1` 时跳过 `0x43af60`（134 `$:` 钱框）与 `0x43b0a0`／`0x43b230`（上一位／下一位），重制该页不画钱框；行动环 狀態（`0x444285` `push 0`）是 mode 0，有钱框。
+**`0x443cfa`：未知单位不开状态页**。它是玩家对象过程空闲态（`0x443c4a` 按 `+0x8c` 分派，state 0 = `0x443c63`）的确认键分支（不在施法序列 `0x442a90` 内）：光标格 `0x411c40 & 0x70000` 有单位 → `0x407800` 取角色 → `0x446b30(actor)`（模板 `+0xa0 & 0x10`）为真走 `0x443d4e`（`0x410a50` 通过则 state 1、`+0x9c = 0x80000`，己方选中）；为假时 `*0x4c1cec = actor`、`+0x80 |= 输入位`，**已知字节为 1 才** `0x436490(+0xa0, 0, 0)` ＋ `0x43b4e0(actor, 1, self)` 开状态页并置 state 10；已知字节为 0 直接落到 `0x443d9d`（等同点空格）。点单位开的是 mode 1：`0x43b4e0` case 0／1 在 `in_stack_8 == 1` 时跳过 `0x43af60`（134 `$:` 钱框）与 `0x43b0a0`／`0x43b230`（上一位／下一位）；行动环 狀態（`0x444285` `push 0`）是 mode 0，有钱框。
 
-### 身份栏 HP／MP 条的画法（static-derived，lane E1 2026-09-27）
+### 身份栏 HP／MP 条的画法（static-derived）
 
-P3／P4 三趟 Wine 都没采到「受伤且未知」的敌人，本次改用只读反汇编回答（r2 对 `hsl01.exe` sha256 `f0b5f835…70f7`；`/ad/ dword [e.. + 0xd8]` 全文检索出 47 处 HP 读点，其中身份栏条在下述对象过程内）。条不是 `0x434d10` 文字块的一部分，而是一个独立的对象过程 **`0x4364e0`**（对象过程表 `0x477c7c` 项），绘制分支（参数 −1）：
+r2 对 `hsl01.exe` 全文检索 `/ad/ dword [e.. + 0xd8]` 得 47 处 HP 读点。条不是 `0x434d10` 文字块的一部分，而是独立的对象过程 **`0x4364e0`**（对象过程表 `0x477c7c` 项），绘制分支（参数 −1）：
 
 | 地址 | 读法 |
 | --- | --- |
@@ -56,9 +63,9 @@ P3／P4 三趟 Wine 都没采到「受伤且未知」的敌人，本次改用只
 | `0x4365b6`–`0x4365e2` | `0x4607f9(0x1000000, x, y, …, x + filled, …)` 画满格部分 |
 | `0x4365f0`（`test ah, 1`） | 对象 `+0x80` 位 0x100 置位时另以 `0x45b6de` itoa 印 `cur/max` 文字（`0x411d70`）；悬停栏的条对象应未置该位（推断自 P2 帧：未知 021 的悬停栏只有 `0x434d10` 的 `???`，没有数字；置位者未读） |
 
-**整个 `0x4364e0..0x4368a5` 没有任何对 `0x4c6d80`（已知字节表）的引用，也不读 `0x434d10` 的三谓词**——条的填充只取 live 记录的 `cur/max`。结合 P2（未知 021 悬停帧带满条：条对象对未知单位同样创建）与 P3（已知 023 的 19/29、10/29 条按比例）的 runtime-measured 样本，结论：**未知单位受伤后，身份栏的 HP 条按真实比例缩短、MP 条按真实比例画，只有文字是 `???`**。不支持的结论：位 0x100（印数字）的置位者与 mode 3 切入栏是否置位未读——若切入栏条对象置位，则未知单位的切入栏会印数字（现按 P2 悬停样本与 `0x434d10` 的 `???` 处理）。重制随之改为 `BattleVitals.show_unit` 先按 live 值写 `hp_bar`／`mp_bar` 再套遮罩（`_show_unknown`／`_mask_identity` 不再把条置满／清空），`run_presentation_contract_tests.identity_mask_contracts` 断言半血未知 026 的两条比例与 no_attack 单位的 MP 条比例。P4 ② 的 Wine 路线因此不再需要；若仍想要一帧实机对照：第一战 雷歐納德 首回合走到 026 法师射程内不攻击、待機 让 026／021 来打并靠反击留伤（反击不写已知字节，见下节 `0x430020` 调用点），再用 `hsl_original_probe_units.py` 确认 `hp < max_hp && !known` 后悬停。
+**整个 `0x4364e0..0x4368a5` 没有任何对 `0x4c6d80` 的引用，也不读 `0x434d10` 的三谓词**——条的填充只取 live 记录的 `cur/max`。结合 P2 会话（未知 021 悬停帧带满条：条对象对未知单位同样创建）与第二次会话（已知 023 的 19/29、10/29 条按比例）的 runtime-measured 样本：**未知单位受伤后，身份栏的 HP 条按真实比例缩短、MP 条按真实比例画，只有文字是 `???`**。不支持的结论：位 0x100（印数字）的置位者与 mode 3 切入栏是否置位未读——若切入栏条对象置位，则未知单位的切入栏会印数字（现按 P2 悬停样本与 `0x434d10` 的 `???` 处理）。
 
-## "已知"字节的全部写入者（static-derived；negative-evidence）
+### "已知"字节的全部写入者（static-derived；negative-evidence）
 
 对 `0x4c6d80` 的绝对地址引用共 10 处（`hsltools.native.image` 映射后全文扫描 dword `0x004c6d80`）：
 
@@ -72,59 +79,60 @@ P3／P4 三趟 Wine 都没采到「受伤且未知」的敌人，本次改用只
 | `0x42ca37` | 新游戏初始化 | `rep stosd` 清 200 字节 |
 | `0x42e3f4`／`0x42e9d7` | 存档写／读第 3 节 | 见 [原存档格式](original_save_format.md) §3 |
 | `0x434d9d` | 身份栏 `0x434d10` | 读（上表 `bVar22`） |
-| `0x443cfa` | 玩家过程空闲态确认键分支（`0x443c63`，见上"读法更正"；P2 误记为施法序列） | 读：已知才开 WINDOW20 状态页（`0x436490(0)`＋`0x43b4e0(1)`、state 10），未知不开页 |
+| `0x443cfa` | 玩家过程空闲态确认键分支（`0x443c63`） | 读：已知才开 WINDOW20 状态页（`0x436490(0)`＋`0x43b4e0(1)`、state 10），未知不开页 |
 
-`0x430020` 的调用点（`call rel32` 全文扫描）共 10 处：`0x444388`／`0x445166`／`0x44544b`（玩家对象过程的武器攻击目标确认：光标格 → `0x40fab0` 射程内 → `0x411c40 & 0x60000` 敌方位 → `0x407800` 取角色 → `0x430020`）、`0x441878`／`0x441b82`／`0x441e8c`（技能目标选择函数：`0x4104d0` 枚举覆盖格内目标后逐个压入；`0x441878` 走 MAGIC 表 `0x4c2ca0`，`0x441b82` 走 SPECIAL 表 `0x4c3920`）、`0x442b3c`／`0x442ed5`／`0x443262`（施法序列 `0x442a90` 的首个／后续目标）、`0x440279`（AI 过程 `0x43ede0` 的攻击目标确认：`0x440272` 置 `[0x4c1ce8]`＝攻方、压入 `[0x4c1cec]`＝AI 目标，位于卷动检查 `0x45e882` 之后、交锋 `0x4423c0` 之前；P2 误记为"施法目标"——模拟器实测 AI 武器攻击走此处，AI 施法走 `0x441878`→`0x442b3c`，与玩家同，见下文 2026-09-26 模拟器实测）。反击系列不调 `0x430020`。
+`0x430020` 的调用点（`call rel32` 全文扫描）共 10 处：`0x444388`／`0x445166`／`0x44544b`（玩家对象过程的武器攻击目标确认：光标格 → `0x40fab0` 射程内 → `0x411c40 & 0x60000` 敌方位 → `0x407800` 取角色 → `0x430020`）、`0x441878`／`0x441b82`／`0x441e8c`（技能目标选择函数：`0x4104d0` 枚举覆盖格内目标后逐个压入；`0x441878` 走 MAGIC 表 `0x4c2ca0`，`0x441b82` 走 SPECIAL 表 `0x4c3920`）、`0x442b3c`／`0x442ed5`／`0x443262`（施法序列 `0x442a90` 的首个／后续目标）、`0x440279`（AI 过程 `0x43ede0` 的攻击目标确认：`0x440272` 置 `[0x4c1ce8]`＝攻方、压入 `[0x4c1cec]`＝AI 目标，位于卷动检查 `0x45e882` 之后、交锋 `0x4423c0` 之前；AI 武器攻击走此处，AI 施法走 `0x441878`→`0x442b3c`，与玩家同）。反击系列不调 `0x430020`。
 
-结论：一个单位在**被任何一方——玩家、敌方 AI、友军 NPC——选为武器／魔法／绝技目标的那一刻**（`0x430020` 在 `0x43006b` 写 1，早于交锋与切入，命中与否无关）或**死亡**（`0x43ef5b`，在切入结束之后）时变为已知；**反击命中不揭示**（反击系列不压目标），被悬停、走过身边也不改变字节（static-derived ＋ runtime-measured，下文 2026-09-26 模拟器实测；P2 版本的"被 AI 攻击不改变字节"是把 `0x440279` 误读为只管施法，已更正）。玩家记忆（交过手才知道）与之一致。**negative-evidence**：静态枚举只覆盖绝对地址引用与直接 `call`；模拟器对 `0x4c6d80..+199` 的任意写入钩子在所跑的第 51 关第 1 轮（70 次交锋）里只见 `0x43006b` 与 `0x43ef5b` 两个写入点，剧情 `actSetPlayerMode`（`0x4507f0`）、读档等未跑到的路径仍只有静态枚举。**索引粒度（runtime-measured，lane P4）**：写入与读取都以 `obj+0xa2` 为下标，而同一模板行的对象共用该字——一名 021 死亡后，场上其余四名 021 的悬停／切入身份栏同时变为已知（见下文 2026-09-26 采样）。重制 `known_unit_ids` 仍按单位 id 记录（P2 起，存储与 checkpoint v3 键不变），判定自 lane U1 起按模板行：`BattlePlayLoop.unit_known` 对任一已知单位与目标同 `actor_id` 即为真——打死或选中过一名 帝國一般兵 后其余 帝國一般兵 同时显示数字（`run_battle_scene_runtime_tests._test_move_select_identity_bar`：杀一名 021、其余 021 已知、026 仍未知）。
+一个单位在**被任何一方——玩家、敌方 AI、友军 NPC——选为武器／魔法／绝技目标的那一刻**（`0x430020` 在 `0x43006b` 写 1，早于交锋与切入，命中与否无关）或**死亡**（`0x43ef5b`，在切入结束之后）时变为已知；**反击命中不揭示**，被悬停、走过身边也不改变字节。写入与读取都以 `obj+0xa2` 为下标，同一模板行的对象共用该字。**negative-evidence**：静态枚举只覆盖绝对地址引用与直接 `call`；模拟器对 `0x4c6d80..+199` 的任意写入钩子在所跑的第 51 关第 1 轮（70 次交锋）里只见 `0x43006b` 与 `0x43ef5b` 两个写入点，剧情 `actSetPlayerMode`（`0x4507f0`）、读档等未跑到的路径仍只有静态枚举。
 
-## Runtime-measured
+### Runtime-measured
 
-2026-09-22 Wine 会话（与 [范围格包](original_range_cells.md#runtime-measured) 同一会话，存档 3 第一战首回合）：
+**P2 会话（2026-09-22 Wine，与 [范围格包](original_range_cells.md#runtime-measured) 同一会话，存档 3 第一战首回合）**：
 
 - 移动选择态，光标停在 `(305,62)` 的拉爾斯帝國兵身体格：屏幕底部出现 WINDOW10 身份栏，`等級:??` `經驗:???` `生命力:???`（HP 条满）`魔法力:???`（MP 条空）`姓名:???` `稱號:拉爾斯帝國兵` `種族:人類` `狀態:???`，抗性行五个 `???`。
-- 同态，光标停在 `(430,300)` 的友军 一般兵：`等級:1 經驗:0/100 生命力:29/29 魔法力:0/0 姓名:???`——注意该行 PLAYERS 模板本身姓名为空串时原版也印 `???`（`0x4477b0` 查不到名字），与已知字节无关；稱號 一般兵、種族 人類、狀態 正常、抗性 06%／04%／03%／07%／02%。
+- 同态，光标停在 `(430,300)` 的友军 一般兵：`等級:1 經驗:0/100 生命力:29/29 魔法力:0/0 姓名:???`——该行 PLAYERS 模板姓名为空串时原版也印 `???`，与已知字节无关；稱號 一般兵、種族 人類、狀態 正常、抗性 06%／04%／03%／07%／02%。
 - 光标停在门口士兵的头部格 `(300,30)` 无身份栏：触发按身体（脚）格判定。
 - 行动环打开（未进入移动／攻击选择）时悬停单位不出现身份栏。
-- 未在同一会话内完成一次攻击后复查（会话预算 10 分钟）；"确认目标即已知"为 static-derived，未 runtime 复核。
 
-2026-09-25 第二次 Wine 会话（lane P3，9.6 分钟：标题 (318,296) 两击直接载入 戰場記錄 → 雷歐納德 三次 待機 (367,322) 放 AI 行动 → 移动选择态悬停；`hsl_win32_memread.exe` 读 `*0x4c1bc8` 记录表与 `0x4c6d80`；存档未写；帧与 memread 样本在 `ignored/lane-recordings/P3-wine-frames/`）：
+**第二次 Wine 会话（2026-09-25，9.6 分钟：标题 (318,296) 两击载入 戰場記錄 → 雷歐納德 三次 待機 (367,322) 放 AI 行动 → 移动选择态悬停；`hsl_win32_memread.exe` 读 `*0x4c1bc8` 记录表与 `0x4c6d80`；存档未写）**：
 
-- **已知单位的 HP 条按比例画**：友军 一般兵 被击中后切入栏 `生命力 19/29` 条约 2/3、悬停栏 `10/29` 条约 1/3（runtime-measured，`p3-ai1`／`p3-h1` 帧）。
-- **死亡写已知字节（runtime-measured）**：一名 拉爾斯帝國兵（记录 25，22 HP）被友军击杀后，`0x4c6d80` 的置位索引由 `{0, 23, 24}` 变为 `{0, 21, 23, 24}`——`0x43ef5b` 死亡写入者得到运行时复核；被 AI 命中而未死的单位不改变字节（同会话 重裝兵 45/50 仍在原集合内且本就已知）。（2026-09-26 更正：友军攻击的目标确认 `0x440279` 在击前已写同一下标，这次 dump 区分不了两个写入者；重裝兵 本就已知，也检验不了 AI 目标确认。死亡写入由下文模拟器反击击杀轨迹单独复核。）
-- **受伤未知敌人的 HP 条：negative-evidence（未观测到）**：三轮 AI 行动里敌方只发生一次死亡（22 HP 一击致死）与零次带伤存活——友军 一般兵／重裝兵 的反击没有留下受伤存活的敌人；悬停到的三名未知 拉爾斯帝國兵（`p3-h2` 等帧）memread 均满血，条满与"按比例"不可区分。**条的画法仍 provisional**。静态旁证：`0x4c6d80` 的 10 处引用（上表）里没有任何一处在窗口对象／条绘制过程中，条渲染器读不到已知字节——若它按 `+0xd8/+0xdc` 画，则未知单位的条也是真实比例（P2 样本中 拉爾斯帝國兵 MP 0/0 本就为空、HP 本就满血，与此一致）；重制未据此改动（unknown 仍画满 HP／空 MP），替换证据仍是一次受伤未知敌人的悬停帧（可用 memread 先确认 HP < max 再悬停）。
+- 已知单位的 HP 条按比例画：友军 一般兵 被击中后切入栏 `生命力 19/29` 条约 2/3、悬停栏 `10/29` 条约 1/3。
+- 一名 拉爾斯帝國兵（记录 25，22 HP）被友军击杀后，`0x4c6d80` 的置位索引由 `{0, 23, 24}` 变为 `{0, 21, 23, 24}`（这次 dump 区分不了目标确认 `0x440279` 与死亡 `0x43ef5b` 两个写入者；死亡写入由下文模拟器反击击杀轨迹单独复核）。
+- 受伤未知敌人：negative-evidence（未观测到）——三轮 AI 行动里敌方只有一次一击致死、零次带伤存活；悬停到的三名未知 拉爾斯帝國兵 memread 均满血。
 
-2026-09-26 第三次 Wine 会话（lane P4，8 分 49 秒 21:18:30→21:27:19：标题 (318,296) 两击直接载入 戰場記錄 → 雷歐納德 三次 待機 (367,322) 放 AI 行动，每轮后 `hsl_original_probe_units.py`（本次新增 `known_serial`＝`obj+0xa2`、`known`＝`0x4c6d80[obj+0xa2]`）dump 全部单位；存档 mtime 未变；帧与四份 dump 在 `ignored/lane-recordings/P4-wine-frames/`）：
+**第三次 Wine 会话（2026-09-26，8 分 49 秒，同一路线；每轮后 `hsl_original_probe_units.py` dump 全部单位的 `known_serial`＝`obj+0xa2`、`known`＝`0x4c6d80[obj+0xa2]`；存档 mtime 未变）**：
 
-- **已知字节按模板行共用（runtime-measured）**：开局 `known` 只有 雷歐納德（`+0xa2`=0）、两名 023（23）、两名 024（24）；五名 021 的 `+0xa2` 全是 21、两名 026 全是 26，字节均为 0。第 2 轮 AI 行动中一名 021（记录 25，22 HP）被友军击杀、另一名 021（记录 23）被打到 2/28 存活——dump 显示字节 21 置位，**五名 021 同时变为已知**（含从未被攻击、满血的记录 21／24／27）；两名 026 仍未知。`0x43ef5b` 的死亡写入以 `obj+0xa2` 为下标，与 `0x434d10` 的读取同一下标。
-- **受伤未知敌人的条画法：negative-evidence（这趟也没采到）**：唯一受伤存活的敌人（记录 23，2/28）与同轮死亡的 021 同模板，在同一 AI 轮内已经变为已知，无法作为"受伤且未知"样本；两名 026 三轮都满血。要采到该样本需要一名 026（或其他单模板敌人）被友军打伤且不死，同时该模板无人死亡、未被玩家选中——按模板共用后，这个样本在第一战出现的窗口比 P3 假设的更窄。**条的画法仍 provisional**（静态旁证不变：条渲染器没有已知字节的读者）。
-- 采样时间线：第 1 轮 AI 后 友军 023（记录 29）10/29、敌方全满血；第 2 轮 记录 25 死亡（0/22）、记录 23 2/28、记录 29 仍 10/29；第 3 轮 记录 29 死亡（REMOVED，遗言帧 `p4-r3.png`）。
+- 已知字节按模板行共用：开局 `known` 只有 雷歐納德（0）、两名 023（23）、两名 024（24）；五名 021 的 `+0xa2` 全是 21、两名 026 全是 26，字节均为 0。第 2 轮一名 021（记录 25，22 HP）被友军击杀、另一名 021（记录 23）被打到 2/28 存活——字节 21 置位，**五名 021 同时变为已知**（含从未被攻击、满血的记录 21／24／27）；两名 026 仍未知。
+- 受伤未知敌人：negative-evidence（这趟也没采到）——唯一受伤存活的敌人与同轮死亡的 021 同模板，已变为已知；两名 026 三轮都满血。
+- 采样时间线：第 1 轮 AI 后 友军 023（记录 29）10/29、敌方全满血；第 2 轮 记录 25 死亡（0/22）、记录 23 2/28、记录 29 仍 10/29；第 3 轮 记录 29 死亡。
 
-2026-09-26 模拟器实测（lane KNOWN；`tools/hsltools/probes/_known_byte_trace.py` 在 `_enemy_level` 裁判下把整个 hsl01.exe 放进 unicorn 逐帧跑第 51 关第 1 轮，玩家回合全 待機；钩子：`0x4c6d80..+199` 任意写入（写入 EIP、下标、值）、`0x434d9b` 身份栏读字节（下标、值、调用者 `0x4364af`＝`0x436490` mode 3 切入栏）、`0x430020` 调用点、`0x4423c0` 交锋对与逐帧 HP；轨迹在 `ignored/known/*.json`）。开局置位 `{0, 23, 24}`：
+**模拟器实测（2026-09-26；`tools/hsltools/probes/_known_byte_trace.py` 在 `_enemy_level` 裁判下把整个 hsl01.exe 放进 unicorn 逐帧跑第 51 关第 1 轮，玩家回合全 待機；钩子：`0x4c6d80..+199` 任意写入（写入 EIP、下标、值）、`0x434d9b` 身份栏读字节（下标、值、调用者 `0x4364af`＝`0x436490` mode 3 切入栏）、`0x430020` 调用点、`0x4423c0` 交锋对与逐帧 HP）**。开局置位 `{0, 23, 24}`：
 
-- **友军 NPC 的武器攻击揭示目标**：021_1 移到 (15,16)、HP 200（`--set 021_1.cell=15/16 --set 021_1.max_hp=200 --set 021_1.hp=200`）。023_1 攻击 021_1：第 1611 帧 `0x430020` 自 `0x440279` 调用、`0x43006b` 写下标 21＝1 → 第 1625 帧交锋 → 第 1773 帧切入栏读下标 21＝1，**不遮罩**；023_2、024_2 随后同样各自从 `0x440279` 再写一次。
-- **敌方 AI 的武器攻击同一路径**：021_1 攻击 雷歐納德：`0x440279` 写下标 0（本就为 1）；同一交锋里攻方 021 的切入栏（第 930 帧）读下标 21＝0，**遮罩**——攻方不因发起攻击而已知。
-- **AI 施法同玩家施法**：026_1 移到 (15,14)、HP 200 对 雷歐納德 施法：`0x441878`（技能目标选择）与 `0x442b3c`（施法序列首目标）各调一次 `0x430020`、写下标 0。
-- **反击不揭示**：伤害种子 `--damage-seed 23 304` 下 雷歐納德 的反击命中 021_1（200→183，第 1290 帧），其间无 `0x430020` 调用、无写入，021 直到第 1861 帧 023_1 的 `0x440279` 才置位；另 4 个种子里 021_1 反击 023_1／023_2，同样零写入（共 6 次反击）。
-- **反击击杀：死亡写入在切入之后**：021_1 HP 10／22、同种子：反击镜头第 1258 帧读下标 21＝0（遮罩），第 1290 帧 HP 0，第 1419 帧 `0x43ef5b` 写下标 21——切入栏全程 `???`，此后悬停才见数字。
+- 友军 NPC 的武器攻击揭示目标：021_1 移到 (15,16)、HP 200（`--set 021_1.cell=15/16 --set 021_1.max_hp=200 --set 021_1.hp=200`）。023_1 攻击 021_1：第 1611 帧 `0x430020` 自 `0x440279` 调用、`0x43006b` 写下标 21＝1 → 第 1625 帧交锋 → 第 1773 帧切入栏读下标 21＝1，**不遮罩**；023_2、024_2 随后同样各自从 `0x440279` 再写一次。
+- 敌方 AI 的武器攻击同一路径：021_1 攻击 雷歐納德：`0x440279` 写下标 0（本就为 1）；同一交锋里攻方 021 的切入栏（第 930 帧）读下标 21＝0，**遮罩**——攻方不因发起攻击而已知。
+- AI 施法同玩家施法：026_1 移到 (15,14)、HP 200 对 雷歐納德 施法：`0x441878` 与 `0x442b3c` 各调一次 `0x430020`、写下标 0。
+- 反击不揭示：伤害种子 `--damage-seed 23 304` 下 雷歐納德 的反击命中 021_1（200→183，第 1290 帧），其间无 `0x430020` 调用、无写入，021 直到第 1861 帧 023_1 的 `0x440279` 才置位；另 4 个种子里 021_1 反击 023_1／023_2，同样零写入（共 6 次反击）。
+- 反击击杀：021_1 HP 10／22、同种子：反击镜头第 1258 帧读下标 21＝0（遮罩），第 1290 帧 HP 0，第 1419 帧 `0x43ef5b` 写下标 21——切入栏全程 `???`，此后悬停才见数字。
 - 19 条轨迹（17 个伤害种子＋反击击杀＋施法）合计 70 次交锋，写入 EIP 只有 `0x43006b` 与 `0x43ef5b`。
 
-录屏旁证（用户录屏 2026-09-24 中午12.03.22.mov，101–102 s；ffmpeg 抽帧 `ignored/known/rec/`）：第 2 轮友军 023 攻击并击杀一名 拉爾斯帝國兵 的切入栏已印 `等級 1 經驗 0/100 生命力 0/22 狀態 正常`、抗性 07%／04%／04%／07%／03%（`姓名 ???` 是该模板姓名为空串，见 2026-09-22 条），此前 雷歐納德 两轮都 待機、未选过目标，且死亡写入在切入之后——该镜头的数字只能来自友军攻击的目标确认。
+**录屏旁证**（2026-09-24 录屏 101–102 s）：第 2 轮友军 023 攻击并击杀一名 拉爾斯帝國兵 的切入栏已印 `等級 1 經驗 0/100 生命力 0/22 狀態 正常`、抗性 07%／04%／04%／07%／03%（`姓名 ???` 是该模板姓名为空串），此前 雷歐納德 两轮都 待機、未选过目标，且死亡写入在切入之后——该镜头的数字只能来自友军攻击的目标确认。
 
-## 重制接线与边界
+## 重制接线
 
-- `known_unit_ids`（`LoopKeys.KNOWN_UNIT_IDS`）随 loop 创建为空数组；`attack_target` 在校验通过、结算之前 `_mark_known(target)`；`BattleLoopCombat._resolve_exchange`（玩家与 AI 武器交锋共用）校验通过后 `_mark_known(defender)`（lane KNOWN，对应 `0x440279`／`0x444388`），反击系列不标——此前重制未复刻 AI 武器攻击的目标确认，友军 NPC 打中的敌人在切入栏、悬停与状态页都仍是 `???`，直到它死亡；`_resolve_skill` 对每个 footprint 目标（玩家与 AI 施法共用）`_mark_known`；`_set_unit_defeated(true)` `_mark_known`。`unit_known` 对 `side_mask == pmPlayer` 的单位恒真（`0x407e01`）。
-- `BattleCheckpoint.validate` 要求该键为数组且每项是唯一的现存单位 id（`invalid_saved_known_units`）；此前保存的 v3 快照缺该键会被 `missing_saved_array` 明确拒绝。
-- 攻击选择态维持既有"合法目标才显示"的预览，P3 起按同一遮罩（`_test_attack_target_preview` 断言 `"22 / 22"` → `"???"`，把目标加入 `known_unit_ids` 后再断言 `"22 / 22"`）；魔法／支援目标预览同（`run_magic_experience_tests.presentation_cases`）。
-- 状态全页（点击敌人打开 WINDOW20）P3 起遮罩身份栏与属性行、装备可读（`_test_status_panel` 026 的 MP 断言 `"N / N"` → `"???"`）；lane STATUSPAGE 起未知单位点了不开页（见上），玩家能看到的遮罩页只剩 no_attack 单位的属性行，`_test_status_panel` 的 026 改断言不开页。
-- 切入身份栏按交锋回执的 `strip_known_ids`（目标确认后、结算前的 known 快照）遮罩（lane KNOWN）：被反击打死的未知攻方在两段切入里都是 `???`，死后悬停才见数字，与 `0x43ef5b` 在切入之后一致；施法回执无快照、读结算后的 loop（目标在结算前已标）。
-- **未知单位的条按真实比例（static-derived，lane E1）**：条对象过程 `0x4364e0` 只读 live `cur/max`，无已知字节读者（上文「身份栏 HP／MP 条的画法」）；重制 `show_unit` 先写两条比例再套遮罩。此前「未知画满 HP／空 MP」的 provisional 关闭；三趟 Wine 未采到受伤未知敌人的 negative-evidence 保留为历史记录。仍未读：位 0x100 数字文本的置位者、氣力条（重制自创，未知时仍空）。
-- **无名单位的姓名栏照原版印 `???`（负责人决定 2026-09-26）**：姓名栏逐字印 live +0x04 name id 的 RESOURCE 文字（`0x4477b0(+4)`）；无名士兵与怪物的 PLAYERS `name` 是公用占位 306（RESOURCE `???`），所以即使已知也印 `???`（上文 2026-09-22 友军 一般兵 与录屏 101 s）。此前重制在身份栏用 `job_show_name` 补名（021 显示「拉爾斯帝國兵」）；现 `BattleVitals` 读单位 `display_name`（安装字／`actSetPlayerName` 写入的 +0x04，逐字）或 `actor_panels.json` 行的 `name`（`portraits.panel_name`，逐字），数值揭示不变。肖像 manifest 的 `name`（交付视图、队伍页、战败句的列表标签）仍按稱號补名，是重制显示选择。
-- **索引粒度已对齐（lane U1）**：原版已知字节按模板行共用（上文 2026-09-26），重制 `unit_known` 按同 `actor_id` 判定、`known_unit_ids` 仍记被标记的单位 id（不迁 checkpoint）；采样到的非主角单位 `obj+0xa2` 都等于其 PLAYERS 行号（021→21、026→26、023→23、024→24），即重制的 `actor_id`；雷歐納德读到 0（pmPlayer 出生即已知，判定不经该字）。边界：`actSetPlayerName`／脚本改名不改 `actor_id`，与原版同一下标一致。
+- `game/sim/loop/BattlePlayLoop.gd`：`known_unit_ids`（`LoopKeys.KNOWN_UNIT_IDS`）随 loop 创建为空数组；`attack_target` 在校验通过、结算之前 `_mark_known(target)`；`BattleLoopCombat._resolve_exchange`（玩家与 AI 武器交锋共用）校验通过后 `_mark_known(defender)`（对应 `0x440279`／`0x444388`），反击系列不标；`_resolve_skill` 对每个 footprint 目标 `_mark_known`；`_set_unit_defeated(true)` `_mark_known`。`unit_known` 对 `side_mask == pmPlayer` 的单位恒真（`0x407e01`），否则 `known_unit_ids` 含该单位或含任一同 `actor_id` 的单位（按模板行判定；存储仍按被标记的单位 id；`actSetPlayerName`／脚本改名不改 `actor_id`）。provenance rules：known_unit_ids 在目标确认时写（0x430020）、死亡时写（0x43ef36）、pmPlayer 出生即已知。
+- `BattleCheckpoint.validate` 要求该键为数组且每项是唯一的现存单位 id（`invalid_saved_known_units`）；缺该键的 v3 快照由 `missing_saved_array` 拒绝。
+- `game/battle/scene/BattleVitals.gd`：`mask(unit, known)`＝唯一遮罩策略——`hp`＝bVar22、`identity`＝bVar22‖bVar21（读单位 `no_attack`，模板位 0x2 的 live 镜像，`actSetPlayerNoAttack` 可改）、`level`＝二者之一‖等级>99；`show_unit(unit, hp, known)` 先按 live 值写 `hp_bar`／`mp_bar` 再套遮罩；`state_text(flags)` 照「狀態欄」拼单字；姓名读单位 `display_name`（安装字／`actSetPlayerName` 写入的 +0x04，逐字）或 `actor_panels.json` 行的 `name`（`portraits.panel_name`，逐字）。provenance strings：0x434d10 谓词——已知字节清零 → 等级 ??、经验／HP／MP／姓名／状态／抗性 ???；抗性 "%02d%" 或 80 起 "MAX"（0x435616／0x43563b）；0x446b00 no_attack 位 → 同上但不含 HP；模板等级 > 99 → 等级 ??。
+- 攻击选择态的目标预览、魔法／支援目标预览、状态全页、切入身份栏都经同一遮罩（`BattlePresentation.preview_hovered_unit`／`preview_target`、`BattleStatusPanel.show_unit`、`BattleCombatCutin.play`）；切入栏按交锋回执的 `strip_known_ids`（目标确认后、结算前的 known 快照）遮罩，被反击打死的未知攻方在两段切入里都是 `???`；施法回执无快照、读结算后的 loop。
+- `BattleSceneInput` 点非己方指挥单位时先问 `BattleStatusPanel.opens_for(unit_known)`，未知就当点空地、不开页；OPT-INFO＝公開 一律视为已知照开（改良选项）。点单位开的状态页不画钱框。
+- **肖像绑定（resource-derived）**：120×144 肖像由 PLAYERS.TXT `picture` 字段绑定 PAK 内 SHP——001→`SHAPE\FACE0000.SHP`（不是 FACE0001）、021／023／024／026→`FACE0021／0023／0024／0026.SHP`；`hsltools/assets/portraits.py` 生成 `content/imported/hsl/chapter01/portraits/manifest.json`（`python3 tools/hsl.py check actor_portraits`）。战中按对白 speaker ID、开场按 STORY actor token 选头像。肖像 manifest 的 `name`（交付视图、队伍页、战败句的列表标签）按稱號补名，是重制显示选择。
+- provenance 写法：`runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured`。
 
-## 来源头迁入的备注
+## 复现
 
-RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
+`PYTHONPATH=tools python3 -m hsltools.probes._known_byte_trace`（模拟器跑第 51 关第 1 轮，钩已知字节写入与身份栏读取；需本机原版 EXE）；Wine 会话部分不可再生：原版侧唯一记录。
 
-- `game/sim/loop/BattlePlayLoop.gd` rules：known_unit_ids: 0x430020 at target confirmation, 0x43ef36 on death, pmPlayer born known
-- `game/battle/scene/BattleVitals.gd` strings：0x434d10 predicates: known byte 0x4c6d80 clear → ?? level and ??? exp／HP／MP／name／state／resists; resist values "%02d%" or "MAX" from 80, 0x435616／0x43563b; 0x446b00 no_attack template bit → the same without HP; template level > 99 → ?? level
+## 边界
+
+- 仍未读：位 0x100 数字文本的置位者、氣力条（重制自创，未知时仍空）。
+- 受伤且未知的敌人未在原版实机采到；条按真实比例的结论来自静态（条渲染器无已知字节读者）加两类已知／未知样本。
+- 剧情 `actSetPlayerMode`（`0x4507f0`）、读档路径的写入只有静态枚举。

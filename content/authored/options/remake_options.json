@@ -107,7 +107,7 @@
         "game/battle/scene/MagicImpactPresentation.gd:begin（每次法术受者血条与数字读一次）→ pace（PACE_MAP）",
         "game/battle/runtime/BattleOpeningCoordinator.gd:handle_input（对白外每次确认读一次）→ 原版值不快进，剧情走位与镜头照原速；快／極快 时 fast_forward_motion 落位"
       ],
-      "evidence": ["script-fast-forward", "game/battle/runtime/CombatPresentationTiming.gd", "docs/evidence_packets/runtime_observations/system_menu/README.md#預備動作0x477c14-bit1"],
+      "evidence": ["script-fast-forward", "game/battle/runtime/CombatPresentationTiming.gd", "docs/evidence_packets/runtime_observations/menus_ui/README.md#預備動作0x477c14-bit1"],
       "work": "M"
     },
     {

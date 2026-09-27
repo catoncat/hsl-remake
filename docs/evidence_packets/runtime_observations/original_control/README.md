@@ -1,97 +1,44 @@
 # Original HSL: bounded Wine-side control
 
-> evidence: runtime-measured · status: record-only · tools: build_runtime_helpers.sh, hsl_original_control.py, hsl_runtime_probe.py · updated: 2026-09-09
+> evidence: runtime-measured · status: record-only · tools: build_runtime_helpers.sh, hsl_original_control.py, hsl_runtime_probe.py · updated: 2026-09-27
 
-Evidence tier: `runtime-measured`. Checked on 2026-09-09 using the user's local
-HSL v1.06 title screen, Wine 11.0 and the already installed cnc-ddraw wrapper.
-This packet validates a control/capture route, not remake parity or all gameplay.
+## 结论
 
-## Working route
+- Original: HSL v1.06 under Wine 11.0 with the installed cnc-ddraw wrapper accepts one Win32 input at a time in 640×480 logical client coordinates, and cnc-ddraw's own screenshot hotkey (VK_SNAPSHOT) yields a fresh 640×480 game PNG; a click at the Move icon `(367,175)` then a right click at `(320,240)` enters and leaves movement selection (runtime-measured).
+- Remake: not a remake packet — it validates a supervised control/capture route (`tools/hsl_original_control.py`) used by other original-side packets; no Godot product code consumes it (runtime-measured).
+- Difference: none claimed; this is not isolated or headless control, and does not prove remake parity or any gameplay rule (negative-evidence for unattended use).
 
-Use `tools/hsl_original_control.py`: one Win32 action in the same Wine prefix,
-then cnc-ddraw's own 640×480 surface screenshot. Inspect that screenshot before
-choosing another action. The tool never infers gameplay success from SendInput's
-return value, nor automatically retries an action after a screenshot failure.
+## 证据
 
-```sh
-tools/build_runtime_helpers.sh --win32-control
-python3 tools/hsl_original_control.py inspect
-python3 tools/hsl_original_control.py screenshot --label before
+**runtime-measured (HSL v1.06 title screen, Wine 11.0, cnc-ddraw)**
 
-# Precondition: visually confirmed first-turn action menu, with Move at 367,175.
-python3 tools/hsl_original_control.py click 367 175 --dry-run
-python3 tools/hsl_original_control.py click 367 175 --label move
-# Inspect the emitted game.png; proceed only when movement selection is visible.
-python3 tools/hsl_original_control.py rclick 320 240 --label cancel
-```
+| Observation | Reading |
+| --- | --- |
+| Client size | Original Windows client 640×480; native macOS window 577×462 points. The earlier helper minimum 600×470 rejected this window; both Swift helpers now admit downscaling while keeping Wine owner, layer, aspect and ambiguity checks (heuristic; the bridge identifies the EXE). |
+| Failed captures | `screencapture -l358` failed to create a window image although the screen-capture preflight returned true; a Win32 BitBlt client-capture experiment also failed. Neither is used. |
+| cnc-ddraw config | Installed `ddraw.ini`: `renderer=gdi`, `windowed=true`, `keyscreenshot=0x2C`, `screenshotdir=.\Screenshots\`. VK_SNAPSHOT inside Wine produced a fresh, visually verified PNG. No config was changed. |
+| Input imports | EXE imports `GetKeyboardState` and `GetKeyState`; the import table does not name DirectInput (does not exclude dynamic loading). |
+| Opening route | New Story (first click highlights, second activates) → opening dialogue/conditions passed with Space and one dialogue mouse click → first battle action menu. |
+| Move/cancel cycle | Three prototype cycles of left click `(367,175)` then right click `(320,240)` showed movement selection and return to the action menu (six frames reviewed together); the promoted tool repeated the cycle — frames move-selected.png（原版帧见私有档案：`runtime_observations/original_control/move-selected.png`）, cancel-returned.png（原版帧见私有档案：`runtime_observations/original_control/cancel-returned.png`）, receipts in [proof.json](proof.json). |
 
-`inspect` is read-only and emits no screenshot. `focus` explicitly requests Wine
-foreground focus; ordinary inputs refuse when the game is not Wine's foreground
-window. `key space`, `key enter`, `key escape`, arrows and tab are supported.
-Only Space was exercised during opening/confirmation in this proof. Inputs use
-640×480 logical client coordinates, not macOS points. Each non-inspect action
-records its receipt before attempting a screenshot; a failure must be inspected
-before replaying anything.
+**API basis (external documentation)**: SendInput inserts events into the keyboard/mouse input stream and its return value reports insertion, not application-level acceptance (Microsoft Learn, `SendInput function (winuser.h)`); GetKeyboardState reflects the calling thread's keyboard state (Microsoft Learn, `GetKeyboardState function (winuser.h)`); posting key messages alone is not equivalent to injecting input (The Old New Thing, `You can't simulate keyboard input with PostMessage, revisited`, 2025-03-19).
 
-The helper uniquely resolves `hsl01.exe` and its game window; ambiguous processes
-or windows fail instead of guessing. Captures reject stale PNGs, ambiguous new
-files, unexpected dimensions and a changed Wine PID/HWND. The screenshot hotkey
-is an additional input, not a perfectly passive recorder.
+## 重制接线
 
-## Runtime observations
+No `game/` consumer. Tool contract of `tools/hsl_original_control.py`:
 
-- Original Windows client: 640×480; native macOS window: 577×462 points.
-  The previous helper's minimum 600×470 rejected this window. Both Swift helpers
-  now admit downscaling while retaining Wine owner, layer, aspect and ambiguity
-  checks. These checks remain heuristic; the new bridge identifies the EXE.
-- `screencapture -l358` failed to create a window image even though the screen
-  capture permission preflight returned true. A separate Win32 BitBlt client
-  capture experiment also failed. Neither is used by the new bridge.
-- The installed `ddraw.ini` already specified `renderer=gdi`, `windowed=true`,
-  `keyscreenshot=0x2C`, and `screenshotdir=.\Screenshots\`. Sending VK_SNAPSHOT
-  inside Wine produced a fresh, visually verified game PNG. No config was changed.
-- EXE imports include `GetKeyboardState` and `GetKeyState`; the import table did
-  not directly name DirectInput. This does not exclude dynamic API loading and
-  does not establish every internal input path.
-- The prototype entered New Story (first click highlighted, second activated),
-  passed opening dialogue/conditions using Space and one dialogue mouse click,
-  and reached the first battle action menu.
-- Three consecutive prototype cycles of single left click at `(367,175)` then
-  single right click at `(320,240)` showed movement selection and return to the
-  action menu. All six frames were visually reviewed together. The promoted
-  tool then repeated the same cycle successfully; the two frames and receipts
-  are preserved in this packet's `proof.json`.
+- One Win32 action in the same Wine prefix, then a cnc-ddraw 640×480 screenshot; inspect it before the next action. Never infers success from SendInput's return value; never auto-retries after a screenshot failure.
+- `inspect` is read-only (no screenshot). `focus` requests Wine foreground; ordinary inputs refuse when the game is not Wine's foreground window. `key space|enter|escape`, arrows and tab are supported (only Space was exercised here). Each non-inspect action records its receipt before the screenshot.
+- Uniquely resolves `hsl01.exe` and its window (ambiguity fails); captures reject stale PNGs, ambiguous new files, unexpected dimensions and a changed Wine PID/HWND. The screenshot hotkey is itself an input, not a passive recorder.
+- `hsl_runtime_probe.py`／`hsl_win32_memread.c` are separate read-only memory probes; this route did not run them.
 
-Raw prototype records: `ignored/original-control-spike/probe.jsonl` and
-`move-proof.png`; promoted-tool receipts: `ignored/original-control/`.
-Raw paths are optional diagnostics, not tracked dependencies.
+## 复现
 
-## Boundaries
+`tools/build_runtime_helpers.sh --win32-control && python3 tools/hsl_original_control.py inspect`, then with a visually confirmed first-turn action menu: `python3 tools/hsl_original_control.py click 367 175 --label move` and `rclick 320 240 --label cancel`, inspecting each emitted `game.png` before continuing. Readings above are 不可再生：原版侧唯一记录 for the tested Wine/cnc-ddraw setup.
 
-No EXE patch, game-memory write, save overwrite, gameplay-stat change or Godot
-product change was used. cnc-ddraw writes new screenshot files inside the game
-installation; the tool copies them to a unique ignored evidence directory.
+## 边界
 
-This is **not isolated/headless control**. Wine foreground state does not prove
-macOS foreground state; inputs may move the actual pointer, and user interaction
-can interfere. Use short supervised operations on the built-in display, not an
-unattended playthrough. External displays, background-only control, other Wine
-versions/renderers, actual move destinations, attacks, items, complete battles
-and long-run reliability were not validated here. A fresh PNG may depict a valid
-black transition or an unchanged game state; `behavior_verified` stays false in
-machine receipts until separate visual review.
-
-The pre-existing `hsl_runtime_probe.py`/`hsl_win32_memread.c` remain candidates for
-read-only state observations when a precise rule question needs them. This input
-proof did not run or validate those memory probes.
-
-## API basis
-
-Microsoft documents SendInput as inserting events into the keyboard/mouse input
-stream; its return value reports insertion, not application-level acceptance.
-GetKeyboardState reflects the calling thread's keyboard state. Posting key
-messages alone is not equivalent to injecting keyboard input. References:
-
-- Microsoft Learn, `SendInput function (winuser.h)`.
-- Microsoft Learn, `GetKeyboardState function (winuser.h)`.
-- Microsoft The Old New Thing, `You can't simulate keyboard input with PostMessage, revisited` (2025-03-19).
+- No EXE patch, game-memory write, save overwrite, gameplay-stat change or Godot change was used; cnc-ddraw writes screenshots inside the game installation and the tool copies them to a unique ignored directory.
+- Not isolated/headless: Wine foreground does not prove macOS foreground; inputs may move the real pointer and interaction can interfere. Short supervised operations on the built-in display only.
+- Not validated: external displays, background-only control, other Wine versions/renderers, move destinations, attacks, items, complete battles, long-run reliability.
+- A fresh PNG may show a valid black transition or an unchanged state; `behavior_verified` stays false in receipts until separate visual review.

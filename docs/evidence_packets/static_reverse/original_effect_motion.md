@@ -1,17 +1,24 @@
-# 法术特效的运动：effProc* 程序逐 tick 原指令执行，幻火 tracer 读通
+# 法术特效的运动：effProc* 程序逐 tick 原指令执行
 
-> evidence: static-derived: 0x415dc0 效果对象过程、effProc* 跳表 0x4231b0、0x45f5f7 帧循环、0x4237f7 效果脚本解释器、0x401220／0x4010c0 残影的读法与原指令执行; runtime-measured: 2026-09-24 用户录屏 471.7–474.6 s 幻火与原生轨迹的对照; provisional: 随机样本、±1 帧、缺帧循环、未复原的 13 个对象 · status: live · functions: 0x4010c0, 0x401140, 0x401220, 0x401290, 0x401310, 0x401c20, 0x401dc0, 0x402180, 0x4021df, 0x4038a0, 0x407ec0, 0x415c10, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x416095, 0x41618a, 0x4162e6, 0x416409, 0x423873, 0x423951, 0x423a20, 0x42dc50, 0x42dcb0, 0x43bf30, 0x446be0, 0x450710, 0x458c10, 0x458c80, 0x45e307, 0x45e3ed, 0x45e575, 0x45e5a6, 0x45e785, 0x45eb75, 0x45eb9d, 0x45ebdc, 0x45f5f7, 0x45fc01, 0x460541, 0x4606a9, 0x4607f9, 0x46164b, 0x461982, 0x46b691 · tools: hsltools/assets/skill_effects.py, hsltools/levels/battle.py, hsltools/probes/effect_motion.py, run_animal_program_tests.gd, run_battle_scene_runtime_tests.gd, run_skill_effect_script_tests.gd, run_support_magic_tests.gd · updated: 2026-09-26
+> evidence: static-derived: 0x415dc0 效果对象过程、effProc* 跳表 0x4231b0、0x45f5f7 帧循环、0x4237f7 效果脚本解释器、0x401220／0x4010c0 残影的读法与原指令执行; runtime-measured: 2026-09-24 原版录屏 471.7–474.6 s 幻火与原生轨迹的对照; provisional: 随机样本、±1 帧、缺帧循环、未复原的 13 个对象 · status: live · functions: 0x4010c0, 0x401140, 0x401220, 0x401290, 0x401310, 0x401c20, 0x401dc0, 0x402180, 0x4021df, 0x4038a0, 0x407ec0, 0x415c10, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x416095, 0x41618a, 0x4162e6, 0x416409, 0x423873, 0x423951, 0x423a20, 0x42dc50, 0x42dcb0, 0x43bf30, 0x446be0, 0x450710, 0x458c10, 0x458c80, 0x45e307, 0x45e3ed, 0x45e575, 0x45e5a6, 0x45e785, 0x45eb75, 0x45eb9d, 0x45ebdc, 0x45f5f7, 0x45fc01, 0x460541, 0x4606a9, 0x4607f9, 0x46164b, 0x461982, 0x46b691 · tools: hsltools/assets/skill_effects.py, hsltools/levels/battle.py, hsltools/probes/effect_motion.py, run_animal_program_tests.gd, run_battle_scene_runtime_tests.gd, run_skill_effect_script_tests.gd, run_support_magic_tests.gd · updated: 2026-09-27
 
-lane R7-SPELL（2026-09-25）。回答："原版法术特效怎么动"——火球从哪来、怎么飞、怎么爆，以及同一族效果对象程序（effProc*）能否按同一读法复原。r2 读 `hsl01.exe`（SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`），unicorn 在合成对象上执行原指令；未运行原程序，raw 反汇编只在 `ignored/`。
+## 结论
 
-## 1. 结论
+- 原版每个效果对象由自己的 effProc* 程序每 tick 改位置、换帧、改混合层级与缩放，许多程序还会抛出子对象（火花、子弹、残影）；效果对象一律加法混合（static-derived）。
+- 39 行法术引用的 144 个效果对象里 131 个连同子对象（3396 个实例、59 种子对象）逐 tick 原指令执行，得到 `content/generated/hsl/skills/effect_motion.json`；重制 `game/battle/scene/EffectObjectMotion.gd`／`SkillEffectScriptPlayer.gd` 按它逐帧画整棵树（static-derived）。
+- 幻火（effCode23）的独立 Python 模型与原生轨迹逐样本相等，与原版录屏节拍一致（[runtime 包](../runtime_observations/effect_motion/README.md)）；幻火是一团光从目标头顶 88 px 处摇摆落下，不是从施法者飞向目标（runtime-measured）。
+- 差异：没有原生轨迹的 13 个对象、单一随机种子、±1 帧与缺帧循环是重制读法，逐条见边界（provisional）；声音排程未切到原生结果（`effect-sound-timing`）。
 
-- **重制此前的"静帧＋淡出"与原版不符**：原版每个效果对象由自己的 effProc* 程序每 tick 改位置、换帧、改混合层级与缩放，许多程序还会抛出子对象（火花、子弹、残影）。
+## 证据
+
+EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；unicorn 在合成对象上执行原指令，未运行原程序。
+
+### 覆盖
+
 - **原版读法可以整体执行**：39 行法术引用的 144 个效果对象里，**131 个**的程序连同它们抛出的全部子对象（共 3396 个实例、59 种子对象）只经过已审阅的对象内代码，逐 tick 执行后得到原生轨迹 `content/generated/hsl/skills/effect_motion.json`；按程序计，法术直接引用的 84 个 effProc 中 **73 个全部**、2 个部分（IconBGSet、OtherBig）复原，**9 个**未复原（§5）。
-- **tracer 幻火（effCode23）**：独立 Python 模型（`hsltools/probes/_effect_motion_model.py`）按本包 §3 的读法重算 FlyDrop／FireBomb／FireBomb2 三棵对象树，与原生轨迹逐样本（位置、帧、模式、层级、缩放）一致；与用户录屏逐帧对照（[runtime 包](../runtime_observations/effect_motion/README.md)）：落光 → 50 tick 后六团火 → 112 tick 处 FireBomb2 的 12 颗光球四散淡出，节拍按本机 19.4 ms/tick 对齐。
-- 录屏里所谓"火球飞行"并不是从施法者飞向目标：幻火是**一团光从目标头顶 88 px 处摇摆落下**（FlyDrop），随后在目标周围升起火团。
+- **tracer 幻火（effCode23）**：独立 Python 模型（`hsltools/probes/_effect_motion_model.py`）按下文 tracer 的读法重算 FlyDrop／FireBomb／FireBomb2 三棵对象树，与原生轨迹逐样本（位置、帧、模式、层级、缩放）一致；与原版录屏逐帧对照（[runtime 包](../runtime_observations/effect_motion/README.md)）：落光 → 50 tick 后六团火 → 112 tick 处 FireBomb2 的 12 颗光球四散淡出，节拍按本机 19.4 ms/tick 对齐。
 
-## 2. 帧模型与公共部分（static-derived）
+### 帧模型与公共部分（static-derived）
 
 | 地址 | 读法 |
 | --- | --- |
@@ -24,7 +31,7 @@ lane R7-SPELL（2026-09-25）。回答："原版法术特效怎么动"——火�
 | `0x458c10`／`0x458c80` | 两个旋转字的 RNG；rand(n) = (rng & 0xffff) mod n |
 | `0x45e575`／`0x45e5a6` | 形状计数：每张停 `shape_delay + 1` 次调用；前者走完停在末张并返回 1，后者回到首张返回 1 |
 
-## 3. tracer：幻火（effCode23）从创建到销毁
+### tracer：幻火（effCode23）从创建到销毁
 
 脚本：`effInsertObject FlyDrop,0,0 · effWait 50 · effInsertRandomObject FireBomb,0,0,36,48,24,6 · effWait 50 · effInsertObject FireBomb2,0,0 · effWait 50`。
 
@@ -38,14 +45,14 @@ lane R7-SPELL（2026-09-25）。回答："原版法术特效怎么动"——火�
 
 独立模型（`_effect_motion_model.verify`，`hsl check effect_motion` 执行）用 global.obs 模板与已跟踪的原版 cos／sin 表（`command_menu/native_layout.json`）重算三棵树，要求与原生轨迹完全相等；消融（FlyDrop 横向偏 1 px）→ `instance 0 model track differs from native`。
 
-## 4. 原生执行（`hsltools/probes/effect_motion.py`）
+### 原生执行（`hsltools/probes/effect_motion.py`）
 
 - 每个法术对象一台 unicorn：原点 (320,240)、镜头 (0,0)、RNG 取映像初值（`0x4c1e8c = 1` 不按时钟播种）；根对象按解释器的方式创建（基点 = 原点），然后逐帧执行 §2 的帧模型直到全部对象销毁。
 - 原指令执行的范围只有对象内读写、RNG 与纯几何（`REVIEWED`：`0x4010c0`、`0x401220..0x401307`、`0x415c10..0x4231ae`、`0x42dc50`、`0x42dcb0`、`0x458c10`、`0x45e485`、`0x45e575..0x45ed46`、`0x46e0f0`、`0x46e720`）；创建／销毁、放声（记录）、堆、形状名表 `0x45fc01` 与 SHP 原点／尺寸 `0x4606a9`（读 hsl.pak 的 SHP 头）由 Python 应答；遇到其它地址即停下，对象列入 `unrestored` 并写明卡在哪个函数。
 - 每个对象再以位移 (37,−23) 跑一次，比较得出 `motion`：`translates`（114：整体平移）、`anchored`（3：由原点驱动，位移无关）、`mixed`（3）与 `reshaped`（11）——后两类在重制里按平移处理（provisional，替换证据是各程序对基点的逐条读法）。
 - 残影对象 179（obj_Shadow_Left，定义在关卡 OBS，取 `obj-051.obs`）由 `0x401220` 复制父对象当前形状、模式 `| engMIX`、层级 6，defProcShadowLeft `0x4010c0` 每 4 tick 层级减一，到 0 销毁（24 tick）——施法引导的残影也是它（见 [ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）。
 
-## 4a. 施法引导的残影与换边镜像（cast-afterimage）
+### 施法引导的残影与换边镜像（cast-afterimage）
 
 - **残影** `0x401220(obj)`：以 `0x45e307(x, y, 179)` 在对象当前位置建 obj_Shadow_Left，复制形状 `+0x30` 与缩放 `+0x20／+0x24`，模式 = 父模式 `| engMIX`，层级 `+0x28 = 6`，`+0x90 = 0x40004`，并清掉创建跳画位（`0x401269`）——创建那一帧就以 6/16 画出。defProcShadowLeft `0x4010c0` 首次调用只清初始化位，之后 `+0x90` 低字每 4 次归零重装、层级减一，到 0 销毁：共 24 帧、层级 6→1。
 - 施法引导（`0x401c20` 的 m_action／s_action）里两处留残影：aniSetXYDisp（`0x402180`）作为这一次 call 的首条指令时，先在对象原地（(320,240)，横幅第 0 张）留一个再加位移（`0x402187`）；子状态 1 每张局部图的停留到期且还有下一张时，在局部图锚点留该张（`0x402b68`，层 0x33），然后换下一张。
@@ -53,9 +60,9 @@ lane R7-SPELL（2026-09-25）。回答："原版法术特效怎么动"——火�
 - 重制：`AnimalCastLead.compile(program, panels, mirrored)` 的每个状态带 `afterimages`（张、锚点、层级、是否镜像）与 `mirrored`；`BattleCombatCutin.show_cast_lead` 画横幅翻转与各残影（透明度 = 层级/16，engMIX 交叉淡化）；`cast_lead` 读单位 `side_swapped`（`hsltools/levels/battle.py` 按 obj_Data9≠0 写入 18 场里的相关单位）。`run_animal_program_tests.cast_lead_afterimages_and_mirror` 按上述常数独立算出并逐 call 断言；消融：去掉横幅残影 25 条失败、去掉局部图残影 8 条失败、镜像不取反位移 1 条失败。
 - provisional：残影与活动面板的先后（同层链表顺序）；残影用 Godot 普通透明混合近似 RGB565 16 级交叉淡化。
 
-## 4b. 普通切入的换边镜像（cutin-mirror）
+### 4b. 普通切入的换边镜像（cutin-mirror）
 
-lane CUTMIRROR（2026-09-26），r2 读 `hsl01.exe`（同上 SHA）。`0x446be0(对象)` 取对象 `+0xac`（所属演员）的记录号 `+0xa4`，读 `[0x4c1bc8 + 号×0x1fc + 0xa0] & 8`——即记录 `+0xa0` 的掩码 8 位。全 EXE 只有 6 处调用，5 处在攻方对象 `0x401c20`、1 处在守方对象 `0x4038a0`，特效脚本对象（effProc*／specCode）不读它：
+`0x446be0(对象)` 取对象 `+0xac`（所属演员）的记录号 `+0xa4`，读 `[0x4c1bc8 + 号×0x1fc + 0xa0] & 8`——即记录 `+0xa0` 的掩码 8 位。全 EXE 只有 6 处调用，5 处在攻方对象 `0x401c20`、1 处在守方对象 `0x4038a0`，特效脚本对象（effProc*／specCode）不读它：
 
 | 调用点 | 读法（static-derived） |
 | --- | --- |
@@ -72,7 +79,7 @@ lane CUTMIRROR（2026-09-26），r2 读 `hsl01.exe`（同上 SHA）。`0x446be0(
 - **位怎么来**：构造 `0x407ec0` 在 obj_Data9≠0 且 PLAYERS mode 恰为 pmPlayer 或 pmEnemy（真的互换）时 `or 8`（`0x407fc3`），其他 mode 不置位；脚本 `0x450710` actSetPlayerMode 每次调用先 `xor 8`（`0x45073c`）再比较新旧 mode——**翻转**，模式不变也翻（[阵营位包](original_player_mode_sides.md)）。
 - 重制接入点：`CutinLayout.side_swapped`／`k_action(row, swapped)`，`BattleCombatCutin._set_frame(…, mirrored)`（普攻、借用演出）、`SkillEffectScriptPlayer._stand`、`MoonDancePresentation` 的守方帧；`WinfailActions._apply_player_mode` 翻位。守方的 ATTACK_FLASH 击中闪光重制未画，其镜像读法随之未接。
 
-## 5. 找到／复原／剩余
+### 找到／复原／剩余
 
 | 类别 | 数目 | 说明 |
 | --- | --- | --- |
@@ -83,17 +90,24 @@ lane CUTMIRROR（2026-09-26），r2 读 `hsl01.exe`（同上 SHA）。`0x446be0(
 
 13 个未复原对象在重制里仍是 provisional 的"静帧＋最短 48 tick＋24 tick 淡出"。
 
-## 6. 声音：原生结果与上一 lane 的静态计数（未切换）
+### 声音：原生结果与静态计数
 
-原生执行同时记录了每棵树放的全部声音。与 `special_effect_scripts.json` 的 `program_sounds`（lane R5-L2 静态计数）相比：FireBigHead、MindUBrkShp1..4、OtherGlass、WaterBeast 有 ±1～16 tick 的出入；MindBall、MindBeast、WaterBig1／2、WaterBigBall、WaterBigIce、OtherBBall2、WaterDrop、FireArray 的**子对象**各自放 obj_X1（原计数只看根对象，漏掉）。负责人 2026-09-25 决定本 lane 只换画面、声音排程不动；这些差异留作 `effect-sound-timing` 的替换证据。
+原生执行同时记录了每棵树放的全部声音。与 `special_effect_scripts.json` 的 `program_sounds`（静态计数）相比：FireBigHead、MindUBrkShp1..4、OtherGlass、WaterBeast 有 ±1～16 tick 的出入；MindBall、MindBeast、WaterBig1／2、WaterBigBall、WaterBigIce、OtherBBall2、WaterDrop、FireArray 的**子对象**各自放 obj_X1（原计数只看根对象，漏掉）。声音排程仍用静态计数，这些差异是 `effect-sound-timing` 的替换证据（见 [特效对象声音](original_effect_object_sounds.md)）。
 
-## 7. 重制落地
+## 重制接线
 
 - `game/battle/scene/EffectObjectMotion.gd` 读原生轨迹并给出某帧的精灵（成员、偏移、加法／减法／普通、层级透明度、缩放）；`SkillEffectScriptPlayer.compile_effect` 给有轨迹的对象标 `native`，寿命 = 轨迹帧数，`_draw_native` 在插入 tick 起逐帧画整棵树；effInsertRandomObject 改为 §2 的折叠偏移与累加延迟。
 - `skill_effects` 导入同时收下轨迹画到的成员（新导入 53 张子对象帧；hsl.pak 没有的 11 个列入 `missing_members`，与原有缺帧一样按系列循环，provisional）。
 - 定向测试：`run_skill_effect_script_tests`（`native_motion_tracks`／`native_motion_drawing`／`effect_random_insertion`、改写的旧断言）、`run_support_magic_tests`（创建帧不画）、`run_battle_scene_runtime_tests._test_local_spell_layers`（風刃按原生存活区间取样）。消融：`tracked()` 恒假 → 2291 条失败；延迟改回独立随机 → 40 个种子的顺序断言失败；轨迹帧 +1 → "创建 tick 不画"失败。
+- `game/battle/scene/EffectObjectMotion.gd` layout：native execution of 0x415dc0／0x4010c0 and the effProc* jump table 0x4231b0: positions, members, draw modes, levels, zooms; frame model of 0x45f5f7 — docs/evidence_packets/static_reverse/original_effect_motion.md
+- `game/battle/scene/EffectObjectMotion.gd` timing：one sample per original tick from the object's creation; the creation-flagged first frame is not drawn — 0x45f5f7 skip bit 0x10000000
+- provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_effect_motion.md`。
 
-## 8. provisional 与替换证据
+## 复现
+
+`python3 tools/hsl.py check effect_motion skill_effects`（独立模型与原生轨迹逐样本比较；重生成需原作 hsl01.exe＋hsl.pak 与 unicorn：`ignored/venv/bin/python tools/hsl.py generate effect_motion skill_effects`）。
+
+## 边界
 
 - **随机样本**：每个根对象只跑一个 RNG 种子，同一法术里多个同类对象（幻火的六团火）内部的火花方向完全相同；替换证据是把程序的随机分支移植成按实例取随机数，或多种子轨迹。
 - **特效原点**：已读（[地图普攻与受击包 §1](original_map_strike.md#1-结论)）：eff_proc_Local 取目标对象 `(+4, +8)`（`0x443087`），即目标格中心、无 y 偏移；eff_proc_Global 取光标格中心（`0x442d81`）。录屏"高约 14 px"量的是脚下，换算到锚点约 2 px。
@@ -101,20 +115,3 @@ lane CUTMIRROR（2026-09-26），r2 读 `hsl01.exe`（同上 SHA）。`0x446be0(
 - **缺帧**：程序画到 hsl.pak 没有的 SHP 名（如 EAR24_05..10、FIR07_03..07）时原版取的是注册表里的下一个名字，注册表内容未读；重制循环系列里已有的成员。
 - **镜头**：探针记录镜头／震屏字（`0x4c091c／0x4c0920`、`0x4c1b98／0x4c1b9c`），131 个对象都没有写；地震类程序对镜头的作用不在本包。
 - **不支持的结论**：不证明像素级混合与原版一致（Godot 加法混合不是 RGB565 饱和加法）；不证明 13 个未复原对象的外观；不证明特写绝技（defProcObjectMove／obj_Data7）的运动；不证明法术演出与伤害结算的先后。
-
-## 复跑
-
-```text
-UV_CACHE_DIR=~/.cache/uv uv pip install --offline 'unicorn>=2,<3'      # 进 ignored/venv
-ignored/venv/bin/python tools/hsl.py generate effect_motion skill_effects   # 需原作 hsl01.exe＋hsl.pak（WINEPREFIX）
-python3 tools/hsl.py check effect_motion skill_effects
-tools/godot.sh --headless --script res://tests/run_all.gd -- run_skill_effect_script_tests.gd
-r2 -q -c 'pd 120 @ 0x416095; pd 80 @ 0x41618a; pxw 16 @ 0x42337c' hsl01.exe   # raw 只进 ignored/
-```
-
-## 来源头迁入的备注
-
-RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
-
-- `game/battle/scene/EffectObjectMotion.gd` layout：native execution of 0x415dc0／0x4010c0 and the effProc* jump table 0x4231b0: positions, members, draw modes, levels, zooms; frame model of 0x45f5f7 — docs/evidence_packets/static_reverse/original_effect_motion.md
-- `game/battle/scene/EffectObjectMotion.gd` timing：one sample per original tick from the object's creation; the creation-flagged first frame is not drawn — 0x45f5f7 skip bit 0x10000000

@@ -1,82 +1,59 @@
-# 原版菜单函数已执行对照：数据、计数与展开
+# 行动菜单：原函数执行对照（集合、布局、换帧、展开）
 
-> evidence: static-derived · status: live · functions: 0x409090, 0x43ea30, 0x45e5a6, 0x45e5d9, 0x45e80d · tools: hsl_native_presentation_probe.py, hsltools/assets/combat_animation.py, hsltools/assets/command_frames.py, hsltools/assets/menu_layout.py, run_presentation_contract_tests.gd · updated: 2026-09-14
+> evidence: static-derived · status: live · functions: 0x409090, 0x43ea30, 0x45e5a6, 0x45e5d9, 0x45e80d · tools: hsl_native_presentation_probe.py, hsltools/assets/combat_animation.py, hsltools/assets/command_frames.py, hsltools/assets/menu_layout.py, run_presentation_contract_tests.gd · updated: 2026-09-27
 
-本包承接 [表现逻辑离线恢复研究](presentation_source_recovery.md)，不是原版引擎的完整重放器。它把该研究给出的窄函数入口变成了可复跑的原指令输出，并接入当前 Godot 菜单。原作本体只读；开发探针不启动 Wine、不调用系统输入，也不修改原作进程。
+## 结论
 
-## 证据与接入
+- 原版行动菜单由 `0x43ea30` 按 EXE 内 UTF-16 字符表选图标集合，用 256 项整数表 `0x4a35fc／0x4a39fc`（横 ×66、纵 ×72、右移 16，中心 y−28，六项步进 +1、七项索引掩 `~7`）排位；换帧走 `0x45e5a6`（循环）／`0x45e5d9`（往返），展开走 `0x45e80d`（容差 2、步进上限 8）（static-derived）。
+- 重制 `CommandPresentationRules`／`BattleCommandMenu` 消费 `menu_layout.py` 生成的 `native_layout.json` 与 `command_frames.py` 的源帧；三个 helper 在隔离 x86 仿真里逐次执行，Godot 用同一输入逐步比较（static-derived）。
+- 差异：菜单更新频率按每秒 60 次是重制时钟选择（provisional）；菜单事件位的完整语义、行动后留哪几项的上层选择不由本包证明（未读）。
 
-| 内容 | 原版入口／输入 | 当前消费方 | 证明边界 |
-| --- | --- | --- | --- |
-| 图标身份、帧数与循环方式 | `data\\obj-051.obs` 的 `defProcBattleCommandString`、Data3/Data8；BCMD SHP | `hsltools/assets/command_frames.py` → `source_objects.json`／manifest → `BattleCommandMenu` | Data3 非零走循环，零走往返；不把第一张图当全部动画 |
-| 菜单位置 | EXE `0x4a35fc/0x4a39fc` 两张 256 项整数表；生成函数 `0x43ea30` | `hsltools/assets/menu_layout.py` → `native_layout.json` → `CommandPresentationRules.centers` | 横纵 66/72、中心 y−28、六／七项索引特例；不是未经检查的浮点圆 |
-| 循环换帧 | `0x45e5a6..0x45e5d8` | `frame_at(..., looped=true)` | 合成对象按原始指令逐次执行，D=6 时七次调用推进 |
-| 往返换帧 | `0x45e5d9..0x45e641` | `frame_at(..., looped=false)` | 两端不重复；三帧是 0→1→2→1→0，不是 0→1→2→0 |
-| 展开运动 | 菜单在 `0x43e72a..0x43e73b` 以容差 2、最大步进 8 调用 `0x45e80d` | `opening_step` 与菜单自身可见位置 | 两轴距离均不超过 2 才吸附；其余距离算术右移一位后限制在 ±8 |
-| 悬停缩放参数 | `0x43e7b6` 写入 16.16 值 `0x15800` | manifest 参数与图标尺寸 | 原图 42px；没有把 54px 手调值继续当原版参数 |
+## 证据
 
-EXE 身份固定为 SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。原包命令定义与帧都有来源摘要；菜单表保存原字节摘要。当前扩展了 use/give/equip/drop 四类图标，不把有图标等同于全部装备玩法已实现。
+**static-derived（EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`）**
 
-## 原指令输出，而不是自我生成的预期值
+| 内容 | 原版入口 | 读数 |
+| --- | --- | --- |
+| 菜单对象过程 | `0x43e5d0` `defProcBattleCommandString`（process table slot 14） | 菜单入口；`0x4038a0` 是 slot 23 `defProcAnimalDefense`，不是菜单 handler；`0x45b554` 是输入位测试 |
+| 集合字符表 | `0x4784fc` `nopqz`／`0x478508` `nopqzw`／`0x478514` `nopqzv`／`0x478520` `nopqzvw`／`0x478530` `oqz`／`0x478538` `oqzv`／`0x478540` `oqzw`／`0x478548` `oqzvw`／`0x478554` `rtus` | 字符 `n..z` ＝ 对象 110..122（move／attack／item／wait／use／give／equip／drop／magic／special／ok／cancel／status，OBJ-ALL.H） |
+| mode 分支 | `0x43eb32..0x43eb39` `add esi,2; dec ecx` | mode 1 跳过首字符 Move（不是去掉 Wait）；mode 2 是 `oqz` 系列；玩家入口 `0x443a3c` 调 mode 0、`0x4440e1` 调 mode 1、`0x44416f` 调 mode 3（道具子菜单） |
+| `0x409090` | 按 actor 索引读武器表 `+0x84`，另有 `+0x18c／+0x2c` 分支 | 决定是否跳过 `o`（攻击）；不是「本行动已攻击」布尔值 |
+| 布局算术 | `0x43ebf3..0x43edc1` | `step = 256 / N`（N＝6 时 +1），起始角 192，`index = angle & mask`，`x = cx + (table_x[index]·66) >> 16`，`y = cy + (table_y[index]·72) >> 16`，`angle = (angle − step) & 255`；中心 `(owner_x, owner_y − 28)`；边距 `0x15` 与地图尺寸 `*0x4c0934／38 << 5` 做边界偏移 |
+| 目标坐标 | `0x43ed1a` | 图标在中心生成，目标写 `+0x9e`（x）／`+0x9c`（y）；`0x43e5d0` 的 `0x20000000` 事件分支读它们并调 `0x45e80d` |
+| 展开步进 | `0x43e72a..0x43e73b` → `0x45e80d` | 两轴距离都 ≤2 才吸附；否则距离算术右移一位，限制在 ±8 |
+| 悬停分支 | `0x43e7ea..0x43e822` | 事件位 `0x02000000` 置对象标志、调 `0x45f0d1`，按 `+0x94` 选 `0x45e5a6` 或 `0x45e5d9`；`0x43e824..0x43e841` 另一分支从保存字段恢复帧号、计数与帧数 |
+| 初始化计数 | `0x43e786` | 写 `+0x7c = 0x00060006`（当前／重置计数都为 6） |
+| 悬停缩放 | `0x43e7b6` | 16.16 值 `0x15800`；原图 42 px |
+| 选择交接 | `0x43e887..0x43e891` | 图标 `+0xa8` 的 16 位值写入 owner `+0x8c` |
+| 循环换帧 | `0x45e5a6..0x45e5d8`（18 条指令） | `+0x7c` 减 1，≥0 不推进；否则从 `+0x7e` 恢复计数、帧号 `+0x30` 加 1、剩余帧 `+0x78` 减 1，耗尽时从 `+0x7a` 恢复并回绕；计数 D 时每 D+1 次调用推进一帧 |
+| 往返换帧 | `0x45e5d9..0x45e641` | 两端不重复：三帧为 0→1→2→1→0 |
 
-开发入口：[`hsl_native_presentation_probe.py`](../../../tools/hsl_native_presentation_probe.py)。输出：[`native_presentation_helpers.json`](native_presentation_helpers.json)。
+**resource-derived**
 
-探针加载原 EXE 的 PE sections，显式构造栈、返回地址和对象字段。每次调用只允许上述三个函数之一的指令地址，最多执行 256 条指令，并确认返回到预定停止地址。没有把未知函数 stub 成成功，也没有依赖正在运行的原作。
+| 内容 | 出处 |
+| --- | --- |
+| 图标身份、帧数、循环方式 | `data\obj-051.obs` 的 `defProcBattleCommandString` Data3／Data8（Data3 非零循环、零往返）；BCMD SHP：移动／攻击／道具／待机／特殊技各 3 帧、状态 5 帧（`BCMD01／02／03／04／10／13_1.SHP` 起），原包字节 SHA-256 与 manifest `source_sha256` 一致 |
+| 普通攻击程序 | `data\ANIMAL.TXT`（CP950，与 tracked 副本逐字节相同）：雷歐納德 `aniDelay,12,aniSetShape,1,aniDelay,8,aniSetShape,2,aniDelay,3` / `aniInsertAttackFlash,-90,-120,aniSetShape,3,aniDelay,30` |
 
-换帧覆盖循环／往返两种模式各自的 1、2、3、5 帧；每例保留初态与 84 次更新，共 680 个帧号样本。展开覆盖垂直、斜向、负坐标、临界吸附及非零起点的六条轨迹。`run_presentation_contract_tests.gd` 用同一输入逐步比较 Godot 与这些原函数输出，不用 Godot 模型反过来生成其预期值。
+**原函数执行对照**：`hsl_native_presentation_probe.py` 装入 PE sections，显式构造栈、返回地址与对象字段，每次只允许三个 helper 之一的指令地址、上限 256 条、确认返回到停止地址。换帧覆盖循环／往返各 1、2、3、5 帧，每例初态＋84 次更新，共 680 个帧号样本；展开覆盖垂直、斜向、负坐标、临界吸附、非零起点六条轨迹。输出 [native_presentation_helpers.json](native_presentation_helpers.json)。
 
-```sh
-# 可选分析依赖只用于重跑原函数；不加入游戏或普通验证环境。
-uv run --no-project --with 'unicorn>=2,<3' --python /opt/homebrew/bin/python3 \
-  python tools/hsl_native_presentation_probe.py \
-  --output ignored/presentation-reference/native-helpers-rerun.json
+**runtime-measured（原版录像，历史样本）**：`runtime_observations/presentation_reference/media/` 里 `original-hover-loop.mp4`（持续悬停循环，不含进入／退出）、`original-five-menu.mp4`（移动后攻击移到顶点、其余五项重排）、`menu_after_both-original.mp4`（第一战雷歐納德移动后普攻，目标 22→2 HP，演出后直接进入下一角色）；覆盖清单 `cases.json` 无一条标 `matched`。
 
-# 与已整理的原函数输出比较；先检查版本差异，不盲目覆盖基准。
-cmp ignored/presentation-reference/native-helpers-rerun.json \
-  docs/evidence_packets/static_reverse/native_presentation_helpers.json
+## 重制接线
 
-python3 tools/hsl.py check menu_layout
-python3 tools/hsl.py check command_frames
-tools/play.sh --headless --script res://tests/run_presentation_contract_tests.gd
-```
+- `tools/hsltools/assets/menu_layout.py` → `content/imported/hsl/shared/command_menu/native_layout.json` → `game/battle/runtime/CommandPresentationRules.gd`（`centers`）。
+- `tools/hsltools/assets/command_frames.py` → `source_objects.json`／manifest → `game/battle/scene/BattleCommandMenu.gd`（`frame_at(..., looped)`、`opening_step`）。
+- 普通攻击：`PYTHONPATH=tools python3 -m hsltools.assets.combat_animation --bind-programs` 按 [ANIMAL 完整程序](animal_program_execution.md) 保留指令原序（Delay 的设置与退出各占一次调用、SetShape 让出、Flash 继续读后继指令），雷歐納德帧 1／2／3 出现在第 14／24／29 次调用、末段等待收束于 60 次。
+- provenance 写法：`## provenance:` 维度写 `static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md`。`CommandPresentationRules.gd` rules：0x43ea30 整数表 0x4a35fc／0x4a39fc 与六／七项索引；`BattleCommandMenu.gd` layout：经 CommandPresentationRules 取整数中心。
+- provisional：菜单更新按每秒 60 次；替换点是 [原版 tick 速率](../runtime_observations/original_tick_rate/README.md) 的调度结论。
 
-目前将菜单更新映射到每秒 60 次是单独的表现时钟选择。函数调用计数等价不证明原作主循环每秒必定调用 60 次，不证明 Wine 显示帧率，也不能推导 ANIMAL 的 aniDelay。ANIMAL 的完整程序恢复由另一条已授权研究线负责，见 协作入口（已删，见 Git 历史）。
+## 复现
 
-### ANIMAL 最小 live 接入
+`uv run --no-project --with 'unicorn>=2,<3' python tools/hsl_native_presentation_probe.py --output ignored/presentation-reference/native-helpers-rerun.json`，与 `native_presentation_helpers.json` 比较；数据侧 `python3 tools/hsl.py check menu_layout command_frames`。
 
-已读研究线交付的 [完整程序与 dispatcher 前段证据](animal_program_execution.md)，并由 `PYTHONPATH=tools python3 -m hsltools.assets.combat_animation --bind-programs` 绑定现有六类角色的 ordinary action。保留全部有效指令原序，Delay setup 与等待退出分别占调用，SetShape 让出，Flash 继续读取同次后继指令。雷欧纳德帧 1/2/3 首次出现在第 14/24/29 次调用结果，末段等待收束于 60 次；不再简单累加原文 12/8/3/30 后丢掉动作自身的调用边界。新 Python 和 Godot 回归保护这些界限及原始闪光偏移。
+## 边界
 
-ordinary 通道支持 Delay/SetShape/InsertAttackFlash 与 002／004／006 的速度／位移／缩放（`combat_animation.ACTION_OPCODES`）；未知操作明确拒绝绑定。s_action 施法引导自 R30 起由 `AnimalCastLead` 按 handler 读法播放（`0x45e80d` 在 aniMoveToCenter 与施法对象滑入处以容差 16、步 32 复用同一 `opening_step`），m_action 数据保留、条带未导入。作者源文件末尾转交现有重制受击调度，不伪造原 loader 隐式 Over 或其公共尾部已执行。运行时仍用既有 cut-in 时钟与 immutable receipt，不再次结算伤害。
-
-鼠标入口另使用 [完整滚动请求探针](original_mechanics_audit.md) 验证边缘方向，实际浏览仍走现有 camera pan/clamp；原请求 ±12 与最终每秒速度分开。五点/四维成长等其他规则的恢复由同一审计登记，未被本包的菜单／攻击接入覆盖。
-
-## 行动集合与上层交接不可混淆
-
-已修正 `core_logic.json` 的旧摘要：mode 1 在 `0x43eb32..0x43eb39` 跳过的是首个 UTF-16 Move 字符，不是 Wait；mode 2 是 oqz 系列，也不是“只有魔法／特殊技”。玩家入口在 `0x443a3c` 调用 mode 0，在 `0x4440e1` 调用 mode 1，在 `0x44416f` 调用 mode 3（道具子菜单）。
-
-进一步直接读取的 `0x409090` 通过 actor 索引定位实时资料并读取武器表 `+0x84`，还处理 `+0x18c/+0x2c` 的分支。它不是“本行动已经攻击”的布尔值；不能靠此函数返回零推断攻击预算已经耗尽。`0x444825` 在后置交换收束后转至 `0x4454a5` 的行动收尾，而不是无条件重新生成相同菜单；完整状态变体仍须分别研究。
-
-既有补充短片 `presentation_reference/media/menu_after_both-original.mp4` 记录了一个明确情形：第一战雷欧纳德移动后普通攻击，目标从 22 HP 变为 2 HP，演出后直接进入下一角色，没有额外 Wait 确认。该历史样本仍有效。后续 [公共行动恢复](original_action_state_machine.md) 已用 EXE 证明未移动的普通攻击、落空和特殊技也在完成后结束；当前不再要求 moved 与 attacked 同时为真，但仍等待地图预告、攻击／反击、剧情和成长面板结束，再通过 PlayLoop 单一出口交接。
-
-只攻击未移动、特殊装备、多次行动与其他状态不由这个样本一并证明。两项菜单的几何仍可按原表计算并单独测试；这不意味着本案例应该显示两项菜单。
-
-## 共享面板与行为边界
-
-状态／物品／成长共用 `BattleVitals`、`BattleEquipmentView` 和 `BattleUISkin`，读取 `shared/panels/manifest.json`。身份栏在面板顶部，生命／魔力／气力使用源槽条，左侧属性与右侧装备分离；魔击力来自已有原属性探针，不再误放命中率。战斗受击时同一身份栏仍位于特写底部。数值取当前战斗输入，不复制原版截图中的等级、HP 或金币。
-
-物品路径为子菜单→列表→地图对象／丢弃确认。逐级取消不消费物品或行动；取消后的旧回调、重复确认及非法接收者不提交。使用、给予和丢弃的有效操作由 PlayLoop 更新；装备页面当前只读已装备项目，初始清单没有可更换的装备，不声称实现了全装备系统。给予／丢弃结束行动是明确的重制策略。
-
-成长继续采用已存在的生命／攻击／防御三项规则，本轮校正面板及真实输入，不冒充原作四维成长。原版完整施法／死亡／战利品处理仍不能由菜单 helper 的通过推出；它们与本包已经恢复的菜单函数严格区分。
-
-## 验证方式
-
-源数据检查、原函数输出对照、真实输入夹具、正常时钟通关和原版视觉等价是不同层次。当前定向测试还保护展开期间不能点到重叠图标、悬停移出复位、重复指针刷新不重置动画、边缘图标和文字可见，以及完整受伤后才交接。
-
-`capture_presentation_reference.gd` 通过 Godot Movie Maker 输出 menu/attack/magic/status/items/growth 六类参考；物品和成长使用 Control 输入事件而不是直接提交数值。完整门禁仍是 `tools/verify.sh`。双侧视频清单仍保留缺失项，原函数通过不会自动把整个视觉 case 标成 matched；不要为了让视频覆盖表全绿重开长时间 Wine 采样。
-
-## 来源头迁入的备注
-
-RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
-
-- `game/battle/runtime/CommandPresentationRules.gd` rules：0x43ea30 integer tables 0x4a35fc／0x4a39fc, six／seven-count indexing
-- `game/battle/scene/BattleCommandMenu.gd` layout：0x43ea30 integer centers via CommandPresentationRules
+- 事件位 `0x02000000`／`0x20000000` 由哪种输入产生未读，不把它们命名为已证明的 hover-enter／leave。
+- 行动后实际留哪几项由 `0x443330` 玩家过程与行动交接决定，本包只证明集合与几何；行动收尾见 [公共行动恢复](original_action_state_machine.md)。
+- 函数调用次数等价不证明原主循环每秒调用次数、Wine 显示帧率，也不能推出 ANIMAL `aniDelay` 的秒数。
+- 完整施法、受击、死亡、战利品的时间轴不由菜单 helper 推出。

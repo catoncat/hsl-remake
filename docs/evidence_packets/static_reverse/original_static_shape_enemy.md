@@ -1,6 +1,6 @@
 # 站立型敌方精灵来源
 
-> evidence: static-derived · status: live · tools: hsl_actor_walk_manifest.py · updated: 2026-09-24
+> evidence: static-derived · status: live · tools: hsl_actor_walk_manifest.py · updated: 2026-09-27
 
 ## Source
 
@@ -22,7 +22,7 @@ Level 59 binds `obj_Story_Level_Enemy60` / `SID_ENEMY060/1` to PlayLoop unit `ac
 
 The original `defProcEnemy` object registration, native collision rectangle, standing direction, frame timing, attack animation and scheduler are not established by this packet. The remake uses one source standing frame, source move point zero, and the existing hit-flash contract as explicit `provisional` presentation reads.
 
-## Level 37／80 additions (R6-L10)
+## Level 37／80 additions
 
 - `SID_ENEMY068` (level 80 怨念體): `stand = SHAPE\68-001.SHP`, all walk fields repeat it — the same standing-only path, one frame `68-001.SHP` (77×76 px), decoded into the level-80 actor manifest. The EVEF record 45 object (`obj_Data7 = 68`, `obj_Mode engADDCOLOR`) is a PlayLoop unit because PLAYERS 68 now has a generated template (`hsltools.sources.actor_walk_frames.standing_actor_code`); an EVEF standing enemy without a template (level 18's 門 Enemy100, the 12／26 hull pieces) stays a stand sprite. The additive blend is not reproduced (`provisional`).
 - `SID_ENEMY067` (level 37 gem): `stand = MAGIC\MIN12_11.SHP` (`stand_num 3`), walk fields `MAGIC\MIN12_21.SHP` (the switched-off look `actSetPlayerWalkShape` selects). The actor manifest takes the declared standing frame only (13×13 px); `actSetPlayerWalkShape`／`actRestoreShape` stay presentation requests without a frame swap (`provisional`).

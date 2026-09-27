@@ -1,90 +1,69 @@
-# First battle audio sources
+# Battle sound sources: actor sounds, footsteps, interface, GAME OVER, level-up
 
-> evidence: static-derived · status: live · functions: 0x409610, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x43de90, 0x43dec0, 0x4477b0, 0x459990, 0x45a0b0, 0x45a390 · tools: hsltools/assets/actor_audio.py, hsltools/assets/interface_audio.py · updated: 2026-09-05
+> evidence: static-derived; resource-derived: PLAYERS.TXT sound fields, resource.h／RESOURCE.TXT sound bindings, PAK WAV members; runtime-measured: remake Master-bus recordings · status: live · functions: 0x409610, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x43de90, 0x43dec0, 0x4477b0, 0x459990, 0x45a0b0, 0x45a390 · tools: hsltools/assets/actor_audio.py, hsltools/assets/interface_audio.py · updated: 2026-09-27
 
-Checked: 2026-09-05. EXE SHA-256: `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`.
+## 结论
 
-## Music (static-derived)
+- Original: actor sounds come from explicit PLAYERS.TXT `sound_*` fields; the walk sound plays every eight 4-pixel steps on the two battle movement paths and on scripted frames 0／3; confirmation (398), item use (402), level-up (401) and GAME OVER (628) are pushed by named call sites to the shared wrapper `0x42c180` (static-derived; resource-derived).
+- Remake: `hsltools/assets/actor_audio.py` and `hsltools/assets/interface_audio.py` extract and normalise exactly the named PAK WAVs; `ActorRuntime` emits the per-cell and scripted-frame walk cues, the interface player plays confirmation／item use／level-up, `GameOverScreen` plays GAMEOVER.WAV (resource-derived; static-derived).
+- Differences: trigger timing within an event, relative volume, overlap and the per-cell walk tempo are remake choices (provisional); terrain footstep variants (`0x43dec0`／`0x43de90`) are not connected. Music is in [original_music.md](original_music.md).
 
-`0x42c1c0` resolves a level number into a signed word from `0x477b44 + level*2`. Argument -1 uses current level global `0x4c1bb8`. For level 51, address `0x477baa` contains `13 00`: track 19.
+## 证据
 
-`0x42c340` calls that resolver with -1 and passes its result to `0x42c250`. At `0x42c2ba` the latter formats `music\%02d.wav`; at `0x42c2f2` it calls loader `0x45a0b0` with flag 4. The no-argument script-dispatch branch at `0x452a80` (actPlayLevelMusic) calls `0x42c340`. The whole music flow (loop, stops, title, world map, town, GameClear, every story script) is in [original_music.md](original_music.md). STORY051 starts with `actPlayLevelMusic`.
+EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`.
 
-Reproduce:
+### Actor sounds (resource-derived)
 
-```sh
-r2 -e scr.color=0 -q -c 'pd 12 @ 0x42c1c0; px 2 @ 0x477baa; pd 65 @ 0x42c250; pd 5 @ 0x42c340; pd 8 @ 0x452a80' "$HSL_ORIGINAL_DIR/hsl01.exe"
-```
+| Characters | walk | attack | miss | dead |
+| --- | --- | --- | --- | --- |
+| 1／21／23 | WALK0011 | ATTACK01 | MISS0001 | DEAD0003 |
+| 24 | WALK0012 | ATTACK05 | MISS0001 | DEAD0003 |
+| 26 | WALK0011 | ATTACK05 | MISS0001 | DEAD0003 |
 
-The active Wine game directory contains no music directory. The hsl.pak member inventory contains no music WAV member; checked Documents/Downloads/Wine paths yielded no music/19.wav. This proves absence only in the checked locations, not on the entire machine. User confirmed extraction is the Agent responsibility; continue self-service investigation and deprioritize missing BGM. The tracks were later obtained from the user's Steam 經典版 ([steam_classic_edition.md](../resource_inventory/steam_classic_edition.md)).
+Explicit table associations from PLAYERS.TXT, not filename guesses. The native table parser reads `sound_walk` at `0x44bae2` and stores its resolved identifier at `0x44bb00` in template offset +8 (word) (static-derived); the handle numbering is in [original_save_format.md](original_save_format.md).
 
-## Character sounds (resource-derived)
+### Walking cues (static-derived)
 
-`tools/hsltools/assets/actor_audio.py` joins the tracked PLAYERS.TXT character codes 1/21/23/24/26 to their explicit sound_walk/sound_attack/sound_miss/sound_dead fields, extracts exactly six named PAK members, and normalizes their encoded WAV headers using the existing importer. Output: `content/imported/hsl/chapter01/actor_audio.json` and audio_normalized files. Source and decoded checksums plus PCM profiles are recorded. `--check` requires no external game installation.
+| Fact | Address |
+| --- | --- |
+| Live character record at `[0x4c1bc8] + object[+0xa4] * 0x1fc`; default branch reads word `+8` and calls the audio wrapper | `0x409610`, `0x4096e1..0x4096e9` → `0x42c180` |
+| Two battle movement paths advance a displacement component by 4 px, decrement `+0x9e`, play the walk sound at zero, reload 8 and advance the path cursor: one sound per 32-px cell | `0x4411fe..0x44126a` (`0x441298`), `0x443f85..0x443ff1` (`0x44401f`) |
+| The packed path cursor／countdown starts at `0x00080000`, so the first footstep also follows eight increments | `0x4410b7`, `0x443d70` |
+| Scripted motion plays only when the animation counter equals delay − 1 and current frame − group start is 0 or 3, excluding the disabled-motion flag and invalid motion state | `0x454041..0x45408a` |
+| The wrapper checks audio enable, resolves the id and calls the mixer with volume 255 | `0x42c180` → `0x45a390` |
+| Environment-dependent alternatives | `0x43dec0`, `0x43de90` |
 
-All five use DEAD0003 and MISS0001. Character 24 uses WALK0012; the others use WALK0011. Characters 1/21/23 use ATTACK01; 24/26 use ATTACK05. These are explicit table associations, not filename guesses. Native table parser reads sound_walk at `0x44bae2` and stores its resolved identifier at `0x44bb00` in template offset +8 (word).
+### Interface, GAME OVER and level-up (resource-derived; static-derived)
 
-Not established: complete scenario-unit-to-character initialization, walking frame triggers, repeated playback cadence, relative volume, panning, attack/death choreography. Walk sounds are now wired as described below. Attack/miss/dead sounds are also connected to settled combat events using remake timing, following the project's preference for improved presentation over exact historical reproduction. PCM validation does not prove auditory equivalence or in-game timing.
+| Cue | resource.h → RESOURCE | PCM | Call site |
+| --- | --- | --- | --- |
+| `sfxAccept=398` | `WAV\ACCEPT01.WAV` | 11,025 Hz mono 8-bit, 4,409 frames (0.400 s) | `0x43e920` push 398 → `0x4477b0` (`0x43e92b`) → `0x459990` (`0x43e931`) → `0x42c180` (`0x43e93a`) |
+| `sfxUseItem=402` | `WAV\MHEAL001.WAV` | 11,025 Hz mono 8-bit, 21,129 frames (1.916 s) | `0x40a349` push 402 → `0x42c180` (`0x40a35d`) |
+| `sfxLevelUp=401` | `WAV\LEVELUP2.WAV` | 22,050 Hz mono 8-bit, 46,084 frames (2.090 s) | `0x40854f` push 401 → `0x4477b0` (`0x408554`) → `0x459990` (`0x40855a`) → `0x42c180` (`0x408563`) |
+| `sfxGameOver=628` | `WAV\GAMEOVER.WAV` | 16 kHz mono signed 16-bit, 106,667 frames (6.667 s) | `0x42aebe` push 628 → resolve `0x42aed3` → load `0x42aed9` → `0x42c180` (`0x42aee2`) |
 
+### Remake output (runtime-measured, remake side)
 
-## Walking cues (static-derived; live presentation still provisional)
+Non-headless Godot runs recorded the Master bus through `AudioEffectRecord`: walk cues 48 kHz stereo 3.37 s, soldier／beast／scripted sections separated by silence, peak 19291/32767; confirmation＋potion 3.424 s, confirmation peak 10073/32767, healing peak 6419/32767, silent gaps. These prove mixed output and complete tails, not subjective loudness or original audiovisual timing.
 
-- `0x409610` resolves the actor's live character record at `[0x4c1bc8] + object[+0xa4] * 0x1fc`. Its default branch `0x4096e1..0x4096e9` reads word `+8` and calls audio wrapper `0x42c180`. This joins the parser's `sound_walk` field to actual playback.
-- Two battle movement paths advance a displacement component by four pixels (`0x4411fe..0x44126a`, `0x443f85..0x443ff1`). They decrement a counter at `+0x9e`, play the walking sound at zero (`0x441298`, `0x44401f`), reload eight, and advance the path cursor. Eight four-pixel increments make one 32-pixel cell. The remake emits the corresponding cue after each completed grid-path segment.
-- Scripted motion uses a distinct check at `0x454041..0x45408a`: it excludes the relevant disabled-motion flag and invalid motion state, checks the animation counter against delay minus one, then plays only when current frame minus group start is 0 or 3. The remake uses those two relative frames for its scripted opening walk. Exact subframe delay still depends on the unresolved native tick/frame clock.
-- The sound wrapper checks audio enable state, resolves the sound id and calls `0x45a390` with volume 255. Original overlap flags, attenuation and platform mixing are not reproduced exactly.
-- `0x409610` also has environment-dependent alternatives via `0x43dec0` and `0x43de90`. Only the explicit default actor walking sounds are currently connected; do not claim all terrain footstep variants.
+## 重制接线
 
-`ActorRuntime` owns one `AudioStreamPlayer` child for its walk presentation. Ordinary player and AI paths emit per-segment cues; the opening call selects scripted frame cues. Zero-duration correction, cancel and node exit stop playback and cancel its schedule. Walking completion keeps the final sound tail; no separate battle state or timer is added.
+- `tools/hsltools/assets/actor_audio.py` → `content/imported/hsl/chapter01/actor_audio.json` and normalised WAVs (source and decoded checksums, PCM profiles); per-level copies via `level_actors:<N>`.
+- `tools/hsltools/assets/interface_audio.py` extracts ACCEPT01／MHEAL001／GAMEOVER／LEVELUP2, decodes the XOR-A8 header and records source and decoded hashes.
+- `game/battle/runtime/ActorRuntime.gd` owns one walk `AudioStreamPlayer`: per completed grid segment on player and AI paths, frames 0／3 on scripted walks; cancel, zero-duration correction and node exit stop it.
+- One interface `AudioStreamPlayer` at −6 dB: confirmation on releasing an enabled command, item use on a successful application (rejected use is silent; `game/battle/scene/BattleItemUsePresentation.gd` `audio:` provenance), level-up only when the settled receipt shows `level_after > level_before`.
+- `game/title/GameOverScreen.gd` plays GAMEOVER.WAV as the GAME OVER screen fades in (`rules:` provenance).
+- provenance 写法：`static-derived docs/evidence_packets/static_reverse/first_battle_audio.md`.
+- provisional: the per-cell walk tempo and every trigger moment inside an event; replacement points are the tick clock ([original_tick_rate](../runtime_observations/original_tick_rate/README.md)) and the named call sites above.
 
-Verification: live scene actors load their table-selected streams, movement tests check no premature cue, each completed cell including the last, scripted frame 0/3, and silence after cancellation. A non-headless Godot run recorded the actual Master bus through `AudioEffectRecord`: 48 kHz stereo, 3.37 s, nonzero soldier/beast/scripted sections separated by silence, peak 19291/32767. Raw recording stays in `ignored/audio-review/walk-output.wav`. This proves mixed output, not subjective original loudness or exact audiovisual timing.
+## 复现
 
-The two cue modes are required by the two native call paths; the cue helpers are shared by movement and frame advancement. No credible removable abstraction remained. Ablation removed an added node-exit cleanup hook: it did not resolve the warning and duplicates engine lifecycle handling. The focused audio test now allows 100 ms for AudioServer to release stopped voices asynchronously before test-process shutdown; the test passes without resource warnings.
+`python3 tools/hsl.py check actor_audio interface_audio`（no original installation needed）；static call sites: `r2 -e scr.color=0 -q -c 'pd 12 @ 0x43e920; pd 12 @ 0x40a349; pd 10 @ 0x40854d; pd 20 @ 0x42aea0' "$HSL_ORIGINAL_DIR/hsl01.exe"`.
 
+## 边界
 
-Movement pacing follow-up: the battle walker initializes the packed path cursor/countdown to `0x00080000` at `0x4410b7` and `0x443d70`, so the first footstep also follows eight displacement increments. The remake now assigns each 32-pixel path segment the same provisional 0.18 s, rather than compressing an entire multi-cell walk into that duration. Native updates-per-second, acceleration options and exact timing remain unresolved; the structural correction does not establish the final tempo.
-
-
-## Interface confirmation and item use (resource-derived, static-derived)
-
-`resource.h` binds `sfxAccept=398` and `sfxUseItem=402`; RESOURCE.TXT maps them to `WAV\ACCEPT01.WAV` and `WAV\MHEAL001.WAV`. `tools/hsltools/assets/interface_audio.py` extracts those two named PAK members, decodes the XOR-A8 WAV header and records both source and decoded hashes. `--check` validates the tracked symbol/name mappings, decoded hashes and PCM profiles without the original installation. Both are 11,025 Hz mono, 8-bit PCM: confirmation 4,409 frames (0.400 s), healing 21,129 frames (1.916 s).
-
-Native confirmation call path at `0x43e920` pushes 398, calls name resolver `0x4477b0` at `0x43e92b`, loader `0x459990` at `0x43e931`, then playback wrapper `0x42c180` at `0x43e93a`. Item-use path pushes 402 at `0x40a349`, reaching the same wrapper at `0x40a35d`. These establish original playback of the explicitly named resources, without claiming every original UI trigger has been recovered.
-
-Reproduce the static call-site inspection:
-
-```sh
-r2 -e scr.color=0 -q -c 'pd 12 @ 0x43e920; pd 12 @ 0x40a349' "$HSL_ORIGINAL_DIR/hsl01.exe"
-```
-
-The remake uses one reusable interface `AudioStreamPlayer` at -6 dB. Releasing the pointer on the same enabled command plays confirmation; successful healing plays the item-use cue. Rejected item use does not play it. Trigger timing, relative volume and single-voice overlap are modern presentation choices; no unproven cancel cue is substituted. Existing character sounds remain separately mixed. The two events share a three-line helper; no credible removable abstraction or duplicated mechanism warranted an executable ablation experiment.
-
-Verification: a non-headless real-scene harness recorded the Master bus through `AudioEffectRecord` after opening voices had drained, clicked/released Move, then used a potion through the actual panel with a wounded-player fixture. The 48 kHz stereo mix is 3.424 s; initial/gap/final windows are silent, confirmation peak 10073/32767 and healing-window peak 6419/32767. Raw capture: `ignored/interface-audio-review/output.wav`. This demonstrates actual mixed output and complete tails, not subjective listening equivalence or a full battle route. Runtime tests cover confirmation release, successful potion sound and rejected full-health silence.
-
-
-## Game Over (resource-derived, static-derived)
-
-`resource.h` explicitly binds `sfxGameOver=628`; RESOURCE maps 628 to `WAV\GAMEOVER.WAV`. The same interface-audio importer now includes this third member (16 kHz, mono, signed 16-bit PCM, 106,667 frames / 6.667 s). Original call site `0x42aebe` pushes 628; `0x42aed3` resolves its name, `0x42aed9` loads it, and `0x42aee2` calls playback wrapper `0x42c180`. Reproduce with `r2 -e scr.color=0 -q -c 'pd 20 @ 0x42aea0' "$HSL_ORIGINAL_DIR/hsl01.exe"`.
-
-The remake plays it when the failure result first becomes visible, after death-line dialogue and combat presentation. It reuses the existing interface audio player; refreshing the result does not restart the sound. Victory does not borrow this failure cue. This is resource-correct audio with a modern presentation trigger, not native game-over screen/timing equivalence.
-
-A real-scene settled-outcome fixture recorded the Master bus and captured both result variants in `ignored/result-review/`. Both actual mouse-button input sequences reload the real scene and verify HP 30, recovery-item quantity 3 and no outcome. This tests end-screen presentation and restart, not the combat route producing those outcomes. The separate full battle routes remain documented in the playability audit.
-
-
-## Level-up cue (resource-derived, static-derived)
-
-`resource.h` binds `sfxLevelUp=401`; RESOURCE maps it to `WAV\LEVELUP2.WAV`. The interface-audio importer now includes this resource and verifies its source binding, decoded hash and PCM profile: 22,050 Hz mono 8-bit PCM, 46,084 frames / 2.090 s. Native call site `0x40854f` pushes 401; `0x408554` calls name resolver `0x4477b0`, `0x40855a` loads it through `0x459990`, then `0x408563` calls audio wrapper `0x42c180`. Reproduce with `r2 -e scr.color=0 -q -c 'pd 10 @ 0x40854d' "$HSL_ORIGINAL_DIR/hsl01.exe"`.
-
-Runtime listens to the existing once-per-strike cut-in impact signal and reads the settled experience receipt. Only `level_after > level_before` plays the cue, at the same frame as visible upgrade text. Ordinary gain and later visual refreshes are silent. Normal, special and counter receipts share this signal; no extra schedule or presentation flag is added. Timing and -6 dB interface-player mixing are remake choices, not original choreography equivalence.
-
-A non-headless real-scene fixture set the player near the threshold and an adjacent foe to one HP, then used actual deterministic attack settlement: 21 EXP, level 1 → 2. `ignored/growth-review/upgrade.png` was visually checked and `output.wav` captured the Master mix through the complete cue tail. This is a controlled upgrade demonstration, not a natural full-battle leveling route. Runtime tests check delayed onset, visible upgrade, matching stream, non-repetition and silence on ordinary EXP. No credible removable abstraction remained; the event subscription reuses the existing impact and sound paths.
-
-## Missing music source follow-up — 2026-09-05
-
-Read-only inspection of the Wine installation, Downloads game copy and archived original copy still found no music directory; an exact Spotlight `19.wav` query found no file. The Documents/Downloads archive inventory did not reveal a matching game-disc or music archive. These are bounded local negative observations, not proof that the soundtrack is unavailable everywhere.
-
-A [disc owner's catalogue](https://www.omega.idv.tw/kdb120/viewthread.php?threadid=5692) publishes a CUE with data track 01 and audio tracks 02–19. A [separate gamerip catalogue](https://downloads.khinsider.com/game-soundtracks/album/the-legend-of-fancy-realm-windows-gamerip-1995) lists 18 audio tracks numbered 1–18. The first 17 CUE spans match the ordered rip durations with only short gaps (approximately 0.95–2.15 seconds) between them. This supports an **inference** that rip Track 18 corresponds to CD track 19, which is the local EXE's first-battle music lookup. The final CUE track has no following boundary, so its duration cannot be independently checked from that listing alone.
-
-Compact source URLs, indices, duration comparison and limits are in `first_battle_music_candidates.json`. These catalogue findings do not constitute an extracted local music asset or verified PCM equivalence. At that investigation checkpoint, no BGM file had been integrated. The rip page's year metadata also disagrees with the photographed-disc catalogue; it is not used as historical authority.
-
-A follow-up inspected central-directory names in all 44 ZIP archives discovered under Documents/Downloads (including ignored/hidden paths), without extracting unrelated content: no `19.wav`, HSL disc image/CUE, or music-directory audio entries. One non-ZIP archive was unrelated by name and was not opened. Mounted-volume names did not identify a game disc. No I/O errors occurred in the ZIP scan. No other copy exists; online sourcing or original composition is allowed. The tracks were later obtained from the user's Steam 經典版 (see [steam_classic_edition.md](../resource_inventory/steam_classic_edition.md)). The original track identity and missing local file remain separate source facts.
+- Complete scenario-unit-to-character initialisation, repeated playback cadence, relative volume, panning and original overlap flags are not established; PCM validation does not prove auditory equivalence.
+- Only the default actor walking sounds are connected; the terrain variants of `0x409610` are not claimed.
+- Not every original UI trigger has been recovered; no unproven cancel cue is substituted.
+- Exact subframe delay of scripted footsteps depends on the unresolved native tick／frame clock.
+- The music tracks come from the Steam 經典版 ([steam_classic_edition.md](../resource_inventory/steam_classic_edition.md)); the older catalogue comparison of CD track numbers is kept as data in `first_battle_music_candidates.json` and is not a source claim.

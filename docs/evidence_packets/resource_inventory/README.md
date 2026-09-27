@@ -1,6 +1,6 @@
 # Resource Inventory
 
-> evidence: resource-derived · status: record-only · updated: 2026-09-08
+> evidence: resource-derived · status: record-only · tools: hsl_resource_scanner.py · updated: 2026-09-27
 
 `resource_manifest.json` is the canonical complete inventory of the scanned original packages. It supports targeted discovery and provenance checks; it is not a runtime asset catalog and is not loaded by Godot.
 

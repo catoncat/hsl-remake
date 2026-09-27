@@ -1,41 +1,40 @@
 # 战斗特写站位、击杀／升级飘字与抗性宝石：原版三路测量
 
-> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（特写演员锚点、底栏 WINDOW10 外框、左上红框立绘外框、KILL／EXP／$／LEVEL UP 精灵匹配的出现时刻与轨迹、抗性宝石位置）与音轨起音; static-derived: 0x401c20／0x4038a0 特写站位与击退、0x442720 结算阶段、0x4084e0／0x408580 数字浮字、0x408390／0x4083e0 KILL 浮字、0x434d10 抗性文字; resource-derived: hsl.pak KILL_000..010、NUM4xx／5xx／511／512／514、MAGICON1..5、ANIMAL.TXT k_action · status: live · functions: 0x401c20, 0x4038a0, 0x404560, 0x408390, 0x4083e0, 0x4084e0, 0x408580, 0x408b20, 0x42f4fc, 0x434d10, 0x43f0aa, 0x442720, 0x4435c5, 0x45e91e · tools: hsl_video_events.py, run_combat_aftermath_tests.gd, run_cutin_floaters_tests.gd · updated: 2026-09-24
+> evidence: runtime-measured: 2026-09-24 用户录屏逐帧像素（特写演员锚点、底栏 WINDOW10 外框、左上红框立绘外框、KILL／EXP／$／LEVEL UP 精灵匹配的出现时刻与轨迹、抗性宝石位置）与音轨起音; static-derived: 0x401c20／0x4038a0 特写站位与击退、0x442720 结算阶段、0x4084e0／0x408580 数字浮字、0x408390／0x4083e0 KILL 浮字、0x434d10 抗性文字; resource-derived: hsl.pak KILL_000..010、NUM4xx／5xx／511／512／514、MAGICON1..5、ANIMAL.TXT k_action · status: live · functions: 0x401c20, 0x4038a0, 0x404560, 0x408390, 0x4083e0, 0x4084e0, 0x408580, 0x408b20, 0x42f4fc, 0x434d10, 0x43f0aa, 0x442720, 0x4435c5, 0x45e91e · tools: hsl_video_events.py, run_combat_aftermath_tests.gd, run_cutin_floaters_tests.gd · updated: 2026-09-27
 
-lane R6-P3（2026-09-24）。回答任务书四项「原版怎样」：特写人物与底栏、特殊技切入立绘、击杀／升级飘字、加点面板（身份栏）气力条下的「小剑与倍率」。每项给像素／声音／资源／静态至少一路量值，再写重制前后。原版录屏 `录屏2026-09-24 中午12.03.22.mov`（用户录屏，私有档案）（游戏区 `crop=1280:960:112:140` 缩到 640×480，可变帧率约 57 fps，一律用 PTS 秒）；本机原作 tick ≈ 19.4 ms、设计 16 ms（[tick 率](../original_tick_rate/README.md)）。精灵匹配用新的 `hsl_video_events.py sprite`（给 hsl.pak 解出的 RGBA 图，逐帧求最小掩膜 RGB 差的位置与分数，分数 ≤ 40 记为可见）。重制前的像素来自 lane R6-V2 的补录（`remake_supp_take1/3.mp4`），原始帧与中间 JSON 在 lane worktree 的 `ignored/r6p3/`，不入库。
+## 结论
 
-## 1. 特写站位：攻方在中线，守方按 k_action 偏移并被击退
+- 原版特写攻方在中线 (320,330)，守方按 ANIMAL `k_action` 偏移（aniKLeft +30、aniKRight −50）并在命中后 14 tick 被击退 105 px、落空退 150 px；底栏 WINDOW10 与特殊技左上红框立绘位置已与重制一致（runtime-measured＋static-derived）。
+- 原版结算每位受益者依次出 EXP → $ →（獲得物品窗）→ LEVEL UP＋升级音 → 加点窗，每个浮字在第 32 tick 放行下一个；KILL 美术字随阵亡在其头上出、40 tick 定住；身份栏抗性行是五颗元素宝石＋「07%」（runtime-measured＋static-derived＋resource-derived）。
+- 重制 `CutinLayout`（站位、击退、闪避）、`BattleRewardFloater`（美术字排版与淡出）、`BattleAftermath`（队列与放行）、`BattleVitals`（抗性宝石）按这些读法实现（static-derived）。
+- 差异：反击方第二份金钱累加器合在一份 $ 里（provisional）；抗性数字仍用系统字（原版 ASCFONT 小字未接入）；画宝石的原版调用点未找到，位置取像素（negative-evidence）。
 
-**任务书的说法**（R6-V2 并排命名）：重制人物偏右约 1/4 屏、底栏压缩在右半边。**像素核对后**：底栏与攻方都已与原版一致，偏右的是**受击的守方**。
+## 证据
+
+录屏 `录屏2026-09-24 中午12.03.22.mov`（私有档案；游戏区 `crop=1280:960:112:140` 缩到 640×480，可变帧率约 57 fps，一律用 PTS 秒）；本机原作 tick ≈ 19.4 ms、设计 16 ms（[tick 率](../original_tick_rate/README.md)）。精灵匹配用 `hsl_video_events.py sprite`（给 hsl.pak 解出的 RGBA 图，逐帧求最小掩膜 RGB 差的位置与分数，分数 ≤ 40 记为可见）。原始帧与中间 JSON 不入库。
+
+### 1. 特写站位：攻方在中线，守方按 k_action 偏移并被击退
 
 **像素**（把 combat_animation 帧的中心 120×120 块匹配到录像帧，锚点 = 匹配位置 + SHP 绘制原点）：
 
-| 对象 | 原版 | 重制前（R6-V2 补录 1） |
-| --- | --- | --- |
-| WINDOW10 身份栏外框 | 左上 (133,322)、右缘 627（101.5、189.0 s） | 同（63.2、62.7 s） |
-| 攻方（023 一般兵 100.5 s；001 雷歐納德 189.0 s） | 锚点 (320,330) | (320,320)（62.2 s） |
-| 守方 021 中立姿态 | (350,330)（100.9／101.1／101.3 s） | (320,320)（62.7、63.0 s） |
-| 守方 021 受击姿态 | (266,330) 101.5 s → (245,330) 102.3 s | (321–323,320)，±3 px 抖动（63.6、64.2 s） |
+| 对象 | 原版 |
+| --- | --- |
+| WINDOW10 身份栏外框 | 左上 (133,322)、右缘 627（101.5、189.0 s） |
+| 攻方（023 一般兵 100.5 s；001 雷歐納德 189.0 s） | 锚点 (320,330) |
+| 守方 021 中立姿态 | (350,330)（100.9／101.1／101.3 s） |
+| 守方 021 受击姿态 | (266,330) 101.5 s → (245,330) 102.3 s |
 
-**静态**（r2ghidra 读 `hsl01.exe`）：攻方对象 `0x401c20` 普攻（kind 0）置 `x = 视口 + 0x140`、`y = 视口 + 0x14a`（法术／绝技 kind 1／2 为 `y + 0xf0`）；守方对象 `0x4038a0` 同样置 (0x140, 0x14a)，记下 `+0x8a = x` 后按角色 ANIMAL 行的 `k_action`（`+0xa2`；ANIMAL.H：aniKStop 0／aniKRight 1／aniKLeft 2，ANIMAL.TXT 注释 "hit move flag"）偏移：1 → `x − 0x32`，2 → `x + 0x1e`（`0x404560`）。命中时（`0x404040..0x404069`，脚本绝技的命中 opcode 同一段）置击退速度 `0xe0000`（14 px／tick）、角度 0（aniKRight，向右）或 0x80（aniKLeft，向左），尾部 `0x45eb9d／0x45ebdc` 每 tick 积分、`0x45eb89` 每 tick 减 1.0：14 tick 共 105 px。落空（`0x404214..0x404217`）目标 `x ± 0x96`（150 px），`0x45e91e` 每 tick 走 min(36, 剩余／4)、至少 2：14 步＋到达 1 tick。021 为 aniKLeft：350 起、击退到 245，与像素逐点相符。
+**静态**（r2ghidra 读 `hsl01.exe`）：攻方对象 `0x401c20` 普攻（kind 0）置 `x = 视口 + 0x140`、`y = 视口 + 0x14a`（法术／绝技 kind 1／2 为 `y + 0xf0`）；守方对象 `0x4038a0` 同样置 (0x140, 0x14a)，记下 `+0x8a = x` 后按角色 ANIMAL 行的 `k_action`（`+0xa2`；ANIMAL.H：aniKStop 0／aniKRight 1／aniKLeft 2，ANIMAL.TXT 注释 "hit move flag"）偏移：1 → `x − 0x32`，2 → `x + 0x1e`（`0x404560`）。命中时（`0x404040..0x404069`，脚本绝技的命中 opcode 同一段）置击退速度 `0xe0000`（14 px／tick）、角度 0（aniKRight，向右）或 0x80（aniKLeft，向左），尾部 `0x45eb9d／0x45ebdc` 每 tick 积分、`0x45eb89` 每 tick 减 1.0：14 tick 共 105 px。落空（`0x404214..0x404217`）目标 `x ± 0x96`（150 px），`0x45e91e` 每 tick 走 min(36, 剩余／4)、至少 2：14 步＋到达 1 tick。021 为 aniKLeft：350 起、击退到 245，与像素逐点相符。攻击白闪 `aniInsertAttackFlash` 的对象由 `0x40222e..0x402245` 置于攻方对象 (x, y) ＋ 位移。
 
 **资源**：`content/imported/hsl/chapter01/combat_animation/manifest.json` 每行 `source_k_action`（第一章 57 行＋作者关 5 行全部有值）。
 
-**声音**：站位与击退无放声（受击音由武器类 0x194–0x199 另放，本 lane 不动）。
+**声音**：站位与击退无放声（受击音由武器类 0x194–0x199 另放）。
 
-**重制前**：`BattleCombatCutin._show_shot` 攻守都放 (320,320)；受击只有 6 px（命中）／24 px（落空）的 provisional 线性位移；脚本绝技守方 (320,320)、落空时 32 px 正弦摆动。
+### 2. 特殊技切入的左上红框立绘
 
-**重制后**：共享 `game/battle/runtime/CutinLayout.gd`：攻方 `attacker_anchor()` x 320；守方 `defender_anchor(row)` 按 k_action 偏 −50／+30；命中后 `knockback_x`、落空后 `dodge_x` 按 tick 位移。普攻（`_show_shot`＋受击段）、脚本绝技（`SkillEffectScriptPlayer` 守方段，从 aniProcessHitMiss 的 impact tick 起）、借用 氣刃斬 与专属演出（经 `_show_shot`）共用它。`run_cutin_floaters_tests` 普查这四个文件不再写死特写站位、守方一律经 `defender_anchor`，并核对全部 manifest 行都有已知 k_action。
+**像素**：原版 242.1 s 与重制补录 72.1 s，把 001 的 `special-1..6.png` 匹配到帧，最佳都是 `special-2`（234×184 红框持剑半身），左上 (100,0)，分数 6.6／3.6。原版分镜顺序（240.5–246.5 s 每 0.25 s 抽帧）：眼部横幅 → 左上红框持剑半身 → 蓝色剑光局部 → 右下肖像 → 白光 → 特写，与重制施法引导 `AnimalCastLead` 一致（静态读法见 [ANIMAL 程序包 §8](../../static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释)）。「重制缺半身立绘」的说法不成立（negative-evidence）。
 
-**中线 y（lane R7-CUE，2026-09-25 已改）**：原版中线 y 是 330（`0x14a`，像素同），重制原为 320；负责人预先批准后 `CutinLayout.SHOT_ANCHOR` 改为 (320,330)，门禁断言随之改为 (320,330)（`run_battle_scene_runtime_tests` 反击锚点、`run_presentation_contract_tests` 056 无条带施法者）。攻击白闪 `aniInsertAttackFlash` 的对象由 `0x40222e..0x402245` 置于攻方对象 (x, y) ＋ 位移（static-derived），重制白闪同步改为 `attacker_anchor()` ＋ 位移（雷歐納德 (−90,−120) → (230,210)）。脚部在身份栏之下，可见差别是人物整体低 10 px。
-
-## 2. 特殊技切入的左上红框立绘：重制已有，位置一致
-
-**像素**：原版 242.1 s、重制 R6-V2 补录 3 的 72.1 s，把 001 的 `special-1..6.png` 匹配到帧，最佳都是 `special-2`（234×184 红框持剑半身），左上 (100,0)，分数 6.6／3.6。原版分镜顺序（240.5–246.5 s 每 0.25 s 抽帧）：眼部横幅 → 左上红框持剑半身 → 蓝色剑光局部 → 右下肖像 → 白光 → 特写，与重制 R30 的施法引导（`AnimalCastLead`，静态读法见 [ANIMAL 程序包 §8](../../static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释)）一致。
-
-**结论**：「重制缺半身立绘」是 negative-evidence（模型命名错误），本 lane 不改。
-
-## 3. 击杀／升级飘字：KILL（随阵亡）→ EXP → $ →（獲得物品）→ LEVEL UP＋升级音 → 加点窗
+### 3. 击杀／升级飘字：KILL（随阵亡）→ EXP → $ →（獲得物品）→ LEVEL UP＋升级音 → 加点窗
 
 **资源**（hsl.pak 解码，`content/imported/hsl/shared/reward_floats/`，`hsl generate reward_floats`）：`KILL_000`「KILL」119×43、`KILL_001..010` 数字 0–9（红金金属渐变）；`NUM511`「EXP」57×20 与 `NUM400..409` 紫色数字；`NUM512`「$」16×25 与 `NUM500..509` 金色数字；`NUM514`「LEVEL UP」152×21 金色；`NUM513`「MISS」。对象表：`obj_ShowContinueKillNumber` 395 → `SHAPE\KILL_000.SHP` 11 帧（`defProcShowContinueKillNumber`）；`obj_ShowNumber` 177 → NUM100 65 帧；`obj_LevelUp_Star` 149 → `MAGIC\AIR06_03.SHP`（`effProcFlyUpShape`）。
 
@@ -57,57 +56,48 @@ lane R6-P3（2026-09-24）。回答任务书四项「原版怎样」：特写人
 | 370–377 s（KILL 3、EXP 26、$ 220） | 371.905–372.606（0.70 s），镜头横滑时随地图左移 64 px | 372.355，(285,144) | 372.939，(292,144) | — |
 | 498–505 s（敌法师反击、升级） | — | 501.484 EXP 19，(237,144) | — | 502.052，(272,144)；502.702 第二位受益者 EXP 1，(244,144) |
 
-读法：同一场里 EXP → $ → LEVEL UP 间隔 0.60／0.62／0.58 s ≈ 32 tick（本机 18–19 ms／tick），即「上一浮字放行才出下一个」；EXP、$、LEVEL UP 中心按 0x408580 排版反推都落在同一点 x（336 场 = 320，镜头已把受益者滑到画面中心 (320,192)，y − 48 = 144）；KILL 的中心 263 = 320 − 57（1 位数），数字与 KILL 字之间空约 35 px（`kill_zoom` 放大图目视确认）；KILL 与之后的 EXP 同时在屏（EXP 在 KILL 开始后 0.42–0.45 s，即 16 tick 消散＋镜头滑动之后）；有两位受益者时第一位的 LEVEL UP 在第二位的 EXP 之前（498 场）。
+读法：同一场里 EXP → $ → LEVEL UP 间隔 0.60／0.62／0.58 s ≈ 32 tick（本机 18–19 ms／tick），即「上一浮字放行才出下一个」；EXP、$、LEVEL UP 中心按 0x408580 排版反推都落在同一点 x（336 场 = 320，受益者已在画面 (320,192)，y − 48 = 144）；KILL 的中心 263 = 320 − 57（1 位数），数字与 KILL 字之间空约 35 px；KILL 与之后的 EXP 同时在屏（EXP 在 KILL 开始后 0.42–0.45 s，即 16 tick 消散＋镜头滑动之后）；有两位受益者时第一位的 LEVEL UP 在第二位的 EXP 之前（498 场）。
 
 **声音**（`hsl_video_events.py audio`，10 ms 包络起音）：337.5–341.0 s 只有 339.67 s 一个起音（LEVEL UP 精灵出现后 0.08 s）；500.0–503.5 s 只有 502.14 s（LEVEL UP 502.05 s 后 0.09 s）。与 `LEVELUP2.WAV`／`LEVELUP1.WAV` 的互相关只有 0.03–0.05（录音里有背景乐，不能据此认定文件）；文件身份取静态 `0x191` 与资源表 `sfxLevelUp → WAV\LEVELUP2.WAV`。EXP、$、KILL 出现时无起音（0x4084e0 只有 kind 6 放声，0x408390 不放声）。
 
-**重制前**：`BattleAftermath` 用一个 Label：「KILL N」绿色文字排在全部阵亡之后、画在杀手头上；「EXP N」紫色文字，升级时同一格追加「升級！等級 N」；「$ N」黄色文字；每格 46 tick 结束后才出下一格；升级音随 EXP 响；获得物品窗在全部浮字之后。
+### 4. 身份栏抗性行：五颗元素宝石＋「07%」
 
-**重制后**：
-
-- 新 `BattleRewardFloater`：按上表排版画原版美术字（KILL_000＋数字、NUM511＋NUM4xx、NUM512＋NUM5xx、NUM514），层级淡出与上浮按 0x408580；KILL 40 tick 定住。
-- 结算前镜头滑到受益者（`0x442720` 阶段 0 的 `0x43bf30`，受益者落在画面 (320,192)，到位才出 EXP）由 lane R7-CAMX 补上，见[镜头包 §1](../camera_panel_motion/README.md)。
-- `BattleAftermath` 队列：阵亡（遗言 → 拉伸消散，**同时**在阵亡者头上 24 px 出 KILL，杀手连杀 > 1 时）→ 每位受益者依次 EXP →（归其所有的）$ → LEVEL UP；每格在 32 tick 放行时进入下一格，上一格继续淡完 46 tick；LEVEL UP 格在獲得物品待领时停住（`holding_for_loot`，结算窗照开），领完才出 LEVEL UP；`level_up_presented` 触发升级音（不再随 EXP）；之后才开加点窗。
-- 普查（`run_cutin_floaters_tests`）：游戏代码里只有 `BattleRewardFloater` 画这些美术字，升级音只有 `play_growth_sound`←`level_up_presented` 一个入口；所有交锋回执（普攻、法术、绝技、反击）都经 `BattleAftermath.prepare`。
-
-LevelUp_Star 星光（`0x415c10` 撒 AIR06_03、effProcFlyUpShape）与 `0x4071e0` 的角色 use_magic 姿势已由 lane R7-POSE 复原，见[地图姿势与飘字包 §1–§2](../map_pose_floaters/README.md)；反击方的第二份金钱累加器 `0x4c2978` 重制合在一份 $ 里（provisional）。
-
-## 4. 「加点面板气力条下的小剑与倍率」＝身份栏抗性行：五颗元素宝石＋「07%」
-
-**像素**：原版特写身份栏（101.5 s 等）气力条下一行，放大 4 倍看是五颗菱形宝石（棕、蓝、绿、红、灰）各跟一个数字，形如「07x」——即 ASCII 小字的「07%」，不是剑也不是倍率。宝石匹配（`MAGICON1..5`，9×19）左上 (138 + 48·i, 450)；白字外框 x 149 + 48·i 起、宽 23 px、行 457–465。重制前同一行是系统字「地7%　水4%　風4%　火8%　心3%」（间距 47、无宝石）。
+**像素**：原版特写身份栏（101.5 s 等）气力条下一行，放大 4 倍看是五颗菱形宝石（棕、蓝、绿、红、灰）各跟一个数字，即 ASCII 小字的「07%」（不是剑也不是倍率）。宝石匹配（`MAGICON1..5`，9×19）左上 (138 + 48·i, 450)；白字外框 x 149 + 48·i 起、宽 23 px、行 457–465。
 
 **资源**：hsl.pak `SHAPE\MAGICON1..5.SHP`（9×19，棕／蓝／绿／红／灰）；EXE 字串 `SHAPE\MAGICON1..5.SHP`。
 
 **静态**：`0x42f4fc..0x42f58c` 把 MAGICON1..5 装入句柄表 `0x4c3460[0..4]`，魔法列表 `0x42a0ef`／`0x439cec` 以魔法元素 0..4 为下标取图，所以 1..5 = 地水風火心，与 `resist_by_type` 的 0..4 同序。身份栏文字 `0x434d10` 的抗性循环（五项，记录 `+0x104` 起）：未知单位 `"???   "`；值 < 80（0x50）`"%02d"`＋`"%   "`（`0x43563b`）；否则 `"MAX   "`（`0x435616`）。画宝石的调用点未在 `0x4c3460` 的读者里找到（只有两个魔法列表读它，negative-evidence），位置取像素。
 
-**重制后**：`BattleVitals` 抗性行画五颗宝石（panels manifest `magicon1..5`），数字按 `resist_text`：「07%」、80 起「MAX」、未知「???」，白字黑影，位置取上面的像素。身份栏在特写、状态页、道具、升級窗、獲得物品窗共用。字体仍是系统字（原版 ASCFONT 小字未接入）。
+### 5. 重制验收录像读数（runtime-measured，重制侧）
 
-## 5. 总表（「重制后」列取 §6 验收录像的同一脚本复量）
-
-| 项 | 原版量值（等级） | 重制前 | 重制后 |
-| --- | --- | --- | --- |
-| 底栏 WINDOW10 | (133,322)–627，全宽双栏（runtime-measured） | 同 | 同（未改） |
-| 攻方锚点 | (320,330)（runtime-measured＋static 0x401c20） | (320,320) | (320,330)（R7-CUE） |
-| 守方中立锚点 | aniKLeft 350、aniKRight 270（static 0x404560，像素 350） | 320 | 录像 021 为 350 |
-| 受击位移 | 14 tick 105 px；落空 15 tick 150 px（static，像素 350→245） | 6／24 px | 录像 021 350→245、反击时 001（aniKRight）受击停在 375 |
-| 左上红框立绘 | special-2 (100,0)（runtime-measured） | 同 | 同（未改） |
-| KILL | KILL_000 美术字，阵亡者头上，40 tick 定住（resource＋static＋像素 0.70 s） | 绿字，杀手头上，排在全部阵亡后 | 录像 22.000–22.617 s（0.62 s，16 ms tick），中心 = x − 57，不漂移 |
-| EXP／$ | NUM511／512＋数字，受益者头上 48 px，32 tick 放行（static＋像素 0.60 s） | 紫／黄字，46 tick 一格 | 录像 EXP 22.30（先被 KILL 盖住，同原版）→ $ 22.80，中心 x − 35／x − 28 |
-| LEVEL UP | NUM514，$（与獲得物品窗）之后，升级音同刻（static＋像素 339.59 s、起音 339.67 s） | 「升級！等級 N」附在 EXP 行，升级音随 EXP | 录像 獲得物品窗 23.37–24.87 → LEVEL UP 24.85 → 加点窗 25.40 |
-| 抗性行 | 五颗宝石＋「07%」／「MAX」（resource＋static＋像素） | 「地7%」系统字 | 录像宝石 (138+48i, 450)，与原版同位 |
-
-## 6. 验收录像
-
-内置屏 Movie Maker 离线录像（Godot `--screen 1 --write-movie … --fixed-fps 60`，驱动开头核实 `R6P3_SCREEN current=1`），开发夹具：A 段雷歐納德普攻不致死的 021（被反击），B 段 氣刃斬 击杀 021（连杀 2→3、EXP 差 1 级、必掉的重要物品）。录像与驱动：`ignored/lane-recordings/R6-P3/r6p3_review.mp4`、`record.gd`、`record_route.log`，截图 `rv_0..5_*.png` 与 `review_sheet.jpg` 在同一目录。复量用的是 §1–§4 同一套脚本（`sprite` 子命令、中心块锚点匹配、宝石与 WINDOW10 匹配）：
+Godot Movie Maker 离线录像（60 fps），开发夹具：A 段雷歐納德普攻不致死的 021（被反击），B 段 氣刃斬 击杀 021（连杀 2→3、EXP 差 1 级、必掉的重要物品）；同一套脚本（`sprite` 子命令、中心块锚点匹配、宝石与 WINDOW10 匹配）复量：
 
 | 量 | 原版 | 重制验收录像 |
 | --- | --- | --- |
 | WINDOW10 | (133,322)–627 | (133,322)–627（3.35 s） |
-| 攻方锚点 | (320,330) | (320,320)（2.6 s） |
+| 攻方锚点 | (320,330) | (320,320)（2.6 s；录于中线改为 330 之前） |
 | 守方 021 中立／受击末 | 350／245 | 350（3.85 s）／245（4.6 s） |
 | 反击镜头的 001（aniKRight）受击末 | —（录屏无） | 375（7.35 s）＝ 270 ＋ 105 |
 | 左上红框立绘 | special-2 (100,0) | special-2 (100,0)（15.95 s） |
 | KILL 3 | 40 tick，中心 x − 57，定住 | 22.000–22.617 s，中心 311 ＝ 368 − 57，漂移 0 |
-| EXP → $ 间隔 | 0.60 s（≈32 tick） | 22.30 → 22.80 s（0.53 s ＝ 33 × 16 ms） |
+| EXP → $ 间隔 | 0.60 s（≈32 tick） | 22.30 → 22.80 s（0.53 s ＝ 33 × 16 ms）；中心 x − 35／x − 28 |
 | LEVEL UP 与獲得物品窗 | $ → 獲得物品窗 → LEVEL UP（静态阶段 4／6） | 獲得物品窗 23.37 s、领完 24.87 s、LEVEL UP 24.85–24.88 s、加点窗 25.40 s |
 | 抗性宝石 | (138+48i, 450) | (138+48i, 450) |
+
+## 重制接线
+
+- `game/battle/runtime/CutinLayout.gd`：`SHOT_ANCHOR = (320,330)`；`attacker_anchor()` x 320；`defender_anchor(row)` 按 k_action 偏 −50／+30；命中后 `knockback_x`、落空后 `dodge_x` 按 tick 位移。普攻（`BattleCombatCutin._show_shot`＋受击段）、脚本绝技（`SkillEffectScriptPlayer` 守方段，从 aniProcessHitMiss 的 impact tick 起）、借用 氣刃斬 与专属演出共用；攻击白闪为 `attacker_anchor()` ＋ 位移（雷歐納德 (−90,−120) → (230,210)）。
+- `BattleRewardFloater`：按 §3 排版画 KILL_000＋数字、NUM511＋NUM4xx、NUM512＋NUM5xx、NUM514，层级淡出与上浮按 `0x408580`；KILL 40 tick 定住。游戏代码里只有它画这些美术字。
+- `BattleAftermath`：阵亡（遗言 → 拉伸消散，同时在阵亡者头上 24 px 出 KILL，杀手连杀 > 1 时）→ 每位受益者依次 EXP →（归其所有的）$ → LEVEL UP；每格在 32 tick 放行时进入下一格，上一格继续淡完 46 tick；獲得物品待领时 LEVEL UP 格停住（`holding_for_loot`），领完才出；`level_up_presented` 触发升级音（`play_growth_sound` 唯一入口）；之后开加点窗。所有交锋回执（普攻、法术、绝技、反击）经 `BattleAftermath.prepare`。结算前镜头滑到受益者见 [镜头包](../camera_panel_motion/README.md)；LevelUp_Star 星光与 `0x4071e0` 姿势见 [地图姿势与飘字包 §1–§2](../map_pose_floaters/README.md)。
+- `BattleVitals`：抗性行画五颗宝石（panels manifest `magicon1..5`），数字按 `resist_text`（「07%」、80 起「MAX」、未知「???」），白字黑影；身份栏在特写、状态页、道具、升級窗、獲得物品窗共用。
+- provenance 写法：`runtime-measured docs/evidence_packets/runtime_observations/cutin_floaters/README.md`。
+
+## 复现
+
+不可再生：原版侧唯一记录（录屏读数）。重制侧：`tools/godot.sh --headless --script tests/run_cutin_floaters_tests.gd`（站位全经 `defender_anchor`、manifest 行都有已知 k_action、美术字与升级音单一入口）。
+
+## 边界
+
+- 反击方的第二份金钱累加器 `0x4c2978` 重制合在一份 $ 里（provisional）。
+- 抗性数字用系统字，原版 ASCFONT 小字未接入；宝石位置取像素（原版画宝石的调用点未找到）。
+- 升级音文件身份来自静态与资源表，录音互相关不足以单独认定。

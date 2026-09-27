@@ -1,21 +1,27 @@
 # 原版逻辑 tick 率：设计 16 ms（1000/60 整除）、本机 Wine 实测 19.4 ms
 
-> evidence: static-derived: frame pacer and per-tick dispatch; runtime-measured: live pacer registers, tick counting, walk and idle cadence; resource-derived: cnc-ddraw configuration · status: record-only · functions: 0x42c110, 0x42d240, 0x42d280, 0x42da60, 0x457830, 0x458760, 0x45f4b9, 0x45f50d, 0x45f5f7 · tools: hsl_runtime_probe.py, hsl_win32_memread.c · updated: 2026-09-22
-
-lane R24-tick-rate（2026-09-22）。回答一个问题：原版「一个逻辑 tick」是多少毫秒——它是 `aniDelay`／`actDelay`／对象 `shape_delay`、脚本离场的 16 tick、资源恢复数字的 40 tick、`defProcGameOverBOSS` 的 60 tick 等一切计数的单位。EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`，原作 v1.06，Wine 11.0，cnc-ddraw `renderer=gdi`。
+> evidence: static-derived: frame pacer and per-tick dispatch; runtime-measured: live pacer registers, tick counting, walk and idle cadence; resource-derived: cnc-ddraw configuration · status: live · functions: 0x42c110, 0x42d240, 0x42d280, 0x42da60, 0x457830, 0x458760, 0x45f4b9, 0x45f50d, 0x45f5f7 · tools: hsl_runtime_probe.py, hsl_win32_memread.c · updated: 2026-09-27
 
 ## 结论
+
+- 原版一个逻辑 tick＝一次主循环＝每个对象过程调用一次，设计周期 **16 ms**（`1000 / 60` 无符号整除，62.5 tick/s）；`aniDelay`／`actDelay`／`shape_delay`、离场 16 tick、资源恢复数字 40 tick、`defProcGameOverBOSS` 60 tick 等一切计数都以它为单位（static-derived；runtime-measured：周期寄存器读得 16）。
+- 本机 Wine 实测 **19.40 ms/tick**（51.6 tick/s），偏离来自宿主 `GetTickCount` 步进粗，不是游戏另有时钟（runtime-measured）。
+- 重制 `game/core/OriginalTick.gd` 按 16 ms/tick 换算，各演出模块经它把 tick 计数转成秒；参考录像（同一台机器录）量出的秒数按 19.4 ms/tick 折回 tick 再乘 16 ms（static-derived 换算；取 16 还是 19.4 为产品取舍，重制取 16）。
+
+## 证据
+
+EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`，原作 v1.06，Wine 11.0，cnc-ddraw `renderer=gdi`。
+
+### 总表
 
 | 量 | 值 | 层级 |
 | --- | --- | --- |
 | 设计 tick 周期 | **16 ms**（`1000 / 60` 无符号整除；不是 16.667）→ 62.5 tick/s | static-derived（`0x45f4b9`），runtime-measured（周期寄存器 `0x4a41fc` 在标题 12 个样本全读得 16） |
-| 本机 Wine 实测 tick | **19.40 ms**（1654 tick / 32.08 s，战斗待机；标题拟合 18.3 ms）→ 51.6 tick/s | runtime-measured；偏离原因是本机 `GetTickCount` 步进粗（见下），不是游戏逻辑 |
+| 本机 Wine 实测 tick | **19.40 ms**（1654 tick / 32.08 s，战斗待机；标题拟合 18.3 ms）→ 51.6 tick/s | runtime-measured；偏离原因是本机 `GetTickCount` 步进粗，不是游戏逻辑 |
 | 一次主循环 = 一个 tick = 每个对象过程调用一次 | 是 | static-derived（`0x42da60`→`[0x4c1b24]`=`0x42d600`→`0x45f5f7`） |
-| 逐帧绘制可跳、逻辑不跳 | 落后 ≥2 周期时最多连跳 6 帧不呈现，逻辑仍每圈一 tick | static-derived（`0x45f50d` 参数 6）；本次实测跳帧计数 `0x4a4208` 始终 0 |
+| 逐帧绘制可跳、逻辑不跳 | 落后 ≥2 周期时最多连跳 6 帧不呈现，逻辑仍每圈一 tick | static-derived（`0x45f50d` 参数 6）；实测跳帧计数 `0x4a4208` 始终 0 |
 
-**给替换 lane 的换算**：原版 N tick ＝ N × 16 ms（设计值）。用户在本机 Wine 上实际看到的时长是 N × 19.4 ms（慢 21%）；参考录像包 `original_gameplay_reference` 也是这台机器录的，用它量出的秒数应按 19.4 ms/tick 折回 tick，再乘 16 ms 才是设计时长。哪个作为重制目标是产品决定（见「边界」）。
-
-## 静态读法（static-derived）
+### 静态读法（static-derived）
 
 主循环与节拍器全部围绕 `GetTickCount`（唯一计时导入；`timeSetEvent(250,250,0x459f60)` 是 DirectSound 流缓冲回填，与逻辑无关）：
 
@@ -32,19 +38,17 @@ lane R24-tick-rate（2026-09-22）。回答一个问题：原版「一个逻辑 
 
 因此：对象过程里的 `shape_delay` 递减（`0x45e5a6`）、ANIMAL `aniDelay`（`0x4022aa`）、STORY `actDelay`、离场 16 tick（`0x454286`）、`defProcShowNumber` 等全部以「主循环圈」为单位；一圈的设计长度是 16 ms。
 
-`ddraw.ini`（resource-derived，未改动）：`maxfps=-1`、`vsync=false`、`maxgameticks=0`、`limiter_type=0`——cnc-ddraw 不节流游戏循环，测得的节拍完全由游戏自身的 `0x45f50d` 决定。
+### resource-derived
 
-## 运行时测量（runtime-measured）
+`ddraw.ini`（未改动）：`maxfps=-1`、`vsync=false`、`maxgameticks=0`、`limiter_type=0`——cnc-ddraw 不节流游戏循环，测得的节拍完全由游戏自身的 `0x45f50d` 决定。
 
-方法：`tools/build_runtime_helpers.sh --win32-rpm` 后，用 `hsl_win32_memread.exe --repeat N --interval-ms M`（本 lane 新增的重复采样：同一进程内 `Sleep` 间隔读同一组地址，附 `GetTickCount`／`QueryPerformanceCounter` 主机时间戳）只读采样；`hsl_runtime_probe.py --read-backend win32-rpm` 做低频采样。不写内存、不改存档（四个 `.SAV` 前后 sha1 相同）。Wine 会话 01:42–01:58（约 16 分钟，超出任务书建议的 10 分钟：其中约 5 分钟耗在下文的录屏工具故障上）。raw 采样在 `ignored/tick-rate/`（不入库）。
+### 运行时测量（runtime-measured）
 
-### 1. 节拍器寄存器（标题 12 样本；战斗 300 样本）
+采样方式：`hsl_win32_memread.exe --repeat N --interval-ms M`（同一进程内 `Sleep` 间隔读同一组地址，附 `GetTickCount`／`QueryPerformanceCounter` 主机时间戳）只读采样；`hsl_runtime_probe.py --read-backend win32-rpm` 做低频采样。不写内存、不改存档（四个 `.SAV` 前后 sha1 相同）。Wine 会话约 16 分钟；raw 采样在 `ignored/tick-rate/`（不入库）。
 
-标题：`0x4a41fc` 12 个样本全读得 `16`。标题与战斗：`0x4a4208`（跳帧计数）全部 0；`0x4a4204`（carry）0–6（战斗众数 4）；`0x4a420c`（入口 elapsed）标题 0–2 ms、战斗 4–6 ms（另有少量 16–20 是忙等结束后的写入被采到）——即帧体开销 0–6 ms，其余时间在忙等。战斗未重读 `0x4a41fc`，但 carry／elapsed 分布与 16 ms 周期一致。`play_seconds` 与主机墙钟同步推进（标题 21.8 s 内 34→54；战斗 32 s 内 605→636）。
+**1. 节拍器寄存器（标题 12 样本；战斗 300 样本）**：标题 `0x4a41fc` 12 个样本全读得 `16`。标题与战斗 `0x4a4208`（跳帧计数）全部 0；`0x4a4204`（carry）0–6（战斗众数 4）；`0x4a420c`（入口 elapsed）标题 0–2 ms、战斗 4–6 ms（另有少量 16–20 是忙等结束后的写入被采到）——即帧体开销 0–6 ms，其余时间在忙等。战斗未重读 `0x4a41fc`，但 carry／elapsed 分布与 16 ms 周期一致。`play_seconds` 与主机墙钟同步推进（标题 21.8 s 内 34→54；战斗 32 s 内 605→636）。
 
-### 2. 用脉冲计数器数 tick（战斗待机，300 样本 × 100 ms）
-
-`0x4c1c70` 每 100 ms 前进 5 或 6（147／147 次，4 次 7，1 次 9），无歧义解包：
+**2. 用脉冲计数器数 tick（战斗待机，300 样本 × 100 ms）**：`0x4c1c70` 每 100 ms 前进 5 或 6（147／147 次，4 次 7，1 次 9），无歧义解包：
 
 ```text
 1654 tick / 32080 ms (GetTickCount) = 32079.9 ms (QPC)  →  19.395 ms/tick = 51.56 tick/s
@@ -53,13 +57,9 @@ pace_last 跨度 32079 ms（帧边界时间戳与主机钟一致）
 
 标题 12 样本（间隔 ~1.9 s，只能对 33 取模）对 15–26 ms 逐 0.02 ms 拟合，最优 18.3 ms/tick（帧体更轻，超调更小）。
 
-### 3. 为什么实测不是 16：本机 `GetTickCount` 粒度
+**3. 实测不是 16 的原因：本机 `GetTickCount` 粒度**：独立小程序在同一 Wine 前缀里忙读 `GetTickCount` 3 s：594 次步进，均值 5.0 ms/步，直方图 `1 ms ×235、2–8 ms ×159、9 ms ×76、10 ms ×117、11–12 ms ×7`。忙等条件 `now − last ≥ 16` 在粗步进的钟上平均超调 3–4 ms（战斗样本 carry 众数 4），而超调只进入 carry，忙等路径又不消费 carry → 每帧 ≈ 16 + 超调。在 1 ms 粒度的时钟上（Win9x 时代的目标机）帧 ≈ 16–17 ms；在 15.6 ms 粒度的 NT 时钟上按同一算法会是 31.25 ms（static-derived 推论，未实测）。
 
-独立小程序在同一 Wine 前缀里忙读 `GetTickCount` 3 s：594 次步进，均值 5.0 ms/步，直方图 `1 ms ×235、2–8 ms ×159、9 ms ×76、10 ms ×117、11–12 ms ×7`。忙等条件 `now − last ≥ 16` 在粗步进的钟上平均超调 3–4 ms（战斗样本 carry 众数 4），而超调只进入 carry，忙等路径又不消费 carry → 每帧 ≈ 16 + 超调。这是宿主时钟效应：在 1 ms 粒度的时钟上（Win9x 时代的目标机）帧 ≈ 16–17 ms；在 15.6 ms 粒度的 NT 时钟上按同一算法会是 31.25 ms（static-derived 推论，未实测）。
-
-### 4. 可对照的动画／等待时长样本
-
-全部从内存按 tick 数出（录屏见「工具摩擦」），设计秒 = tick × 16 ms，本机秒 = 实测。
+**4. 可对照的动画／等待时长样本**（从内存按 tick 数出；设计秒 = tick × 16 ms，本机秒 = 实测）：
 
 | # | 现象 | tick 数（实测） | 设计时长 | 本机实测 | 说明 |
 | --- | --- | --- | --- | --- | --- |
@@ -68,20 +68,22 @@ pace_last 跨度 32079 ms（帧边界时间戳与主机钟一致）
 | 3 | UI 亮度脉冲（菜单／光标高亮） | **33 tick** 一周（−16…16） | 528 ms | 640 ms | `0x42c130` 的 18 个消费者共用 |
 | 4 | 帧节拍 | 1 tick | 16 ms | 19.4 ms | 周期寄存器 16；跳帧 0 |
 | 5 | 游玩秒计数 | 每 1000 游戏 ms +1 | 1 s | 1 s（与墙钟同步） | 证明游戏时钟＝墙钟−暂停；存档游玩时长单位就是秒 |
-| 6 | 城门火焰 `obj_Shape_Delay=3`、10 帧 | 40 tick 一周（resource + static，本次未采样其对象） | 640 ms，15.6 显示帧/s | 776 ms | [gate_fire_animation](../../static_reverse/gate_fire_animation.md)；重制 60 更新/s 应为 62.5 |
+| 6 | 城门火焰 `obj_Shape_Delay=3`、10 帧 | 40 tick 一周（resource + static，未采样其对象） | 640 ms，15.6 显示帧/s | 776 ms | [gate_fire_animation](../../static_reverse/gate_fire_animation.md)；重制 60 更新/s 应为 62.5 |
 | 7 | 脚本离场 16 tick／资源恢复 MP 数字延迟 40 tick／GAME OVER 保持 60 tick | 16／40／60 tick（static） | 256／640／960 ms | 310／776／1164 ms | [original_script_departure](../../static_reverse/original_script_departure.md)、[original_resource_recovery](../../static_reverse/original_resource_recovery.md)、[PRESENTATION](../../../architecture/PRESENTATION.md) |
 
-### 5. 静态与运行时的一致性
+**5. 静态与运行时的一致性**：周期 16、每圈一 tick、待机 11 tick／帧、行走 3 tick／帧、脉冲 33 tick 周期均在内存中按静态读法出现。实测 19.4 ms ≠ 16 ms 的来源是宿主 `GetTickCount` 粒度（第 3 条），不是游戏另有时钟。
 
-一致：周期 16、每圈一 tick、待机 11 tick／帧、行走 3 tick／帧、脉冲 33 tick 周期均在内存中按静态读法出现。不一致且已解释：实测 19.4 ms ≠ 16 ms，来源是宿主 `GetTickCount` 粒度（第 3 节），不是游戏另有时钟。
+## 重制接线
 
-## 复跑
+- `game/core/OriginalTick.gd` 持有 16 ms/tick 换算；消费本包的模块（provenance 头写 `docs/evidence_packets/runtime_observations/original_tick_rate/README.md`）：`MapObjectDrift`、`MapObjectAnimation`、`CommandPresentationRules`、`BattleCommandMenu`、`ActorRuntime`、`StoryEffectObjects`、`OpeningStoryObjects`、`OpeningCinematics`、`BattleOpeningCoordinator`、`BattleScriptCoordinator`、`SkillEffectScriptPlayer`、`BattlePanelMotion`、`BattleMagicPanel`、`BattleCameraController`、`BattleCombatCutin`、`BattleWinFailBoard`、`BattleDepartureView`、`MoonDancePresentation`、`PoisonArrowPresentation`、`WorldMapRuntime`、`GameOverScreen`。
+- `game/title/GameOverScreen.gd` timing：`defProcGameOverBOSS` `0x42aea0` 保持 60 tick＝0.96 s 后才可离开，淡入跨这段保持。
+- remake-invented 时序的逐格换算见 [tick_mapping.md](tick_mapping.md)。
+
+## 复现
+
+不可再生：原版侧唯一记录。复读方式：`tools/build_runtime_helpers.sh --win32-rpm` 编出 `ignored/bin/hsl_win32_memread.exe`，`tools/run_original_hsl.sh` 进第一战首次行动菜单后执行
 
 ```sh
-tools/doctor.sh --original
-tools/build_runtime_helpers.sh --win32-rpm          # ignored/bin/hsl_win32_memread.exe
-tools/run_original_hsl.sh                           # 标题；戰場記錄 进第一战首次行动菜单
-PID=$(wine tasklist 2>/dev/null | awk '/hsl01.exe/{print $2}')
 wine ignored/bin/hsl_win32_memread.exe --pid $PID \
   --read-u32 pulse=0x4c1c70 --read-u32 pace_period=0x4a41fc --read-u32 pace_last=0x4a4200 \
   --read-u32 pace_carry=0x4a4204 --read-u32 pace_skip=0x4a4208 --read-u32 pace_elapsed=0x4a420c \
@@ -93,19 +95,7 @@ wine ignored/bin/hsl_win32_memread.exe --pid $PID \
 
 ## 边界
 
-- 本包只证明「主循环节拍与 tick 单位」，不证明任何具体演出的帧内容、混色或坐标等价。
-- 19.4 ms 是**本机** Wine 11.0 + macOS 的实测；不同宿主的 `GetTickCount` 粒度不同，原作在 1990 年代目标机上更接近 16–17 ms。重制该用 16（设计值）还是用户实际体验的 19.4，是负责人的产品决定；本包推荐 16 ms/tick（62.5 tick/s）为「原版设计时钟」，并把参考录像的秒数按 19.4 折算成 tick 后再对照。
+- 只证明主循环节拍与 tick 单位，不证明任何具体演出的帧内容、混色或坐标等价。
+- 19.4 ms 是本机 Wine 11.0 + macOS 的实测；不同宿主的 `GetTickCount` 粒度不同，原作在 1990 年代目标机上更接近 16–17 ms。重制取 16 ms/tick（62.5 tick/s）为「原版设计时钟」，参考录像的秒数按 19.4 折算成 tick 后再对照。
 - 未测：对白逐字节奏、`defProcShowNumber` 数字寿命、`mapobjFlash` 过程、菜单展开步进的 tick 数、脚本 `actWalk` 速度参数与像素/tick 的关系（玩家行走 4 px/tick 不自动等于脚本行走）。这些是「已知以 tick 计但计数未读」，见 [映射表](tick_mapping.md)。
-- 36 格 remake-invented 时序的逐格换算见 [tick_mapping.md](tick_mapping.md)。
-
-## 工具摩擦
-
-- `hsl_record_window`（ScreenCaptureKit 单窗口录制）对 Wine 窗口只送出前 ~0.9 s 的 53 帧就停止（30／10／6 s 三次、`--no-audio` 也一样；Godot 窗口正常）。原因未定位（怀疑 winemac.drv 的窗口表面更新不被 SCK 视为内容变化）。本 lane 给它加了 `--no-audio` 选项（排除音频停滞假设，保留），tick 测量改走内存采样。若后续需要录屏，先用 Godot 窗口验证工具，再排查 Wine 窗口。
-- `hsl_win32_memread.exe` 每次 `wine` 启动约 1.9 s，原先每次只能读一组值；新增 `--repeat`／`--interval-ms` 后可在进程内 25–100 ms 间隔连续采样，单次输出保持原格式（`repeat=1` 时无新字段）。
-- 首次 `--dry-run`／`inspect` 在游戏窗口尚未创建时报 `game_window_not_found`，等 5 s 再查即可。误右键会打开系统卷轴（原版右键＝系统菜单），再点会落到 讀取戰場記錄 的 確定／取消——用 `key escape` 关卷轴。
-
-## 来源头迁入的备注
-
-RULESCUT（2026-09-26）把 `game/` 模块 `## provenance:` 头里的长备注原样移到这里：头里 static-derived／resource-derived 只留 `tag path`，每条来源项不超过 200 字符（`hsl check provenance`）。每行是「模块 维度：原备注」。
-
-- `game/title/GameOverScreen.gd` timing：defProcGameOverBOSS 0x42aea0 holds 60 ticks = 0.96 s before it can be left; the fade-in spans that hold
+- `hsl_record_window`（ScreenCaptureKit 单窗口录制）对 Wine 窗口只送出前 ~0.9 s 的 53 帧就停止（Godot 窗口正常，原因未定位），本包的计数因此全部走内存采样；`hsl_win32_memread.exe` 每次 `wine` 启动约 1.9 s，连续采样用 `--repeat`。游戏窗口创建前 `inspect` 报 `game_window_not_found`，等 5 s 再查；原版右键＝系统卷轴，用 `key escape` 关。

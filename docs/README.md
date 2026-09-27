@@ -45,7 +45,7 @@ Checked: 2026-09-27
 | --- | --- |
 | 资源、静态包、原图与具体来源 | [KNOWLEDGE_INDEX](KNOWLEDGE_INDEX.md)（证据包索引，生成块由 `hsl check evidence_index` 维护） |
 | 机制证据等级与未恢复边界 | [MECHANICS_EVIDENCE_MATRIX](MECHANICS_EVIDENCE_MATRIX.md) |
-| 证据包目录说明 | [evidence_packets](evidence_packets/README.md) |
+| 研究附录首页：怎么读证据包、证据用语、从哪进 | [evidence_packets](evidence_packets/README.md) |
 | 核心公式／地址的静态结论 | [核心规则证据](first_battle_core_logic_evidence.md) |
 | 第一战资源／脚本的早期结论（09-01，已被逐关导入链与各证据包覆盖） | [资源证据](first_battle_static_resource_evidence.md) |
 
