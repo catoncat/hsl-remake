@@ -221,7 +221,10 @@ static func attack_accuracy(attacker: Dictionary, defender: Dictionary) -> Dicti
 
 ## Damage -> saved hit roll -> critical impact. EXP and main/counter series are composed
 ## by PlayLoop. queued_damage remains the original stamina input even on a critical.
-static func resolve_attack(attacker: Dictionary, defender: Dictionary, rng: Variant = null, is_counter: bool = false) -> Dictionary:
+## `damage_halved`: the defender wears an hp_damage_half item (live +0x18c bit 4). 0x4423c0 tests it at
+## 0x442545 through 0x40e2a0 after the counter scaling and halves the nonzero damage (sar 1), a zero
+## result becoming 1; skills never reach this branch (0x40e2a0 has no other caller).
+static func resolve_attack(attacker: Dictionary, defender: Dictionary, rng: Variant = null, is_counter: bool = false, damage_halved: bool = false) -> Dictionary:
 	var source: Variant = rng
 	if source == null:
 		var live_rng := RandomNumberGenerator.new()
@@ -237,6 +240,8 @@ static func resolve_attack(attacker: Dictionary, defender: Dictionary, rng: Vari
 	var sampled_damage := int(damage_detail["damage"])
 	if is_counter:
 		sampled_damage = maxi(1, sampled_damage * 80 / 100)
+	if damage_halved:
+		sampled_damage = maxi(1, sampled_damage / 2)
 	var roll := rand_range(100, source)
 	var hit := roll < rate
 	var impact := critical_impact(sampled_damage, hit, int(atk["attack_damagex2"]), source)

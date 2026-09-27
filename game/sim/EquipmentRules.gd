@@ -16,6 +16,18 @@ static func equipped_code(equipment: Array, slot: String) -> int:
 	return 0
 
 
+## True when any equipped catalog row sets boolean `key` (the equipment refresh ORs each item's
+## +0xa0 word into live +0x18c at 0x448709..0x448717, so one such item is enough).
+static func has_flag(unit: Dictionary, catalog: Dictionary, key: String) -> bool:
+	var equipment: Variant = unit.get("equipment", [])
+	if not equipment is Array: return false
+	for entry in equipment:
+		if not entry is Dictionary: continue
+		var item: Variant = catalog.get(str(int(entry.get("item_code", 0))))
+		if item is Dictionary and bool(item.get(key, false)): return true
+	return false
+
+
 static func effect_delta(equipment: Array, catalog: Dictionary) -> Dictionary:
 	var delta := {"attack": 0, "defense": 0, "hit_rate": 0, "magic_attack": 0,
 		"max_hp": 0, "max_mp": 0, "speed": 0, "move_point": 0, "avoid_hit_ratio": 0, "attack_back": 0,

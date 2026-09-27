@@ -37,6 +37,12 @@ CASTING_FIELDS = {'add_magic_hit', 'keep_status_good', 'avoid_poison', 'avoid_no
 # itemTypeUse cure bits (loader 0x447f8f..0x447fe2 -> item+0xa0 0x80000000/0x40000000/0x20000000/0x10000000);
 # consumables.py carries them into ItemUseRules, so they are not unsupported passives.
 CURE_FIELDS = {'cure_poison', 'cure_no_magic', 'cure_paralysis', 'cure_weaken'}
+# ITEM loader 0x447e00..0x447e1b: hp_damage_half -> item+0xa0 bit 4, ORed into live +0x18c (0x448709..0x448717);
+# 0x4423c0 halves a nonzero strike at 0x442545 (0x40e2a0 tests the defender's bit 4).
+DEFENSE_FIELDS = {'hp_damage_half'}
+# high_cost: loader 0x448164 ORs item+0xa0 bit 0x800 (stored 0x4481b1, ORed into +0x18c) but no .text
+# instruction tests that bit on either word, so it carries no rule.
+INERT_FIELDS = {'high_cost'}
 RESISTS = {0: [0], 1: [1], 2: [2], 3: [3], 4: [4], 7: [0, 1, 2, 3, 4],
            8: [0, 1, 2, 3], 9: [1, 3], 10: [0, 3], 11: [2, 3], 12: [3, 4],
            13: [0, 1], 14: [1, 2], 15: [1, 4], 16: [0, 2], 17: [0, 4], 18: [2, 4]}
@@ -122,7 +128,7 @@ def build():
         elif kind == 5:
             effects['speed'] += base
         unsupported = [key for key, value in row.items()
-                       if key not in METADATA and key not in NUMERIC and key not in STAMINA_FLAGS and key not in EXPERIENCE_FIELDS and key not in GOLD_FIELDS and key not in COMBAT_FIELDS and key not in RESOURCE_FIELDS and key not in CASTING_FIELDS and key not in CURE_FIELDS and value != '0']
+                       if key not in METADATA and key not in NUMERIC and key not in STAMINA_FLAGS and key not in EXPERIENCE_FIELDS and key not in GOLD_FIELDS and key not in COMBAT_FIELDS and key not in RESOURCE_FIELDS and key not in CASTING_FIELDS and key not in CURE_FIELDS and key not in DEFENSE_FIELDS and key not in INERT_FIELDS and value != '0']
         weapon = weapon_magic(row, constants)
         if weapon['element'] != -1 and kind != 2:
             unsupported.append('magic_attack_type')
@@ -152,6 +158,7 @@ def build():
                        'double_attack': int(row.get('double_attack', 0)) != 0,
                        'weapon_effect_flags': sum(bit for key, bit in WEAPON_EFFECTS.items() if int(row.get(key, 0))),
                        'move_magic_use': int(row.get('move_magic_use', 0)) != 0,
+                       'hp_damage_half': int(row.get('hp_damage_half', 0)) != 0,
                        'add_attack_range': int(row.get('add_attack_range', 0)) != 0,
                        'magic_hit_bonus': int(row.get('add_magic_hit', 0)),
                        'status_effect_flags': sum(bit for field, bit in [('keep_status_good', 0x80), ('avoid_poison', 0x800000), ('avoid_nomagic', 0x1000000), ('avoid_weaken', 0x2000000), ('avoid_paralysis', 0x4000000)] if int(row.get(field, 0))),
@@ -164,7 +171,7 @@ def build():
             'sources': {str(path): digest(path.read_bytes()) for path in (TABLES/'ITEM.TXT', TABLES/'TYPE.H', NAMES)},
             'evidence': 'docs/evidence_packets/static_reverse/original_inventory_equipment.md',
             'items': items,
-            'limits': ['Numeric effects, st_x2/no_addst, exp_x2, gold_x2, double_attack/action_twice, mp_use_half, HP/MP automatic restoration, HP transfer, magic hit/protection, moved casting, normal-weapon range extension, ordinary-series cancellation, the 0x409310 status word (weaken/no-magic/paralysis/poison and the random_status_error pick), weaken/poison/no-magic/paralysis protection and consumable cure bits have independent live contracts; other nonzero fields reject equip.',
+            'limits': ['Numeric effects, st_x2/no_addst, exp_x2, gold_x2, double_attack/action_twice, mp_use_half, HP/MP automatic restoration, HP transfer, magic hit/protection, moved casting, normal-weapon range extension, strike-damage halving (hp_damage_half), ordinary-series cancellation, the 0x409310 status word (weaken/no-magic/paralysis/poison and the random_status_error pick), weaken/poison/no-magic/paralysis protection and consumable cure bits have independent live contracts; other nonzero fields reject equip.',
                        'Live base-stat refresh supports independently proven job80/85/90/94. Source job eligibility still restricts individual equipment.',
                        'Unknown fields and unrecognized element/resistance constants remain unsupported, not silently discarded.']}
 

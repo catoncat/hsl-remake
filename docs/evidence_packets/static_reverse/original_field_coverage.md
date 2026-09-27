@@ -13,7 +13,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | 表 | 记录 | 字段 | consumed | passthrough | recorded | unconsumed | dead |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [players](#players) PLAYERS.TXT | \[character] rows | 102 | 88 | 0 | 0 | 6 | 8 |
-| [item](#item) ITEM.TXT | \[item] rows | 72 | 66 | 0 | 0 | 1 | 5 |
+| [item](#item) ITEM.TXT | \[item] rows | 72 | 67 | 0 | 0 | 0 | 5 |
 | [magic](#magic) MAGIC.TXT | \[magic] rows | 14 | 13 | 0 | 0 | 1 | 0 |
 | [special](#special) SPECIAL.TXT | \[special] rows | 13 | 13 | 0 | 0 | 0 | 0 |
 | [range](#range) RANGE.TXT | \[range] rows | 3 | 3 | 0 | 0 | 0 | 0 |
@@ -29,7 +29,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | [town_event](#town_event) TOWNDEF te opcode | te tokens | 46 | 44 | 0 | 0 | 0 | 2 |
 | [animal](#animal) ANIMAL.H ani* opcode（演员程序 + 绝技特效脚本） | ani* opcodes | 36 | 33 | 0 | 0 | 0 | 3 |
 | [effects](#effects) EFFECTS.TXT eff* opcode（法术特效） | \[effect] blocks | 4 | 4 | 0 | 0 | 0 | 0 |
-| **合计** | 17 表 | 742 | 535 | 17 | 75 | 16 | 99 |
+| **合计** | 17 表 | 742 | 536 | 17 | 75 | 15 | 99 |
 
 ## 3. 嫌疑排序
 
@@ -46,7 +46,6 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `obj.obj_X2` | rows 10 | 模板 +0x18（特效 WAV／ObjectMove 参数） |
 | `magic.effect_caster` | rows_nondefault 8 | 施法者侧特效（8 行） |
 | `players.sound_hit` | rows_nondefault 4 | 被击音效（4 行；记录 +0x10 lo 句柄） |
-| `item.high_cost` | rows_nondefault 4；items_unsupported 4 | 高价（4 行非 0） |
 | `players.sound_walkwater` | rows_nondefault 2 | 水中行走音效（2 行） |
 | `players.sound_shoothit` | rows_nondefault 1 | 射击命中音效（1 行，+0x22） |
 | `players.no_shadow` | rows_nondefault 1 | 不画影子（bit 0x100，1 行） |
@@ -212,7 +211,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `add_defense` | consumed | `tools/hsltools/data/equipment.py:build` | 非默认行 29；声明行 30；unsupported 物品 0 | 防御加值 | — |
 | `add_attack_range` | consumed | `game/sim/PositionCapabilityRules.gd:effects` | 非默认行 2；声明行 3；unsupported 物品 0 | 射程 +1 | — |
 | `mp_use_half` | consumed | `game/sim/SkillResourceRules.gd:amounts` | 非默认行 1；声明行 2；unsupported 物品 0 | MP 消耗减半 | — |
-| `hp_damage_half` | dead | — | 非默认行 1；声明行 2；unsupported 物品 1 | 受伤减半（数据 1 行为 0） | — |
+| `hp_damage_half` | consumed | `game/sim/CoreCombatRules.gd:resolve_attack` | 非默认行 1；声明行 2；unsupported 物品 0 | 受伤减半（1 行 302 替身雕像；loader 0x447e1b 置 item+0xa0 bit 4 → +0x18c） | 0x4423c0 在 0x442545 调 0x40e2a0：守方有该位时非零伤害减半，得 0 取 1；只在普攻／反击 |
 | `action_twice` | consumed | `game/sim/ExtraActionRules.gd:equipment` | 非默认行 5；声明行 6；unsupported 物品 0 | 再行动 | — |
 | `exp_x2` | consumed | `game/sim/ExperienceRules.gd:multiplier` | 非默认行 1；声明行 2；unsupported 物品 0 | 经验双倍 | — |
 | `gold_x2` | consumed | `game/sim/BattleRewardRules.gd:gold_multiplier` | 非默认行 1；声明行 2；unsupported 物品 0 | 金钱双倍（1 行 230；item 位 0x20 → +0x18c，0x442819 经 0x40e2d0 翻倍） | 曾误记 dead；REWARD 接入 |
@@ -235,7 +234,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `avoid_nomagic` | consumed | `game/sim/StatusApplicationRules.gd:equipment_modifiers` | 非默认行 1；声明行 2；unsupported 物品 0 | 免封魔 | — |
 | `avoid_weaken` | consumed | `game/sim/StatusApplicationRules.gd:equipment_modifiers` | 非默认行 1；声明行 2；unsupported 物品 0 | 免衰弱（1 行 220；位 0x2000000，0x40e2f0 免疫查询） | R21 曾误记 dead；R27 随 equipment.py status_effect_flags 接入 |
 | `avoid_paralysis` | consumed | `game/sim/StatusApplicationRules.gd:equipment_modifiers` | 非默认行 2；声明行 3；unsupported 物品 0 | 免麻痹 | — |
-| `high_cost` | unconsumed | UNCONSUMED | 非默认行 4；声明行 5；unsupported 物品 4 | 高价（4 行非 0） | equipment.py unsupported_fields；原语义未追（疑商店卖价／不可卖） |
+| `high_cost` | dead | — | 非默认行 4；声明行 5；unsupported 物品 0 | 高价（4 行非 0；loader 0x448164 置 item+0xa0 bit 0x800，并入 +0x18c） | 全 .text 无测该位的指令，原版无规则效果；equipment.py INERT_FIELDS 照原版可装 |
 | `no_addst` | consumed | `game/sim/StaminaRules.gd:effects` | 非默认行 1；声明行 2；unsupported 物品 0 | 不加气力 | — |
 | `hp_transfer_mp` | consumed | `game/sim/ResourceRecoveryRules.gd:transfer_values` | 非默认行 1；声明行 2；unsupported 物品 0 | HP 转 MP | — |
 | `add_steal_ratio` | consumed | `game/sim/EquipmentRules.gd:effect_delta` | 非默认行 1；声明行 2；unsupported 物品 0 | 偷窃加成（1 行 131 隱忍黑衣 20；item+0x40，0x448420 加到 +0x196 工作字） | equipment.py NUMERIC add_steal_ratio→effects.steal_ratio；131 因此 supported |

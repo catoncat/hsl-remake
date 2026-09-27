@@ -557,13 +557,14 @@
     },
     {
       "id": "special-object-motion",
-      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭）；剩随机用 4 个种子变体代替共享流、出屏按首个插入点判定、角度环／龙卷列等模式插入仍是重制几何",
-      "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）",
+      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），特写在脚本与结果数字结束时收、未完对象剪断；剩收尾 16 tick 变暗未接、随机用 4 个种子变体代替共享流、角度环／龙卷列等模式插入仍是重制几何",
+      "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）；守方 aniOver 直接进 phase 101，收尾不查对象，拆场位 0x4c1404 令 slot 36–38 对象自删",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
-        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
+        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md",
+        "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "ObjcomdMotion 读原生轨迹，SkillEffectScriptPlayer／MoonDancePresentation／PoisonArrowPresentation 按它画；模式插入的 radial／spin 几何保留",
+      "remake": "ObjcomdMotion 读原生轨迹，SkillEffectScriptPlayer／MoonDancePresentation／PoisonArrowPresentation 按它画；模式插入的 radial／spin 几何保留；complete_tick 不含对象寿命",
       "remake_code": [
         "game/battle/scene/ObjcomdMotion.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd",
@@ -1267,15 +1268,16 @@
     },
     {
       "id": "unimplemented-abilities",
-      "difference": "部分技能／被动效果未实现：学到也显示不可用，带未支持字段的装备禁止装备（如 008 源 32 武器 range3CellCircle）",
-      "original": "未实现能力各有原字段；008 武器缺独立原范围证据",
+      "difference": "技能与被动已无拒绝项；带未支持字段的装备剩 3 件禁止装备（神之足、龍鱗、朧月），见审计 ABILITIES",
+      "original": "神之足错拼列原版不读；龍鱗 magic4Type 大小写解析与朧月 range6CellShoot 范围未证明",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_campaign_actors.md",
         "docs/evidence_packets/static_reverse/original_inventory_equipment.md"
       ],
-      "remake": "明确拒绝，不借用近似技能",
+      "remake": "equipment.py unsupported_fields 明确拒绝装备；high_cost 与 hp_damage_half 已照原版接入",
       "remake_code": [
-        "game/sim/SkillTargetRules.gd"
+        "tools/hsltools/data/equipment.py",
+        "game/sim/EquipmentRules.gd"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",

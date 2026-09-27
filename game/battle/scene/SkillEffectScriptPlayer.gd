@@ -368,14 +368,18 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 					break
 		event["arrive"] = arrive
 		event["expire"] = arrive + event["frames"].size() * int(event["frame_ticks"])
-	# The clip ends when the script, the readable result and every inserted object are done
-	# (殘影亂斬 inserts its last shadow 90 ticks in, after its final aniDelay).
+	# The clip ends when the script and the readable result are done; object lifetimes do not
+	# hold it. The defense script's aniOver (0x403d3d) goes straight to phase 101 (0x403d7a),
+	# whose close (0x404ada) sets the teardown bit 0x4c1404 |= 1, and every cutin effect object
+	# (slots 36–38: 0x404ffa, 0x4050a0, 0x4051d0) deletes itself on that bit — no liveness
+	# check. Objects still running then are cut at the end. Remake reading: a random-delay
+	# insert (0x401390) landing after the script's end still appears and sounds its insertion
+	# cues, so a seed never changes which objects and cues play.
 	var complete := maxi(cursor, int(timeline["result_tick"]) + RESULT_HOLD_TICKS)
 	for event in timeline["events"]:
-		if not event.get("open_ended", false):
-			complete = maxi(complete, int(event.get("expire", event["tick"])))
+		complete = maxi(complete, int(event["tick"]) + (1 if event["kind"] == "object" else 0))
 	for event in timeline["events"]:
-		if event.get("open_ended", false):
+		if event["kind"] == "object" and (event.get("open_ended", false) or int(event["expire"]) > complete):
 			event["expire"] = complete
 	timeline["complete_tick"] = complete
 	timeline.erase("sound_cues")

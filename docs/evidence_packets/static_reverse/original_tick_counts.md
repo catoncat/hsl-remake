@@ -1,10 +1,11 @@
 # 以 tick 计的原版时长：数字寿命、章节标题、边缘滚动、脚本行走速度
 
-> evidence: static-derived: object-process and STORY VM state machines read from hsl01.exe; runtime-measured: 2026-09-24 recording of the 棄卒 title card (§2); provisional: rows marked 未读 · status: live · functions: 0x401060, 0x401c20, 0x4038a0, 0x406d20, 0x406eb0, 0x408580, 0x409610, 0x4111d0, 0x42c3f0, 0x42d280, 0x42dc50, 0x42dc80, 0x43b4e0, 0x43e270, 0x43e2a0, 0x43e2d0, 0x43e4a0, 0x43e570, 0x4423c0, 0x446c40, 0x44fbd0, 0x44fcf0, 0x4501f0, 0x45136a, 0x451818, 0x452102, 0x452123, 0x452eac, 0x452f32, 0x453111, 0x453b90, 0x45e307, 0x45e525, 0x45e5a6, 0x45e91e, 0x45f5f7, 0x45f7cb, 0x46067d, 0x4607f9, 0x460989, 0x46098f, 0x4609c0, 0x4609f1, 0x460a06, 0x460e9c, 0x460f26, 0x460fb0, 0x4611e3, 0x461479, 0x461982, 0x462154, 0x463eeb, 0x464c22, 0x4699fd, 0x46b691, 0x46b6c1, 0x46bede · tools: hsl_exe_decompile.py · updated: 2026-09-28
+> evidence: static-derived: object-process and STORY VM state machines read from hsl01.exe; runtime-measured: 2026-09-24 recording of the 棄卒 title card (§2); provisional: rows marked 未读 · status: live · functions: 0x401060, 0x401370, 0x401c20, 0x402295, 0x40298a, 0x4038a0, 0x403d3d, 0x404ada, 0x404b23, 0x404f90, 0x4050a0, 0x4051d0, 0x406d20, 0x406eb0, 0x408580, 0x409610, 0x4104d0, 0x4111d0, 0x42c3f0, 0x42d280, 0x42dc50, 0x42dc80, 0x43b4e0, 0x43e270, 0x43e2a0, 0x43e2d0, 0x43e4a0, 0x43e570, 0x4423c0, 0x446c40, 0x44fbd0, 0x44fcf0, 0x4501f0, 0x45136a, 0x451818, 0x452102, 0x452123, 0x452eac, 0x452f32, 0x453111, 0x453b90, 0x45e307, 0x45e525, 0x45e5a6, 0x45e91e, 0x45f5f7, 0x45f7cb, 0x46067d, 0x4607f9, 0x460989, 0x46098f, 0x4609c0, 0x4609f1, 0x460a06, 0x460e9c, 0x460f26, 0x460fb0, 0x4611e3, 0x461479, 0x461982, 0x462154, 0x463eeb, 0x464c22, 0x4699fd, 0x46b691, 0x46b6c1, 0x46bede · tools: hsl_exe_decompile.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版以主循环 tick 计的演出计数已从对象过程与 STORY VM 状态机读出：地图数字 kind 1–6 寿命 46 tick（第 32 tick 放行），红色伤害数字 10×位数＋34；章节标题 582 tick（任意键最短 263）；边缘滚动 12 px/tick；脚本行走（含 actMoveDispWait）speed→1／2／4／8 px/tick；剧情压黑每 3 tick 一级、16 级（48 tick），actDarkScreen／actDeleteDarkScreen 都不等待；普攻守方中立 32 tick、命中停留 68＋10×位数、落空 56，屏幕过渡变暗／变亮各 16；攻方开场 24 tick 缩放＋32 tick 叠层（static-derived）。
+- 绝技特写收尾：守方 EFFECTS 脚本的 aniOver 直接进 phase 101（变暗 16 → 拆场 → 回地图变亮 16），不查场上对象是否还活着；未完的特写对象在拆场位 `0x4c1404` 置位的那一 tick 自删（static-derived，§9）。
 - 重制 `CombatPresentationTiming`、`OpeningCinematics`／`BattleOpeningCoordinator`、`BattleCameraController`／`WorldMapRuntime`、`BattleCombatCutin` 按这些计数经 `OriginalTick`（16 ms/tick）换算（static-derived）。
 - 差异：对象 700 每级明暗已读出——每个 565 分量取 ⌊c·(16−n)／16⌋，重制黑层 alpha n／16 与之线性等价，只差 5／6 位截断的末位（static-derived）；击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional（`mapobjFlash` 已读，见 [地图物件闪烁](original_map_object_flash.md)）；像素混合未逐像素对照（provisional）。
 
@@ -136,6 +137,22 @@ VM 处理器（opcode 2–7，`0x4508a8` 等）把 `[code][serial][x][y][speed]`
 子状态 1／4 的 `0x446c10` 检查与 `0x446c40(…, 5, 6)` 不受这两位控制；按字节模式未找到清除 0x1800 的写入，两位在走完后的去向未读（provisional）。
 
 
+### 9. 绝技特写的收尾时刻：脚本结束即收，对象不参与
+
+读法：r2 反汇编 `0x401c20` phase 101（字节表 `0x403748` → 跳表 `0x403720` 第 6 项 `0x40298a`）、`0x4038a0` kind 2 的解释循环（`0x403954` 起，op 字节表 `0x404f48` → 跳表 `0x404ee8`）与 phase 101（`0x404aab`）、拆场位 `0x4c1404` 的全部 16 处引用（`/x 04144c00`）。
+
+| 步骤 | 地址 | 原版 |
+| --- | --- | --- |
+| 攻方脚本结束 | `0x402295` | aniOver：`+0x8c = 0x650000`（phase 101 子 0）、保存指针、让出 |
+| 攻方收页 | `0x40298a..0x4029ee` | 子 0 只等 `+0x88`（本对象插入的攻击闪光）归零，随即子 1 并 `0x4c1404 \|= 1`；子 1：`0x42c3f0(0)`、`0x401710`、`0x42c3d0`、parent `+0x8c++`、`0x45e3ed` 自删 |
+| 守方开页 | `0x40435e`（phase 100） | 先清 `0x4c1404` 位 0；`0x406d20`／`0x406eb0` 插入攻／守方对象时整字清零 |
+| 守方脚本 | `0x403954` | kind 2 从 `0x4c1408` 取 EFFECTS 守方程序逐条执行（op 0..35） |
+| 守方 aniOver | `0x403d3d..0x403db6` | `0x4104d0(1)` 取下一目标：有则换目标、`+0x8c = 100` 重开守方页，新程序指针来自 `0x4c1b70` 表并 `0x4c1404 \|= 1`；无（或 `0x409a20` 返回 −1）则 `+0x8c = 0x650000` 直接进 phase 101（`0x403d7a`） |
+| 守方收尾 | `0x404b23`／`0x404ada` | 子 0：无续击 → `0x42dc90(1)` 请求变暗（16 tick，§6）→ 子 1；子 1 等过渡挂起归零后 `0x4c1404 \|= 1`、`0x401370`（删 `0x4c1400` 对象）、`0x42c3f0(0)` 退出切入、`0x42dca0(1)` 变亮、`+0x30 = 0xffff` |
+| 对象自删 | `0x404ffa`、`0x4050a0`、`0x4051d1` | 过程表 slot 36／37／38（`0x404f90`／`0x4051d0`／`0x4050a0`）入口都测 `0x4c1404 & 1`，置位即 `0x45e3ed` 自删 |
+
+结论：两页都在各自脚本 aniOver 后收，收尾路径上没有任何对象存活检查——攻方只等自己的攻击闪光，守方只经 16 tick 变暗；这 16 tick 内特写对象照常运行，拆场位一置，slot 36–38 的对象在下一次过程调用时自删（带延迟尚未出现的随机插入实例同样被删）。攻方页的对象在攻方收页时已被删，不跨入守方页。
+
 ## 重制接线
 
 provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/static_reverse/original_tick_counts.md`（`BattleCombatCutin.gd` 按 §7 锚点引用）。
@@ -145,6 +162,7 @@ provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/s
 - **§8 actMoveDispWait**：`OpeningStoryObjects._move_disp` 目标格心化后走 `_move_actor`（`ScriptWalkPath.route`，与 actWalkDispWait 同路、同速度表、Wait 居中与跟随）；`ActorRuntime.move_along(..., keep_pose_frame_ticks)` 不换朝向与行走形态、不放走步声、到位不回站立，帧按 `move_disp_frame_ticks`（7／5／2／3 tick）循环；有脚本形态时改写其循环帧率并在走完后保留（0x1800 未见清除）。
 - **§3 边缘滚动**：`BattleCameraController.EDGE_SCROLL_PIXELS_PER_TICK = 12`、`WorldMapRuntime` 同值；键盘平移与鼠标边缘共用（原版键位与边缘同一请求）。修饰键加速未接（重制无对应输入）。
 - **§6 守方受击**：`CombatPresentationTiming`：`TARGET_PAUSE_TICKS = 32`，`hurt_hold_ticks(hit, damage)` = 命中 `HIT_TO_NUMBER_TICKS 40 ＋ damage_number_release_ticks ＋ 1`／落空 `MISS_SLIDE_TICKS 15 ＋ 1 ＋ MISS_HOLD_TICKS 40`；`RECOVERY_TICKS = 16`（变黑期间受击姿态保持，static-derived）、`CLOSING_LIGHTEN_TICKS = 16`（地图上从黑变亮，切入内容已隐藏），只在交换的最后一镜或击杀镜（`closes_exchange`：`last_shot` 或 `defender_hp_after ≤ 0`）播放；`ordinary(actor, strike, first_shot, last_shot)` 返回 `opening／release／target／impact／recovery／darkened／complete`。`BattleCombatCutin` 不回到中立姿态（受击帧保持到镜头结束）。击退 105 px／残影／闪避滑动 150 px 的位移未接（重制仍用 6／24 px 的 reaction 位移，provisional）。
+- **§9 绝技收尾**：`SkillEffectScriptPlayer._finish_timeline`：`complete_tick` = max(脚本游标, 结果 tick ＋ `RESULT_HOLD_TICKS`, 最后一次对象插入 tick ＋ 1)，对象寿命不再参与；仍在运行的对象（含 open-ended）剪到 `complete_tick`。`clip_complete_tick` 照旧等最后一个结果数字删除。
 - **§7 攻方开场**：`BattleCombatCutin._show_opening`、`CombatPresentationTiming.OPENING_*`：交换的第一镜（`first_shot`，`BattlePresentation._show_strike` 按 `CombatSequence.strikes` 顺序传入；反击镜与追加击镜对应位 0x200 → 无开场）先播 24 tick 加法光球（`opening_zoom_ramp()` 复现 `0x401060` 的 24 个 16.16 缩放值，`BLEND_MODE_ADD`，攻方隐藏、身份栏隐藏、特写底图与底色隐藏——光球画在地图之上）再播 32 tick 18× 光球 alpha = 层级/16（`opening_overlay_level`），光球盖住整个 640×480 含身份栏；随后程序第一条指令。缩放段隐藏身份栏与底板、变亮段隐藏，照「构图」表；攻方只按程序缩放（aniSetZoom）与换边镜像画，不另做外框适配；受击帧 `hurt_frame` ＝ 演员帧数 − 1（`0x404015`）。
 
 ## 复现
@@ -158,4 +176,5 @@ provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/s
 - 未读（保留 provisional）：击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。
 - `mapobjFlash` 亮度步进已读：见 [地图物件闪烁](original_map_object_flash.md)。
 - §8：无脚本形态的演员走完后原版仍按移动延迟每 tick 循环当前形态，重制到位即停帧；子状态 1／4 的 `0x446c10` 起步动作分支在数据下不可达（SHAPEDEF 无 `prepare`，见 [original_action_state_machine.md](original_action_state_machine.md)「起步动作」），`0x44fbd0` 目标修正在重制里未接（与 actWalk 系列相同）。
+- §9：重制绝技路径没有收尾的 16 tick 变暗（原版对象在其下多跑 16 tick 才删）；攻方页对象未在攻方收页处剪断（重制攻守两页连在同一条时间线上）；延迟落在脚本结束后的随机插入实例原版不出现，重制仍从插入 tick 起画到片段结束（出现的实例集不随种子变）；aniShowHitResult 等数字放行（`0x404643`）的阻塞未计入脚本游标。
 - 反编译原文留在 `ignored/static/hsl01/decompiled/`，不入库。

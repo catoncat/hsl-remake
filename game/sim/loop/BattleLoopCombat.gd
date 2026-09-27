@@ -29,6 +29,7 @@ const CombatSequence = preload("res://game/sim/CombatSequenceRules.gd")
 const WeaponEffects = preload("res://game/sim/WeaponEffectRules.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const StaminaRules = preload("res://game/sim/StaminaRules.gd")
@@ -134,7 +135,8 @@ static func apply_strike(loop: Dictionary, attacker_id: String, defender_id: Str
 	var hp_before := int(BattlePlayLoop.unit_ref(loop, defender_id)["hp"])
 	var attacker_before := CoreCombatRules.receipt_vitals(BattlePlayLoop.unit_ref(loop, attacker_id))
 	var defender_before := CoreCombatRules.receipt_vitals(BattlePlayLoop.unit_ref(loop, defender_id))
-	var strike := CoreCombatRules.resolve_attack(BattlePlayLoop.unit_ref(loop, attacker_id), BattlePlayLoop.unit_ref(loop, defender_id), rng, is_counter)
+	var halved := EquipmentRules.has_flag(BattlePlayLoop.unit_ref(loop, defender_id), loop["equipment_items"], "hp_damage_half")
+	var strike := CoreCombatRules.resolve_attack(BattlePlayLoop.unit_ref(loop, attacker_id), BattlePlayLoop.unit_ref(loop, defender_id), rng, is_counter, halved)
 	# A lethal result ends the series (the damage path raises the death flag at once);
 	# an undead defender is revived below, after the death-truncated series is settled.
 	var lethal := int(strike["defender_hp_after"]) <= 0
