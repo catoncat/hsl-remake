@@ -7,8 +7,8 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_movement.md
 ##   rules: provisional
-##     (shortest-path tie-breaks, guard routes, refinement flood metric and candidate order are remake composition;
-##     approach_goals (candidate_filters, no_attack pursuit) use flat RANGE offsets)
+##     (shortest-path tie-breaks, guard routes, a 3×3 actor's refinement flood are remake composition;
+##     approach_goals (candidate_filters receipt only) use flat RANGE offsets)
 const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
 const SkillResolutionRules = preload("res://game/sim/SkillResolutionRules.gd")
@@ -233,47 +233,186 @@ static func approach_home(loop: Dictionary, actor: Dictionary, envelope: Diction
 
 
 static func approach_point(loop: Dictionary, actor: Dictionary, envelope: Dictionary, home: Vector2i, rng: Variant) -> Dictionary:
-	## 0x4111a0(actor, point, 0x12, move) -> 0x411080, the one walk both callers use: the
-	## fixed-point guard (0x43fbd6, point = its anchor) and ordinary pursuit (state 0xb
-	## sub 0 at 0x440d5c..0x440d84, point = the held target's position, taken when
-	## 0x40fb20 finds no attack this turn). The native driver floods radius max(18, move) from the
-	## actor and takes the flooded stoppable cell nearest (Manhattan) to the anchor
-	## (0x413900 / 0x413740: cells holding any unit are skipped, an equal candidate
-	## replaces the held one on rand() & 1), then floods again with the radius shrunk by
-	## two toward that cell, until the radius is the move budget; the last pick is this
-	## turn's destination. Every candidate that would be taken is first checked by
-	## 0x40d800: with three or more flagged in-map neighbours it is skipped when
-	## rand(100) < 80. The shrinking levels pass side 0 (only hard-blocked 0x4000 cells
-	## count, 0x41112b); the last pick passes the actor's side word 0x40ba20 (0x41114d),
-	## so hostile occupants count too. The remake replays that refinement over its own
-	## movement-cost flood (provisional: the flood metric, the candidate iteration order
-	## and an odd move budget's last shrink). An anchor beyond the map edge (WINFAIL012
-	## retreat points) needs no map cell: the walk ends at the edge.
+	## 0x4111a0(actor, point, 0x12, move) -> 0x411080(actor, point, 0x12, move, 0), the one
+	## walk both callers use: the fixed-point guard (0x43fbd6, point = its anchor) and
+	## ordinary pursuit (state 0xb sub 0 at 0x440d5c..0x440d84, point = the held target's
+	## pixel +4／+8, taken when 0x40fb20 finds no attack this turn). Last argument 0: the
+	## floods are 0x40f440 (map-bounded) in the actor's 0x40bab0 mode (P 2, E 3, N 7; flying
+	## 6, 0x446ad0) — the movement flood itself, see native_flood. Radius max(18, move); each
+	## level floods from the actor, and while the radius is above the move budget 0x413900
+	## with side 0 (only 0x4000 cells count for 0x40d800, 0x41112b) moves the point to the
+	## nearest candidate — a level with none leaves the point as it was — and the radius
+	## drops by two, never below the move budget (an odd budget's last step shrinks by one).
+	## At the move budget 0x413900 passes the actor's side word 0x40ba20 (0x41114d); none
+	## found, or 0x410a50 with nothing to walk, returns 0 and the actor stays. Candidates are
+	## scanned row-major over the flood buffer: reached, no unit on the cell (0x70000, the
+	## actor's own cell included — 0x40d8b0 re-registers it at 0x40dc36 before pursuit), the
+	## Manhattan-nearest kept, an equal one replacing it on rand() & 1, and a taken candidate
+	## with three or more flagged in-map neighbours dropped when rand(100) < 80. A 3×3 actor
+	## keeps the movement envelope as its flood (provisional). An anchor beyond the map edge
+	## (WINFAIL012 retreat points) needs no map cell: the walk ends at the edge.
 	var origin: Vector2i = actor["coord"]
 	var move := int(actor["move_point"])
 	var result := {"to": origin, "path": [origin], "cost": 0, "goal": home, "route_cost": -1, "draws": [], "candidates": 0, "refinements": [], "reason": "no_reachable_cell"}
 	var target := home
 	var radius := maxi(FIXED_POINT_FLOOD_RADIUS, move)
 	var cell_words := neighbour_words(loop)
+	var context := TacticalGridRules.Traversal.prepare(actor, loop["units"], TerrainEditRules.tiles(loop), {}, loop["map_size"])
+	if not context["ok"]:
+		result["reason"] = context["reason"]
+		return result
+	var native := int(context["radius"]) == 0
 	while true:
-		var flood: Dictionary = envelope
-		if radius != move:
-			flood = TacticalGridRules.movement_reachability_envelope(actor, loop["units"], TerrainEditRules.tiles(loop), loop["map_size"], radius)
-			if not flood["ok"]:
-				result["reason"] = flood["reason"]
-				return result
+		var cells: Array = []
+		if native:
+			cells = native_candidates(native_flood(context, origin, radius), context, origin)
+		else:
+			var flood: Dictionary = envelope
+			if radius != move:
+				flood = TacticalGridRules.movement_reachability_envelope(actor, loop["units"], TerrainEditRules.tiles(loop), loop["map_size"], radius)
+				if not flood["ok"]:
+					result["reason"] = flood["reason"]
+					return result
+			cells = flood["reachable_by_coord"].keys()
 		var mask := blocker_mask(side_word(actor) if radius == move else 0)
-		var pick := nearest_stoppable(flood["reachable_by_coord"].keys(), target, origin, rng, result["draws"], cell_words, mask, loop["map_size"])
+		var pick := nearest_stoppable(cells, target, origin, rng, result["draws"], cell_words, mask, loop["map_size"])
 		if pick.is_empty():
-			return result
-		result["refinements"].append({"radius": radius, "target": target, "pick": pick["cell"], "candidates": pick["candidates"], "crowded_skips": pick["crowded_skips"]})
-		target = pick["cell"]
+			if radius == move: return result
+		else:
+			result["refinements"].append({"radius": radius, "target": target, "pick": pick["cell"], "candidates": pick["candidates"], "crowded_skips": pick["crowded_skips"]})
+			target = pick["cell"]
 		if radius == move: break
 		radius = maxi(radius - 2, move)
 	result["candidates"] = int(result["refinements"].back()["candidates"])
+	# The move flood the walk animates: every cell the native flood reaches is in it.
+	if not envelope["reachable_by_coord"].has(target):
+		result["reason"] = "pick_outside_envelope"
+		return result
 	var route: Dictionary = envelope["reachable_by_coord"][target]
 	result.merge({"to": target, "path": route["path"], "cost": route["cost"], "route_cost": TacticalGridRules.manhattan(target, home), "reason": "nearest_to_point"}, true)
 	return result
+
+
+## 0x40f440(actor, radius, mode) -> 0x40f200／0x40ed50 with the map bounds on (0x4c1a74 = 0)
+## over a traversal `context` (ActorTraversalRules.prepare: mode, mask, cell words with the
+## other units' side bits, heights, no_block cells): {origin, radius, width, values}, each
+## cell's stored budget in the (2r+1)² buffer centred on `origin` (radius capped at 50,
+## origin radius + 1, 0 unreached). The four neighbours of the origin are flooded up, down,
+## left, right with budget `radius`; see _native_step for one cell.
+static func native_flood(context: Dictionary, origin: Vector2i, radius: int) -> Dictionary:
+	radius = mini(radius, 50)
+	var width := radius * 2 + 1
+	var values := PackedInt32Array()
+	values.resize(width * width)
+	values.fill(0)
+	values[radius * width + radius] = radius + 1
+	var size: Vector2i = context["size"]
+	var flood := {"origin": origin, "radius": radius, "width": width, "values": values, "context": context, "size": size}
+	if radius <= 0: return flood
+	var source: int = context["cell_heights"][origin.y * size.x + origin.x]
+	_native_step(flood, origin + Vector2i(0, -1), radius, 0, source)
+	_native_step(flood, origin + Vector2i(0, 1), radius, 1, source)
+	_native_step(flood, origin + Vector2i(-1, 0), radius, 2, source)
+	_native_step(flood, origin + Vector2i(1, 0), radius, 3, source)
+	return flood
+
+
+## 0x40ed50 for modes 2／3／7 (ground) and 6 (flying), directions 0 up, 1 down, 2 left,
+## 3 right. Ground: height gap d = new − previous; |d| ≥ 3 stops, an uphill d is paid on
+## entry (budget −= d, 0x40ef69); a cell carrying a mask bit (0x4000 or a hostile side)
+## stops unless a no_block unit stands there (0x407800 → 0x446b30); the cell stores the
+## budget when it beats the stored value (else stops), then passes on budget − 0x40eb80
+## (2 when the cell ahead or either side, not the one it came from, carries a mask bit,
+## else 1). Flying: 0x4000 stops, store, pass on budget − 1. Budget ≤ 0 stops. An up／down
+## cell goes on, then left, then right; a left／right cell goes up, down, then on. A tile's
+## move_cost above 1 (scenario tiles only; WRD cells cost 1) is paid on entry with the climb.
+static func _native_step(flood: Dictionary, cell: Vector2i, budget: int, direction: int, previous_height: int) -> void:
+	var values: PackedInt32Array = flood["values"]
+	var origin: Vector2i = flood["origin"]
+	var radius: int = flood["radius"]
+	var width: int = flood["width"]
+	var context: Dictionary = flood["context"]
+	var size: Vector2i = flood["size"]
+	var cell_flags: PackedInt32Array = context["cell_flags"]
+	var cell_heights: PackedInt32Array = context["cell_heights"]
+	var cell_costs: PackedInt32Array = context["cell_costs"]
+	var cell_pass: PackedByteArray = context["cell_pass"]
+	var mask := int(context["mask"])
+	var flying := int(context["mode"]) == 6
+	while true:
+		if cell.x < 0 or cell.y < 0 or cell.x >= size.x or cell.y >= size.y: return
+		var bx := cell.x - origin.x + radius
+		var by := cell.y - origin.y + radius
+		if bx < 0 or by < 0 or bx >= width or by >= width: return
+		var index := by * width + bx
+		var map_index := cell.y * size.x + cell.x
+		var word := cell_flags[map_index]
+		var height := cell_heights[map_index]
+		if flying:
+			if word & HARD_BLOCK_FLAG: return
+			if values[index] >= budget: return
+			values[index] = budget
+			budget -= 1
+		else:
+			var gap := height - previous_height
+			if absi(gap) >= 3: return
+			budget -= maxi(gap, 0) + cell_costs[map_index] - 1
+			if word & mask and cell_pass[map_index] == 0: return
+			if values[index] >= budget: return
+			values[index] = budget
+			budget -= _native_leave_cost(cell, direction, cell_flags, mask, size)
+		if budget <= 0: return
+		previous_height = height
+		match direction:
+			0, 1:
+				_native_step(flood, cell + (Vector2i(0, -1) if direction == 0 else Vector2i(0, 1)), budget, direction, height)
+				_native_step(flood, cell + Vector2i(-1, 0), budget, 2, height)
+				cell += Vector2i(1, 0)
+				direction = 3
+			2:
+				_native_step(flood, cell + Vector2i(0, -1), budget, 0, height)
+				_native_step(flood, cell + Vector2i(0, 1), budget, 1, height)
+				cell += Vector2i(-1, 0)
+			_:
+				_native_step(flood, cell + Vector2i(0, -1), budget, 0, height)
+				_native_step(flood, cell + Vector2i(0, 1), budget, 1, height)
+				cell += Vector2i(1, 0)
+
+
+## 0x40eb80(x, y, direction, mask): 2 when the cell ahead or one of the two beside the
+## direction of travel carries a mask bit, else 1; off-map cells carry none (0x40eb40).
+static func _native_leave_cost(cell: Vector2i, direction: int, cell_flags: PackedInt32Array, mask: int, size: Vector2i) -> int:
+	var checks: Array
+	match direction:
+		0: checks = [Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1)]
+		1: checks = [Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, 1)]
+		2: checks = [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0)]
+		_: checks = [Vector2i(0, -1), Vector2i(0, 1), Vector2i(1, 0)]
+	for delta in checks:
+		var point: Vector2i = cell + delta
+		if point.x < 0 or point.y < 0 or point.x >= size.x or point.y >= size.y: continue
+		if cell_flags[point.y * size.x + point.x] & mask: return 2
+	return 1
+
+
+## 0x413740's candidate cells over a native_flood buffer, row-major: reached, no unit on
+## the cell (0x70000; `origin`, the actor's own registered cell, included), and — a remake
+## stop rule kept from the move flood — no 0x100000 no-stop flag.
+static func native_candidates(flood: Dictionary, context: Dictionary, origin: Vector2i) -> Array:
+	var cells: Array = []
+	var radius: int = flood["radius"]
+	var width: int = flood["width"]
+	var values: PackedInt32Array = flood["values"]
+	var size: Vector2i = flood["size"]
+	var cell_flags: PackedInt32Array = context["cell_flags"]
+	for by in range(width):
+		for bx in range(width):
+			if values[by * width + bx] <= 0: continue
+			var cell := Vector2i(origin.x - radius + bx, origin.y - radius + by)
+			if cell == origin: continue
+			if cell_flags[cell.y * size.x + cell.x] & (ActorRoleRules.SIDE_MASK | 0x100000): continue
+			cells.append(cell)
+	return cells
 
 
 static func nearest_stoppable(cells: Array, target: Vector2i, origin: Vector2i, rng: Variant, draws: Array, cell_words: Dictionary, mask: int, map_size: Vector2i) -> Dictionary:
@@ -470,6 +609,8 @@ static func adjacent_blockers(cell: Vector2i, mask: int, cell_words: Dictionary,
 	return count
 
 
+## The prefix of `route` the actor can walk this turn: up to its move points, ending on the
+## last stoppable cell.
 static func advance_path(actor: Dictionary, route: Dictionary) -> Dictionary:
 	var end_index := 0
 	var cost := 0

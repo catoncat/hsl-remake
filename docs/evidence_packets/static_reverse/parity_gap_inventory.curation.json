@@ -1096,8 +1096,8 @@
     },
     {
       "id": "ai-first-battle-moves",
-      "difference": "第一关 AI 走位：普通追击精化（R7-AI51）、同速行动顺序、精化候选的 0x40d800 过滤（R7-NPC），以及持有目标（按注册槽序扫描、被排除的对象照样计分只在比较处退回、锁定对本回合新取目标也生效、保留不看可达、定点守卫前置于锁定）、普通类别逐槽换目标与 state 0xa 类别只掷一次、站位半格偏置排序、武器站位与出手按地形射程、法术分支只问行动者自身可用性并取覆盖最多的施放中心、法术落空后的 11% 侧移、第 52 关两名 069 出场为敌方（lane AI-PRIO）已照原版；原版裁判对第 3、6、10、51、52 关开场与第 51 关 r1／first_control 局面按充分混合的种子比较各单位盯谁、打谁、施不施法，规则类分歧为 0，随机类按 32 种子分布对照；剩余＝抽取结构不复刻（原版每次行动先抽优先级链，重制不抽，锁定掷是新抽，逐值对拍不齐，只要求分布对得上）、追击精化的洪泛度量与遍历顺序（r1 023_2 落 [16,16] 与第 52 关 ally024_2 落点比例偏离原版）、无普通攻击单位的追击走法、追击目标点仍按平铺射程、原版 0x410a50 走向自身格的返回值未执行",
-      "original": "单个决策函数已逐组原生核对；追击 0x4111a0、站位 0x40d8b0／0x413390、过滤 0x40d800、注册顺序 0x407660／0x4c34c0、目标扫描 0x40bb80（find_no_id 退回 0x40bd4f 前后）、锁定 0x441002、保留 0x43f55f、定点守卫 0x440ef1、类别掷 0x43fe0c、武器覆盖 0x40fa80／0x40fb20 与到站复查 0x441311、法术分支 0x40c570／0x40d340／0x40df70／0x40c9a0／0x40cca0、11% 侧移 0x43ff1f..0x44003c、069 换边 0x407ec0 已读并接入；精化的洪泛 0x40f440 代价度量未逐步核对；录屏对照见 battle_051_ai_moves，裁判对照见 original_enemy_turn §11",
+      "difference": "第一关 AI 走位：普通追击精化（R7-AI51）、同速行动顺序、精化候选的 0x40d800 过滤（R7-NPC），以及持有目标（按注册槽序扫描、被排除的对象照样计分只在比较处退回、锁定对本回合新取目标也生效、保留不看可达、定点守卫前置于锁定）、普通类别逐槽换目标与 state 0xa 类别只掷一次、站位半格偏置排序、武器站位与出手按地形射程、法术分支只问行动者自身可用性并取覆盖最多的施放中心、法术落空后的 11% 侧移、第 52 关两名 069 出场为敌方（lane AI-PRIO）已照原版；原版裁判对第 3、6、10、51、52 关开场与第 51 关 r1／first_control 局面按充分混合的种子比较各单位盯谁、打谁、施不施法，规则类分歧为 0，随机类按 32 种子分布对照；追击精化的洪泛（0x40f440／0x40ed50 移动模式、高差、0x40eb80 代价、深度优先与逐行候选）、no_attack 单位回合入口即结束（0x43f413）、追击目标点取持有目标位置、站位＝自身格走不动即结束回合（0x410a50 返回 0 → 0x441eb8）已照原版；喂原版抽签回放第 1 场 r1 与第 1／2 场开场各 32 种子落点逐行一致（352/352、894/896，另 2 行落点一致目标归口径）；剩余＝抽取结构不复刻（原版每次行动先抽优先级链，重制不抽，锁定掷是新抽，逐值对拍不齐，只要求分布对得上；不喂抽签时 r1 023_2 与第 2 场 ally024_2 的落点比例随持有目标比例偏离）、3×3 行动者的精化仍用移动包络、+0x80 bit 0x10000 时站位走不动重进优先级链未复刻",
+      "original": "单个决策函数已逐组原生核对；追击 0x4111a0、站位 0x40d8b0／0x413390、过滤 0x40d800、注册顺序 0x407660／0x4c34c0、目标扫描 0x40bb80（find_no_id 退回 0x40bd4f 前后）、锁定 0x441002、保留 0x43f55f、定点守卫 0x440ef1、类别掷 0x43fe0c、武器覆盖 0x40fa80／0x40fb20 与到站复查 0x441311、法术分支 0x40c570／0x40d340／0x40df70／0x40c9a0／0x40cca0、11% 侧移 0x43ff1f..0x44003c、069 换边 0x407ec0 已读并接入；精化洪泛 0x40f440／0x40ed50（模式跳转表 0x40f1c4）与 0x411080 参数、no_attack 入口 0x43f412 已读并接入；录屏对照见 battle_051_ai_moves，裁判对照见 original_enemy_turn §11",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_ai_navigation.md",
         "docs/evidence_packets/static_reverse/original_ai_decisions.md",
@@ -3361,18 +3361,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#86c3599d3c": {
       "item": "ai-skill-buckets",
       "text": "差异：原整体 16 状态 AI、目标锁定／等待、原路径选择与技能评分未复原；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_navigation.md#05ce00ef64": {
-      "item": "ai-first-battle-moves",
-      "text": "洪泛的原生代价度量与候选遍历顺序、奇数移动力最后一级收缩方式未复刻；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_navigation.md#6b6ec30b58": {
-      "item": "ai-first-battle-moves",
-      "text": "**未复刻**（provisional）：原 `0x410a50` 走向自身格的返回值未执行；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_navigation.md#74a32d797b": {
-      "item": "ai-first-battle-moves",
-      "text": "差异：洪泛的原生代价度量与候选遍历顺序、奇数移动力最后一级收缩、`0x410a50` 走向自身格的返回值未复刻（provisional）；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_ai_priority.md#9b430cd2a3": {
       "item": "ai-skill-buckets",

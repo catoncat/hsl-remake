@@ -1,13 +1,15 @@
 # 原 AI：持有目标、等待、守备固定点、追击走法与攻击站位
 
-> evidence: static-derived; resource-derived: EVEF 字值; provisional: 固定点逐格路线 · status: live · functions: 0x40c9a0, 0x40cca0, 0x40d530, 0x40d800, 0x40d8b0, 0x40f8b0, 0x40fa80, 0x40fb20, 0x411080, 0x411a30, 0x411b90, 0x413390, 0x413740, 0x42bd50, 0x43fbd6, 0x45ec32, 0x45ec63 · tools: hsltools/levels/seed.py, hsltools/probes/ai_navigation.py, run_ai_navigation_tests.gd, run_battle_reward_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 原版抽签回放; resource-derived: EVEF 字值; provisional: 固定点逐格路线 · status: live · functions: 0x40c9a0, 0x40cca0, 0x40d530, 0x40d800, 0x40d8b0, 0x40eb80, 0x40ed50, 0x40f200, 0x40f440, 0x40f8b0, 0x40fa80, 0x40fb20, 0x410a50, 0x411080, 0x4111a0, 0x411a30, 0x411b90, 0x413390, 0x413740, 0x42bd50, 0x43f413, 0x43fbd6, 0x45ec32, 0x45ec63 · tools: hsltools/levels/seed.py, hsltools/probes/ai_navigation.py, hsltools/probes/ai_replay.py, run_ai_navigation_tests.gd, run_battle_reward_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：`object+0x88` 持有目标，保留用曼哈顿域、新查询用圆域，`ai_lock` 概率决定是否换；`wait_round` 每行动减一，受伤／异常／近敌提前结束；`ai_fixed` 是以锚点为中心的半径；追击与回固定点共用 `0x4111a0 → 0x411080` 精化（半径 `max(18,移动力)` 洪泛取曼哈顿最近可停格、半径 −2 重复）；攻击站位由 `0x40d8b0 → 0x413390` 按半格偏置距离降序选取，并以地形射程到站复查（static-derived；118 组原指令执行＋反汇编读法）。
 - EVEF 实例回调 `0x42bd50` 把实例字写进物品槽与 25 个 AI／调级／装备字段；敌友走同一 dispatcher，无武器的普通路径不移动（static-derived；实例字值 resource-derived）。
 - 重制：`game/sim/AINavigationRules.gd`（`approach_home`／`approach_point`／`attack_stations`／`attack_station`／`target_in_range`）、`game/sim/loop/BattleLoopAI.gd`、`game/sim/ActorInitializationRules.gd` 复刻上述链；第一战原版第 1 回合 12 个 AI 落点全部落在重制可产出集合内（见 [battle_051_ai_moves](../runtime_observations/battle_051_ai_moves/README.md)）。
-- 差异：洪泛的原生代价度量与候选遍历顺序、奇数移动力最后一级收缩、`0x410a50` 走向自身格的返回值未复刻（provisional）；中心平分的双候选随机流与原全局 RNG 顺序未等价。
+- 追击精化的洪泛就是移动洪泛：`0x4111a0` 传末参 0，`0x411080` 取 `0x40f440`（受地图边界）与行动者 `0x40bab0` 模式（P 2／E 3／N 7，飞行 6），每步代价＝上坡差＋`0x40eb80` 的 1／2、高差 ≥3 与敌方占位（mask）挡；洪泛按上下左右深度优先、每格存最大余量；候选按缓冲逐行扫描、像素曼哈顿距离取最近，某一级无候选则目标点不变；目标点是持有目标的像素位置，不是射程格。`no_attack` 单位（模板 +0xa0 bit 2）在 `0x43f413` 直接结束回合，不追击不施法；追击选中的格不可能是自身格（有单位跳过），`0x410a50` 自身格返回 0 只出现在站位＝自身格且打不到时，回合结束（static-derived，反汇编读法）。原版裁判喂原版抽签回放：玩家第 1 场 · 棄卒（LEVEL051）r1 32 种子 352/352、第 1 场与第 2 场 · 惡夢的終曲（LEVEL052）开场 32 种子 894/896 一致（其余 2 行落点一致、目标标签归口径）（runtime-measured）。
+- 重制：`AINavigationRules.native_flood`／`_native_step`／`native_candidates` 逐步移植 `0x40f200`／`0x40ed50`／`0x413740`；`BattleLoopAI._ai_take_owned_turn` 对 `no_attack` 单位直接待机。
+- 差异：中心平分的双候选随机流与原全局 RNG 顺序未等价；3×3 行动者的精化仍用移动包络（provisional）；原版 +0x80 bit 0x10000 时站位走不动改重进优先级链未复刻。
 
 ## 证据
 
@@ -36,6 +38,12 @@
 | `0x40d8b0`→`0x413390` | 抹自身占位（`0x411b90`），以目标为原点按地形射程（`0x40fa80`／`0x40f8b0`）收集「洪泛到达 ∩ 射程格 ∩ 无单位」，上限 500；3×3 目标按九个身体格顺序试；按 `\|2dx+1\|+\|2dy+1\|` 降序插入，仅与前项等键时抽 `rand()&1`（`0x41362f..0x413716`） |
 | `0x440b2c` | 站位不比攻击者远且四邻有敌时，`rand(99)+1` > 92（近战）或 78（远程）仍走到站位；否则目标已在射程内就原地攻击；都不成立则走到站位 |
 | `0x441311..0x441369` | 到站后以行动者为原点重建覆盖测持有目标，为零 `je 0x441eb8` 结束回合不出手 |
+| `0x4111a0` | `0x411080(actor, x, y, 0x12, move, 0)`；两处调用：`0x43fc46`（回固定点）、`0x440d7f`（追击） |
+| `0x411080` | 行动者已在目的格心返回 0；半径 `max(0x12, move)`；模式：飞行（`0x446ad0`）6，否则末参 0 → `0x40bab0`（P 2／E 3／N 7），末参 1（剧情走位）→ 1；洪泛：末参 0 → `0x40f440`，1 → `0x40f350`；半径 ≠ move 时 `0x413900(点, 0)` 找到才改写目的点（返回值不看），半径 −2、不低于 move；半径 = move 时 `0x413900(点, 0x40ba20 阵营)`，找不到或 `0x410a50` 返回 0 → 返回 0 |
+| `0x40f200`／`0x40ed50`（`0x4c1a74 = 0`） | 半径上限 50，缓冲 (2r+1)²，中心 r+1，四邻按上、下、左、右以预算 r 递归；每格先查地图与缓冲边界；模式跳转表 `0x40f1c4`：2→mask `0x64000`、3→`0x54000`、7→`0x34000`（高差附加在前：`预算 −= 上坡差`，`\|高差\|≥3` 停），格字命中 mask 时要该格对象 `0x446b30`（模板 +0xa0 bit 0x10）才可过，缓冲值 ≥ 预算停，写入预算后 `预算 −= 0x40eb80`（前方与两侧有 mask 旗 2，否则 1）；6→只看 `0x4000`、减 1；预算 ≤0 停；上／下来的格先直行再左、右，左／右来的格先上、下再直行 |
+| `0x413740` | 缓冲逐行逐列；跳过 0／带 0x80 与格字 `& 0x70000` 的格（`0x40d8b0` 在 `0x40dc36` 重新登记自身，所以追击时自身格也跳过）；距离是格心像素对目标像素的曼哈顿；同距先抽 `0x458c10 & 1`；命中写回格心像素 |
+| `0x440c2c..0x440d11` | 站位走法：重定位掷中 `0x410a50(站位)`；否则 `0x40fb20` 在射程内原地攻击；否则 `0x40f440(move)` 后 `0x410a50(站位)`，返回 0（站位＝自身格或不可达）时对象 +0x80 带 0x10000 回 `0x440db1`，否则 `0x441eb8` 结束回合 |
+| `0x43f412..0x43f45a` | NPC 过程回合入口：非剧情阶段（`[0x4c1b00] & 0x4000000` 清）且 `0x446b00`（no_attack）为 1 → `0x411a30` 登记、`0x4483f0`、活记录 +0xe8 清零，当前行动者是自己则 `0x442084` 结束回合 |
 | `0x43feba`（抽取 `0x43ff32`） | 魔法进攻无法术目标时 `rand(100)<11` 且有站位：`0x40f440(actor,1,mode)` 一步洪泛内取离站位最近格（`0x413900`） |
 
 EVEF 实例回调 `0x42bd50`（过程 3／5 分支 `0x42bd96..`）：
@@ -52,6 +60,22 @@ EVEF 实例回调 `0x42bd50`（过程 3／5 分支 `0x42bd96..`）：
 
 **runtime-measured**（原版）：17 关 064 第 1 回合两次运行都落 (33,15)，重制精化链 (37,18)→(36,18)→(36,16)→(34,16)→(33,15) 一致；第 2 回合原版 (34,18)／(36,16)，重制 (36,16)；第 3 回合到 (37,18) 释放（[original_level17_escort](../runtime_observations/original_level17_escort/README.md)）。3 关 028_1 16/16 种子取右侧 (6,10) 而非上方 (5,9)。17 关 035_1 实测 `0x40f440(035_1,1,3)`→`0x413900` 取 (28,14)。第一战 021_3 站位 (14,11) 与原版一致。
 
+**runtime-measured：原版裁判喂抽签回放**（`ai_replay` 判定器，`_enemy_level.py batch --mix 20 --turns 1` 原版侧，SEEDS 1..32）：
+
+```
+L051 r1 : AI_REPLAY_CHECK_PASS levels=1 runs=32 rows=352 agree=352 random=0 rule=0 caliber=0 unreached=0
+L051+L052 开场 (--align): AI_REPLAY_CHECK_PASS levels=2 runs=64 rows=896 agree=894 random=0 rule=0 caliber=2 unreached=0
+```
+
+口径 2 行是第 52 场 ally024_2（s9／s13）：落点一致，原版目标 021_8、重制 021_7。不喂抽签的 32 种子落点分布（两边各自随机流）：
+
+| 单位 | 原版 | 重制 |
+| --- | --- | --- |
+| 第 1 场 · 棄卒（LEVEL051）r1 023_2 | [14,14]×20 [15,15]×6 [16,16]×4 [13,15]×2 | [14,14]×14 [16,16]×8 [15,15]×7 [17,17]×2 [13,15]×1 |
+| 第 2 场 · 惡夢的終曲（LEVEL052）ally024_2 | [14,35]×12 [13,36]×9 [12,37]×6 [15,36]×2 [11,38]×2 [17,38]×1 | [13,36]×15 [12,37]×5 [17,38]×4 [11,38]×4 [10,39]×2 [14,35]×2 |
+
+分布差来自持有目标比例（023_2 原版 026_1:021_1＝17:15，重制 10:22）与两边随机流不同；同一抽签下落点逐行一致，本包的精化链不是分歧来源。原生洪泛移植前后这 64 局重制输出逐字节相同。
+
 **user-confirmed**：原版第二战皇帝与上方法师／重装队不会立即下压；重制 all-wait 复跑皇帝第 1–8 回合 `wait_round` 7→0，两名 026 第 3 回合才动（[remake_all_wait_trace_level52.txt](../runtime_observations/original_level17_escort/remake_all_wait_trace_level52.txt)）。
 
 **重制侧回执**（Godot 真实控件，正常时钟，夹具改位置／HP／速度／控制资格）：绕障碍 4 回合保持目标经 (7,9)→(8,8)→(9,9)→(10,9) 攻击；近目标不连通时改追远目标；锁定目标死亡后重选；空格 (10,9) 为中心的毒雾／驱毒各覆盖 4 人一次 MP；缺 MP／禁魔改物理接近。数据在 [runtime_observations/ai_navigation/receipt.json](../runtime_observations/ai_navigation/receipt.json)。
@@ -64,7 +88,9 @@ EVEF 实例回调 `0x42bd50`（过程 3／5 分支 `0x42bd96..`）：
 - 回执：`home_approach.refinements`（含 `crowded_skips`）、`ai_decision.pursuit_approach`、`ai_decision.attack_station`（`order`／`draws`／`roll`／`reason`／`arrival_in_range`）、`wait_reason`（`fixed_point_reached`／`station_out_of_range`）。
 - 侧走 11% 支线：`AIDecisionRules.side_walk_roll`、`BattleLoopAI._ai_side_walk`；逐槽换目标：`BattleLoopAI._ai_station_switch`。
 - 表现：`BattleNavigationCue` 画实际路径；Wait 0.55 秒「待機」短反馈是重制可读性选择。
-- 重制组合（provisional）：`SkillTargetRules.candidate_centers` 遍历全部合法站位不复刻 250 缓存；`no_attack` 单位追击仍用最短路前缀；`approach_goals` 仍按平铺 RANGE。
+- 精化：`approach_point` 每级 `native_flood`（`0x40f200`／`0x40ed50`，移动模式、mask、高差、`0x40eb80`、no_block 占位格）→ `native_candidates`（`0x413740` 候选）→ `nearest_stoppable`；末级选中格的走法与耗费取本回合移动包络的路线；3×3 行动者仍用移动包络。
+- `no_attack`：`BattleLoopAI._ai_take_owned_turn` 在决策前待机（`wait_reason` `no_attack`，`0x43f413`）；活记录 +0xe8 清零与 `0x4483f0` 未接。
+- 重制组合（provisional）：`SkillTargetRules.candidate_centers` 遍历全部合法站位不复刻 250 缓存；`approach_goals` 按平铺 RANGE，只进 `candidate_filters.without_approach` 回执，不影响走法。
 
 ## 复现
 
@@ -72,9 +98,10 @@ EVEF 实例回调 `0x42bd50`（过程 3／5 分支 `0x42bd96..`）：
 
 ## 边界
 
-- 洪泛的原生代价度量与候选遍历顺序、奇数移动力最后一级收缩方式未复刻；替换证据为对 `0x411080` 用 17 关 WRD／占位做有界执行。
-- **未复刻**（provisional）：原 `0x410a50` 走向自身格的返回值未执行；重制把站位即自身格当原地攻击，到站复查照做。
+- 原生洪泛移植没有逐格原指令对照（静态读法＋整局回放一致）；3×3 行动者的精化洪泛未移植。
+- `0x410a50` 自身格：重制把站位即自身格当原地攻击，到站复查不中即结束回合，与原版 `0x441eb8` 同果；+0x80 bit 0x10000 时原版重进优先级链未复刻。
 - `0x43feba` 与 `0x410a50`（自身格）尚无有界原指令执行。
+- 不喂抽签的落点分布差属于抽取结构（持有目标比例、随机流），见差异清单 `ai-first-battle-moves`。
 - 中心平分的双候选流与原全局 RNG 顺序未等价。
 - 大型占地、特殊移动模式、全部高差／地块 flags 另见 [original_movement.md](original_movement.md)。
 - 护送战全程逐格一致与 80% 拒绝对路线的影响不由本包支持；逐格一致只在两次原版运行一致处声明。

@@ -197,7 +197,7 @@ func route_cases() -> void:
 	check(route["cost"] == 5 and not route["path"].has(Vector2i(3,5)), "full-map search finds a lower-cost detour instead of blindly following geometric distance")
 	var pointless := fixture("cast")
 	var caster: Dictionary = pointless["units"][0]
-	caster["no_attack"] = true
+	caster["weapon_code"] = 0  # no ordinary attack: 0x409090 zero (a no_attack unit would end its turn at 0x43f413 before any cast)
 	TestSuite.own(pointless, "skill_book")["actors"][caster["actor_id"]]["supported_initial_ids"] = [POISON]
 	TestSuite.own(pointless, "skill_book")["skills"][POISON]["fields"]["use_ratio"] = "100"
 	pointless["units"][1]["status_flags"] = 1

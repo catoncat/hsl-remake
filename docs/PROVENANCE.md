@@ -455,7 +455,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleUISkin](../game/common/BattleUISkin.gd) | layout | — | set_wrapped_text's break-before-name rule for the shaped UI labels; those labels have no original counterpart read |
 | [GameSettings](../game/settings/GameSettings.gd) | rules | — | 設定選項 row semantics read from the baked Title039 labels; original mixer not located |
 | [AIDecisionRules](../game/sim/AIDecisionRules.gd) | rules | — | stable-id adapter |
-| [AINavigationRules](../game/sim/AINavigationRules.gd) | rules | — | shortest-path tie-breaks, guard routes, refinement flood metric and candidate order are remake composition; approach_goals (candidate_filters, no_attack pursuit) use flat RANGE offsets |
+| [AINavigationRules](../game/sim/AINavigationRules.gd) | rules | — | shortest-path tie-breaks, guard routes, a 3×3 actor's refinement flood are remake composition; approach_goals (candidate_filters receipt only) use flat RANGE offsets |
 | [AISelfPreservation](../game/sim/AISelfPreservation.gd) | rules | — | supported-effect dispatcher is a remake adapter; MAGIC-then-SPECIAL cure order |
 | [AISkillPlanning](../game/sim/AISkillPlanning.gd) | rules | — | legal-intent enumeration over the current WRD grid, per-channel draw of 0x40d4e0 |
 | [AISupportPlanning](../game/sim/AISupportPlanning.gd) | rules | — | destination enumeration, effective coverage and live-id adapters |

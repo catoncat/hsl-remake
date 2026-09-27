@@ -59,7 +59,7 @@ static func build(mode: String) -> Dictionary:
 		foe["growth_profile"]["source"].merge({"attack_power":1000,"attack_back":100},true)
 	if mode == "escape":foe["coord"] = Vector2i(18,16)
 	if mode == "ai":
-		owner["player_commandable"] = false;owner["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY;owner["no_attack"] = true
+		owner["player_commandable"] = false;owner["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY;owner["weapon_code"] = 0
 		friend["growth_profile"]["source"]["speed"] = 400
 		loop["player_unit_id"] = "tina"
 		# Player006 has no complete source AI strategy. This explicitly authored

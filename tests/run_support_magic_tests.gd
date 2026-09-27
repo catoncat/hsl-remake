@@ -443,7 +443,7 @@ func dispel_decisions_and_combat() -> void:
 	var loop := stat_fixture()
 	var actor := BattlePlayLoop.unit_ref(loop,"tina")
 	actor["player_commandable"] = false; actor["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY
-	actor["no_attack"] = true; actor["inventory"] = [0,0,0,0,0,0,0,0]
+	actor["weapon_code"] = 0; actor["inventory"] = [0,0,0,0,0,0,0,0]  # spell-only: no_attack would end the AI turn at 0x43f413
 	actor["equipment"].append({"slot":"accessory2","item_code":227})
 	own(loop, "skill_book")["actors"]["002"]["supported_initial_ids"] = [DISPEL]
 	own(loop, "skill_book")["skills"][DISPEL]["fields"]["use_ratio"] = "100"

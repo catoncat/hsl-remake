@@ -151,6 +151,12 @@ static func ai_take_turn(loop: Dictionary, actor_id: String, rng: Variant = null
 ## this actor on this state (`step_ai_turn`), so the preflight does not run it again.
 static func _ai_take_owned_turn(next: Dictionary, loop: Dictionary, actor_id: String, rng: Variant = null, skill_inputs_checked: bool = false) -> Dictionary:
 	var actor: Dictionary = BattlePlayLoop.unit_ref(next, actor_id)
+	# 0x43f412..0x43f45a: an AI unit whose template carries no_attack (+0xa0 bit 2, 0x446b00)
+	# re-registers its cell and ends the turn before any decision — no pursuit, no cast —
+	# unless the story-phase bit 0x4000000 of [0x4c1b00] is set (never during an AI turn).
+	if bool(actor.get("no_attack", false)):
+		return {"loop": next, "action": {"actor_id": actor_id, "kind": "wait", "wait_reason": "no_attack",
+			"from": actor["coord"], "to": actor["coord"], "path": [], "source": "0x43f413"}}
 	if idle_without_strategy(next, actor):
 		return {"loop": next, "action": {"actor_id": actor_id, "kind": "wait", "wait_reason": "no_selectable_target",
 			"from": actor["coord"], "to": actor["coord"], "path": [], "source": "undeclared_ai_empty_target_scan"}}
@@ -532,23 +538,15 @@ static func _ai_skill_attempt(loop: Dictionary, next: Dictionary, turn: Dictiona
 ## held target through the refinement walk 0x4111a0 (0x440d5c..0x440d84), or waits. That
 ## walk measures toward the target's cell and needs no full route to it (static-derived
 ## 0x4111a0／0x413740: floods from the actor, nearest stoppable cell by distance), so an
-## armed unit walks toward an enclosed target too. A unit without an ordinary attack (only
-## cast positions to reach) keeps the remake's prefix of the route to its nearest goal;
-## unarmed (0x409090 zero) ends the turn at 0x441eb8.
+## armed unit walks toward an enclosed target too. Unarmed (0x409090 zero) ends the turn at
+## 0x441eb8; a no_attack unit never gets here (it ends its turn at 0x43f413).
 static func _ai_pursuit(next: Dictionary, turn: Dictionary) -> Dictionary:
 	var actor_id: String = turn["actor_id"]
 	var target: Dictionary = next["units"][int(turn["target_index"])]
 	var action: Dictionary = turn["action"]
-	var route: Dictionary = turn["prepared"]["approaches"].get(target["id"], {})
 	var armed: bool = not bool(turn["prepared"]["candidate_filters"]["unarmed"])
 	action["wait_reason"] = "no_accepted_action" if armed else "no_valid_action"
-	if not route.is_empty() and bool(turn["actor"].get("no_attack", false)):
-		var advance := AINavigationRules.advance_path(turn["actor"], route)
-		if advance["path"].size() > 1:
-			BattlePlayLoop.set_unit_coord(next, actor_id, advance["to"])
-			action.merge(advance, true)
-			action.merge({"kind": "move", "toward": str(target["id"]), "purpose": "pursuit"}, true)
-	elif armed:
+	if armed:
 		var approach := AINavigationRules.approach_point(next, turn["actor"], turn["prepared"]["envelope"], target["coord"], turn["source"])
 		turn["decision"]["pursuit_approach"] = {"goal": approach["goal"], "refinements": approach["refinements"], "draws": approach["draws"], "reason": approach["reason"], "source": "0x440d5c / 0x4111a0 / 0x411080 / 0x413740"}
 		if approach["path"].size() > 1:
