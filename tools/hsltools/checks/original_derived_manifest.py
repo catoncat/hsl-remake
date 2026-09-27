@@ -22,6 +22,7 @@ import subprocess
 
 from hsltools import original_content
 from hsltools.registry import CheckFailed, Context, GeneratedFilesTask
+from hsltools.sources.shp import png_sha256
 
 OUTPUT = original_content.MANIFEST_RELATIVE
 
@@ -71,19 +72,10 @@ def sha256(path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def rgba_sha256(path) -> str:
-    """SHA-256 of the decoded image: b'<width>x<height>\n' + its RGBA bytes (palette, tRNS and
-    bit depth normalised by Pillow), independent of the PNG encoder."""
-    from PIL import Image
-    with Image.open(path) as image:
-        rgba = image.convert('RGBA')
-        return hashlib.sha256(f'{rgba.width}x{rgba.height}\n'.encode() + rgba.tobytes()).hexdigest()
-
-
 def content_hash(path) -> dict[str, str]:
     """The manifest's hash field for one file: {'rgba_sha256': ...} for a PNG, else {'sha256': ...}."""
     if path.suffix.lower() == '.png':
-        return {'rgba_sha256': rgba_sha256(path)}
+        return {'rgba_sha256': png_sha256(path)}
     return {'sha256': sha256(path)}
 
 
@@ -93,7 +85,7 @@ class OriginalDerivedManifestTask(GeneratedFilesTask):
     inputs = ('content/', 'docs/evidence_packets/', 'docs/evidence_questions/')
     outputs = (OUTPUT,)
     replaces = ()  # born as a registry task: no historical command to replace
-    scripts = ('tools/hsltools/checks/original_derived_manifest.py', 'tools/hsltools/original_content.py')
+    scripts = ('tools/hsltools/checks/original_derived_manifest.py', 'tools/hsltools/original_content.py', 'tools/hsltools/sources/shp.py')
 
     def render(self, ctx: Context) -> dict[str, bytes]:
         paths = tracked_original_derived(ctx)

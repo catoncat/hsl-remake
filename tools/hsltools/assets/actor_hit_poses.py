@@ -26,6 +26,7 @@ from pathlib import Path
 
 from hsltools.paths import ROOT
 from hsltools.registry import Context, ScriptCheckTask, original_archive
+from hsltools.sources.shp import png_sha256
 
 SHAPEDEF = Path('content/imported/hsl/global/tables/SHAPEDEF.TXT')
 OUTPUT_ROOT = Path('content/imported/hsl/shared/actor_hit_poses')
@@ -108,7 +109,7 @@ def check() -> None:
     for key, entry in manifest['poses'].items():
         assert entry['source_member'] == poses[key], f'{key}: hit member drifted'
         data = (ROOT / entry['png_path']).read_bytes()
-        assert _sha(data) == entry['sha256'], f'{key}: pose PNG differs from the manifest'
+        assert png_sha256(data) == entry['sha256'], f'{key}: pose PNG differs from the manifest'
         assert entry['res_path'] == 'res://' + entry['png_path'] and len(entry['draw_origin']) == 2
     fielded = walk_keys()
     missing = sorted(fielded - set(poses) - set(same) - set(manifest['without_hit_field']))
@@ -135,7 +136,7 @@ def build(pak: Path) -> None:
                         'draw_origin': list(struct.unpack_from('<ii', payload, 0x1C)),
                         'draw_origin_evidence': 'static-derived:0x45fa75-0x45fab4',
                         'png_path': target.as_posix(), 'res_path': 'res://' + target.as_posix(),
-                        'sha256': _sha((ROOT / target).read_bytes())}
+                        'sha256': png_sha256((ROOT / target))}
     fielded = walk_keys()
     manifest = {'schema': SCHEMA, 'evidence_tier': 'resource-derived', 'source': SHAPEDEF.as_posix(),
                 'source_sha256': _sha((ROOT / SHAPEDEF).read_bytes()),
@@ -148,10 +149,23 @@ def build(pak: Path) -> None:
     print(f'ACTOR_HIT_POSES_IMPORT_PASS poses={len(entries)}')
 
 
+def walk_manifest_inputs() -> tuple[str, ...]:
+    """walk_keys()'s files as concrete task inputs (the registry orders producers by path, not by
+    glob): the chapter-01 and shared manifests and each cast level's manifest from level_actors."""
+    from hsltools.levels.actors import cast_levels, level_dir
+    return ('content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json',
+            'content/imported/hsl/shared/actor_walk_frames/actor_walk_manifest.json',
+            *(f'{level_dir(level).relative_to(ROOT).as_posix()}/actor_walk_frames/actor_walk_manifest.json' for level in cast_levels()))
+
+
 class ActorHitPosesTask(ScriptCheckTask):
     name = 'actor_hit_poses'
     family = 'assets'
-    inputs = (SHAPEDEF.as_posix(), 'content/**/actor_walk_manifest.json')
+
+    @property
+    def inputs(self) -> tuple[str, ...]:
+        return (SHAPEDEF.as_posix(), *walk_manifest_inputs())
+
     outputs = (OUTPUT_ROOT.as_posix() + '/',)
     replaces = ()  # born after the migration: no historical command to replace
     scripts = ('tools/hsltools/assets/actor_hit_poses.py',)

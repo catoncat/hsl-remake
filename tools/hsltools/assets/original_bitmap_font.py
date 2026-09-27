@@ -39,7 +39,6 @@ Registry task original_bitmap_font (family assets); generate reads the original 
 """
 from __future__ import annotations
 
-import hashlib
 import io
 import json
 import re
@@ -48,6 +47,7 @@ from pathlib import Path
 from hsltools.data.simplified_chars import OUT as CHAR_TABLE, REVIEW
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.original_font import BIG5_GLYPH_RANGES, FONTS, glyph_index, read_font
+from hsltools.sources.shp import png_sha256
 
 OUT_DIR = Path('content/generated/hsl/fonts')
 TABLE = OUT_DIR / 'original_fonts.json'
@@ -177,7 +177,7 @@ def face_record(name: str, atlas: bytes, count: int) -> dict:
     rows = -(-count // FULL_COLUMNS)
     return {
         'atlas': (OUT_DIR / f'{name}.png').as_posix(),
-        'atlas_sha256': hashlib.sha256(atlas).hexdigest() if atlas else '',
+        'atlas_sha256': png_sha256(atlas) if atlas else '',
         'atlas_size': [FULL_COLUMNS * full_w, rows * full_h + half_h],
         'members': [f'@:\\data\\{full}', f'@:\\data\\{half}'],
         'full_cell': [full_w, full_h],

@@ -13,7 +13,7 @@ from hsltools.data import OriginalArchiveTask, printed_last_line
 from hsltools.registry import Context
 from hsltools.sources.pak import (find_decoded_paks_packages, find_paks_record_by_name,
     read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes)
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import TABLES, blocks, digest, parse_table
 ROOT = Path('content/imported/hsl/shared/mage_magic')
 SOURCE = Path('content/imported/hsl/shared/first_skill')
@@ -64,7 +64,7 @@ def build(pak):
         target = ROOT / ('cast_star%02d.png' % index)
         write_shp_preview(raw, parse_shp(raw), target)
         result['casting']['frames'].append({'res_path': 'res://' + target.as_posix(), 'source_member': member,
-            'source_sha256': digest(raw), 'png_sha256': digest(target.read_bytes()), 'draw_origin': list(struct.unpack_from('<ii',raw,0x1c))})
+            'source_sha256': digest(raw), 'png_sha256': png_sha256(target), 'draw_origin': list(struct.unpack_from('<ii',raw,0x1c))})
     for binding in result['bindings'].values():
         for obj in binding['objects'].values():
             prefix,number=re.fullmatch(r'(.+_)(\d+)\.SHP',obj['obj_Shape_Name']).groups()
@@ -73,7 +73,7 @@ def build(pak):
                 if member in result['images']:continue
                 raw=read(member);target=ROOT/(member.split('\\')[-1].lower()+'.png')
                 write_shp_preview(raw,parse_shp(raw),target)
-                result['images'][member]={'res_path':'res://'+target.as_posix(),'source_sha256':digest(raw),'png_sha256':digest(target.read_bytes()),'draw_origin':list(struct.unpack_from('<ii',raw,0x1c))}
+                result['images'][member]={'res_path':'res://'+target.as_posix(),'source_sha256':digest(raw),'png_sha256':png_sha256(target),'draw_origin':list(struct.unpack_from('<ii',raw,0x1c))}
             member=obj.get('obj_X1','')
             if not member.startswith('WAV\\') or member in result['sounds']:continue
             raw=read(member)
@@ -92,8 +92,8 @@ def check():
     assert data['definition']==definitions() and data['bindings']==source_bindings()
     assert data['casting']['object']['obj_code'] == '399'
     assert len(data['casting']['frames']) == int(data['casting']['object']['obj_Shape_Number'])
-    for item in data['casting']['frames']: assert digest(Path(item['res_path'].removeprefix('res://')).read_bytes()) == item['png_sha256']
-    for item in data['images'].values():assert digest(Path(item['res_path'].removeprefix('res://')).read_bytes())==item['png_sha256']
+    for item in data['casting']['frames']: assert png_sha256(Path(item['res_path'].removeprefix('res://'))) == item['png_sha256']
+    for item in data['images'].values():assert png_sha256(Path(item['res_path'].removeprefix('res://')))==item['png_sha256']
     for item in data['sounds'].values():assert digest(Path(item['res_path'].removeprefix('res://')).read_bytes())==item['sha256']
     print('MAGE_MAGIC_CHECK_PASS')
 

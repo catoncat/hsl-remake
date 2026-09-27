@@ -16,7 +16,7 @@ from hsltools.paths import ROOT
 from hsltools.registry import CheckFailed, Context
 from hsltools.sources.pak import (find_decoded_paks_packages, find_paks_record_by_name,
     read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes)
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import TABLES,blocks,digest
 
 OUT=Path('content/imported/hsl/shared/poison_arrow')
@@ -53,7 +53,7 @@ def build(pak:Path,data):
         members.extend(groups[name])
     for member in members:
         raw=read(member);path=OUT/(member.split('\\')[-1].lower()+'.png');write_shp_preview(raw,parse_shp(raw),path)
-        images[member]=dict(res_path='res://'+path.as_posix(),source_sha256=digest(raw),png_sha256=digest(path.read_bytes()),draw_origin=list(struct.unpack_from('<ii',raw,0x1c)))
+        images[member]=dict(res_path='res://'+path.as_posix(),source_sha256=digest(raw),png_sha256=png_sha256(path),draw_origin=list(struct.unpack_from('<ii',raw,0x1c)))
     sounds={}
     for key,member in [('shoot','WAV\\SHOOT001.WAV'),('hit','WAV\\BOMB0024.WAV')]:
         raw=read(member)
@@ -71,7 +71,7 @@ def check(data):
     if manifest['definition']!=data or len(manifest['images'])!=11:raise ValueError('Poison Arrow asset identity differs')
     if [len(manifest['groups'][key]) for key in data['objects']]!=[1,4,5]:raise ValueError('Poison Arrow source frame count differs')
     for row in manifest['images'].values():
-        if digest(Path(row['res_path'].removeprefix('res://')).read_bytes())!=row['png_sha256']:raise ValueError('Poison Arrow image changed')
+        if png_sha256(Path(row['res_path'].removeprefix('res://')))!=row['png_sha256']:raise ValueError('Poison Arrow image changed')
     for row in manifest['sounds'].values():
         if digest(Path(row['res_path'].removeprefix('res://')).read_bytes())!=row['sha256']:raise ValueError('Poison Arrow audio changed')
 

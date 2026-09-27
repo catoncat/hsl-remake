@@ -29,6 +29,7 @@ from typing import Any
 
 from hsltools.data.world_map import DEFAULT_OUTPUT_DIR, DEFAULT_PAK_ROOT, MEMBERS, PakReader, _sha, render_shp_png
 from hsltools.registry import Context, NotGeneratable, ScriptCheckTask
+from hsltools.sources.shp import png_sha256
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -205,7 +206,7 @@ def build(pak_root: Path, output_dir: Path) -> tuple[dict[str, Any], dict[str, A
             "width": meta["width"],
             "height": meta["height"],
             "source_sha256": _sha(raw),
-            "png_sha256": _sha(png),
+            "png_sha256": png_sha256(png),
         }
 
     town_messages = {
@@ -295,7 +296,7 @@ def check_offline(output_dir: Path) -> list[str]:
         png = output_dir / res_path.replace("res://content/imported/hsl/global/world_map/", "")
         if not png.is_file():
             issues.append(f"portrait png missing: {png}")
-        elif _sha(png.read_bytes()) != entry.get("png_sha256"):
+        elif png_sha256(png) != entry.get("png_sha256"):
             issues.append(f"portrait png sha mismatch: {key}")
     for token, speaker in messages.get("speakers", {}).items():
         if speaker.get("portrait_key") and speaker["portrait_key"] not in portraits.get("actors", {}):

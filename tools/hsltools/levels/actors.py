@@ -24,6 +24,7 @@ from hsltools.legacy import SHARED_ACTOR_POOL
 from hsltools.levels import actor_chain_levels, legacy_failures, original_pak, profile
 from hsltools.paths import ORIGINAL_PAK, ROOT
 from hsltools.registry import Context, NotGeneratable, Task
+from hsltools.sources.shp import png_sha256
 
 DEFAULT_PAK = ORIGINAL_PAK
 SHARED_WALK = ROOT / 'content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json'
@@ -167,7 +168,7 @@ def build_portraits(level: int, speakers: tuple[str, ...], pak: Path, shape_face
         target.parent.mkdir(parents=True, exist_ok=True)
         write_shp_preview(raw, parse_shp(raw), target)
         result.setdefault('shape_faces', {})[member] = {
-            'source_member': member, 'res_path': _res(target), 'source_sha256': _sha(raw), 'png_sha256': _sha(target.read_bytes()),
+            'source_member': member, 'res_path': _res(target), 'source_sha256': _sha(raw), 'png_sha256': png_sha256(target),
             'usage': 'actShapeMessage portrait; the speaker name is the token\'s resource id, resolved through RESOURCE.TXT at runtime'}
     for code in speakers:
         if code in shared['actors']:
@@ -182,7 +183,7 @@ def build_portraits(level: int, speakers: tuple[str, ...], pak: Path, shape_face
         write_shp_preview(raw, parse_shp(raw), target)
         result['actors'][code] = {'source_member': row['picture'], 'name': _resolve_name(row['name'], names),
                                   'name_policy': PORTRAIT_NAME_POLICY,
-                                  'res_path': _res(target), 'source_sha256': _sha(raw), 'png_sha256': _sha(target.read_bytes())}
+                                  'res_path': _res(target), 'source_sha256': _sha(raw), 'png_sha256': png_sha256(target)}
     return result
 
 
@@ -245,7 +246,7 @@ def build_shape_sets(level: int, sets: dict[str, dict], pak: Path) -> dict:
             write_shp_preview(raw, parse_shp(raw), target)
             frames.append({'index': index, 'source_member': member, 'draw_origin': list(struct.unpack_from('<ii', raw, 0x1C)),
                            'draw_origin_evidence': 'static-derived:0x45fa75-0x45fab4', 'res_path': _res(target),
-                           'source_sha256': _sha(raw), 'png_sha256': _sha(target.read_bytes())})
+                           'source_sha256': _sha(raw), 'png_sha256': png_sha256(target)})
         result['sets'][name] = {'actor_id': spec['actor_id'], 'source_token': spec['source_token'], 'frame_count': len(frames),
                                 'fps': 8, 'fps_evidence_tier': 'provisional', 'frames': frames}
     return result
@@ -298,13 +299,13 @@ def check(level: int) -> dict[str, int]:
         elif row['name'] != _resolve_name(players[int(code)]['name'], names) or row.get('name_policy') != PORTRAIT_NAME_POLICY:
             raise SystemExit(f'level-only portrait {code} label is not the PLAYERS name-field policy; rebuild')
         data = (ROOT / row['res_path'].removeprefix('res://')).read_bytes()
-        if _sha(data) != row['png_sha256']:
+        if png_sha256(data) != row['png_sha256']:
             raise SystemExit(f'portrait {code} differs from manifest')
     if set(portraits.get('shape_faces', {})) != set(cast.get('shape_faces', ())):
         raise SystemExit('level shape-message faces differ from the level profile cast')
     for member, row in portraits.get('shape_faces', {}).items():
         data = (ROOT / row['res_path'].removeprefix('res://')).read_bytes()
-        if _sha(data) != row['png_sha256']:
+        if png_sha256(data) != row['png_sha256']:
             raise SystemExit(f'shape face {member} differs from manifest')
     if cast.get('shape_sets'):
         shape_sets = json.loads((out / 'actor_shape_sets/manifest.json').read_text(encoding='utf-8'))
@@ -315,7 +316,7 @@ def check(level: int) -> dict[str, int]:
                 raise SystemExit(f'shape set {name} members differ from the level profile cast')
             for frame in entry['frames']:
                 data = (ROOT / frame['res_path'].removeprefix('res://')).read_bytes()
-                if _sha(data) != frame['png_sha256'] or len(frame['draw_origin']) != 2:
+                if png_sha256(data) != frame['png_sha256'] or len(frame['draw_origin']) != 2:
                     raise SystemExit(f'shape set frame {frame["res_path"]} differs from manifest')
     audio = json.loads((out / 'actor_audio.json').read_text(encoding='utf-8'))
     if set(audio['characters']) != {str(int(code)) for code in cast['actors']}:

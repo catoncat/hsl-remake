@@ -16,7 +16,7 @@ from hsltools.data.skill_book import build as skill_book
 from hsltools.registry import Context
 from hsltools.sources.pak import (find_decoded_paks_packages, find_paks_record_by_name,
     read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes)
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import TABLES, digest
 OUT = Path('content/imported/hsl/chapter01/support_magic')
 SOURCES = [TABLES/'MAGIC.TXT', TABLES/'OBJ-ALL.H', SOURCE/'effects.txt', SOURCE/'global.obs']
@@ -55,7 +55,7 @@ def build(pak, spells=None, out=OUT, schema='hsl_support_magic_resources.v1', fr
                 if member in result['images']: continue
                 raw=read(member); path=out/(member.split('\\')[-1].lower()+'.png')
                 write_shp_preview(raw,parse_shp(raw),path)
-                result['images'][member]=dict(res_path='res://'+path.as_posix(),source_sha256=digest(raw),png_sha256=digest(path.read_bytes()),draw_origin=list(struct.unpack_from('<ii',raw,0x1c)))
+                result['images'][member]=dict(res_path='res://'+path.as_posix(),source_sha256=digest(raw),png_sha256=png_sha256(path),draw_origin=list(struct.unpack_from('<ii',raw,0x1c)))
             obj['source_frames']=frames
             for value in obj.values():
                 if isinstance(value,str) and value.startswith('WAV\\'): sounds.add(value)
@@ -86,7 +86,7 @@ def check(spells=None, out=OUT, frame_members=None):
             assert len(expected)==int(obj['obj_Shape_Number']) and derived['source_frames']==expected
             assert all(member in data['images'] for member in derived['source_frames'])
         assert all(member in data['sounds'] for member in re.findall(r'WAV\\[\w]+\.WAV',','.join(binding['actions'])))
-    for item in data['images'].values(): assert digest(Path(item['res_path'].removeprefix('res://')).read_bytes())==item['png_sha256']
+    for item in data['images'].values(): assert png_sha256(Path(item['res_path'].removeprefix('res://')))==item['png_sha256']
     for item in data['sounds'].values(): assert digest(Path(item['res_path'].removeprefix('res://')).read_bytes())==item['sha256']
     print(f'SUPPORT_ASSETS_PASS spells={len(data["spells"])} images={len(data["images"])} sounds={len(data["sounds"])}')
 

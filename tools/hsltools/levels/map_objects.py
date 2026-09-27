@@ -19,6 +19,7 @@ from hsltools.legacy import imported_levels
 from hsltools.levels import legacy_failures, original_pak, profile
 from hsltools.paths import ORIGINAL_PAK, ROOT
 from hsltools.registry import Context, NotGeneratable, Task
+from hsltools.sources.shp import png_sha256
 
 DEFAULT_PAK = ORIGINAL_PAK
 PREVIEW_ROOT = ROOT / 'content/imported/hsl/shared/shape_previews/map_object'
@@ -380,7 +381,7 @@ def build(level: int, pak: Path) -> dict[str, int]:
             target = PREVIEW_ROOT / f'{shape_id}.png'
             if not target.is_file():
                 write_shp_preview(raw, parse_shp(raw), target)
-            previews[shape_id] = {'res_path': 'res://' + target.relative_to(ROOT).as_posix(), 'png_sha256': _sha(target.read_bytes())}
+            previews[shape_id] = {'res_path': 'res://' + target.relative_to(ROOT).as_posix(), 'png_sha256': png_sha256(target)}
     out_dir = level_dir(level)
     out_dir.mkdir(parents=True, exist_ok=True)
     manifest = {
@@ -451,7 +452,7 @@ def check(level: int) -> dict[str, int]:
     combined_children = [child for group in combined for child in group['children']]
     for shape_id, preview in manifest['previews'].items():
         path = ROOT / preview['res_path'].removeprefix('res://')
-        if not path.is_file() or _sha(path.read_bytes()) != preview['png_sha256']:
+        if not path.is_file() or png_sha256(path) != preview['png_sha256']:
             raise SystemExit(f'map object preview differs or is missing: {path}')
         origin = alignment['shapes'].get(shape_id, {}).get('draw_origin')
         if not (isinstance(origin, list) and len(origin) == 2 and all(isinstance(v, int) for v in origin)):
@@ -468,7 +469,9 @@ class LevelMapObjectsTask(Task):
         self.level = level
         self.name = f'level_map_objects:{level}'
         folder = level_dir(level).relative_to(ROOT).as_posix()
-        self.outputs = (f'{folder}/map_objects.json', f'{folder}/map_object_alignment.json')
+        # PREVIEW_ROOT is shared: each level writes the previews of its own shapes when missing (all 235
+        # tracked ones), so every level task declares the directory.
+        self.outputs = (f'{folder}/map_objects.json', f'{folder}/map_object_alignment.json', PREVIEW_ROOT.relative_to(ROOT).as_posix() + '/')
         self.inputs = (seed_path(level).relative_to(ROOT).as_posix(), *profile.input_path(level))
         self.replaces = (f'tools/hsl_level_map_objects.py --level {level} --check',)
         self.scripts = ('tools/hsltools/levels/map_objects.py', 'tools/hsltools/levels/profile.py', 'tools/hsltools/sources/actor_walk_frames.py')

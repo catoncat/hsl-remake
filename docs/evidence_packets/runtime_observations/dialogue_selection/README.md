@@ -10,8 +10,8 @@
 | --- | --- | --- |
 | [原对白 02/frame_004（重制画面）](../../../screenshots/remake/dialogue-board-bottom.png)（原版帧见私有档案：`runtime_observations/original_gameplay_reference/02_dialogue_system/frame_004.png`） 是左肖像、石纹金框与姓名／正文分区；[旧开场](before-opening.png) 是较窄黑底 | [开场](opening.png) 复用原 BOARD02 与肖像；姓名和正文、继续符号分离 | `BattleDialogue`；Runtime 只递交当前消息并等待所有显示页 |
 | 战中旧代码每 40 字截页，混入姓名／继续提示 | [长台词首页](story-first.png) 和 [末页](story-last.png) 按实际排版每页三行；全文不切片，末页确认才推进消息 | Presentation 保留整条消息队列，共用 Dialogue |
-| [原状态 06/frame_006](../original_gameplay_reference/06_status_and_stats_screen/frame_006.png) 显示魔擊力 17%；旧实现丢失后缀 | [状态页](status.png) 显示 17%；成长后定向回归显示 18%，没有乘除 100 | `BattleStatusPanel.show_unit` |
-| [原选择 08/frame_004](../original_gameplay_reference/08_attack_target_selection/frame_004.png) 是气刃斩；空格也有技能名和光标 | [空格](special-empty.png)、[合法目标](special-target.png) 保留当前技能名；仅合法敌人展示目标和实际命中率，空格不残留上一目标信息 | `BattleSelectionCursor` 与 Presentation 的选择／预览方法 |
+| 原状态 06/frame_006（原版帧见私有档案：`runtime_observations/original_gameplay_reference/06_status_and_stats_screen/frame_006.png`） 显示魔擊力 17%；旧实现丢失后缀 | [状态页](status.png) 显示 17%；成长后定向回归显示 18%，没有乘除 100 | `BattleStatusPanel.show_unit` |
+| 原选择 08/frame_004（原版帧见私有档案：`runtime_observations/original_gameplay_reference/08_attack_target_selection/frame_004.png`） 是气刃斩；空格也有技能名和光标 | [空格](special-empty.png)、[合法目标](special-target.png) 保留当前技能名；仅合法敌人展示目标和实际命中率，空格不残留上一目标信息 | `BattleSelectionCursor` 与 Presentation 的选择／预览方法 |
 | 底部固定身份栏会覆盖低处选格 | [下缘目标](lower-target.png) 的身份栏转到上方；[移动](move-selection.png) 的光标与实际命中格共用镜头转换 | Runtime 在镜头更新后传入逻辑格矩形；信息栏避让是重制选择 |
 
 BOARD02、肖像与状态底板属于 `resource-derived`。原录像的局部观察范围见 V01–V05；本包的重制运行属于 `runtime-measured`。布局使用 640×480 逻辑视口，未将 638×480 有损录像强行拉伸后当精确测量。当前字体、18px 字号、换行／三行分页、光标角线和呼吸速度、下缘目标的信息栏避让均是明确的重制编排；没有声称恢复原字体、alpha、时钟或完整原 UI handler。

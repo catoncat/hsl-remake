@@ -59,7 +59,7 @@ R6-V2 的"停约 10 s 再淡黑约 2 s"与录屏量值不符：亮起到全黑�
 
 ## 5. 技能页：特殊技与魔法（lane UI6 进入流程；SKILLPAGE 布局；SKILLPAGE2 2026-09-26 原版实拍、滚动条、列表顺序）
 
-页面是状态窗的另一种 root mode，不是独立列表板。来源三路：hsl01.exe 静态读法（地址）、2026-09-24 录屏 238.8 s 帧、2026-09-26 Wine 原版实拍（`tools/hsl_original_control.py` 的 cnc-ddraw 游戏窗截图，回憶錄 第 1 行 `level06_pre_battle` 进第 6 关，只截游戏窗口）。本目录三帧：[skill-page-magic-hover.png](skill-page-magic-hover.png)（緹娜 魔法页，悬停 水剎）、[skill-page-special-red.png](skill-page-special-red.png)（琥 特殊技页，氣力 0 付不起 毒魔箭）、[skill-page-special-red-hover.png](skill-page-special-red-hover.png)（同页悬停该行）。cnc-ddraw 把 RGB565 左移展开，帧里白色是 (248,252,248)，颜色比 8 位原值低 3–7。
+页面是状态窗的另一种 root mode，不是独立列表板。来源三路：hsl01.exe 静态读法（地址）、2026-09-24 录屏 238.8 s 帧、2026-09-26 Wine 原版实拍（`tools/hsl_original_control.py` 的 cnc-ddraw 游戏窗截图，回憶錄 第 1 行 `level06_pre_battle` 进第 6 关，只截游戏窗口）。本目录三帧：skill-page-magic-hover.png（原版帧见私有档案：`runtime_observations/menus_ui/skill-page-magic-hover.png`）（緹娜 魔法页，悬停 水剎）、skill-page-special-red.png（原版帧见私有档案：`runtime_observations/menus_ui/skill-page-special-red.png`）（琥 特殊技页，氣力 0 付不起 毒魔箭）、skill-page-special-red-hover.png（原版帧见私有档案：`runtime_observations/menus_ui/skill-page-special-red-hover.png`）（同页悬停该行）。cnc-ddraw 把 RGB565 左移展开，帧里白色是 (248,252,248)，颜色比 8 位原值低 3–7。
 
 | 项 | 原版 | 等级 |
 | --- | --- | --- |

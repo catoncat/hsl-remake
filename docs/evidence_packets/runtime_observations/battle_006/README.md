@@ -35,8 +35,8 @@
 
 | 帧 | 内容 |
 | --- | --- |
-| [original_battle_open.png](original_battle_open.png) | 原版 STORY006 结束、宣戰 卡：北门广场，沃斯菲塔士兵已由原版本机安装在场 |
-| [original_winfail_card.png](original_winfail_card.png) | 原版胜负条件卡 |
+| original_battle_open.png（原版帧见私有档案：`runtime_observations/battle_006/original_battle_open.png`） | 原版 STORY006 结束、宣戰 卡：北门广场，沃斯菲塔士兵已由原版本机安装在场 |
+| original_winfail_card.png（原版帧见私有档案：`runtime_observations/battle_006/original_winfail_card.png`） | 原版胜负条件卡 |
 
 **读出的开局（27 名，与重制 `battle_006.json` 同样 27 名）。**
 

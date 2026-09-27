@@ -85,7 +85,7 @@ C 类里的具体风险（按量排）：
 | original-measure（接触表、逐帧动画序列、录像对照） | 47 | 公开文档改文字描述＋"原版帧见私有档案"，导出时变换 | OSS3 已做：`oss_screenshots.py export-text`，`oss_export.sh` 自动调用（12 份 md） |
 | original-resource（原版影片帧、SHP 预览） | 6 | 同上；玩家可用自己的正版在本地重渲染 | OSS3 已做（同上） |
 
-改链接后相邻句子仍按原版帧描述（如"原录像…压缩样本"），全量替换时要逐句改写成重制画面的说法。驱动现状（OSS3）：`capture_town_review`、`capture_world_map_review` 已修好；`capture_status_review` 后半（下一名友军的环菜单不接点击）与 `capture_battle_reward_review`（战利品期间 F5 被拒，产品行为变化）仍失败，见 §8.1。**剩 47 处**：`battle_0NN/original_*` 8（只有 `battle_005` 首控有同包重制图，其余要改文字）、`original_gameplay_reference` 03／04／06–11／15–18 共 26（状态页截图待修驱动后重拍）、`original_world_town` 10–13／15–17 共 7（重制商店买入直接进背包、没有告别对白与金钱不足板，同构图缺；整理裝備 用 `capture_party_equipment_review`）、`menus_ui` 3、`dialogue_selection` 2、`combat_aftermath` 1。
+改链接后相邻句子仍按原版帧描述（如"原录像…压缩样本"），全量替换时要逐句改写成重制画面的说法。驱动现状（OSS4）：`capture_town_review`、`capture_world_map_review`、`capture_battle_reward_review`（改成领取中验证拒存、交接后再存、新进程 F9 读档，prepare／resume 均 PASS）已修好；`capture_status_review` 后半（治疗后下一名友军的环菜单不接点击）仍失败——让场景自己跑到环出现且演出安静再点也不行，原因未查。**剩 47 处**（OSS4 起 `export-text` 在导出时连它们一起变文字，公开树里不再有原版帧链接；补拍一处后 `apply` 把它移到 remake 类）：`battle_0NN/original_*` 8（只有 `battle_005` 首控有同包重制图，其余要改文字）、`original_gameplay_reference` 03／04／06–11／15–18 共 26（状态页截图待修驱动后重拍）、`original_world_town` 10–13／15–17 共 7（重制商店买入直接进背包、没有告别对白与金钱不足板，同构图缺；整理裝備 用 `capture_party_equipment_review`）、`menus_ui` 3、`dialogue_selection` 2、`combat_aftermath` 1。
 
 ### 2.3 公众只有 Steam 版时能重建什么
 
@@ -252,6 +252,37 @@ C 类里的具体风险（按量排）：
 - `capture_town_review` 修好（新开大地图先展开 1 号路线、期间点击被丢，等 `reveal_busy` 清掉再点）：`TOWN_REVIEW_PASS shots=11`。`capture_world_map_review` 同样等展开；戈爾山道现在直接进第 2 关战斗（不再是 STORY002 预览后回地图），后半改成 城镇→Esc→边缘卷动去回→走 1 号路线进战斗：`WORLD_MAP_REVIEW_PASS shots=6`。`capture_status_review`：状态页与第一次解毒已过，治疗后下一名友军的环菜单由驱动步进才出现，但仍不接点击（待查）；状态页截图面板偏出画面，不宜进文档。`capture_battle_reward_review`：现在拿取战利品期间 `combat_busy` 为真，F5 被 `quiet()` 拒绝，"部分领取后存档／新进程续领"整段不再成立——是产品行为变化（`game/`，不在本 lane 写集），战利品窗前三张照常出图。
 - 53 处 original-measure／original-resource 链接改在**导出时**变文字（`oss_screenshots.py export-text`，`oss_export.sh` 自动调用，12 份 md）：私有仓库保留链接供证据审读。
 - 补拍替换 4 处（`original_world_town` 帧 03／04／08／09 → 重制 歐姆村 根菜单、武器店窗、手上的 長劍，标签改写成重制画面内容，表前说明两栏仍是原版记录）。**进度 57／104**（文字 53＋补拍 4）；剩 47 处 original-scene 见 §2.2。
+
+### 8.2 OSS4（2026-09-27）：嵌入的 PNG 哈希、生成顺序、剩余清单
+
+**做法同 §8.1**（临时树＝`HEAD` 删掉清单里全部有主的 A 类，1,255 个写 A 类的非 packet 任务 `hsl generate`，失败的再跑到不动点，按清单比对）。
+
+| 结果 | OSS3 | OSS4 |
+| --- | ---: | ---: |
+| 清单条目 | 19,317 | 19,257（删 60 张孤儿走行帧） |
+| 逐字节一致 | 16,318（84.5%） | 17,893（92.9%） |
+| 按清单一致（PNG 按像素） | — | 19,120（99.3%） |
+| 缺失 | 253 | 133 |
+| 内容不同 | 203 | 4 |
+
+- **JSON 嵌 PNG 哈希**：生成器写入与校验的 `png_sha256`／`decoded_png_sha256`／`atlas_sha256`／`border_sheet_sha256` 及 PNG 的 `sha256` 字段一律存 `hsltools.sources.shp.png_sha256`（与清单 `rgba_sha256` 同一算法），28 个生成器、562 个 JSON 重生成（seed 149、`level_battle` 125 经 `seed_sha256` 连带、`map_objects` 133、`portraits` 72、`message_text_evidence` 48 等）。content 下嵌已提交 PNG 字节哈希的 JSON 434→1（`authored/battle200/combat_animation.json` 引用 `content/authored` 占位美术，无生成器）；空目录重跑里"只差嵌入哈希"的 JSON 约 190→0。例外：`movie/manifest.json` 的 webp 分片仍按字节（有损编码，换 libwebp 版本会变，本机不可见）。
+- **补上的生成路径**：`stat_magic_data`、`moon_dance_data` 的 generate 连资源目录一起从 PAK 重导（原来只有旧 `--pak` 入口写，stat_magic 47＋moon_dance 14）；`level_map_objects:N` 声明共享 `shape_previews/map_object/`（已提交 236 张中 235 张被关卡引用）；`battle001/actor_walk_frames/028`、`036` 60 张是孤儿（两者已进 chapter01 共享清单）已删。
+- **生成顺序**：`actor_hit_poses`／`actor_magic_poses` 的输入原是 glob `content/**/actor_walk_manifest.json`，registry 按路径前缀排序匹配不到，空目录时先于走行清单跑、写 0 张还报 ok（magic 344 张缺失）；改成具体路径（两份共享清单＋75 个关卡清单）。`scope_inventory` 同类：读 `content/battles/` 却未声明，排在 `level_battle` 之前，第二次跑即一致（未改，见下）。
+
+**剩余不可生成／不一致（137）**：
+
+| 文件 | 数 | 原因 |
+| --- | ---: | --- |
+| `gameplay_reference`／`visual_evidence_index`／`actor_walk_contact_sheet` 证据帧 | 104 | 原版截图与接触表，只有检查；按 §2.2 迁私有档案，不生成 |
+| `music_import` | 19 | 需 soundfile／numpy 与 Steam 版 `music\NN.wav`（环境依赖） |
+| `ai_action_frequency`／`ai_replay`／`opening_snapshot_diff` 的 json＋md | 6 | 要 `ignored/` 下的运行录制导出 |
+| chapter01 `message_text_evidence.json` | 1 | 由 `tools/hsl_payload_inspector.py`（`write_chapter01_imported_map_object_ir`）写，它读仓库外的资源扫描清单（`--manifest`，原始清单不入库），不在注册表；同一导入器还写 chapter01 `map_objects.json`／`ui_resources.json`／`resource_refs.json`／`audio_normalized.json`／两份 preview index 与 `shape_previews` 的 battle_ui 42／actor_sprite 5／unknown 5／magic_effect 4（无主，留作种子）。要生成须先从 PAK 重建资源扫描清单，另开一块 |
+| `audio_normalized/Accept01.WAV`、`Attack06.wav` | 2 | `actor_audio` 没写出（未查；疑为当前 cast 不再引用） |
+| `shape_previews/map_object/68-001.SHP.png` | 1 | 孤儿：没有关卡把它当地图物件放置（068 怨念體以 actor 站在该帧），全仓无路径引用 |
+| `FONT15.png`／`FONT24.png`／`original_fonts.json` | 3 | 字表随已生成内容变化，临时树与已提交不同（OSS1 已记，未查） |
+| `static/hsl01/scope_inventory.json` | 1 | 未声明输入 `content/battles/`，排序靠前；再跑一次即逐字节一致 |
+
+另有无主 1,201 个（截图／录像、占位美术、`static/hsl01` 等，见 §8）不在比对的"生成"范围内。
 
 ## 9. Windows／Linux 可移植性（WINPORT，2026-09-27）
 

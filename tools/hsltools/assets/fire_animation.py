@@ -12,7 +12,7 @@ from pathlib import Path
 
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / 'content/imported/hsl/chapter01/fire_animation'
 
@@ -26,7 +26,7 @@ def check():
     assert all(len(f['draw_origin']) == 2 for f in m['frames'])
     for f in m['frames']:
         p = ROOT / f['texture'].removeprefix('res://')
-        assert hashlib.sha256(p.read_bytes()).hexdigest() == f['png_sha256']
+        assert png_sha256(p) == f['png_sha256']
     print('FIRE_ANIMATION_CHECK_PASS')
 
 
@@ -51,7 +51,7 @@ def build(pak):
         write_shp_preview(payload, parse_shp(payload), p)
         frames.append({'source_member': member, 'source_sha256': hashlib.sha256(payload).hexdigest(),
             'texture': 'res://' + p.relative_to(ROOT).as_posix(),
-            'png_sha256': hashlib.sha256(p.read_bytes()).hexdigest(),
+            'png_sha256': png_sha256(p),
             'draw_origin': list(struct.unpack_from('<ii', payload, 28))})
     m = {'schema': 'hsl_fire_animation.v1', 'source_sha256': hashlib.sha256(raw).hexdigest(),
         'source_fields': fields, 'frames': frames, 'frame_ticks': int(fields['obj_Shape_Delay']) + 1,

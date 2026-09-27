@@ -37,14 +37,14 @@
 | --- | --- | --- |
 | [重制 歐姆村 武器店窗（重制画面）](../../../screenshots/remake/shop-window.png)（原版帧见私有档案：`runtime_observations/original_world_town/08-weapon-shop-window.png`） | 席達鎮 武器店老板招呼后开窗 | 上述构图；雷歐納德 的背包、红字行与 ↓、六个按钮与暗着的 買賣。 |
 | [重制 武器店，背包里的 長劍 拿在手上（重制画面）](../../../screenshots/remake/shop-holding-bag-item.png)（原版帧见私有档案：`runtime_observations/original_world_town/09-item-shop-bag-item-picked-up.png`） | 道具店，点背包里的 回復藥 | 物品离开格子、贴在鼠标上（手上物）；金钱不变（70）。 |
-| [10-item-shop-sold-hover-description.png](10-item-shop-sold-hover-description.png) | 带着它点货表 | 卖出：物品消失，金钱 70→120（半价 50）；鼠标停在 銀製髮飾 上，说明框「銀製髮飾(劍,弓,拳,賊,法,翼,獸,魔劍)」「防毒　賣價$200」。 |
-| [11-item-shop-bought-in-hand.png](11-item-shop-bought-in-hand.png) | 点货表的 回復藥 | 买入：金钱 120→20，买到的 回復藥 贴在鼠标上，要再点背包格才放进去（下一次点背包第 1 格即放入）。 |
-| [12-armor-shop-not-enough-gold.png](12-armor-shop-not-enough-gold.png) | 护甲店，70 金点 布衣 | BOARD02 石板居中偏下（约 (75,320)–(564,465)），红字「抱歉, 您的金錢不足無法購買。」（消息 606）；点一下关掉。 |
-| [13-shop-esc-farewell.png](13-shop-esc-farewell.png) | 店里按 Esc（右键同样，04:38 那趟） | 商店窗关掉，回到老板的上方对白板，说告别话；再点一下回根菜单。 |
+| 10-item-shop-sold-hover-description.png（原版帧见私有档案：`runtime_observations/original_world_town/10-item-shop-sold-hover-description.png`） | 带着它点货表 | 卖出：物品消失，金钱 70→120（半价 50）；鼠标停在 銀製髮飾 上，说明框「銀製髮飾(劍,弓,拳,賊,法,翼,獸,魔劍)」「防毒　賣價$200」。 |
+| 11-item-shop-bought-in-hand.png（原版帧见私有档案：`runtime_observations/original_world_town/11-item-shop-bought-in-hand.png`） | 点货表的 回復藥 | 买入：金钱 120→20，买到的 回復藥 贴在鼠标上，要再点背包格才放进去（下一次点背包第 1 格即放入）。 |
+| 12-armor-shop-not-enough-gold.png（原版帧见私有档案：`runtime_observations/original_world_town/12-armor-shop-not-enough-gold.png`） | 护甲店，70 金点 布衣 | BOARD02 石板居中偏下（约 (75,320)–(564,465)），红字「抱歉, 您的金錢不足無法購買。」（消息 606）；点一下关掉。 |
+| 13-shop-esc-farewell.png（原版帧见私有档案：`runtime_observations/original_world_town/13-shop-esc-farewell.png`） | 店里按 Esc（右键同样，04:38 那趟） | 商店窗关掉，回到老板的上方对白板，说告别话；再点一下回根菜单。 |
 | [14-town-esc-back-to-map.png（重制画面）](../../../screenshots/remake/world-map-status-bar.png)（原版帧见私有档案：`runtime_observations/original_world_town/14-town-esc-back-to-map.png`） | 根菜单按 Esc（右键同样，04:39 那趟） | 城镇关掉，回到大地图；根菜单上没有「離開」项，右键／Esc 就是离城的方式。在大地图再按 Esc 才是系统卷轴（帧 02）。 |
-| [15-arrange-status-page.png](15-arrange-status-page.png) | 大地图卷轴选「整理裝備」 | 共用状态窗模式 0 开在「狀態」页：大地图不压暗、状态栏仍在；上方同商店的成员条，左板 WINDOW21 九行属性（力量 51 是黄字，其余白字），右板 WINDOW30 六个装备槽，左下 `$:` 框。底部七钮：上一位／下一位／倉庫／狀態／裝備／魔法／特殊技，**狀態 画暗**（当前页）；没有「離開」钮。与[原作仓库窗](../../static_reverse/original_storage_window.md)「模式 0 全貌」的读法逐项相同。 |
-| [16-arrange-equip-page.png](16-arrange-equip-page.png) | 点「裝備」 | 左板换成背包（回復藥 一行，**红字**——同一件在帧 17 是白字），右板不变；**裝備 画暗**、狀態 恢复亮。 |
-| [17-arrange-storage-page.png](17-arrange-storage-page.png) | 点「倉庫」 | 右板换成 WINDOW90「倉庫」列表（空，右缘上下箭头）；底部变成 上一位／下一位／丟棄（389）／使用（437）／裝備／魔法／特殊技——倉庫 与 狀態 消失。再右键：窗关掉，回到大地图卷轴（卷轴仍开着）。 |
+| 15-arrange-status-page.png（原版帧见私有档案：`runtime_observations/original_world_town/15-arrange-status-page.png`） | 大地图卷轴选「整理裝備」 | 共用状态窗模式 0 开在「狀態」页：大地图不压暗、状态栏仍在；上方同商店的成员条，左板 WINDOW21 九行属性（力量 51 是黄字，其余白字），右板 WINDOW30 六个装备槽，左下 `$:` 框。底部七钮：上一位／下一位／倉庫／狀態／裝備／魔法／特殊技，**狀態 画暗**（当前页）；没有「離開」钮。与[原作仓库窗](../../static_reverse/original_storage_window.md)「模式 0 全貌」的读法逐项相同。 |
+| 16-arrange-equip-page.png（原版帧见私有档案：`runtime_observations/original_world_town/16-arrange-equip-page.png`） | 点「裝備」 | 左板换成背包（回復藥 一行，**红字**——同一件在帧 17 是白字），右板不变；**裝備 画暗**、狀態 恢复亮。 |
+| 17-arrange-storage-page.png（原版帧见私有档案：`runtime_observations/original_world_town/17-arrange-storage-page.png`） | 点「倉庫」 | 右板换成 WINDOW90「倉庫」列表（空，右缘上下箭头）；底部变成 上一位／下一位／丟棄（389）／使用（437）／裝備／魔法／特殊技——倉庫 与 狀態 消失。再右键：窗关掉，回到大地图卷轴（卷轴仍开着）。 |
 
 ## 与重制对照
 

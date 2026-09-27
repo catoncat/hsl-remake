@@ -54,6 +54,7 @@ from hsltools.paths import ROOT
 from hsltools.registry import CheckFailed, Context, GeneratedFilesTask
 from hsltools.schema import unit as unit_schema
 from hsltools.sources.tables import AUTHORED_CHARACTERS, authored_characters
+from hsltools.sources.shp import png_sha256
 
 AUTHORED = 'content/authored'
 GENERATED = 'content/generated/hsl/authored'
@@ -260,10 +261,10 @@ def build_seed(level: int, inputs: dict, terrain: dict, map_size: list[int], pat
             'story': {'member': story_source, 'byte_length': len(inputs['story']), 'sha256': _sha(inputs['story'])},
             'winfail': {'member': winfail_source, 'byte_length': len(inputs['winfail']), 'sha256': _sha(inputs['winfail'])},
             'terrain': {'member': terrain['source']['member'], 'byte_length': terrain['source']['byte_length'], 'sha256': terrain['source']['sha256']},
-            'map': {'member': manifest['map_texture'], 'byte_length': _repo(manifest['map_texture']).stat().st_size, 'sha256': _sha(_repo(manifest['map_texture']).read_bytes())},
+            'map': {'member': manifest['map_texture'], 'sha256': png_sha256(_repo(manifest['map_texture']))},
         },
         'map': {'source_size': list(map_size), 'decoded_png': manifest['map_texture'], 'decoded_png_size': list(map_size),
-                'decoded_png_sha256': _sha(_repo(manifest['map_texture']).read_bytes()), 'rows_decode': True},
+                'decoded_png_sha256': png_sha256(_repo(manifest['map_texture'])), 'rows_decode': True},
         'terrain': {'packet': 'res://' + paths['terrain'], 'grid_size': [terrain['source_format']['width'], terrain['source_format']['height']],
                     'tile_count': terrain['stats']['tile_count'], 'blocking_count': terrain['stats']['blocking_count'],
                     'cell_size_from_map_division_candidate': [CELL, CELL], 'cell_size_candidate_status': 'dimension-consistent',

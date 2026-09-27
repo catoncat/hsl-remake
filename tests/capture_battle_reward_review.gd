@@ -1,6 +1,8 @@
 extends SceneTree
-## Two separate rendered processes: prepare saves partial loot, resume loads it
-## from the product opening. Fixtures change HP/stock/initiative, never rewards.
+## Two separate rendered processes: prepare claims the loot (F5 is refused while it is
+## still pending: the loot window is not a quiet boundary) and saves after the hand-off,
+## resume loads that save with F9 in a new process. Fixtures change HP/stock/initiative,
+## never rewards.
 const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
 const Cases = preload("res://tests/run_battle_reward_tests.gd")
 const Save = preload("res://game/battle/runtime/BattleCheckpoint.gd")
@@ -37,6 +39,7 @@ func run() -> void:
 	DirAccess.make_dir_recursive_absolute(OUT)
 	create_timer(150).timeout.connect(func(): push_error("Reward review timed out"); quit(2))
 	if mode == "prepare":
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
 		await setup(Cases.fixture())
 		await attack_to_loot("initial")
 		var panel = scene.settlement_controller.panel
@@ -51,32 +54,37 @@ func run() -> void:
 		await key(KEY_ESCAPE)
 		check(scene.play_loop["settlement"]["pending"].size() == 1 and Loop.unit(scene.play_loop, "leonard")["inventory"].count(281) == 1, "Esc drops the held item into the first free bag slot, claiming exactly one instance")
 		await key(KEY_F5)
-		var saved := Save.read(PATH, scene.play_loop)
-		check(saved["ok"] and saved["snapshot"]["loop"] == scene.play_loop, "F5 saves the exact partially claimed state")
-		await shot("partial-saved")
-	else:
-		await setup({})
-		check(scene.interaction_state == "opening_timeline" and scene.settlement_controller.resume_button.visible, "new process exposes Continue Save during the original opening")
-		await shot("startup-resume")
-		var saved := Save.read(PATH, scene.play_loop)
-		check(saved["ok"], "previous process left a valid checkpoint")
-		await click(scene.settlement_controller.resume_button)
-		check(scene.play_loop == saved["snapshot"]["loop"] and scene.settlement_controller.panel.visible, "new process restores exact stock, wallet, EXP and pending item")
-		check(not scene.get_node("BattlePresentation").combat_busy(scene.play_loop), "restoration does not rerun the attack, death, experience or money animation")
-		await shot("partial-restored")
-		var panel = scene.settlement_controller.panel
+		check(not FileAccess.file_exists(PATH), "F5 is refused while loot is still pending (Loop.loot_waiting is not a quiet boundary)")
+		await shot("partial-save-refused")
 		await click(panel.rows[0])
 		await click(panel.slots[panel.first_empty_slot()])
 		await shot("fully-claimed")
 		await click(panel.finish_button)
-		await create_timer(0.1).timeout
+		for _attempt in range(400): # the LEVEL UP float plays first (in-process: no restore skip)
+			if scene.growth_panel.visible: break
+			await create_timer(0.025).timeout
 		check(scene.growth_panel.visible, "earned growth follows completed loot")
 		scene.growth_panel.hide() # harness skip seam: right click／Esc cannot close the window before OK
+		for _attempt in range(200):
+			if scene.selected_unit_id == "enemy023_1": break
+			await create_timer(0.025).timeout
 		await create_timer(0.4).timeout
 		check(scene.selected_unit_id == "enemy023_1" and scene.play_loop["turn_queue"]["index"] == 1, "completed loot hands off exactly once to the next controlled actor")
 		await key(KEY_F5)
+		var saved := Save.read(PATH, scene.play_loop)
+		check(saved["ok"] and saved["snapshot"]["loop"] == scene.play_loop, "F5 after the hand-off saves the claimed state")
+		await shot("claimed-saved")
+	else:
+		# The fixture scenario has no product opening (so no Continue Save button): F9 loads the checkpoint.
+		await setup({})
+		await shot("startup-resume")
+		var saved := Save.read(PATH, scene.play_loop)
+		check(saved["ok"], "previous process left a valid checkpoint")
 		await key(KEY_F9)
-		check(scene.selected_unit_id == "enemy023_1" and scene.play_loop["settlement"]["pending"].is_empty() and scene.play_loop["gold"] == 100, "completed save reload cannot reopen already claimed rewards")
+		await create_timer(0.4).timeout
+		check(scene.play_loop == saved["snapshot"]["loop"] and not scene.settlement_controller.panel.visible, "new process restores exact stock, wallet and EXP with no loot window")
+		check(not scene.get_node("BattlePresentation").combat_busy(scene.play_loop), "restoration does not rerun the attack, death, experience or money animation")
+		check(scene.selected_unit_id == "enemy023_1" and scene.play_loop["settlement"]["pending"].is_empty() and scene.play_loop["gold"] == 100, "the reloaded save cannot reopen already claimed rewards")
 		await shot("completed-handoff")
 		await full_inventory()
 		await terminal_loot()
@@ -151,9 +159,14 @@ func full_inventory() -> void:
 	await click(panel.storage_button)
 	check(scene.play_loop["settlement"]["pending"].size() == 2 and not panel._abandon_armed, "leaving the 丟棄 icon cancels the discard and retains both medicines")
 	await click(panel.finish_button)
-	await create_timer(0.1).timeout
+	for _attempt in range(400): # the LEVEL UP float plays before the growth window
+		if scene.growth_panel.visible: break
+		await create_timer(0.025).timeout
 	if scene.growth_panel.visible: scene.growth_panel.hide() # harness skip seam
-	await create_timer(0.4).timeout
+	for _attempt in range(200):
+		if scene.action_menu.get_node("StatusCommand").is_visible_in_tree(): break
+		await create_timer(0.025).timeout
+	await create_timer(0.2).timeout
 	# 待領物品 is an OPT-GUIDE 提示 button (the original status page has no button bar).
 	preload("res://game/settings/GameOptions.gd").environment_preset = "comfort"
 	await click(scene.action_menu.get_node("StatusCommand"))
@@ -178,14 +191,16 @@ func terminal_loot() -> void:
 		await click(panel.rows[0])
 		await click(panel.slots[panel.first_empty_slot()])
 	await click(panel.finish_button)
-	for _attempt in range(200):
+	for _attempt in range(600):
 		await create_timer(0.025).timeout
+		if scene.growth_panel.visible: scene.growth_panel.hide() # harness skip seam
 		if scene.get_node("BattlePresentation").dialogue_active(): await key(KEY_SPACE)
 		if scene.get_node("BattlePresentation").battle_finished: break
 	check(scene.get_node("BattlePresentation").battle_finished and scene.play_loop["gold"] == 100, "victory becomes visible only after rewards and closing dialogue")
 	await key(KEY_F5)
 	await key(KEY_F9)
-	check(scene.get_node("BattlePresentation").battle_finished and not panel.visible and scene.play_loop["gold"] == 100, "terminal restoration neither reopens loot nor reissues rewards")
+	# The reload restores the loop (outcome, wallet, empty loot); the held victory view is not part of a save.
+	check(scene.play_loop["battle_outcome"] == BattleOutcome.VICTORY_ENEMIES_CLEARED and not panel.visible and scene.play_loop["gold"] == 100 and scene.play_loop["settlement"]["pending"].is_empty(), "terminal restoration neither reopens loot nor reissues rewards")
 	await shot("terminal-result")
 
 

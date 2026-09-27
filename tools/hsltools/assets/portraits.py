@@ -22,7 +22,7 @@ from pathlib import Path
 
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import TABLES, blocks, digest, parse_table
 
 ROOT = Path('content/imported/hsl/chapter01/portraits')
@@ -102,7 +102,7 @@ def build(pak, selected=None):
         target = ROOT / (code + '.png')
         write_shp_preview(raw, parse_shp(raw), target)
         row.update({'res_path': 'res://' + target.as_posix(), 'source_sha256': digest(raw),
-                    'png_sha256': digest(target.read_bytes())})
+                    'png_sha256': png_sha256(target)})
     (ROOT / 'manifest.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
 
 
@@ -116,7 +116,7 @@ def check():
         row = result['actors'][code]
         assert all(row[key] == value for key, value in binding.items())
         assert row['res_path'] == 'res://' + (ROOT / (code + '.png')).as_posix()
-        assert digest(Path(row['res_path'].removeprefix('res://')).read_bytes()) == row['png_sha256']
+        assert png_sha256(Path(row['res_path'].removeprefix('res://'))) == row['png_sha256']
     print('ACTOR_PORTRAITS_CHECK_PASS')
 
 

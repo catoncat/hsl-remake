@@ -15,7 +15,7 @@ import struct
 
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 
 ROOT = Path('content/imported/hsl/chapter01/combat_animation')
 ACTORS = ['001', '021', '023', '024', '025', '026', '039', '002', '004', '006', '028', '036', '003', '061', '062',
@@ -329,14 +329,14 @@ def build(pak, selected=None):
             data = read(member)
             target = ROOT / actor / f'{index}.png'
             write_shp_preview(data, parse_shp(data), target)
-            frames.append({'res_path': 'res://' + target.as_posix(), 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)), 'source_member': member, 'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': hashlib.sha256(target.read_bytes()).hexdigest()})
+            frames.append({'res_path': 'res://' + target.as_posix(), 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)), 'source_member': member, 'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': png_sha256(target)})
         flash = {}
         if 'fh_shape' in fields:
             member = fields['fh_shape'].split()[0]
             data = read(member)
             target = ROOT / actor / 'flash.png'
             write_shp_preview(data, parse_shp(data), target)
-            flash = {'res_path': 'res://' + target.as_posix(), 'source_member': member, 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)), 'png_sha256': hashlib.sha256(target.read_bytes()).hexdigest()}
+            flash = {'res_path': 'res://' + target.as_posix(), 'source_member': member, 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)), 'png_sha256': png_sha256(target)}
         flash_match = re.search(r'aniInsertAttackFlash,(-?\d+),(-?\d+)', actions)
         if flash_match is None and not is_receiver_only(source_program):raise ValueError('Missing original strike release: '+actor)
         flash_offset = list(map(int,flash_match.groups())) if flash_match else []
@@ -349,7 +349,7 @@ def build(pak, selected=None):
                 data = read(member)
                 target = ROOT / actor / f'{stem}-{index}.png'
                 write_shp_preview(data, parse_shp(data), target)
-                frames.append({'res_path': 'res://' + target.as_posix(), 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)), 'source_member': member, 'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': hashlib.sha256(target.read_bytes()).hexdigest()})
+                frames.append({'res_path': 'res://' + target.as_posix(), 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)), 'source_member': member, 'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': png_sha256(target)})
             return frames
         result['actors'][actor]['special_frames'] = strip('s_shape', 's_number', 'special') if actor in SPECIAL_FRAME_ACTORS else []
         result['actors'][actor]['magic_frames'] = strip('m_shape', 'm_number', 'magic') if actor in MAGIC_FRAME_ACTORS else []
@@ -360,7 +360,7 @@ def build(pak, selected=None):
         data = read(member)
         target = ROOT / 'background.png'
         write_shp_preview(data, parse_shp(data), target)
-        result['background'] = {'res_path': 'res://' + target.as_posix(), 'source_member': member, 'png_sha256': hashlib.sha256(target.read_bytes()).hexdigest()}
+        result['background'] = {'res_path': 'res://' + target.as_posix(), 'source_member': member, 'png_sha256': png_sha256(target)}
         result['opening'] = import_opening(read)
     (ROOT / 'manifest.json').write_text(json.dumps(bind_programs(result), ensure_ascii=False, indent=2) + '\n')
 
@@ -370,7 +370,7 @@ def import_opening(read):
     target = ROOT / 'opening_ball.png'
     write_shp_preview(data, parse_shp(data), target)
     return {'res_path': 'res://' + target.as_posix(), 'source_member': OPENING_MEMBER, 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)),
-            'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': hashlib.sha256(target.read_bytes()).hexdigest(), 'note': OPENING_NOTE}
+            'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': png_sha256(target), 'note': OPENING_NOTE}
 
 
 def append_opening(pak):
@@ -398,10 +398,10 @@ def check():
     assert manifest.get('magic_cast_program_policy') == MAGIC_CAST_PROGRAM_POLICY
     assert hashlib.sha256((ROOT / 'ANIMAL.TXT').read_bytes()).hexdigest() == manifest['source_sha256']
     background = manifest['background']
-    assert hashlib.sha256(Path(background['res_path'].removeprefix('res://')).read_bytes()).hexdigest() == background['png_sha256']
+    assert png_sha256(Path(background['res_path'].removeprefix('res://'))) == background['png_sha256']
     opening = manifest['opening']
     assert opening['source_member'] == OPENING_MEMBER and opening['note'] == OPENING_NOTE and len(opening['draw_origin']) == 2
-    assert hashlib.sha256(Path(opening['res_path'].removeprefix('res://')).read_bytes()).hexdigest() == opening['png_sha256']
+    assert png_sha256(Path(opening['res_path'].removeprefix('res://'))) == opening['png_sha256']
     source = (ROOT / 'ANIMAL.TXT').read_bytes().decode('cp950')
     records = {row['code']: row for row in json.loads(PROGRAMS.read_text())['records']}
     bound_opcodes = {event['op'] for item in manifest['actors'].values() for event in item.get('dispatch', {}).get('events', [])}
@@ -438,7 +438,7 @@ def check():
         else:
             assert item['magic_frames'] == [], f'{actor}: magic strip imported but not listed in MAGIC_FRAME_ACTORS'
         for frame in item['frames'] + item['special_frames'] + item['magic_frames'] + ([item['flash']] if item['flash'] else []):
-            assert hashlib.sha256(Path(frame['res_path'].removeprefix('res://')).read_bytes()).hexdigest() == frame['png_sha256']
+            assert png_sha256(Path(frame['res_path'].removeprefix('res://'))) == frame['png_sha256']
     print('COMBAT_ANIMATION_CHECK_PASS')
 
 

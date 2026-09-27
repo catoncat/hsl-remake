@@ -13,7 +13,7 @@ from hsltools.data import OriginalArchiveTask, printed_last_line
 from hsltools.registry import Context
 from hsltools.sources.pak import (find_decoded_paks_packages, find_paks_record_by_name,
     read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes)
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import TABLES, blocks, digest, parse_table
 
 ROOT = Path('content/imported/hsl/shared/first_skill')
@@ -78,7 +78,7 @@ def build(pak):
         target = ROOT / (member.split('\\')[-1].lower() + '.png')
         write_shp_preview(raw, parse_shp(raw), target)
         images[member] = {'res_path': 'res://' + target.as_posix(), 'source_sha256': digest(raw),
-                          'png_sha256': digest(target.read_bytes()), 'draw_origin': list(struct.unpack_from('<ii', raw, 0x1c))}
+                          'png_sha256': png_sha256(target), 'draw_origin': list(struct.unpack_from('<ii', raw, 0x1c))}
     member = re.search(r'aniPlaySound,([^,\s]+)', ','.join(scripts['specCode01']))[1]
     raw = read(member)
     with tempfile.TemporaryDirectory() as tmp:
@@ -111,7 +111,7 @@ def check():
                if b.get('obj_code') in ('410', '411', '412', '413')}
     assert data['objects'] == objects
     for item in data['images'].values():
-        assert digest(Path(item['res_path'].removeprefix('res://')).read_bytes()) == item['png_sha256']
+        assert png_sha256(Path(item['res_path'].removeprefix('res://'))) == item['png_sha256']
     sound = data['sound']
     assert digest(Path(sound['res_path'].removeprefix('res://')).read_bytes()) == sound['sha256']
     print('FIRST_SKILL_CHECK_PASS')

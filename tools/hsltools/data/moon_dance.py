@@ -15,10 +15,10 @@ import struct
 import tempfile
 from hsltools.probes.moon_dance import PACKET, EFFECTS, source_fields, check as native_check
 from hsltools.data import json_bytes
-from hsltools.registry import CheckFailed, Context, GeneratedFilesTask
+from hsltools.registry import CheckFailed, Context, GeneratedFilesTask, original_archive
 from hsltools.sources.pak import (find_decoded_paks_packages, find_paks_record_by_name,
     read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes)
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import TABLES, blocks, digest
 
 OUT=Path('content/imported/hsl/shared/moon_dance')
@@ -77,7 +77,7 @@ def build_assets(pak: Path, data: dict) -> None:
         for i in range(count):
             member=prefix+str(int(digits)+i).zfill(len(digits))+'.SHP';raw=read(member)
             target=OUT/(group+'-'+str(i)+'.png');write_shp_preview(raw,parse_shp(raw),target)
-            images[member]=dict(res_path='res://'+target.as_posix(),source_sha256=digest(raw),png_sha256=digest(target.read_bytes()),
+            images[member]=dict(res_path='res://'+target.as_posix(),source_sha256=digest(raw),png_sha256=png_sha256(target),
                                 draw_origin=list(struct.unpack_from('<ii',raw,0x1c)))
             groups[group].append(member)
     sounds={}
@@ -101,7 +101,7 @@ def check_assets(data: dict) -> None:
     for key,count in [('caster',3),('421',4),('422',4)]:
         if len(manifest['groups'][key])!=count:raise ValueError('Moon frame coverage differs')
     for row in manifest['images'].values():
-        if digest(Path(row['res_path'].removeprefix('res://')).read_bytes())!=row['png_sha256']:raise ValueError('Moon image mismatch')
+        if png_sha256(Path(row['res_path'].removeprefix('res://')))!=row['png_sha256']:raise ValueError('Moon image mismatch')
     for row in manifest['sounds'].values():
         if digest(Path(row['res_path'].removeprefix('res://')).read_bytes())!=row['sha256']:raise ValueError('Moon audio mismatch')
 
@@ -144,6 +144,14 @@ class MoonDanceDataTask(GeneratedFilesTask):
             check_assets(json.loads((ctx.root / CONTRACT).read_bytes()))
         except ValueError as error:
             raise CheckFailed(f'{self.name}: {error}') from error
+        return line
+
+    def generate(self, ctx: Context) -> str:
+        line = super().generate(ctx)
+        # The asset folder (frames, sounds, manifest.json) re-imports from the PAK too.
+        data = json.loads((ctx.root / CONTRACT).read_bytes())
+        build_assets(original_archive(ctx), data)
+        check_assets(data)
         return line
 
     def summary(self, rendered: dict[str, bytes], mode: str) -> str:

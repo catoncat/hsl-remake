@@ -1,11 +1,11 @@
 # OSS export report
 
-Source: private repository `main` = `2eaf1948551bea11e206a1edc93953f4173b7c5c` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `01a4889462aa40c0bf4702f18843e8432e86ba8b` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
 - written: **1907 files, 55.6 MB**
-- dropped: **19320 files, 733.2 MB**
-- processed (home path / author e-mail / public .gitignore rules): 15 files
+- dropped: **19260 files, 733.1 MB**
+- processed (home path / author e-mail / public .gitignore rules): 21 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
@@ -18,7 +18,7 @@ No git history or author metadata is carried; the first commit of the public rep
 | reason | files | MB |
 | --- | ---: | ---: |
 | A: evidence screenshots / recordings / renders of the original | 873 | 397.7 |
-| A: content/imported decoded media | 16200 | 255.4 |
+| A: content/imported decoded media | 16140 | 255.3 |
 | A: content/imported text/source/json | 1519 | 35.1 |
 | A: content/generated tables (EXE / PAK derived) | 422 | 25.2 |
 | A: content/battles assembled level data | 210 | 18.8 |
@@ -45,11 +45,17 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/OPTIONS.md`
 - `docs/PROVENANCE.md`
 - `docs/evidence_packets/resource_inventory/original_movies.md`
+- `docs/evidence_packets/runtime_observations/battle_005/README.md`
+- `docs/evidence_packets/runtime_observations/battle_006/README.md`
+- `docs/evidence_packets/runtime_observations/battle_053/README.md`
 - `docs/evidence_packets/runtime_observations/combat_aftermath/README.md`
+- `docs/evidence_packets/runtime_observations/dialogue_selection/README.md`
 - `docs/evidence_packets/runtime_observations/effect_motion/README.md`
+- `docs/evidence_packets/runtime_observations/menus_ui/README.md`
 - `docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md`
 - `docs/evidence_packets/runtime_observations/original_movies_playback/README.md`
 - `docs/evidence_packets/runtime_observations/original_title_ornaments/README.md`
+- `docs/evidence_packets/runtime_observations/original_world_town/README.md`
 - `docs/evidence_packets/runtime_observations/system_menu/README.md`
 - `docs/evidence_packets/runtime_observations/title_screen/README.md`
 - `docs/evidence_packets/static_reverse/original_cast_overlays.md`

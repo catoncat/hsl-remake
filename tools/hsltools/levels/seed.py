@@ -19,7 +19,7 @@ from typing import Any
 from PIL import Image
 
 from hsltools.sources.scripts import parse_evef, parse_text_metadata
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
 from hsltools.sources.wrd import decode_wrd
 from hsltools.checks.source_map_binding import (
@@ -723,7 +723,7 @@ def build(level: int, pak: Path, seed_path: Path, terrain_path: Path | None, map
             **({"shared_png_of_level": int(alias["alias_of_level"])} if "map" in shared else {}),
             "decoded_png": "res://" + map_path.as_posix(),
             "decoded_png_size": image_size,
-            "decoded_png_sha256": _sha(map_path.read_bytes()),
+            "decoded_png_sha256": png_sha256(map_path),
             "rows_decode": bool(map_metadata.get("all_rows_decode", False)),
         },
         "terrain": {
@@ -783,7 +783,7 @@ def check(level: int, seed_path: Path, terrain_path: Path | None, map_path: Path
     assert seed.get("level_kind", "battle") == ("battle" if seed["scripts"].get("winfail") is not None else "story")
     assert seed["terrain"]["packet"] == "res://" + terrain_path.as_posix()
     assert seed["map"]["decoded_png"] == "res://" + map_path.as_posix()
-    assert _sha(map_path.read_bytes()) == seed["map"]["decoded_png_sha256"]
+    assert png_sha256(map_path) == seed["map"]["decoded_png_sha256"]
     assert terrain["source"]["sha256"] == seed["sources"]["terrain"]["sha256"]
     assert terrain["source_format"]["width"] == seed["terrain"]["grid_size"][0]
     assert terrain["source_format"]["height"] == seed["terrain"]["grid_size"][1]

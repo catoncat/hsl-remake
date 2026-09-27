@@ -24,7 +24,7 @@ from hsltools.paths import ORIGINAL_PAK
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import (decoded_xor_a8_wave_bytes, find_decoded_paks_packages, find_paks_record_by_name,
                                   parse_xor_a8_wave_candidate, read_paks_record_bytes)
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / 'content/imported/hsl/global/title'
@@ -313,7 +313,7 @@ def build(pak: Path) -> dict:
             'size': [int(info['width']), int(info['height'])],
             'draw_origin': list(struct.unpack_from('<ii', raw, 28)),
             'texture': 'res://' + target.relative_to(ROOT).as_posix(),
-            'png_sha256': _sha(target.read_bytes()),
+            'png_sha256': png_sha256(target),
             'evidence_tier': 'resource-derived',
         }
     manifest = {
@@ -358,7 +358,7 @@ def check() -> None:
         raise SystemExit('title manifest roles differ from the tool')
     for role, entry in manifest['shapes'].items():
         path = ROOT / entry['texture'].removeprefix('res://')
-        if not path.is_file() or _sha(path.read_bytes()) != entry['png_sha256']:
+        if not path.is_file() or png_sha256(path) != entry['png_sha256']:
             raise SystemExit(f'title preview mismatch for {role}: {path}')
         if len(entry['draw_origin']) != 2 or len(entry['size']) != 2:
             raise SystemExit(f'title shape entry malformed for {role}')

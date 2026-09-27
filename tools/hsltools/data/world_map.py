@@ -35,6 +35,7 @@ from typing import Any
 from hsltools.data import OriginalArchiveTask, printed_last_line
 from hsltools.paths import ORIGINAL_ROOT, ROOT
 from hsltools.registry import Context
+from hsltools.sources.shp import png_sha256
 
 DEFAULT_PAK_ROOT = ORIGINAL_ROOT
 DEFAULT_OUTPUT_DIR = ROOT / "content/imported/hsl/global/world_map"
@@ -491,7 +492,7 @@ def decode_shp_preview(reader: PakReader, member: str, preview_rel: str) -> tupl
         entry.update({"width": None, "height": None, "frame_count": None, "draw_origin": None, "preview": None, "png_sha256": None,
                       "decode_error": f"{type(error).__name__}: {error}"})
         return entry, None
-    entry.update({**meta, "preview": preview_rel, "png_sha256": _sha(png), "decode_error": None})
+    entry.update({**meta, "preview": preview_rel, "png_sha256": png_sha256(png), "decode_error": None})
     return entry, png
 
 
@@ -710,7 +711,7 @@ def check_offline(output_dir: Path) -> list[str]:
         failures.append("world_map counts differ from record lists")
     for entry in _preview_entries(world_map):
         path = output_dir / entry["preview"]
-        if not path.is_file() or _sha(path.read_bytes()) != entry.get("png_sha256"):
+        if not path.is_file() or png_sha256(path) != entry.get("png_sha256"):
             failures.append(f"preview missing or hash differs: {entry['preview']}")
     stats = towndef.get("statistics", {})
     if stats.get("item_count") != len(towndef.get("items", [])) or stats.get("town_event_count") != len(towndef.get("town_events", [])):

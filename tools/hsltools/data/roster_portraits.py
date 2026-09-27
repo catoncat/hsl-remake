@@ -18,6 +18,7 @@ from hsltools.data import json_bytes
 from hsltools.paths import ROOT
 from hsltools.registry import Context, GeneratedFilesTask
 from hsltools.sources.tables import AUTHORED_CHARACTERS, authored_characters
+from hsltools.sources.shp import png_sha256
 
 IMPORTED = 'content/imported/hsl/chapter01/portraits/manifest.json'
 OUTPUT = 'content/generated/hsl/roles/actor_portraits.json'
@@ -37,7 +38,7 @@ def build() -> dict:
         if code in actors:
             raise ValueError(f'{AUTHORED_CHARACTERS}: character {code} already has an imported portrait row')
         actors[code] = {'name': row['name_text'], 'res_path': portrait, 'evidence_tier': 'authored',
-                        'png_sha256': hashlib.sha256((ROOT / portrait.removeprefix('res://')).read_bytes()).hexdigest()}
+                        'png_sha256': png_sha256((ROOT / portrait.removeprefix('res://')))}
     return {
         'schema': SCHEMA,
         'evidence_tier': 'resource-derived',

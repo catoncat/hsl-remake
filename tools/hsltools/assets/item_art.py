@@ -11,7 +11,7 @@ from pathlib import Path
 from PIL import Image
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import TABLES, blocks
 
 ROOT = Path('content/imported/hsl/chapter01/item_art')
@@ -43,7 +43,7 @@ def build(pak):
         write_shp_preview(raw, parse_shp(raw), target)
         with Image.open(target) as image:
             size = list(image.size)
-        assets[key] = {'source_member': member, 'source_sha256': digest(raw), 'res_path': 'res://' + target.as_posix(), 'sha256': digest(target.read_bytes()), 'size': size, 'draw_origin': list(struct.unpack_from('<ii', raw, 0x1c))}
+        assets[key] = {'source_member': member, 'source_sha256': digest(raw), 'res_path': 'res://' + target.as_posix(), 'sha256': png_sha256(target), 'size': size, 'draw_origin': list(struct.unpack_from('<ii', raw, 0x1c))}
     result = {'schema': 'hsl_first_battle_item_art.v1', 'evidence_tier': 'resource-derived', 'item_categories': bindings(), 'assets': assets,
               'use_contract': 'Original shared consumable category art and slot frames, selected for the remake item panel; not individual potion artwork or native layout/handler parity.'}
     (ROOT / 'manifest.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
@@ -57,7 +57,7 @@ def check():
     for key, asset in data['assets'].items():
         assert asset['source_member'] == MEMBERS[key]
         path = Path(asset['res_path'].removeprefix('res://'))
-        assert digest(path.read_bytes()) == asset['sha256'], path
+        assert png_sha256(path) == asset['sha256'], path
         with Image.open(path) as image:
             assert list(image.size) == asset['size']
     print('ITEM_ART_CHECK_PASS')

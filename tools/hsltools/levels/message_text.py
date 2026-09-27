@@ -24,6 +24,7 @@ from hsltools.levels import CHAPTER_SHARED, legacy_failures, profile
 from hsltools.paths import ROOT
 from hsltools.registry import Context, NoRegenerationPath, Task, original_archive
 from hsltools.sources.tables import parse_table
+from hsltools.sources.shp import png_sha256
 
 DEFAULT_EVIDENCE = Path('content/imported/hsl/chapter01/message_text_evidence.json')
 
@@ -121,7 +122,7 @@ def _write_title(pak: Path, member: str, target: Path) -> dict:
     target.parent.mkdir(parents=True, exist_ok=True)
     write_shp_preview(title, parse_shp(title), target)
     return {'source_member': member.replace('@:\\', '').upper(), 'res_path': 'res://' + target.as_posix(),
-            'sha256': hashlib.sha256(title).hexdigest(), 'png_sha256': hashlib.sha256(target.read_bytes()).hexdigest()}
+            'sha256': hashlib.sha256(title).hexdigest(), 'png_sha256': png_sha256(target)}
 
 
 def import_chapter_dialogue(pak: Path) -> None:
@@ -258,7 +259,7 @@ def check_message_text_evidence(path: Path, level: int | None = None) -> dict:
         return {'level': level, 'message_id_count': len(evidence['messages'])}
     if title['res_path'] != 'res://' + title_path.as_posix():
         raise ValueError('section title res_path differs from the level layout')
-    if hashlib.sha256(title_path.read_bytes()).hexdigest() != title['png_sha256']:
+    if png_sha256(title_path) != title['png_sha256']:
         raise ValueError('section title image differs from imported source')
     return {'level': level, 'message_id_count': len(evidence['messages'])}
 

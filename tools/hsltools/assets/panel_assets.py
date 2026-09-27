@@ -14,7 +14,7 @@ from pathlib import Path
 from hsltools.data.ai_profiles import definitions as type_definitions
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import TABLES, blocks, digest, parse_table
 
 ROOT = Path('content/imported/hsl/shared/panels')
@@ -98,10 +98,10 @@ def build(pak):
             continue
         target = ROOT / (key + '.png')
         previous=existing.get('assets',{}).get(key,{})
-        if not (target.exists() and previous.get('source_sha256')==digest(raw) and previous.get('sha256')==digest(target.read_bytes())):
+        if not (target.exists() and previous.get('source_sha256')==digest(raw) and previous.get('sha256')==png_sha256(target)):
             write_shp_preview(raw, parse_shp(raw), target)
         data['assets'][key] = {'source_member': member, 'source_sha256': digest(raw),
-                              'res_path': 'res://' + target.as_posix(), 'sha256': digest(target.read_bytes()),
+                              'res_path': 'res://' + target.as_posix(), 'sha256': png_sha256(target),
                               'draw_origin': list(struct.unpack_from('<ii', raw, 0x1c)), 'empty':False}
     (ROOT / 'manifest.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
 
@@ -120,7 +120,7 @@ def check():
             assert bytes.fromhex(asset['source_bytes'])==EMPTY_CLAW and asset['source_sha256']==digest(EMPTY_CLAW)
             continue
         assert asset['empty'] is False
-        assert digest(Path(asset['res_path'].removeprefix('res://')).read_bytes()) == asset['sha256']
+        assert png_sha256(Path(asset['res_path'].removeprefix('res://'))) == asset['sha256']
     print('PANEL_ASSETS_CHECK_PASS')
 
 

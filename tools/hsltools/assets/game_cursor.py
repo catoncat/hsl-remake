@@ -18,7 +18,7 @@ from pathlib import Path
 
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / 'content/imported/hsl/shared/game_cursor'
@@ -44,7 +44,7 @@ def check():
         assert frame['source_member'].upper().endswith(f'CURSOR{index + 1:02}.SHP')
         assert len(frame['draw_origin']) == 2 and len(frame['size']) == 2
         p = ROOT / frame['texture'].removeprefix('res://')
-        assert hashlib.sha256(p.read_bytes()).hexdigest() == frame['png_sha256']
+        assert png_sha256(p) == frame['png_sha256']
     print('GAME_CURSOR_CHECK_PASS')
 
 
@@ -92,7 +92,7 @@ def build(pak):
         write_shp_preview(payload, shp, p)
         frames.append({'source_member': member, 'source_sha256': hashlib.sha256(payload).hexdigest(),
             'texture': 'res://' + p.relative_to(ROOT).as_posix(),
-            'png_sha256': hashlib.sha256(p.read_bytes()).hexdigest(),
+            'png_sha256': png_sha256(p),
             'size': [shp['width'], shp['height']],
             'draw_origin': list(struct.unpack_from('<ii', payload, 0x1C))})
     m = {'schema': 'hsl_game_cursor.v1', 'source_member': SOURCE_MEMBER, 'source_sha256': hashlib.sha256(raw).hexdigest(),

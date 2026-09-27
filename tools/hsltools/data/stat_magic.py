@@ -2,8 +2,8 @@
 
 Registry task stat_magic_data (family skills): tracked outputs the trial content/battles/stat_magic_trial.json
 and inventory content/generated/hsl/development/stat_magic_inventory.json (rendered byte for byte), plus the
-imported asset folder content/imported/hsl/chapter01/stat_magic/ which check validates and only the legacy
---pak entry re-imports. Bodies moved verbatim from the former hsl_stat_magic_data.py.
+imported asset folder content/imported/hsl/chapter01/stat_magic/ which check validates and generate re-imports
+from the PAK (support_magic importer). Bodies moved verbatim from the former hsl_stat_magic_data.py.
 """
 from __future__ import annotations
 import copy
@@ -12,7 +12,7 @@ from pathlib import Path
 from hsltools.data import json_bytes
 from hsltools.data.skill_book import build as skill_book
 from hsltools.data.support_magic import build, check
-from hsltools.registry import CheckFailed, Context, GeneratedFilesTask
+from hsltools.registry import CheckFailed, Context, GeneratedFilesTask, original_archive
 
 OUT=Path('content/imported/hsl/chapter01/stat_magic')
 TRIAL=Path('content/battles/stat_magic_trial.json')
@@ -77,6 +77,8 @@ class StatMagicDataTask(GeneratedFilesTask):
 
     def generate(self, ctx: Context) -> str:
         line = super().generate(ctx)
+        # The asset folder (frames, sounds, manifest.json) re-imports from the PAK like water_strike_data.
+        build(original_archive(ctx), definitions(), OUT, 'hsl_stat_magic_resources.v1', FRAME_MEMBERS)
         check(definitions(), OUT, FRAME_MEMBERS)
         return line
 

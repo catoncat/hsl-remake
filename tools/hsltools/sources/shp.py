@@ -184,3 +184,23 @@ def write_shp_preview(data: bytes, shp: dict[str, Any], output_path: Path) -> No
             if tracked.size == image.size and tracked.convert("RGBA").tobytes() == image.tobytes():
                 return
     image.save(output_path)
+
+
+def png_sha256(source: Path | bytes) -> str:
+    """Pixel hash of a PNG (a path or its bytes): SHA-256 of b'<width>x<height>\\n' + the decoded
+    RGBA bytes (palette, tRNS and bit depth normalised by Pillow). The derived manifest's
+    `rgba_sha256` and every `png_sha256`-style field a generator embeds for a PNG it wrote: a
+    player's Pillow / zlib build encodes the same image to other bytes, and the JSON must still come
+    out identical (docs/OPEN_SOURCE_PLAN.md §8.1)."""
+    import hashlib
+    import io
+
+    from PIL import Image, UnidentifiedImageError
+    data = bytes(source) if isinstance(source, (bytes, bytearray)) else Path(source).read_bytes()
+    try:
+        with Image.open(io.BytesIO(data)) as image:
+            rgba = image.convert('RGBA')
+            return hashlib.sha256(f'{rgba.width}x{rgba.height}\n'.encode() + rgba.tobytes()).hexdigest()
+    except (UnidentifiedImageError, OSError):
+        # Not a decodable image: a value no image hashes to, so callers report their own mismatch.
+        return 'undecodable:' + hashlib.sha256(data).hexdigest()

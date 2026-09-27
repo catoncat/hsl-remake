@@ -35,6 +35,7 @@ from pathlib import Path
 from hsltools.assets.actor_hit_poses import walk_keys
 from hsltools.paths import ROOT
 from hsltools.registry import Context, ScriptCheckTask, original_archive
+from hsltools.sources.shp import png_sha256
 
 SHAPEDEF = Path('content/imported/hsl/global/tables/SHAPEDEF.TXT')
 OUTPUT_ROOT = Path('content/imported/hsl/shared/actor_magic_poses')
@@ -111,7 +112,7 @@ def check() -> None:
         assert imported, f'{key}: no use_magic frame imported'
         for frame in entry['frames']:
             data = (ROOT / frame['png_path']).read_bytes()
-            assert _sha(data) == frame['sha256'], f'{key}: pose PNG differs from the manifest'
+            assert png_sha256(data) == frame['sha256'], f'{key}: pose PNG differs from the manifest'
             assert frame['res_path'] == 'res://' + frame['png_path'] and len(frame['draw_origin']) == 2
             frames += 1
     print(f'ACTOR_MAGIC_POSES_CHECK_PASS poses={len(poses)} frames={frames} use_magic_is_stand={len(same)} '
@@ -141,7 +142,7 @@ def build(pak: Path) -> None:
             frames.append({'source_member': member, 'source_sha256': _sha(payload),
                            'draw_origin': list(struct.unpack_from('<ii', payload, 0x1C)),
                            'png_path': target.as_posix(), 'res_path': 'res://' + target.as_posix(),
-                           'sha256': _sha((ROOT / target).read_bytes())})
+                           'sha256': png_sha256((ROOT / target))})
         entries[key] = {'frames': frames, 'missing_members': missing}
     manifest = {'schema': SCHEMA, 'evidence_tier': 'resource-derived', 'source': SHAPEDEF.as_posix(),
                 'source_sha256': _sha((ROOT / SHAPEDEF).read_bytes()),
@@ -157,7 +158,12 @@ def build(pak: Path) -> None:
 class ActorMagicPosesTask(ScriptCheckTask):
     name = 'actor_magic_poses'
     family = 'assets'
-    inputs = (SHAPEDEF.as_posix(), 'content/**/actor_walk_manifest.json')
+
+    @property
+    def inputs(self) -> tuple[str, ...]:
+        from hsltools.assets.actor_hit_poses import walk_manifest_inputs
+        return (SHAPEDEF.as_posix(), *walk_manifest_inputs())
+
     outputs = (OUTPUT_ROOT.as_posix() + '/',)
     replaces = ()
     scripts = ('tools/hsltools/assets/actor_magic_poses.py',)

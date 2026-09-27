@@ -24,7 +24,7 @@ from pathlib import Path
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import (decoded_xor_a8_wave_bytes, find_decoded_paks_packages, find_paks_record_by_name,
                                   parse_xor_a8_wave_candidate, read_paks_record_bytes)
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import blocks, digest
 
 SCOPE = Path('content/generated/hsl/skills/special_effect_scripts.json')
@@ -180,7 +180,7 @@ def build(pak: Path) -> None:
         target = frame_path(member)
         write_shp_preview(raw, parse_shp(raw), target)
         frames[member] = {'res_path': 'res://' + target.as_posix(), 'source_sha256': digest(raw),
-                          'png_sha256': digest(target.read_bytes()), 'draw_origin': list(struct.unpack_from('<ii', raw, 0x1c))}
+                          'png_sha256': png_sha256(target), 'draw_origin': list(struct.unpack_from('<ii', raw, 0x1c))}
     sounds = {}
     for member in wav_members:
         raw = read(member)
@@ -272,7 +272,7 @@ def check() -> None:
             assert member in manifest['frames'] or member in manifest['missing_members'], f'{name}: {member} not imported'
     for member, item in manifest['frames'].items():
         path = Path(item['res_path'].removeprefix('res://'))
-        assert path == frame_path(member) and digest(path.read_bytes()) == item['png_sha256'], member
+        assert path == frame_path(member) and png_sha256(path) == item['png_sha256'], member
         assert len(item['draw_origin']) == 2
     for member, item in manifest['sounds'].items():
         path = Path(item['res_path'].removeprefix('res://'))

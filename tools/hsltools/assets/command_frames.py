@@ -11,7 +11,7 @@ from PIL import Image
 
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
-from hsltools.sources.shp import parse_shp, write_shp_preview
+from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import digest, blocks
 
 ROOT = Path('content/imported/hsl/shared/command_menu')
@@ -65,7 +65,7 @@ def build(pak):
                 if unchanged:
                     target.write_bytes(previous)
             frames.append({'res_path': 'res://' + target.as_posix(), 'source_member': member,
-                           'source_sha256': digest(data), 'png_sha256': digest(target.read_bytes()),
+                           'source_sha256': digest(data), 'png_sha256': png_sha256(target),
                            'draw_origin': list(struct.unpack_from('<ii',data,0x1c))})
         result['commands'][name] = {**definition, 'frames': frames}
     (ROOT / 'manifest.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
@@ -84,7 +84,7 @@ def check():
         assert row['frame_count'] == definition['frame_count'] == len(row['frames'])
         assert row['looped'] == definition['looped']
         for frame in row['frames']:
-            assert digest(Path(frame['res_path'].removeprefix('res://')).read_bytes()) == frame['png_sha256']
+            assert png_sha256(Path(frame['res_path'].removeprefix('res://'))) == frame['png_sha256']
     print('COMMAND_FRAMES_CHECK_PASS')
 
 

@@ -32,6 +32,7 @@ from PIL import Image
 
 from hsltools.paths import ORIGINAL_MOVIE_PAK
 from hsltools.registry import Context, ScriptCheckTask, original_archive
+from hsltools.sources.shp import png_sha256
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -435,7 +436,7 @@ def build_movie(name: str, spec: dict[str, Any], packages: list[dict[str, Any]],
         'sheet_format': 'webp', 'sheet_quality': quality, 'sheet_frame_order': 'row-major, frame 0 at top-left',
         'sheet_total_bytes': sum(sheet['bytes'] for sheet in sheets),
         'thumbnail': {'file': thumbnail_path.relative_to(ROOT).as_posix(), 'frame': thumbnail_frame,
-                      'sha256': _sha(thumbnail_path.read_bytes())},
+                      'sha256': png_sha256(thumbnail_path)},
     }
 
 
@@ -506,7 +507,7 @@ def check(out_dir: Path = OUT_DIR) -> dict[str, int]:
             raise SystemExit(f'{name}: sheet total size differs or exceeds the budget')
         thumbnail = ROOT / movie['thumbnail']['file']
         thumb = thumbnail.read_bytes()
-        if _sha(thumb) != movie['thumbnail']['sha256'] or len(thumb) > THUMBNAIL_MAX_BYTES:
+        if png_sha256(thumb) != movie['thumbnail']['sha256'] or len(thumb) > THUMBNAIL_MAX_BYTES:
             raise SystemExit(f'{name}: thumbnail differs from manifest or is too large')
         if movie['thumbnail']['frame'] != MOVIES[name]['thumbnail_frame']:
             raise SystemExit(f'{name}: thumbnail frame differs from the tool')

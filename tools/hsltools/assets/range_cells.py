@@ -19,7 +19,7 @@ from pathlib import Path
 from hsltools.native.image import EXE_SHA, image
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
-from hsltools.sources.shp import parse_shp, rgb565_to_rgb, shp_pixel_values
+from hsltools.sources.shp import parse_shp, png_sha256, rgb565_to_rgb, shp_pixel_values
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / 'content/imported/hsl/shared/range_cells'
@@ -101,7 +101,7 @@ def build(pak: Path, exe: Path) -> None:
             'initial_delay': delay,
             'initial_frame': frame,
             'border_sheet': 'res://' + path.relative_to(ROOT).as_posix(),
-            'border_sheet_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+            'border_sheet_sha256': png_sha256(path),
             'border_frames': frames,
         }
     manifest = {
@@ -150,7 +150,7 @@ def check() -> None:
         assert palette['frame_ticks'] == 8 and palette['frame_count'] == FRAME_COUNT, name
         assert len(palette['border_frames']) == FRAME_COUNT, name
         path = ROOT / palette['border_sheet'].removeprefix('res://')
-        assert hashlib.sha256(path.read_bytes()).hexdigest() == palette['border_sheet_sha256'], name
+        assert png_sha256(path) == palette['border_sheet_sha256'], name
         with Image.open(path) as sheet:
             assert sheet.size == (CELL * FRAME_COUNT, CELL), name
             pixels = sheet.convert('RGBA').load()

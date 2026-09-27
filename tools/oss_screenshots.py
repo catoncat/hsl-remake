@@ -16,7 +16,8 @@ the target:
                                                       docs/screenshots/remake/ and point those links at them; the
                                                       original frame stays named as text（原版帧见私有档案：`id`）
   python3 tools/oss_screenshots.py export-text DIR    in an exported tree (tools/oss_export.sh calls this), turn every
-                                                      original-measure / original-resource link into its label plus
+                                                      original-measure / original-resource / not yet recaptured
+                                                      original-scene link into its label plus
                                                       （原版帧见私有档案：`id`）; the private repository keeps the links
 
 Only `apply` (docs/screenshots/remake/*.png and the linking .md files) and `export-text` (the .md files of
@@ -221,8 +222,13 @@ def cmd_apply() -> int:
     return 0
 
 
+# Categories export-text turns into text. original-scene links not yet swapped for a remake capture (`apply`) go too:
+# the public tree carries no original frame, and a later recapture simply moves the link to `remake`.
+TEXTIFIED = ('original-measure', 'original-resource', 'original-scene')
+
+
 def textify(md: str, text: str) -> tuple[str, int]:
-    """`text` of repository-relative `md` with its original-measure / original-resource links replaced by
+    """`text` of repository-relative `md` with its original-measure / original-resource / original-scene links replaced by
     the link label and the archive id (fenced code untouched); -> (new text, replaced links)."""
     out, in_fence, replaced = [], False, 0
     for line in text.split('\n'):
@@ -235,7 +241,7 @@ def textify(md: str, text: str) -> tuple[str, int]:
                 if '://' in url or not url.lower().endswith(MEDIA):
                     return m.group(0)
                 target = os.path.normpath(os.path.join(os.path.dirname(md), url))
-                if classify(target)[0] not in ('original-measure', 'original-resource'):
+                if classify(target)[0] not in TEXTIFIED:
                     return m.group(0)
                 replaced += 1
                 label = m.group(2).strip() or Path(target).name
