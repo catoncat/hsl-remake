@@ -1,11 +1,12 @@
 # 原版大地图与城镇画面：状态栏、系统卷轴、城镇根菜单、对白板位置、商店窗、整理裝備
 
-> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框） · status: live · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-27
+> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框）; static-derived: select 选择窗（0x4264a0／0x426680／0x4264f0） · status: live · functions: 0x412680, 0x412760, 0x4264a0, 0x4264f0, 0x426680, 0x42c130 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
 
 ## 结论
 
 - 原版进城不压暗大地图，TownBG 约在 (160,148)，石纹菜单板叠在其左上，菜单无「離開」项、画面无金钱／同伴栏，右键／Esc 离城；shape 台词在上、队员台词在下；商店窗是战后「獲得物品」窗的商店分支，買賣 钮暗着（runtime-measured；negative-evidence）。
 - 重制 `game/world/TownRuntime.gd`、`TownShopScreen.gd`、`WorldMapRuntime.gd`、`BattleSystemMenu.gd` 按下表对齐；对白板上下分工由 [original_dialogue_board](../../static_reverse/original_dialogue_board.md) 的 `0x414220` 顶槽位静态确认（static-derived）。
+- teSelectInsertEvent／tePlayerSelectInsertEvent 的选项不在石纹板上：原版建 BOARD02 选择窗放下槽，行距 28、FONT.24 白字、悬停脉冲绿，选人末行固定「離開」；重制照做（static-derived，见「select 选择窗」）。
 - 差异：不画红色 ↓（买入进手持再放下已照原版，[original_shop_transaction](../../static_reverse/original_shop_transaction.md)）；差异清单 `town-layout-extras`（provisional）。
 
 ## 证据
@@ -68,6 +69,23 @@
 | 23-arrange-storage-after-shop.png（原版帧见私有档案：`runtime_observations/original_world_town/23-arrange-storage-after-shop.png`） | 离店离城，卷轴「整理裝備」→ 倉庫 | 商店里放入的 回復藥 1 仍在列表里：商店 倉庫 与 整理裝備 倉庫 是同一份存储。 |
 | 24-arrange-next-member-hand-kept.png（原版帧见私有档案：`runtime_observations/original_world_town/24-arrange-next-member-hand-kept.png`） | 从列表取出后点 下一位 | 成员换人，回復藥 仍在光标上，列表空。 |
 
+### static-derived：select 选择窗（`0x4264a0`／`0x426680`／`0x4264f0`，r2ghidra 反编译 `hsl01.exe`，未执行）
+
+`0x454e20` case 0xf（teSelectInsertEvent）与 case 0x1e（tePlayerSelectInsertEvent）把选项消息 id 填进 `0x4c2940`、事件填进 `0x4c2900`，调 `0x4264a0(picture, 0, 0x4c2940, &0x4c1d54)`；`0x4264a0` 建对象 704，第 2 参为 0，不置 `0x4000`。对象 704／705 的定义在 global.obs，过程号经 PROCESS.DEF 查表 `0x477c2c`（resource-derived）。
+
+| 项 | 原版 | 地址 |
+| --- | --- | --- |
+| 窗对象 | 704 Event_Select_Window：`SHAPE\BOARD02.SHP`（489×145，与对白板同一块），planeMenu4，defProcEventSelectWindow 69 → `0x426680` | global.obs |
+| 窗位置 | y ＝ 镜头 y ＋ 320（下槽）；`0x4000` 时 ＋20，但两条 te 都不置。x：有 picture ＝ 镜头 x ＋ 144，picture 画在 (x − 132, y)；无 picture ＝ (640 − 宽)/2 ＝ 75 | `0x426680` |
+| picture | teSelect：`[player id]` 在队时取 PLAYERS 行 `+600`（−1 视为无）；tePlayerSelect：`[shape]`，TOWNDEF 两处都传 −1 → 居中无头像 | case 0xf／0x1e |
+| 行对象 | 705 Event_Select_String：planeMenu5，defProcEventSelectString 68 → `0x4264f0`；最多 10 行 | global.obs、`0x426680` |
+| 行位置 | x ＝ 窗 ＋ 17；第 6–10 行 x ＝ 窗 ＋ 37 ＋ 行宽（第二列）；y ＝ 窗 ＋ 顶 ＋ 28·(i mod 5)，顶 17，行数 > 4 时 4；行宽 472，行数 > 5 时 226；行高 28 | `0x426680` |
+| 字 | FONT.24（`[0x4c1ae0]`）；平时 `0x412760`：阴影 `0x8430` 画在 (+1,+1)、再白 `0xffff`；淡入淡出中 `0x413040` 按窗层级画 | `0x4264f0` |
+| 悬停色 | 鼠标在行上（位 `0x2000000`）时再以 `0x412680` 用 `0x42c130` 色重画、不画阴影：绿 255 − 2·\|p\|、红蓝 0，p 每 tick −16..16（同特殊技页悬停） | `0x4265a4`–`0x4265d6` |
+| 点击 | 窗层级满 16 且未选时，点击（位 `0x40000`）写行号、放 398 ACCEPT01；窗淡出 16 tick 后把行号交回 VM | `0x4265e2`–`0x42661a`、`0x426680` 状态 3 |
+| 取消 | 两个过程都不读 Esc／右键；tePlayerSelect 在队员行后固定追加 RESOURCE 312「離開」、事件 −1，选它结束本事件（VM 返回 1） | `0x455831`、`0x454e20` 阶段 0x1e |
+| 对白板上下 | 与选择窗无关：`0x414220` 的 `0x4000` 只由 teShapeMessage／teCheckMoney 置（上，y 20），tePlayerMessage 不置（下，y 320） | [original_dialogue_board](../../static_reverse/original_dialogue_board.md) |
+
 ## 重制接线
 
 | 项 | 重制 | 与原版 |
@@ -78,6 +96,7 @@
 | TownBG、菜单 | TownBG (158,148)；WINDOW70.SHP (60,60) 叠在其上，白字行 x 72、行距 32 | 同 |
 | 离城、金钱栏 | 右键／Esc 离城、退子菜单、取消选人；根画面无点名与金钱／同伴条 | 同 |
 | 对白板 | `TownRuntime`：上 y 20、下 y 320；转职结果与获得金钱／物品的重制旁白放下方 | 同 |
+| select 选择窗 | `TownRuntime._show_select_window`：BOARD02 下槽，有头像 x 144（头像 x 12）、无头像 x 75；行 +17、行距 28、行数 > 4 顶 4、> 5 分两列；FONT.24 白字＋阴影，悬停脉冲绿去阴影；点击放 ACCEPT01；选人只列在队队员、末行「離開」；Esc／右键不取消；选择期间石纹板隐藏 | 同；选后淡出 16 tick 再交回、窗淡入期间不收点击未做（立即交回）；选择期间石纹板是否仍在未核对 |
 | 商店窗 | `TownShopScreen`：同一套 WINDOW10／20／90／40 板与六钮、价格右缘 x 594、悬停说明框、BOARD02 拒绝消息；红字按物品职业掩码 | 同；不画 ↓ |
 | 卖出 | 手上物 → 货表，`WorldPartyRules.sell` 半价，重要物品拒卖 | 同 |
 | 买入 | 点货行扣钱，直接放进所显示成员首个空格 | 异，见 [original_shop_transaction](../../static_reverse/original_shop_transaction.md) |
@@ -93,5 +112,6 @@
 
 - 商店只看了 席達鎮 三家店、一名成员：换人、商店里的 裝備／倉庫／丟棄、买入后放到别的成员背包、背包满与重要物品拒收（消息 607）无样本；背包格与货表行格位沿用战后窗静态坐标，未逐像素重测。
 - 红色 ↓ 的含义未核对。
-- 城镇菜单项字体、颜色与菜单板纹理只看了截图，未核对资源文件。
+- 城镇根菜单项字体、颜色、悬停色与菜单板纹理只看了截图，未核对资源文件；根菜单悬停黄字仍是重制读法。
+- select 选择窗只有静态读数，无原版实拍帧；tePlayerSelect 只列 `0x42caa0` 判为在队的队员（重制按 `in_party` 滤行），`[mode]` 1／2 再按 `+0x134` 位 `0xc0000000`／`0x80000000`、`0x40000000` 过滤（case 0x1e），这一层重制未做。
 - 读存档那一趟在帧 07 后游戏失去前台（`game_not_foreground`），商店与离城由后续三趟补采。

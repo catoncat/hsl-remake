@@ -43,7 +43,7 @@
     },
     "11": {
       "title": "系统菜单细节",
-      "summary": "任務說明与存档確定／取消（R6-P4 已做）；状态页左栏证据冲突已解（STATUSPAGE）；剩状态页存读按钮（OPT-GUIDE=提示 时才有）不走確定／取消"
+      "summary": "任務說明与存档確定／取消（R6-P4 已做）；状态页左栏与魔法／特殊技页滚动条已照原版；剩状态页存读按钮（OPT-GUIDE=提示 时才有）不走確定／取消"
     },
     "12": {
       "title": "游戏光标",
@@ -128,25 +128,6 @@
       "effort": "S",
       "category": "面板与界面",
       "decision": "照原版；SKILLPAGE 重做布局，SKILLPAGE2 补原版实拍核对、滚动条、列表顺序、悬停脉冲；名字用 FONT.24 点阵（lane FONT）"
-    },
-    {
-      "id": "status-left-column",
-      "difference": "状态页原版底部是一排页按钮（狀態／道具／魔法／特殊技，行动环 狀態 页另有上一位／下一位），说明框只在悬停装备／道具时盖在按钮排上；重制已照做，剩魔法／特殊技页超过九行时的滚动条",
-      "original": "0x43ac10 根对象 +0x94=4：开页总是属性页（WINDOW21），只有页按钮 0x43a640 改页；钮停靠 y 387（0x43b0a0..0x43b230），frame_028 红框行 366–406 吻合；录屏 77.5／84.0 s 的道具列表是物品／交换窗（0x4000 下 WINDOW30 过程改页），不是状态页",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
-        "docs/evidence_packets/static_reverse/original_growth_window.md"
-      ],
-      "remake": "左栏 WINDOW21 九项属性＝原版默认页；钱框按 mode 0／1 照做；页按钮排按 0x43b0a0..0x43b230 的钮心 x 与 y 387 照做，道具／魔法／特殊技页只读、悬停出说明；装备与行的说明框只在悬停时出现；技能页不画滚动条（最多九行）",
-      "remake_code": [
-        "game/battle/scene/BattleStatusPanel.gd:show_unit",
-        "game/battle/scene/BattleEquipmentView.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "every_battle",
-      "effort": "M",
-      "category": "面板与界面",
-      "decision": "STATUSPAGE（2026-09-27）：证据冲突已解——左栏默认就是属性页；UI7（2026-09-27）照做页按钮排与悬停说明框；剩技能页滚动条"
     },
     {
       "id": "status-page-extras",
@@ -1042,12 +1023,13 @@
     },
     {
       "id": "town-layout-extras",
-      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与「離開城鎮／返回／取消」按钮（lane TOWNMAP；右键／Esc 离城、退子菜单、取消选人）；剩 select 选项做成石纹板文字行与悬停色是重制读法，上下对白板分工仍由 7 帧归纳",
-      "original": "城镇根画面没有金钱显示与离开项（帧 03／04／14）；上下对白板：0x454e20 teShapeMessage 以 1、tePlayerMessage 以 0 调 0x414220，给消息对象置 0x4000 位，读该位的摆放代码未读",
+      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；对白板上下已由 0x414220 静态确认；剩根菜单悬停黄字、选择期间石纹板隐藏与选择窗淡入淡出时序是重制读法",
+      "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1；0x4145f6 读 0x4000 放上槽",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/original_world_town/README.md"
+        "docs/evidence_packets/runtime_observations/original_world_town/README.md",
+        "docs/evidence_packets/static_reverse/original_dialogue_board.md"
       ],
-      "remake": "TownRuntime 的重制补充",
+      "remake": "TownRuntime 选择窗与对白板照原版；根菜单悬停色与选择期间石纹板隐藏是重制补充",
       "remake_code": [
         "game/world/TownRuntime.gd"
       ],
@@ -2325,8 +2307,7 @@
     "provenance:game/battle/scene/BattleStatusPanel.gd|layout|remake-invented|docs/OPTIONS.md": {
       "item": [
         "status-page-extras",
-        "status-save-buttons-confirm",
-        "status-left-column"
+        "status-save-buttons-confirm"
       ]
     },
     "provenance:game/battle/scene/BattleStatusPanel.gd|strings|remake-invented|": {
@@ -2973,10 +2954,7 @@
       "resolved": "章节标题卡横幅减色、纵向 8→1 缩放、章节名淡入淡出（R7-TITLE 589524ea）"
     },
     "video:11": {
-      "item": [
-        "status-save-buttons-confirm",
-        "status-left-column"
-      ]
+      "item": "status-save-buttons-confirm"
     },
     "video:12": {
       "resolved": "原版红宝石权杖光标 10 帧、热点在宝石尖（R7-CAM 37f2bbc8，game_cursor）"

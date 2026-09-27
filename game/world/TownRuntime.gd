@@ -8,8 +8,8 @@ extends Control
 ## top-left corner with the entries as white rows, NPC (teShapeMessage) lines use a top
 ## dialogue board and party (tePlayerMessage) lines the bottom one. Like the original the
 ## screen shows no town name, gold or party strip and no leave／back buttons (frames 03／04):
-## right click or Escape leaves the town, steps out of a sub-menu or declines a member
-## prompt. It plays the effects the
+## right click or Escape leaves the town or steps out of a sub-menu; a choice lists its rows
+## on the bottom BOARD02 select board (member prompts end with a「離開」row). It plays the effects the
 ## stateless TownEventRules interpreter returns. teCreateShop opens TownShopScreen (the
 ## original status-window shop); buying/selling is this node's transaction through
 ## WorldPartyRules. Right click or Escape leaves the town, as in the original. This node owns no world
@@ -37,9 +37,13 @@ extends Control
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
 ##     (no dimming; TownBG (158,148), WINDOW70 (60,60); rows x 72 from y 72, 32 px pitch; two boards)
-##   layout: provisional (the top／bottom split generalised from 7 lines; job-up and narration lines on the bottom board)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
+##     (0x414220 top flag: teShapeMessage top, tePlayerMessage bottom)
+##   layout: static-derived docs/evidence_packets/runtime_observations/original_world_town/README.md
+##     (select board 0x426680／rows 0x4264f0: BOARD02 bottom, rows +17, 28 px, pulse-green hover)
+##   layout: provisional (job-up and narration lines on the bottom board)
 ##   layout: resource-derived content/generated/hsl/text/protected_words.json
-##   layout: remake-invented (choice rows in the board, hover colour; the shop window is TownShopScreen)
+##   layout: remake-invented (root-menu hover colour; the stone board hides during a choice)
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
 ##   strings: resource-derived content/imported/hsl/global/world_map/towndef.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
@@ -210,11 +214,11 @@ func _menu_row(parent: Control, index: int, text: String, node_name: String) -> 
 	return row
 
 
-## The stone board shows while a menu, sub-menu or choice lists its rows; the original hides
-## it while a message plays (frames 05–07).
+## The stone board shows while a menu or sub-menu lists its rows; the original hides it while
+## a message plays (frames 05–07), and a choice lists its rows on the select board instead.
 func _refresh_board() -> void:
 	if _board != null:
-		_board.visible = mode in ["menu", "sub_menu", "select"]
+		_board.visible = mode in ["menu", "sub_menu"]
 
 
 func menu_codes() -> Array[int]:
@@ -433,29 +437,24 @@ func _show_pending(pending: Dictionary) -> void:
 		"select":
 			mode = "select"
 			var speaker: Dictionary = speakers.get(str(pending.get("speaker", "")), {})
-			var options: Array = pending.get("options", [])
-			for index in range(options.size()):
-				var option: Dictionary = options[index]
-				var row := _menu_row(_choice_root, index, message_text(int(option.get("message_id", 0))), "Choice%d" % index)
-				row.pressed.connect(choose.bind(index))
-			_dialogue.show_narration("select", "%s：請選擇" % str(speaker.get("name_text", "")) if not speaker.is_empty() else "請選擇")
-			_place_dialogue(false)
-			current_text = _dialogue.body_text()
+			var labels: Array[String] = []
+			for option in pending.get("options", []):
+				labels.append(message_text(int((option as Dictionary).get("message_id", 0))))
+			_show_select_window(labels, str(speaker.get("portrait_key", "")), false)
 		"player_select":
 			mode = "select"
+			var labels: Array[String] = []
+			var picks: Array[int] = []
 			var options: Array = pending.get("options", [])
 			for index in range(options.size()):
 				var option: Dictionary = options[index]
+				if not bool(option.get("in_party", true)):
+					continue  # case 0x1e lists only members 0x42caa0 finds in the party
 				var speaker: Dictionary = speakers.get(str(option.get("player_token", "")), {})
-				var row := _menu_row(_choice_root, index, str(speaker.get("name_text", str(option.get("player_token", "")))), "Choice%d" % index)
-				row.pressed.connect(choose.bind(index))
-			# A member prompt can be declined (Esc / right click): the ceremony room's
-			# tePlayerSelectInsertEvent (命運神殿 event 71) re-offers itself after each
-			# member's result, so without a cancel the town could never be left — a remake
-			# reading; the original select handler's cancel path is not located.
-			_dialogue.show_narration("player_select", "請選擇角色")
-			_place_dialogue(false)
-			current_text = _dialogue.body_text()
+				labels.append(str(speaker.get("name_text", str(option.get("player_token", "")))))
+				picks.append(index)
+			# Every TOWNDEF use passes shape -1, so the board is centred without a picture.
+			_show_select_window(labels, "", true, picks)
 		"sub_menu":
 			mode = "sub_menu"
 			var entries: Array = pending.get("entries", [])
@@ -473,6 +472,124 @@ func _show_pending(pending: Dictionary) -> void:
 	_refresh_board()
 
 
+## teSelectInsertEvent／tePlayerSelectInsertEvent (0x454e20 case 0xf／0x1e) open
+## 0x4264a0(picture, 0, rows, &result) = object 704 Event_Select_Window (global.obs: BOARD02,
+## defProcEventSelectWindow 69 → 0x426680). No 0x4000 flag, so the board takes the bottom slot
+## (camera y + 320); x 144 with the speaker's picture at x − 132, else centred (640 − 489) / 2.
+## Each row is object 705 Event_Select_String (0x4264f0): x board + 17 (rows 5–9: board + 37 +
+## width), y board + top + 28·(i mod 5) with top 17 (4 past four rows), width 472 (226 past
+## five), 28 high; FONT.24 white over the 0x8430 shadow (0x412760), the hovered row redrawn in
+## the 0x42c130 pulse green without shadow (0x412680); a click stores the index and plays
+## ACCEPT01 (398). tePlayerSelectInsertEvent appends RESOURCE 312「離開」with event −1, which
+## ends the event (0x455831, phase 0x1e: row event −1 → VM return 1).
+const SELECT_BOARD := "BOARD02"
+const SELECT_BOARD_Y := 320.0
+const SELECT_BOARD_X_FACE := 144.0
+const SELECT_BOARD_X_CENTRED := 75.0
+const SELECT_BOARD_WIDTH := 489
+const SELECT_FACE_DX := -132.0
+const SELECT_ROW_INSET := 17
+const SELECT_ROW_PITCH := 28
+const SELECT_ROWS_PER_COLUMN := 5
+const SELECT_LEAVE_TEXT := "離開"
+const SELECT_HOVER_HALF := 16
+const SELECT_SOUND := "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+var _select_rows: Array[Label] = []
+var _select_hover := -1
+var _select_clock := 0.0
+
+
+## `picks`: the pending option index behind each row (default: row i answers option i).
+func _show_select_window(labels: Array[String], portrait_key: String, leave_row: bool, picks: Array[int] = []) -> void:
+	_dialogue.clear_message()
+	current_text = ""
+	current_speaker = ""
+	_select_rows.clear()
+	_select_hover = -1
+	var face: Texture2D = null
+	if portrait_key != "" and _dialogue._portraits.has(portrait_key):
+		face = load(str(_dialogue._portraits[portrait_key]["res_path"]))
+	var board_at := Vector2(SELECT_BOARD_X_FACE if face != null else SELECT_BOARD_X_CENTRED, SELECT_BOARD_Y)
+	var window := Control.new()
+	window.name = "SelectWindow"
+	window.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_choice_root.add_child(window)
+	BattleUISkin.board(window, SELECT_BOARD, board_at)
+	if face != null:
+		var picture := TextureRect.new()
+		picture.name = "Picture"
+		picture.position = board_at + Vector2(SELECT_FACE_DX, 0)
+		picture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		BattleUISkin.show_shape(picture, face)
+		window.add_child(picture)
+	var texts := labels.duplicate()
+	if leave_row:
+		texts.append(SELECT_LEAVE_TEXT)
+	var count := mini(texts.size(), 2 * SELECT_ROWS_PER_COLUMN)
+	var width := SELECT_BOARD_WIDTH - SELECT_ROW_INSET
+	if count > SELECT_ROWS_PER_COLUMN:
+		width = width / 2 - 10
+	var top := 4 if count > 4 else SELECT_ROW_INSET
+	for index in range(count):
+		var column_x := SELECT_ROW_INSET if index < SELECT_ROWS_PER_COLUMN else SELECT_ROW_INSET + 20 + width
+		var hit := Control.new()
+		hit.name = "Choice%d" % index
+		hit.position = board_at + Vector2(column_x, top + SELECT_ROW_PITCH * (index % SELECT_ROWS_PER_COLUMN))
+		hit.size = Vector2(width, SELECT_ROW_PITCH)
+		hit.clip_contents = true
+		hit.mouse_filter = Control.MOUSE_FILTER_STOP
+		window.add_child(hit)
+		var row := BattleUISkin.text(hit, Vector2.ZERO, BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(width, 24))
+		row.text = texts[index]
+		_select_rows.append(row)
+		hit.mouse_entered.connect(_hover_select.bind(index))
+		hit.mouse_exited.connect(_hover_select.bind(-1))
+		var leave := leave_row and index == texts.size() - 1
+		hit.gui_input.connect(_select_row_input.bind(picks[index] if index < picks.size() else index, leave))
+	set_process(true)
+
+
+func _hover_select(index: int) -> void:
+	_select_hover = index
+	for row_index in range(_select_rows.size()):
+		var row := _select_rows[row_index]
+		if not is_instance_valid(row):
+			continue
+		row.add_theme_color_override("font_color", select_hover_colour() if row_index == index else BattleUISkin.TEXT_WHITE)
+		row.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0) if row_index == index else BattleUISkin.TEXT_SHADOW)
+
+
+func _select_row_input(event: InputEvent, index: int, leave: bool) -> void:
+	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+		return
+	var sound := AudioStreamPlayer.new()
+	sound.stream = load(SELECT_SOUND)
+	sound.finished.connect(sound.queue_free)
+	(runtime if runtime != null else self).add_child(sound)
+	sound.play()
+	if leave:
+		cancel_select()
+	else:
+		choose(index)
+
+
+## The hovered row's colour this tick: 0x42c130 on the 0x42c110 counter, green 255 − 2·|p| with
+## red and blue 0, p stepping once a tick through −16..16.
+func select_hover_colour() -> Color:
+	var period := 2 * SELECT_HOVER_HALF + 1
+	var step := int(OriginalTick.ticks(_select_clock)) % period - SELECT_HOVER_HALF
+	return Color8(0, 255 - 2 * absi(step), 0)
+
+
+func _process(delta: float) -> void:
+	if mode != "select" or _select_hover < 0 or _select_hover >= _select_rows.size():
+		return
+	_select_clock += delta
+	if is_instance_valid(_select_rows[_select_hover]):
+		_select_rows[_select_hover].add_theme_color_override("font_color", select_hover_colour())
+
+
 ## Answer a select / player_select prompt by option index.
 func choose(index: int) -> void:
 	if mode != "select":
@@ -481,8 +598,9 @@ func choose(index: int) -> void:
 	_resume(index)
 
 
-## Decline an open player_select prompt: the script continues past the token with no
-## member chosen (TownEventRules records the resume as invalid_choice).
+## The player_select board's「離開」row (event −1): the script continues past the token — every
+## TOWNDEF use is the last token, so the event ends — with no member chosen (TownEventRules
+## records the resume as invalid_choice).
 func cancel_select() -> void:
 	if mode != "select" or str((run.get("pending", {}) as Dictionary).get("kind", "")) != "player_select":
 		return
@@ -747,7 +865,7 @@ func shop_close() -> void:
 
 ## The map forwards every event while the town is open. Confirm advances a message. Right
 ## click or Escape (original frames 13／14) leaves the town from the root menu, steps out of a
-## sub-menu, declines a member prompt and steps the shop back (closes its message, puts a
+## sub-menu and steps the shop back (closes its message, puts a
 ## held item back, else closes the shop); Space／Enter also close the shop's message.
 func handle_input(event: InputEvent) -> void:
 	var escape: bool = event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE
@@ -768,8 +886,7 @@ func handle_input(event: InputEvent) -> void:
 			if escape or right_click:
 				menu_exit()
 		"select":
-			if escape or right_click:
-				cancel_select()
+			pass  # 0x426680／0x4264f0 read no cancel input: only a row click answers.
 		_:
 			pass
 

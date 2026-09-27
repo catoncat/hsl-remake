@@ -13,6 +13,7 @@ extends Control
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
 ##   layout: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (§4 魔法／特殊技 pages: 0x43add0 WINDOW20 with the 0x446060 scroll bar past nine rows)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V05
 ##     (frame_006: status page fields, 魔擊力 percent suffix, WINDOW40 at the bottom right)
@@ -36,6 +37,7 @@ const EntryGrowthRules = preload("res://game/sim/EntryGrowthRules.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleMagicPanel = preload("res://game/battle/scene/BattleMagicPanel.gd")
+const BattleSkillScrollBar = preload("res://game/battle/scene/BattleSkillScrollBar.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 var portrait: TextureRect
 var equipment_labels: Dictionary = {}
@@ -108,6 +110,8 @@ var page_captions: Dictionary = {}
 var attribute_nodes: Array[Control] = []
 var page_root: Control
 var page_detail: Control
+## 魔法／特殊技 pages: the 0x446060 bar of their WINDOW20 (null on the other pages).
+var skill_scroll: BattleSkillScrollBar
 var _unit: Dictionary = {}
 var _loop: Dictionary = {}
 var _own_page := true
@@ -210,6 +214,7 @@ func set_page(next_page: int) -> void:
 		page_root.remove_child(child)
 		child.queue_free()
 	page_detail.hide()
+	skill_scroll = null
 	match page:
 		PAGE_ITEMS: _build_bag()
 		PAGE_MAGIC, PAGE_SPECIAL: _build_skills()
@@ -245,7 +250,10 @@ func _item_lines(details: Dictionary, code: String) -> Array:
 
 
 ## 魔法／特殊技 pages: the unit's list in the skill page's order and row geometry, @1 white or
-## @2 red when it cannot pay (BattleMagicPanel); read-only, nine rows (no scroll bar yet).
+## @2 red when it cannot pay (BattleMagicPanel); read-only. Mode 0 builds WINDOW20 through
+## 0x43add0 like the skill page, whose 0x438330 always hangs the 0x446060 bar on it: past nine
+## rows the shared BattleSkillScrollBar appears, and each page switch starts at row 0 (0x438160
+## sees a new page word).
 func _build_skills() -> void:
 	UISkin.board(page_root, "WINDOW20", BattleMagicPanel.LIST_AT)
 	if _loop.is_empty():
@@ -253,9 +261,19 @@ func _build_skills() -> void:
 	var channel := "magic" if page == PAGE_MAGIC else "special"
 	var options: Array = BattlePlayLoop.magic_options(_loop, inspected_unit_id) if page == PAGE_MAGIC else BattlePlayLoop.special_options(_loop, inspected_unit_id)
 	options.sort_custom(func(a, b): return BattleMagicPanel.list_order(a) < BattleMagicPanel.list_order(b))
-	for index in range(mini(options.size(), BattleMagicPanel.VISIBLE_ROWS)):
+	var clip := Control.new()
+	clip.name = "Skills"
+	clip.position = BattleMagicPanel.LIST_AT + Vector2(0, BattleMagicPanel.ROW_TOP)
+	clip.size = Vector2(BattleMagicPanel.LIST_SIZE.x, BattleMagicPanel.LIST_CLIP_HEIGHT)
+	clip.clip_contents = true
+	clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	page_root.add_child(clip)
+	var rows := Control.new()
+	rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip.add_child(rows)
+	for index in range(options.size()):
 		var option: Dictionary = options[index]
-		var row := _hover_row(BattleMagicPanel.LIST_AT + Vector2(0, BattleMagicPanel.ROW_TOP + index * BattleMagicPanel.ROW_HEIGHT), Vector2(BattleMagicPanel.LIST_SIZE.x - 24, BattleMagicPanel.ROW_HEIGHT))
+		var row := _hover_row(Vector2(0, index * BattleMagicPanel.ROW_HEIGHT), Vector2(BattleMagicPanel.LIST_SIZE.x - 24, BattleMagicPanel.ROW_HEIGHT), rows)
 		row.name = "Skill_%d" % index
 		var element := BattleMagicPanel.ELEMENT_TYPES.find(str(option.get("fields", {}).get("type", "")))
 		if element >= 0: UISkin.asset(row, "magicon%d" % (element + 1), BattleMagicPanel.GEM_AT)
@@ -263,14 +281,18 @@ func _build_skills() -> void:
 		var label := UISkin.text(row, Vector2(BattleMagicPanel.NAME_DX, 0), rest, UISkin.FONT_BODY)
 		label.text = str(option["name"])
 		_hover_lines(row, label, rest, BattleMagicPanel.description_lines(option, channel))
+	skill_scroll = BattleSkillScrollBar.new(BattleMagicPanel.LIST_AT)
+	skill_scroll.scrolled.connect(func(pos: int): rows.position.y = -BattleMagicPanel.ROW_HEIGHT * pos)
+	page_root.add_child(skill_scroll)
+	skill_scroll.reset(options.size())
 
 
-func _hover_row(at: Vector2, dimensions: Vector2) -> Control:
+func _hover_row(at: Vector2, dimensions: Vector2, parent: Control = null) -> Control:
 	var row := Control.new()
 	row.position = at
 	row.size = dimensions
 	row.mouse_filter = Control.MOUSE_FILTER_STOP
-	page_root.add_child(row)
+	(parent if parent != null else page_root).add_child(row)
 	return row
 
 
@@ -303,7 +325,10 @@ func _button(title: String, width: int) -> Button:
 ## Modal input while the sheet is up: right click / Esc／Enter／Space close it
 ## (BattleSceneRuntime.modal_panels dispatch). Unlike the other modals the closing event is
 ## not marked handled — the runtime dispatcher never did, and GUI focus keeps its turn.
+## On a 魔法／特殊技 page ↑↓／PgUp PgDn go to its scroll bar.
 func handle_input(event: InputEvent) -> bool:
+	if skill_scroll != null and skill_scroll.handle_key(event):
+		return true
 	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT) or (event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_ESCAPE, KEY_ENTER, KEY_SPACE]):
 		hide()
 		return true

@@ -41,25 +41,8 @@ const LIST_CLIP_HEIGHT := 250
 ## codes by bit (magicCode01 = bit 0). An authored code has no bit and follows its type's
 ## original bits, as its skill_book source_order does.
 const LIST_TYPES := ["magicEARTH", "magicWATER", "magicAIR", "magicFIRE", "magicMIND", "magicOTHER", "magicOTHER2"]
-## Scroll bar 0x446060 (objects 150–153) at WINDOW20 + (200,0): WIN02BAR trough 24×264 (its
-## red arrows are baked in), BAR_UP／BAR_DOWN buttons at (5,5)／(5,243), BAR_BLK1 thumb 14 px
-## wide clipped to its height with the BAR_BLK2 foot on its last 2 px (150's draw pass).
-## Track y 22–242 of the bar (+0x6c = 16+6, +0x74 = 264−22). 0x445d70: height
-## ⌊⌊9·65536/n⌋·220/65536⌋, top 22 + ⌊220·pos/n⌋, pos in [0, n−9]. 0x445860: n ≤ 9 hides
-## all four objects and ignores the keys.
-const BAR_AT := Vector2(200, 0)
-const ARROW_UP_AT := Vector2(5, 5)
-const ARROW_DOWN_AT := Vector2(5, 243)
-const THUMB_X := 5
-const THUMB_WIDTH := 14
-const THUMB_FOOT := 2
-const TRACK_TOP := 22
-const TRACK_LENGTH := 220
-const THUMB_SCALE := 65536
-## 0x445cd0: a held arrow is drawn engFLASH with colour 0x4208, each pixel averaged with
-## (66,65,66); it steps on release only if the mouse never left it (no auto-repeat).
-const ARROW_HELD_SHADER := "shader_type canvas_item;\nvoid fragment() { COLOR.rgb = (COLOR.rgb + vec3(66.0, 65.0, 66.0) / 255.0) * 0.5; }"
-const NO_DRAG := -1
+## Scroll bar 0x446060: BattleSkillScrollBar at WINDOW20 + (200,0), shared with the status page.
+const BattleSkillScrollBar = preload("res://game/battle/scene/BattleSkillScrollBar.gd")
 const NAME_DX := 32
 const GEM_AT := Vector2(15, 2)
 ## 0x438160 redraws the hovered name (0x4132f0 mode 1) in the 0x42c130 pulse colour — green
@@ -101,12 +84,8 @@ var vitals: Control
 var gold_label: Label
 var list: Control
 var scroll_pos := 0
-var scroll_bar: Control
+var scroll_bar: BattleSkillScrollBar
 var _rows: VBoxContainer
-var _thumb: Control
-var _thumb_foot: TextureRect
-var _held_arrow: TextureRect
-var _drag_grab := NO_DRAG
 var _hover_name: Label
 var _pulse_clock := 0.0
 
@@ -126,7 +105,11 @@ func _ready() -> void:
 	_rows = VBoxContainer.new()
 	_rows.add_theme_constant_override("separation", 0)
 	list.add_child(_rows)
-	_build_scroll_bar()
+	scroll_bar = BattleSkillScrollBar.new(LIST_AT)
+	scroll_bar.scrolled.connect(func(pos: int):
+		scroll_pos = pos
+		_rows.position.y = -ROW_HEIGHT * pos)
+	add_child(scroll_bar)
 	BattleUISkin.board(self, "WINDOW40", GOLD_AT)
 	gold_label = BattleUISkin.text(self, GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
 	gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -155,94 +138,18 @@ func hover_colour() -> Color:
 
 
 ## Modal input while the page is up: right click / Esc cancel (BattleSceneRuntime.modal_panels
-## dispatch); with the scroll bar up, a new press of ↑／↓ moves one row and PgUp／PgDn nine
-## (0x445f00 key masks 4／8／0x800／0x1000). The wheel does nothing: the original window
-## procedure has no WM_MOUSEWHEEL case. Everything else is left to the rows and the bar.
+## dispatch); ↑↓／PgUp PgDn go to the scroll bar. Everything else is left to the rows and the bar.
 func handle_input(event: InputEvent) -> bool:
 	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT) or (event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE):
 		cancelled.emit()
 		get_viewport().set_input_as_handled()
 		return true
-	if event is InputEventKey and event.pressed and not event.echo and scroll_bar.visible:
-		var step: int = {KEY_UP: -1, KEY_DOWN: 1, KEY_PAGEUP: -VISIBLE_ROWS, KEY_PAGEDOWN: VISIBLE_ROWS}.get(event.keycode, 0)
-		if step != 0:
-			scroll_to(scroll_pos + step)
-			get_viewport().set_input_as_handled()
-			return true
-	return false
-
-
-func _build_scroll_bar() -> void:
-	scroll_bar = BattleUISkin.board(self, "WIN02BAR", LIST_AT + BAR_AT)
-	scroll_bar.name = "ScrollBar"
-	scroll_bar.mouse_filter = Control.MOUSE_FILTER_STOP
-	scroll_bar.gui_input.connect(_trough_input)
-	_thumb = Control.new()
-	_thumb.clip_contents = true
-	_thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	scroll_bar.add_child(_thumb)
-	BattleUISkin.board(_thumb, "BAR_BLK1", Vector2.ZERO)
-	_thumb_foot = BattleUISkin.asset(_thumb, "BAR_BLK2", Vector2.ZERO)
-	var held := ShaderMaterial.new()
-	held.shader = Shader.new()
-	held.shader.code = ARROW_HELD_SHADER
-	for step in [-1, 1]:
-		var arrow := BattleUISkin.asset(scroll_bar, "BAR_UP" if step < 0 else "BAR_DOWN", ARROW_UP_AT if step < 0 else ARROW_DOWN_AT)
-		arrow.mouse_filter = Control.MOUSE_FILTER_STOP
-		arrow.gui_input.connect(_arrow_input.bind(arrow, step, held))
-	scroll_bar.hide()
+	return scroll_bar.handle_key(event)
 
 
 ## Moves the list to row `pos` (clamped) and puts the thumb where 0x445d70 does.
 func scroll_to(pos: int) -> void:
-	var count := choices.size()
-	scroll_pos = clampi(pos, 0, maxi(0, count - VISIBLE_ROWS))
-	_rows.position.y = -ROW_HEIGHT * scroll_pos
-	scroll_bar.visible = count > VISIBLE_ROWS
-	if not scroll_bar.visible: return
-	var height := (VISIBLE_ROWS * THUMB_SCALE / count) * TRACK_LENGTH / THUMB_SCALE
-	_thumb.position = Vector2(THUMB_X, TRACK_TOP + TRACK_LENGTH * scroll_pos / count)
-	_thumb.size = Vector2(THUMB_WIDTH, height)
-	_thumb_foot.position.y = height - THUMB_FOOT
-
-
-## 0x445cd0: pressing an arrow holds it; leaving it lets go without a step; releasing on it
-## steps once.
-func _arrow_input(event: InputEvent, arrow: TextureRect, step: int, held: ShaderMaterial) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			_held_arrow = arrow
-			arrow.material = held
-		elif _held_arrow == arrow:
-			_release_arrow()
-			scroll_to(scroll_pos + step)
-	elif event is InputEventMouseMotion and _held_arrow == arrow and not Rect2(Vector2.ZERO, arrow.size).has_point(event.position):
-		_release_arrow()
-
-
-func _release_arrow() -> void:
-	if _held_arrow != null: _held_arrow.material = null
-	_held_arrow = null
-
-
-## 0x445860 on the trough: a press above the thumb pages up nine rows, below it down nine;
-## the press then drags the thumb (grab point kept) — it follows the mouse smoothly between
-## the track ends while the list follows whole rows, pos = ⌊(top − 22 + ⌊110/n⌋)·n/220⌋; the
-## release snaps the thumb onto that row.
-func _trough_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			if event.position.y < _thumb.position.y: scroll_to(scroll_pos - VISIBLE_ROWS)
-			elif event.position.y > _thumb.position.y + _thumb.size.y: scroll_to(scroll_pos + VISIBLE_ROWS)
-			_drag_grab = int(event.position.y - _thumb.position.y)
-		elif _drag_grab != NO_DRAG:
-			_drag_grab = NO_DRAG
-			scroll_to(scroll_pos)
-	elif event is InputEventMouseMotion and _drag_grab != NO_DRAG:
-		var count := choices.size()
-		var top := clampi(int(event.position.y) - _drag_grab, TRACK_TOP, TRACK_TOP + TRACK_LENGTH)
-		scroll_to((top - TRACK_TOP + TRACK_LENGTH / (2 * count)) * count / TRACK_LENGTH)
-		_thumb.position.y = mini(top, TRACK_TOP + TRACK_LENGTH - int(_thumb.size.y) - 1)
+	scroll_bar.scroll_to(pos)
 
 
 ## Row order of the page (0x434d10): type index × 32 + code bit.
@@ -260,8 +167,6 @@ func show_spells(options: Array, channel: String = "magic", unit: Dictionary = {
 		child.queue_free()
 	choices.clear()
 	_hover_name = null
-	_release_arrow()
-	_drag_grab = NO_DRAG
 	vitals.visible = not unit.is_empty()
 	if vitals.visible: vitals.show_unit(unit)
 	gold_label.text = str(gold)
@@ -303,7 +208,7 @@ func show_spells(options: Array, channel: String = "magic", unit: Dictionary = {
 		choices[option["id"]] = row
 	# Every opening starts at row 0: 0x43add0 creates WINDOW20 with +0xa0 = 2 and 0x438160's first
 	# tick finds that unlike its page word (5 magic, 10 special), so it zeroes *0x4c1cd4.
-	scroll_to(0)
+	scroll_bar.reset(choices.size())
 	hide_description()
 	show()
 
