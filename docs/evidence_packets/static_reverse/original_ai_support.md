@@ -1,12 +1,13 @@
 # 原 AI：友军回复、状态援助、增益自施与友军用药
 
-> evidence: static-derived; runtime-measured: L547 buff self-cast distribution, ALLYHEAL 友军用药（模板背包、救与不救、0x40d530 落点，第 51／52 关裁判） · status: live · functions: 0x40c110, 0x40c1b0, 0x40c2d0, 0x40c2f0, 0x40c3a0, 0x40c480, 0x40d530, 0x413390, 0x43fce1, 0x44cb10 · tools: hsltools/probes/_enemy_level.py, hsltools/probes/ai_support.py, run_ai_support_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 0x440db5 链首掷（enemy_turn 回执）, L547 buff self-cast distribution, ALLYHEAL 友军用药（模板背包、救与不救、0x40d530 落点，第 51／52 关裁判） · status: live · functions: 0x40c110, 0x40c1b0, 0x40c2d0, 0x40c2f0, 0x40c3a0, 0x40c480, 0x40d530, 0x413390, 0x43fce1, 0x44cb10 · tools: hsltools/probes/_enemy_level.py, hsltools/probes/ai_support.py, run_ai_support_tests.gd · updated: 2026-09-27
 
 ## 结论
 
 - 原版：优先级链位 4（友军回复，比 `ai_help_otherhp`）先于位 8（状态援助，比 `ai_help_status`）；`0x40c2f0`／`0x40c3a0` 在八格方域按登记槽序续查同侧（`side & 0x870000` 相等）非自身友军；增益入口 `0x43fce1` 先找友军、找不到才自施；友军用药取模板背包首件回血药，落点 `0x40d530` 不含自身格、按半格偏置距离远者优先（static-derived；26 组扫描正常返回＋48 组优先级后缀）。
 - 裁判对照：第 51 关雷歐納德 HP5／15／20 时原版骑士用药 9/12、6/12、0/12，重制改后逐项相同；第 547 关自施 FIRE05／EARTH06 频率一致（runtime-measured）。
 - 重制：`AISupportRules`（纯扫描／优先级）、`AISupportPlanning`（技能与药品意图、`_item_intent` 站位）、`_resolve_skill`／`_resolve_item_use` 共同提交；每个角色 PLAYERS 模板非空 item1..8 进 `consumables.json` 的 `initial_inventory`（static-derived 规则＋重制组合）。
+- 援助链首掷：原版每次进入优先级链都在 `0x440db1..0x440dc9`（`push 0x63; call 0x458c80; inc esi`）抽一次 `rand(99)+1`，类别找不到对象跳回 `0x440db1` 再抽；重制 `AISupportPlanning.choose` 没有携带链掷骰时补抽的 `rand(99)+1` 就是这一掷，模数与 +1 一致（static-derived；runtime-measured：`enemy_turn` 回执 5 回合 55 个 NPC 行动中 `0x440db5` 256 次、均为 n=99，回跳时两次链首掷之间没有别的抽取）。
 - 差异：空类别预先跳过只改抽取次数不改分布，同种子逐值不同；射程 1 用平铺四邻未走地形传播；原空格中心、全地图遍历与全局随机流未复原（provisional）。
 
 ## 证据
@@ -62,6 +63,7 @@ HP5 行原版不救的种子 1、2、4 位 4 抽到 85、96、93（>80）。第 
 - 射程 1 用平铺四邻，未经 `0x40fa80` 地形传播；差别只可能在墙角。
 - 大体型行动者只按锚点格算站位。
 - 同种子逐值结果不同，只要求分布一致。
+- 回放判定不把 `0x440db5` 的值喂给援助链首掷：预先跳过空类别后锁定掷骰（`0x441002`）携带的值与原版差一次抽取，喂入后漆黑之森 · 遭遇戰（LEVEL547）有 4 行只在持有目标上分歧（抽取结构差，分布相同）。
 - `0x40d530` 移动搜索未由探针执行，落点读法由裁判实测验证。
 - 自清毒与友军支援的组合位置、全局 RNG、锁定／wait_round 仍为 provisional。
 - 完整原助攻／增益／特殊支援、驱毒药援助、所有职业成长未完成。

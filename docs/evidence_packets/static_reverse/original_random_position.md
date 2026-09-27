@@ -1,11 +1,12 @@
 # 随机位置 winfail 动作：槽位表、洗牌与 107／108／117／121
 
-> evidence: static-derived: opcode arguments, dispatch locations, slot table and random insert, the 107／108／117／121 handlers (which of them draw, and from which stream); provisional: the shuffle rolls' place in the global sequence (they draw 0x458c10 on the global stream, but the global draws before them are not yet the original's), whatever 0x45e307 draws inside itself · status: live · functions: 0x450840, 0x450f2c, 0x450f99, 0x451d0f, 0x451db7, 0x451e64, 0x458c10, 0x458c80 · tools: run_battle_scene_runtime_tests.gd · updated: 2026-09-27
+> evidence: static-derived: opcode arguments, dispatch locations, slot table and random insert, the 107／108／117／121 handlers (which of them draw, and from which stream); provisional: the shuffle rolls' place in the global sequence (they draw 0x458c10 on the global stream, but the global draws before them are not yet the original's), whatever 0x45e307 draws inside itself; runtime-measured: LEVEL037 进关后的洗牌结果（模拟器整镜像，单样本） · status: live · functions: 0x450840, 0x450f2c, 0x450f99, 0x451d0f, 0x451db7, 0x451e64, 0x458c10, 0x458c80 · tools: run_battle_scene_runtime_tests.gd · updated: 2026-09-27
 
 ## 结论
 
 - 原版 `actSetRandomPos` 最多存五组像素点并做一次部分洗牌（每槽一次 `0x458c10() & 1`），107／108 把对象放在槽位＋位移处不抽随机，117 把槽 0 设为某对象位置，121 每个对象在全局流上抽 3 次（static-derived）。
 - 重制 `BattleLoopInit._load_opening_story_state` 在 PlayLoop 创建时于全局流 `global_rng` 上跑同一洗牌，并把绑定到槽 k 的单位移到洗牌后的位置；开场表现读同一顺序（static-derived 输入）。
+- 原版古代神殿遺跡 · 守護者之戰（LEVEL037）进关后五个守卫对按插入序落在表项 2、3、0、1、4（第 1、2 对落在 (8,14)／(20,14)），与重制同一遍历在掷骰 1、1、0、0、0 下的结果相同（runtime-measured，单样本）。
 - 差异：洗牌抽取在全局序列中的位置、`0x45e307` 内部的抽取未对齐（provisional）。
 
 ## 证据

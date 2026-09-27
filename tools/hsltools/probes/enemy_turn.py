@@ -261,8 +261,12 @@ def remake_names(machine, battle_path: Path = BATTLE, by_coord: bool = False) ->
     """Registry object → remake unit id. Units of one actor code are matched in registry-slot
     order against the battle's playable_units order (the save's registry slots 20.. follow the
     opening order); by_coord (a level just entered, units still on their opening cells) first
-    takes the unit of that code whose opening coord is the object's cell."""
-    units = json.loads(battle_path.read_text())['playable_units']
+    takes the unit of that code whose opening coord is the object's cell — except units an opening
+    actInsertObjectRandomPos binds to a random slot (STORY037's guards): their cell is the shuffled
+    slot's, so they keep registry-slot (insert) order."""
+    battle = json.loads(battle_path.read_text())
+    units = battle['playable_units']
+    shuffled = {b.get('unit_id') for b in battle.get('opening', {}).get('actor_bindings', {}).values() if 'random_slot' in b}
     by_code: dict[int, list[dict]] = {}
     for unit in units:
         by_code.setdefault(int(unit['actor_id']), []).append(unit)
@@ -274,7 +278,7 @@ def remake_names(machine, battle_path: Path = BATTLE, by_coord: bool = False) ->
         for slot, obj, code in objects:
             cell = [machine.geti(obj + 4) >> 5, machine.geti(obj + 8) >> 5]
             pool = by_code.get(code, [])
-            match = next((unit for unit in pool if list(unit.get('coord', [])) == cell), None)
+            match = next((unit for unit in pool if list(unit.get('coord', [])) == cell and unit['id'] not in shuffled), None)
             if match is not None:
                 pool.remove(match)
                 names[obj] = match['id']
