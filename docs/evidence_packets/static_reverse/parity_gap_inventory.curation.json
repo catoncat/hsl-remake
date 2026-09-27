@@ -342,13 +342,13 @@
     },
     {
       "id": "footprint-preview-style",
-      "difference": "玩家选目标的技能结算脚印画成洋红填充＋白边（用户定的醒目样式；AI 起手的射程与作用范围 UI6 已照原版 0x411480／0x4116a0 调色板＋I_rect 边框），原版逐次重绘与图层未追",
-      "original": "0x444f08／0x4450e0 → 0x4100e0 → 0x4116a0 画覆盖；逐次重绘与图层未追",
+      "difference": "玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替",
+      "original": "0x444eb7／0x445075 → 0x40fa80 写射程、0x444f08／0x4450e0 → 0x4100e0 写脚印；每 tick 0x411480 红格后 0x4116a0（魔法 0／绝技 1）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
         "docs/evidence_packets/static_reverse/original_range_cells.md"
       ],
-      "remake": "BattleSceneOverlays 洋红脚印（只在玩家选目标）",
+      "remake": "BattleSceneOverlays 射程 attack 调色板、refresh_skill_footprint 用 magic／special 调色板",
       "remake_code": [
         "game/battle/scene/BattleSceneOverlays.gd",
         "game/battle/runtime/RangeCellOverlay.gd"
@@ -357,7 +357,7 @@
       "visibility": "every_battle",
       "effort": "S",
       "category": "面板与界面",
-      "decision": "已定"
+      "decision": "照原版（RANGECOLOR）"
     },
     {
       "id": "cast-overlay-rules",
@@ -2275,9 +2275,6 @@
     "provenance:game/battle/runtime/MapSceneConfig.gd|layout|provisional|": {
       "item": "stage-placement"
     },
-    "provenance:game/battle/runtime/RangeCellOverlay.gd|layout|remake-invented|": {
-      "item": "footprint-preview-style"
-    },
     "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|": {
       "item": "story-effect-objects"
     },
@@ -2471,9 +2468,6 @@
       ]
     },
     "provenance:game/battle/scene/BattleSceneOverlays.gd|layout|provisional|": {
-      "item": "footprint-preview-style"
-    },
-    "provenance:game/battle/scene/BattleSceneOverlays.gd|layout|remake-invented|": {
       "item": "footprint-preview-style"
     },
     "provenance:game/battle/scene/BattleSceneRuntime.gd|rules|remake-invented|": {

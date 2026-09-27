@@ -11,7 +11,6 @@ extends Node2D
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
 ##   layout: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#证据
 ##     (border pixels and averaged fill match the sampled original frame)
-##   layout: remake-invented (add_marked_cells: the caller-styled outlined cells of the skill footprint preview)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
 ##   timing: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#证据
 ##     (pulse counter 0x4c1a7c walks the 17-value triangle live)
@@ -111,34 +110,6 @@ func add_cells(name_prefix: String, cell_rects: Array[Rect2], palette: String) -
 		_paint(cell)
 
 
-## Adds one outlined cell per rect under `name_prefix` in a caller-chosen style (the skill
-## footprint preview): a flat `fill` under a `width` px `edge` outline, drawn above the
-## palette cells added earlier; these cells keep their colours (no pulse, no I_rect frame).
-func add_marked_cells(name_prefix: String, cell_rects: Array[Rect2], fill: Color, edge: Color, width: float) -> void:
-	for index in range(cell_rects.size()):
-		var rect: Rect2 = cell_rects[index]
-		var cell := Node2D.new()
-		cell.name = "%s%02d" % [name_prefix, index]
-		cell.set_meta("marked", true)
-		cell.position = rect.position
-		var inset := width / 2.0
-		var corners := PackedVector2Array([Vector2(inset, inset), Vector2(rect.size.x - inset, inset), Vector2(rect.size.x - inset, rect.size.y - inset), Vector2(inset, rect.size.y - inset)])
-		var body := Polygon2D.new()
-		body.name = "Fill"
-		body.polygon = PackedVector2Array([Vector2.ZERO, Vector2(rect.size.x, 0.0), rect.size, Vector2(0.0, rect.size.y)])
-		body.color = fill
-		cell.add_child(body)
-		var outline := Line2D.new()
-		outline.name = "Edge"
-		outline.points = corners
-		outline.closed = true
-		outline.width = width
-		outline.default_color = edge
-		outline.joint_mode = Line2D.LINE_JOINT_SHARP
-		cell.add_child(outline)
-		add_child(cell)
-
-
 func clear_cells(name_prefix: String) -> void:
 	for child in get_children():
 		if str(child.name).begins_with(name_prefix):
@@ -168,7 +139,6 @@ func _process(delta: float) -> void:
 ## The original re-evaluates the ramp index and the frame timer each drawn tick; both are
 ## derived here from one running tick so an added cell joins the pulse in phase.
 func _paint(cell: Node) -> void:
-	if cell.has_meta("marked"): return
 	var palette: String = str(cell.get_meta("palette"))
 	var ramp: Array[Color] = _palette_ramps[palette]
 	var pulse_index: int = absi(int(_pulse_indices[_tick % _pulse_indices.size()]))

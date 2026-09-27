@@ -1,10 +1,11 @@
 # 范围格：ICONBOX 半透明填充、I_rect 边框帧与逐 tick 脉动
 
-> evidence: static-derived; resource-derived; runtime-measured · status: live · functions: 0x411200, 0x411480, 0x4116a0, 0x4504d0, 0x450d4b, 0x450d69, 0x4684b6 · tools: hsl_original_control.py, hsl_win32_memread.c, hsltools/assets/range_cells.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived; runtime-measured · status: live · functions: 0x40fa80, 0x4100e0, 0x411200, 0x411480, 0x4116a0, 0x444fb3, 0x445256, 0x4504d0, 0x450d4b, 0x450d69, 0x4684b6 · tools: hsl_original_control.py, hsl_win32_memread.c, hsltools/assets/range_cells.py · updated: 2026-09-27
 
 ## 结论
 
 - 原版：移动、武器攻击、魔法、绝技四种范围格都是「ICONBOX 实心块按 ramp 颜色 50／50 混色＋`I_rect` 边框帧」；ramp 按 17 tick 三角脉动（最暗项连显两 tick），边框每 8 tick 换帧、8 帧一圈；过场标记 `obj_Story_Show_Pos` 用魔法格同一外观，但每 6 tick 换帧、计时独立（static-derived；Wine 采样 runtime-measured）。
+- 原版选魔法／绝技目标：可选射程一律用武器攻击红格（`0x411480`），光标所在处的作用脚印用魔法黄（`0x4116a0` 传 0）／绝技青绿（传 1），每 tick 先画射程、后画脚印，脚印叠在红格上（static-derived）。
 - 重制：`game/battle/runtime/RangeCellOverlay.gd` 读 `content/imported/hsl/shared/range_cells/manifest.json`，一个运行 tick 同时驱动脉动与换帧；`BattleSceneOverlays` 只决定格集合与调色板（static-derived）。
 - 差异：8 bit alpha 0.5 代替 RGB565 抹位平均，差 ≤1 级；未做逐像素截图对比（provisional）。
 
@@ -26,6 +27,7 @@
 | 边框 | 同位置 blit `I_rect<调色板><帧+1>.shp`，不混色 |
 | 调色板来源 | `0x441913`／`0x4419a5`（经 `0x4097f0` 查 MAGIC 表 `0x4c2ca0`）传 0＝魔法黄 ramp `0xffea…0xd6a5`；`0x441c19`／`0x441c9b`（经 `0x409810` 查 SPECIAL 表 `0x4c3920`）传 1＝绝技青绿 ramp `0x6ef7…0x45b2` |
 | 脉动 `0x411442..0x41145e` | 绘制后 `counter >= 0` 时 +1，`ramp[counter] == 0` 则 `counter = 1 - counter`；`counter < 0` 时仅 +1；序列 `0,1,…,8,-8,…,-1`，17 tick 一周；四张 ramp 由亮到暗（移动 `0x529f → 0x295a`） |
+| 选目标叠画 | 玩家魔法态 `0x79`：`0x444eb7` 调 `0x40fa80`→`0x40f8b0` 把射程写进 `*0x4c1b48`，`0x444f08`／`0x444f1b` 调 `0x4100e0` 把光标格脚印写进 `*0x4c1b4c`；每 tick `0x444fb3` 调 `0x411480`（红），随后 `0x444fca` 调 `0x4116a0(x, y, 0, 0)`。绝技态 `0x98`：`0x445075`／`0x44508f` 写射程、`0x4450e0`／`0x4450f4` 写脚印，`0x445256` 画红、`0x44526b` 调 `0x4116a0(…, 1)`。AI 起手同序：魔法 `0x441779`／`0x4418fd` 写、`0x44198f` 红→`0x4419a5` 黄；绝技 `0x441a73`／`0x441c02` 写、`0x441c84` 红→`0x441c9b` 青绿 |
 | 帧计时 `0x4113ff..0x411438` | `delay -= 1`，到 0 重装为字 `0x476bfa` = 8，`frame = (frame+1) mod` 字 `0x476bfe` = 8；初始 delay 8、frame 0 |
 
 tick 定义见 [original_tick_rate](../runtime_observations/original_tick_rate/README.md)。
@@ -49,7 +51,7 @@ tick 定义见 [original_tick_rate](../runtime_observations/original_tick_rate/R
 ## 重制接线
 
 - `game/battle/runtime/RangeCellOverlay.gd`（挂 `World/MoveOverlay`）：每格一个子节点，`Polygon2D` 用 `ramp[abs(index)]` alpha 0.5 叠加，`Sprite2D` 以 `hframes = 8` 取边框帧；`OriginalTick.ticks(delta)` 驱动，新格与已有格同相。
-- `BattleSceneOverlays`：移动＝move，`SELECTED_ATTACK` 空／normal＝attack，magic＝magic，special＝special；footprint 只有一种画法。
+- `BattleSceneOverlays`：移动＝move；武器、魔法、绝技的可选射程都＝attack；`refresh_skill_footprint` 在光标格画脚印，魔法＝magic、绝技＝special，后加的子节点叠在射程格上；自中心绝技的射程层直接画脚印格，用技能调色板。
 - `BattleAttackCue` 用同一 manifest 画 AI 施法起手格（见 [original_cast_overlays.md](original_cast_overlays.md)）。
 
 ## 复现
@@ -59,5 +61,8 @@ tick 定义见 [original_tick_rate](../runtime_observations/original_tick_rate/R
 ## 边界
 
 - 过场里是否调用 `0x4116a0` 的起手格未核对。
+- 射程与脚印的脉动计数器在原版是 `0x4c1a80`／`0x4c1a84` 两个，重制共用一个 tick、两层同相（provisional）。
+- 自中心绝技原版射程层（`0x40fa80` 以施法者为中心）的格集未对照，重制以脚印格代替（provisional）。
+- 选魔法／绝技目标的叠画只有静态读法，没有原版帧读数（provisional）：第 51 战首控存档里 雷歐納德 气力不足、氣刃斬（气格消耗 1）选不中，队中无魔法角色；替换路线：用气力 ≥1 格或有魔法角色的存档截选目标帧，按上表读法核对填充 ramp 与边框首行。
 - `I_rect01..08` 与 `ICONRECT.SHP` 的用途未复现。
 - 565 抹位平均与 alpha 0.5 的 ≤1 级差异未做逐像素对比。

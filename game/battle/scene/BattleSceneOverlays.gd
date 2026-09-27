@@ -4,19 +4,18 @@ extends RefCounted
 ## the original's pulsing fill and I_rect border per cell). Cells come from the PlayLoop
 ## (movement_cells／attack_cells／SkillTargetRules); the runtime keeps the mirrored
 ## `move_overlay_cells`／`attack_overlay_cells`. The palette follows the original's
-## drawers: move, attack, magic (0x4116a0 palette 0) and special (palette 1). The
+## drawers: move (0x411200); every target reach — weapon, magic and special — in the attack
+## palette (0x411480); the magic／special footprint at the cursor in 0x4116a0 palette 0／1,
+## drawn after (over) the reach. The
 ## overlay is part of the spatial contract (camera, projection, hit-test, menu anchor)
 ## and its geometry is not tuned here.
 ## provenance:
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V02
 ##     (32 px axis-aligned cells, diamond reach outline)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##     (skill targeting: reach in the attack palette, cursor footprint in the skill palette on top)
 ##   layout: provisional
-##     (refresh_skill_footprint: 0x444f08／0x4450e0 feed the cursor cell to 0x4100e0, whose coverage 0x4116a0 draws;
-##     per-hover redraw and layering not traced)
-##   layout: remake-invented
-##     (the footprint's magenta fill and white outline over the range palette, FOOTPRINT_FILL／FOOTPRINT_EDGE — user
-##     decision 2026-09-24)
+##     (a self-centred special shows its footprint as the reach layer, in the skill palette)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
 ##     (sync_unit_highlights: the original lights the targeted and the acting unit; when is provisional)
 
@@ -27,12 +26,6 @@ const Interaction = preload("res://game/sim/Interaction.gd")
 var runtime: Node
 ## The footprint cells last drawn under the cursor (refresh_skill_footprint).
 var footprint_cells: Array = []
-## The settle footprint's own style (remake-invented, user decision 2026-09-24: clearly
-## distinct from the cast range): a magenta tint no range palette uses (move blue, attack
-## red, magic yellow, special cyan) under a solid white outline, drawn over the range cells.
-const FOOTPRINT_FILL := Color(1.0, 0.25, 0.75, 0.5)
-const FOOTPRINT_EDGE := Color(1.0, 1.0, 1.0, 0.95)
-const FOOTPRINT_EDGE_PX := 2.0
 
 
 static func create(scene_runtime: Node) -> RefCounted:
@@ -130,15 +123,17 @@ func refresh_attack_overlay() -> void:
 	var shown_cells: Array = runtime.attack_overlay_cells
 	var fields := BattlePlayLoop.skill_fields(runtime.play_loop, str(runtime.play_loop.get(LoopKeys.SELECTED_SKILL_ID, "")))
 	var selected_attack := str(runtime.play_loop.get(LoopKeys.SELECTED_ATTACK, ""))
+	var palette := "attack"
 	if selected_attack == "special" and BattlePlayLoop.SkillTargetRules.self_centered(fields):
 		# A self-centred special can only be cast on the caster's cell: show the area it settles over.
 		shown_cells = BattlePlayLoop.Combat.skill_cast_footprint(runtime.play_loop, BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)["coord"])
-	runtime.move_overlay.add_cells("AttackCell", _cell_rects(shown_cells), attack_palette(selected_attack))
+		palette = footprint_palette(selected_attack)
+	runtime.move_overlay.add_cells("AttackCell", _cell_rects(shown_cells), palette)
 	runtime.move_overlay.visible = true
 
 
-## The selected skill's real effect area at the cursor cell, drawn as a second layer of the
-## skill palette over the cast range (brighter where they overlap): the cells come from
+## The selected skill's real effect area at the cursor cell, drawn over the attack-palette
+## reach in the skill's own palette (0x4116a0 after 0x411480 each tick): the cells come from
 ## BattleLoopCombat.skill_cast_footprint, the very footprint the cast settles over (毒魔箭's
 ## range1Cell cross around the chosen cell, a Dir line away from the caster, a circle …).
 ## Rebuilt only when the set changes; [] (off range, not skill targeting) clears it.
@@ -149,12 +144,12 @@ func refresh_skill_footprint(coord: Vector2i) -> void:
 	footprint_cells = cells
 	runtime.move_overlay.clear_cells("EffectCell")
 	if not cells.is_empty():
-		runtime.move_overlay.add_marked_cells("EffectCell", _cell_rects(cells), FOOTPRINT_FILL, FOOTPRINT_EDGE, FOOTPRINT_EDGE_PX)
+		runtime.move_overlay.add_cells("EffectCell", _cell_rects(cells), footprint_palette(str(runtime.play_loop.get(LoopKeys.SELECTED_ATTACK, ""))))
 
 
-## Original drawer per selection state: 0x411480 for the weapon, 0x4116a0 palette 0 for a
-## magic footprint and palette 1 for a special-skill footprint.
-static func attack_palette(selected_attack: String) -> String:
+## The footprint drawer's palette: 0x4116a0 palette 0 (0x441913／0x4419a5) for a magic
+## footprint, palette 1 (0x441c19／0x441c9b) for a special-skill footprint.
+static func footprint_palette(selected_attack: String) -> String:
 	match selected_attack:
 		"magic":
 			return "magic"

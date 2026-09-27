@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (193 modules, 150 remake-invented cells, 77 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (193 modules, 148 remake-invented cells, 77 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (193)
 
@@ -31,7 +31,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [MapObjectFlash](../game/battle/runtime/MapObjectFlash.gd) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json) | n/a | provisional [TYPE.H](../content/imported/hsl/global/tables/TYPE.H) | n/a |
 | [MapObjectPlacement](../game/battle/runtime/MapObjectPlacement.gd) | n/a | resource-derived [map_object_alignment.json](../content/imported/hsl/chapter01/map_object_alignment.json); static-derived [actor_shp_draw_origin.md](../docs/evidence_packets/static_reverse/actor_shp_draw_origin.md); runtime-measured [first_battle_visual_evidence_index.md](../docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md) | n/a | n/a | n/a |
 | [MapSceneConfig](../game/battle/runtime/MapSceneConfig.gd) | n/a | static-derived [actor_placement_initialization.md](../docs/evidence_packets/static_reverse/actor_placement_initialization.md); provisional | n/a | n/a | n/a |
-| [RangeCellOverlay](../game/battle/runtime/RangeCellOverlay.gd) | n/a | resource-derived [range_cells/manifest.json](../content/imported/hsl/shared/range_cells/manifest.json); static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md); runtime-measured [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) `#证据`; remake-invented | n/a | static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md); runtime-measured [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) `#证据` | n/a |
+| [RangeCellOverlay](../game/battle/runtime/RangeCellOverlay.gd) | n/a | resource-derived [range_cells/manifest.json](../content/imported/hsl/shared/range_cells/manifest.json); static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md); runtime-measured [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) `#证据` | n/a | static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md); runtime-measured [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) `#证据` | n/a |
 | [SceneTimeline](../game/battle/runtime/SceneTimeline.gd) | resource-derived [STORY051.TXT](../content/imported/hsl/chapter01/source_texts/STORY051.TXT); static-derived [original_select_insert_event.md](../docs/evidence_packets/static_reverse/original_select_insert_event.md) | n/a | n/a | n/a | n/a |
 | [ShowNumberStyle](../game/battle/runtime/ShowNumberStyle.gd) | n/a | resource-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md) | static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md) | n/a | n/a |
 | [StoryEffectObjects](../game/battle/runtime/StoryEffectObjects.gd) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); remake-invented | n/a | static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); provisional | resource-derived [scripts](../content/imported/hsl/chapter01/scripts) |
@@ -76,7 +76,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleRewardFloater](../game/battle/scene/BattleRewardFloater.gd) | n/a | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md); runtime-measured [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md); remake-invented | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); remake-invented | static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md) | n/a |
 | [BattleSceneInput](../game/battle/scene/BattleSceneInput.gd) | remake-invented | runtime-measured [first_battle_visual_evidence_index.md](../docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md) | n/a | n/a | n/a |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | n/a | remake-invented | n/a | static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); provisional; remake-invented | resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json) |
-| [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | n/a | runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#V02`; static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md); provisional; remake-invented | n/a | runtime-measured [dialogue_death/README.md](../docs/evidence_packets/runtime_observations/dialogue_death/README.md) | n/a |
+| [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | n/a | runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#V02`; static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md); provisional | n/a | runtime-measured [dialogue_death/README.md](../docs/evidence_packets/runtime_observations/dialogue_death/README.md) | n/a |
 | [BattleSceneRuntime](../game/battle/scene/BattleSceneRuntime.gd) | remake-invented; static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [camera_panel_motion/README.md](../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | resource-derived [message_text_evidence.json](../content/imported/hsl/chapter01/battle051/message_text_evidence.json) | static-derived [original_battle_end_flow.md](../docs/evidence_packets/static_reverse/original_battle_end_flow.md); runtime-measured [original_battle_end_flow.md](../docs/evidence_packets/static_reverse/original_battle_end_flow.md) | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json); resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json) |
 | [BattleSceneStage](../game/battle/scene/BattleSceneStage.gd) | n/a | resource-derived [actor_walk_frames](../content/imported/hsl/chapter01/actor_walk_frames); resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); resource-derived [map_object_alignment.json](../content/imported/hsl/chapter01/map_object_alignment.json); provisional | n/a | static-derived [original_map_object_drift.md](../docs/evidence_packets/static_reverse/original_map_object_drift.md) | resource-derived [actor_audio.json](../content/imported/hsl/chapter01/actor_audio.json); resource-derived [scripts](../content/imported/hsl/chapter01/scripts); provisional |
 | [BattleScriptActorPresentation](../game/battle/scene/BattleScriptActorPresentation.gd) | n/a | remake-invented | n/a | static-derived [original_script_wait.md](../docs/evidence_packets/static_reverse/original_script_wait.md) | n/a |
@@ -267,7 +267,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (150)
+### remake-invented 清单 (148)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -279,7 +279,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [GrowthCampaignProgress](../game/battle/runtime/GrowthCampaignProgress.gd) | rules | deferred validated reward pool at a quiet ordinary-party victory; a separate party's pool must be taken or abandoned before the hand-off |
 | [GrowthCampaignProgress](../game/battle/runtime/GrowthCampaignProgress.gd) | strings | the separate-party notice line |
 | [MapObjectDrift](../game/battle/runtime/MapObjectDrift.gd) | timing | moving backgrounds are placed every display frame from the current camera, the original once per tick before that frame's scroll |
-| [RangeCellOverlay](../game/battle/runtime/RangeCellOverlay.gd) | layout | add_marked_cells: the caller-styled outlined cells of the skill footprint preview |
 | [StoryEffectObjects](../game/battle/runtime/StoryEffectObjects.gd) | layout | rain emitter, zoom flash, glow readings of those fields |
 | [OpeningEndCard](../game/battle/runtime/opening/OpeningEndCard.gd) | rules | skip-battle-as-victory and not-remade rows |
 | [OpeningEndCard](../game/battle/runtime/opening/OpeningEndCard.gd) | layout | card layout |
@@ -320,7 +319,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleSceneInput](../game/battle/scene/BattleSceneInput.gd) | rules | mouse／keyboard dispatch order, right-click cancel, Home recenter |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | layout | panel draw order and menu anchoring rules |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | timing | per-member offered level; Status 成長點, a load and the next battle's first quiet moment reopen points left by an old save or the harness skip |
-| [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | layout | the footprint's magenta fill and white outline over the range palette, FOOTPRINT_FILL／FOOTPRINT_EDGE — user decision 2026-09-24 |
 | [BattleSceneRuntime](../game/battle/scene/BattleSceneRuntime.gd) | rules | scene orchestration, dev seams, input gating |
 | [BattleSceneRuntime](../game/battle/scene/BattleSceneRuntime.gd) | rules | OPT-TREASURE read point [OPTIONS.md](../docs/OPTIONS.md) |
 | [BattleScriptActorPresentation](../game/battle/scene/BattleScriptActorPresentation.gd) | layout | spawned actors appear at the committed cell; original entry paths not restored |
@@ -458,7 +456,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | layout | — | the same strip for any living unit under the cursor in weapon／magic／special selection, legal target or not — user request 2026-09-23, the original's per-state rule is unread |
 | [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | timing | — | a caster without an m_shape lead poses at clip start beside the Cast_Star ring |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | timing | — | that ordering is a static reading; a lost battle offers no window — the conservative choice |
-| [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | layout | — | refresh_skill_footprint: 0x444f08／0x4450e0 feed the cursor cell to 0x4100e0, whose coverage 0x4116a0 draws; per-hover redraw and layering not traced |
+| [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | layout | — | a self-centred special shows its footprint as the reach layer, in the skill palette |
 | [BattleSceneStage](../game/battle/scene/BattleSceneStage.gd) | layout | — | combined-placement child offsets, layer hints |
 | [BattleSceneStage](../game/battle/scene/BattleSceneStage.gd) | audio | — | background sounds play map-wide at −8 dB; native attenuation not located |
 | [BattleScriptCoordinator](../game/battle/scene/BattleScriptCoordinator.gd) | rules | — | re-arming may pick another registered instance |
@@ -520,7 +518,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 33 | 16 | 0 | 25 | 3 | 77 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
-| remake-invented | 53 | 44 | 38 | 14 | 1 | 150 |
+| remake-invented | 53 | 42 | 38 | 14 | 1 | 148 |
 | n/a | 62 | 114 | 142 | 134 | 163 | 615 |
 
 <!-- provenance:end -->

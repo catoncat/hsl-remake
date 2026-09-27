@@ -66,7 +66,7 @@
 | 跨战 HP／MP 回满 | 原版跨关承接还没读清，是缺口不是选项；查清后原版层照原版（`carry-model`） |
 | 繁体显示 | 繁体要重画约 80 张图，低优先，接缝已留（`simplified-display-gaps`）；配乐已换成原版曲目，不再是选项 |
 | 重制自有界面与流程的文字 | 面板说明、续玩提示、预览关结束卡、学技提示、Home 回中：原版没有对应的东西可切换，保留（`panel-captions`、`campaign-flow-extras`、`title-flow-extras`、`opening-end-card`、`learning-notice`、`home-recenter`） |
-| 玩家技能脚印的洋红样式、悬停身份栏规则 | 原版画法／规则还没读完，先查（`footprint-preview-style`、`hover-strip-rule`） |
+| 悬停身份栏规则 | 原版规则还没读完，先查（`hover-strip-rule`）；技能脚印已照原版调色板（`footprint-preview-style`） |
 
 ## 5. 三件已定的事
 
