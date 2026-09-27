@@ -148,6 +148,7 @@ func _ready() -> void:
 	stage.add_child(cast_portrait)
 	vitals = preload("res://game/battle/scene/BattleVitals.gd").new()
 	vitals.position = Vector2(0, 322)
+	vitals.resist_gem_at = vitals.RESIST_STRIP_GEM_AT
 	panel.add_child(vitals)
 	# 0x43b4e0 mode 2 (0x403512／0x404bf3 push 2) sets the ST object's 0x10000: shared pulse.
 	vitals.st_bar.shared_pulse = true

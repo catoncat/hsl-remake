@@ -1110,8 +1110,8 @@ func _test_resist_row() -> void:
 	_assert_eq(vitals.resist_gems.size(), 5, "five element gems")
 	for index in range(5):
 		_assert_true(vitals.resist_gems[index].texture.resource_path.ends_with("panels/magicon%d.png" % (index + 1)), "gem %d is MAGICON%d" % [index, index + 1])
-		_assert_eq(vitals.resist_gems[index].position, Vector2(138 + 48 * index, 128), "gem %d at the recording's (138 + 48·i, 450 − 322)" % index)
-		_assert_eq(vitals.resist_values[index].position.x, 149.0 + 48 * index, "value %d starts 11 px after its gem" % index)
+		_assert_eq(vitals.resist_gems[index].position, Vector2(146 + 48 * index, 128), "gem %d at the docked-window frames' (146 + 48·i, 142 − 14)" % index)
+		_assert_eq(vitals.resist_values[index].position.x, 156.0 + 48 * index, "value %d cell starts 10 px after its gem (ink at +12)" % index)
 	vitals.queue_free()
 	await process_frame
 

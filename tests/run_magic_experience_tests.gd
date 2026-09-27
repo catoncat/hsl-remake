@@ -234,7 +234,7 @@ func presentation_cases() -> void:
 	var revealed := casting.duplicate(true)
 	revealed[preload("res://game/sim/LoopKeys.gd").KNOWN_UNIT_IDS].append("enemy021_1")
 	presentation.preview_target(revealed, "", Vector2i(10, 8))
-	check(presentation.target_vitals.visible and presentation.target_vitals.values["hp"].text == "100 / 100", "the casting-target strip shows the numbers of a fought enemy")
+	check(presentation.target_vitals.visible and presentation.target_vitals.values["hp"].text == "100/100", "the casting-target strip shows the numbers of a fought enemy")
 	loop = BattlePlayLoop.attack_target(casting, "enemy021_1", zero)
 	check(BattlePlayLoop.unit_known(loop, "enemy021_1"), "the cast makes its target known (0x442b3c)")
 	scene.apply_loop(loop, "test")

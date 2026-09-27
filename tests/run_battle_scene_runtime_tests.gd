@@ -725,7 +725,7 @@ func _test_status_inspection_no_turn_cost() -> void:
 			_assert_true(scene.status_panel.portrait.texture.resource_path.ends_with("portraits/%s.png" % actor_id), "inspection must switch to the clicked actor portrait")
 			_assert_eq(scene.status_panel.vitals.values["role"].text, scene.status_panel.UISkin.data()["actors"][actor_id]["title"], "original title field must follow the clicked actor, not replace it with a faction label")
 			if actor_id == "023":
-				_assert_eq(scene.status_panel.vitals.values["hp"].text, "%d / %d" % [int(target["hp"]), int(target["max_hp"])], "a friendly unit's status page is in the clear (pmPlayer actors are born known)")
+				_assert_eq(scene.status_panel.vitals.values["hp"].text, "%d/%d" % [int(target["hp"]), int(target["max_hp"])], "a friendly unit's status page is in the clear (pmPlayer actors are born known)")
 			_dispatch_key(scene, KEY_ESCAPE)
 			_assert_eq(scene.play_loop, select_before, "ally inspection must preserve move-select and turn state")
 			_assert_eq(scene.interaction_state, preload("res://game/sim/Interaction.gd").MOVE_SELECT, "closing another unit's page returns to move-select (0x4440b7 sub 11 → 0)")
@@ -736,7 +736,7 @@ func _test_status_inspection_no_turn_cost() -> void:
 	var before: Dictionary = scene.play_loop.duplicate(true)
 	scene.menus.choose_command("status")
 	_assert_true(scene.status_panel.visible, "Status command should open usable panel")
-	_assert_eq(scene.status_panel.vitals.values["hp"].text, "30 / 30", "Status should show live health on the original status strip")
+	_assert_eq(scene.status_panel.vitals.values["hp"].text, "30/30", "Status should show live health on the original status strip")
 	_assert_true(scene.status_panel.portrait.texture.resource_path.ends_with("portraits/001.png"), "player Status must use source-bound portrait")
 	_assert_true(scene.status_panel.equipment_labels["weapon"].text == "闊刃劍" and scene.status_panel.equipment_labels["armor"].text == "騎士鎧甲", "original equipment slots must show the actual weapon and armor")
 	_assert_eq(scene.play_loop, before, "viewing Status must preserve pending move and queue")
@@ -1261,7 +1261,7 @@ func _test_live_experience() -> void:
 	presentation.cutin._process(0.25)
 	_assert_true(not scene.ui_audio.playing, "level-up sound must wait for visible combat result")
 	_assert_eq(presentation.cutin.vitals.values["level"].text, "1", "wind-up cannot reveal the precomputed level-up")
-	_assert_eq(presentation.cutin.vitals.values["exp"].text, "99 / 100", "wind-up must retain pre-strike experience")
+	_assert_eq(presentation.cutin.vitals.values["exp"].text, "99/100", "wind-up must retain pre-strike experience")
 	_seek_ordinary(presentation.cutin, "impact")
 	_assert_true(not presentation.cutin.result.text.contains("EXP") and not scene.ui_audio.playing, "impact cannot announce map growth early")
 	_seek_ordinary(presentation.cutin, "complete")
@@ -1288,7 +1288,7 @@ func _test_live_experience() -> void:
 	_assert_true(not scene.ui_audio.playing, "ordinary EXP gain must not play upgrade cue")
 	scene.status_panel.show_unit(after)
 	_assert_eq(scene.status_panel.vitals.values["level"].text, "2", "original status strip must show current level")
-	_assert_eq(scene.status_panel.vitals.values["exp"].text, "24 / 150", "original status strip must show retained native EXP")
+	_assert_eq(scene.status_panel.vitals.values["exp"].text, "24/150", "original status strip must show retained native EXP")
 	scene.queue_free()
 	await process_frame
 
@@ -1412,7 +1412,7 @@ func _test_attack_target_preview() -> void:
 	scene.apply_loop(scene.play_loop, "test")
 	scene.scene_input.handle_pointer_motion(scene.grid_cell_center_to_logical_position(target["coord"]))
 	scene._process(0)
-	_assert_true(presentation.target_vitals.visible and presentation.target_vitals.values["hp"].text == "22 / 22", "original target strip must show current HP of a fought enemy instead of a debug transcript")
+	_assert_true(presentation.target_vitals.visible and presentation.target_vitals.values["hp"].text == "22/22", "original target strip must show current HP of a fought enemy instead of a debug transcript")
 	before = scene.play_loop.duplicate(true)
 	var resolved: Dictionary = scene.BattlePlayLoop.CoreCombatRules.resolve_attack(player, target, func(_n): return 0)
 	_assert_eq(resolved["hit_rate"], 100, "actual strike must share preview accuracy")
@@ -1496,7 +1496,7 @@ func _test_move_select_identity_bar() -> void:
 	scene.scene_input.handle_pointer_motion(scene.grid_cell_center_to_logical_position(friend["coord"]))
 	scene._process(0)
 	_assert_true(vitals.visible and vitals.values["name"].text == "???", "a known friendly nameless 023 (name 306) prints ??? like the original (Wine 2026-09-22)")
-	_assert_eq(vitals.values["hp"].text, "%d / %d" % [int(friend["hp"]), int(friend["max_hp"])], "a friendly unit shows its real HP on hover")
+	_assert_eq(vitals.values["hp"].text, "%d/%d" % [int(friend["hp"]), int(friend["max_hp"])], "a friendly unit shows its real HP on hover")
 	for cell in Loop.movement_cells(scene.play_loop, "leonard"):
 		if scene.scene_input.unit_id_at_grid(cell) == "":
 			scene.scene_input.handle_pointer_motion(scene.grid_cell_center_to_logical_position(cell))

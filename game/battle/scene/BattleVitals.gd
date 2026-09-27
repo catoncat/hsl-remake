@@ -12,7 +12,7 @@ extends Control
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##     (resist row: gems at (138 + 48·i, 450) in the close-up, value glyphs from x 149 + 48·i)
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#7
-##     (FONT.24 identity cells: 姓名／稱號／種族／狀態 ink boxes on the Wine frames)
+##     (FONT.24 identity cells, 40/40 values, docked resist row at gems (146 + 48·i, 142))
 ##   layout: resource-derived content/imported/hsl/chapter01/portraits/manifest.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_stamina.md
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_identity_bar.md
@@ -67,12 +67,17 @@ const VALUE_CELLS := {
 const VALUE_CELL_HEIGHT := 24
 ## Resist row: five element gems (panels magicon1..5 = earth, water, wind, fire, mind — the
 ## element order of the handle table 0x4c3460 and of resist_by_type) 48 px apart, each followed
-## by its value. The 2026-09-24 recording (close-up strip at y 322) puts the gems' top-left at
-## screen (138 + 48·i, 450) and the white value glyphs at x 149 + 48·i, rows 457–465.
-const RESIST_GEM_AT := Vector2(138, 128)
+## by its value. The docked WINDOW10 (item／status windows at (133,14)): the Wine frames put the
+## gems' top-left at screen (146 + 48·i, 142) and the white value ink at x 158 + 48·i, rows
+## 149–157 (menus_ui/README.md#7). The bottom strip (close-up and hover, y 322) is not the same
+## draw: the recording puts its gems at (138 + 48·i, 450), value ink from x 149 + 48·i, rows
+## 457–465 (cutin_floaters/README.md §4) — callers of that strip set resist_gem_at.
+const RESIST_GEM_AT := Vector2(146, 128)
+const RESIST_STRIP_GEM_AT := Vector2(138, 128)
 const RESIST_PITCH := 48
-const RESIST_TEXT_DX := 11
-const RESIST_TEXT_CENTRE_Y := 139
+const RESIST_TEXT_DX := 10
+const RESIST_TEXT_CENTRE_Y := 138
+var resist_gem_at := RESIST_GEM_AT
 ## 0x434d10 prints each value as two zero-padded digits and "%", or "MAX" from 80 up.
 const RESIST_MAX := 80
 var resist_gems: Array[TextureRect] = []
@@ -113,8 +118,8 @@ func _ready() -> void:
 		values[key] = label
 	values["st"].hide() # Original status strip presents stamina with its segmented bar.
 	for index in range(5):
-		resist_gems.append(UISkin.asset(self, "magicon%d" % (index + 1), RESIST_GEM_AT + Vector2(RESIST_PITCH * index, 0)))
-		var label := UISkin.label(self, Vector2(RESIST_GEM_AT.x + RESIST_TEXT_DX + RESIST_PITCH * index, RESIST_TEXT_CENTRE_Y - VALUE_CELL_HEIGHT / 2.0), 12)
+		resist_gems.append(UISkin.asset(self, "magicon%d" % (index + 1), resist_gem_at + Vector2(RESIST_PITCH * index, 0)))
+		var label := UISkin.label(self, Vector2(resist_gem_at.x + RESIST_TEXT_DX + RESIST_PITCH * index, RESIST_TEXT_CENTRE_Y - VALUE_CELL_HEIGHT / 2.0), 12)
 		label.size = Vector2(0, VALUE_CELL_HEIGHT)
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		label.add_theme_color_override("font_color", Color.WHITE)
@@ -170,9 +175,10 @@ func show_unit(unit: Dictionary, visible_hp: int = -1, known: bool = true) -> vo
 		_show_unknown()
 		return
 	values["level"].text = str(int(unit["level"]))
-	values["exp"].text = "%d / %d" % [int(unit.get("exp", 0)), preload("res://game/sim/ProgressionRules.gd").exp_to_next(int(unit["level"]))]
-	values["hp"].text = "%d / %d" % [hp, int(unit["max_hp"])]
-	values["mp"].text = "%d / %d" % [mp, max_mp]
+	# 0x434d10 runs value and maximum together: 等級 2 帧 「75/150」「40/40」「0/0」 (menus_ui/README.md#7).
+	values["exp"].text = "%d/%d" % [int(unit.get("exp", 0)), preload("res://game/sim/ProgressionRules.gd").exp_to_next(int(unit["level"]))]
+	values["hp"].text = "%d/%d" % [hp, int(unit["max_hp"])]
+	values["mp"].text = "%d/%d" % [mp, max_mp]
 	values["st"].text = str(int(unit.get("stamina", 0)))
 	st_bar.value = clampf(float(unit.get("stamina", 0)), 0, StaminaRules.CAP)
 	# 0x434d10 prints the live +0x04 name id's RESOURCE text verbatim (0x4477b0(+4)): a

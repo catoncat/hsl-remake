@@ -166,6 +166,7 @@ func _ready() -> void:
 	debug_hud = OS.get_cmdline_user_args().has("--debug-hud")
 	target_vitals = preload("res://game/battle/scene/BattleVitals.gd").new()
 	target_vitals.position = Vector2(0, 322)
+	target_vitals.resist_gem_at = target_vitals.RESIST_STRIP_GEM_AT
 	target_vitals.hide()
 	ui.add_child(target_vitals)
 	# 0x43b4e0 mode 3 (hover／target strip, 0x43e5bf push 3) sets the ST object's 0x10000.

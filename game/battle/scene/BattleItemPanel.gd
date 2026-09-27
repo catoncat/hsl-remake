@@ -17,7 +17,7 @@ extends Control
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#7
 ##     (使用／交換／裝備／丟棄 windows: boards, 32 px rows, icon and name cells, pulse-green hover, description, gold)
 ##   strings: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#7
-##     (裝備 row colour: 0x434d10 @2 red for a consumable or a piece outside the job mask)
+##     (裝備 row colour: 0x434d10 @2 red for a consumable or a piece outside the job mask; important @6)
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
 ##   strings: resource-derived content/imported/hsl/chapter01/consumables.json
 ##   strings: remake-invented (返回, 沒有道具, 道具 N / 8 — OPT-GUIDE＝提示 only)
@@ -180,7 +180,8 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 				rows.add_child(empty_slot)
 			continue
 		var details: Dictionary = catalog[code]
-		var button := _bag_button(details, code, index, index, BattleUISkin.TEXT_WHITE)
+		# 0x434d10 (0x435e12／0x435e9d): an important item (+0xa0 bit 0x8000000) prints @6 in every mode.
+		var button := _bag_button(details, code, index, index, BattleUISkin.TEXT_IVORY if bool(details.get("important", false)) else BattleUISkin.TEXT_WHITE)
 		var caption: Label = button.get_node("Caption")
 		button.disabled = operation == "use" and ItemUseRules.definition_error(items.get(code, {})) != ""
 		button.mouse_entered.connect(_hover_row.bind(caption, _item_lines(details, code)))
@@ -488,9 +489,12 @@ func _show_hand_window(command: String) -> void:
 
 ## Name colour of a hand-window row (0x434d10 bag rows, 0x4c1cf8 == 1 in 裝備): a consumable, or
 ## a piece outside the unit's job mask (+0xa8), prints @2 red; anything else @1 white. 丟棄 takes
-## the white branch for every row. Important items (@6) are not coloured here.
+## the white branch for every row. An important item (+0xa0 bit 0x8000000) prints @6 ivory
+## (255,255,222) on either branch (0x435e12／0x435e9d), in every mode.
 func _hand_colour(details: Dictionary) -> Color:
-	if operation != "equip" or bool(details.get("important", false)):
+	if bool(details.get("important", false)):
+		return BattleUISkin.TEXT_IVORY
+	if operation != "equip":
 		return BattleUISkin.TEXT_WHITE
 	if not int(details["type_code"]) in range(2, 7):
 		return BattleUISkin.TEXT_RED

@@ -492,13 +492,13 @@
     },
     {
       "id": "ui-layout-readings",
-      "difference": "战斗 使用／交換／裝備／丟棄 道具窗已按原版实拍核对：板、行、图标、字、行色、悬停脉冲绿、说明框（回复行「生命+40」）、金钱框、WINDOW10 字段字库偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区、WINDOW10 抗性行 x 与数值斜线空格",
+      "difference": "战斗 使用／交換／裝備／丟棄 道具窗已按原版实拍核对：板、行、图标、字、行色（重要物 @6 米白按色表）、悬停脉冲绿、说明框（回复行「生命+40」）、金钱框、WINDOW10 字段字库、数值「40/40」与抗性行偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区",
       "original": "原窗体 SHP 已导入；使用／交換 窗与 裝備／丟棄 窗 Wine 实拍各三帧（runtime-measured）；其余面板原版录屏未覆盖",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md"
       ],
-      "remake": "BattleItemPanel 四种道具窗、BattleItemText 回复行与 BattleVitals 字段字库照原版读数；BattleUISkin／BattleEquipmentView 其余排布是重制读法",
+      "remake": "BattleItemPanel 四种道具窗、BattleItemText 回复行与 BattleVitals 字段字库、数值写法、抗性行照原版读数；BattleUISkin／BattleEquipmentView 其余排布是重制读法",
       "remake_code": [
         "game/common/BattleUISkin.gd",
         "game/battle/scene/BattleSceneMenus.gd",

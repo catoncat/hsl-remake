@@ -289,7 +289,7 @@ func run() -> void:
 					check(cutin.transition_shade.visible and not cutin.scenery.visible and not cutin.vitals.visible and not cutin.defender_sprite.visible, "the lighten plays over the map with the cut-in contents hidden")
 				if phase == "target_pause":
 					check(cutin.defender_sprite.visible and not cutin.clips[0]["impact_emitted"], "victim has a distinct pre-impact shot")
-					check(cutin.vitals.values["hp"].text == "22 / 22", "pending victim shot must retain pre-hit HP")
+					check(cutin.vitals.values["hp"].text == "22/22", "pending victim shot must retain pre-hit HP")
 				if phase == "hurt":
 					check(cutin.defender_sprite.visible, "victim must remain visible throughout hurt interval")
 					check(cutin.defender_sprite.texture.resource_path.ends_with("021/4.png" if hit else "021/0.png"), "hit and miss have distinct victim poses")
@@ -686,7 +686,7 @@ func identity_mask_contracts() -> void:
 	veteran["level"] = 100
 	check(Vitals.mask(veteran, true) == {"hp": false, "identity": false, "level": true}, "level above 99 masks the level alone")
 	vitals.show_unit(pacifist, -1, true)
-	check(vitals.values["hp"].text == "%d / %d" % [int(pacifist["hp"]), int(pacifist["max_hp"])] and vitals.hp_bar.value > 0, "a known no_attack unit keeps its HP readable")
+	check(vitals.values["hp"].text == "%d/%d" % [int(pacifist["hp"]), int(pacifist["max_hp"])] and vitals.hp_bar.value > 0, "a known no_attack unit keeps its HP readable")
 	check(vitals.values["level"].text == "??" and vitals.values["exp"].text == "???" and vitals.values["mp"].text == "???" and vitals.values["name"].text == "???" and vitals.values["state"].text == "???", "a no_attack unit prints ?? level and ??? exp／MP／name／state")
 	check(vitals.resist_values.all(func(label): return label.text.ends_with("???")) and vitals.values["role"].text != "???" and vitals.values["race"].text != "???", "no_attack masks the resists, 稱號 and 種族 stay readable")
 	vitals.show_unit(veteran, -1, true)
@@ -729,7 +729,7 @@ func identity_mask_contracts() -> void:
 	var friend := unit("023")
 	cutin.play(strike, friend, enemy, false, Vector2(320, 240), Vector2(240, 240), [], [], {str(friend["id"]): true, str(enemy["id"]): false})
 	cutin._show_shot(cutin.clips[0], false)
-	check(cutin.vitals.values["hp"].text == "%d / %d" % [int(friend["hp"]), int(friend["max_hp"])], "the attacker shot of a known unit shows its HP")
+	check(cutin.vitals.values["hp"].text == "%d/%d" % [int(friend["hp"]), int(friend["max_hp"])], "the attacker shot of a known unit shows its HP")
 	cutin._show_shot(cutin.clips[0], true)
 	check(cutin.vitals.values["hp"].text == "???" and cutin.vitals.values["name"].text == "???" and cutin.vitals.values["role"].text != "???", "the victim shot of an enemy the player has not fought masks HP and name, keeps 稱號")
 	cutin.clips[0]["impact_emitted"] = true
@@ -738,7 +738,7 @@ func identity_mask_contracts() -> void:
 	cutin.clips.clear()
 	cutin.play(strike, unit("001"), enemy, false)
 	cutin._show_shot(cutin.clips[0], true)
-	check(cutin.vitals.values["hp"].text == "22 / 22", "a clip enqueued without a known map shows the strip in the clear (the player's own target is known at confirmation)")
+	check(cutin.vitals.values["hp"].text == "22/22", "a clip enqueued without a known map shows the strip in the clear (the player's own target is known at confirmation)")
 	cutin.queue_free()
 
 
