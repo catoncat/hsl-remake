@@ -40,17 +40,19 @@ extends Control
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
 ##     (0x414220 top flag: teShapeMessage top, tePlayerMessage bottom)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/original_world_town/README.md
-##     (select board 0x426680／rows 0x4264f0: BOARD02 bottom, rows +17, 28 px, pulse-green hover)
+##     (select board 0x426680, rows 0x4264f0, menu rows 0x4561d0: pulse-green hover)
 ##   layout: provisional (job-up and narration lines on the bottom board)
 ##   layout: resource-derived content/generated/hsl/text/protected_words.json
-##   layout: remake-invented (root-menu hover colour; the stone board hides during a choice)
+##   layout: remake-invented (the stone board hides during a choice)
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
 ##   strings: resource-derived content/imported/hsl/global/world_map/towndef.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
 ##   strings: remake-invented (narration lines for gold／item grants)
 ##   timing: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
 ##     (teDelay N → N + 1 ticks, teMenuMoveOut → 20 ticks, through OriginalTick)
-##   timing: provisional (the menus have no clock of their own)
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_world_town/README.md
+##     (select board 0x426680: 16-tick fade in, clicks only at full level, 16-tick fade out, then hand back)
+##   timing: provisional (the stone menus have no clock of their own)
 ##   audio: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
 ##     (tePlaySound 0x455710 -> 0x42c180: plays at volume 255, no wait)
 ##   audio: resource-derived content/imported/hsl/global/world_map/town_sounds.json
@@ -187,8 +189,8 @@ static func _entry_text(entry: Dictionary) -> String:
 	return "〔事件 %d〕" % int(entry.get("code", 0)) if text == "" or not bool(entry.get("known", false)) else text
 
 
-## One entry of the stone board: a white text row (hover turns it yellow — remake; the
-## original cursor is not recorded).
+## One entry of the stone board (0x4561d0 draw pass): FONT.24 white over the 0x8430 shadow at
+## (+1,+1); the hovered row (+0x9a) is drawn in the 0x42c130 pulse green, shadow kept.
 func _menu_row(parent: Control, index: int, text: String, node_name: String) -> Button:
 	var row := Button.new()
 	row.name = node_name
@@ -203,9 +205,12 @@ func _menu_row(parent: Control, index: int, text: String, node_name: String) -> 
 		row.add_theme_stylebox_override(style, StyleBoxEmpty.new())
 	row.add_theme_font_size_override("font_size", BattleUISkin.FONT_BODY)
 	row.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
-	row.add_theme_color_override("font_hover_color", BattleUISkin.TEXT_YELLOW)
-	row.add_theme_color_override("font_pressed_color", BattleUISkin.TEXT_YELLOW)
-	row.add_theme_color_override("font_hover_pressed_color", BattleUISkin.TEXT_YELLOW)
+	row.add_theme_color_override("font_hover_color", select_hover_colour())
+	row.add_theme_color_override("font_pressed_color", BattleUISkin.TEXT_WHITE)
+	row.add_theme_color_override("font_hover_pressed_color", select_hover_colour())
+	row.mouse_entered.connect(_hover_menu_row.bind(row))
+	row.mouse_exited.connect(_hover_menu_row.bind(null))
+	set_process(true)
 	row.add_theme_color_override("font_disabled_color", Color(0.62, 0.6, 0.56))
 	row.add_theme_color_override("font_shadow_color", BattleUISkin.TEXT_SHADOW)
 	row.add_theme_constant_override("shadow_offset_x", 1)
@@ -482,6 +487,9 @@ func _show_pending(pending: Dictionary) -> void:
 ## the 0x42c130 pulse green without shadow (0x412680); a click stores the index and plays
 ## ACCEPT01 (398). tePlayerSelectInsertEvent appends RESOURCE 312「離開」with event −1, which
 ## ends the event (0x455831, phase 0x1e: row event −1 → VM return 1).
+## The board's level (+0x28) climbs 0→16 one step a tick (state 0), rows take a click only at
+## level 16 with no pick yet (0x4265e2), and after a pick it falls 16→0 (state 3) before the
+## index is handed back (0x42692e); the board and its rows draw at level/16.
 const SELECT_BOARD := "BOARD02"
 const SELECT_BOARD_Y := 320.0
 const SELECT_BOARD_X_FACE := 144.0
@@ -497,6 +505,12 @@ const SELECT_SOUND := "res://content/imported/hsl/shared/interface_audio/confirm
 var _select_rows: Array[Label] = []
 var _select_hover := -1
 var _select_clock := 0.0
+const SELECT_FADE_TICKS := 16
+var _select_window: Control = null
+var _select_level := 0.0
+var _select_fading_out := false
+var _select_answer: Callable = Callable()
+var _hover_row: Button = null
 
 
 ## `picks`: the pending option index behind each row (default: row i answers option i).
@@ -506,6 +520,9 @@ func _show_select_window(labels: Array[String], portrait_key: String, leave_row:
 	current_speaker = ""
 	_select_rows.clear()
 	_select_hover = -1
+	_select_level = 0.0
+	_select_fading_out = false
+	_select_answer = Callable()
 	var face: Texture2D = null
 	if portrait_key != "" and _dialogue._portraits.has(portrait_key):
 		face = load(str(_dialogue._portraits[portrait_key]["res_path"]))
@@ -513,6 +530,8 @@ func _show_select_window(labels: Array[String], portrait_key: String, leave_row:
 	var window := Control.new()
 	window.name = "SelectWindow"
 	window.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	window.modulate.a = 0.0
+	_select_window = window
 	_choice_root.add_child(window)
 	BattleUISkin.board(window, SELECT_BOARD, board_at)
 	if face != null:
@@ -563,15 +582,15 @@ func _hover_select(index: int) -> void:
 func _select_row_input(event: InputEvent, index: int, leave: bool) -> void:
 	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
 		return
+	if _select_level < SELECT_FADE_TICKS or _select_fading_out:
+		return
 	var sound := AudioStreamPlayer.new()
 	sound.stream = load(SELECT_SOUND)
 	sound.finished.connect(sound.queue_free)
 	(runtime if runtime != null else self).add_child(sound)
 	sound.play()
-	if leave:
-		cancel_select()
-	else:
-		choose(index)
+	_select_fading_out = true
+	_select_answer = cancel_select if leave else choose.bind(index)
 
 
 ## The hovered row's colour this tick: 0x42c130 on the 0x42c110 counter, green 255 − 2·|p| with
@@ -583,11 +602,28 @@ func select_hover_colour() -> Color:
 
 
 func _process(delta: float) -> void:
-	if mode != "select" or _select_hover < 0 or _select_hover >= _select_rows.size():
-		return
 	_select_clock += delta
-	if is_instance_valid(_select_rows[_select_hover]):
+	if is_instance_valid(_hover_row) and _hover_row.is_visible_in_tree():
+		_hover_row.add_theme_color_override("font_hover_color", select_hover_colour())
+		_hover_row.add_theme_color_override("font_hover_pressed_color", select_hover_colour())
+	if mode != "select" or not is_instance_valid(_select_window):
+		return
+	var step := OriginalTick.ticks(delta)
+	_select_level = clampf(_select_level + (-step if _select_fading_out else step), 0.0, SELECT_FADE_TICKS)
+	_select_window.modulate.a = floorf(_select_level) / SELECT_FADE_TICKS
+	if _select_fading_out and _select_level <= 0.0:
+		var answer := _select_answer
+		_select_fading_out = false
+		_select_answer = Callable()
+		if answer.is_valid():
+			answer.call()
+		return
+	if _select_hover >= 0 and _select_hover < _select_rows.size() and is_instance_valid(_select_rows[_select_hover]):
 		_select_rows[_select_hover].add_theme_color_override("font_color", select_hover_colour())
+
+
+func _hover_menu_row(row: Button) -> void:
+	_hover_row = row
 
 
 ## Answer a select / player_select prompt by option index.

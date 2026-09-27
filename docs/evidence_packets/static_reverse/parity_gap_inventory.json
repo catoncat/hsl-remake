@@ -471,13 +471,13 @@
     },
     {
       "id": "ui-layout-readings",
-      "difference": "多个面板的尺寸、排列与样式是重制读法：按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区、道具目标列表",
-      "original": "原窗体 SHP 已导入，部分面板原版录屏未覆盖",
+      "difference": "战斗 使用／交換 道具窗已按原版实拍核对：板、行、图标、字、悬停脉冲绿、说明框、金钱框偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区、裝備／丟棄 持物窗的行排布与滚动区、道具说明第三行措辞（原版「生命+40」，重制「回復 40 HP」）",
+      "original": "原窗体 SHP 已导入；使用／交換 窗 Wine 实拍三帧（runtime-measured）；其余面板原版录屏未覆盖",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md"
       ],
-      "remake": "BattleUISkin／BattleSceneMenus／BattleEquipmentView／BattleItemPanel 的重制排布",
+      "remake": "BattleItemPanel 使用／交換 窗照原版读数；BattleUISkin／BattleEquipmentView 与持物窗的其余排布是重制读法",
       "remake_code": [
         "game/common/BattleUISkin.gd",
         "game/battle/scene/BattleSceneMenus.gd",
@@ -825,13 +825,13 @@
     },
     {
       "id": "town-layout-extras",
-      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；对白板上下已由 0x414220 静态确认；剩根菜单悬停黄字、选择期间石纹板隐藏与选择窗淡入淡出时序是重制读法",
-      "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1；0x4145f6 读 0x4000 放上槽",
+      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；剩选择期间石纹板隐藏是重制读法",
+      "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1；0x426680 层级 0→16、满 16 才收点击、选后 16→0 再交回；0x4561d0 悬停行 0x42c130 色、阴影照画；0x4145f6 读 0x4000 放上槽",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_world_town/README.md",
         "docs/evidence_packets/static_reverse/original_dialogue_board.md"
       ],
-      "remake": "TownRuntime 选择窗与对白板照原版；根菜单悬停色与选择期间石纹板隐藏是重制补充",
+      "remake": "TownRuntime 选择窗与对白板照原版；选择窗淡入淡出与根菜单悬停色照原版；选择期间石纹板隐藏是重制补充",
       "remake_code": [
         "game/world/TownRuntime.gd"
       ],

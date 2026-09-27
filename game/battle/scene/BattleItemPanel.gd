@@ -14,10 +14,12 @@ extends Control
 ##     (item sub-menu, target selection)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md
 ##     (the picked item's icon rides the pointer while its use target is chosen)
-##   layout: remake-invented (scrollable lists, preview rows)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#7
+##     (使用／交換 window: boards, 32 px rows, icon and name cells, pulse-green hover, description box, gold box)
+##   layout: remake-invented (equip／drop window's scrollable list)
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
 ##   strings: resource-derived content/imported/hsl/chapter01/consumables.json
-##   strings: remake-invented (tooltips, 沒有道具, 道具 N / 8 — OPT-GUIDE＝提示 only)
+##   strings: remake-invented (返回, 沒有道具, 道具 N / 8 — OPT-GUIDE＝提示 only)
 signal use_requested(item_code: String, target_id: String)
 ## The use target pick (page "target"): started, every pointer move／left press on the map, left.
 signal use_pick_started
@@ -40,7 +42,25 @@ const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
-var rows: VBoxContainer
+const BattleMagicPanel = preload("res://game/battle/scene/BattleMagicPanel.gd")
+## 使用／交換 window (mode 6／7), runtime-measured on 玩家第 2 场 · 惡夢的終曲（LEVEL052）
+## (menus_ui/README.md#7): WINDOW20 (12,174), rows from (20,182) every 32 px, the item icon
+## anchored at (row x+24, row y+8) → 回復藥 texture (25,173+32i), the FONT.24 name cell at row
+## x+48 (ink x 72, y 187–202), WINDOW40 `$:` (416,440), WINDOW50 description (252,349).
+const LIST_BOARD_AT := Vector2(12, 174)
+const LIST_ROW_ORIGIN := Vector2(8, 8)
+const LIST_ROW_HEIGHT := 32
+const LIST_ROW_SIZE := Vector2(208, 32)
+const LIST_ICON_ANCHOR := Vector2(24, 8)
+const LIST_NAME_DX := 48
+const GOLD_AT := Vector2(416, 440)
+const DETAIL_AT := Vector2(252, 349)
+## Party gold for the `$:` box (BattleSceneMenus sets it before opening the window).
+var gold := 0
+var detail_box: Control
+var hover_caption: Label
+var _pulse_clock := 0.0
+var rows: Control
 var menu: Control
 var page_root: Control
 var source_unit: Dictionary = {}
@@ -111,6 +131,7 @@ func _clear_page() -> void:
 		page_root.remove_child(child)
 		child.queue_free()
 	target_buttons.clear()
+	hover_caption = null
 	menu.hide()
 
 
@@ -144,57 +165,104 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 	equipment_view = equipment
 	page_root.add_child(equipment)
 	equipment.show_unit(unit)
-	BattleUISkin.board(page_root, "WINDOW20", Vector2(12, 174))
-	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(20, 180)
-	scroll.size = Vector2(207, 250)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	page_root.add_child(scroll)
-	rows = VBoxContainer.new()
-	rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	rows.add_theme_constant_override("separation", 0)
-	scroll.add_child(rows)
+	BattleUISkin.board(page_root, "WINDOW20", LIST_BOARD_AT)
+	BattleUISkin.board(page_root, "WINDOW40", GOLD_AT)
+	var gold_label := BattleUISkin.text(page_root, GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
+	gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	gold_label.text = str(gold)
+	detail_box = Control.new()
+	detail_box.name = "ItemDescription"
+	detail_box.position = DETAIL_AT
+	detail_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	BattleUISkin.board(detail_box, "WINDOW50", Vector2.ZERO)
+	detail_box.hide()
+	page_root.add_child(detail_box)
+	# Eight fixed 32 px bag rows (the status page's 道具 page geometry); the window never scrolls.
+	rows = Control.new()
+	rows.name = "Rows"
+	rows.position = LIST_BOARD_AT + LIST_ROW_ORIGIN
+	rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	page_root.add_child(rows)
 	var catalog := EquipmentCatalog.items()
 	for index in range(unit["inventory"].size()):
 		var code := str(int(unit["inventory"][index]))
 		if code == "0":
 			# 0x438cbf..0x438d0c: a pick on an empty slot inserts into the first empty slot.
 			if placing and index == unit["inventory"].find(0):
-				rows.add_child(_empty_slot_button(index))
+				var empty_slot := _empty_slot_button(index)
+				empty_slot.position = Vector2(0, index * LIST_ROW_HEIGHT)
+				empty_slot.size = LIST_ROW_SIZE
+				rows.add_child(empty_slot)
 			continue
 		var details: Dictionary = catalog[code]
 		var button := Button.new()
 		button.name = "Item_%s_%d" % [code, index]
-		button.text = str(details["name"])
 		button.set_meta("item_code", code)
 		button.set_meta("inventory_index", index)
-		button.custom_minimum_size = Vector2(195, 32)
-		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.add_theme_font_size_override("font_size", 18)
-		button.add_theme_color_override("font_hover_color", Color.YELLOW)
+		button.position = Vector2(0, index * LIST_ROW_HEIGHT)
+		button.size = LIST_ROW_SIZE
 		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
-			var style := StyleBoxEmpty.new()
-			style.content_margin_left = 43
-			button.add_theme_stylebox_override(state, style)
-		var art := BattleUISkin.asset(button, str(details["icon"]), Vector2(3, 0))
+			button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+		var art := BattleUISkin.anchored_asset(button, str(details["icon"]), LIST_ICON_ANCHOR)
 		art.name = "OriginalConsumable"
+		var caption := BattleUISkin.text(button, Vector2(LIST_NAME_DX, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(LIST_ROW_SIZE.x - LIST_NAME_DX, 24))
+		caption.name = "Caption"
+		caption.text = str(details["name"])
 		button.disabled = operation == "use" and ItemUseRules.definition_error(items.get(code, {})) != ""
-		if hints and operation == "use" and not button.disabled:
-			button.tooltip_text = preload("res://game/battle/scene/BattleItemText.gd").description(items[code])
+		button.mouse_entered.connect(_hover_row.bind(caption, _item_lines(details, code)))
+		button.mouse_exited.connect(_hover_row.bind(null, []))
 		button.pressed.connect(_place_give_item.bind(index, int(code)) if placing else _select_item.bind(code, index))
 		rows.add_child(button)
 	if hints and rows.get_child_count() == 0:
-		var empty := Label.new()
+		var empty := BattleUISkin.text(rows, Vector2(LIST_NAME_DX, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(160, 24))
 		empty.text = "沒有道具"
-		empty.add_theme_font_size_override("font_size", 16)
-		rows.add_child(empty)
-	var back := BattleUISkin.button(page_root, "返回", Vector2(502, 442), Vector2(113, 30))
+	# Remake-only (the original window has neither): back button and count, OPT-GUIDE＝提示 only.
+	var back := BattleUISkin.button(page_root, "返回", Vector2(252, 442), Vector2(113, 30))
 	back.pressed.connect(cancel)
+	back.visible = hints
 	var capacity := BattleUISkin.label(page_root, Vector2(20, 440), 15)
 	capacity.text = "道具 %d / 8" % (8 - unit["inventory"].count(0))
 	capacity.visible = hints
 	if placing:
 		_hold_selected_item()
+
+
+## Description lines of a bag row: equipment as the equipment board's, a consumable as its name,
+## 可使用 and its effect (the frame's 回復藥／可使用／生命+40).
+func _item_lines(details: Dictionary, code: String) -> Array:
+	var lines: Array = []
+	if int(details["type_code"]) in range(2, 7):
+		lines.append_array(BattleEquipmentView.description_lines(details))
+	else:
+		lines.append_array([str(details["name"]), "可使用"])
+		if items.has(code):
+			lines.append_array(preload("res://game/battle/scene/BattleItemText.gd").description(items[code]).split("\n"))
+	return lines.filter(func(line): return str(line) != "")
+
+
+## Hovering a row pulses its name green (BattleMagicPanel.hover_colour) and fills WINDOW50 with
+## up to four FONT.15 rows at (x+8, y+12+16i), 360 px centred, the first @3 green (0x436d70).
+func _hover_row(caption: Label, lines: Array) -> void:
+	if is_instance_valid(hover_caption):
+		hover_caption.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
+	hover_caption = caption
+	for child in detail_box.get_children():
+		if child is Label:
+			detail_box.remove_child(child)
+			child.queue_free()
+	for index in range(mini(lines.size(), 4)):
+		var row := BattleUISkin.text(detail_box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
+		row.text = str(lines[index])
+		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	detail_box.visible = caption != null
+	if caption != null:
+		caption.add_theme_color_override("font_color", _hover_colour())
+
+
+func _hover_colour() -> Color:
+	var period := 2 * BattleMagicPanel.HOVER_PULSE_HALF + 1
+	var step := int(OriginalTick.ticks(_pulse_clock)) % period - BattleMagicPanel.HOVER_PULSE_HALF
+	return Color8(0, BattleMagicPanel.HOVER_GREEN_BASE - 2 * absi(step), 0)
 
 
 func _select_item(code: String, index: int = -1) -> void:
@@ -285,9 +353,12 @@ func _hold_selected_item() -> void:
 	_follow_pointer()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if visible and is_instance_valid(held_icon):
 		_follow_pointer()
+	_pulse_clock += delta
+	if visible and is_instance_valid(hover_caption):
+		hover_caption.add_theme_color_override("font_color", _hover_colour())
 
 
 func _follow_pointer() -> void:

@@ -1,6 +1,6 @@
 # 原版大地图与城镇画面：状态栏、系统卷轴、城镇根菜单、对白板位置、商店窗、整理裝備
 
-> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框）; static-derived: select 选择窗（0x4264a0／0x426680／0x4264f0） · status: live · functions: 0x412680, 0x412760, 0x4264a0, 0x4264f0, 0x426680, 0x42c130 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
+> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框）; static-derived: select 选择窗（0x4264a0／0x426680／0x4264f0）与石纹菜单行（0x4561d0） · status: live · functions: 0x412680, 0x412760, 0x4264a0, 0x4264f0, 0x426680, 0x42c130, 0x4561d0 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
 
 ## 结论
 
@@ -69,6 +69,16 @@
 | 23-arrange-storage-after-shop.png（原版帧见私有档案：`runtime_observations/original_world_town/23-arrange-storage-after-shop.png`） | 离店离城，卷轴「整理裝備」→ 倉庫 | 商店里放入的 回復藥 1 仍在列表里：商店 倉庫 与 整理裝備 倉庫 是同一份存储。 |
 | 24-arrange-next-member-hand-kept.png（原版帧见私有档案：`runtime_observations/original_world_town/24-arrange-next-member-hand-kept.png`） | 从列表取出后点 下一位 | 成员换人，回復藥 仍在光标上，列表空。 |
 
+### static-derived：石纹菜单行（`0x4561d0` 绘制分支，r2 反汇编 `hsl01.exe`，未执行）
+
+城镇窗是对象 740 Town_Window（WINDOW70，defProcTownBOSS `0x4561d0`，见 [bigmap_performances](../../resource_inventory/bigmap_performances.md)）；根菜单与子菜单（`+0x80` 置 `0x4000` 时走 `0x454610` 子项表）都由它的绘制分支画，不另建行对象。
+
+| 项 | 原版 | 地址 |
+| --- | --- | --- |
+| 字 | 最多 8 行、行距 32；FONT.24 经 `0x460884`，先画 `0x8430` 阴影于 (+1,+1)，再画字 | `0x4562b6`–`0x4562ec`、`0x456377`–`0x4563a5` |
+| 悬停色 | 行号等于 `+0x9a`（鼠标所在行）时字色取 `0x42c130`（绿 255 − 2·\|p\|、红蓝 0，与选择窗同一计数），否则白 `0xffff`；阴影照画 | `0x4562f1`–`0x456317` |
+| 点击 | 状态 `+0x8c` 为 4 且悬停行上点击（`0x4c6398` 位 `0x10000`）→ 状态 5、放 398 ACCEPT01 | `0x45630f`–`0x45636f` |
+
 ### static-derived：select 选择窗（`0x4264a0`／`0x426680`／`0x4264f0`，r2ghidra 反编译 `hsl01.exe`，未执行）
 
 `0x454e20` case 0xf（teSelectInsertEvent）与 case 0x1e（tePlayerSelectInsertEvent）把选项消息 id 填进 `0x4c2940`、事件填进 `0x4c2900`，调 `0x4264a0(picture, 0, 0x4c2940, &0x4c1d54)`；`0x4264a0` 建对象 704，第 2 参为 0，不置 `0x4000`。对象 704／705 的定义在 global.obs，过程号经 PROCESS.DEF 查表 `0x477c2c`（resource-derived）。
@@ -83,6 +93,7 @@
 | 字 | FONT.24（`[0x4c1ae0]`）；平时 `0x412760`：阴影 `0x8430` 画在 (+1,+1)、再白 `0xffff`；淡入淡出中 `0x413040` 按窗层级画 | `0x4264f0` |
 | 悬停色 | 鼠标在行上（位 `0x2000000`）时再以 `0x412680` 用 `0x42c130` 色重画、不画阴影：绿 255 − 2·\|p\|、红蓝 0，p 每 tick −16..16（同特殊技页悬停） | `0x4265a4`–`0x4265d6` |
 | 点击 | 窗层级满 16 且未选时，点击（位 `0x40000`）写行号、放 398 ACCEPT01；窗淡出 16 tick 后把行号交回 VM | `0x4265e2`–`0x42661a`、`0x426680` 状态 3 |
+| 状态机 | `+0x8c` 四态：0 淡入，层级 `+0x28` 每 tick ＋1，到 16 进 1；1 只一 tick，结果 `+0xa4` 置 −1 进 2；2 活动，等行对象写入结果（行只在层级 16 且结果 −1 时读点击）后进 3；3 淡出，层级每 tick −1，到 0 把结果写进 `*[+0xac]`、销毁自己，脚本在此后才拿到行号。窗与行都按层级/16 画（`0x4607f9` 带层级） | `0x426872`–`0x42695a` |
 | 取消 | 两个过程都不读 Esc／右键；tePlayerSelect 在队员行后固定追加 RESOURCE 312「離開」、事件 −1，选它结束本事件（VM 返回 1） | `0x455831`、`0x454e20` 阶段 0x1e |
 | 对白板上下 | 与选择窗无关：`0x414220` 的 `0x4000` 只由 teShapeMessage／teCheckMoney 置（上，y 20），tePlayerMessage 不置（下，y 320） | [original_dialogue_board](../../static_reverse/original_dialogue_board.md) |
 
@@ -93,10 +104,10 @@
 | 大地图状态栏 | `WorldMapRuntime._build_status_bar`：(0,412) 整张减法混合；「完成度：」x 6、数字 x 114、时间右对齐 x 634，字行 y 427–444 | 同 |
 | 大地图行走者 | 按战斗尺寸画；当前点、可达点、悬停点标名是重制补的 | 尺寸同；标名异（原版悬停是否显示未采） |
 | 网格线、系统卷轴、进城底图 | BigMap.SHP 1:1 不压暗；`BattleSystemMenu` world 变体六项同名；进城不压暗 | 同 |
-| TownBG、菜单 | TownBG (158,148)；WINDOW70.SHP (60,60) 叠在其上，白字行 x 72、行距 32 | 同 |
+| TownBG、菜单 | TownBG (158,148)；WINDOW70.SHP (60,60) 叠在其上，白字行 x 72、行距 32；悬停行 `0x42c130` 脉冲绿、阴影照画 | 同 |
 | 离城、金钱栏 | 右键／Esc 离城、退子菜单、取消选人；根画面无点名与金钱／同伴条 | 同 |
 | 对白板 | `TownRuntime`：上 y 20、下 y 320；转职结果与获得金钱／物品的重制旁白放下方 | 同 |
-| select 选择窗 | `TownRuntime._show_select_window`：BOARD02 下槽，有头像 x 144（头像 x 12）、无头像 x 75；行 +17、行距 28、行数 > 4 顶 4、> 5 分两列；FONT.24 白字＋阴影，悬停脉冲绿去阴影；点击放 ACCEPT01；选人只列在队队员、末行「離開」；Esc／右键不取消；选择期间石纹板隐藏 | 同；选后淡出 16 tick 再交回、窗淡入期间不收点击未做（立即交回）；选择期间石纹板是否仍在未核对 |
+| select 选择窗 | `TownRuntime._show_select_window`：BOARD02 下槽，有头像 x 144（头像 x 12）、无头像 x 75；行 +17、行距 28、行数 > 4 顶 4、> 5 分两列；FONT.24 白字＋阴影，悬停脉冲绿去阴影；点击放 ACCEPT01；选人只列在队队员、末行「離開」；Esc／右键不取消；选择期间石纹板隐藏 | 同；淡入 16 tick 满级前不收点击、点选后淡出 16 tick 再交回（玩家点击路径；脚本直调 `choose` 仍立即交回）；选择期间石纹板是否仍在未核对 |
 | 商店窗 | `TownShopScreen`：同一套 WINDOW10／20／90／40 板与六钮、价格右缘 x 594、悬停说明框、BOARD02 拒绝消息；红字按物品职业掩码 | 同；不画 ↓ |
 | 卖出 | 手上物 → 货表，`WorldPartyRules.sell` 半价，重要物品拒卖 | 同 |
 | 买入 | 点货行扣钱，直接放进所显示成员首个空格 | 异，见 [original_shop_transaction](../../static_reverse/original_shop_transaction.md) |

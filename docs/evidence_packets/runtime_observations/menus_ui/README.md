@@ -1,6 +1,6 @@
 # 菜单与界面：标题、目标光标、系统卷轴、状态页与技能页的原版测量
 
-> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）的逐帧像素、SHP 模板匹配与音轨互相关，2026-09-26 Wine 原版实拍技能页三帧（§5，cnc-ddraw 游戏窗截图），2026-09-28 Wine 战斗卷轴开启与回憶錄列表四帧及 `0x4c1b00` 读数（§3）; resource-derived: I_RECT01.SHP、BOARD02.SHP、WINDOW60.SHP、Title039／Title061、WAV 表; static-derived: 状态窗 mode 10 与 WINDOW20／21 的既有读法（static_reverse/original_growth_window.md）、状态页 mode 0／1 板与页按钮 `0x43ac10`／`0x43a640`／`0x443cfa`（§4）、技能页 `0x43b4e0`／`0x438160`／`0x434d10`／`0x433a90`／`0x4331b0`、滚动条 `0x446060`／`0x445860`／`0x445d70`、悬停脉冲 `0x42c110`／`0x42c130` 的读法（§5）、預備動作 开关 `0x424590`／`0x401e74`（§預備動作）、战斗卷轴开启条件 `0x4082ab` 与 讀取回憶錄 去向 `0x425842`（§3）、卷轴卷动 `0x4253f0`／`0x425a90` 起点与 `0x45e882`／`0x45e91e` 逐 tick 步进（§6）; provisional: 只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6） · status: live · functions: 0x401c20, 0x401e74, 0x4030f7, 0x403199, 0x4031c7, 0x4081c0, 0x423c10, 0x424560, 0x424590, 0x424680, 0x4253f0, 0x425a90, 0x45e882, 0x45e91e · tools: hsl_original_control.py, hsl_video_events.py, run_battle_scene_runtime_tests.gd, run_presentation_contract_tests.gd, run_skill_resolution_tests.gd, run_system_menu_tests.gd, run_title_screen_tests.gd · updated: 2026-09-28
+> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）的逐帧像素、SHP 模板匹配与音轨互相关，2026-09-26 Wine 原版实拍技能页三帧（§5，cnc-ddraw 游戏窗截图），2026-09-28 Wine 战斗卷轴开启与回憶錄列表四帧及 `0x4c1b00` 读数（§3）、2026-09-28 Wine 战斗 使用／交換 道具窗三帧（§7）; resource-derived: I_RECT01.SHP、BOARD02.SHP、WINDOW60.SHP、Title039／Title061、WAV 表; static-derived: 状态窗 mode 10 与 WINDOW20／21 的既有读法（static_reverse/original_growth_window.md）、状态页 mode 0／1 板与页按钮 `0x43ac10`／`0x43a640`／`0x443cfa`（§4）、技能页 `0x43b4e0`／`0x438160`／`0x434d10`／`0x433a90`／`0x4331b0`、滚动条 `0x446060`／`0x445860`／`0x445d70`、悬停脉冲 `0x42c110`／`0x42c130` 的读法（§5）、預備動作 开关 `0x424590`／`0x401e74`（§預備動作）、战斗卷轴开启条件 `0x4082ab` 与 讀取回憶錄 去向 `0x425842`（§3）、卷轴卷动 `0x4253f0`／`0x425a90` 起点与 `0x45e882`／`0x45e91e` 逐 tick 步进（§6）; provisional: 只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6） · status: live · functions: 0x401c20, 0x401e74, 0x4030f7, 0x403199, 0x4031c7, 0x4081c0, 0x423c10, 0x424560, 0x424590, 0x424680, 0x4253f0, 0x425a90, 0x45e882, 0x45e91e · tools: hsl_original_control.py, hsl_video_events.py, run_battle_scene_runtime_tests.gd, run_presentation_contract_tests.gd, run_skill_resolution_tests.gd, run_system_menu_tests.gd, run_title_screen_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -119,11 +119,29 @@ static-derived（hsl01.exe v1.06）。預備動作 是原版的施法／绝技�
 - 普攻（kind 0）不经 `0x401e74`（`0x401dfd` 起自己的分支），不受此位影响。
 - 重制：`GameSettings` 键 `ready_action`（默认开＝初值 3，写 `user://settings.json`，旧文件缺键补默认）；`BattleSystemMenu` 設定選項 第二行旋钮读写它；关掉时 `BattleCombatCutin.cast_lead` 对有起手条带的施法者返回 `AnimalCastLead.skipped`（法术 8 个压暗 call、绝技 27 个隐藏 call），`SkillEffectScriptPlayer` 的绝技与地图法术两条起手分支原样消费它；没有导入起手条带的施法者照旧走 Cast_Star 替身／站立帧（原版两档同路）。
 
+### 7. 战斗 使用／交換 道具窗（mode 6／7）
+
+Wine 原版 v1.06，读 HSLBAT.SAV 进 玩家第 2 场 · 惡夢的終曲（LEVEL052）第 1 回合，雷歐納德 行动环 → 道具 → 使用／交換，背包 回復藥×3。三帧（cnc-ddraw 游戏窗截图，`ignored/original-control/` 标签 `use2`＝使用窗无悬停、`usehover`＝使用窗悬停第 2 行、`givehover`＝交換（给予方）窗悬停第 1 行，不提交）。读数用 SHP 预览模板差（1 px 步长）与白／绿墨迹外框；重制侧同一背包在 640×480 窗口截一帧比。两窗排布相同。
+
+| 项 | 原版读数 | 重制改前 | 改后偏移 |
+| --- | --- | --- | --- |
+| 板 | WINDOW20 (12,174)（模板差 7.1）、WINDOW10 (133,14)、WINDOW30 (252,174)；无页按钮 | 同 | 0 |
+| 金钱框 | WINDOW40 (416,440)，「$: 2650」墨迹 x 557–602、y 447–464 | 无 | 0（墨迹逐框一致） |
+| 行 | 八格按背包序号，行顶 182+32i，不滚动（三件时行 0–2） | 滚动列表，行高 32 | 0 |
+| 图标格 | 回復藥 itemIconUse（原点 (19,17)）左上 (25,173+32i)，即锚 (行 x+24, 行 y+8)＝(44,190+32i)，与状态页 道具 页同 | (23,180+32i) | 0（改前 −2／+7） |
+| 字 | FONT.24（字高 15 的墨迹 y 187–202）；「回復藥」墨迹 x 72–139、行 0 y 187–202，格左 x 68 | x 67–134、y 189–204 | 0（改前 −5／+2） |
+| 悬停 | 横向整行命中；名字变 `0x42c130` 脉冲绿，两帧 (0,248,0)／(0,228,0)，同技能页（§5）；不是黄、无光标条 | 系统黄 | 同一脉冲（重制帧 (0,243,0)） |
+| 说明框 | 悬停即出 WINDOW50 (252,349)（模板差 4.5），FONT.15 三行居中：@3 绿「回復藥」墨迹 x 419–463、y 364–374，「可使用」「生命+40」白 | 无（提示档是 tooltip） | 框与首行 0；第三行措辞不同（重制「回復 40 HP」） |
+| 按钮 | 窗内无按钮、无「返回」与件数；右键关窗 | 返回 (502,442)、道具 n/8 | 两者只在 OPT-GUIDE＝提示 显示 |
+
+交換 窗是给予流程第一步的给予方窗（state 110）；接收方窗（state 114，`owner` 分支）同一排布，空格行只在首个空位出一行，未单独拍。
+
 ## 重制接线
 
 - 标题：`game/title/TitleScreen.gd`（版本号、`CONFIRM_HOLD_SECONDS`／`FADE_TO_BLACK_SECONDS`、宝珠与书浮动、`_refresh_lit` 悬停亮起读 OPT-GUIDE、`show_message` 无记录消息）；布局来自 `content/imported/hsl/global/title/manifest.json`。
 - 目标格光标：`game/battle/scene/BattleSelectionCursor.gd`、`BattleAttackCue.gd`。
 - 系统卷轴：`game/battle/scene/BattleSystemMenu.gd`——`open` 放 ACCEPT01（`runtime.play_ui_sound("confirm")`），`_ask` 出確定／取消、问句读 OPT-GUIDE；timing：save notice 582.53–582.77 s in, held to 583.73 s, out by 583.87 s；任務說明 board dissolves in 577.55–577.95 s and out 579.08–579.48 s（`BattleWinFailBoard` 的 32／34 tick 溶入溶出）；卷动 `_slide`／`_slide_tick` 逐原版 tick 复现 `0x45e882`／`0x45e91e`，起点取 `SCROLL_START_OFFSET`。
+- 使用／交換 道具窗：`BattleItemPanel._show_list`（`LIST_*`、`GOLD_AT`、`DETAIL_AT` 常量，§7）。
 - 状态页与技能页：`BattleStatusPanel`、`BattleMagicPanel`、`BattleSceneMenus`、`BattleSceneInput`；provenance 头写 `runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5` 等。
 - 預備動作：`game/settings/GameSettings.gd`（`ready_action`）、`game/battle/scene/AnimalCastLead.gd`（关掉时的 call 数）。
 - 重制补充（原版没有）挂在选项上，原版值下不显示：见 `content/authored/options/remake_options.json` 的 `read_points`。
@@ -134,6 +152,7 @@ static-derived（hsl01.exe v1.06）。預備動作 是原版的施法／绝技�
 
 ## 边界
 
+- 裝備／丟棄 持物窗（mode 4／5）的行仍是重制滚动列表，未拍原版帧；接收方交換窗与空格行未单独拍。
 - 战斗卷轴开启条件：开场剧情中与首个行动环之前只有静态读法（`0x4000000`／`0x2000000`），Wine 只拍了行动环、移动选格与敌方回合三态；消息框打开期间 `0x413bce` 也置 `0x2000000`，重制由 `quiet()` 覆盖。
 - 版本号的点阵字形与颜色梯度没有导入；只对齐了墨迹外框。
 - 標題 戰場記錄／離開遊戲 的亮起停留与淡黑只量了 開始新故事 一次，二者沿用；`0x42dc90(2)` 的淡出时长未读。

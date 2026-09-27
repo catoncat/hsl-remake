@@ -166,6 +166,7 @@ func choose_command(command_id: String) -> void:
 				targets.append(target)
 			var actor := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
 			runtime.item_panel.map_area = map_logical_rect()
+			runtime.item_panel.gold = int(runtime.play_loop.get(LoopKeys.GOLD, 0))
 			runtime.item_panel.show_inventory(actor, runtime.play_loop[LoopKeys.CONSUMABLES], targets, runtime.world_to_logical_position(runtime.actor_node_for_unit(runtime.selected_unit_id).position), runtime.play_loop[LoopKeys.SKILL_BOOK]["actors"][actor["actor_id"]])
 			set_action_menu_visible(false)
 		return
@@ -429,6 +430,7 @@ func _begin_give_session() -> void:
 	if next == runtime.play_loop:
 		return
 	runtime.apply_loop(next, "begin_give")
+	runtime.item_panel.gold = int(runtime.play_loop.get(LoopKeys.GOLD, 0))
 	runtime.item_panel.show_give_session(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), _give_recipients(), int(runtime.play_loop[LoopKeys.ITEM_REVISION]))
 
 
@@ -442,6 +444,7 @@ func _confirm_give(target_id: String, index: int, code: int, target_index: int, 
 		return
 	runtime.apply_loop(next, "confirm_give")
 	runtime.play_ui_sound("confirm")
+	runtime.item_panel.gold = int(runtime.play_loop.get(LoopKeys.GOLD, 0))
 	runtime.item_panel.show_give_session(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), _give_recipients(), int(runtime.play_loop[LoopKeys.ITEM_REVISION]))
 
 
