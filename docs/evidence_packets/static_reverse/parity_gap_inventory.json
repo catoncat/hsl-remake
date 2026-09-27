@@ -4,18 +4,18 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 95,
-    "sources": 524,
+    "sources": 522,
     "sources_by_kind": {
-      "provenance": 207,
-      "sentence": 144,
+      "provenance": 206,
+      "sentence": 143,
       "scope": 75,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 53,
+    "layout_timing_modules": 52,
     "items_by_original_status": {
-      "read_complete": 15,
-      "read_partial": 56,
+      "read_complete": 16,
+      "read_partial": 55,
       "unread": 7,
       "no_original_code": 17
     },
@@ -1305,6 +1305,26 @@
       ]
     },
     {
+      "id": "ai-move-preview-timing",
+      "difference": "敌方移动预告已照原版分追击 12／站位 24 tick，只剩起步前的 ANI 动作 5／6 未演",
+      "original": "0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 有动作 5／6 就先播再走",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_action_state_machine.md",
+        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
+      ],
+      "remake": "BattleAiMovePreview.preview_ticks 按 purpose 取 12／24，预告结束即起步",
+      "remake_code": [
+        "game/battle/scene/BattleAiMovePreview.gd:preview_ticks"
+      ],
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "地图人物演出",
+      "sources": [
+        "video:5"
+      ]
+    },
+    {
       "id": "counter-gold-split",
       "difference": "反击击杀时原版有第二份金钱累加器，重制一次行动只飘一份 $（$ 字形已是原版 NUM500，lane DIGITS 未动）",
       "original": "反击方第二份金钱累加器 0x4c2978",
@@ -1412,27 +1432,6 @@
         "provenance:game/battle/scene/BattleGrowthPanel.gd|rules|remake-invented|docs/OPTIONS.md",
         "provenance:game/battle/scene/BattleSceneMenus.gd|timing|remake-invented|",
         "provenance:game/sim/ProgressionRules.gd|rules|remake-invented|"
-      ]
-    },
-    {
-      "id": "ai-move-preview-timing",
-      "difference": "敌方移动预告停 16 tick（取中位），原版有 0.2 s 与 0.45 s 两簇，成因未读",
-      "original": "两簇时长的成因未读",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
-      ],
-      "remake": "BattleAiMovePreview 固定 16 tick",
-      "remake_code": [
-        "game/battle/scene/BattleAiMovePreview.gd:holds"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "地图人物演出",
-      "sources": [
-        "provenance:game/battle/scene/BattleAiMovePreview.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#be73cbb995",
-        "video:5"
       ]
     },
     {
