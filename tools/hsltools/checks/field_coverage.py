@@ -276,7 +276,7 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'hit_ratio': ('consumed', 'game/sim/NativeMagicRollRules.gd:roll', '命中', None),
         'function': ('consumed', 'game/sim/SkillTargetRules.gd:function_mask', '功能位（magicFun_*）', None),
         'use_ratio': ('consumed', 'game/sim/AISkillPlanning.gd:choose', 'AI 使用概率', None),
-        'effect_proc': ('consumed', 'game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect', 'eff_proc_Local／Global（特效镜头模式）', 'Local 在每个受影响格播放、Global 在屏幕中心播放一次（GLOBAL_ORIGIN，provisional）'),
+        'effect_proc': ('consumed', 'game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect', 'eff_proc_Local／Global（特效镜头模式）', 'Local 在每个受影响格播放、Global 在光标格中心播放一次（0x442b58／0x442d81）'),
         'effect_code': ('consumed', 'game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect', 'EFFECTS 脚本编号', '39 段 effCode 脚本经 special_effect_scripts.json 编成 tick 时间线；144 个效果对象中 131 个按原生 effProc* 轨迹（effect_motion.json）运动，13 个仍未复原'),
         'status_hit_ratio': ('consumed', 'game/sim/StatusApplicationRules.gd:prepare', '状态命中', None),
         'effect_caster': ('unconsumed', None, '施法者侧特效（8 行）', '表现层未读'),

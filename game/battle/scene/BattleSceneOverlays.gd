@@ -13,9 +13,8 @@ extends RefCounted
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V02
 ##     (32 px axis-aligned cells, diamond reach outline)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
-##     (skill targeting: reach in the attack palette, cursor footprint in the skill palette on top)
-##   layout: provisional
-##     (a self-centred special shows its footprint as the reach layer, in the skill palette)
+##     (skill targeting, self-centred specials included: reach in the attack palette,
+##     cursor footprint in the skill palette on top)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/dialogue_death/README.md
 ##     (Wine frames: acting unit lit at the action menu, every actor at attack targeting)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
@@ -142,15 +141,10 @@ func refresh_attack_overlay() -> void:
 		return
 	runtime.move_overlay.clear_all_cells()
 	footprint_cells = []
-	var shown_cells: Array = runtime.attack_overlay_cells
-	var fields := BattlePlayLoop.skill_fields(runtime.play_loop, str(runtime.play_loop.get(LoopKeys.SELECTED_SKILL_ID, "")))
-	var selected_attack := str(runtime.play_loop.get(LoopKeys.SELECTED_ATTACK, ""))
-	var palette := "attack"
-	if selected_attack == "special" and BattlePlayLoop.SkillTargetRules.self_centered(fields):
-		# A self-centred special can only be cast on the caster's cell: show the area it settles over.
-		shown_cells = BattlePlayLoop.Combat.skill_cast_footprint(runtime.play_loop, BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)["coord"])
-		palette = footprint_palette(selected_attack)
-	runtime.move_overlay.add_cells("AttackCell", _cell_rects(shown_cells), palette)
+	# Every reach, a self-centred special's range0Cell included, is the caster-centred 0x40fa80
+	# buffer in the attack palette (0x445026 range → 0x445075／0x44508f); its area shows only as
+	# the cursor footprint once the cursor is on a reach cell (0x40fab0 at 0x4450ab).
+	runtime.move_overlay.add_cells("AttackCell", _cell_rects(runtime.attack_overlay_cells), "attack")
 	runtime.move_overlay.visible = true
 
 

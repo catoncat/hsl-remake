@@ -12,6 +12,7 @@ extends Node2D
 ##   layout: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#证据
 ##     (border pixels and averaged fill match the sampled original frame)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
+##     (one pulse counter and frame timer per drawer, each advanced only by its own drawer)
 ##   timing: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#证据
 ##     (pulse counter 0x4c1a7c walks the 17-value triangle live)
 
@@ -22,6 +23,9 @@ const MANIFEST_PATH := "res://content/imported/hsl/shared/range_cells/manifest.j
 const PALETTES: PackedStringArray = ["move", "attack", "magic", "special"]
 ## Blit mode 6 averages destination and colour, so the ramp shows at half strength.
 const FILL_ALPHA := 0.5
+## The original drawer each palette belongs to: 0x411200 move, 0x411480 attack, 0x4116a0 the
+## magic／special footprint (palette 0／1 share its counter 0x4c1a84 and timer 0x476c44).
+const DRAWERS := {"move": "move", "attack": "attack", "magic": "footprint", "special": "footprint"}
 
 static var _manifest: Dictionary = {}
 static var _border_sheets: Dictionary = {}
@@ -36,7 +40,9 @@ var _frame_count: int = 8
 var _frame_ticks: int = 8
 var _pulse_indices: Array = []
 var _elapsed_ticks: float = 0.0
-var _tick: int = 0
+## Running tick per drawer (DRAWERS): the original references each counter and frame timer only
+## inside its own drawer, so a layer's pulse advances only on the ticks it is drawn.
+var _ticks: Dictionary = {"move": 0, "attack": 0, "footprint": 0}
 
 
 static func manifest() -> Dictionary:
@@ -131,16 +137,22 @@ func _process(delta: float) -> void:
 	if steps <= 0:
 		return
 	_elapsed_ticks -= float(steps)
-	_tick += steps
+	var drawn := {}
+	for child in get_children():
+		drawn[DRAWERS[str(child.get_meta("palette"))]] = true
+	for drawer in drawn:
+		_ticks[drawer] = int(_ticks[drawer]) + steps
 	for child in get_children():
 		_paint(child)
 
 
 ## The original re-evaluates the ramp index and the frame timer each drawn tick; both are
-## derived here from one running tick so an added cell joins the pulse in phase.
+## derived here from the drawer's running tick so an added cell joins its layer in phase,
+## while the attack reach and the footprint over it pulse on their own counters.
 func _paint(cell: Node) -> void:
 	var palette: String = str(cell.get_meta("palette"))
 	var ramp: Array[Color] = _palette_ramps[palette]
-	var pulse_index: int = absi(int(_pulse_indices[_tick % _pulse_indices.size()]))
+	var tick: int = int(_ticks[DRAWERS[palette]])
+	var pulse_index: int = absi(int(_pulse_indices[tick % _pulse_indices.size()]))
 	(cell.get_node("Fill") as Polygon2D).color = ramp[pulse_index]
-	(cell.get_node("Border") as Sprite2D).frame = (_tick / _frame_ticks) % _frame_count
+	(cell.get_node("Border") as Sprite2D).frame = (tick / _frame_ticks) % _frame_count

@@ -279,7 +279,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `hit_ratio` | consumed | `game/sim/NativeMagicRollRules.gd:roll` | 非默认行 39；声明行 39 | 命中 | — |
 | `function` | consumed | `game/sim/SkillTargetRules.gd:function_mask` | 非默认行 39；声明行 39 | 功能位（magicFun_*） | — |
 | `use_ratio` | consumed | `game/sim/AISkillPlanning.gd:choose` | 非默认行 39；声明行 39 | AI 使用概率 | — |
-| `effect_proc` | consumed | `game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect` | 非默认行 39；声明行 39 | eff_proc_Local／Global（特效镜头模式） | Local 在每个受影响格播放、Global 在屏幕中心播放一次（GLOBAL_ORIGIN，provisional） |
+| `effect_proc` | consumed | `game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect` | 非默认行 39；声明行 39 | eff_proc_Local／Global（特效镜头模式） | Local 在每个受影响格播放、Global 在光标格中心播放一次（0x442b58／0x442d81） |
 | `effect_code` | consumed | `game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect` | 非默认行 39；声明行 39 | EFFECTS 脚本编号 | 39 段 effCode 脚本经 special_effect_scripts.json 编成 tick 时间线；144 个效果对象中 131 个按原生 effProc* 轨迹（effect_motion.json）运动，13 个仍未复原 |
 | `status_hit_ratio` | consumed | `game/sim/StatusApplicationRules.gd:prepare` | 非默认行 6；声明行 6 | 状态命中 | — |
 | `effect_caster` | unconsumed | UNCONSUMED | 非默认行 8；声明行 8 | 施法者侧特效（8 行） | 表现层未读 |

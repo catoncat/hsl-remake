@@ -526,7 +526,7 @@ func map_magic() -> void:
 		# 026 has no m_shape lead: it poses as the clip starts, beside the Cast_Star ring (R7-POSE).
 		check(scene.actor_node_for_unit(caster["id"]).is_posing(), "the map caster without a lead takes its use_magic pose: " + key)
 		check(view.magic_impact.busy() and not view.dialogue_active(), "map receiver bars and amount finish before death dialogue: " + key)
-		view.magic_impact._process(view.magic_impact.VITALS_SECONDS + view.magic_impact.float_seconds())
+		view.magic_impact._process(view.magic_impact.total_seconds())
 		scene._process(0)
 		check(view.current_message_id() == expected_line(view.aftermath, target["id"], str(target["actor_id"])) and scene.actor_node_for_unit(target["id"]).visible, "map spell victim gets its own source last words: " + key)
 		check(death_sounds(scene, target["id"]) == 0, "a map-spell death sound waits for the last words: " + key)

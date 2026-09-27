@@ -69,8 +69,6 @@ const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.g
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
 const STAGE_SIZE := Vector2(640, 320)
 const TARGET_CENTRE := Vector2(320, 160)
-## Where an eff_proc_Global script plays: the logical screen centre, not a unit.
-const GLOBAL_ORIGIN := Vector2(320, 240)
 ## A row whose attack script is empty still shows the caster's cast panels for this lead.
 const EMPTY_ATTACK_LEAD_TICKS := 30
 ## Ticks the result stays up after aniShowHitResult at the least (a remake floor that keeps a
@@ -627,7 +625,8 @@ static func clip_complete_tick(timeline: Dictionary, spawns: Array) -> int:
 ## portrait from the m_shape strip over the shadowed map, tick-driven) when the caster has an
 ## imported strip, else the shared Cast_Star ring for CAST_LEAD_IN; the cast cue sounds as the
 ## lead begins; `released` fires when it ends, the script then plays at every affected
-## position (once at GLOBAL_ORIGIN for eff_proc_Global) with `impact` at its last cue; the
+## position (once at the cursor cell centre `map_target` for eff_proc_Global: 0x442b58 sets
+## 0x4c2c70／0x4c2c74 to (column×32+16, row×32+16) and 0x442d81 builds one interpreter there) with `impact` at its last cue; the
 ## effect carries no name caption. Real seconds, 62.5 ticks/s, after the lead.
 func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 	var timeline: Dictionary = clip["effect_timeline"]
@@ -676,7 +675,7 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	var complete := mark(host, clip, elapsed, {"release": lead_in,
 		"impact": lead_in + float(timeline["impact_tick"]) * scale,
 		"complete": lead_in + float(timeline["complete_tick"]) * scale})
-	draw(clip, seconds, [GLOBAL_ORIGIN] if bool(timeline["global"]) else clip["affected_positions"])
+	draw(clip, seconds, [clip["map_target"]] if bool(timeline["global"]) else clip["affected_positions"])
 	if complete:
 		clear()
 		return true

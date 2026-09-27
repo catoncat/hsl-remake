@@ -242,7 +242,7 @@ func presentation_cases() -> void:
 	check(presentation.magic_impact.busy() and presentation.magic_impact.entries[0]["panel"].visible and not presentation.magic_impact.entries[0]["amount"].visible, "native map receiver vitals precede damage digits")
 	check(presentation.magic_impact.entries[0]["panel"].get_child(0).size == Vector2(42, 7), "theme minimum font size cannot enlarge the short map resource strip")
 	presentation.magic_impact._process(0.5)
-	check(not presentation.magic_impact.entries[0]["panel"].visible and presentation.magic_impact.entries[0]["amount"].visible, "map damage follows temporary HP/MP bars")
+	check(presentation.magic_impact.entries[0]["panel"].visible and presentation.magic_impact.entries[0]["amount"].visible, "map damage joins the temporary HP/MP bars (recording: number at tick 29, bars until 60)")
 	presentation.magic_impact._process(presentation.magic_impact.float_seconds())  # the red number lives 10 ticks per digit + 34
 	await process_frame
 	check(not presentation.magic_impact.busy() and scene.play_loop == saved, "receiver cleanup restores actor without replaying logical damage or EXP")

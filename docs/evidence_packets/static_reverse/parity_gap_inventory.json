@@ -3,11 +3,11 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 100,
+    "items": 99,
     "sources": 529,
     "sources_by_kind": {
-      "provenance": 219,
-      "sentence": 139,
+      "provenance": 217,
+      "sentence": 141,
       "scope": 73,
       "matrix": 85,
       "video": 13
@@ -15,12 +15,12 @@
     "layout_timing_modules": 59,
     "items_by_original_status": {
       "read_complete": 15,
-      "read_partial": 59,
+      "read_partial": 58,
       "unread": 9,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 20,
+      "every_battle": 19,
       "some_levels": 37,
       "rare": 38,
       "invisible": 5
@@ -40,7 +40,7 @@
       "特写与施法演出": 10,
       "重制新增（原版没有）": 16,
       "镜头": 2,
-      "面板与界面": 11,
+      "面板与界面": 10,
       "音频": 3,
       "飘字与数字": 4
     },
@@ -62,13 +62,13 @@
     "bitmap-font",
     "cast-lead-compositing",
     "effect-origin",
-    "footprint-preview-style",
     "growth-window-timing",
     "magic-impact-bar",
     "move-path-overlay",
     "panel-captions",
     "status-page-extras",
-    "wait-cue"
+    "wait-cue",
+    "ui-layout-readings"
   ],
   "items": [
     {
@@ -354,15 +354,16 @@
     },
     {
       "id": "effect-origin",
-      "difference": "地图法术特效原点：Local 已与原版同为目标格中心（录屏\"高 14 px\"是量到脚下）；Global 原版是光标格中心、重制取屏幕中心",
-      "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移）；eff_proc_Global：0x442d81 以光标格中心建一份；Local 多受者是否每人一份未读",
+      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份",
+      "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移）；eff_proc_Global：0x442b58 写光标格 (列×32+16, 行×32+16)，0x442d81 以它建一份；Local 多受者遍历 0x4c1cec 未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_strike.md",
         "docs/evidence_packets/runtime_observations/effect_motion/README.md"
       ],
-      "remake": "BattlePresentation 传入各受影响单位的格中心；Global 在 GLOBAL_ORIGIN（屏幕中心）放一次",
+      "remake": "BattlePresentation 传入各受影响单位的格中心；Global 在 clip map_target（cast_center 格中心）放一次",
       "remake_code": [
-        "game/battle/scene/BattlePresentation.gd"
+        "game/battle/scene/BattlePresentation.gd",
+        "game/battle/scene/SkillEffectScriptPlayer.gd"
       ],
       "original_status": "read_partial",
       "visibility": "every_battle",
@@ -370,28 +371,6 @@
       "category": "特写与施法演出",
       "sources": [
         "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读）、法术通道 0x40aa80 的计数位里 MP 伤害位是否计入"
-      ]
-    },
-    {
-      "id": "footprint-preview-style",
-      "difference": "玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替",
-      "original": "0x444eb7／0x445075 → 0x40fa80 写射程、0x444f08／0x4450e0 → 0x4100e0 写脚印；每 tick 0x411480 红格后 0x4116a0（魔法 0／绝技 1）",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_cast_overlays.md",
-        "docs/evidence_packets/static_reverse/original_range_cells.md"
-      ],
-      "remake": "BattleSceneOverlays 射程 attack 调色板、refresh_skill_footprint 用 magic／special 调色板",
-      "remake_code": [
-        "game/battle/scene/BattleSceneOverlays.gd",
-        "game/battle/runtime/RangeCellOverlay.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "面板与界面",
-      "decision": "照原版（RANGECOLOR）",
-      "sources": [
-        "provenance:game/battle/scene/BattleSceneOverlays.gd|layout|provisional|"
       ]
     },
     {
@@ -418,13 +397,14 @@
     },
     {
       "id": "magic-impact-bar",
-      "difference": "法术命中时原版先在受者旁画 HP／MP 两条再出数字（原录像 V08 14_tactical_map_magic_aoe frame_041 画 HP 24/43、MP 0/0，frame_046 才出数字 19）；重制同样先亮血条，只有 0.45 s 时长是重制估值、多目标血条互相避让是重制自加。数字本身已是原版字形与出现点（目标 (x, y−0x34)，lane DIGITS）",
-      "original": "原版法术命中先画受者 HP／MP 条，之后 0x40aba0 在目标 (x, y−0x34) 生成 kind 0／5 数字（V08 frame_041→046 约 5 帧）",
+      "difference": "法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出",
+      "original": "原版法术命中在受者脚边画 HP／MP 条（先前值后后值），之后 0x40aba0 在目标 (x, y−0x34) 生成 kind 0／5 数字；2026-09-24 录屏 474.600／475.000／475.167／475.767 s（19.4 ms/tick 折 0／21／29／60 tick）",
       "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_magic_damage.md",
         "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md",
         "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
       ],
-      "remake": "MagicImpactPresentation 的受者条（VITALS_SECONDS 0.45，时长未量）；两个选项预设都保留（OPTIONS-S2 核对）",
+      "remake": "MagicImpactPresentation 的受者条 BEFORE_TICKS 21／NUMBER_TICKS 29／BAR_TICKS 60，42×7 条画法为重制",
       "remake_code": [
         "game/battle/scene/MagicImpactPresentation.gd"
       ],
@@ -434,7 +414,7 @@
       "category": "飘字与数字",
       "sources": [
         "provenance:game/battle/scene/MagicImpactPresentation.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/MagicImpactPresentation.gd|timing|remake-invented|"
+        "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#32cb0f367e"
       ]
     },
     {
@@ -1606,7 +1586,8 @@
         "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#28465aadbe",
         "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#587e4a745c",
         "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#75288a642a",
-        "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#8caf94691b"
+        "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#8caf94691b",
+        "sentence:docs/evidence_packets/static_reverse/original_range_cells.md#a4479738ba"
       ]
     },
     {
