@@ -1,6 +1,6 @@
 # 悬停身份栏与"已知"字节：0x434d10 的 ??? 规则与 0x4c6d80 的写入者
 
-> evidence: static-derived; runtime-measured; negative-evidence; provisional · status: live · functions: 0x407cc0, 0x407ec0, 0x430020, 0x434d10, 0x436490, 0x4364e0, 0x43ede0, 0x443c63, 0x4440b7, 0x4447a7, 0x446b00, 0x446b30, 0x450710 · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/native/image.py, hsltools/probes/_known_byte_trace.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured; negative-evidence; provisional · status: live · functions: 0x407cc0, 0x407ec0, 0x430020, 0x434d10, 0x436490, 0x4364e0, 0x43b4e0, 0x43e570, 0x43ede0, 0x443c63, 0x443e2a, 0x4440b7, 0x4445b7, 0x4447a7, 0x4449bb, 0x444c9e, 0x444fe6, 0x445286, 0x446b00, 0x446b30, 0x450710 · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/native/image.py, hsltools/probes/_known_byte_trace.py · updated: 2026-09-28
 
 ## 结论
 
@@ -8,6 +8,7 @@
 - 已知字节在单位被任何一方选为武器／魔法／绝技目标时（`0x430020`，击前）或死亡时（`0x43ef5b`，切入之后）写 1，反击不揭示；下标按演员模板行共用；未知单位点击不开状态页（static-derived＋runtime-measured）。
 - 点他人单位开状态页只在**移动选格态**（外层 `+0x8e` = 20，子态 0 `0x443c63`）：点非玩家指挥的已知单位开 mode 1 页、子态 10 等待，关窗子态 11 `0x4440b7` 回子态 0 选格；行动环（98）与移动后行动环（74）走默认 `0x4447a7`，没有点单位分支；玩家指挥单位在选格态也不开页（static-derived＋runtime-measured）。
 - 重制 `BattlePlayLoop.unit_known`／`known_unit_ids`、`BattleVitals.mask`／`show_unit`、`BattleStatusPanel.opens_for`、`BattleCombatCutin.play(…, known)` 照此实现；`BattleSceneInput` 只在 `MOVE_SELECT` 点非可指挥单位开页，关窗仍在选格态（static-derived）。
+- 悬停身份栏逐状态：移动选格、武器／魔法／绝技选目标、道具与交换选格每 tick 对光标格上任一方的存活单位画 mode 3 身份栏，不查射程、合法性、阵营、是否本人；行动环（98／74）与确认之后的状态不画（static-derived，见「悬停身份栏逐状态」）。重制 `preview_target`／`preview_hovered_unit` 与 `_item_pick_hover` 同此。
 - 差异：位 0x100（条上印数字）的置位者未读、氣力条是重制自创（差异清单 `identity-bar-bits`，provisional）；受伤且未知的敌人未在原版实机采到（negative-evidence）。
 
 ## 证据
@@ -52,6 +53,21 @@
 **`0x443cfa`：未知单位不开状态页**。它是玩家对象过程**移动选格态**（外层 `+0x8e` = 20 → `0x443c4a` 按 word `+0x8c` 查子表 `0x445820`，子态 0 = `0x443c63`）的确认键分支（不在施法序列 `0x442a90` 内）：光标格 `0x411c40 & 0x70000` 有单位 → `0x407800` 取角色 → `0x446b30(actor)`（模板 `+0xa0 & 0x10`）为真走 `0x443d4e`（`0x410a50` 通过则 state 1、`+0x9c = 0x80000`，己方选中）；为假时 `*0x4c1cec = actor`、`+0x80 |= 输入位`，**已知字节为 1 才** `0x436490(+0xa0, 0, 0)` ＋ `0x43b4e0(actor, 1, self)` 开状态页并置 state 10；已知字节为 0 直接落到 `0x443d9d`（等同点空格）。点单位开的是 mode 1：`0x43b4e0` case 0／1 在 `in_stack_8 == 1` 时跳过 `0x43af60`（134 `$:` 钱框）与 `0x43b0a0`／`0x43b230`（上一位／下一位）；行动环 狀態（`0x444285` `push 0`）是 mode 0，有钱框。
 
 **开页的状态与关窗去向**。子态 10 等窗关；关窗后子态 11 `0x4440b7` 把 `[0x4c2ae4]` 写回自己的 `+0xa0`、word `+0x8c` 置 0，外层仍是 20——回到选格，移动范围照旧。玩家指挥单位（`+0xa0 & 0x10`）在选格态走 `0x443d4e`，目标格被占或就是原格时 `0x410a50` 不通过，落到 `0x443d9d`，不开页。行动环等待（低态表 98）与移动后行动环（74）经字节表 `0x445758`→指针表 `0x445694` 都落默认 `0x4447a7`，没有 `0x407800` 取点击单位的分支，所以行动环里点谁都不开页。
+
+### 悬停身份栏逐状态（static-derived）
+
+悬停身份栏只有两种写法：公共例程 `0x43e570`（读光标格 `0x4c1a8c`／`0x4c1a90` → `0x411c40 & 0x70000` 任一方单位位 → `0x407800` 取对象 → `0x436490(obj+0xa0, 3, -1)` 生成文字＋`0x43b4e0(obj, 3, obj)` 开 WINDOW10 → `0x43e4a0`）与道具／交换选格里内联的同一对调用。两者都不查射程格、目标合法性、阵营、已知字节或是否行动者本人；`0x43b4e0` 开头遇对象 `+0x80 & 0x8000000`（死亡标）直接返回，所以死亡单位不出栏。已知字节只决定栏内 `???` 遮罩（`0x434d10`，见上），不决定栏出不出。`[0x4c2ae4]`（窗口所属模板行）在悬停路径上只有道具／交换选格的内联分支写（`0x444a2e`、`0x444d11`），`0x43e570` 不写它；它不是悬停判定的输入。`0x43e570` 的全部 `call` 调用点只有下表四处（`E8` 全文扫描）。
+
+| 状态（玩家过程） | 悬停身份栏调用点 | 显示条件 | 重制 |
+| --- | --- | --- | --- |
+| 移动选格（外层 20，子态 0 `0x443c63`） | 无确认输入或点击未开页时落 `0x443d9d`（悬停单位 `+0x80` 置 ebp 位 亮起）→ `0x443e08` 移动范围 `0x411200`、光标 `0x430230`、`0x443e2a` 调 `0x43e570` | 光标格有任一方单位、非死亡；移动范围内外都画、本人也画 | `MOVE_SELECT` 属 `Interaction.TARGETING`，`preview_target` → `preview_hovered_unit`：存活单位即显示 |
+| 武器攻击选目标（`0x50` `0x4442e4`） | 攻击范围 `0x411480` 与光标之后 `0x4445b7` 调 `0x43e570` | 同上；射程外、友军、本人也画 | `ATTACK_SELECT`：合法目标由 `_preview_attack_target` 画栏＋预览，其余存活单位由 `preview_hovered_unit` 画栏 |
+| 魔法选目标（`0x79` `0x444ec1`） | 射程、范围、光标之后 `0x444fe6` | 同上；确认 tick 跳尾不画 | 同 `ATTACK_SELECT` |
+| 绝技选目标（`0x98` `0x445099`） | 射程、范围、光标之后 `0x445286` | 同上；确认 tick 跳尾不画 | 同 `ATTACK_SELECT` |
+| 道具选格（state 105） | `0x4449bb` 内联：`& 0x70000` → `+0x80` 置 ebp 位、`[0x4c2ae4] = +0xa0`、`0x436490(+0xa0, 3, -1)`、`0x43b4e0(unit, 3, esi)` | 同上；范围外也画（见 [用药演出](original_item_use_presentation.md)） | `BattleSceneMenus._item_pick_hover` → `preview_hovered_unit` |
+| 交换选格（state 113 `0x444c27`） | 左键不成立时落 `0x444c9e` 内联：`& 0x70000` → `+0x80` 置 ebp 位、`[0x4c2ae4] = +0xa0`、`0x436490(…, 3, -1)`、`0x43b4e0(unit, 3, esi)` | 同上（见 [交换](original_give_exchange.md)） | 同道具选格 |
+| 行动环（98）、移动后行动环（74） | 无：经 `0x445758`→`0x445694` 落默认 `0x4447a7` | 不画（P2 实机同） | 行动环不属 `TARGETING`，不调预览 |
+| 确认之后（`0x51`／`0x52`／`0x7a`／`0x99`／`0x8f`／`0xa1`、道具 106 起） | 无调用点 | 不画 | `refresh` 在确认帧隐藏 |
 
 ### 身份栏 HP／MP 条的画法（static-derived）
 
@@ -143,6 +159,7 @@ r2 对 `hsl01.exe` 全文检索 `/ad/ dword [e.. + 0xd8]` 得 47 处 HP 读点�
 
 ## 边界
 
+- 悬停身份栏逐状态表只枚举 `0x43e570` 的直接 `call` 与玩家过程里内联的 `0x436490(…, 3)`＋`0x43b4e0(…, 3)` 对；重制以 HP ≤ 0 代替死亡标 `0x8000000`，两者在可操作的选格状态里一致，死亡处理未完成的中间帧没有逐 tick 对照。
 - 仍未读：位 0x100 数字文本的置位者、氣力条（重制自创，未知时仍空）。
 - 受伤且未知的敌人未在原版实机采到；条按真实比例的结论来自静态（条渲染器无已知字节读者）加两类已知／未知样本。
 - 剧情 `actSetPlayerMode`（`0x4507f0`）、读档路径的写入只有静态枚举。

@@ -276,23 +276,6 @@
       "category": "面板与界面"
     },
     {
-      "id": "hover-strip-rule",
-      "difference": "选武器／魔法／绝技目标时，光标下任何存活单位都显示身份栏（重制取舍），原版逐状态规则未读",
-      "original": "原版各选择状态何时显示身份栏未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_cast_overlays.md"
-      ],
-      "remake": "BattlePresentation 对光标下任何存活单位都显示",
-      "remake_code": [
-        "game/battle/scene/BattlePresentation.gd:preview_hovered_unit"
-      ],
-      "original_status": "unread",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "面板与界面",
-      "decision": "保留重制做法"
-    },
-    {
       "id": "cast-overlay-rules",
       "difference": "施法时魔法／绝技选单窗何时关、浏览态何时画移动范围、I_RECT02..08 其他配色何时用——原版未读",
       "original": "施法覆盖层调用点已读，选单窗关闭与浏览态触发条件未读",
@@ -2336,9 +2319,6 @@
     },
     "provenance:game/sim/loop/BattlePlayLoop.gd|rules|remake-invented|": {
       "no_visible_effect": "PlayLoop 的事务顺序与菜单面，是重制内部结构"
-    },
-    "provenance:game/battle/scene/BattlePresentation.gd|layout|provisional|": {
-      "item": "hover-strip-rule"
     },
     "provenance:game/battle/scene/BattlePresentation.gd|layout|remake-invented|": {
       "item": "floater-extra-words"

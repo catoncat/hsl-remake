@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (194 modules, 142 remake-invented cells, 73 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (194 modules, 142 remake-invented cells, 72 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (194)
 
@@ -72,7 +72,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleNavigationCue](../game/battle/scene/BattleNavigationCue.gd) | n/a | remake-invented | remake-invented | remake-invented | n/a |
 | [BattlePanelMotion](../game/battle/scene/BattlePanelMotion.gd) | n/a | runtime-measured [camera_panel_motion/README.md](../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md); remake-invented | n/a | runtime-measured [camera_panel_motion/README.md](../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md); provisional; static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | n/a |
 | [BattlePoisonGasPresentation](../game/battle/scene/BattlePoisonGasPresentation.gd) | n/a | static-derived [original_poison_gas.md](../docs/evidence_packets/static_reverse/original_poison_gas.md); remake-invented | n/a | static-derived [original_poison_gas.md](../docs/evidence_packets/static_reverse/original_poison_gas.md) | static-derived [original_poison_gas.md](../docs/evidence_packets/static_reverse/original_poison_gas.md) |
-| [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | n/a | runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#17`; runtime-measured [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md) `#runtime-measured`; provisional; static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); remake-invented | resource-derived [message_text_evidence.json](../content/imported/hsl/chapter01/message_text_evidence.json); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); remake-invented; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md); static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md); provisional | resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json); resource-derived [actor_audio.json](../content/imported/hsl/chapter01/actor_audio.json) |
+| [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | n/a | runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#17`; runtime-measured [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md) `#runtime-measured`; static-derived [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); remake-invented | resource-derived [message_text_evidence.json](../content/imported/hsl/chapter01/message_text_evidence.json); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); remake-invented; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md); static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md); provisional | resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json); resource-derived [actor_audio.json](../content/imported/hsl/chapter01/actor_audio.json) |
 | [BattleRewardFloater](../game/battle/scene/BattleRewardFloater.gd) | n/a | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md); runtime-measured [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md) | n/a |
 | [BattleSceneInput](../game/battle/scene/BattleSceneInput.gd) | remake-invented | runtime-measured [first_battle_visual_evidence_index.md](../docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md) | n/a | n/a | n/a |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | n/a | remake-invented; static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); static-derived [original_give_exchange.md](../docs/evidence_packets/static_reverse/original_give_exchange.md) | n/a | static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); provisional; remake-invented | resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json) |
@@ -417,7 +417,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (73)
+### provisional 疑点 (72)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -447,7 +447,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleDropLightningPresentation](../game/battle/scene/BattleDropLightningPresentation.gd) | layout | — | planeEffect6 drawn over planeEffect2 |
 | [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | layout | — | range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36 |
 | [BattlePanelMotion](../game/battle/scene/BattlePanelMotion.gd) | timing | — | the per-tick formula is a fit of the frames, the EXE helper is unread |
-| [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | layout | — | the same strip for any living unit under the cursor in weapon／magic／special selection, legal target or not — user request 2026-09-23, the original's per-state rule is unread |
 | [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | timing | — | a caster without an m_shape lead poses at clip start beside the Cast_Star ring |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | timing | — | that ordering is a static reading; a lost battle offers no window — the conservative choice |
 | [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | timing | — | magic／item target and move selection follow the attack frame; not captured |
@@ -502,11 +501,11 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 32 | 69 | 41 | 10 | 29 | 181 |
-| static-derived | 240 | 84 | 17 | 91 | 20 | 452 |
+| static-derived | 240 | 85 | 17 | 91 | 20 | 453 |
 | runtime-measured | 17 | 32 | 3 | 19 | 2 | 73 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 33 | 15 | 0 | 22 | 3 | 73 |
+| provisional | 33 | 14 | 0 | 22 | 3 | 72 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
 | remake-invented | 54 | 39 | 34 | 14 | 1 | 142 |

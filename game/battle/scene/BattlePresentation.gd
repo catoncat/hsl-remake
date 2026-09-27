@@ -5,9 +5,8 @@ extends Node2D
 ##     (objective text on the map)
 ##   layout: runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured
 ##     (bottom identity strip on pointer-over a unit in move selection, not while the action ring is open)
-##   layout: provisional
-##     (the same strip for any living unit under the cursor in weapon／magic／special selection, legal target or not —
-##     user request 2026-09-23, the original's per-state rule is unread)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_identity_bar.md
+##     (the strip for any living unit under the cursor in every pick state, none in the action ring)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   layout: remake-invented (caption placement above the numbers)
@@ -387,8 +386,9 @@ func _sync_defeated_visibility(loop: Dictionary) -> void:
 
 
 ## Every grid-cursor action (move, weapon, magic, special) shows the identity strip of the
-## living unit under the cursor, whether or not it is a legal target: legality only decides
-## the hit／effect preview line (a full-HP ally under 治癒之水 still shows its strip).
+## living unit under the cursor, whether or not it is a legal target (0x43e570 at 0x443e2a／
+## 0x4445b7／0x444fe6／0x445286 tests only the cell's unit bits): legality only decides the
+## hit／effect preview line (a full-HP ally under 治癒之水 still shows its strip).
 func preview_target(loop: Dictionary, target_id: String, center_coord: Variant = null) -> void:
 	previewed_target_id = ""
 	combat_label.hide()
@@ -477,9 +477,10 @@ func _strip_known(loop: Dictionary, unit_id: String) -> bool:
 	return info_public or BattlePlayLoop.unit_known(loop, unit_id)
 
 
-## The original identity strip while the pointer rests on a unit's body cell during move
-## selection (0x434d10 text block on WINDOW10): friendly or enemy, alive, with the ??? mask
-## for a unit the player has not yet fought (BattlePlayLoop.unit_known).
+## The original identity strip while the pointer rests on a unit's body cell in any pick state
+## (0x43e570 or the item／give pick's inline copy → 0x434d10 text block on WINDOW10): any side,
+## the actor itself included, alive (0x43b4e0 skips the death flag), with the ??? mask for a
+## unit the player has not yet fought (BattlePlayLoop.unit_known).
 func preview_hovered_unit(loop: Dictionary, unit_id: String) -> void:
 	if unit_id == "":
 		return

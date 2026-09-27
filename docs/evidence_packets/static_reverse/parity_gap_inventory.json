@@ -3,10 +3,10 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 101,
-    "sources": 533,
+    "items": 100,
+    "sources": 532,
     "sources_by_kind": {
-      "provenance": 215,
+      "provenance": 214,
       "sentence": 147,
       "scope": 73,
       "matrix": 85,
@@ -16,11 +16,11 @@
     "items_by_original_status": {
       "read_complete": 15,
       "read_partial": 60,
-      "unread": 9,
+      "unread": 8,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 19,
+      "every_battle": 18,
       "some_levels": 37,
       "rare": 40,
       "invisible": 5
@@ -40,7 +40,7 @@
       "特写与施法演出": 10,
       "重制新增（原版没有）": 16,
       "镜头": 3,
-      "面板与界面": 11,
+      "面板与界面": 10,
       "音频": 3,
       "飘字与数字": 4
     },
@@ -1503,26 +1503,6 @@
         "provenance:game/battle/scene/BattleGrowthPanel.gd|rules|remake-invented|docs/OPTIONS.md",
         "provenance:game/battle/scene/BattleSceneMenus.gd|timing|remake-invented|",
         "provenance:game/sim/ProgressionRules.gd|rules|remake-invented|"
-      ]
-    },
-    {
-      "id": "hover-strip-rule",
-      "difference": "选武器／魔法／绝技目标时，光标下任何存活单位都显示身份栏（重制取舍），原版逐状态规则未读",
-      "original": "原版各选择状态何时显示身份栏未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_cast_overlays.md"
-      ],
-      "remake": "BattlePresentation 对光标下任何存活单位都显示",
-      "remake_code": [
-        "game/battle/scene/BattlePresentation.gd:preview_hovered_unit"
-      ],
-      "original_status": "unread",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "面板与界面",
-      "decision": "保留重制做法",
-      "sources": [
-        "provenance:game/battle/scene/BattlePresentation.gd|layout|provisional|"
       ]
     },
     {
