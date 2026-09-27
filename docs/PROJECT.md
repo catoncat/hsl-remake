@@ -20,7 +20,7 @@ Checked: 2026-09-27
 
 ## 在跑
 
-TESTCUT4：把 run_winfail_rules 与 run_skill_resolution 两套件里"原版语义＋输入校验"混写的用例拆开，只留原版语义。AI 分布口径全部闭合：差异清单 107 条里 AI 一族没有未闭合口径，回放判定 unreached=0、可确证规则差 0。
+没有 lane 在跑。AI 分布口径全部闭合：差异清单 107 条里 AI 一族没有未闭合口径，回放判定 unreached=0、可确证规则差 0。
 
 <a id="next-steps"></a>
 

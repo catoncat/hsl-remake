@@ -66,7 +66,7 @@ python3 tools/verify_runner.py godot && python3 tools/verify_runner.py promote-t
 | [ordinary_special](run_ordinary_special_tests.gd) | 普通／反击暴击、武器附加、氣刃斬、战斗积气 | `sr/original_ordinary_special`、`sr/original_stamina` |
 | [weapon_effect](run_weapon_effect_tests.gd) | 武器末击附毒／状态字与未来行动取消 | `sr/original_weapon_effects` |
 | [magic_experience](run_magic_experience_tests.gd) | 风火伤害、支援贡献、最终 EXP 与连续数 | `sr/original_experience` |
-| [skill_resolution](run_skill_resolution_tests.gd) | 技能费用、目标模式与覆盖、共同提交、预览脚印＝结算格 | `sr/original_skill_resources`、`sr/original_skill_targets` |
+| [skill_resolution](run_skill_resolution_tests.gd) | 技能结算的原版数值（命中先于三角骰、各元素抗性槽、衰弱／麻痹／治疗／增益／吸血／回合效果／偷金偷物的原版地址与阈值）、初始拥有来自 PLAYERS 声明、费用、目标模式与覆盖、共同提交、预览脚印＝结算格；坏 descriptor 归 `hsl check skill_coverage` | `sr/original_skill_resources`、`sr/original_skill_targets`、`sr/original_magic_damage`、`sr/original_skill_function_bits`、`sr/original_steal_ratio` |
 | [status_application](run_status_application_tests.gd) | 状态施加掷骰、生命周期与到期 | `sr/original_status_application`、`sr/original_status_effects` |
 | [entry_growth](run_entry_growth_tests.gd) | 新援入场调级（含第 6 关 opcode 73 两段式）与实例奖励 | `sr/original_auto_growth` |
 | [growth_lifecycle](run_growth_lifecycle_tests.gd) | 初始阵容／NPC 升级、动态学技 | `sr/original_growth_lifecycle` |
@@ -80,7 +80,7 @@ python3 tools/verify_runner.py godot && python3 tools/verify_runner.py promote-t
 | [large_actor](run_large_actor_tests.gd) | 3×3 大型占格 flood 与命中去重 | `sr/original_large_actor` |
 | [gol_road](run_gol_road_tests.gd) | 戈爾山道两阶段入队与后生 | `ro/gol_road` |
 | [ohm_village](run_ohm_village_tests.gd) | 歐姆村编队、弓手近身负格、毒魔箭 | `ro/ohm_village` |
-| [winfail_rules](run_winfail_rules_tests.gd) | winfail 解释器（52／53 战 golden 序列、token 语义）、扫描节拍、全部战斗原则上打得赢 | `sr/original_check_targets`、`sr/original_round_display`、`sr/winfail_claim_limits` |
+| [winfail_rules](run_winfail_rules_tests.gd) | winfail 解释器：52／53 战 golden 序列、原版 token 语义（0x450840 计数分支、状态挂起与连锁、原生动作、目标板与下一关 token、我方总数）、扫描节拍、全部战斗原则上打得赢；坏 seed／未知 token 归 `hsl check winfail_coverage` | `sr/original_check_targets`、`sr/original_round_display`、`sr/winfail_claim_limits` |
 | [town_event_rules](run_town_event_rules_tests.gd) | 城镇 te 解释器：对白／金钱／商店／子菜单／神秘商人／转职 | `sr/town_event_semantics`、`sr/original_secret_man` |
 | [story_object_terrain](run_story_object_terrain_tests.gd) | 剧情物件改地形、脚本走位逐格不穿墙 | `sr/original_story_object_terrain`、`sr/original_script_walk_path` |
 | [camera_panel_motion](run_camera_panel_motion_tests.gd) | 镜头滑动与面板运动的原节拍、脚本定位镜头 (320,192) | `sr/original_script_camera_scroll` |
