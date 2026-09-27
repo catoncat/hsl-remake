@@ -100,7 +100,15 @@ func update_action_menu_anchor() -> void:
 		return
 	var actor: Node = runtime.actor_node_for_unit(runtime.selected_unit_id)
 	if actor != null:
-		runtime.action_menu.place_near(runtime.world_to_logical_position(actor.position), Rect2(Vector2(12, 12), Vector2(runtime.logical_viewport_size) - Vector2(24, 24)))
+		runtime.action_menu.place_near(runtime.world_to_logical_position(actor.position), map_logical_rect())
+
+
+## The map in logical (screen) coordinates: the bounds 0x43ea30 keeps ring icons inside.
+func map_logical_rect() -> Rect2:
+	var config = runtime.camera_controller.map_config if runtime.camera_controller != null else null
+	if config == null or config.world_size == Vector2i.ZERO:
+		return Rect2(Vector2.ZERO, Vector2(runtime.logical_viewport_size))
+	return Rect2(runtime.world_to_logical_position(Vector2.ZERO), Vector2(config.world_size))
 
 
 func set_action_menu_visible(visible: bool) -> void:
@@ -133,6 +141,7 @@ func choose_command(command_id: String) -> void:
 				target["screen_position"] = runtime.world_to_logical_position(runtime.actor_node_for_unit(id).position)
 				targets.append(target)
 			var actor := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
+			runtime.item_panel.map_area = map_logical_rect()
 			runtime.item_panel.show_inventory(actor, runtime.play_loop[LoopKeys.CONSUMABLES], targets, runtime.world_to_logical_position(runtime.actor_node_for_unit(runtime.selected_unit_id).position), runtime.play_loop[LoopKeys.SKILL_BOOK]["actors"][actor["actor_id"]])
 			set_action_menu_visible(false)
 		return

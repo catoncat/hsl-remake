@@ -41,6 +41,8 @@ var attack_source: Dictionary = {}
 var items: Dictionary = {}
 var targets: Array = []
 var anchor := Vector2(320, 240)
+## Map bounds in the anchor's coordinates; the item submenu (0x43ea30 mode 3) shifts off map edges.
+var map_area := Rect2(0, 0, 640, 480)
 var page := "commands"
 var operation := "use"
 var selected_item := ""
@@ -104,7 +106,7 @@ func _show_commands() -> void:
 	_clear_page()
 	page = "commands"
 	menu.rebuild([{"command": "use"}, {"command": "equip"}, {"command": "drop"}, {"command": "give"}])
-	menu.place_near(anchor, Rect2(0, 0, 640, 480))
+	menu.place_near(anchor, map_area)
 	menu.show()
 
 

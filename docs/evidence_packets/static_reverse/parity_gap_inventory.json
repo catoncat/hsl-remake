@@ -396,14 +396,14 @@
     },
     {
       "id": "command-menu-captions",
-      "difference": "行动环图标下有中文说明、菜单会被夹在视口内",
+      "difference": "行动环图标下有中文说明",
       "original": "原版行动环只有图标",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md"
       ],
-      "remake": "原版路径照原版：行动环只画图标；OPT-GUIDE=提示 时恢复改良：图标下加中文说明（BattleCommandMenu.rebuild 读，悬停放大后仍在图标下方不遮图标）（OPTIONS-S4）；菜单夹在视口内两条路径都有",
+      "remake": "原版路径照原版：行动环只画图标；OPT-GUIDE=提示 时恢复改良：图标下加中文说明（BattleCommandMenu.rebuild 读，悬停放大后仍在图标下方不遮图标）（OPTIONS-S4）；环的位置两条路径都照原版 0x43ea30（环心在行动者、只按地图边平移图标）",
       "remake_code": [
-        "game/battle/scene/BattleCommandMenu.gd:place_near"
+        "game/battle/scene/BattleCommandMenu.gd:rebuild"
       ],
       "original_status": "no_original_code",
       "visibility": "every_battle",

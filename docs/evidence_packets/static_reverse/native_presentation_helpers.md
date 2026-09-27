@@ -1,11 +1,11 @@
 # 行动菜单：原函数执行对照（集合、布局、换帧、展开）
 
-> evidence: static-derived · status: live · functions: 0x409090, 0x43ea30, 0x45e5a6, 0x45e5d9, 0x45e80d · tools: hsl_native_presentation_probe.py, hsltools/assets/combat_animation.py, hsltools/assets/command_frames.py, hsltools/assets/menu_layout.py, run_presentation_contract_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 2026-09-27 Wine 原版地图边缘行动环一帧 · status: live · functions: 0x409090, 0x43bf30, 0x43ea30, 0x45e5a6, 0x45e5d9, 0x45e80d · tools: hsl_native_presentation_probe.py, hsltools/assets/combat_animation.py, hsltools/assets/command_frames.py, hsltools/assets/menu_layout.py, run_presentation_contract_tests.gd · updated: 2026-09-27
 
 ## 结论
 
-- 原版行动菜单由 `0x43ea30` 按 EXE 内 UTF-16 字符表选图标集合，用 256 项整数表 `0x4a35fc／0x4a39fc`（横 ×66、纵 ×72、右移 16，中心 y−28，六项步进 +1、七项索引掩 `~7`）排位；换帧走 `0x45e5a6`（循环）／`0x45e5d9`（往返），展开走 `0x45e80d`（容差 2、步进上限 8）（static-derived）。
-- 重制 `CommandPresentationRules`／`BattleCommandMenu` 消费 `menu_layout.py` 生成的 `native_layout.json` 与 `command_frames.py` 的源帧；三个 helper 在隔离 x86 仿真里逐次执行，Godot 用同一输入逐步比较（static-derived）。
+- 原版行动菜单由 `0x43ea30` 按 EXE 内 UTF-16 字符表选图标集合，用 256 项整数表 `0x4a35fc／0x4a39fc`（横 ×66、纵 ×72、右移 16，中心 y−28，六项步进 +1、七项索引掩 `~7`）排位；换帧走 `0x45e5a6`（循环）／`0x45e5d9`（往返），展开走 `0x45e80d`（容差 2、步进上限 8）；地图边缘处环心仍在行动者，只把全部图标目标整体平移到图标中心离地图边 ≥`0x15` px，不看视口——开环前 `0x43bf30` 已把镜头对准行动者（static-derived）。
+- 重制 `CommandPresentationRules`／`BattleCommandMenu` 消费（边缘平移在 `BattleCommandMenu.place_near`，收地图矩形） `menu_layout.py` 生成的 `native_layout.json` 与 `command_frames.py` 的源帧；三个 helper 在隔离 x86 仿真里逐次执行，Godot 用同一输入逐步比较（static-derived）。
 - 差异：菜单更新频率按每秒 60 次是重制时钟选择（provisional）；菜单事件位的完整语义、行动后留哪几项的上层选择不由本包证明（未读）。
 
 ## 证据
@@ -18,7 +18,9 @@
 | 集合字符表 | `0x4784fc` `nopqz`／`0x478508` `nopqzw`／`0x478514` `nopqzv`／`0x478520` `nopqzvw`／`0x478530` `oqz`／`0x478538` `oqzv`／`0x478540` `oqzw`／`0x478548` `oqzvw`／`0x478554` `rtus` | 字符 `n..z` ＝ 对象 110..122（move／attack／item／wait／use／give／equip／drop／magic／special／ok／cancel／status，OBJ-ALL.H） |
 | mode 分支 | `0x43eb32..0x43eb39` `add esi,2; dec ecx` | mode 1 跳过首字符 Move（不是去掉 Wait）；mode 2 是 `oqz` 系列；玩家入口 `0x443a3c` 调 mode 0、`0x4440e1` 调 mode 1、`0x44416f` 调 mode 3（道具子菜单） |
 | `0x409090` | 按 actor 索引读武器表 `+0x84`，另有 `+0x18c／+0x2c` 分支 | 决定是否跳过 `o`（攻击）；不是「本行动已攻击」布尔值 |
-| 布局算术 | `0x43ebf3..0x43edc1` | `step = 256 / N`（N＝6 时 +1），起始角 192，`index = angle & mask`，`x = cx + (table_x[index]·66) >> 16`，`y = cy + (table_y[index]·72) >> 16`，`angle = (angle − step) & 255`；中心 `(owner_x, owner_y − 28)`；边距 `0x15` 与地图尺寸 `*0x4c0934／38 << 5` 做边界偏移 |
+| 布局算术 | `0x43ebf3..0x43edc1` | `step = 256 / N`（N＝6 时 +1），起始角 192，`index = angle & mask`，`x = cx + (table_x[index]·66) >> 16`，`y = cy + (table_y[index]·72) >> 16`，`angle = (angle − step) & 255`；中心 `(owner_x, owner_y − 28)`（owner `+4／+8`，地图像素） |
+| 地图边平移 | `0x43eca2..0x43ed06`、`0x43eda6..0x43edc1` | 每轴一个平移量（初值 0），按图标顺序逐个判：中心 `< 0x15` 且 `中心 − 0x15` 更小则取之；中心 `> W − 0x15`（W＝`*0x4c0934 << 5`，y 轴用 `*0x4c0938`）且 `中心 − W + 0x15` 大于当前值则取之；建完后沿兄弟链 `+0x60` 从每个图标的 `+0x9e／+0x9c` 减去。生成点不减——展开从行动者处滑向平移后的目标 |
+| 开环前镜头 | `0x443a1d` → `0x43bf30(owner, 0)` | 玩家过程状态 0 先调镜头：目标左上 `(x − 0x140, y − 0xc0)` 夹到 `[0, *0x4c0958]×[0, *0x4c095c]`，未到位返回 0 就不开环，到位后才 `0x443a3c` 调 `0x43ea30`；故只有镜头贴地图边时环才会碰边 |
 | 目标坐标 | `0x43ed1a` | 图标在中心生成，目标写 `+0x9e`（x）／`+0x9c`（y）；`0x43e5d0` 的 `0x20000000` 事件分支读它们并调 `0x45e80d` |
 | 展开步进 | `0x43e72a..0x43e73b` → `0x45e80d` | 两轴距离都 ≤2 才吸附；否则距离算术右移一位，限制在 ±8 |
 | 悬停分支 | `0x43e7ea..0x43e822` | 事件位 `0x02000000` 置对象标志、调 `0x45f0d1`，按 `+0x94` 选 `0x45e5a6` 或 `0x45e5d9`；`0x43e824..0x43e841` 另一分支从保存字段恢复帧号、计数与帧数 |
@@ -39,12 +41,14 @@
 
 **runtime-measured（原版录像，历史样本）**：`runtime_observations/presentation_reference/media/` 里 `original-hover-loop.mp4`（持续悬停循环，不含进入／退出）、`original-five-menu.mp4`（移动后攻击移到顶点、其余五项重排）、`menu_after_both-original.mp4`（第一战雷歐納德移动后普攻，目标 22→2 HP，演出后直接进入下一角色）；覆盖清单 `cases.json` 无一条标 `matched`。
 
+**runtime-measured（2026-09-27 Wine 原版，cnc-ddraw 游戏窗截图，帧在 `ignored/edgering/`，不入库）**：戰場記錄 读档进玩家第 2 场 · 惡夢的終曲（LEVEL052），雷歐納德 移到地图最下一行（脚点 y≈464）后开的五项环：镜头不动（视口底已是地图底），待機／狀態 图标中心 y≈459（＝480−`0x15`）、攻擊 y≈330，与环心 436、下侧图标偏移 +58、平移 35 的算术一致；环整体上移、不以视口为界、仍围在行动者上方。
+
 ## 重制接线
 
 - `tools/hsltools/assets/menu_layout.py` → `content/imported/hsl/shared/command_menu/native_layout.json` → `game/battle/runtime/CommandPresentationRules.gd`（`centers`）。
 - `tools/hsltools/assets/command_frames.py` → `source_objects.json`／manifest → `game/battle/scene/BattleCommandMenu.gd`（`frame_at(..., looped)`、`opening_step`）。
 - 普通攻击：`PYTHONPATH=tools python3 -m hsltools.assets.combat_animation --bind-programs` 按 [ANIMAL 完整程序](animal_program_execution.md) 保留指令原序（Delay 的设置与退出各占一次调用、SetShape 让出、Flash 继续读后继指令），雷歐納德帧 1／2／3 出现在第 14／24／29 次调用、末段等待收束于 60 次。
-- provenance 写法：`## provenance:` 维度写 `static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md`。`CommandPresentationRules.gd` rules：0x43ea30 整数表 0x4a35fc／0x4a39fc 与六／七项索引；`BattleCommandMenu.gd` layout：经 CommandPresentationRules 取整数中心。
+- provenance 写法：`## provenance:` 维度写 `static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md`。`CommandPresentationRules.gd` rules：0x43ea30 整数表 0x4a35fc／0x4a39fc 与六／七项索引；`BattleCommandMenu.gd` layout：经 CommandPresentationRules 取整数中心，`place_near(anchor, 地图矩形)` 做地图边平移（`BattleSceneMenus.map_logical_rect`；道具子菜单同）。
 - provisional：菜单更新按每秒 60 次；替换点是 [原版 tick 速率](../runtime_observations/original_tick_rate/README.md) 的调度结论。
 
 ## 复现

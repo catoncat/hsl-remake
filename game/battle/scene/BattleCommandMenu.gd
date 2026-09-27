@@ -4,7 +4,9 @@ extends Control
 ##   layout: static-derived content/imported/hsl/shared/command_menu/native_layout.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/presentation_source_recovery.md
 ##     (0x43ea30 command strings 0x4784fc..0x478554: nopqzvw, rtus)
-##   layout: remake-invented (viewport clamping, caption placement)
+##   layout: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md
+##     (0x43ec29..0x43edc1 map-edge shift of the icon targets; ring centre stays on the owner)
+##   layout: remake-invented (caption placement under OPT-GUIDE 提示)
 ##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
 ##   strings: remake-invented
 ##     (Chinese captions under the icons, drawn only under OPT-GUIDE 提示 — the original ring is icons only)
@@ -13,7 +15,7 @@ extends Control
 signal command_selected(command_id: String)
 ## Presentation only. Icon identity comes from BCMD resources and original captures.
 ## Radial order is the 0x43ea30 UTF-16 command strings (nopqzvw: move, attack, item, wait,
-## status, magic, special; rtus for the item submenu); edge fitting favors readable captions.
+## status, magic, special; rtus for the item submenu). Edge fitting is the native map-edge shift.
 const COMMANDS := {
 	"move": ["BCMD01_1", "移動"],
 	"attack": ["BCMD02_1", "攻擊"],
@@ -35,11 +37,15 @@ const RADIAL_ORDER := ["move", "attack", "item", "wait", "status", "magic", "spe
 ## Source frame sequences advance once per original tick (seven calls per hover frame).
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const HOVER_UPDATES_PER_SECOND := OriginalTick.TICKS_PER_SECOND
+## 0x43eca2／0x43ecbd: icon centres keep 0x15 px (half the 42 px icon) inside the map.
+const EDGE_MARGIN := 0x15
 var frames: Dictionary = {}
 var looped: Dictionary = {}
 var hovered := ""
 var hover_elapsed := 0.0
 var centers: Dictionary = {}
+## Unshifted native offsets from the ring centre; `centers` = these minus the map-edge shift.
+var ring_offsets: Dictionary = {}
 var gui_interaction := false
 var displayed_centers: Dictionary = {}
 ## OPT-GUIDE (docs/OPTIONS.md), read once per ring (rebuild): 提示 puts the caption under each
@@ -86,6 +92,7 @@ func rebuild(commands: Array) -> void:
 		child.free()
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	centers.clear()
+	ring_offsets.clear()
 	captions = not GameOptions.is_original("OPT-GUIDE")
 	var active_ids: Array[String] = []
 	for id in RADIAL_ORDER:
@@ -99,6 +106,7 @@ func rebuild(commands: Array) -> void:
 		offsets = PresentationRules.centers(active_ids.size())
 	for i in range(active_ids.size()):
 		centers[active_ids[i]] = offsets[i]
+		ring_offsets[active_ids[i]] = offsets[i]
 	for command in commands:
 		var id := str(command.get("command", ""))
 		if not COMMANDS.has(id):
@@ -161,10 +169,30 @@ func layout_bounds() -> Rect2:
 	return bounds
 
 
-func place_near(anchor: Vector2, visible_area: Rect2) -> void:
-	var bounds := layout_bounds()
-	# Native full/five-item samples center the ring roughly one tile above the foot.
-	position = (anchor + Vector2(0, PresentationRules.data()["center_y"])).clamp(visible_area.position - bounds.position, visible_area.end - bounds.end)
+## 0x43ea30 places the ring centre at the owner (foot point − 28 in y) and spawns every icon
+## there; only the icon targets move: one shift per axis, taken over all icon centres, pulls any
+## centre within 0x15 px of the map edge (0, *0x4c0934／38 << 5) back inside (0x43eca2..0x43ed06;
+## the right／bottom test runs after the left／top one and wins only when larger), then
+## 0x43edae..0x43edb5 subtract it from +0x9e／+0x9c. The viewport is not consulted: 0x443a1d
+## (0x43bf30) centres the camera on the owner first. `map_area` is the map in the same
+## coordinates as `anchor`.
+func place_near(anchor: Vector2, map_area: Rect2) -> void:
+	position = anchor + Vector2(0, PresentationRules.data()["center_y"])
+	var shift := Vector2.ZERO
+	var margin := float(EDGE_MARGIN)
+	for id in ring_offsets:
+		var point: Vector2 = position + ring_offsets[id] - map_area.position
+		for axis in 2:
+			if point[axis] < margin and point[axis] - margin < shift[axis]:
+				shift[axis] = point[axis] - margin
+			if point[axis] > map_area.size[axis] - margin and point[axis] - map_area.size[axis] + margin > shift[axis]:
+				shift[axis] = point[axis] - map_area.size[axis] + margin
+	for id in ring_offsets:
+		centers[id] = ring_offsets[id] - shift
+	if not _opening:
+		for id in centers:
+			displayed_centers[id] = centers[id]
+	set_hovered_command(hovered)
 
 
 func is_expanding() -> bool:
