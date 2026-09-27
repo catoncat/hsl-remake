@@ -5,17 +5,17 @@ extends Control
 ##   layout: static-derived docs/evidence_packets/static_reverse/presentation_source_recovery.md
 ##     (0x43ea30 command strings 0x4784fc..0x478554: nopqzvw, rtus)
 ##   layout: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md
-##     (0x43ec29..0x43edc1 map-edge shift of the icon targets; ring centre stays on the owner)
-##   layout: remake-invented (caption placement under OPT-GUIDE 提示)
+##     (0x43ec29..0x43edc1 map-edge shift of icon targets; captions 0x43e5d0 message −1, centre y+13)
 ##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
-##   strings: remake-invented
-##     (Chinese captions under the icons, drawn only under OPT-GUIDE 提示 — the original ring is icons only)
+##   strings: resource-derived content/imported/hsl/global/tables/resource.h
+##     (obj-051.obs obj_Data9 bcommand_0..12 → RESOURCE ids 17..20／23..26／28／29／40)
 ##   timing: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 signal command_selected(command_id: String)
 ## Presentation only. Icon identity comes from BCMD resources and original captures.
 ## Radial order is the 0x43ea30 UTF-16 command strings (nopqzvw: move, attack, item, wait,
 ## status, magic, special; rtus for the item submenu). Edge fitting is the native map-edge shift.
+## Captions are the RESOURCE strings the original draws under every icon (0x43e5d0, message −1).
 const COMMANDS := {
 	"move": ["BCMD01_1", "移動"],
 	"attack": ["BCMD02_1", "攻擊"],
@@ -30,7 +30,6 @@ const COMMANDS := {
 	"drop": ["BCMD08_1", "丟棄"],
 }
 const FRAME_PATH := "res://content/imported/hsl/shared/command_menu/manifest.json"
-const GameOptions = preload("res://game/settings/GameOptions.gd")
 const PresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const RADIAL_ORDER := ["move", "attack", "item", "wait", "status", "magic", "special", "use", "equip", "drop", "give"]
@@ -48,9 +47,14 @@ var centers: Dictionary = {}
 var ring_offsets: Dictionary = {}
 var gui_interaction := false
 var displayed_centers: Dictionary = {}
-## OPT-GUIDE (docs/OPTIONS.md), read once per ring (rebuild): 提示 puts the caption under each
-## icon, below its hover size so it never covers icon pixels; 原版 draws the icons only.
-var captions := false
+## Caption colours: RGB565 0xffff／0x8430 (idle) and 0xffef／0x8420 (hovered) as displayed.
+const CAPTION_COLOR := Color8(248, 252, 248)
+const CAPTION_SHADOW := Color8(128, 132, 128)
+const CAPTION_HOVER_COLOR := Color8(248, 252, 120)
+const CAPTION_HOVER_SHADOW := Color8(128, 132, 0)
+## The caption box is centred on the icon centre; its top is the FONT.15 cell top (centre y+13).
+const CAPTION_SIZE := Vector2(88, 16)
+const CAPTION_TOP := 13.0
 var _opening := false
 var _opening_fraction := 0.0
 
@@ -93,7 +97,6 @@ func rebuild(commands: Array) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	centers.clear()
 	ring_offsets.clear()
-	captions = not GameOptions.is_original("OPT-GUIDE")
 	var active_ids: Array[String] = []
 	for id in RADIAL_ORDER:
 		for command in commands:
@@ -125,16 +128,16 @@ func rebuild(commands: Array) -> void:
 			button.mouse_entered.connect(set_hovered_command.bind(id))
 			button.mouse_exited.connect(set_hovered_command.bind(""))
 		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		if captions:
-			var label := Label.new()
-			label.name = "Caption"
-			label.text = spec[1]
-			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			label.add_theme_font_size_override("font_size", 14)
-			label.add_theme_constant_override("outline_size", 2)
-			label.add_theme_color_override("font_outline_color", Color.BLACK)
-			button.add_child(label)
+		var label := Label.new()
+		label.name = "Caption"
+		label.text = spec[1]
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.add_theme_font_size_override("font_size", 14)
+		label.add_theme_constant_override("shadow_offset_x", 1)
+		label.add_theme_constant_override("shadow_offset_y", 1)
+		label.add_theme_constant_override("shadow_outline_size", 0)
+		button.add_child(label)
 		add_child(button)
 	_begin_opening()
 
@@ -154,9 +157,10 @@ func set_hovered_command(command_id: String) -> void:
 		button.modulate = Color(1, 1, 1, 0.4 if button.disabled else 1.0)
 		var label := button.get_node_or_null("Caption") as Label
 		if label != null:
-			label.position = Vector2((side - 88) * 0.5, side + 2)
-			label.size = Vector2(88, 20)
-			label.add_theme_color_override("font_color", Color.YELLOW if active else Color.WHITE)
+			label.position = Vector2(side * 0.5 - CAPTION_SIZE.x * 0.5, side * 0.5 + CAPTION_TOP)
+			label.size = CAPTION_SIZE
+			label.add_theme_color_override("font_color", CAPTION_HOVER_COLOR if active else CAPTION_COLOR)
+			label.add_theme_color_override("font_shadow_color", CAPTION_HOVER_SHADOW if active else CAPTION_SHADOW)
 
 
 func layout_bounds() -> Rect2:

@@ -3,24 +3,24 @@
   "updated": "2026-09-27",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 107,
-    "sources": 539,
+    "items": 106,
+    "sources": 537,
     "sources_by_kind": {
-      "provenance": 224,
+      "provenance": 222,
       "sentence": 143,
       "scope": 74,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 63,
+    "layout_timing_modules": 62,
     "items_by_original_status": {
       "read_complete": 16,
       "read_partial": 60,
       "unread": 13,
-      "no_original_code": 18
+      "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 26,
+      "every_battle": 25,
       "some_levels": 36,
       "rare": 40,
       "invisible": 5
@@ -38,7 +38,7 @@
       "战斗规则": 13,
       "标题与过场": 4,
       "特写与施法演出": 10,
-      "重制新增（原版没有）": 17,
+      "重制新增（原版没有）": 16,
       "镜头": 2,
       "面板与界面": 14,
       "音频": 3,
@@ -63,12 +63,12 @@
     "additive-level-blend",
     "bitmap-font",
     "cast-lead-compositing",
-    "command-menu-captions",
     "effect-origin",
     "footprint-preview-style",
     "growth-window-timing",
     "highlight-colours",
-    "magic-impact-bar"
+    "magic-impact-bar",
+    "map-death-blend"
   ],
   "items": [
     {
@@ -392,26 +392,6 @@
       "sources": [
         "provenance:game/battle/scene/AnimalCastLead.gd|layout|provisional|",
         "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#55f6ecc336"
-      ]
-    },
-    {
-      "id": "command-menu-captions",
-      "difference": "行动环图标下有中文说明",
-      "original": "原版行动环只有图标",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md"
-      ],
-      "remake": "原版路径照原版：行动环只画图标；OPT-GUIDE=提示 时恢复改良：图标下加中文说明（BattleCommandMenu.rebuild 读，悬停放大后仍在图标下方不遮图标）（OPTIONS-S4）；环的位置两条路径都照原版 0x43ea30（环心在行动者、只按地图边平移图标）",
-      "remake_code": [
-        "game/battle/scene/BattleCommandMenu.gd:rebuild"
-      ],
-      "original_status": "no_original_code",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "重制新增（原版没有）",
-      "sources": [
-        "provenance:game/battle/scene/BattleCommandMenu.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/BattleCommandMenu.gd|strings|remake-invented|"
       ]
     },
     {

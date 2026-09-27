@@ -10,25 +10,25 @@
 
 ## 总数
 
-共 **107** 条差异（其中 0 条本轮有 lane 进行中），来自 539 个来源条目：provenance 224、sentence 143、scope 74、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 63 个全部归类。另有 51 个来源判为玩家看不到、13 个已做掉（句子是旧状态）。
+共 **106** 条差异（其中 0 条本轮有 lane 进行中），来自 537 个来源条目：provenance 222、sentence 143、scope 74、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 62 个全部归类。另有 51 个来源判为玩家看不到、13 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
 | 已读完只差照做 | 16 |
 | 读了一部分 | 60 |
 | 未读 | 13 |
-| 原版无对应代码 | 18 |
+| 原版无对应代码 | 17 |
 
 | 可见度 | 条数 |
 | --- | --- |
-| 每场都看得到 | 26 |
+| 每场都看得到 | 25 |
 | 部分关卡 | 36 |
 | 少见 | 40 |
 | 看不见 | 5 |
 
 | 建议归入的类 | 条数 |
 | --- | --- |
-| 重制新增（原版没有） | 17 |
+| 重制新增（原版没有） | 16 |
 | 面板与界面 | 14 |
 | 战斗规则 | 13 |
 | 地图人物演出 | 10 |
@@ -66,20 +66,19 @@
 | 12 | 加色对象按层级淡出的像素混合（升级星光、伤害数字 NUM510 闪光）按「加色 × 层级/16」近似，原 RGB565 例程未逐条读；绿／蓝／MISS 数字的层级淡出同样按 alpha＝层级/16 （`additive-level-blend`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
 | 13 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值；技能页名字墨迹对 Wine 帧偏移 0／0、宽 71＝原版）。AI 施法名字幕也换 FONT.24（lane UIFIX：0x43e110／0x43e1c0 的字体是 [0x4c1ae0]，对录像 14 源帧 9987 逐像素一致）。剩：重制各处字号归到原版两面（≤16→FONT.15、≥17→FONT.24）是重制定的，个别界面的字行位置未逐一对原版 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
 | 14 | 施法引导的阴影底用压暗 0.35 的地图近似；引导残影与活动面板的先后、16 级交叉淡化用普通透明近似 （`cast-lead-compositing`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 15 | 行动环图标下有中文说明 （`command-menu-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 16 | 地图法术特效原点：Local 已与原版同为目标格中心（录屏"高 14 px"是量到脚下）；Global 原版是光标格中心、重制取屏幕中心 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 17 | 玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替 （`footprint-preview-style`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | 照原版（RANGECOLOR） |
-| 18 | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 （`growth-window-timing`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
-| 19 | 说话人／目标／行动者高亮的颜色与脉动只量自一份录屏，原版高亮绘制过程未读 （`highlight-colours`） | 读了一部分 | 每场都看得到 | S | 地图人物演出 | — |
-| 20 | 法术命中时原版先在受者旁画 HP／MP 两条再出数字（原录像 V08 14_tactical_map_magic_aoe frame_041 画 HP 24/43、MP 0/0，frame_046 才出数字 19）；重制同样先亮血条，只有 0.45 s 时长是重制估值、多目标血条互相避让是重制自加。数字本身已是原版字形与出现点（目标 (x, y−0x34)，lane DIGITS） （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
+| 15 | 地图法术特效原点：Local 已与原版同为目标格中心（录屏"高 14 px"是量到脚下）；Global 原版是光标格中心、重制取屏幕中心 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 16 | 玩家选魔法／绝技目标：射程照原版画武器攻击红格、光标脚印照原版画魔法黄／绝技青绿叠在上面（RANGECOLOR）；剩两层脉动同相、自中心绝技射程层以脚印代替 （`footprint-preview-style`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | 照原版（RANGECOLOR） |
+| 17 | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 （`growth-window-timing`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
+| 18 | 说话人／目标／行动者高亮的颜色与脉动只量自一份录屏，原版高亮绘制过程未读 （`highlight-colours`） | 读了一部分 | 每场都看得到 | S | 地图人物演出 | — |
+| 19 | 法术命中时原版先在受者旁画 HP／MP 两条再出数字（原录像 V08 14_tactical_map_magic_aoe frame_041 画 HP 24/43、MP 0/0，frame_046 才出数字 19）；重制同样先亮血条，只有 0.45 s 时长是重制估值、多目标血条互相避让是重制自加。数字本身已是原版字形与出现点（目标 (x, y−0x34)，lane DIGITS） （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
+| 20 | 阵亡灵魂的混合按叠加处理（原混合未读实），灵魂时长保留静态 16 tick（录屏 0.27–0.32 s） （`map-death-blend`） | 读了一部分 | 每场都看得到 | S | 地图人物演出 | — |
 
 ## 全量（按类）
 
-### 重制新增（原版没有）（17）
+### 重制新增（原版没有）（16）
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `command-menu-captions` | 行动环图标下有中文说明 | 原版行动环只有图标<br>[original_gameplay_reference/README.md](../../../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) | 原版路径照原版：行动环只画图标；OPT-GUIDE=提示 时恢复改良：图标下加中文说明（BattleCommandMenu.rebuild 读，悬停放大后仍在图标下方不遮图标）（OPTIONS-S4）；环的位置两条路径都照原版 0x43ea30（环心在行动者、只按地图边平移图标）<br>[BattleCommandMenu.gd](../../../game/battle/scene/BattleCommandMenu.gd) `rebuild` | 原版无对应代码 | 每场都看得到 | S | provenance 2 |
 | `move-path-overlay` | 移动选格显示路径线、角括号、「移動 3/5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示，原版没有 | 原版只画移动范围<br>[original_actor_traversal.md](../../../docs/evidence_packets/static_reverse/original_actor_traversal.md) | 原版路径照原版：移动选格只画范围与选格角括号；OPT-GUIDE=提示 时恢复改良：路径线、「移動 3 / 5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示、AI 走位路径线（BattlePresentation.show_selection 进入移动选格读、BattleNavigationCue.begin 每个 AI 行动读）（OPTIONS-S4）<br>[BattleMovementPreview.gd](../../../game/battle/scene/BattleMovementPreview.gd)、[BattleSelectionCursor.gd](../../../game/battle/scene/BattleSelectionCursor.gd)、[BattleNavigationCue.gd](../../../game/battle/scene/BattleNavigationCue.gd) | 原版无对应代码 | 每场都看得到 | S | provenance 4 |
 | `panel-captions` | 各面板的说明文字、提示（tooltip）、确认问句、拒绝理由都是重制写的 | 原版面板多为纯图标与数值<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | 各面板 strings 为 remake-invented；移动选格的说明（移動後不能施法、占地3×3）只在 OPT-GUIDE=提示 时出（OPTIONS-S4），其余面板两条路径都有<br>[BattleItemPanel.gd](../../../game/battle/scene/BattleItemPanel.gd)、[BattleItemText.gd](../../../game/battle/scene/BattleItemText.gd)、[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd)、[BattleLootPanel.gd](../../../game/battle/scene/BattleLootPanel.gd) | 原版无对应代码 | 每场都看得到 | S | provenance 8 |
 | `status-page-extras` | 状态页的永久加值行、属性／抗性悬停说明、「保存／讀取／待領物品／返回」按钮条是重制补充；原版点未交手单位不开页 | 原版闲置点击 0x443cfa 对未知单位不开页；按钮条原版没有<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_identity_bar.md](../../../docs/evidence_packets/static_reverse/original_identity_bar.md) | 原版路径照原版：没有加值行、说明与按钮条，点未交手单位不开页（BattleStatusPanel.opens_for）；OPT-INFO=公開 恢复加值行、说明与点谁都开，OPT-GUIDE=提示 恢复按钮条；「成長點」随 OPT-GROWTH 暂缓路径（有点数才显示）<br>[BattleStatusPanel.gd](../../../game/battle/scene/BattleStatusPanel.gd) `show_unit`、[BattleStatusPanel.gd](../../../game/battle/scene/BattleStatusPanel.gd) `opens_for` | 原版无对应代码 | 每场都看得到 | S | provenance 1、matrix 1 |

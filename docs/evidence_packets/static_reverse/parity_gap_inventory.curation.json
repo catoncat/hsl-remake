@@ -290,22 +290,6 @@
       "category": "重制新增（原版没有）"
     },
     {
-      "id": "command-menu-captions",
-      "difference": "行动环图标下有中文说明",
-      "original": "原版行动环只有图标",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md"
-      ],
-      "remake": "原版路径照原版：行动环只画图标；OPT-GUIDE=提示 时恢复改良：图标下加中文说明（BattleCommandMenu.rebuild 读，悬停放大后仍在图标下方不遮图标）（OPTIONS-S4）；环的位置两条路径都照原版 0x43ea30（环心在行动者、只按地图边平移图标）",
-      "remake_code": [
-        "game/battle/scene/BattleCommandMenu.gd:rebuild"
-      ],
-      "original_status": "no_original_code",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "重制新增（原版没有）"
-    },
-    {
       "id": "identity-bar-bits",
       "difference": "身份栏：位 0x100（印数字）的置位者未读，未知单位在切入栏是否印数字不确定；气力条是重制自创",
       "original": "0x434d10 的 ??? 规则与已知字节写入者已读；位 0x100 置位者、条的画法未读",
@@ -2343,12 +2327,6 @@
     },
     "provenance:game/battle/scene/BattleCombatCutin.gd|timing|remake-invented|": {
       "item": "missing-clip-fallback"
-    },
-    "provenance:game/battle/scene/BattleCommandMenu.gd|layout|remake-invented|": {
-      "item": "command-menu-captions"
-    },
-    "provenance:game/battle/scene/BattleCommandMenu.gd|strings|remake-invented|": {
-      "item": "command-menu-captions"
     },
     "provenance:game/battle/scene/BattleDialogue.gd|layout|remake-invented|": {
       "item": [

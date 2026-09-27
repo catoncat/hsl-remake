@@ -49,21 +49,20 @@
       "original_value": "original",
       "comfort_value": "hints",
       "values": [
-        {"id": "original", "label": "原版", "text": "原版：行動環只有圖標，移動只畫範圍，撤離格只在劇本插入時畫。"},
-        {"id": "hints", "label": "提示", "text": "改良：圖標下加說明、移動路徑線與「移動 3/5」費用欄、撤離格常駐、待機與再次行動提示。"}
+        {"id": "original", "label": "原版", "text": "原版：移動只畫範圍，撤離格只在劇本插入時畫。"},
+        {"id": "hints", "label": "提示", "text": "改良：移動路徑線與「移動 3/5」費用欄、撤離格常駐、待機與再次行動提示。"}
       ],
       "why": "新手第一次玩看得懂该点哪里、能走到哪",
       "save_effect": "none",
       "changeable": "anytime",
       "read_points": [
-        "game/battle/scene/BattleCommandMenu.gd:rebuild（行动环每次打开读一次）→ captions：原版值只画图标；提示 时每个图标下加说明字（放在悬停放大后的图标下方，不盖图标像素）",
         "game/battle/scene/BattlePresentation.gd:show_selection（进入移动选格读一次）→ move_hints：原版值只画移动范围与选格；提示 时加路径线（BattleMovementPreview）、「移動 3 / 5」费用栏与「可通過，不能停留」「無法到達」「移動後不能施法」等说明",
         "game/battle/scene/BattlePresentation.gd:_ready（建场景读一次；重製選項页关闭且有值变了经 remake_options_changed 再读）→ escape_marks：原版值只画剧本插入的 obj_Story_Show_Pos 标记；提示 时撤离阶段每个撤离格常驻金色半透明格（ESCAPEMARK 644178ea 之前的画法）",
         "game/battle/scene/BattleNavigationCue.gd:begin（每个 AI 行动读一次）→ 原版值无提示、不停顿、不画 AI 走位线；提示 时「待機」「守候 · 尚餘 N 次」「麻痺 · 無法行動」停 0.55 s、AI 走位画路径线",
         "game/battle/scene/BattleExtraActionCue.gd:refresh（每次第二次行动出现时读一次）→ hints：原版值不显示、不停顿；提示 时「再次行動」并停 0.55 s",
         "game/battle/scene/BattleStatusPanel.gd:show_unit（状态页每次打开读一次）→ hint_buttons：原版值状态页没有按钮条；提示 时底部加「保存 F5」「讀取 F9」「待領物品」「返回」（「成長點」随 OPT-GROWTH 暂缓路径，有点数就显示）"
       ],
-      "evidence": ["command-menu-captions", "move-path-overlay", "wait-cue", "extra-action-cue", "ESCAPEMARK 644178ea"],
+      "evidence": ["move-path-overlay", "wait-cue", "extra-action-cue", "ESCAPEMARK 644178ea"],
       "work": "M"
     },
     {
