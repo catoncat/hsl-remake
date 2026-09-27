@@ -4,18 +4,18 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 97,
-    "sources": 530,
+    "sources": 529,
     "sources_by_kind": {
       "provenance": 214,
-      "sentence": 145,
+      "sentence": 144,
       "scope": 73,
       "matrix": 85,
       "video": 13
     },
     "layout_timing_modules": 58,
     "items_by_original_status": {
-      "read_complete": 13,
-      "read_partial": 59,
+      "read_complete": 14,
+      "read_partial": 58,
       "unread": 8,
       "no_original_code": 17
     },
@@ -54,6 +54,7 @@
     "special-skill-page",
     "status-left-column",
     "cursor-hide-item-icon",
+    "dark-screen-fade",
     "drop-lightning-presentation",
     "npc-level-policy",
     "shop-hand-cursor",
@@ -67,8 +68,7 @@
     "status-page-extras",
     "wait-cue",
     "ui-layout-readings",
-    "ai-first-battle-moves",
-    "ai-skill-buckets"
+    "ai-first-battle-moves"
   ],
   "items": [
     {
@@ -183,6 +183,25 @@
       "category": "光标与字体",
       "sources": [
         "provenance:game/cursor/GameCursor.gd|rules|remake-invented|docs/OPTIONS.md"
+      ]
+    },
+    {
+      "id": "dark-screen-fade",
+      "difference": "剧情压黑每级按黑层 alpha n／16 画，与原版每分量 ⌊c·(16−n)／16⌋ 同一线性比例，只差原版 5／6 位分量截断的末位；节拍照原版（每 3 tick 一级、16 级、不等待）",
+      "original": "对象 700 过程 0x43e2d0：[0x4c1ca8] 每 3 tick ±1（0..16），actDarkScreen／actDeleteDarkScreen 都不等待；合成器操作 4（0x4699fd）以纯黑形状 [0x4bbb4e] 为源，查 0x460fb0 的 17 张表，每个 565 分量＝⌊c·(16−n)／16⌋",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_tick_counts.md"
+      ],
+      "remake": "OpeningCinematics._step_dark_screen 每 3 tick 一级，黑层 alpha＝级数／16（8 位混合）",
+      "remake_code": [
+        "game/battle/runtime/opening/OpeningCinematics.gd:_step_dark_screen"
+      ],
+      "original_status": "read_complete",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "标题与过场",
+      "sources": [
+        "provenance:game/battle/runtime/opening/OpeningCinematics.gd|timing|provisional|"
       ]
     },
     {
@@ -632,26 +651,6 @@
       "sources": [
         "provenance:game/battle/scene/BattleItemUsePresentation.gd|layout|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 三类效果对象的加色＋engMIX 按\"加色 × 层级/16\"画、随机数用重制种子；AI 引导与玩家选格的射程格按\"自身格＋四邻无敌对占位\"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高"
-      ]
-    },
-    {
-      "id": "dark-screen-fade",
-      "difference": "剧情压黑的每级明暗按 alpha n／16 画，原版每级混合（0x461479）未读；节拍已照原版（每 3 tick 一级、16 级、不等待）",
-      "original": "对象 700 过程 0x43e2d0：[0x4c1ca8] 每 3 tick ±1（0..16），actDarkScreen／actDeleteDarkScreen 都不等待；每级画法 0x461479 未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md"
-      ],
-      "remake": "OpeningCinematics._step_dark_screen 每 3 tick 一级，alpha＝级数／16",
-      "remake_code": [
-        "game/battle/runtime/opening/OpeningCinematics.gd:_step_dark_screen"
-      ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "标题与过场",
-      "sources": [
-        "provenance:game/battle/runtime/opening/OpeningCinematics.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#32e3b886b5"
       ]
     },
     {

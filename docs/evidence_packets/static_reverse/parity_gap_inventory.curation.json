@@ -839,16 +839,16 @@
     },
     {
       "id": "dark-screen-fade",
-      "difference": "剧情压黑的每级明暗按 alpha n／16 画，原版每级混合（0x461479）未读；节拍已照原版（每 3 tick 一级、16 级、不等待）",
-      "original": "对象 700 过程 0x43e2d0：[0x4c1ca8] 每 3 tick ±1（0..16），actDarkScreen／actDeleteDarkScreen 都不等待；每级画法 0x461479 未读",
+      "difference": "剧情压黑每级按黑层 alpha n／16 画，与原版每分量 ⌊c·(16−n)／16⌋ 同一线性比例，只差原版 5／6 位分量截断的末位；节拍照原版（每 3 tick 一级、16 级、不等待）",
+      "original": "对象 700 过程 0x43e2d0：[0x4c1ca8] 每 3 tick ±1（0..16），actDarkScreen／actDeleteDarkScreen 都不等待；合成器操作 4（0x4699fd）以纯黑形状 [0x4bbb4e] 为源，查 0x460fb0 的 17 张表，每个 565 分量＝⌊c·(16−n)／16⌋",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "OpeningCinematics._step_dark_screen 每 3 tick 一级，alpha＝级数／16",
+      "remake": "OpeningCinematics._step_dark_screen 每 3 tick 一级，黑层 alpha＝级数／16（8 位混合）",
       "remake_code": [
         "game/battle/runtime/opening/OpeningCinematics.gd:_step_dark_screen"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "some_levels",
       "effort": "S",
       "category": "标题与过场"
@@ -3546,10 +3546,6 @@
         "cam-random-scroll"
       ],
       "text": "actWalkFollow(Wait) 的镜头规则与 actScrollBGToRandomPos 未读。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#32e3b886b5": {
-      "item": "dark-screen-fade",
-      "text": "每级明暗按 alpha 级数／16 画，`0x461479` 的逐级混合未读（provisional）。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#f1812c4aa6": {
       "item": "script-walk-speed",

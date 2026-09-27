@@ -433,7 +433,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [MapObjectFlash](../game/battle/runtime/MapObjectFlash.gd) | timing | [TYPE.H](../content/imported/hsl/global/tables/TYPE.H) | mapobjFlash objsScore = level, objsHitPoint = delay ticks; 0.55 s／0.22 stand in until the flash branch is read |
 | [MapSceneConfig](../game/battle/runtime/MapSceneConfig.gd) | layout | — | world size from the decoded map texture |
 | [StoryEffectObjects](../game/battle/runtime/StoryEffectObjects.gd) | timing | — | obj_Data7 read as a flash lifetime, glow swell, rain drop frame cadence and spawn band — the mapobjDropRain／defProcObjectMove processes are unread |
-| [OpeningCinematics](../game/battle/runtime/opening/OpeningCinematics.gd) | timing | — | dark level n of obj_ScreenDarker 700 drawn as alpha n／16 — the 0x461479 per-level blend is unread |
+| [OpeningCinematics](../game/battle/runtime/opening/OpeningCinematics.gd) | timing | — | dark level n: 0x4699fd floors each 565 channel to c·(16−n)／16; black alpha n／16 is that ratio at 8 bits |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | — | follow／slide walk readings |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md) | random-position slots in table order instead of the native shuffle |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | layout | — | walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over the following actDelay |

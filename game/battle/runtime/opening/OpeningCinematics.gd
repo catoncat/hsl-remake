@@ -20,7 +20,7 @@ extends RefCounted
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: provisional
-##     (dark level n of obj_ScreenDarker 700 drawn as alpha n／16 — the 0x461479 per-level blend is unread)
+##     (dark level n: 0x4699fd floors each 565 channel to c·(16−n)／16; black alpha n／16 is that ratio at 8 bits)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##     (§3.4: the film player stops the music and nothing resumes it)
 
@@ -385,7 +385,9 @@ func _scroll_camera_to_position(event: Dictionary) -> void:
 
 
 func _darken_screen(event: Dictionary) -> void:
-	## Dark level n draws as alpha n／16 (the 0x461479 blend per level is unread: provisional).
+	## Dark level n draws as black alpha n／16. The original (0x4699fd, op 4 over the all-black
+	## shape [0x4bbb4e]) writes floor(c·(16−n)／16) per 565 channel: the same linear ratio, only
+	## the 5／6-bit truncation differs (original_tick_counts.md §5).
 	if _dark_screen == null:
 		_dark_screen = ColorRect.new()
 		_dark_screen.name = "StoryDarkScreen"
