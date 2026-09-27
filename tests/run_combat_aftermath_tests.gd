@@ -501,7 +501,8 @@ func map_magic_lead_pose() -> void:
 		if not clip["release_emitted"]:
 			view.refresh(scene.play_loop, scene.map_config, true)
 			if node.is_posing(): break
-	check(clip["release_emitted"] and not node.is_posing(), "no pose before the lead's release")
+	# The loop breaks on a pose before the release; the pose itself comes with the release (0x402fd1).
+	check(clip["release_emitted"], "no pose before the lead's release")
 	view.refresh(scene.play_loop, scene.map_config, true)
 	check(node.is_posing(), "the caster takes its use_magic pose as the lead ends")
 	scene.queue_free()
@@ -523,7 +524,7 @@ func map_magic() -> void:
 		scene.apply_loop(scene.play_loop, "test")
 		var view = scene.get_node("BattlePresentation")
 		finish_cutin(scene)
-		# 026 has no m_shape lead: it poses as the clip starts, beside the Cast_Star ring (R7-POSE).
+		# 026 has no m_shape lead: it poses after the 8 shadow calls, with the Cast_Star burst (0x403128).
 		check(scene.actor_node_for_unit(caster["id"]).is_posing(), "the map caster without a lead takes its use_magic pose: " + key)
 		check(view.magic_impact.busy() and not view.dialogue_active(), "map receiver bars and amount finish before death dialogue: " + key)
 		view.magic_impact._process(view.magic_impact.total_seconds())

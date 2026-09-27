@@ -779,7 +779,7 @@ func expected_lead_calls(program: Array, panels: Array, magic: bool = false) -> 
 ## aniMoveToCenter · aniInsertCastObject −160,−150,2,4,4 over the 7-panel P002_101 strip) plays
 ## through the map magic presenter before the effCode script — the same AnimalCastLead as the
 ## 絕技 lead; `released` fires at its end and the script clock starts there. A caster without
-## an imported m_shape strip (026, whose m_shape is commented out) keeps the Cast_Star ring.
+## an imported m_shape strip (026, whose m_shape is commented out) plays the 8 shadow calls and the Cast_Star burst.
 func magic_cast_lead_program() -> void:
 	var row := record("SID_PLAYER1")
 	var program: Array = row["programs"]["m_action"]
@@ -833,8 +833,8 @@ func magic_cast_lead_program() -> void:
 	_assert_true(not cutin.busy() and timeline.is_empty(), "the magic clip completes")
 	cutin.play(strike, unit("026"), unit("021"), false, Vector2(470, 320), Vector2(190, 210), [Vector2(470, 320)])
 	_assert_true(cutin.cast_lead(cutin.clips[0], "magic").is_empty() and cutin.manifest["actors"]["026"]["magic_frames"].is_empty() and cutin.manifest["actors"]["026"]["magic_cast_program"].is_empty(), "026 declares no m_action (commented out in ANIMAL.TXT) and no strip")
-	cutin._process(STEP * 5)
-	_assert_true(cutin.skill_effects.sprites.any(func(sprite): return sprite.visible and str(sprite.texture.resource_path).contains("cast_star")), "a caster without a magic strip keeps the Cast_Star stand-in lead")
+	cutin._process(STEP * 12)
+	_assert_true(cutin.skill_effects.sprites.any(func(sprite): return sprite.visible and str(sprite.texture.resource_path).contains("cast_star")), "a caster without a magic strip bursts Cast_Star after its 8 shadow calls")
 	while cutin.busy():
 		cutin._process(0.1)
 	for actor_id in cutin.manifest["actors"]:

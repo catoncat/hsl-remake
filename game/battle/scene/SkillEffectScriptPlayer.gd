@@ -6,7 +6,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ## cut-in anchors its `released`／`impact` signals and result text to. A MAGIC row's effCode
 ## script becomes a timeline of objects displaced from the effect origin — drawn on the map at
 ## every affected position (eff_proc_Local) or once at the screen centre (eff_proc_Global) —
-## after the shared Cast_Star lead. It reads the settled strike receipt (hit, damage) and never
+## after the caster's cast lead, pose and Cast_Star burst. It reads the settled strike receipt (hit, damage) and never
 ## decides anything: hit-only opcodes are dropped at compile time, random placements come from
 ## a presentation RNG seeded per clip, not the play loop's.
 ##
@@ -39,7 +39,6 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##   layout: provisional
 ##     (ANIMAL random／angle／round／tornado geometry, off-stage flights, static hold of the objects effect_motion.json
 ##     lists unrestored, eff_proc_Global at screen centre — manifest policy)
-##   layout: remake-invented (Cast_Star ring around a caster without an imported m_shape strip)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   strings: resource-derived content/generated/hsl/skills/special_effect_scripts.json
 ##   strings: remake-invented content/generated/hsl/skills/authored_effect_scripts.json
@@ -51,7 +50,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
 ##   timing: provisional
 ##     (lifetime = shape_number × (shape_delay＋1); untracked objects' lifetime／fade; impact at the last cue;
-##     CAST_LEAD_IN／EMPTY_ATTACK_LEAD_TICKS stand in; effProc* motion not restored)
+##     EMPTY_ATTACK_LEAD_TICKS stands in; effProc* motion not restored)
 ##   audio: resource-derived content/imported/hsl/shared/skill_effects/manifest.json
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_effect_object_sounds.md
 ##   audio: provisional
@@ -666,8 +665,9 @@ static func clip_complete_tick(timeline: Dictionary, spawns: Array) -> int:
 ## actors; the cast lead's shadow darkens the map (level 8／16 through the effect). First the caster's ANIMAL m_action cast
 ## lead (AnimalCastLead through the host, `cast_lead(clip, "magic")` — banner, insets and
 ## portrait from the m_shape strip over the shadowed map, tick-driven) when the caster has an
-## imported strip, else the shared Cast_Star ring for CAST_LEAD_IN; the cast cue sounds as the
-## lead begins; `released` fires when it ends, the script then plays at every affected
+## imported strip, else the 預備動作-off lead (AnimalCastLead.skipped, 8 shadow calls); as it ends
+## the caster poses (`released`), Cast_Star bursts over it and sfx 0x193 sounds, and the
+## script waits out the pose (`caster_pose_ticks`, 8n + 40), then plays at every affected
 ## position (once at the cursor cell centre `map_target` for eff_proc_Global: 0x442b58 sets
 ## 0x4c2c70／0x4c2c74 to (column×32+16, row×32+16) and 0x442d81 builds one interpreter there) with `impact` at its last cue; the
 ## effect carries no name caption. Real seconds, 62.5 ticks/s, after the lead.
@@ -690,57 +690,107 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	# the original's effect states (0x7a, 0x4419f8) draw no text.
 	host.result.visible = false
 	show()
+	# A caster without an imported strip plays the 預備動作-off lead (the same 0x401ec4 jump).
 	var lead: Dictionary = host.cast_lead(clip, "magic")
-	var lead_in: float = Timing.CAST_LEAD_IN if lead.is_empty() else Timing.scaled(OriginalTick.seconds(float(lead["complete_tick"])))
-	if elapsed < lead_in:
-		if not clip.get("cast_started", false):
-			clip["cast_started"] = true
-			host.ability_sound.stream = load(host.cue_manifest["sounds"]["cast_magic"]["res_path"])
-			host.ability_sound.play()
-		if not lead.is_empty():
-			host.show_cast_lead(clip, lead, elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
-			clear()
-			return false
-		var progress: float = elapsed / Timing.CAST_LEAD_IN
-		var frame: Dictionary = casting[int(elapsed * 30) % casting.size()]
-		for index in range(6):
-			var angle := float(index) * TAU / 6.0 + progress
-			var sprite := _sprite(index)
-			sprite.texture = load(frame["res_path"])
-			sprite.centered = false
-			sprite.offset = -Vector2(frame["draw_origin"][0], frame["draw_origin"][1])
-			sprite.position = clip["map_caster"] + Vector2(0, -26) + Vector2(cos(angle), sin(angle)) * lerpf(28, 3, progress)
-			sprite.scale = Vector2.ONE
-			sprite.rotation = 0.0
-			sprite.z_index = 0
-			sprite.material = materials[""]
-			sprite.modulate = Color.WHITE
-			sprite.show()
-		for index in range(6, sprites.size()):
-			sprites[index].hide()
+	if lead.is_empty():
+		lead = AnimalCastLead.skipped(true)
+	var lead_end: float = Timing.scaled(OriginalTick.seconds(float(lead["complete_tick"])))
+	# The call after the lead poses the caster (0x4071e0), bursts Cast_Star and sounds 0x193
+	# (0x402fd1／0x403128); the effect VM states 4／7／0x17／0x19 wait while the caster's pose bit
+	# 0x1000 is set (0x442c89, 0x442d07, 0x442f65, 0x443009), 8n + 40 ticks.
+	var lead_in: float = Timing.scaled(OriginalTick.seconds(float(lead["complete_tick"]) + float(clip.get("caster_pose_ticks", 0))))
+	if elapsed < lead_end:
+		host.show_cast_lead(clip, lead, elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
+		clear()
 		return false
+	if not clip.get("cast_started", false):
+		clip["cast_started"] = true
+		host.ability_sound.stream = load(host.cue_manifest["sounds"]["cast_magic"]["res_path"])
+		host.ability_sound.play()
+		clip["cast_stars"] = cast_stars(hash(str(clip["strike"])))
 	# After the lead the attacker object stays: sub-state 5 (0x403089) hands the flow back
 	# (parent +0x8c++) and hides itself, sub-state 6 (0x4030b7) keeps its shadow at +0x90 = 8
 	# while the effect phase holds [0x4c1b00] & 0x1000000, so the map stays at level 8／16.
-	# The same holds for the Cast_Star stand-in of an unimported strip.
 	host.background.color = Color(0, 0, 0, float(AnimalCastLead.SHADOW_MAX_LEVEL) / AnimalCastLead.LEVELS)
+	var star_origin: Vector2 = clip["map_caster"] - Vector2(0, float(clip.get("caster_height", CAST_STAR_DEFAULT_HEIGHT)))
+	var star_tick: float = (elapsed - lead_end) / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND
+	if elapsed < lead_in:
+		mark(host, clip, elapsed, {"release": lead_end, "impact": INF, "complete": INF})
+		_draw_cast_stars(clip["cast_stars"], star_tick, star_origin, 0)
+		return false
 	var seconds: float = (elapsed - lead_in) / Timing.PLAYBACK_SPEED
 	var scale: float = Timing.PLAYBACK_SPEED / TICKS_PER_SECOND
-	var complete := mark(host, clip, elapsed, {"release": lead_in,
+	var complete := mark(host, clip, elapsed, {"release": lead_end,
 		"impact": lead_in + float(timeline["impact_tick"]) * scale,
 		"complete": lead_in + float(timeline["complete_tick"]) * scale})
-	draw(clip, seconds, [clip["map_target"]] if bool(timeline["global"]) else clip["affected_positions"])
+	var used := draw(clip, seconds, [clip["map_target"]] if bool(timeline["global"]) else clip["affected_positions"])
+	_draw_cast_stars(clip["cast_stars"], star_tick, star_origin, used)
 	if complete:
 		clear()
 		return true
 	return false
 
 
+## 0x408b20 case 4 (0x408bb4): two 0x401390 calls of object 399 Cast_Star at the burst point,
+## (w 2, h 2, delay 0, jitter 0, 28) then (…, delay 24, …, 20) — dx, dy ∈ {0, 1}, one tick
+## apart. Each runs effProcCollectFadeShape (0x41f4e5): a held shape rand(6), angle rand & 0xff,
+## radius obj_Data5 128 + rand(64) px closing at obj_Data3 3.5 px a tick to 1 px, level + 1
+## every 2 ticks to 16, then − 1 a tick; additive (0x415dc0). Presentation RNG, seeded per clip.
+const CAST_STAR_BATCHES := [[0, 28], [24, 20]]
+const CAST_STAR_RADIUS := 128
+const CAST_STAR_RADIUS_RANGE := 64
+const CAST_STAR_SPEED := 3.5
+const CAST_STAR_LEVELS := 16
+## 0x43d990 for a caster without a shape (0xffff): 40 + 2.
+const CAST_STAR_DEFAULT_HEIGHT := 42
+
+
+static func cast_stars(seed: int) -> Array:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed
+	var stars: Array = []
+	for batch in CAST_STAR_BATCHES:
+		for index in range(int(batch[1])):
+			var angle := TAU * float(rng.randi() & 0xff) / 256.0
+			var radius := float(CAST_STAR_RADIUS + _rand(rng, CAST_STAR_RADIUS_RANGE))
+			var arrive := int(ceilf((radius - 1.0) / CAST_STAR_SPEED))
+			stars.append({"start": int(batch[0]) + index, "at": Vector2(_rand(rng, 2), _rand(rng, 2)), "frame": _rand(rng, 6),
+				"direction": Vector2(cos(angle), sin(angle)), "radius": radius, "arrive": arrive, "arrive_level": mini(arrive / 2, CAST_STAR_LEVELS)})
+	return stars
+
+
+## Draws the Cast_Star objects alive `tick` ticks after the burst from sprite `first` on.
+func _draw_cast_stars(stars: Array, tick: float, origin: Vector2, first: int) -> void:
+	var used := first
+	for star in stars:
+		var age := int(tick) - int(star["start"])
+		if age < 0:
+			continue
+		var level := mini(age / 2, CAST_STAR_LEVELS) if age <= int(star["arrive"]) else int(star["arrive_level"]) - (age - int(star["arrive"]))
+		if level <= 0:
+			continue
+		var frame: Dictionary = casting[int(star["frame"]) % casting.size()]
+		var sprite := _sprite(used)
+		used += 1
+		sprite.texture = load(frame["res_path"])
+		sprite.centered = false
+		sprite.offset = -Vector2(frame["draw_origin"][0], frame["draw_origin"][1])
+		sprite.position = origin + Vector2(star["at"]) + (Vector2(star["direction"]) * maxf(float(star["radius"]) - CAST_STAR_SPEED * age, 1.0)).floor()
+		sprite.scale = Vector2.ONE
+		sprite.rotation = 0.0
+		sprite.z_index = 0
+		sprite.material = materials[""]
+		sprite.modulate = Color(1, 1, 1, float(level) / CAST_STAR_LEVELS)
+		sprite.show()
+	for index in range(used, sprites.size()):
+		sprites[index].hide()
+
+
 ## Draws the objects alive at `seconds` once per origin and fires the sounds reached since
 ## the last call (the clip remembers which). Special sprites follow the stage — (0,0) top-left,
 ## the target centre at (320,160), feet at y=320 — with the single origin (0,0); effect sprites
 ## are displaced from each affected position.
-func draw(clip: Dictionary, seconds: float, origins: Array) -> void:
+func draw(clip: Dictionary, seconds: float, origins: Array) -> int:
 	show()
 	var timeline: Dictionary = clip["effect_timeline"]
 	var tick := seconds * TICKS_PER_SECOND
@@ -765,6 +815,7 @@ func draw(clip: Dictionary, seconds: float, origins: Array) -> void:
 			_draw_object(sprite, event, tick, origin)
 	for index in range(used, sprites.size()):
 		sprites[index].hide()
+	return used
 
 
 func _draw_object(sprite: Sprite2D, event: Dictionary, tick: float, origin: Vector2) -> void:

@@ -20,7 +20,7 @@ extends Node2D
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_strike.md
-##   timing: provisional (a caster without an m_shape lead poses at clip start beside the Cast_Star ring)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md#无条带起手序列
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 
@@ -228,17 +228,15 @@ func show_item_use(effect: Dictionary, world_position: Vector2) -> bool:
 
 ## The map caster's use_magic pose (0x4071e0). A map spell's attacker object calls it as the cast
 ## lead's fade ends (0x402fd1, sub-state 4 at +0x84 = 32; 0x403128 for a caster without a lead),
-## together with the Cast_Star burst and sfx 0x193: with an imported m_shape lead that is the
-## clip's `released`; a caster without one poses as the clip starts, beside the Cast_Star ring
-## that stands in for the lead (provisional: that ring is a remake beat — recording 469.9–471.8 s
-## shows 026 posing with the stars at once). Specials cut in and do not pose.
+## together with the Cast_Star burst and sfx 0x193: the clip's `released`, which ends the
+## m_shape lead or, for a caster without one, the 8 shadow calls. Specials cut in and do not pose.
 func _sync_cast_pose() -> void:
 	if not cutin.busy():
 		return
 	var clip: Dictionary = cutin.clips[0]
 	if is_same(clip, _posed_clip) or not str(clip["strike"].get("skill_id", "")).begins_with("magic:"):
 		return
-	if not cutin.cast_lead(clip, "magic").is_empty() and not bool(clip["release_emitted"]):
+	if not bool(clip["release_emitted"]):
 		return
 	_posed_clip = clip
 	_pose_unit(str(clip["strike"]["attacker_id"]))
@@ -601,9 +599,33 @@ func _show_strike(strike: Dictionary, loop: Dictionary, map_config: RefCounted, 
 	for unit in [attacker, defender] + (units if strike.has("special_segments") else []):
 		known[str(unit["id"])] = public or BattlePlayLoop.unit_known(loop, str(unit["id"]), known_ids)
 	cutin.play(strike, attacker, defender, counter, get_parent().world_to_logical_position(target_world), get_parent().world_to_logical_position(caster_world), affected_positions, units if strike.has("special_segments") else [], known, first_shot, last_shot)
+	if str(strike.get("skill_id", "")).begins_with("magic:"):
+		_note_caster(cutin.clips.back(), str(attacker["id"]))
+
+
+## A map spell's caster readings the effect player needs: the Cast_Star burst point's height
+## h = 0x43d990(caster shape) = the current shape's height + 2 (0x403156), and the use_magic
+## pose length 8n + 40 the effect VM waits out on the caster's pose bit (0x442f65).
+func _note_caster(clip: Dictionary, unit_id: String) -> void:
+	var runtime := get_parent()
+	var actor = runtime.actor_node_for_unit(unit_id) if runtime != null and runtime.has_method("actor_node_for_unit") else null
+	if actor == null:
+		return
+	var sprite := actor.get_node_or_null("Sprite2D") as Sprite2D
+	if sprite != null and sprite.texture != null:
+		clip["caster_height"] = sprite.texture.get_height() + 2
+	if not actor.has_method("has_shape_override") or actor.has_shape_override():
+		return
+	var entry: Dictionary = actor.magic_pose_entry(str(actor.actor_id))
+	if not entry.is_empty():
+		clip["caster_pose_ticks"] = 2 * actor.MAGIC_POSE_FRAME_TICKS * entry["frames"].size() + actor.MAGIC_POSE_HOLD_TICKS
 
 
 func _present_release(_strike: Dictionary, attacker: Dictionary, _defender: Dictionary, _counter: bool) -> void:
+	# 0x402fd1／0x403128: the map caster poses as its lead releases.
+	if str(_strike.get("skill_id", "")).begins_with("magic:") and cutin.busy() and not is_same(cutin.clips[0], _posed_clip):
+		_posed_clip = cutin.clips[0]
+		_pose_unit(str(_strike.get("attacker_id", "")))
 	if _strike.has("support_effects") or _strike.has("stat_effects") or _strike.has("skill_name"): return
 	_play_sound(attacker, "attack")
 

@@ -309,19 +309,22 @@ func run() -> void:
 		cutin.queue_free()
 		await process_frame
 	# A magic receipt plays its effCode script through the script player (the skill_id names
-	# the row); the Cast_Star lead rings the caster first, the script then plays at the target.
+	# the row); 026 has no strip: 8 shadow calls, then the Cast_Star burst over the caster with
+	# sfx 0x193 (0x403128..0x40318c), the script then plays at the target.
 	var magic := BattleCombatCutin.new()
 	root.add_child(magic)
 	magic.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	magic.set_process(false)
 	magic.play({"skill_id": "magic:magicAIR:magicCode01", "magic_key": "wind", "magic_name": "風刃", "hit": true, "damage": 5, "defender_hp_after": 25}, unit("026"), unit("001"), false, Vector2(470, 320), Vector2(190, 210))
-	magic._process(0.1)
+	magic.clips[0]["caster_pose_ticks"] = 88
+	magic._process(magic.Timing.CAST_LEAD_IN / magic.Timing.PLAYBACK_SPEED + 0.3)
 	check(magic.ability_sound.stream.resource_path.ends_with("cast_magic.wav"), "casting begins with its independent original sound")
-	check(magic.skill_effects.sprites[0].visible and magic.skill_effects.sprites[0].texture.resource_path.contains("cast_star"), "casting consumes source Cast_Star frames")
-	check(magic.skill_effects.sprites[0].position.distance_to(Vector2(190, 184)) < 35, "casting effect anchors at caster, not target")
+	var stars: Array = magic.skill_effects.sprites.filter(func(sprite): return sprite.visible and sprite.texture.resource_path.contains("cast_star"))
+	check(not stars.is_empty(), "casting consumes source Cast_Star frames")
+	check(stars.all(func(sprite): return sprite.position.distance_to(Vector2(190, 168)) < 200 and sprite.position.x < 400), "casting effect anchors at caster, not target")
 	check(not magic.clips[0]["impact_emitted"] and not magic.result.visible, "casting must not announce target damage, and carries no name caption: the original captions a spell only while its range is drawn")
-	magic._process(magic.Timing.CAST_LEAD_IN / magic.Timing.PLAYBACK_SPEED)
-	var shown: Array = magic.skill_effects.sprites.filter(func(sprite): return sprite.visible)
+	magic._process(88.0 / 62.5 / magic.Timing.PLAYBACK_SPEED)
+	var shown: Array = magic.skill_effects.sprites.filter(func(sprite): return sprite.visible and not sprite.texture.resource_path.contains("cast_star"))
 	check(not shown.is_empty() and shown.all(func(sprite): return sprite.position.x > 400) and shown[0].texture.resource_path.contains("air01_"), "released effect moves to the target side of the map, drawing the script's AirWave1 shapes")
 	magic._process(10)
 	check(not magic.busy() and not magic.skill_effects.visible, "spell releases the same presentation gate at completion")

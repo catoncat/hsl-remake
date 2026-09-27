@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 93,
-    "sources": 529,
+    "sources": 526,
     "sources_by_kind": {
-      "provenance": 207,
+      "provenance": 204,
       "sentence": 150,
       "scope": 74,
       "matrix": 85,
@@ -14,8 +14,8 @@
     },
     "layout_timing_modules": 53,
     "items_by_original_status": {
-      "read_complete": 19,
-      "read_partial": 51,
+      "read_complete": 20,
+      "read_partial": 50,
       "unread": 6,
       "no_original_code": 17
     },
@@ -58,6 +58,7 @@
     "drop-lightning-presentation",
     "map-object-flash",
     "npc-level-policy",
+    "cast-strip-missing",
     "shop-hand-cursor",
     "battle-equip-drop-hand",
     "bitmap-font",
@@ -67,8 +68,7 @@
     "panel-captions",
     "status-page-extras",
     "wait-cue",
-    "special-object-motion",
-    "ui-layout-readings"
+    "special-object-motion"
   ],
   "items": [
     {
@@ -274,6 +274,32 @@
         "provenance:game/sim/InitialRosterGrowthRules.gd|rules|remake-invented|",
         "scope:docs/evidence_packets/runtime_observations/battle_006/README.md|provisional|敌人随机调级与携带品的逐项对照",
         "scope:docs/evidence_packets/static_reverse/original_job_stats.md|provisional|合成初始化"
+      ]
+    },
+    {
+      "id": "cast-strip-missing",
+      "difference": "没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势；002 s_shape 绝技条带未导入",
+      "original": "无引导施法者走預備動作 关同一跳 0x401ec4：子状态 7 八 call 压暗，第 9 call 0x4071e0 姿势、0x408b20 case 4（两次 0x401390 放对象 399 Cast_Star，effProcCollectFadeShape）、0x4477b0(0x193) 放声；效果 VM 阶段 4／7／0x17／0x19 等施法者姿势位 0x1000 清",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_cast_overlays.md",
+        "docs/evidence_packets/runtime_observations/map_pose_floaters/README.md"
+      ],
+      "remake": "SkillEffectScriptPlayer 对无条带施法者用 AnimalCastLead.skipped 八 call 引导，释放时放 cast_magic、画 cast_stars 聚拢星，效果推迟 caster_pose_ticks（8n＋40）；BattlePresentation 在 released 摆姿势并记姿势长与星点高",
+      "remake_code": [
+        "game/battle/scene/SkillEffectScriptPlayer.gd",
+        "game/battle/scene/BattlePresentation.gd",
+        "game/battle/runtime/CombatPresentationTiming.gd"
+      ],
+      "original_status": "read_complete",
+      "visibility": "some_levels",
+      "effort": "M",
+      "category": "特写与施法演出",
+      "sources": [
+        "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
+        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点",
+        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#3a79262110",
+        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#9fcbff8d85"
       ]
     },
     {
@@ -951,35 +977,6 @@
         "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#335cfc522d",
         "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#5548a11867",
         "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#f225891ffc"
-      ]
-    },
-    {
-      "id": "cast-strip-missing",
-      "difference": "没导入施法条带（m_shape／002 s_shape）的角色用重制三帧施放画、Cast_Star 圆环和 1.5 s 引导代替原引导",
-      "original": "m_action／s_action 引导程序已读（四 opcode），条带未导入",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/native_presentation_helpers.md",
-        "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md"
-      ],
-      "remake": "CombatPresentationTiming.CAST_LEAD_IN 与 SkillEffectScriptPlayer 的 Cast_Star",
-      "remake_code": [
-        "game/battle/runtime/CombatPresentationTiming.gd",
-        "game/battle/scene/SkillEffectScriptPlayer.gd",
-        "game/battle/scene/MoonDancePresentation.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "M",
-      "category": "特写与施法演出",
-      "sources": [
-        "provenance:game/battle/runtime/CombatPresentationTiming.gd|timing|provisional|",
-        "provenance:game/battle/scene/BattlePresentation.gd|timing|provisional|",
-        "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
-        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点",
-        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#3a79262110",
-        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#9fcbff8d85"
       ]
     },
     {

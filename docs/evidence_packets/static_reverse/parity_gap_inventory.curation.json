@@ -521,19 +521,19 @@
     },
     {
       "id": "cast-strip-missing",
-      "difference": "没导入施法条带（m_shape／002 s_shape）的角色用重制三帧施放画、Cast_Star 圆环和 1.5 s 引导代替原引导",
-      "original": "m_action／s_action 引导程序已读（四 opcode），条带未导入",
+      "difference": "没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势；002 s_shape 绝技条带未导入",
+      "original": "无引导施法者走預備動作 关同一跳 0x401ec4：子状态 7 八 call 压暗，第 9 call 0x4071e0 姿势、0x408b20 case 4（两次 0x401390 放对象 399 Cast_Star，effProcCollectFadeShape）、0x4477b0(0x193) 放声；效果 VM 阶段 4／7／0x17／0x19 等施法者姿势位 0x1000 清",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/native_presentation_helpers.md",
-        "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md"
+        "docs/evidence_packets/static_reverse/original_cast_overlays.md",
+        "docs/evidence_packets/runtime_observations/map_pose_floaters/README.md"
       ],
-      "remake": "CombatPresentationTiming.CAST_LEAD_IN 与 SkillEffectScriptPlayer 的 Cast_Star",
+      "remake": "SkillEffectScriptPlayer 对无条带施法者用 AnimalCastLead.skipped 八 call 引导，释放时放 cast_magic、画 cast_stars 聚拢星，效果推迟 caster_pose_ticks（8n＋40）；BattlePresentation 在 released 摆姿势并记姿势长与星点高",
       "remake_code": [
-        "game/battle/runtime/CombatPresentationTiming.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd",
-        "game/battle/scene/MoonDancePresentation.gd"
+        "game/battle/scene/BattlePresentation.gd",
+        "game/battle/runtime/CombatPresentationTiming.gd"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "some_levels",
       "effort": "M",
       "category": "特写与施法演出"
@@ -2047,9 +2047,6 @@
     "provenance:game/title/CampaignResumePrompt.gd|strings|remake-invented|": {
       "item": "campaign-flow-extras"
     },
-    "provenance:game/battle/runtime/CombatPresentationTiming.gd|timing|provisional|": {
-      "item": "cast-strip-missing"
-    },
     "provenance:game/battle/runtime/CombatPresentationTiming.gd|timing|remake-invented|": {
       "item": "remake-options-page"
     },
@@ -2203,9 +2200,6 @@
     "provenance:game/battle/scene/BattlePresentation.gd|strings|remake-invented|": {
       "item": "floater-extra-words"
     },
-    "provenance:game/battle/scene/BattlePresentation.gd|timing|provisional|": {
-      "item": "cast-strip-missing"
-    },
     "provenance:game/battle/scene/BattleSceneInput.gd|rules|remake-invented|": {
       "item": "home-recenter"
     },
@@ -2329,9 +2323,6 @@
         "special-object-motion",
         "effect-motion"
       ]
-    },
-    "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|remake-invented|": {
-      "item": "cast-strip-missing"
     },
     "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|strings|remake-invented|content/generated/hsl/skills/authored_effect_scripts.json": {
       "no_visible_effect": "续集授权招式的名字与脚本，原版范围之外"

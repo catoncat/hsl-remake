@@ -7,9 +7,7 @@ extends RefCounted
 ##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: remake-invented (OPT-PACE 快／極快 clock multipliers PACE_CUTIN／PACE_MAP; 原版 is × 1.0)
-##   timing: provisional
-##     (CAST_LEAD_IN stands in for the m_action lead of a magic caster whose m_shape strip is not imported — the
-##     imported ones and the 絶技 s_action lead are played by AnimalCastLead)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md#无条带起手序列
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 ## Multiplier on the ordinary cut-in clock. The product plays the attacker's ANIMAL program
@@ -154,11 +152,11 @@ static func hurt_hold_ticks(hit: bool, damage: int) -> int:
 
 static func hurt_hold(hit: bool, damage: int) -> float:
 	return scaled(OriginalTick.seconds(hurt_hold_ticks(hit, damage)))
-## Cast_Star lead of the map magic presenter, 1.1 s visible on the scaled clock, for a caster
-## without an imported m_shape strip (the original's m_action lead, played by AnimalCastLead
-## when the strip is imported, has the same program shape as the s_action lead).
-const CAST_LEAD_IN_VISIBLE_SECONDS := 1.1
-static var CAST_LEAD_IN: float = scaled(CAST_LEAD_IN_VISIBLE_SECONDS)
+## Lead of a map spell whose caster has no imported m_shape strip: the 預備動作-off jump
+## (0x401ec4) — 8 sub-state-7 shadow calls (0x4030f7), the pose, Cast_Star burst and sfx 0x193
+## on the 9th (AnimalCastLead.skipped, SKIPPED_MAGIC_CALLS).
+const CAST_LEAD_IN_TICKS := 8
+static var CAST_LEAD_IN: float = scaled(OriginalTick.seconds(CAST_LEAD_IN_TICKS))
 
 ## defProcShowNumber (0x408580): after the spawn's hold ticks, an EXP／heal／MP／$／MISS／
 ## LEVEL UP number (kind 1–6) lives 16 + 15 × 2 = 46 ticks, releases its waiter at tick 32

@@ -1,6 +1,6 @@
 # 施法确认到效果结束之间的地图覆盖层：射程／范围格、光标、身份栏
 
-> evidence: static-derived; provisional · status: live · functions: 0x4010c0, 0x401220, 0x401c20, 0x401d6f, 0x402499, 0x402b68, 0x402e47, 0x402f5e, 0x403089, 0x4030b7, 0x4034c6, 0x4035ef, 0x406d20, 0x4100e0, 0x411480, 0x4116a0, 0x428ee4, 0x42946d, 0x42dc50, 0x430230, 0x438f8e, 0x43bf30, 0x43c0f0, 0x43e110, 0x43e1c0, 0x43e570, 0x441043, 0x4423b0, 0x442a90, 0x443c63, 0x444e58, 0x45e307, 0x45e6da, 0x45e882, 0x45f5f7, 0x461479 · tools: run_presentation_contract_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-28
+> evidence: static-derived; provisional · status: live · functions: 0x4010c0, 0x401220, 0x401390, 0x401c20, 0x401d6f, 0x402499, 0x402b68, 0x402e47, 0x402f5e, 0x403089, 0x4030b7, 0x4030f7, 0x40310b, 0x4034c6, 0x4035ef, 0x406d20, 0x408b20, 0x4100e0, 0x411480, 0x4116a0, 0x41f4e5, 0x428ee4, 0x42946d, 0x42dc50, 0x430230, 0x438f8e, 0x43bf30, 0x43c0f0, 0x43d990, 0x43e110, 0x43e1c0, 0x43e570, 0x441043, 0x4423b0, 0x442a90, 0x443c63, 0x444e58, 0x45e307, 0x45e6da, 0x45e882, 0x45f5f7, 0x461479 · tools: run_presentation_contract_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -141,6 +141,19 @@ S＝static-derived（上表调用点），R＝原录像观察（录像 14 外部
 | 残影深度 | 横幅残影（`0x402187`）留在模板桶 planeEffect2（resource-derived，`map_objects.json` 对象 179）；局部图残影（`0x402b68`）建后改 `+0xc = 0x33`、坐标＝局部图锚点 | `0x402b87` |
 | 同桶先后 | 施法对象在 `0x45f5f7` 第一遍（调用过程）里就提交局部图／肖像；残影对象第二遍才提交，都挂桶尾，所以桶 0x33 内残影画在活动面板之上 | `0x45f5f7`、`0x461479` |
 
+### 无条带起手序列
+
+施法者无引导帧（与預備動作 关同一跳 `0x401ec4`）时对象 154 的逐 call 序列与效果 VM 的接续（static-derived）：
+
+| call | 对象 154 | 同刻 | 地址 |
+| --- | --- | --- | --- |
+| 1..8 | 子状态 7：`+0x90++`，≤ 8 让出；阴影级 min(call＋1, 8)（首 call 画 0） | 施法者隐藏的引导对象不画形状 | `0x4030f7..0x403105` |
+| 9 | `+0x90 = 9`，`0x4c1408 == 0`（法术）：进子状态 5 | `0x4071e0` 施法者摆 use_magic 姿势（SHAPEDEF `use_magic`／`use_magic_num`，每张 4 tick，末张停 40 tick，倒放，共 8n＋40 tick）；`0x408b20(x, y − h, 4, 0, 3)` 撒星，h = `0x43d990(施法者 +0x30)` ＝当前形状高＋2（形状 0xffff 时 42），SID 0x3c 固定 64；`0x4477b0(0x193)` → `0x459990` → `0x42c180` 放 RESOURCE 403 sfxCastMagic（`WAV\CAST001.WAV`） | `0x40310b..0x403194` |
+| 10 | 子状态 5：清切入位、`0x42c3d0` 停声道、`[0x4c432c]++`（对象 `+0xa8` = `0x4c42a0`，`+0x8c` 即效果 VM 阶段字）、隐藏，进子状态 6 | — | `0x403089..0x4030b2`、`0x442f1e` |
+| 11.. | 子状态 6：阴影停级 8 | 效果 VM 阶段 4／7／0x17／0x19（`0x442c71`、`0x442cef`、`0x442f4d`、`0x442ff1`）置 `0x1000000` 后先测施法者 `+0x80 & 0x1000`（姿势位），置位就让出——效果等姿势放完才开始 | `0x442c83..0x442c8c`、`0x442d01..0x442d0a`、`0x442f5f..0x442f68`、`0x443003..0x44300c` |
+
+撒星（`0x408b20` case 4，跳表 `0x408dd8[case − 2]` → `0x408bb4`）：两次 `0x401390(x, y, 399, 2, 2, 延迟, 0, 个数)`——`(…, 0, 0, 28)` 与 `(…, 24, 0, 20)`；宽高 2 使 dx、dy ∈ {0, 1}，jitter 0 时 `0x458c80(0)` 返回 0、延迟每颗加 1，故 28 颗延迟 0..27、20 颗延迟 24..43；等待对象与第 5 参数 3 在 case 4 不用。对象 399 `Cast_Star`（resource-derived，`DATA\OBJ-051.OBS`：planeEffect2、`MAGIC\CAST_STAR01.SHP` 6 张、延迟 2、defProcEffectProcess1、Data3 0x38000、Data5 0x800000、Data6 0xc00000、Data9 effProcCollectFadeShape）：`0x415dc0` 序言数完延迟才画、置加色与级 16；`0x41f4e5` 首 call 起始张＋rand(+0x78 低字＝6) 定住、置交叉淡化、级 0，角 rand & 0xff，半径 128＋rand(64) px，速度 3.5 px；之后每 2 tick 级＋1 到 16，半径每 tick −3.5 到 1 px 进淡出，级每 tick −1 归零删除（聚拢程序同 [用药包](original_item_use_presentation.md) 的 396）。
+
 ## 重制接线
 
 - `BattleAttackCue.leads(strike, attacker)` 只看施放者：`player_commandable` 时返回 false（普攻与施法同一条，`BattlePresentation.refresh` 改调 `skip(sequence)`，同一帧把片段交给切入／地图效果）；AI 从不为 `player_commandable` 单位行动，所以这等于「玩家下令」。AI 的攻击与施法 `begin`：按收据有无 `skill_id` 取普攻（6／滑动／12 tick）或施法（24／滑动／24 tick），滑动逐 tick 取 `glide_path`，经 `OriginalTick` 换算。
@@ -167,5 +180,6 @@ S＝static-derived（上表调用点），R＝原录像观察（录像 14 外部
 - 道具使用的原版目标态没有定位（provisional）；替换路线：从行动环道具项的状态转移（`0x63..0x72` 段）读起。
 - 玩家选目标时射程红格与脚印黄／青绿格的叠画与两层各自的计数器见 [范围格包](original_range_cells.md)。
 - 施法引导：planeEffect2 的数值取自 PROCESS.DEF 的排列（planeObject40 = 43 之后），本地无该文件，横幅残影低于桶 0x32 按此推定；桶 0x17 阴影与同桶 23 的单位先后（单位第二遍提交、画在阴影之上）重制未建模，重制阴影盖住全部单位。
-- 施法引导：子状态 5 那一 call 重制没有单独留（效果从引导结束的下一 tick 起，差 1 call）；子状态 6 在效果结束后的 8 call 阴影淡出未播（重制片段在效果完成时整体收起），无引导的法术（含没导入条带、用 Cast_Star 代替引导的施法者）同样盖级 1..8 后停级 8 的阴影，不再按伤害法术另用 0.2 暗层；归 `cast-lead-phase`。
+- 施法引导：子状态 5 那一 call 重制没有单独留（效果从引导结束的下一 tick 起，差 1 call）；子状态 6 在效果结束后的 8 call 阴影淡出未播（重制片段在效果完成时整体收起），无引导的法术（含没导入条带的施法者）同样盖级 1..8 后停级 8 的阴影，不再按伤害法术另用 0.2 暗层；归 `cast-lead-phase`。
+- 无条带起手：重制 `SkillEffectScriptPlayer` 对无条带施法者用 `AnimalCastLead.skipped` 的 8 call，释放那一 call 放 403、画两批 Cast_Star 聚拢星，效果推迟姿势长 8n＋40（`BattlePresentation._note_caster` 记，有条带者同样等）；星点高 h 取重制当前站立帧高＋2，use_magic 即站立帧的 060／068 与无 SHAPEDEF 行者不等姿势（provisional）。
 - 施法对象自身模式在子状态 1 是否带 `0x80000000`（挂桶头）未逐条核对；带则局部图残影会排到桶头、画在面板之下。
