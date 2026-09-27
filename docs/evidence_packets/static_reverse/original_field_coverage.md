@@ -431,7 +431,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `obj_CollideX2` | dead | — | 行 5 | 同上 | — |
 | `obj_CollideY2` | dead | — | 行 5 | 同上 | — |
 | `obj_Attribute` | consumed | `tools/hsltools/data/treasures.py:chest_hidden` | 行 226 | 模板 +0x80 objattr* 旗（FLAG7／ATTACKFLAG）；宝箱：无 objattrATTACKFLAG 0x10000 → 0x415730 形状字 0xffff（隐藏宝物） | 226 行（176 地图对象、宝箱、特效）；只有宝箱模板保留（obj-028／obj-080 的 798 写 ATTACKFLAG＝可见，其余宝箱无此字段＝隐藏），生成器写 treasures `hidden`，BattleTreasurePresentation 不画隐藏箱；地图对象与特效的值导入器仍不保留（站立物件的固定图层语义见绘制顺序包） |
-| `obj_Score` | consumed | `game/battle/runtime/MapObjectDrift.gd:add_background` | 行 55 | 模板 +0x84；地图对象 mapobj 参数（x range／level） | CLOUDDRIFT：mapobjMoveBG 的横向视差 x = x0 + trunc((镜头x − x0)·score/640)，−1 钉画面（0x43d4c1，original_map_object_drift.md）；导入器只对 mapobjMoveBG 保留；mapobjFlash 的 level 等其余用法仍不保留 |
+| `obj_Score` | consumed | `game/battle/runtime/MapObjectDrift.gd:add_background` | 行 55 | 模板 +0x84；地图对象 mapobj 参数（x range／level） | CLOUDDRIFT：mapobjMoveBG 的横向视差 x = x0 + trunc((镜头x − x0)·score/640)，−1 钉画面（0x43d4c1，original_map_object_drift.md）；导入器对 mapobjMoveBG 与 mapobjFlash 保留；MAPFLASH：mapobjFlash 的 score 是变暗级数（0x43cee7，original_map_object_flash.md，MapObjectFlash.gd 读） |
 | `obj_HitPoint` | consumed | `tools/hsltools/levels/battle.py:_apply_object_install` | 行 96；已放置演员 46 | 模板 +0x88；演员：≠0 → live +0x1b6 HP 加值半字 +=（0x407ec0，在 refresh 前）；地图对象：mapobj 参数（delay／y range） | 46 个已放置敌军：024 +50（25）、023 +20（18）、024 +30（3）。R22：加进单位 growth_profile.source.hit_point 与 max_hp／hp（`object_hit_point`），脚本插入的 024 隊長 +30／+50 同路；地图对象：mapobjMoveBG 的纵向视差 /480 由 MapObjectDrift.add_background 读（CLOUDDRIFT），其余 mapobj 的值不保留 |
 
 ### wrd

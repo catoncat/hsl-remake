@@ -97,5 +97,5 @@ wine ignored/bin/hsl_win32_memread.exe --pid $PID \
 
 - 只证明主循环节拍与 tick 单位，不证明任何具体演出的帧内容、混色或坐标等价。
 - 19.4 ms 是本机 Wine 11.0 + macOS 的实测；不同宿主的 `GetTickCount` 粒度不同，原作在 1990 年代目标机上更接近 16–17 ms。重制取 16 ms/tick（62.5 tick/s）为「原版设计时钟」，参考录像的秒数按 19.4 折算成 tick 后再对照。
-- 未测：对白逐字节奏、`defProcShowNumber` 数字寿命、`mapobjFlash` 过程、菜单展开步进的 tick 数、脚本 `actWalk` 速度参数与像素/tick 的关系（玩家行走 4 px/tick 不自动等于脚本行走）。这些是「已知以 tick 计但计数未读」，见 [映射表](tick_mapping.md)。
+- 未测：对白逐字节奏、`defProcShowNumber` 数字寿命、菜单展开步进的 tick 数、脚本 `actWalk` 速度参数与像素/tick 的关系（玩家行走 4 px/tick 不自动等于脚本行走）。这些是「已知以 tick 计但计数未读」，见 [映射表](tick_mapping.md)。
 - `hsl_record_window`（ScreenCaptureKit 单窗口录制）对 Wine 窗口只送出前 ~0.9 s 的 53 帧就停止（Godot 窗口正常，原因未定位），本包的计数因此全部走内存采样；`hsl_win32_memread.exe` 每次 `wine` 启动约 1.9 s，连续采样用 `--repeat`。游戏窗口创建前 `inspect` 报 `game_window_not_found`，等 5 s 再查；原版右键＝系统卷轴，用 `key escape` 关。

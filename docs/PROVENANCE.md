@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (195 modules, 142 remake-invented cells, 71 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (195 modules, 142 remake-invented cells, 69 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (195)
 
@@ -26,9 +26,9 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [CommandPresentationRules](../game/battle/runtime/CommandPresentationRules.gd) | static-derived [native_layout.json](../content/imported/hsl/shared/command_menu/native_layout.json); static-derived [native_presentation_helpers.md](../docs/evidence_packets/static_reverse/native_presentation_helpers.md) | static-derived [native_layout.json](../content/imported/hsl/shared/command_menu/native_layout.json) | n/a | static-derived [native_presentation_helpers.md](../docs/evidence_packets/static_reverse/native_presentation_helpers.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | n/a |
 | [CutinLayout](../game/battle/runtime/CutinLayout.gd) | n/a | static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md); static-derived [original_effect_motion.md](../docs/evidence_packets/static_reverse/original_effect_motion.md) `#4b-普通切入的换边镜像cutin-mirror`; resource-derived [ANIMAL.TXT](../content/imported/hsl/chapter01/combat_animation/ANIMAL.TXT); resource-derived [ANIMAL.H](../content/imported/hsl/global/tables/ANIMAL.H); runtime-measured [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md) | n/a | static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md) | n/a |
 | [GrowthCampaignProgress](../game/battle/runtime/GrowthCampaignProgress.gd) | remake-invented | n/a | remake-invented | n/a | n/a |
-| [MapObjectAnimation](../game/battle/runtime/MapObjectAnimation.gd) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); static-derived [gate_fire_animation.md](../docs/evidence_packets/static_reverse/gate_fire_animation.md) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); provisional | n/a |
+| [MapObjectAnimation](../game/battle/runtime/MapObjectAnimation.gd) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); static-derived [gate_fire_animation.md](../docs/evidence_packets/static_reverse/gate_fire_animation.md); static-derived [original_map_object_flash.md](../docs/evidence_packets/static_reverse/original_map_object_flash.md) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | n/a |
 | [MapObjectDrift](../game/battle/runtime/MapObjectDrift.gd) | n/a | static-derived [original_map_object_drift.md](../docs/evidence_packets/static_reverse/original_map_object_drift.md); runtime-measured [original_map_object_drift.md](../docs/evidence_packets/static_reverse/original_map_object_drift.md); resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json) | n/a | static-derived [original_map_object_drift.md](../docs/evidence_packets/static_reverse/original_map_object_drift.md); runtime-measured [original_map_object_drift.md](../docs/evidence_packets/static_reverse/original_map_object_drift.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); remake-invented; provisional | n/a |
-| [MapObjectFlash](../game/battle/runtime/MapObjectFlash.gd) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json) | n/a | provisional [TYPE.H](../content/imported/hsl/global/tables/TYPE.H) | n/a |
+| [MapObjectFlash](../game/battle/runtime/MapObjectFlash.gd) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); static-derived [original_map_object_flash.md](../docs/evidence_packets/static_reverse/original_map_object_flash.md) | n/a | static-derived [original_map_object_flash.md](../docs/evidence_packets/static_reverse/original_map_object_flash.md) | n/a |
 | [MapObjectPlacement](../game/battle/runtime/MapObjectPlacement.gd) | n/a | resource-derived [map_object_alignment.json](../content/imported/hsl/chapter01/map_object_alignment.json); static-derived [actor_shp_draw_origin.md](../docs/evidence_packets/static_reverse/actor_shp_draw_origin.md); runtime-measured [first_battle_visual_evidence_index.md](../docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.md) | n/a | n/a | n/a |
 | [MapSceneConfig](../game/battle/runtime/MapSceneConfig.gd) | n/a | static-derived [actor_placement_initialization.md](../docs/evidence_packets/static_reverse/actor_placement_initialization.md); provisional | n/a | n/a | n/a |
 | [RangeCellOverlay](../game/battle/runtime/RangeCellOverlay.gd) | n/a | resource-derived [range_cells/manifest.json](../content/imported/hsl/shared/range_cells/manifest.json); static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md); runtime-measured [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) `#证据` | n/a | static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md); runtime-measured [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) `#证据` | n/a |
@@ -418,7 +418,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (71)
+### provisional 疑点 (69)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -429,9 +429,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [ActorRuntime](../game/battle/runtime/ActorRuntime.gd) | audio | — | script walks step at relative frames 0／3 |
 | [BattleOpeningCoordinator](../game/battle/runtime/BattleOpeningCoordinator.gd) | rules | — | cutscene resume semantics |
 | [CombatPresentationTiming](../game/battle/runtime/CombatPresentationTiming.gd) | timing | — | CAST_LEAD_IN stands in for the m_action lead of a magic caster whose m_shape strip is not imported — the imported ones and the 絶技 s_action lead are played by AnimalCastLead |
-| [MapObjectAnimation](../game/battle/runtime/MapObjectAnimation.gd) | timing | — | additive colour cycle |
 | [MapObjectDrift](../game/battle/runtime/MapObjectDrift.gd) | timing | — | the original hides and holds clouds while [0x4c1b00] & 0x1400000 or its options bit 0x477c14 & 1 is clear; not wired |
-| [MapObjectFlash](../game/battle/runtime/MapObjectFlash.gd) | timing | [TYPE.H](../content/imported/hsl/global/tables/TYPE.H) | mapobjFlash objsScore = level, objsHitPoint = delay ticks; 0.55 s／0.22 stand in until the flash branch is read |
 | [MapSceneConfig](../game/battle/runtime/MapSceneConfig.gd) | layout | — | world size from the decoded map texture |
 | [StoryEffectObjects](../game/battle/runtime/StoryEffectObjects.gd) | timing | — | obj_Data7 read as a flash lifetime, glow swell, rain drop frame cadence and spawn band — the mapobjDropRain／defProcObjectMove processes are unread |
 | [OpeningCinematics](../game/battle/runtime/opening/OpeningCinematics.gd) | timing | — | dark level n: 0x4699fd floors each 565 channel to c·(16−n)／16; black alpha n／16 is that ratio at 8 bits |
@@ -501,11 +499,11 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 32 | 70 | 41 | 10 | 29 | 182 |
-| static-derived | 241 | 89 | 18 | 94 | 22 | 464 |
+| static-derived | 241 | 91 | 18 | 95 | 22 | 467 |
 | runtime-measured | 17 | 33 | 3 | 19 | 2 | 74 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 33 | 14 | 0 | 22 | 2 | 71 |
+| provisional | 33 | 14 | 0 | 20 | 2 | 69 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
 | remake-invented | 54 | 39 | 34 | 14 | 1 | 142 |

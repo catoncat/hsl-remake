@@ -750,18 +750,17 @@
     },
     {
       "id": "map-object-flash",
-      "difference": "地图物件闪烁（mapobjFlash）的周期／深度和加色循环动画是估值",
-      "original": "TYPE.H：objsScore = level、objsHitPoint = delay；stand-object 过程的闪烁分支未读",
+      "difference": "地图物件闪烁已照原版逐 tick 步进与加色＋层级画法，只剩层级表逐项值与通道舍入未逐像素对照",
+      "original": "0x43cee7：每 obj_HitPoint tick 一步，层级 16 降 obj_Score 级再升回（一周 2·Score+1 步）；0x462240 engMIX 位走 dst + src×层级/16，纯 engADDCOLOR 不乘层级；深度不变",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md",
-        "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md"
+        "docs/evidence_packets/static_reverse/original_map_object_flash.md"
       ],
-      "remake": "MapObjectFlash 0.55 s／0.22，MapObjectAnimation 加色循环",
+      "remake": "MapObjectFlash 按同一计数器逐 tick 走、modulate＝层级/16 配加色；MapObjectAnimation 纯加色",
       "remake_code": [
         "game/battle/runtime/MapObjectFlash.gd",
         "game/battle/runtime/MapObjectAnimation.gd"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "some_levels",
       "effort": "S",
       "category": "地图与物件"
@@ -2078,12 +2077,6 @@
     "provenance:game/battle/runtime/GrowthCampaignProgress.gd|strings|remake-invented|": {
       "item": "loot-panel"
     },
-    "provenance:game/battle/runtime/MapObjectAnimation.gd|timing|provisional|": {
-      "item": "map-object-flash"
-    },
-    "provenance:game/battle/runtime/MapObjectFlash.gd|timing|provisional|content/imported/hsl/global/tables/TYPE.H": {
-      "item": "map-object-flash"
-    },
     "provenance:game/battle/runtime/MapSceneConfig.gd|layout|provisional|": {
       "item": "stage-placement"
     },
@@ -2807,10 +2800,6 @@
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#969122c1dc": {
       "item": "floater-lifetimes",
       "text": "EXP／KILL／$ 浮字是 `obj_ShowNumber` kind 1／4（`0x4084e0`→`0x408580`），寿命计数在 `0x408580` 内未读；"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#c5e5888398": {
-      "item": "map-object-flash",
-      "text": "`mapobjFlash` 的 `defProcStandObject` 分支未读"
     },
     "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#9bca1a0d51": {
       "item": "closeup-object-timing",
@@ -3541,14 +3530,6 @@
     "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|": {
       "no_visible_effect": "用药三类效果星点的位置、延迟、速度与张由重制按本次用药种子抽取，分布与数量照 0x401390／effProcFlyUp2／effProcCollectFadeShape，只是逐颗落点与原版全局随机流不同"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#04de56f50b": {
-      "item": [
-        "map-object-flash",
-        "attack-flash-hold",
-        "cast-lead-phase"
-      ],
-      "text": "未读（保留 provisional）：`mapobjFlash` 亮度步进（TYPE.H：`objsScore = level, objsHitPoint = delay`，字段尚未导出到 map_objects）、击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#32cb0f367e": {
       "item": "magic-impact-bar",
       "text": "条寿命 60 tick 与受击态 `0x407230` 写入的 `+0x92 = 60` 同长，是否同一计数未读。"
@@ -3569,6 +3550,23 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取": {
       "item": "poison-gas-presentation"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_map_object_flash.md|provisional|层级表逐项值与 16 位通道舍入未逐像素对照": {
+      "item": "map-object-flash"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#5f27f2029e": {
+      "item": [
+        "attack-flash-hold",
+        "cast-lead-phase"
+      ],
+      "text": "击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional（`mapobjFlash` 已读，见 [地图物件闪烁](original_map_object_flash.md)）；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#73a76a3778": {
+      "item": [
+        "attack-flash-hold",
+        "cast-lead-phase"
+      ],
+      "text": "未读（保留 provisional）：击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。"
     }
   }
 }

@@ -6,7 +6,7 @@
 
 - 原版以主循环 tick 计的演出计数已从对象过程与 STORY VM 状态机读出：地图数字 kind 1–6 寿命 46 tick（第 32 tick 放行），红色伤害数字 10×位数＋34；章节标题 582 tick（任意键最短 263）；边缘滚动 12 px/tick；脚本行走（含 actMoveDispWait）speed→1／2／4／8 px/tick；剧情压黑每 3 tick 一级、16 级（48 tick），actDarkScreen／actDeleteDarkScreen 都不等待；普攻守方中立 32 tick、命中停留 68＋10×位数、落空 56，屏幕过渡变暗／变亮各 16；攻方开场 24 tick 缩放＋32 tick 叠层（static-derived）。
 - 重制 `CombatPresentationTiming`、`OpeningCinematics`／`BattleOpeningCoordinator`、`BattleCameraController`／`WorldMapRuntime`、`BattleCombatCutin` 按这些计数经 `OriginalTick`（16 ms/tick）换算（static-derived）。
-- 差异：对象 700 每级明暗已读出——每个 565 分量取 ⌊c·(16−n)／16⌋，重制黑层 alpha n／16 与之线性等价，只差 5／6 位截断的末位（static-derived）；`mapobjFlash`、击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional；像素混合未逐像素对照（provisional）。
+- 差异：对象 700 每级明暗已读出——每个 565 分量取 ⌊c·(16−n)／16⌋，重制黑层 alpha n／16 与之线性等价，只差 5／6 位截断的末位（static-derived）；击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional（`mapobjFlash` 已读，见 [地图物件闪烁](original_map_object_flash.md)）；像素混合未逐像素对照（provisional）。
 
 ## 证据
 
@@ -143,6 +143,7 @@ provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/s
 
 - 本包只给 tick 计数与状态机读法，不证明绘制内容（数字弹跳曲线）等价；切入开场的 `0xc000000`／`0x28000000`、过渡的 `0x20000000` 与章节标题的 `0x2000000`／`0x20000000` 已读到像素例程种类（饱和加法／饱和减法／16 级交叉淡化），像素级等价仍未对照。
 - 系统卷轴展开／收起已读（`0x45e882`／`0x45e91e`，[menus_ui](../runtime_observations/menus_ui/README.md) §6）。
-- 未读（保留 provisional）：`mapobjFlash` 亮度步进（TYPE.H：`objsScore = level, objsHitPoint = delay`，字段尚未导出到 map_objects）、击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。
+- 未读（保留 provisional）：击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。
+- `mapobjFlash` 亮度步进已读：见 [地图物件闪烁](original_map_object_flash.md)。
 - §8：无脚本形态的演员走完后原版仍按移动延迟每 tick 循环当前形态，重制到位即停帧；子状态 1／4 的 `0x446c10`／形态组 5 分支与 `0x44fbd0` 目标修正在重制里未接（与 actWalk 系列相同）。
 - 反编译原文留在 `ignored/static/hsl01/decompiled/`，不入库。

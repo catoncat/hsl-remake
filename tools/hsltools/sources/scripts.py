@@ -108,6 +108,10 @@ def parse_text_metadata(data: bytes, encoding: str | None = None) -> dict[str, A
         # (x/640, y/480; −1 pins it to the view) — docs/evidence_packets/static_reverse/original_map_object_drift.md.
         if current_values.get("obj_Data9") == "mapobjMoveBG":
             retained |= {"obj_Score", "obj_HitPoint"}
+        # A flashing light's obj_Score／obj_HitPoint are its dim depth and step delay
+        # (0x43cee7) — docs/evidence_packets/static_reverse/original_map_object_flash.md.
+        if current_values.get("obj_Data9") == "mapobjFlash":
+            retained |= {"obj_Score", "obj_HitPoint"}
         data_fields = {
             key: value
             for key, value in current_values.items()

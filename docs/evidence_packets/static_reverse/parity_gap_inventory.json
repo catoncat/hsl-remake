@@ -4,18 +4,18 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 95,
-    "sources": 527,
+    "sources": 526,
     "sources_by_kind": {
-      "provenance": 213,
+      "provenance": 211,
       "sentence": 143,
-      "scope": 73,
+      "scope": 74,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 58,
+    "layout_timing_modules": 56,
     "items_by_original_status": {
-      "read_complete": 13,
-      "read_partial": 58,
+      "read_complete": 14,
+      "read_partial": 57,
       "unread": 7,
       "no_original_code": 17
     },
@@ -55,6 +55,7 @@
     "cursor-hide-item-icon",
     "dark-screen-fade",
     "drop-lightning-presentation",
+    "map-object-flash",
     "npc-level-policy",
     "shop-hand-cursor",
     "battle-equip-drop-hand",
@@ -67,8 +68,7 @@
     "status-page-extras",
     "wait-cue",
     "ui-layout-readings",
-    "ai-first-battle-moves",
-    "ai-skill-buckets"
+    "ai-first-battle-moves"
   ],
   "items": [
     {
@@ -200,6 +200,26 @@
       "category": "地图与物件",
       "sources": [
         "provenance:game/battle/scene/BattleDropLightningPresentation.gd|layout|provisional|"
+      ]
+    },
+    {
+      "id": "map-object-flash",
+      "difference": "地图物件闪烁已照原版逐 tick 步进与加色＋层级画法，只剩层级表逐项值与通道舍入未逐像素对照",
+      "original": "0x43cee7：每 obj_HitPoint tick 一步，层级 16 降 obj_Score 级再升回（一周 2·Score+1 步）；0x462240 engMIX 位走 dst + src×层级/16，纯 engADDCOLOR 不乘层级；深度不变",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_map_object_flash.md"
+      ],
+      "remake": "MapObjectFlash 按同一计数器逐 tick 走、modulate＝层级/16 配加色；MapObjectAnimation 纯加色",
+      "remake_code": [
+        "game/battle/runtime/MapObjectFlash.gd",
+        "game/battle/runtime/MapObjectAnimation.gd"
+      ],
+      "original_status": "read_complete",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "地图与物件",
+      "sources": [
+        "scope:docs/evidence_packets/static_reverse/original_map_object_flash.md|provisional|层级表逐项值与 16 位通道舍入未逐像素对照"
       ]
     },
     {
@@ -709,30 +729,6 @@
       "sources": [
         "provenance:game/battle/scene/BattleSceneOverlays.gd|timing|provisional|",
         "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|选魔法／道具目标与选移动格时谁亮未拍"
-      ]
-    },
-    {
-      "id": "map-object-flash",
-      "difference": "地图物件闪烁（mapobjFlash）的周期／深度和加色循环动画是估值",
-      "original": "TYPE.H：objsScore = level、objsHitPoint = delay；stand-object 过程的闪烁分支未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md",
-        "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md"
-      ],
-      "remake": "MapObjectFlash 0.55 s／0.22，MapObjectAnimation 加色循环",
-      "remake_code": [
-        "game/battle/runtime/MapObjectFlash.gd",
-        "game/battle/runtime/MapObjectAnimation.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "地图与物件",
-      "sources": [
-        "provenance:game/battle/runtime/MapObjectAnimation.gd|timing|provisional|",
-        "provenance:game/battle/runtime/MapObjectFlash.gd|timing|provisional|content/imported/hsl/global/tables/TYPE.H",
-        "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#c5e5888398",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#04de56f50b"
       ]
     },
     {
@@ -2318,7 +2314,8 @@
         "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#1151c8fef7",
         "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9",
         "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#04de56f50b"
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#5f27f2029e",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#73a76a3778"
       ]
     },
     {
@@ -2444,7 +2441,8 @@
       "category": "特写与施法演出",
       "sources": [
         "provenance:game/battle/scene/BattleCombatCutin.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#04de56f50b"
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#5f27f2029e",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#73a76a3778"
       ]
     }
   ],

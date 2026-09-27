@@ -3,9 +3,10 @@ extends Sprite2D
 ## provenance:
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/gate_fire_animation.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_map_object_flash.md
+##     (engADDCOLOR without engMIX: 0x462240 plain saturating dst + src, no level)
 ##   timing: resource-derived content/imported/hsl/chapter01/map_objects.json
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   timing: provisional (additive colour cycle)
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 

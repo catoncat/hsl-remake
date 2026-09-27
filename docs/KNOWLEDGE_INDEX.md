@@ -313,7 +313,7 @@ docs/evidence_packets/runtime_observations/first_battle_visuals/
 每个证据包标题下方一行机器可读字段块（`> evidence: … · status: … · functions: … · tools: … · updated: …`，规范见 [evidence_packets/README.md](evidence_packets/README.md#packet-header)）是唯一来源；下表由 `PYTHONPATH=tools python3 -m hsltools.evidence.index --write` 生成，`--check` 在门禁里比对。按地址找包：搜 `0x4…`；按复跑入口找包：搜工具名。
 
 <!-- evidence-index:start -->
-_Generated from each packet's header line by `python3 tools/hsl.py generate evidence_index` (212 packets; `hsl check evidence_index` runs in the gate). Edit the packet header, not this block._
+_Generated from each packet's header line by `python3 tools/hsl.py generate evidence_index` (213 packets; `hsl check evidence_index` runs in the gate). Edit the packet header, not this block._
 
 ### resource_inventory (7)
 
@@ -411,7 +411,7 @@ _Generated from each packet's header line by `python3 tools/hsl.py generate evid
 | [水剎：从实际学习到范围施放的窗口验收](evidence_packets/runtime_observations/water_strike/README.md) | resource-derived | superseded → ../../static_reverse/original_water_strike.md | — | — |
 | [大地圖（世界地图）场景 — runtime-measured](evidence_packets/runtime_observations/world_map_scene/README.md) | static-derived | superseded → ../../static_reverse/original_world_town.md | — | — |
 
-### static_reverse (126)
+### static_reverse (127)
 
 | Packet | Evidence | Status | Functions | Tools |
 | --- | --- | --- | --- | --- |
@@ -482,6 +482,7 @@ _Generated from each packet's header line by `python3 tools/hsl.py generate evid
 | [魔法伤害：風刃／幻火原公式、HP 结算与共同技能事务](evidence_packets/static_reverse/original_magic_damage.md) | static-derived; runtime-measured: 2026-09-24 录屏 474.5–476.0 s 受者条与数字的出现／换值／消失时刻 | live | `0x40a7b0` | `hsltools/data/skill_book.py`, `hsltools/probes/magic_damage.py`, `run_magic_experience_tests.gd`, `run_skill_resolution_tests.gd` |
 | [原对象指定地图：P-033／P-047](evidence_packets/static_reverse/original_map_binding.md) | static-derived | live | `0x430370`, `0x45dc5c`, `0x45fc01`, `0x46dd50` | `hsltools/checks/source_map_binding.py`, `hsltools/probes/map_binding.py` |
 | [地图物件云漂移（mapobjCloud）与移動背景视差（mapobjMoveBG）](evidence_packets/static_reverse/original_map_object_drift.md) | static-derived; runtime-measured: 整镜像进 1／2／6／53 关停首次排序后的逐帧坐标、出界回绕与镜头视差; resource-derived: TYPE.H 的 mapobj 编号与各关 OBS 的角度／速度／范围字段 | live | `0x43ccf0`, `0x45eb9d`, `0x45ebdc`, `0x45f5f7`, `0x45fa1e`, `0x4606a9` | `hsltools/probes/_map_object_drift.py` |
+| [地图物件闪烁（mapobjFlash）：步进节拍、变暗深度与加色画法](evidence_packets/static_reverse/original_map_object_flash.md) | static-derived: 站立物件过程 0x43ccf0 的 mapobjFlash 分支与像素例程 0x462240 的加色两路; resource-derived: TYPE.H mapobjFlash、hsl.pak 全部 OBS 的 obj_Score／obj_HitPoint／obj_Data; provisional: 层级表逐项值与 16 位通道舍入未逐像素对照 | live | `0x43ccf0`, `0x43cee7`, `0x43d84b`, `0x462240`, `0x4623e1` | `hsltools/sources/scripts.py` |
 | [地图上的普攻、受击与法术特效原点](evidence_packets/static_reverse/original_map_strike.md) | static-derived: 近战／绝技只在切入层生成刀光与击中闪光（0x4021df、0x40418a → 0x401310），全 EXE 地图受击态只有 0x407230 一个入口（法术通道 0x40aa80、落雷、喷气、地形毒），行动者过程的抖动分支 0x43f288 与收尾换形 0x4420ba..0x442172，死亡入口 0x43ef36／0x44347e 的两个跳过条件，法术演出对象 0x442a90 的两条原点轨道（effect_proc 0／1），`0x40aa80` 效果位 2 是回复 HP、全函数无 MP 伤害分支，受击计数 9 处写入（偷钱／偷物／取消行动只在通道 1 出现，不触发）; runtime-measured: V08 frame_041 受者与 024-P 模板匹配（相关 0.918，锚点 (318, 192)），R7 幻火录屏"原点比脚下高 14 px"换算为比锚点高约 2 px; provisional: Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读） | live | `0x401310`, `0x4021df`, `0x40418a`, `0x407230`, `0x409920`, `0x40aa80`, `0x423a20`, `0x43c7ab`, `0x43ca57`, `0x43ede0`, `0x43ef36`, `0x43f288`, `0x441ef4`, `0x4420ba`, `0x442a90`, `0x442b58`, `0x442d81`, `0x443087`, `0x44347e`, `0x4437b0`, `0x4454e7`, `0x446b60`, `0x446c40` | — |
 | [原作机制来源与重制差异审计](evidence_packets/static_reverse/original_mechanics_audit.md) | static-derived | superseded → original_growth_refresh.md | — | — |
 | [职业：盗贼 88／翼战士 92 的独立刷新与宿魔刀末击削魔](evidence_packets/static_reverse/original_mobile_jobs.md) | static-derived | live | `0x409460`, `0x448840`, `0x46de70` | `hsltools/assets/job_casts.py`, `hsltools/data/mobile_jobs.py`, `hsltools/probes/mana_strike.py`, `hsltools/probes/mobile_jobs.py`, `hsltools/probes/mobile_motion.py`, `hsltools/probes/mobile_source.py`, `run_mobile_jobs_tests.gd` |

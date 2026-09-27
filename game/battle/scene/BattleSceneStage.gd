@@ -248,7 +248,8 @@ func _new_map_object_sprite(record: Dictionary, shape_id: String, texture: Textu
 	if animated:
 		sprite.configure(animation_manifest, anchor_world)
 	elif flashing:
-		sprite.configure(top_left_world, additive)
+		sprite.configure(top_left_world, MapObjectDrift.field_int(map_object_field_value(record, "obj_Score")),
+				MapObjectDrift.field_int(map_object_field_value(record, "obj_HitPoint")), MapObjectDrift.field_int(map_object_field_value(record, "obj_Data")))
 	elif additive:
 		var blend := CanvasItemMaterial.new()
 		blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
