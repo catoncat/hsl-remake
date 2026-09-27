@@ -1,0 +1,147 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 900,
+  "battle": {
+    "id": "battle_900_level900",
+    "title": "曼多力亞 · 對峙",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "曼多力亞 · 敵軍已清除",
+      "fail_0": "曼多力亞 · 雷歐納德 陣亡",
+      "fail_1": "曼多力亞 · 緹娜 陣亡",
+      "fail_2": "曼多力亞 · 村民撤離"
+    },
+    "expected": {
+      "units": 34,
+      "players": 5
+    },
+    "unresolved_semantics": [
+      "STORY900 supplies the five party members and the source garrison. The battle presentation uses the existing status timeline for the selected branch; actMoveDispWait is a no-footstep relative slide and actShowSectionName displays WORD900 with remake pacing.",
+      "The confrontation choice is source-driven: the selected event status is inserted into WinfailScenarioRules before its timeline is spliced into the current prompt. WINFAIL900 event 1 arms the formal battle statuses; exact native transition timing remains provisional.",
+      "WINFAIL900 win restores point 9 to bmpmTown and returns to the map; over-score dispatch and battle rewards follow the existing shared hand-off contract."
+    ]
+  },
+  "story_scene": {
+    "id": "story_900_mandoria_confrontation_opening",
+    "title": "曼多力亞　對峙（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      }
+    },
+    "end_card": {
+      "title": "曼多力亞　對峙",
+      "hint": "戰鬥部分（level 900）尚未重製　　空格／點擊：回到大地圖（曼多力亞）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape"
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "023",
+      "027",
+      "030",
+      "031",
+      "062"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "023",
+      "062"
+    ],
+    "shape_sets": {
+      "kicked": {
+        "actor_id": "023",
+        "members": [
+          "SHAPE\\023-10001.SHP",
+          "SHAPE\\023-10002.SHP",
+          "SHAPE\\023-10003.SHP",
+          "SHAPE\\023-10004.SHP",
+          "SHAPE\\023-10005.SHP",
+          "SHAPE\\023-10006.SHP"
+        ],
+        "source_token": "actChangeShape,SID_ENEMY023,3,2,SHAPE\\023-10001.SHP,6"
+      }
+    }
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_ENEMY023": "376",
+    "SID_ENEMY062": "656"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-900.obs player install obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_ENEMY023": "PLAYERS.TXT name field is 306 (???); 376 一般兵 is the same remake label as levels 51 / 6 / 901, provisional",
+    "SID_ENEMY062": "PLAYERS.TXT character 62 name field 656 = 村民 (resource-derived), as level 65 reads it"
+  },
+  "sweep_fixture": {
+    "mode": "clear",
+    "opening_select_option": 1,
+    "note": "STORY900 actSelectInsertEvent: row two enters the battle branch; row one is covered by the story-mode walkthrough."
+  },
+  "comments": {
+    "story_scene": [
+      "lane parent-900: level 900 (曼多力亞 confrontation) — TOWNDEF event 30 (席達鎮酒館女客人二)",
+      "arms big-map point 9 with event 900 (bmpmGeneral); on level 9's map (obj-900.obs",
+      "地圖管理員 names SHAPE01\\LEVEL09.SHP) the Wosfita soldiers press the villagers, the",
+      "party walks in from the south and STORY900 ends on actSelectInsertEvent: 選擇一",
+      "(winfail900 event 0) kicks the soldier and the party leaves — no battle, back to",
+      "the map with 曼多力亞 restored to a town; 選擇二 (event 1) starts the battle, which",
+      "is not remade, so that branch ends on the card.",
+      "STORY900 opens on actPlayMusic,8 (track 8)."
+    ],
+    "cast": [
+      "lane parent-900: 曼多力亞 confrontation (point 9 event 900): the party, the soldiers 023",
+      "pressing the 062 villagers, plus the 031 / 027 / 030 fighters of the second branch;",
+      "winfail900 event 0 kicks a soldier through the 023-1000x six-frame shape set."
+    ],
+    "speakers": [
+      "lane parent-900: 曼多力亞 confrontation (TOWNDEF event 30 arms point 9 with event 900):",
+      "the five-member party, the Wosfita soldiers 023 and the 062 villagers they press."
+    ]
+  }
+}

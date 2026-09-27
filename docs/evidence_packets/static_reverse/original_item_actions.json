@@ -1,0 +1,265 @@
+{
+  "schema": "hsl_item_actions_static.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "source_member": "@:\\data\\obj-051.obs",
+  "source_sha256": "f6621854fdf4a50677877744da09015f429d2d1a627d7c8490e2bd420d5428a8",
+  "command_routes": {
+    "use": {
+      "object_code": 114,
+      "state": 5,
+      "entry": "0x444a8b",
+      "inventory_mode": 6,
+      "selection_state": 102
+    },
+    "give": {
+      "object_code": 115,
+      "state": 6,
+      "entry": "0x444d6a",
+      "inventory_mode": 7,
+      "selection_state": 110
+    },
+    "equip": {
+      "object_code": 116,
+      "state": 7,
+      "entry": "0x444185",
+      "inventory_mode": 4,
+      "selection_state": 76
+    },
+    "drop": {
+      "object_code": 117,
+      "state": 8,
+      "entry": "0x4441ac",
+      "inventory_mode": 5,
+      "selection_state": 76
+    }
+  },
+  "dispatch": {
+    "byte_indices": "0x445758",
+    "destination_table": "0x445694"
+  },
+  "window_close": {
+    "source_object": {
+      "object_code": 130,
+      "process": "defProcStatusWindow",
+      "data9": 0
+    },
+    "process_address": "0x438160",
+    "root_state_table": "0x439ef8",
+    "parent_pointer_offset": "0x9c",
+    "parent_returns": {
+      "item_menu": {
+        "state": 3,
+        "entry": "0x44416c"
+      },
+      "window_wait": {
+        "state": 76,
+        "entry": "0x4447a7"
+      },
+      "window_closed": {
+        "state": 77,
+        "entry": "0x444c19"
+      }
+    },
+    "held_return": "0x438868 inserts into owner; full backpack preserves hold and open window.",
+    "close": "After held item is cleared, root1->2->3 increments parent76->77->3 item submenu.",
+    "action_policy": "Traced ordinary Equip/Drop closure returns to the item menu without ending the actor action."
+  },
+  "important": {
+    "source_field": "important",
+    "flags_offset": "0xa0",
+    "mask": "0x08000000",
+    "predicate": "0x40e690"
+  },
+  "instruction_anchors": [
+    {
+      "address": "0x43e887",
+      "bytes": "668b8ea8000000",
+      "reviewed_meaning": "Read command obj_Data8 from object+0xa8."
+    },
+    {
+      "address": "0x43e891",
+      "bytes": "6689888c000000",
+      "reviewed_meaning": "Write that command value to parent process state+0x8c."
+    },
+    {
+      "address": "0x447da1",
+      "bytes": "68548a4700",
+      "reviewed_meaning": "ITEM loader requests the important field."
+    },
+    {
+      "address": "0x447daa",
+      "bytes": "e821e9ffff",
+      "reviewed_meaning": "Read the numeric field via 0x4466d0."
+    },
+    {
+      "address": "0x447db2",
+      "bytes": "3bc5894424147408814c241000000008",
+      "reviewed_meaning": "Nonzero important adds mask 0x08000000."
+    },
+    {
+      "address": "0x4481b1",
+      "bytes": "89843aa0000000",
+      "reviewed_meaning": "Store assembled first flag word at ITEM+0xa0."
+    },
+    {
+      "address": "0x478a54",
+      "bytes": "696d706f7274616e7400",
+      "reviewed_meaning": "Original field name important, NUL terminated."
+    },
+    {
+      "address": "0x40e690",
+      "bytes": "8b4c240433c08d14898d0c518b15401b4c00c1e104f78411a0000000000000087405b801000000c3",
+      "reviewed_meaning": "Predicate returns whether item flags+0xa0 contain bit 27."
+    },
+    {
+      "address": "0x43aacb",
+      "bytes": "a1e41c4c0085c0747e50e8b63bfdff83c40485c07571a3e41c4c00",
+      "reviewed_meaning": "Battle item UI discard leaves held item intact when important; clears only after false predicate."
+    },
+    {
+      "address": "0x42a7e2",
+      "bytes": "a1e41c4c0085c00f841f01000050e89b3efeff83c40485c00f850e010000a3e41c4c00",
+      "reviewed_meaning": "Other item UI independently applies the same guarded discard."
+    },
+    {
+      "address": "0x444a5c",
+      "bytes": "8b15001b4c00a1e41c4c0081e2ffffdfff85c08915001b4c0074145056e8b223ffff83c408c705e41c4c000000000066c7868c0000006600e90efdffff",
+      "reviewed_meaning": "Use target cancellation returns held code through insert, clears hold and returns to state102."
+    },
+    {
+      "address": "0x444d3b",
+      "bytes": "8b15001b4c00a1e41c4c0081e2ffffdfff85c08915001b4c0074145056e8d320ffff83c408c705e41c4c000000000066c7868c0000006e00e92ffaffff",
+      "reviewed_meaning": "Give target cancellation returns held code through insert, clears hold and returns to state110."
+    },
+    {
+      "address": "0x444def",
+      "bytes": "a1e41c4c008b0d882c4c003bc874138b86800000000bc3898680000000a1e41c4c00",
+      "reviewed_meaning": "Give return compares current hold with original selection and ORs EBX into owner flags when changed."
+    },
+    {
+      "address": "0x444e11",
+      "bytes": "85c00f8451ffffff5056e81020ffffc705e41c4c000000000083c40866c7868c0000006e00",
+      "reviewed_meaning": "Give return reinserts any remaining held code before returning to selection."
+    },
+    {
+      "address": "0x444bff",
+      "bytes": "8b868000000085c3741025fffffeff898680000000e98c08000066c7868c0000000300e980fbffff",
+      "reviewed_meaning": "Closing Give checks flag 0x10000: clear and enter common action finish if set, otherwise state3."
+    },
+    {
+      "address": "0x444e3b",
+      "bytes": "e88066ffffc7868c0000000000000066c7868c0000000400e94ff9ffff",
+      "reviewed_meaning": "Use completion state118 closes UI and goes to command state4."
+    },
+    {
+      "address": "0x444185",
+      "bytes": "33c96a01668b8ea00000006a0051e8f822ffff33d256668b96a00000006a048915e42a4c00eb25",
+      "reviewed_meaning": "Actual Equip entry selects item UI mode4."
+    },
+    {
+      "address": "0x4441ac",
+      "bytes": "33c06a00668b86a00000006a0050e8d122ffff33c956668b8ea00000006a05890de42a4c0056e80973ffff83c41866c7868c0000004c00",
+      "reviewed_meaning": "Actual Drop entry selects mode5, shared wait state76."
+    },
+    {
+      "address": "0x43bf04",
+      "bytes": "fdb74300fdb74300",
+      "reviewed_meaning": "UI builder modes4/5 share the root-construction entry 0x43b7fd."
+    },
+    {
+      "address": "0x43b7fd",
+      "bytes": "8b44241c5055e808f4ffff",
+      "reviewed_meaning": "Pass caller parent and actor to the status-root constructor 0x43ac10."
+    },
+    {
+      "address": "0x43ac10",
+      "bytes": "6a00688200000068102700006810270000e8e1360200",
+      "reviewed_meaning": "Spawn original object130, whose source process is defProcStatusWindow with Data9=0."
+    },
+    {
+      "address": "0x43ac4d",
+      "bytes": "8b4c240889889c000000",
+      "reviewed_meaning": "Store the caller parent pointer in root+0x9c for closure notification."
+    },
+    {
+      "address": "0x43b81b",
+      "bytes": "66c78694000000010081c900400040898e80000000",
+      "reviewed_meaning": "Equip/Drop roots set selection1 and flags0x40004000; the held-return gate uses 0x4000."
+    },
+    {
+      "address": "0x43b8fe",
+      "bytes": "83fb050f85e60500006a006a00e870f9ffff",
+      "reviewed_meaning": "Mode5 adds the discard button via 0x43b280; mode4 skips it."
+    },
+    {
+      "address": "0x439ed8",
+      "bytes": "d3854300",
+      "reviewed_meaning": "Ordinary Data9=0 root handling enters 0x4385d3."
+    },
+    {
+      "address": "0x4385f1",
+      "bytes": "33ffeb0e33ffc744243800000040897c2460",
+      "reviewed_meaning": "Both root frame branches set EDI=0 before input and closure handling."
+    },
+    {
+      "address": "0x439ef8",
+      "bytes": "b5874300118843003d894300ce894300",
+      "reviewed_meaning": "Root states0/1/2/3 dispatch to opening, input, closing animation and parent notification."
+    },
+    {
+      "address": "0x438811",
+      "bytes": "a198634c00a9000002007510f70590634c00000010000f849a000000a8010f8592000000",
+      "reviewed_meaning": "Root accepts cancel input or alternate cancel only after the input-held bit clears."
+    },
+    {
+      "address": "0x438835",
+      "bytes": "8b442474f6c4040f8585000000f6c4407477f6c41075728b0de41c4c003bcf7468",
+      "reviewed_meaning": "With flags0x4000 and no0x1000/0x0400, a held item must be returned before closing."
+    },
+    {
+      "address": "0x438868",
+      "bytes": "e8c3e5ffff83c40885c00f8435160000",
+      "reviewed_meaning": "Call first-empty insertion; failure exits without clearing hold or requesting closure."
+    },
+    {
+      "address": "0x438882",
+      "bytes": "893de41c4c00e803dcffff",
+      "reviewed_meaning": "Only successful insertion clears held code and refreshes the inventory view."
+    },
+    {
+      "address": "0x4388b6",
+      "bytes": "5f5e5d5b83c45cc3",
+      "reviewed_meaning": "Successful held-item return exits this invocation before the close-request branch."
+    },
+    {
+      "address": "0x4388be",
+      "bytes": "66c78696000000ffff6683be96000000ff7508426689968c000000",
+      "reviewed_meaning": "No held item requests close with sentinel-1, then advances the root input state to its closing animation."
+    },
+    {
+      "address": "0x43896b",
+      "bytes": "e89d5e020083c42085c0740766ff868c000000",
+      "reviewed_meaning": "Closing animation completion advances the root to notification state3."
+    },
+    {
+      "address": "0x4389ce",
+      "bytes": "8b869c000000575666ff808c000000e82f65020083c40450e82d660200",
+      "reviewed_meaning": "Increment the saved parent state76 to77 and release the UI group; no turn handoff here."
+    },
+    {
+      "address": "0x444c19",
+      "bytes": "66c7868c0000000300e980fbffff",
+      "reviewed_meaning": "Parent state77 returns to item-menu state3, preserving the current action."
+    }
+  ],
+  "native_execution": false,
+  "correction": "Menu rtus order does not determine process states. Use/Give/Equip/Drop are Data8=5/6/7/8, not 7/10/8/9.",
+  "limits": [
+    "No original function or UI was executed. Static branches do not establish the entire interactive lifecycle.",
+    "Important prohibits discard; this evidence does not prohibit transfer or equipment.",
+    "Use/Give cancel returns held items to the first empty slot; current remake cancellation never removes draft items.",
+    "Confirmation instead of dragging, cancellation preserving the original slot order and movement rollback are remake interaction policies.",
+    "Give multi-transfer sessions, same-code exchanges, sorting and full original movement flags remain unresolved."
+  ]
+}

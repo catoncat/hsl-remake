@@ -1,0 +1,54 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 70,
+  "story_scene": {
+    "id": "story_070_camp_before_klein",
+    "title": "營地・克萊恩城之前",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      }
+    },
+    "map_alias_note": "no_shape"
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002"
+    ],
+    "speakers": [
+      "001",
+      "002"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 70 (winfail029 -> 29,70): the camp on the way to 克萊恩城. No shape of its own —",
+      "obj-070.obs 地圖管理員 names the dusk camp LEVEL55.SHP (same 20x15 grid, 火01 / 夜晚聲",
+      "EVEF objects). 雷歐納德 and 緹娜 talk by the fire; back to the big map at point 29.",
+      "STORY070 opens on actPlayMusic,9 (track 9)."
+    ],
+    "cast": [
+      "Level 70 (camp on the way to 克萊恩城, story-only): 雷歐納德 and 緹娜 by the fire."
+    ],
+    "speakers": [
+      "Level 70 (camp on the way to 克萊恩城, story-only STORY070, winfail029 -> 29,70): 雷歐納德 and 緹娜 (EVEF installs, slots 0 / 1) talk by the fire."
+    ]
+  }
+}

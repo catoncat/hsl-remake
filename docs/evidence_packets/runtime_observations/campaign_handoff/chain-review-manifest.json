@@ -1,0 +1,514 @@
+{
+  "failures": [],
+  "records": [
+    {
+      "capture": "01-level52-victory-line",
+      "interaction": "action_menu",
+      "scenario": "res://content/battles/second_battle.json"
+    },
+    {
+      "capture": "02-level52-result-next",
+      "interaction": "action_menu",
+      "scenario": "res://content/battles/second_battle.json"
+    },
+    {
+      "capture": "03-level58-opening",
+      "interaction": "opening_timeline",
+      "scenario": "res://content/battles/story_058.json"
+    },
+    {
+      "capture": "05-level60-opening",
+      "interaction": "opening_timeline",
+      "scenario": "res://content/battles/story_060.json"
+    },
+    {
+      "capture": "07-level53-opening",
+      "interaction": "opening_timeline",
+      "scenario": "res://content/battles/third_battle.json"
+    },
+    {
+      "capture": "08-level53-first-control",
+      "interaction": "action_menu",
+      "scenario": "res://content/battles/third_battle.json"
+    },
+    {
+      "capture": "09-level53-victory-line",
+      "interaction": "action_menu",
+      "scenario": "res://content/battles/third_battle.json"
+    },
+    {
+      "capture": "10-level53-result",
+      "interaction": "action_menu",
+      "scenario": "res://content/battles/third_battle.json"
+    },
+    {
+      "capture": "11-level1-preview-end-card",
+      "interaction": "opening_timeline",
+      "scenario": "res://content/battles/story_001.json"
+    },
+    {
+      "capture": "12-world-map-ohm-village",
+      "interaction": "idle",
+      "scenario": "res://content/world/world_map_scene.json"
+    },
+    {
+      "capture": "13-gorl-pass-level-2-card",
+      "interaction": "idle",
+      "scenario": "res://content/world/world_map_scene.json"
+    },
+    {
+      "capture": "14-ohm-village-town",
+      "interaction": "idle",
+      "scenario": "res://content/world/world_map_scene.json"
+    },
+    {
+      "case": "campaign_chain",
+      "fixture": "victory_boss on the level-52 dev first-control seam, level 3 / gold 275; level-53 escape win by gate cell + wait",
+      "saved": {
+        "carry": {
+          "claim_limit": "Remake campaign policy; original inter-level persistence is not proven.",
+          "evidence_tier": "provisional",
+          "from_outcome": "victory_boss",
+          "from_scenario_id": "battle_002_level52",
+          "loop": {
+            "gold": 275.0
+          },
+          "restore_vitals": true,
+          "schema": "hsl_campaign_carry.v1",
+          "units": {
+            "leonard": {
+              "actor_id": "001",
+              "attributes": {
+                "con": 12.0,
+                "dex": 16.0,
+                "mind": 8.0,
+                "str": 16.0
+              },
+              "equipment": [
+                {
+                  "item_code": 2.0,
+                  "name": "闊刃劍",
+                  "slot": "weapon"
+                },
+                {
+                  "item_code": 153.0,
+                  "name": "鐵護輪",
+                  "slot": "head"
+                },
+                {
+                  "item_code": 125.0,
+                  "name": "騎士鎧甲",
+                  "slot": "armor"
+                },
+                {
+                  "item_code": 181.0,
+                  "name": "皮靴",
+                  "slot": "foot"
+                }
+              ],
+              "exp": 0.0,
+              "inventory": [
+                241.0,
+                241.0,
+                241.0,
+                246.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "kill_count": 0.0,
+              "level": 3.0,
+              "pending_stat_points": 0.0,
+              "permanent_gains": {
+                "attack_power": 0.0,
+                "defense": 0.0,
+                "magic_attack_power": 0.0,
+                "resist_0": 0.0,
+                "resist_1": 0.0,
+                "resist_2": 0.0,
+                "resist_3": 0.0,
+                "resist_4": 0.0,
+                "speed": 0.0
+              },
+              "weapon_code": 2.0
+            }
+          }
+        },
+        "from_scenario_id": "story_001_ohm_village_opening",
+        "saved_at_unix": 1789716696.0,
+        "scenario_path": "res://content/world/world_map_scene.json",
+        "schema": "hsl_campaign_progress_save.v1",
+        "world": {
+          "current_point": 1.0,
+          "encounter_ratios": {},
+          "over_score": {},
+          "point_events": {},
+          "point_flags": {
+            "1": [
+              "bmpmTown"
+            ],
+            "10": [
+              "bmpmBattle"
+            ],
+            "11": [
+              "bmpmTown"
+            ],
+            "12": [
+              "bmpmGeneral"
+            ],
+            "13": [
+              "bmpmGeneral"
+            ],
+            "14": [
+              "bmpmTown"
+            ],
+            "15": [
+              "bmpmBattle"
+            ],
+            "16": [
+              "bmpmTown"
+            ],
+            "17": [
+              "bmpmGeneral"
+            ],
+            "18": [
+              "bmpmGeneral"
+            ],
+            "19": [
+              "bmpmBattle"
+            ],
+            "2": [
+              "bmpmGeneral"
+            ],
+            "20": [
+              "bmpmTown"
+            ],
+            "21": [
+              "bmpmGeneral"
+            ],
+            "22": [
+              "bmpmGeneral"
+            ],
+            "23": [
+              "bmpmTown"
+            ],
+            "24": [
+              "bmpmGeneral"
+            ],
+            "25": [
+              "bmpmTown"
+            ],
+            "26": [
+              "bmpmGeneral"
+            ],
+            "27": [
+              "bmpmTown"
+            ],
+            "28": [
+              "bmpmBattle"
+            ],
+            "29": [
+              "bmpmBattle"
+            ],
+            "3": [
+              "bmpmGeneral"
+            ],
+            "30": [
+              "bmpmGeneral"
+            ],
+            "31": [
+              "bmpmGeneral"
+            ],
+            "32": [
+              "bmpmGeneral"
+            ],
+            "33": [
+              "bmpmGeneral"
+            ],
+            "34": [
+              "bmpmGeneral"
+            ],
+            "35": [
+              "bmpmTown"
+            ],
+            "36": [
+              "bmpmGeneral"
+            ],
+            "37": [
+              "bmpmGeneral"
+            ],
+            "38": [
+              "bmpmBattle"
+            ],
+            "39": [
+              "bmpmGeneral"
+            ],
+            "4": [
+              "bmpmTown"
+            ],
+            "40": [
+              "bmpmGeneral"
+            ],
+            "41": [
+              "bmpmBattle"
+            ],
+            "42": [
+              "bmpmTown"
+            ],
+            "43": [
+              "bmpmGeneral"
+            ],
+            "44": [
+              "bmpmGeneral"
+            ],
+            "45": [
+              "bmpmTown"
+            ],
+            "5": [
+              "bmpmBattle"
+            ],
+            "6": [
+              "bmpmTown"
+            ],
+            "7": [
+              "bmpmGeneral"
+            ],
+            "8": [
+              "bmpmGeneral"
+            ],
+            "9": [
+              "bmpmTown"
+            ]
+          },
+          "point_modes": {},
+          "schema": "hsl_world_state.v1",
+          "show_track_points": [],
+          "towns": {
+            "1": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": [
+                  1.0,
+                  2.0,
+                  3.0
+                ]
+              }
+            },
+            "11": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            },
+            "14": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            },
+            "16": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            },
+            "23": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            },
+            "25": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            },
+            "27": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            },
+            "35": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            },
+            "4": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": [
+                  4.0,
+                  5.0,
+                  6.0,
+                  7.0
+                ],
+                "7": [
+                  8.0,
+                  12.0,
+                  13.0,
+                  14.0
+                ]
+              }
+            },
+            "42": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            },
+            "6": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": [
+                  16.0,
+                  17.0,
+                  18.0,
+                  20.0
+                ],
+                "20": [
+                  21.0,
+                  22.0,
+                  23.0
+                ]
+              }
+            },
+            "9": {
+              "exec_event": 0.0,
+              "exit_exec_event": 0.0,
+              "secret_appear_ratio": 0.0,
+              "secret_man": null,
+              "tree": {
+                "0": []
+              }
+            }
+          },
+          "track_flags": {
+            "1": [],
+            "10": [
+              "bmpmHidden"
+            ],
+            "11": [
+              "bmpmHidden"
+            ],
+            "12": [
+              "bmpmHidden"
+            ],
+            "13": [
+              "bmpmHidden"
+            ],
+            "14": [
+              "bmpmHidden"
+            ],
+            "15": [],
+            "16": [],
+            "17": [],
+            "18": [],
+            "19": [],
+            "2": [],
+            "20": [
+              "bmpmHidden"
+            ],
+            "21": [],
+            "22": [],
+            "23": [
+              "bmpmHidden"
+            ],
+            "24": [
+              "bmpmHidden"
+            ],
+            "25": [
+              "bmpmHidden"
+            ],
+            "26": [
+              "bmpmHidden"
+            ],
+            "27": [],
+            "28": [],
+            "29": [
+              "bmpmHidden"
+            ],
+            "3": [],
+            "30": [
+              "bmpmHidden"
+            ],
+            "31": [
+              "bmpmHidden"
+            ],
+            "32": [
+              "bmpmHidden"
+            ],
+            "33": [
+              "bmpmHidden"
+            ],
+            "34": [
+              "bmpmHidden"
+            ],
+            "35": [],
+            "36": [],
+            "37": [
+              "bmpmHidden"
+            ],
+            "38": [],
+            "39": [],
+            "4": [],
+            "40": [],
+            "41": [],
+            "42": [],
+            "43": [
+              "bmpmHidden"
+            ],
+            "44": [],
+            "5": [],
+            "6": [],
+            "7": [],
+            "8": [],
+            "9": []
+          },
+          "track_modes": {},
+          "visited_points": [
+            1.0,
+            2.0
+          ]
+        }
+      }
+    }
+  ],
+  "schema": "hsl_campaign_chain_review.v1"
+}

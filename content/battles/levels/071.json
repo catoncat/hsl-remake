@@ -1,0 +1,54 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 71,
+  "story_scene": {
+    "id": "story_071_wosfita_court_claudy",
+    "title": "王座廳・克羅蒂的疑問",
+    "player_token": null,
+    "end_card": {
+      "title": "王座廳",
+      "hint": "劇情結束　　空格／點擊：回到大地圖（漆黑之森）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "STORY071 has no actSetNextPlayLevelEvent; its exit is the big-map write actSetBMWalkToPoint 30,33 with actSetBMWalkerPlayerID SID_琥 (琥's group walks from point 30 to 33) after clearing point 33 / track 32 hidden flags; the scene records those writes and returns to the big map through end_exit — how the original returns from a level without a next-level token is not located",
+      "Enemy053(克羅蒂) is bound to the 009 walk frames its obs record names (obj_Data7 = 53 is kept as source_actor_code)"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "009",
+      "058"
+    ],
+    "speakers": [
+      "009",
+      "058"
+    ]
+  },
+  "speakers": {
+    "SID_ENEMY058": "657",
+    "SID_ENEMY053": "8"
+  },
+  "speaker_policy": {
+    "SID_ENEMY058": "PLAYERS.TXT character 58 name field = 657 克里歐司 (resource-derived name)",
+    "SID_ENEMY053": "PLAYERS.TXT character 53 name field = name_8 -> resource.h 8 = 克羅蒂 (resource-derived name); the obs object wears her SHAPE\\009-* sprite (Enemy053(克羅蒂))"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 71 (winfail031 -> 31,71): the throne hall (obj-071.obs 地圖管理員 names LEVEL58.SHP,",
+      "same 30x22 WRD as 58 / 60 / 63): 克里歐司 muses alone, 克羅蒂 (Enemy053 wearing her 009",
+      "sprite) walks in with questions. STORY071 has no actSetNextPlayLevelEvent: it ends on",
+      "big-map writes (point 33 / track 32 revealed, actSetBMWalkerPlayerID 琥, actSetBMWalkToPoint",
+      "30,33), so the scene ends on a card back to the big map. No player unit."
+    ],
+    "cast": [
+      "Level 71 (throne hall, story-only): 克里歐司 058 and 克羅蒂 (Enemy053 wearing her 009 sprite)."
+    ],
+    "speakers": [
+      "Level 71 (throne hall, story-only STORY071, winfail031 -> 31,71): 克里歐司 058 muses alone, 克羅蒂 053 (wearing her 009 sprite) walks in with questions."
+    ]
+  }
+}

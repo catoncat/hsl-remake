@@ -1,0 +1,161 @@
+{
+  "schema": "hsl_runtime_probe_trace.v1",
+  "source_policy": "tracked schema only; runtime traces, screenshots, raw memory dumps, and original assets stay under ignored/private paths",
+  "trace": {
+    "created_at": "ISO-8601 UTC timestamp",
+    "tool": "probe collector name and version",
+    "process": {
+      "launch_route": "tools/run_original_hsl.sh or attach-only",
+      "exe_path": "local-private path",
+      "exe_sha256": "sha256 of hsl01.exe",
+      "wineprefix": "Wine prefix used for Wine-internal helpers",
+      "pid": "observed host process id",
+      "win32_pid": "optional Wine tasklist process id for win32-rpm",
+      "wine_version": "wine --version",
+      "window_id": "optional CGWindow id for correlation only"
+    },
+    "probe_targets": [
+      {
+        "name": "input_globals | menu_state | cursor_camera | selected_unit | selected_action | script_interpreter",
+        "source": "static address, signature, symbol, hook, or scan rule",
+        "address": "optional hex address",
+        "confidence": "resource-backed | static-backed | runtime-backed | provisional",
+        "read_only": true
+      }
+    ],
+    "runtime_address_resolution": {
+      "tool": "vmmap",
+      "status": "ok | no_pid | unavailable_or_failed",
+      "wine_region_count": 0,
+      "known_address_resolution": [
+        {
+          "name": "input_globals",
+          "address": "0x415910",
+          "address_space": "pe_va_candidate",
+          "mapped": true,
+          "region": {
+            "start_hex": "0x400000",
+            "end_hex": "0x475000",
+            "size": 479232,
+            "protections": "r-x/rwx"
+          },
+          "read_status": "mapped_not_read"
+        }
+      ],
+      "note": "address ranges only; no process memory bytes are exported"
+    },
+    "read_attempts": [
+      {
+        "name": "input_current_bits",
+        "address": "0x4c6390",
+        "address_space": "pe_va_candidate",
+        "read_only": true,
+        "size": "u32",
+        "tool": "lldb | win32-rpm | frida | winedbg | other",
+        "status": "ok | failed | timeout | unavailable | no_pid",
+        "value_u32_hex": "optional scalar value when status is ok",
+        "stdout_tail": "short diagnostic tail only",
+        "stderr_tail": "short diagnostic tail only"
+      }
+    ],
+    "sampling": {
+      "backend": "lldb | win32-rpm",
+      "count": "number of scalar samples requested",
+      "interval_ms": "delay between samples",
+      "phase_hint": "manual phase label only; not proof of game state",
+      "phase_profile": "optional collector profile: title_idle | dialogue | player_control | action_menu | confirm_down | confirm_up | cancel_down | cancel_up | click_down | click_up | camera_scroll | script_phase",
+      "phase_confidence": "manual_hint_only | operator_observed | correlated_scalar_change | baseline_unknown",
+      "interaction_event": {
+        "name": "none | confirm_down | confirm_up | cancel_down | cancel_up | click_down | click_up | manual_phase_mark",
+        "source": "operator label only; not proof of original semantics"
+      },
+      "run_id": "optional string to correlate supervised traces from the same manual session",
+      "operator_note": "optional short metadata-only note; no screenshots, paths, raw memory, or original text",
+      "read_u32": [
+        {
+          "name": "input_current_bits",
+          "address": "0x4c6390",
+          "address_space": "pe_va_candidate",
+          "size": "u32",
+          "target_group": "input | logical_cursor | menu | camera | script_phase | static_dispatch | custom"
+        }
+      ],
+      "available_phase_profiles": [
+        "title_idle",
+        "dialogue",
+        "player_control",
+        "action_menu",
+        "confirm_down",
+        "confirm_up",
+        "cancel_down",
+        "cancel_up",
+        "click_down",
+        "click_up",
+        "camera_scroll",
+        "script_phase"
+      ],
+      "source_policy": "read-only scalar sampling; no raw memory bytes are exported"
+    },
+    "samples": [
+      {
+        "t_ms": 0,
+        "phase_hint": "title | transition | opening_dialogue | player_control | target_select | turn_event | unknown",
+        "interaction_event": "none | confirm_down | confirm_up | cancel_down | cancel_up | click_down | click_up | manual_phase_mark",
+        "input": {
+          "current_bits": "optional numeric or hex state",
+          "pressed_edge_bits": "optional numeric or hex state",
+          "mouse_client": [0, 0],
+          "read_status": "ok | failed | timeout | unavailable | not_attempted",
+          "source_read": "optional read_u32 name used to populate current_bits"
+        },
+        "scalar_reads": [
+          {
+            "name": "input_current_bits",
+            "address": "0x4c6390",
+            "address_space": "pe_va_candidate",
+            "read_only": true,
+            "size": "u32",
+            "tool": "win32-rpm",
+            "status": "ok",
+            "value_u32_hex": "0x00000000"
+          }
+        ],
+        "cursor_camera": {
+          "cursor": [0, 0],
+          "camera": [0, 0],
+          "coordinate_space": "script | client | map_grid | unknown"
+        },
+        "menu": {
+          "visible": false,
+          "selected_index": null,
+          "hit_object": null,
+          "command_candidate": null
+        },
+        "battle": {
+          "selected_unit": null,
+          "selected_action": null,
+          "turn_owner": null,
+          "round_counter": null
+        },
+        "script": {
+          "status_id": null,
+          "opcode_candidate": null,
+          "program_counter": null
+        },
+        "evidence_notes": []
+      }
+    ]
+  },
+  "first_probe_route": [
+    "attach to the Wine process read-only",
+    "confirm executable hash and known static windows",
+    "sample input aggregator state before and after a supervised input",
+    "only then expand toward menu state, cursor/camera, selected unit, and selected action"
+  ],
+  "forbidden_first_stage": [
+    "whole-desktop screenshots",
+    "raw memory dumps in tracked paths",
+    "writing to the original process",
+    "claiming command semantics from capture alone"
+  ]
+}

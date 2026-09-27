@@ -1,0 +1,120 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 53,
+  "battle": {
+    "id": "battle_003_level53",
+    "title": "逃出克萊恩城 / Level 53",
+    "initial_focus_unit_id": "tina",
+    "initial_objective_phase": "escape",
+    "result_labels": {
+      "win_0": "逃出克萊恩城 · 緹娜 逃出",
+      "fail_0": "逃出克萊恩城 · 緹娜 被捕"
+    },
+    "expected": {
+      "units": 4,
+      "players": 1
+    },
+    "derive_escape_zone": true,
+    "unit_ids": {
+      "SID_ENEMY023": "enemy023_{n}",
+      "obj_Story_Level53_Enemy23": "enemy023_{n}"
+    },
+    "unresolved_semantics": [
+      "STORY053 opening is played by BattleOpeningCoordinator from the compiled timeline with remake pacing; the cinematic 029 walk-and-delete, obj_Story_Player2 install, rope shape override and slide are presentation readings.",
+      "The controlled unit is the source002 priest template at a fixed initial level; original level-53 initialization, growth carry from the captured party and the 029/002 hand-off are not measured.",
+      "WINFAIL053 round-5/7 and count-event inserts land on 32px cell origins read by integer division; original insert lifecycle, walk speed 8 and facing are unresolved.",
+      "actCheckPlayerArrivePos is read as the controlled unit standing on one of the four gate cells at outcome evaluation; the original arrival test timing is not proven.",
+      "actDeletePlayerCode SID_PLAYER1 in the win section is recorded, not executed; the campaign hand-off [1,1] leaves the prologue and is not remade.",
+      "obj_Story_Block (OBJ-ALL.H 701) has no shape; its insert at (640,672) is recorded and nothing is drawn or blocked by the scenario.",
+      "WINFAIL053 round-5/7 and count-event inserts are script actor templates (obj_Story_Level53_Enemy23 → ScriptActorCreationRules) born at the left-edge insert pixel and walked to their targets; the live rules are interpreted from the battle seed by WinfailScenarioRules (rule_adapter winfail)."
+    ]
+  },
+  "story_scene": {
+    "id": "story_053_klein_escape_opening",
+    "title": "逃出克萊恩城（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_slot_inserts": {
+      "obj_Story_Player2": {
+        "token": "SID_PLAYER1",
+        "unit_id": "tina",
+        "actor_id": "029",
+        "object_code": 7
+      }
+    },
+    "token_overrides": {
+      "SID_ENEMY023/1": "guard023_1"
+    },
+    "shapeless_objects": {
+      "obj_Story_Block": 701
+    },
+    "end_card": {
+      "title": "逃出克萊恩城",
+      "hint": "戰鬥部分（level 53）尚未重製　　空格／點擊：回到第一戰"
+    },
+    "notes": [
+      "actScrollBGToPos is read as the view top-left in map pixels; actMoveDispWait slides the actor without walk frames at a provisional 2px-per-frame reading",
+      "obj_Story_Block (OBJ-ALL.H 701) has no shape; its insert is recorded but nothing is drawn or blocked"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "002",
+      "023",
+      "029"
+    ],
+    "speakers": [
+      "002",
+      "023",
+      "029"
+    ],
+    "shape_sets": {
+      "climb": {
+        "actor_id": "029",
+        "members": [
+          "SHAPE\\002-30001.SHP",
+          "SHAPE\\002-30002.SHP",
+          "SHAPE\\002-30003.SHP",
+          "SHAPE\\002-30004.SHP",
+          "SHAPE\\002-30005.SHP",
+          "SHAPE\\002-30006.SHP"
+        ],
+        "source_token": "actChangeShape,SID_PLAYER1,1,4,SHAPE\\002-30001.SHP,6"
+      }
+    }
+  },
+  "speakers": {
+    "SID_PLAYER1": "1",
+    "SID_ENEMY029": "1",
+    "SID_ENEMY023": "376"
+  },
+  "speaker_policy": {
+    "SID_PLAYER1": "controlled player slot 1 = PLAYERS.TXT character 29 (name_1 -> resource.h 1 = 緹娜); STORY053 re-inserts her as obj_Story_Player2 after the story-object walk",
+    "SID_ENEMY029": "story-object copy of 緹娜 before player control (same resource name 1)",
+    "SID_ENEMY023": "PLAYERS.TXT name field is 306 (???); 376 一般兵 is the same remake label as level 51, provisional",
+    "defNoOne": "narration token without a speaker; presented without name or portrait"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 53 is a battle (winfail053): battle_053.json is assembled by level_battle:53; this",
+      "story_scene section is its opening preview, which plays the opening up to first player",
+      "control and then shows the not-remade card (the preview draws 緹娜 as the cinematic 029;",
+      "the battle fields registered slot 1 = PLAYERS 002).",
+      "actPlayLevelMusic at the end of the opening plays table track 18 (0x477b44).",
+      "obj_Story_Player2 (OBJ-ALL.H code 7) installs controlled player slot 2 =",
+      "SID_PLAYER1 at the insert point.",
+      "The pursuing guards enter by script; the token SID_ENEMY023,1 that speaks",
+      "after their entrance is bound to the first inserted guard rather than the",
+      "EVEF gate guard (remake reading; original instance lookup is unresolved).",
+      "obj_Story_Block (OBJ-ALL.H 701) is a shapeless script object; the preview",
+      "records its insert without drawing anything."
+    ],
+    "cast": [
+      "Level 53 (緹娜's escape): the cinematic princess 029 (walks off before the",
+      "controlled slot is installed; opening-only cast in battle_053.json), the controlled unit 002 that obj_Story_Player2",
+      "installs (PLAYERS row 002 = shared priest template) and the pursuing soldiers.",
+      "STORY053 swaps her walk shapes for the six-frame rope-climb set while she",
+      "descends the tower (actChangeShape,SID_PLAYER1,1,4,SHAPE\\\\002-30001.SHP,6)."
+    ]
+  }
+}

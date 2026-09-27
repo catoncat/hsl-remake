@@ -1,0 +1,1 @@
+# Evidence and docs are read by Python checks and FileAccess only; Godot does not scan or import them.

@@ -1,0 +1,94 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 65,
+  "story_scene": {
+    "id": "story_065_mandoria_plea",
+    "title": "廢都　曼多利亞　村民",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      }
+    },
+    "end_card": {
+      "title": "廢都　曼多利亞",
+      "hint": "後續劇情（level 66）尚未重製　　空格／點擊：回到大地圖（廢都）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    }
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "061",
+      "062"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "062"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_ENEMY062": "656"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-065.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_ENEMY062": "PLAYERS.TXT character 62 name field is 306 (???); obj-065.obs names the object Enemy062(村民), so 656 村民 is the remake speaker label, provisional"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 65 is registered: the scene end hands off to story_065.json with",
+      "STORY009's actBMSetPointEvent 9,0,bmpmTown applied to the carried world.",
+      "Level 65 (the 廢都 interior, story-only, chained from STORY009): 緹娜 asks the",
+      "villagers for help and is refused; the party walks out one by one",
+      "(actWalkAndDelete) and 雷歐納德 has the last word. Chains to level 66",
+      "(actSetNextPlayLevelEvent 9,66), which has no map shape of its own yet."
+    ],
+    "cast": [
+      "Level 65 (廢都 interior, story-only): the party and the 061 / 062 villagers; 062 speaks."
+    ],
+    "speakers": [
+      "Level 65 (廢都 interior, story-only STORY065): the party and the 062 villagers."
+    ]
+  }
+}

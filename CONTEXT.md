@@ -1,0 +1,103 @@
+# HSL Project Vocabulary and Evidence Policy
+
+Checked: 2026-09-14
+
+本文件只定义当前项目必须共享的术语和证据写法。项目进度看 `docs/PROJECT.md`，代码结构看 `docs/ARCHITECTURE.md`，具体资料位置看 `docs/KNOWLEDGE_INDEX.md`。
+
+## Product terms
+
+### Original game
+
+用户本机 Wine prefix 中的《幻世录》原作。它是行为参考实现，不是本项目运行时依赖。普通开发、Godot 测试和静态检查不需要启动原作。
+
+### Remake runtime
+
+当前 Godot 产品路径：
+
+```text
+BattleSceneRuntime.tscn → BattleSceneRuntime.gd → BattlePlayLoop.gd
+```
+
+### Live scenario
+
+`content/battles/battle_051.json`。它是当前产品真正加载的第一战配置，由 `level_battle:51` 从 seed／`story_051.json` 组装，与其余正式战斗同一路径（`rule_adapter: winfail`）。`content/battles/first_battle.json` 保留为已审核的 12 名角色模板名册（Python 生成器输入）与纯 loop 机制测试的 `development_battle` 夹具，不再是可进入的战斗。
+
+### Play loop
+
+`BattlePlayLoop` 持有当前唯一可变战斗状态：单位坐标、HP、击败状态、行动状态、速度队列和基础结果。Scene 和 ActorRuntime 只同步表现。
+
+### First control
+
+开场交接后 Leonard 第一次可以接受玩家命令的状态。当前有行动菜单证据，但仍缺 confirmed `first_control_idle_no_menu`；不得用对白间隙或已打开菜单的截图冒充纯站位真值。
+
+### Player-controlled / friendly AI / enemy AI
+
+- `player_controlled`：当前只有 Leonard。
+- `friendly_ai`：第一战与 Leonard 同侧但不接受玩家命令的 023/024。
+- `enemy_ai`：第一战敌方 021/026。
+
+Actor id、sprite id、object process 名或 `team` 字段不能单独证明最终控制权；优先使用 live scenario 与 `ActorRoleRules` 的显式 role。
+
+### Current-Godot scaffold
+
+为了让纵切可运行而明确暂定的规则或表现。当前实例与替换证据见机制矩阵；旧的“必中的攻击”“最近目标追击”不能继续当作当前实现摘要。每个 provisional 选择必须标明范围，不是原版事实。
+
+## Evidence tiers
+
+新结论统一使用以下层级；旧 JSON 中可能保留历史复合标签，但不得继续扩散新命名。
+
+| Tier | 含义 | 可以支持什么 |
+| --- | --- | --- |
+| `resource-derived` | 直接来自原版资源、脚本、表格或可重复解析结果 | 资源存在、字段值、脚本 token/order |
+| `static-derived` | 来自 EXE 静态分析、反编译和明确 call/data join | 函数行为、字段含义、公式或调度候选 |
+| `runtime-measured` | 来自本机原作的窄问题、可追溯窗口采样 | 具体画面、位置、状态转换或标量观测 |
+| `user-confirmed` | 用户对原作内容作出的明确确认 | 用户确认的身份、文字或行为，仍与其他来源分开记录 |
+| `user-hypothesis` | 用户记忆或推测 | 研究方向，不能直接驱动原版等价实现 |
+| `provisional` | 为工程推进暂定，等待更强证据替换 | 可玩 scaffold；必须列出 unresolved boundary |
+| `negative-evidence` | 已检查某个来源但未找到支持 | 阻止错误声明，不证明相反机制必然成立 |
+
+## Claim rules
+
+1. **测试通过只证明实现合同没有回归。** 它不证明原版 parity。
+2. **文件名不是语义。** SHP/BCMD/临时批次编号、截图名称和反编译临时函数名都只能作为定位线索。
+3. **导入资源不是机制。** 看到角色帧、UI 图或 WRD 格子，不等于方向、命中、阻挡、时序已经恢复。
+4. **runtime 只回答窄问题。** 新采样必须写清 route、窗口、时刻、evidence id 和不支持的结论。
+5. **混合证据拆开写。** 不把 `resource-derived + user-confirmed + provisional` 压成一个模糊“已确认”。
+6. **所有 provisional 都有替换点。** 数据、代码或文档中写明未来需要哪类证据。
+7. **录像元数据不等于引擎合同。** 用户提供的 record.mp4 为 638×480／30fps，项目逻辑视口为 640×480；采样 PNG 序号不是视频帧号。视频模型的文字推断需逐项查图，源帧、像素匹配和局部语义分别验证。入口见 `docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md`。
+
+## Spatial contract
+
+Camera、grid/world 投影、actor 脚点、Move overlay、hit-test、前景遮挡和菜单 anchor 是同一个空间合同，不能分别凭感觉调整。
+
+当前强制入口：
+
+```text
+docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.json
+docs/evidence_packets/runtime_observations/first_battle_visuals/move_overlay_primary.png
+tools/hsltools/evidence/visual_index.py
+```
+
+当前角色格中心由原版初始化确定：`origin=(0,0)`、`cell_size=(32,32)`，渲染位置为格中心。旧 Move probe 的 `(192,64)` 偏移和 IoU `0.776041` 不能继续作为 live 投影；NPC 开场移动、前景锚点和完整视觉合同仍待恢复。
+
+## Original runtime capture policy
+
+- 原作文件由环境变量 `HSL_ORIGINAL_DIR` 指定（含 `hsl.pak`／`hsl01.exe` 的目录）；运行观测用 Wine 前缀 `WINEPREFIX`，原作在 `$WINEPREFIX/drive_c/hsl`。
+- 优先通过 `tools/hsl_original_control.py` 做 Wine 内部单步输入和 cnc-ddraw 游戏画面采样；旧 `tools/hsl_capture.sh` 保留 window-only capture。
+- 多个 Wine 窗口时必须显式选择 window id；工具不会猜。
+- 旧 macOS HID 输入需要 Accessibility 权限；Wine 内部入口要求唯一原作窗口及 Wine 前台状态，不承诺 macOS 后台隔离。
+- raw 截图、视频和 trace 放在仓库外 archive 或 `ignored/`，有长期价值的结论再提升到 tracked evidence packet。
+
+## Completion language
+
+当前可说：
+
+> 已接通证据驱动的第一战运行时地基和基础 mechanics-playable 战斗循环。
+
+除非以后有对应证据和验收，不可说：
+
+- 第一战已完成。
+- 开场已完整还原。
+- AI 已恢复。
+- 伤害/命中公式完全确认。
+- 第一可操作帧、镜头或 UI 已达到原版 parity。

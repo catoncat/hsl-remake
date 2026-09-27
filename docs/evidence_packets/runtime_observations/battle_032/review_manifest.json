@@ -1,0 +1,110 @@
+{
+  "failures": [],
+  "level": 32,
+  "records": [
+    {
+      "camera": "(384.0, 240.0)",
+      "capture": "00-framed",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 400.0)",
+      "capture": "dialogue-1977",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 432.0)",
+      "capture": "dialogue-1978",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 944.0)",
+      "capture": "dialogue-1979",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 944.0)",
+      "capture": "dialogue-1980",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 944.0)",
+      "capture": "dialogue-1981",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 944.0)",
+      "capture": "dialogue-1982",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 944.0)",
+      "capture": "dialogue-1983",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 944.0)",
+      "capture": "dialogue-1984",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 944.0)",
+      "capture": "dialogue-1985",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 944.0)",
+      "capture": "dialogue-1986",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 400.0)",
+      "capture": "dialogue-1987",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 400.0)",
+      "capture": "dialogue-1988",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 240.0)",
+      "capture": "first-control",
+      "motion": false
+    },
+    {
+      "first_control": {
+        "interaction": "action_menu",
+        "players": 3,
+        "units": 22
+      }
+    },
+    {
+      "camera": "(384.0, 240.0)",
+      "capture": "win-dialogue-1989",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 240.0)",
+      "capture": "win-dialogue-1990",
+      "motion": false
+    },
+    {
+      "camera": "(384.0, 240.0)",
+      "capture": "result",
+      "motion": false
+    },
+    {
+      "result": {
+        "outcome": "victory_script",
+        "resolved": {
+          "code": 0,
+          "key": "win_0",
+          "kind": "win",
+          "outcome": "victory_script"
+        }
+      }
+    }
+  ],
+  "schema": "hsl_battle_review.v1"
+}

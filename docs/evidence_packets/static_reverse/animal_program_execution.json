@@ -1,0 +1,729 @@
+{
+  "schema": "hsl_native_animal_instruction_slice.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "entry": "0x401c20",
+  "stop_before": "0x4034c6",
+  "instruction_budget_per_update": 512,
+  "update_budget_per_case": 64,
+  "source_program_sha256": "e27783ef3148bad8523af95c7d111f1a3ed66c7c0844c7b7cfdabefb4ef9b4ea",
+  "source_header_sha256": "88959ec91256978d74b9b10138cb12d4505e54789c6e0cfc3d52af0cc38a97e6",
+  "prefix_sha256": "1594b846a1b66f66ea0daf66c03c26eb3460e38c709d3935090316bd22533b4d",
+  "instruction_anchors": [
+    {
+      "address": "0x401f3b",
+      "bytes": "8bbea40000008b0783c70483f821894424680f87b6070000bd08000100ff2485b0374000",
+      "meaning": "load program cursor, consume 32-bit opcode, dispatch 0..33"
+    },
+    {
+      "address": "0x402278",
+      "bytes": "8b0783c70483f821894424680f86cefcffff",
+      "meaning": "some commands drain the following opcode in the same invocation"
+    },
+    {
+      "address": "0x402295",
+      "bytes": "c7868c0000000000650089bea4000000e91c120000",
+      "meaning": "aniOver enters phase 101 and saves cursor"
+    },
+    {
+      "address": "0x4022aa",
+      "bytes": "6689868e0000008b0783c704894424688986a000000089bea4000000e9fb110000",
+      "meaning": "aniDelay stores phase 1, counter and continuation, then yields"
+    },
+    {
+      "address": "0x40243d",
+      "bytes": "668b4e3289bea40000006603c866894e30e973100000",
+      "meaning": "aniSetShape updates frame and yields after optional afterimage call"
+    },
+    {
+      "address": "0x402476",
+      "bytes": "8b0783c704894424688946208946248b060d0000000889bea40000008906e92d100000",
+      "meaning": "aniSetZoom writes both scales and yields"
+    },
+    {
+      "address": "0x402714",
+      "bytes": "8b8ea0000000498bc1898ea00000003bc30f8f9b0d0000899e8c000000e9900d0000",
+      "meaning": "wait decrements, clears state on <=0, and still yields"
+    }
+  ],
+  "opcode_table": {
+    "address": "0x4037b0",
+    "targets": [
+      "0x402295",
+      "0x4022aa",
+      "0x401f5f",
+      "0x4022cb",
+      "0x402350",
+      "0x4023d5",
+      "0x4023ef",
+      "0x402415",
+      "0x402453",
+      "0x402476",
+      "0x402180",
+      "0x4021df",
+      "0x402499",
+      "0x4024c1",
+      "0x4024d3",
+      "0x40263c",
+      "0x402168",
+      "0x402709",
+      "0x402709",
+      "0x40202a",
+      "0x401f9a",
+      "0x401fe2",
+      "0x402709",
+      "0x402078",
+      "0x4020c8",
+      "0x402118",
+      "0x402709",
+      "0x402709",
+      "0x402709",
+      "0x402709",
+      "0x402709",
+      "0x402266",
+      "0x402709",
+      "0x40226e"
+    ]
+  },
+  "phase_table": {
+    "address": "0x403720",
+    "targets": [
+      "0x401f3b",
+      "0x402714",
+      "0x402736",
+      "0x402752",
+      "0x402771",
+      "0x4027ce",
+      "0x40298a",
+      "0x402a3e",
+      "0x403321",
+      "0x4034c6"
+    ]
+  },
+  "phase_indices": {
+    "0": 0,
+    "1": 1,
+    "8": 2,
+    "12": 3,
+    "13": 4,
+    "101": 6,
+    "102": 7,
+    "103": 8
+  },
+  "cases": [
+    {
+      "name": "delay_0",
+      "words": [
+        1,
+        0,
+        9,
+        77824,
+        0
+      ],
+      "states": [
+        {
+          "cursor_word": 0,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 0,
+          "wait": -1,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 4,
+          "phase": 0,
+          "wait": -1,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        },
+        {
+          "cursor_word": 5,
+          "phase": 101,
+          "wait": -1,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        }
+      ]
+    },
+    {
+      "name": "delay_1",
+      "words": [
+        1,
+        1,
+        9,
+        77824,
+        0
+      ],
+      "states": [
+        {
+          "cursor_word": 0,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 1,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 4,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        },
+        {
+          "cursor_word": 5,
+          "phase": 101,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        }
+      ]
+    },
+    {
+      "name": "delay_2",
+      "words": [
+        1,
+        2,
+        9,
+        77824,
+        0
+      ],
+      "states": [
+        {
+          "cursor_word": 0,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 2,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 1,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 4,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        },
+        {
+          "cursor_word": 5,
+          "phase": 101,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        }
+      ]
+    },
+    {
+      "name": "delay_12",
+      "words": [
+        1,
+        12,
+        9,
+        77824,
+        0
+      ],
+      "states": [
+        {
+          "cursor_word": 0,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 12,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 11,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 10,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 9,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 8,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 7,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 6,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 5,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 4,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 3,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 2,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 1,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 4,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        },
+        {
+          "cursor_word": 5,
+          "phase": 101,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        }
+      ]
+    },
+    {
+      "name": "delay_30",
+      "words": [
+        1,
+        30,
+        9,
+        77824,
+        0
+      ],
+      "states": [
+        {
+          "cursor_word": 0,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 30,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 29,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 28,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 27,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 26,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 25,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 24,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 23,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 22,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 21,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 20,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 19,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 18,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 17,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 16,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 15,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 14,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 13,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 12,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 11,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 10,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 9,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 8,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 7,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 6,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 5,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 4,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 3,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 2,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 1,
+          "wait": 1,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 4,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        },
+        {
+          "cursor_word": 5,
+          "phase": 101,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        }
+      ]
+    },
+    {
+      "name": "player5_consecutive_zoom_excerpt",
+      "source_lines": [
+        83,
+        83,
+        84,
+        84,
+        85,
+        85
+      ],
+      "words": [
+        9,
+        69632,
+        9,
+        73728,
+        9,
+        77824,
+        9,
+        81920,
+        9,
+        86016,
+        9,
+        90112,
+        0
+      ],
+      "states": [
+        {
+          "cursor_word": 0,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 65536,
+          "zoom_y": 65536
+        },
+        {
+          "cursor_word": 2,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 69632,
+          "zoom_y": 69632
+        },
+        {
+          "cursor_word": 4,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 73728,
+          "zoom_y": 73728
+        },
+        {
+          "cursor_word": 6,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 77824,
+          "zoom_y": 77824
+        },
+        {
+          "cursor_word": 8,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 81920,
+          "zoom_y": 81920
+        },
+        {
+          "cursor_word": 10,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 86016,
+          "zoom_y": 86016
+        },
+        {
+          "cursor_word": 12,
+          "phase": 0,
+          "wait": 0,
+          "zoom_x": 90112,
+          "zoom_y": 90112
+        },
+        {
+          "cursor_word": 13,
+          "phase": 101,
+          "wait": 0,
+          "zoom_x": 90112,
+          "zoom_y": 90112
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Synthetic object, script pointer and update calls; native loader/initialization not executed.",
+    "aniOver 0 appended to synthetic excerpts for bounded termination; not evidence of parser padding.",
+    "Stop at the common presentation tail: no position integration, sound, graphics or full function return.",
+    "Only aniDelay, aniSetZoom and aniOver are exercised; all unknown callees fail explicitly.",
+    "Source opcode numeric definitions are separate from this process's supported handler subset.",
+    "No update frequency, original frame duration, complete attack/casting or Godot parity claim."
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 55,
+  "story_scene": {
+    "id": "story_055_camp_dusk",
+    "title": "營地・黃昏",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      }
+    },
+    "notes": [
+      "the EVEF 夜晚聲 (mapobjPlayBGSound, WAV\\NIGHT001.WAV) is exported as a background_sound placement and its WAV into sounds/; no runtime consumer plays EVEF-placed ambience yet"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-055.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-055.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-055.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Post-battle camp talks. winfail002's win section hands off with",
+      "actSetNextPlayLevelEvent 2,55: level 55 is the camp at dusk (its own 640x480",
+      "shape41\\level55.SHP, campfire 火01 and night ambience 夜晚聲 in the EVEF) where 緹娜",
+      "reveals she is the Lars princess; STORY055 chains to level 56 (2,56).",
+      "STORY055 opens on actPlayMusic,8 (track 8)."
+    ],
+    "cast": [
+      "Level 55 (camp at dusk after 戈爾山道, story-only): 雷歐納德 / 緹娜 / 琥 by the fire."
+    ],
+    "speakers": [
+      "Level 55 (camp at dusk after 戈爾山道, story-only STORY055, winfail002 -> 2,55): the",
+      "three EVEF installs 雷歐納德 / 緹娜 / 琥 (EXTRAS.H slots 0 / 1 / 2) talk by the fire."
+    ]
+  }
+}

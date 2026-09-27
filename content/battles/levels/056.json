@@ -1,0 +1,69 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 56,
+  "story_scene": {
+    "id": "story_056_camp_morning",
+    "title": "營地・清晨",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      }
+    },
+    "player_slot_inserts": {
+      "obj_Story_Player2": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002",
+        "object_code": 7
+      }
+    },
+    "notes": [
+      "the EVEF 鳥聲 (mapobjPlayBGSound, WAV\\YELL010.WAV) is exported as a background_sound placement and its WAV into sounds/; no runtime consumer plays EVEF-placed ambience yet"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-056.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; STORY056 inserts her through obj_Story_Player2 (OBJ-ALL.H 7 = slot 1); PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-056.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 56 is the same camp the next morning (its own shape41\\level56.SHP, bird",
+      "ambience 鳥聲): 緹娜 is inserted by obj_Story_Player2, the party takes her wager and",
+      "walks off west; the script hides track 3 and returns to the big map at point 2."
+    ],
+    "cast": [
+      "Level 56 (camp in the morning, story-only): 雷歐納德 and 琥 in the EVEF, 緹娜 inserted",
+      "by obj_Story_Player2; all three speak."
+    ],
+    "speakers": [
+      "Level 56 (camp in the morning, story-only STORY056, chained from STORY055): 雷歐納德",
+      "and 琥 are EVEF installs, 緹娜 is inserted by obj_Story_Player2 (slot 1)."
+    ]
+  }
+}

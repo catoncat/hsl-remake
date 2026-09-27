@@ -1,0 +1,15 @@
+# HSL Original: no-menu player-control state -> bounded action-menu probe
+# Coordinates are window-relative, based on the 640x480 game viewport.
+#
+# Precondition:
+# - p1_title_to_player_control.txt has completed.
+# - The game is at the first-battle player-control state with no menu visible.
+#
+# This route only tests whether a right-click opens the action menu. Until a
+# resulting capture is promoted and indexed, that behavior remains a probe,
+# not an original-runtime fact.
+
+screenshot before_action_menu_probe
+rclick 320 240
+wait 1
+screenshot after_action_menu_probe

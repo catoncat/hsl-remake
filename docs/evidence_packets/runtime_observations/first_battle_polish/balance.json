@@ -1,0 +1,602 @@
+[
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 10,
+    "steps": 63,
+    "turn": 8
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 11,
+    "steps": 68,
+    "turn": 9
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 12,
+    "steps": 59,
+    "turn": 7
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 13,
+    "steps": 64,
+    "turn": 8
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 14,
+    "steps": 64,
+    "turn": 8
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 15,
+    "steps": 67,
+    "turn": 8
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 16,
+    "steps": 63,
+    "turn": 8
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 17,
+    "steps": 58,
+    "turn": 7
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 18,
+    "steps": 67,
+    "turn": 8
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 19,
+    "steps": 60,
+    "turn": 7
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 20,
+    "steps": 67,
+    "turn": 9
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 21,
+    "steps": 67,
+    "turn": 9
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 22,
+    "steps": 66,
+    "turn": 9
+  },
+  {
+    "hp": 22,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 23,
+    "steps": 61,
+    "turn": 7
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 24,
+    "steps": 67,
+    "turn": 9
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 25,
+    "steps": 60,
+    "turn": 7
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 26,
+    "steps": 60,
+    "turn": 7
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 27,
+    "steps": 68,
+    "turn": 9
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 28,
+    "steps": 62,
+    "turn": 8
+  },
+  {
+    "hp": 30.0,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "retreat",
+    "potions_used": 0,
+    "seed": 29,
+    "steps": 68,
+    "turn": 9
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 10,
+    "steps": 67,
+    "turn": 8
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 11,
+    "steps": 55,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 12,
+    "steps": 62,
+    "turn": 7
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 13,
+    "steps": 56,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 14,
+    "steps": 69,
+    "turn": 8
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 15,
+    "steps": 55,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 16,
+    "steps": 27,
+    "turn": 3
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 17,
+    "steps": 54,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 18,
+    "steps": 56,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 19,
+    "steps": 68,
+    "turn": 8
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 20,
+    "steps": 27,
+    "turn": 3
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 21,
+    "steps": 54,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 22,
+    "steps": 47,
+    "turn": 5
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 23,
+    "steps": 56,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 2.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 24,
+    "steps": 58,
+    "turn": 7
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 25,
+    "steps": 56,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 26,
+    "steps": 53,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 27,
+    "steps": 55,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 28,
+    "steps": 55,
+    "turn": 6
+  },
+  {
+    "hp": 0,
+    "level": 1.0,
+    "outcome": "defeat_leonard",
+    "policy": "reckless",
+    "potions_used": 0,
+    "seed": 29,
+    "steps": 53,
+    "turn": 6
+  },
+  {
+    "hp": 18,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 1,
+    "seed": 10,
+    "steps": 65,
+    "turn": 8
+  },
+  {
+    "hp": 20,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 11,
+    "steps": 66,
+    "turn": 8
+  },
+  {
+    "hp": 20,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 1,
+    "seed": 12,
+    "steps": 61,
+    "turn": 7
+  },
+  {
+    "hp": 23,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 13,
+    "steps": 65,
+    "turn": 7
+  },
+  {
+    "hp": 22,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 14,
+    "steps": 62,
+    "turn": 7
+  },
+  {
+    "hp": 23,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 15,
+    "steps": 66,
+    "turn": 8
+  },
+  {
+    "hp": 30,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 3,
+    "seed": 16,
+    "steps": 66,
+    "turn": 8
+  },
+  {
+    "hp": 21,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 17,
+    "steps": 65,
+    "turn": 8
+  },
+  {
+    "hp": 30,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 18,
+    "steps": 69,
+    "turn": 8
+  },
+  {
+    "hp": 20,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 1,
+    "seed": 19,
+    "steps": 56,
+    "turn": 6
+  },
+  {
+    "hp": 22,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 1,
+    "seed": 20,
+    "steps": 62,
+    "turn": 7
+  },
+  {
+    "hp": 23,
+    "level": 2.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 21,
+    "steps": 65,
+    "turn": 8
+  },
+  {
+    "hp": 30,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 22,
+    "steps": 60,
+    "turn": 7
+  },
+  {
+    "hp": 30,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 23,
+    "steps": 63,
+    "turn": 7
+  },
+  {
+    "hp": 22,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 24,
+    "steps": 66,
+    "turn": 8
+  },
+  {
+    "hp": 22,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 1,
+    "seed": 25,
+    "steps": 64,
+    "turn": 7
+  },
+  {
+    "hp": 30,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 26,
+    "steps": 64,
+    "turn": 8
+  },
+  {
+    "hp": 30,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 27,
+    "steps": 61,
+    "turn": 7
+  },
+  {
+    "hp": 30,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 28,
+    "steps": 60,
+    "turn": 7
+  },
+  {
+    "hp": 22,
+    "level": 1.0,
+    "outcome": "victory_escape",
+    "policy": "heal_then_advance",
+    "potions_used": 2,
+    "seed": 29,
+    "steps": 63,
+    "turn": 7
+  }
+]

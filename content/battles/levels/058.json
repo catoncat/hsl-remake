@@ -1,0 +1,34 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 58,
+  "story_scene": {
+    "id": "story_058_wosfita_court",
+    "title": "沃斯菲塔王座廳",
+    "player_token": "SID_PLAYER0"
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "024",
+      "027",
+      "058"
+    ],
+    "speakers": [
+      "001",
+      "027",
+      "058"
+    ]
+  },
+  "speakers": {
+    "SID_PLAYER0": "0",
+    "SID_ENEMY024": "377",
+    "SID_ENEMY027": "306",
+    "SID_ENEMY058": "657"
+  },
+  "speaker_policy": {
+    "SID_ENEMY058": "PLAYERS.TXT character 58 name field = 657 克里歐司 (resource-derived name)",
+    "SID_ENEMY027": "PLAYERS.TXT character 27 name field = 306 (???); kept as the original unnamed label",
+    "SID_ENEMY024": "same remake label as level 51 (377); does not speak in STORY058",
+    "defNoOne": "narration token without a speaker; presented without name or portrait"
+  }
+}

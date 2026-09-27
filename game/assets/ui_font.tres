@@ -1,0 +1,9 @@
+[gd_resource type="SystemFont" format=3]
+
+[sub_resource type="SystemFont" id="SystemFont_sc_fallback"]
+font_names = PackedStringArray("Hiragino Sans GB", "Songti SC", "STHeiti", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei")
+
+[resource]
+font_names = PackedStringArray("PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC")
+fallbacks = Array[Font]([SubResource("SystemFont_sc_fallback")])
+allow_system_fallback = true

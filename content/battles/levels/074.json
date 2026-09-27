@@ -1,0 +1,115 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 74,
+  "story_scene": {
+    "id": "story_074_fedak_inn_resolve",
+    "title": "斐達克旅館・出發前夜",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "notes": [
+      "the four 光01 stand objects (engADDCOLOR, mapobjFlash) are drawn with the remake's additive flicker reading"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-074.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-074.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-074.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-074.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-074.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-074.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-074.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-074.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 74 (斐達克旅館, story-only): TOWNDEF event 178 斐達克旅館 hands off with",
+      "teSetNextPlayLevelEvent 42,74 — the night before Klein, 雷歐納德 steps forward and",
+      "each member states why they stay (雪拉 reveals the elf king is her father); the",
+      "script rewrites the 斐達克 / 薛維斯港 tavern events, reveals track 42 / point 44 and",
+      "returns to the big map at point 42 (actSetNextPlayLevelEvent 42,gameBigMapLevel).",
+      "STORY074 opens on actPlayMusic,9 (track 9)."
+    ],
+    "cast": [
+      "Level 74 (斐達克旅館, story-only): the nine-slot party in the inn; 咕嚕 is a conditional",
+      "install and silent."
+    ],
+    "speakers": [
+      "Level 74 (斐達克旅館, story-only STORY074 entered from TOWNDEF event 178 斐達克旅館",
+      "teSetNextPlayLevelEvent 42,74): everyone but 咕嚕 states their resolve before Klein."
+    ]
+  }
+}

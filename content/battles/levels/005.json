@@ -1,0 +1,107 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 5,
+  "battle": {
+    "id": "battle_005_level5",
+    "title": "呼嘯平原 · 殺出一條血路",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "呼嘯平原 · 敵軍已清除",
+      "fail_0": "呼嘯平原 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 13,
+      "players": 4
+    },
+    "unresolved_semantics": [
+      "STORY005 places the four party members and nine 036/038 enemies around the plain; the remake starts from the STORY walk endpoints and interprets WINFAIL005 event_0 at round 9 as eight edge reinforcements from the seed.",
+      "WINFAIL005 win_0 writes point 5 event 507, encounter ratio 100, town_席達鎮 exec event 19, and hides tracks 6 and 15; these world writes are interpreted by the shared hand-off path, not treated as proof of the original battle scheduler.",
+      "The eight event_0 insertions use the recorded nearest legal cell policy if they land outside or on blocked remake terrain; the original standing and insertion collision rules remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_005_howling_plain_opening",
+    "title": "呼嘯平原（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      }
+    },
+    "end_card": {
+      "title": "呼嘯平原",
+      "hint": "戰鬥部分（level 5）尚未重製　　空格／點擊：回到大地圖（呼嘯平原）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the four controlled slots and the 036 / 038 enemies have no battle scenario yet (P-024 job models, multi-slot party); the preview shows the EVEF placements and STORY005 walks only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "036",
+      "038"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)"
+  },
+  "comments": {
+    "battle": [
+      "WINFAIL005: win0 = every enemy is defeated; fail0 = 雷歐納德 falls. Event0",
+      "at round 9 brings eight 036/038 reinforcements from the map edges."
+    ],
+    "story_scene": [
+      "Level 5 (呼嘯平原, bigmap.dat point 5, a Battle point): the four-member party is",
+      "surrounded on the plain by 036 wing warriors and 038 from every edge. The",
+      "battle itself is gated on the same job models as levels 1-3 (P-024).",
+      "actPlayLevelMusic: table 0x477b44 gives level 5 track 18 (as for level 53)."
+    ],
+    "cast": [
+      "Level 5 (呼嘯平原): the four-member party against 036 wing warriors and 038."
+    ],
+    "speakers": [
+      "Level 5 (呼嘯平原, STORY005 opening): the four-member party speaks; 036 / 038 are silent."
+    ]
+  }
+}

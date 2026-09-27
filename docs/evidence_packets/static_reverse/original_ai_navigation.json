@@ -1,0 +1,2017 @@
+{
+  "schema": "hsl_native_ai_navigation.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "cases": [
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          0,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          0,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          0,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          0,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          1,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          1,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          1,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          1,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          0,
+          1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          0,
+          1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          0,
+          1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          0,
+          1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          -1,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          -1,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          -1,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          -1,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          0,
+          -1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          0,
+          -1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          0,
+          -1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          0,
+          -1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          1,
+          1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          1,
+          1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          1,
+          1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          1,
+          1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          -1,
+          1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          -1,
+          1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          -1,
+          1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          -1,
+          1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          1,
+          -1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          1,
+          -1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          1,
+          -1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          1,
+          -1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          -1,
+          -1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          -1,
+          -1
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          -1,
+          -1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          -1,
+          -1
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          3,
+          4
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          3,
+          4
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          3,
+          4
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          3,
+          4
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          4,
+          4
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          4,
+          4
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          4,
+          4
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          4,
+          4
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          5,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          5,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          5,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 23
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          5,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          6,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          6,
+          0
+        ],
+        "radius": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "circle",
+        "delta": [
+          6,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec32",
+      "stop_address": "0x10000000",
+      "instructions": 22
+    },
+    {
+      "input": {
+        "kind": "diamond",
+        "delta": [
+          6,
+          0
+        ],
+        "radius": 5
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "entry": "0x45ec63",
+      "stop_address": "0x10000000",
+      "instructions": 25
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 99,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 1
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 2
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 0
+      },
+      "native": {
+        "next": "nearby",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f62b",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 99,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 13
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 1
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 2
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 3,
+        "hp": 100,
+        "flags": 0
+      },
+      "native": {
+        "next": "nearby",
+        "wait": 2
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f62b",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 3,
+        "hp": 99,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 13
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 3,
+        "hp": 100,
+        "flags": 1
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 3,
+        "hp": 100,
+        "flags": 2
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 0,
+        "roll": 1
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 0,
+        "roll": 30
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 0,
+        "roll": 31
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 0,
+        "roll": 60
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 0,
+        "roll": 61
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 0,
+        "roll": 99
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 30,
+        "roll": 1
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 30,
+        "roll": 30
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 30,
+        "roll": 31
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 30,
+        "roll": 60
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 30,
+        "roll": 61
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 30,
+        "roll": 99
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 60,
+        "roll": 1
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 60,
+        "roll": 30
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 60,
+        "roll": 31
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 60,
+        "roll": 60
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 60,
+        "roll": 61
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 60,
+        "roll": 99
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x44100c",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 100,
+        "roll": 1
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 100,
+        "roll": 30
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 100,
+        "roll": 31
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 100,
+        "roll": 60
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 100,
+        "roll": 61
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "lock",
+        "rate": 100,
+        "roll": 99
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x441002",
+      "stop_address": "0x441035",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          2,
+          0
+        ],
+        "fixed": 0,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 68
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          2,
+          0
+        ],
+        "fixed": 0,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          2,
+          0
+        ],
+        "fixed": 4,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 108
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          2,
+          0
+        ],
+        "fixed": 4,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          2,
+          0
+        ],
+        "fixed": 8,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 108
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          2,
+          0
+        ],
+        "fixed": 8,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          3,
+          4
+        ],
+        "fixed": 0,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 68
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          3,
+          4
+        ],
+        "fixed": 0,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          3,
+          4
+        ],
+        "fixed": 4,
+        "removed": false
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 104
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          3,
+          4
+        ],
+        "fixed": 4,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          3,
+          4
+        ],
+        "fixed": 8,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 108
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          3,
+          4
+        ],
+        "fixed": 8,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          4,
+          4
+        ],
+        "fixed": 0,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 68
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          4,
+          4
+        ],
+        "fixed": 0,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          4,
+          4
+        ],
+        "fixed": 4,
+        "removed": false
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 104
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          4,
+          4
+        ],
+        "fixed": 4,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          4,
+          4
+        ],
+        "fixed": 8,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 108
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          4,
+          4
+        ],
+        "fixed": 8,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          8,
+          0
+        ],
+        "fixed": 0,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 68
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          8,
+          0
+        ],
+        "fixed": 0,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          8,
+          0
+        ],
+        "fixed": 4,
+        "removed": false
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 104
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          8,
+          0
+        ],
+        "fixed": 4,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          8,
+          0
+        ],
+        "fixed": 8,
+        "removed": false
+      },
+      "native": {
+        "next": "retain"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f74e",
+      "instructions": 108
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          8,
+          0
+        ],
+        "fixed": 8,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          9,
+          0
+        ],
+        "fixed": 0,
+        "removed": false
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 61
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          9,
+          0
+        ],
+        "fixed": 0,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          9,
+          0
+        ],
+        "fixed": 4,
+        "removed": false
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 61
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          9,
+          0
+        ],
+        "fixed": 4,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          9,
+          0
+        ],
+        "fixed": 8,
+        "removed": false
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 61
+    },
+    {
+      "input": {
+        "kind": "retain",
+        "delta": [
+          9,
+          0
+        ],
+        "fixed": 8,
+        "removed": true
+      },
+      "native": {
+        "next": "search"
+      },
+      "normal_return": false,
+      "entry": "0x43f55f",
+      "stop_address": "0x43f603",
+      "instructions": 12
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x44c7e0",
+      "bytes": "689c8d4700896c2424e8821602008b15fc1a4c008b4c24248d44242450576a01898c32b8010000",
+      "meaning": "wait_round loader initializes zero then writes live+1b8"
+    },
+    {
+      "address": "0x44c8d5",
+      "bytes": "68508d4700e8911502008b15fc1a4c008b4c243c8d44243c50576a01898c32d0010000",
+      "meaning": "ai_fixed writes live+1d0, used as a home radius"
+    },
+    {
+      "address": "0x44c9e8",
+      "bytes": "68e48c4700896c242ce87a1402008b15fc1a4c008b4c242c8d44242c898c32e8010000",
+      "meaning": "ai_lock writes live+1e8, compared with a 1..99 sample"
+    },
+    {
+      "address": "0x40ca20",
+      "bytes": "8bd18b2d481b4c000faf54241403d5803c02000f84a1010000",
+      "meaning": "Center search visits every positive casting-mask cell"
+    },
+    {
+      "address": "0x40cfea",
+      "bytes": "8b4c24188b15001a4c003bca7e0a890d001a4c0033c9eb0875508b0d601a4c00668b54241e668934cd62654c0066893ccd60654c00668914cd66654c00668904cd64654c004181f9fa000000890d601a4c007c16a1681a4c008b0d641a4c00a31c1a4c00890d241a4c00",
+      "meaning": "Moving casts retain maximum coverage, up to 250 native candidates"
+    },
+    {
+      "address": "0x40d08c",
+      "bytes": "8b5424144085d2a3241a4c007e0e3bc60f8c45feffff41e90afeffff5f5e5dc705401a4c000100000083c8ff5b83c410c3a1001a4c00",
+      "meaning": "Per-update budget resumes the cursor; it is not a total search limit"
+    },
+    {
+      "address": "0x40d5bd",
+      "bytes": "e8eee4ffff8b5c24208b4e0483c40483e920508b460883e820535051e8d222000057e83ce4ff",
+      "meaning": "Large-footprint approach begins with northwest target offset"
+    },
+    {
+      "address": "0x40d7b9",
+      "bytes": "e8f2e2ffff83c404508b4424205056e8b322000057e84de2ffff50e8b75b000083c418",
+      "meaning": "Normal one-cell target uses its actual center"
+    },
+    {
+      "address": "0x40cc28",
+      "bytes": "85ed742d8b54243c83fd018954241075208b7424548b7c24505657e8682e000083c40885c0740a66897c24126689742410",
+      "meaning": "One covered primary prefers its own center when that cell is castable"
+    },
+    {
+      "address": "0x448987",
+      "bytes": "8b8e30010000898e2c010000",
+      "meaning": "Stat refresh copies source move_point+130 into current movement+12c before equipment"
+    }
+  ],
+  "limits": [
+    "Distance functions return normally; retention/wait/probability are suffixes ending before the next decision.",
+    "Map candidate traversal and source center tie comparisons are static anchors, not a complete native flood execution.",
+    "Eight-direction offsets in 0x40d530 concern large target footprints, not proof of diagonal ordinary movement."
+  ]
+}

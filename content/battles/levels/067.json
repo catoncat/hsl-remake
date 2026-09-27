@@ -1,0 +1,99 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 67,
+  "story_scene": {
+    "id": "story_067_camp_cliff_pass",
+    "title": "營地・通行證",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the EVEF 夜晚聲 (mapobjPlayBGSound, WAV\\NIGHT001.WAV) is exported as a background_sound placement and its WAV into sounds/; BattleSceneRuntime loops it at a remake level without positional attenuation",
+      "actGetItem 281,1 (the 那可那魯 pass) is recorded as item_grant only; the carried inventory is not changed by the scene",
+      "actWalkDispWait SID_ENEMY064 with speed 2 and 雪拉's speed-2 walk keep the coordinator's remake walk pacing; the original speed unit is not proven"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "007",
+      "064"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "007",
+      "064"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_嚎": "6",
+    "SID_ENEMY064": "1270"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-067.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-067.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-067.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-067.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-067.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-067.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_ENEMY064": "PLAYERS.TXT character 64 name field = 1270 克里夫 (resource-derived name); obj names the object Enemy064(克里夫); EVEF Enemy064(克里夫) stands by the fire"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 67 (winfail017 -> 17,67): the camp after 艾瓦台地 (level55 alias by 地圖管理員): 克里夫 064",
+      "steps up to the fire, 雷歐納德 demands the 那可那魯 pass, 雪拉 coaxes it out of him (actGetItem",
+      "281), then 嚎 asks 雷歐納德 what he seeks in Wosfita; back to the big map at point 17."
+    ],
+    "cast": [
+      "Level 67 (camp after 艾瓦台地, story-only): the six-member party (嚎 007) and 克里夫 064 by the fire."
+    ],
+    "speakers": [
+      "Level 67 (camp after the mine, story-only, winfail017 -> 17,67): 克里夫 064 (PLAYERS name 1270) hands over",
+      "the pass after 雪拉's coaxing, 嚎 (slot 6) asks 雷歐納德 why he goes to Wosfita."
+    ]
+  }
+}

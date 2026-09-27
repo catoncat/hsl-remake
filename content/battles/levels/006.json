@@ -1,0 +1,131 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 6,
+  "battle": {
+    "id": "battle_006_level6",
+    "title": "席達鎮 · 士兵的追捕",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "captain",
+    "result_labels": {
+      "win_0": "席達鎮 · 隊長已擊敗",
+      "win_1": "席達鎮 · 增援隊長已擊敗",
+      "win_2": "席達鎮 · 雷歐納德 突圍"
+    },
+    "expected": {
+      "units": 27,
+      "players": 4
+    },
+    "unresolved_semantics": [
+      "STORY006 installs the four registered slots and inserts three soldiers and a captain (wait round 3) at the north gate; WINFAIL006 swaps the win status at round 5 for a six-soldier reinforcement with a second captain and an escape row — all interpreted live from the seed.",
+      "The twelve villagers are installed pmPlayerEnemy by their objects' obj_X1 (player_mode 0x30000: attacked by neither camp, attacking no one, uncontrollable AI); soldiers 023/024 are pmPlayer templates swapped to pmEnemy by obj_Data9, the inserted captain carries obj_HitPoint +30. Static-derived from 0x407ec0 / 0x40bb80 (docs/evidence_packets/static_reverse/original_player_mode_sides.md); the player-visible outcome is not yet observed natively."
+    ]
+  },
+  "story_scene": {
+    "id": "story_006_sheeda_town_opening",
+    "title": "席達鎮（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_slot_inserts": {
+      "obj_Story_Player1": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001",
+        "object_code": 6
+      },
+      "obj_Story_Player2": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002",
+        "object_code": 7
+      },
+      "obj_Story_Player3": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003",
+        "object_code": 8
+      },
+      "obj_Story_Player4": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004",
+        "object_code": 9
+      }
+    },
+    "token_overrides": {
+      "SID_ENEMY023/8": "guard023_1",
+      "SID_ENEMY024/1": "guard024_1"
+    },
+    "end_card": {
+      "title": "席達鎮",
+      "hint": "戰鬥部分（level 6）尚未重製　　空格／點擊：回到大地圖（席達鎮）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the four controlled slots and the 023 / 024 soldiers have no battle scenario yet (P-024 job models, multi-slot party); the preview shows the inserts and STORY006 walks only",
+      "actSetPrevInsertObjectWaitRound 3 and actAdjustAllPlayerLevel are recorded, not applied: the preview has no turn queue or level table"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "023",
+      "024",
+      "061",
+      "062"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "023",
+      "024"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_ENEMY023": "376",
+    "SID_ENEMY024": "377"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_ENEMY023": "same remake label as level 51 (376)",
+    "SID_ENEMY024": "same remake label as level 51 (377)"
+  },
+  "comments": {
+    "battle": [
+      "WINFAIL006: win0 = the captain falls before round 5 (soldiers retreat), win1 =",
+      "the second captain falls after the round-5 reinforcement, win2 = 雷歐納德 reaches",
+      "the marked cells (992..1088, 864)."
+    ],
+    "story_scene": [
+      "Level 6 (席達鎮, entered from the tavern event 23 \"席達鎮酒館沃斯菲塔士兵\" via",
+      "teSetNextPlayLevelEvent 6,6): the party is installed by obj_Story_Player1-4",
+      "inserts, three Wosfita soldiers 023 and their captain 024 follow them in and",
+      "the captain denounces 雷歐納德. Its battle is gated on P-024 like levels 1-3/5/7.",
+      "obj_Story_Player1..4 (OBJ-ALL.H 6..9) install controlled slots 0..3 at the",
+      "insert point; the preview spawns the bound actors there.",
+      "SID_ENEMY023,8 speaks after the inserts: seven 023 stand in the EVEF, so the",
+      "eighth instance is read as the first inserted soldier (remake reading, as"
+    ],
+    "cast": [
+      "Level 6 (席達鎮): the party is inserted by script; Wosfita soldiers 023 with their",
+      "captain 024 arrive after them, villagers 061 / 062 stand in the streets.",
+      "Formal battle: WINFAIL006's win / event dialogue (959-976, 953-968) adds the four party members as speakers."
+    ],
+    "speakers": [
+      "Level 6 (席達鎮, STORY006 opening): only the Wosfita captain 024 and a soldier 023 speak."
+    ]
+  }
+}

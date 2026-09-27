@@ -1,0 +1,3236 @@
+{
+  "schema": "hsl_town_initial_trees.v1",
+  "evidence_tier": "static-derived",
+  "claim": "Initial menu tree per town. Confirmed by source-research SR-069: two complete executions of the original town initialiser 0x454ae0 -> 0x454a20 (docs/evidence_packets/static_reverse/original_world_town.md) produce exactly these roots and children (town 1 roots [1,2,3]; town 4 roots [4,5,6,7] with 7 -> [8,12,13,14]; town 6 roots [16,17,18,20] with 20 -> [21,22,23]; the other nine towns start empty). The generation below is the earlier derivation path kept as a record: TOWNDEF town_events grouped by the town named in their section comment, minus every node a TOWNDEF te*TE or PAK STORY/winfail act*TE adds at runtime, every event reached only by jump/insert tokens, every candidate of a town whose shop events are all script-added, and every script-ensured sub-menu without a candidate child; tavern children nest under the sub-menu whose comment prefixes theirs.",
+  "confirmed_by": "SR-069 original_world_town.md: 0x454a20 executable town-id/event-id calls (100x264-byte records, 8 root slots x 7 children)",
+  "replacement_evidence": "none needed for the initial roots/children; later tree changes stay with the te/act add/delete tokens at runtime",
+  "not_supported": [
+    "menu order inside a level (TOWNDEF code order is used)",
+    "that an excluded node is absent at game start for any reason other than the listed script reference",
+    "towns without any candidate (their whole menu is script-populated in the data; an EXE-side default is not ruled out)"
+  ],
+  "sources": {
+    "towndef_json": {
+      "path": "content/imported/hsl/global/world_map/towndef.json",
+      "schema": "hsl_towndef.v1",
+      "town_event_count": 191
+    },
+    "pak_scripts": [
+      {
+        "member": "@:\\data\\STORY061.TXT",
+        "byte_length": 993,
+        "sha256": "f2d89e85e635bcbe7266573ca49de1c87a999bebc32223a5fb0043ce78d04722",
+        "actions": 1
+      },
+      {
+        "member": "@:\\data\\STORY072.TXT",
+        "byte_length": 1441,
+        "sha256": "dcf4993dcfa0d370cb6abf6a990ffc44c5731561cb35426737b5b04951748fec",
+        "actions": 1
+      },
+      {
+        "member": "@:\\data\\STORY074.TXT",
+        "byte_length": 2351,
+        "sha256": "35bc2dd0505354bdd9da8e865dd347351d7cd9044506c9a98fc5cd3a908af895",
+        "actions": 3
+      },
+      {
+        "member": "@:\\data\\winfail001.txt",
+        "byte_length": 1500,
+        "sha256": "94fef77863a3aa7e7cec0b92c3e2fce0c19e273ef3498a5b42af4dacf8209bbb",
+        "actions": 2
+      },
+      {
+        "member": "@:\\data\\winfail005.txt",
+        "byte_length": 1778,
+        "sha256": "5abdf1dd39b0c3485c6d642021c86f018457d2a27360825acf29829d514164dd",
+        "actions": 1
+      },
+      {
+        "member": "@:\\data\\winfail012.txt",
+        "byte_length": 13170,
+        "sha256": "2c99ebe42469bfab43c3a34ad5a7a79b03fe5c4231769aeed7791188d0fab982",
+        "actions": 5
+      },
+      {
+        "member": "@:\\data\\winfail018.txt",
+        "byte_length": 2052,
+        "sha256": "c5b9ab2e27987ce76b142aa90b1c9cefa7164cd44151dbfdcb0a44b1308068e2",
+        "actions": 16
+      },
+      {
+        "member": "@:\\data\\winfail019.txt",
+        "byte_length": 7694,
+        "sha256": "49365542b37d6c76560c56927f80edf29908238d352ba4ff943d4b3a0f7693c0",
+        "actions": 4
+      },
+      {
+        "member": "@:\\data\\winfail021.txt",
+        "byte_length": 7513,
+        "sha256": "6307636be87d559cfa76b2e55a31feaccd98b0e974e37c113764e575a9a1403b",
+        "actions": 10
+      },
+      {
+        "member": "@:\\data\\winfail026.txt",
+        "byte_length": 1855,
+        "sha256": "a95b6726eb634b774e297c2f44e1bd27171e97d5f7a82044f40fd6f80b9fafbe",
+        "actions": 4
+      },
+      {
+        "member": "@:\\data\\winfail028.txt",
+        "byte_length": 5358,
+        "sha256": "ac3d43e0f45ae5656cadc62d6a1fdd358ae6f6db90ab4de870da977bf5ebe704",
+        "actions": 2
+      },
+      {
+        "member": "@:\\data\\winfail034.txt",
+        "byte_length": 4561,
+        "sha256": "bcde3b8fea0408722b27582e286b49284f1678c1effb37fb25566d8070b83410",
+        "actions": 6
+      },
+      {
+        "member": "@:\\data\\winfail073.txt",
+        "byte_length": 2009,
+        "sha256": "d4402df20a58575259c3632997aa2f43dc84bdbd8be2ca527efda3ce2cdf93b5",
+        "actions": 6
+      },
+      {
+        "member": "@:\\data\\winfail901.txt",
+        "byte_length": 4469,
+        "sha256": "958eba6242994059cab4d0adbbbf904d8115a279cd3fe202db71261e182ddbd3",
+        "actions": 5
+      },
+      {
+        "member": "@:\\data\\winfail904.txt",
+        "byte_length": 7694,
+        "sha256": "71d0624c2a3c4e5951e8434583457b7bab2522ba8fc01225604e33e7a9bff92d",
+        "actions": 4
+      }
+    ]
+  },
+  "script_actions": [
+    {
+      "script": "story061",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_歐姆村",
+        "10"
+      ]
+    },
+    {
+      "script": "story072",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "92",
+        "1",
+        "97"
+      ]
+    },
+    {
+      "script": "story074",
+      "token": "actDeleteTE",
+      "args": [
+        "town_斐達克",
+        "172",
+        "1",
+        "174"
+      ]
+    },
+    {
+      "script": "story074",
+      "token": "actAddTE",
+      "args": [
+        "town_斐達克",
+        "172",
+        "1",
+        "175"
+      ]
+    },
+    {
+      "script": "story074",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "36",
+        "1",
+        "40"
+      ]
+    },
+    {
+      "script": "winfail001",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_歐姆村",
+        "9"
+      ]
+    },
+    {
+      "script": "winfail001",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_歐姆村",
+        "9"
+      ]
+    },
+    {
+      "script": "winfail005",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_席達鎮",
+        "19"
+      ]
+    },
+    {
+      "script": "winfail012",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_兩棲族部落",
+        "141"
+      ]
+    },
+    {
+      "script": "winfail012",
+      "token": "actAddTE",
+      "args": [
+        "town_兩棲族部落",
+        "142",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail012",
+      "token": "actAddTE",
+      "args": [
+        "town_兩棲族部落",
+        "143",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail012",
+      "token": "actAddTE",
+      "args": [
+        "town_兩棲族部落",
+        "144",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail012",
+      "token": "actAddTE",
+      "args": [
+        "town_兩棲族部落",
+        "145",
+        "4",
+        "146",
+        "147",
+        "148",
+        "149"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actDeleteTE",
+      "args": [
+        "town_席達鎮",
+        "20",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actAddTE",
+      "args": [
+        "town_席達鎮",
+        "20",
+        "4",
+        "103",
+        "104",
+        "105",
+        "106"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "33",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "34",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "35",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "124",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "125",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "126",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actDeleteTE",
+      "args": [
+        "town_席達鎮",
+        "20",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actAddTE",
+      "args": [
+        "town_席達鎮",
+        "20",
+        "4",
+        "103",
+        "104",
+        "105",
+        "106"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "33",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "34",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "35",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "124",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "125",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail018",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "126",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail019",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "36",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail019",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "41",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail019",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "36",
+        "3",
+        "127",
+        "128",
+        "129"
+      ]
+    },
+    {
+      "script": "winfail019",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "41",
+        "3",
+        "130",
+        "131",
+        "132"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "89",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "90",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "91",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "92",
+        "4",
+        "93",
+        "94",
+        "95",
+        "96"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_瑪哈亞鎮",
+        "88"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "89",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "90",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "91",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actAddTE",
+      "args": [
+        "town_瑪哈亞鎮",
+        "92",
+        "4",
+        "93",
+        "94",
+        "95",
+        "96"
+      ]
+    },
+    {
+      "script": "winfail021",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_瑪哈亞鎮",
+        "88"
+      ]
+    },
+    {
+      "script": "winfail026",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_亞雷比斯",
+        "185"
+      ]
+    },
+    {
+      "script": "winfail026",
+      "token": "actAddTE",
+      "args": [
+        "town_亞雷比斯",
+        "186",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail026",
+      "token": "actAddTE",
+      "args": [
+        "town_亞雷比斯",
+        "187",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail026",
+      "token": "actAddTE",
+      "args": [
+        "town_亞雷比斯",
+        "188",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail028",
+      "token": "actDeleteTE",
+      "args": [
+        "town_亞雷比斯",
+        "189",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail028",
+      "token": "actAddTE",
+      "args": [
+        "town_亞雷比斯",
+        "190",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail034",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_沙羅尼亞",
+        "157"
+      ]
+    },
+    {
+      "script": "winfail034",
+      "token": "actAddTE",
+      "args": [
+        "town_沙羅尼亞",
+        "158",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail034",
+      "token": "actAddTE",
+      "args": [
+        "town_沙羅尼亞",
+        "159",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail034",
+      "token": "actAddTE",
+      "args": [
+        "town_沙羅尼亞",
+        "160",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail034",
+      "token": "actAddTE",
+      "args": [
+        "town_沙羅尼亞",
+        "161",
+        "3",
+        "162",
+        "163",
+        "165"
+      ]
+    },
+    {
+      "script": "winfail034",
+      "token": "actSetTownExitExecEvent",
+      "args": [
+        "town_沙羅尼亞",
+        "166"
+      ]
+    },
+    {
+      "script": "winfail073",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_斐達克",
+        "168"
+      ]
+    },
+    {
+      "script": "winfail073",
+      "token": "actAddTE",
+      "args": [
+        "town_斐達克",
+        "169",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail073",
+      "token": "actAddTE",
+      "args": [
+        "town_斐達克",
+        "170",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail073",
+      "token": "actAddTE",
+      "args": [
+        "town_斐達克",
+        "171",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail073",
+      "token": "actAddTE",
+      "args": [
+        "town_斐達克",
+        "172",
+        "4",
+        "173",
+        "174",
+        "176",
+        "177"
+      ]
+    },
+    {
+      "script": "winfail073",
+      "token": "actAddTE",
+      "args": [
+        "town_斐達克",
+        "178",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail901",
+      "token": "actDeleteTE",
+      "args": [
+        "town_席達鎮",
+        "20",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail901",
+      "token": "actDeleteTE",
+      "args": [
+        "town_席達鎮",
+        "17",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail901",
+      "token": "actAddTE",
+      "args": [
+        "town_席達鎮",
+        "45",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail901",
+      "token": "actAddTE",
+      "args": [
+        "town_席達鎮",
+        "20",
+        "2",
+        "26",
+        "27"
+      ]
+    },
+    {
+      "script": "winfail901",
+      "token": "actSetTownExecEvent",
+      "args": [
+        "town_席達鎮",
+        "25"
+      ]
+    },
+    {
+      "script": "winfail904",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "36",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail904",
+      "token": "actDeleteTE",
+      "args": [
+        "town_薛維斯港",
+        "41",
+        "0"
+      ]
+    },
+    {
+      "script": "winfail904",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "36",
+        "3",
+        "127",
+        "128",
+        "129"
+      ]
+    },
+    {
+      "script": "winfail904",
+      "token": "actAddTE",
+      "args": [
+        "town_薛維斯港",
+        "41",
+        "3",
+        "133",
+        "131",
+        "132"
+      ]
+    }
+  ],
+  "towns": {
+    "town_歐姆村": {
+      "point_id": 1,
+      "tree": {
+        "0": [
+          1,
+          2,
+          3
+        ]
+      },
+      "entries": [
+        {
+          "code": 1,
+          "parent": 0,
+          "show_name_id": 32,
+          "show_name_text": "武器店",
+          "source": "TOWNDEF comment '歐姆村武器店'"
+        },
+        {
+          "code": 2,
+          "parent": 0,
+          "show_name_id": 33,
+          "show_name_text": "護甲店",
+          "source": "TOWNDEF comment '歐姆村護甲店'"
+        },
+        {
+          "code": 3,
+          "parent": 0,
+          "show_name_id": 34,
+          "show_name_text": "道具店",
+          "source": "TOWNDEF comment '歐姆村道具店'"
+        }
+      ],
+      "excluded": [
+        {
+          "code": 9,
+          "comment": "歐姆村未完成",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail001 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 10,
+          "comment": "歐姆村完成",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "story061 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 11,
+          "comment": "歐姆村完成二",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 10 teSetExecEvent"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_米蘭多": {
+      "point_id": 4,
+      "tree": {
+        "0": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "7": [
+          8,
+          12,
+          13,
+          14
+        ]
+      },
+      "entries": [
+        {
+          "code": 4,
+          "parent": 0,
+          "show_name_id": 32,
+          "show_name_text": "武器店",
+          "source": "TOWNDEF comment '米蘭多武器店'"
+        },
+        {
+          "code": 5,
+          "parent": 0,
+          "show_name_id": 33,
+          "show_name_text": "護甲店",
+          "source": "TOWNDEF comment '米蘭多護甲店'"
+        },
+        {
+          "code": 6,
+          "parent": 0,
+          "show_name_id": 34,
+          "show_name_text": "道具店",
+          "source": "TOWNDEF comment '米蘭多道具店'"
+        },
+        {
+          "code": 7,
+          "parent": 0,
+          "show_name_id": 31,
+          "show_name_text": "酒館",
+          "source": "TOWNDEF comment '米蘭多酒館'"
+        },
+        {
+          "code": 8,
+          "parent": 7,
+          "show_name_id": 875,
+          "show_name_text": "酒館老闆",
+          "source": "TOWNDEF comment '米蘭多酒館老闆' (prefix '米蘭多酒館' = sub-menu 7)"
+        },
+        {
+          "code": 12,
+          "parent": 7,
+          "show_name_id": 897,
+          "show_name_text": "侍女",
+          "source": "TOWNDEF comment '米蘭多酒館侍女' (prefix '米蘭多酒館' = sub-menu 7)"
+        },
+        {
+          "code": 13,
+          "parent": 7,
+          "show_name_id": 882,
+          "show_name_text": "獸人",
+          "source": "TOWNDEF comment '米蘭多酒館獸人' (prefix '米蘭多酒館' = sub-menu 7)"
+        },
+        {
+          "code": 14,
+          "parent": 7,
+          "show_name_id": 883,
+          "show_name_text": "旅行者",
+          "source": "TOWNDEF comment '米蘭多酒館旅行者' (prefix '米蘭多酒館' = sub-menu 7)"
+        }
+      ],
+      "excluded": [
+        {
+          "code": 15,
+          "comment": "米蘭多酒館旅行者二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 14 teAddSelfTE"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_席達鎮": {
+      "point_id": 6,
+      "tree": {
+        "0": [
+          16,
+          17,
+          18,
+          20
+        ],
+        "20": [
+          21,
+          22,
+          23
+        ]
+      },
+      "entries": [
+        {
+          "code": 16,
+          "parent": 0,
+          "show_name_id": 32,
+          "show_name_text": "武器店",
+          "source": "TOWNDEF comment '席達鎮武器店'"
+        },
+        {
+          "code": 17,
+          "parent": 0,
+          "show_name_id": 33,
+          "show_name_text": "護甲店",
+          "source": "TOWNDEF comment '席達鎮護甲店'"
+        },
+        {
+          "code": 18,
+          "parent": 0,
+          "show_name_id": 34,
+          "show_name_text": "道具店",
+          "source": "TOWNDEF comment '席達鎮道具店'"
+        },
+        {
+          "code": 20,
+          "parent": 0,
+          "show_name_id": 31,
+          "show_name_text": "酒館",
+          "source": "TOWNDEF comment '席達鎮酒館'"
+        },
+        {
+          "code": 21,
+          "parent": 20,
+          "show_name_id": 875,
+          "show_name_text": "酒館老闆",
+          "source": "TOWNDEF comment '席達鎮酒館老闆' (prefix '席達鎮酒館' = sub-menu 20)"
+        },
+        {
+          "code": 22,
+          "parent": 20,
+          "show_name_id": 925,
+          "show_name_text": "年輕人",
+          "source": "TOWNDEF comment '席達鎮酒館年輕人' (prefix '席達鎮酒館' = sub-menu 20)"
+        },
+        {
+          "code": 23,
+          "parent": 20,
+          "show_name_id": 949,
+          "show_name_text": "沃斯菲塔士兵",
+          "source": "TOWNDEF comment '席達鎮酒館沃斯菲塔士兵' (prefix '席達鎮酒館' = sub-menu 20)"
+        }
+      ],
+      "excluded": [
+        {
+          "code": 19,
+          "comment": "席達鎮未完成",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail005 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 24,
+          "comment": "席達鎮酒館老闆二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 23 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 25,
+          "comment": "席達鎮事件後",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail901 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 26,
+          "comment": "席達鎮酒館老闆三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail901 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 27,
+          "comment": "席達鎮酒館女客人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail901 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 28,
+          "comment": "席達鎮酒館妖精",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 27 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 29,
+          "comment": "席達鎮酒館老闆四",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 28 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 30,
+          "comment": "席達鎮酒館女客人二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 28 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 31,
+          "comment": "席達鎮酒館妖精二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 28 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 45,
+          "comment": "席達鎮護甲店二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail901 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 103,
+          "comment": "席達鎮酒館老闆五",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail018 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 104,
+          "comment": "席達鎮酒館女客人三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail018 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 105,
+          "comment": "席達鎮酒館吉姆",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail018 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 106,
+          "comment": "席達鎮酒館妖精三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail018 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 107,
+          "comment": "席達鎮酒館吉姆二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 98 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 108,
+          "comment": "席達鎮酒館吉姆選一",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 107 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 109,
+          "comment": "席達鎮酒館吉姆選二",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 107 teSelectInsertEvent",
+                "TOWNDEF town_event 191 teExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 110,
+          "comment": "席達鎮酒館吉姆三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 109 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 111,
+          "comment": "席達鎮酒館妖精選一",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 106 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 112,
+          "comment": "席達鎮酒館妖精選二",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 106 teSelectInsertEvent"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_曼多力亞": {
+      "point_id": 9,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": []
+    },
+    "town_薛維斯港": {
+      "point_id": 11,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": [
+        {
+          "code": 32,
+          "comment": "第一次到薛維斯港",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 30 teSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 33,
+          "comment": "薛維斯港武器店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 34,
+          "comment": "薛維斯港護甲店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 35,
+          "comment": "薛維斯港道具店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 37,
+          "comment": "薛維斯港酒館老闆",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 38,
+          "comment": "薛維斯港酒館船員",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 39,
+          "comment": "薛維斯港酒館兩棲族",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 40,
+          "comment": "薛維斯港酒館獸人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "story074 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 42,
+          "comment": "薛維斯港港口船長",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 43,
+          "comment": "薛維斯港港口搬運工人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 44,
+          "comment": "薛維斯港港口水手",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 30 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 46,
+          "comment": "薛維斯港酒館老闆二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 37 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 47,
+          "comment": "薛維斯港酒館船員二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 38 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 48,
+          "comment": "薛維斯港港口船長二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 42 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 49,
+          "comment": "薛維斯港港口搬運工人二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 43 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 51,
+          "comment": "薛維斯港港口船長二選一",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 48 teSelectInsertEvent",
+                "TOWNDEF town_event 140 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 52,
+          "comment": "薛維斯港港口船長二選二",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 48 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 124,
+          "comment": "薛維斯港武器店二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail018 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 125,
+          "comment": "薛維斯港護甲店二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail018 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 126,
+          "comment": "薛維斯港道具店二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail018 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 127,
+          "comment": "薛維斯港酒館老闆",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail019 actAddTE",
+                "winfail904 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 128,
+          "comment": "薛維斯港酒館船員",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail019 actAddTE",
+                "winfail904 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 129,
+          "comment": "薛維斯港酒館兩棲族",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail019 actAddTE",
+                "winfail904 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 130,
+          "comment": "薛維斯港港口搬運工人(克里夫未死)",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail019 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 131,
+          "comment": "薛維斯港港口船長",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail019 actAddTE",
+                "winfail904 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 132,
+          "comment": "薛維斯港港口水手",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail019 actAddTE",
+                "winfail904 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 133,
+          "comment": "薛維斯港港口搬運工人(克里夫死亡)",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail904 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 134,
+          "comment": "克里夫的家",
+          "reasons": [
+            {
+              "reason": "sub_menu_script_populated",
+              "by": [
+                "TOWNDEF town_event 130 teAddSelfTE",
+                "TOWNDEF town_event 136 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 135,
+          "comment": "克里夫的家傭人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 130 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 136,
+          "comment": "克里夫",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 130 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 138,
+          "comment": "薛維斯港港口船長選一",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 131 teSelectInsertEvent",
+                "TOWNDEF town_event 140 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 139,
+          "comment": "薛維斯港港口船長選二",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 131 teSelectInsertEvent",
+                "TOWNDEF town_event 140 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 140,
+          "comment": "薛維斯港港口船長二二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 138 teAddSelfTE",
+                "TOWNDEF town_event 139 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 36,
+          "comment": "薛維斯港酒館",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [33, 34, 35, 124, 125, 126] are all script-added"
+              ],
+              "ensured_by": [
+                "TOWNDEF town_event 30 teAddTE",
+                "TOWNDEF town_event 37 teAddSelfTE",
+                "TOWNDEF town_event 38 teAddSelfTE",
+                "story074 actAddTE",
+                "winfail019 actAddTE",
+                "winfail904 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 41,
+          "comment": "薛維斯港港口",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [33, 34, 35, 124, 125, 126] are all script-added"
+              ],
+              "ensured_by": [
+                "TOWNDEF town_event 30 teAddTE",
+                "TOWNDEF town_event 42 teAddSelfTE",
+                "TOWNDEF town_event 43 teAddSelfTE",
+                "TOWNDEF town_event 138 teAddSelfTE",
+                "TOWNDEF town_event 139 teAddSelfTE",
+                "winfail019 actAddTE",
+                "winfail904 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 50,
+          "comment": "薛維斯港港口搬運工人三",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [33, 34, 35, 124, 125, 126] are all script-added",
+                "no script adds 50 (dead row or EXE-side default)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_兩棲族部落": {
+      "point_id": 14,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": [
+        {
+          "code": 141,
+          "comment": "第一次進入兩棲族部落",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail012 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 142,
+          "comment": "兩棲族部落武器店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail012 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 143,
+          "comment": "兩棲族部落護甲店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail012 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 144,
+          "comment": "兩棲族部落道具店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail012 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 146,
+          "comment": "兩棲族部落集會場, 薩爾克鬥士",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail012 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 147,
+          "comment": "兩棲族部落集會場, 兩棲族青年",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 151 teAddSelfTE",
+                "winfail012 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 148,
+          "comment": "兩棲族部落集會場, 兩棲族老人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 151 teAddSelfTE",
+                "winfail012 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 149,
+          "comment": "兩棲族部落集會場, 人類學者",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail012 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 145,
+          "comment": "兩棲族部落集會場",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [142, 143, 144] are all script-added"
+              ],
+              "ensured_by": [
+                "TOWNDEF town_event 151 teAddSelfTE",
+                "winfail012 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 150,
+          "comment": "兩棲族部落集會場, 兩棲族老人二",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [142, 143, 144] are all script-added",
+                "no script adds 150 (dead row or EXE-side default)"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 151,
+          "comment": "兩棲族部落集會場, 人類學者二",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [142, 143, 144] are all script-added",
+                "no script adds 151 (dead row or EXE-side default)"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 153,
+          "comment": "事件後第一次進入兩棲族部落",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [142, 143, 144] are all script-added",
+                "no script adds 153 (dead row or EXE-side default)"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 154,
+          "comment": "事件後兩棲族部落武器店",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [142, 143, 144] are all script-added",
+                "no script adds 154 (dead row or EXE-side default)"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 155,
+          "comment": "事件後兩棲族部落護甲店",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [142, 143, 144] are all script-added",
+                "no script adds 155 (dead row or EXE-side default)"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 156,
+          "comment": "事件後兩棲族部落道具店",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [142, 143, 144] are all script-added",
+                "no script adds 156 (dead row or EXE-side default)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_命運神殿": {
+      "point_id": 16,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": [
+        {
+          "code": 53,
+          "comment": "命運神殿第一次進入",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 32 teSetExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 54,
+          "comment": "命運神殿儀式之間",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 32 teAddTE"
+              ]
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 53 teExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 56,
+          "comment": "命運神殿大廳女神官A",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 32 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 57,
+          "comment": "命運神殿大廳女神官B",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 32 teAddTE",
+                "TOWNDEF town_event 60 teAddTE",
+                "TOWNDEF town_event 79 teAddTE",
+                "TOWNDEF town_event 80 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 58,
+          "comment": "命運神殿大廳受驗者",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 32 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 59,
+          "comment": "命運神殿大廳老神官",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 32 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 60,
+          "comment": "命運神殿大廳老神官二，有水晶",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 59 teCheckItemExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 61,
+          "comment": "命運神殿, 雷歐納德升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 71 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 62,
+          "comment": "命運神殿, 緹娜升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 71 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 63,
+          "comment": "命運神殿, 琥升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 71 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 64,
+          "comment": "命運神殿, 漢克斯升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 71 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 65,
+          "comment": "命運神殿, 雪拉升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 71 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 66,
+          "comment": "命運神殿, 雷特升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 71 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 67,
+          "comment": "命運神殿, 嚎升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 71 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 68,
+          "comment": "命運神殿, 克羅蒂升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 71 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 69,
+          "comment": "命運神殿, 雷歐納德升級二",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 87 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 70,
+          "comment": "命運神殿, 緹娜升級二",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 87 tePlayerSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 71,
+          "comment": "命運神殿儀式之間二",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 54 teExecEvent",
+                "TOWNDEF town_event 61 teCheckJobUp",
+                "TOWNDEF town_event 61 teExecEvent",
+                "TOWNDEF town_event 62 teCheckJobUp",
+                "TOWNDEF town_event 62 teExecEvent",
+                "TOWNDEF town_event 63 teCheckJobUp",
+                "TOWNDEF town_event 63 teExecEvent",
+                "TOWNDEF town_event 64 teCheckJobUp",
+                "TOWNDEF town_event 64 teExecEvent",
+                "TOWNDEF town_event 65 teCheckJobUp",
+                "TOWNDEF town_event 65 teExecEvent",
+                "TOWNDEF town_event 66 teCheckJobUp",
+                "TOWNDEF town_event 66 teExecEvent",
+                "TOWNDEF town_event 67 teCheckJobUp",
+                "TOWNDEF town_event 67 teExecEvent",
+                "TOWNDEF town_event 68 teCheckJobUp",
+                "TOWNDEF town_event 68 teExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 73,
+          "comment": "命運神殿港口船長",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 32 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 74,
+          "comment": "命運神殿港口船長, 選一回去",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 73 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 75,
+          "comment": "命運神殿港口船長, 選二取消",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 73 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 77,
+          "comment": "命運神殿, 神殿中樞祈求",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 60 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 78,
+          "comment": "命運神殿, 神殿中樞老神官一",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 60 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 79,
+          "comment": "命運神殿, 神殿中樞升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 69 teCheckItemExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 80,
+          "comment": "命運神殿, 神殿中樞升級",
+          "reasons": [
+            {
+              "reason": "no_show_name"
+            },
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 70 teCheckItemExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 81,
+          "comment": "命運神殿, 神殿中樞老神官二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 79 teAddTE",
+                "TOWNDEF town_event 80 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 82,
+          "comment": "命運神殿, 神殿中樞老神官三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 81 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 83,
+          "comment": "命運神殿大廳女神官A二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 60 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 84,
+          "comment": "命運神殿大廳受驗者二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 60 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 85,
+          "comment": "命運神殿大廳女神官A三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 79 teAddTE",
+                "TOWNDEF town_event 80 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 86,
+          "comment": "命運神殿大廳受驗者三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 79 teAddTE",
+                "TOWNDEF town_event 80 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 87,
+          "comment": "命運神殿中樞升級選擇",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 69 teExecEvent",
+                "TOWNDEF town_event 70 teExecEvent",
+                "TOWNDEF town_event 77 teExecEvent",
+                "TOWNDEF town_event 79 teCheckJobUp2",
+                "TOWNDEF town_event 79 teCheckTEExist",
+                "TOWNDEF town_event 79 teExecEvent",
+                "TOWNDEF town_event 80 teCheckJobUp2",
+                "TOWNDEF town_event 80 teCheckTEExist",
+                "TOWNDEF town_event 80 teExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 55,
+          "comment": "命運神殿大廳",
+          "reasons": [
+            {
+              "reason": "sub_menu_script_populated",
+              "by": [
+                "TOWNDEF town_event 32 teAddTE",
+                "TOWNDEF town_event 60 teAddTE",
+                "TOWNDEF town_event 79 teAddTE",
+                "TOWNDEF town_event 80 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 72,
+          "comment": "命運神殿港口",
+          "reasons": [
+            {
+              "reason": "sub_menu_script_populated",
+              "by": [
+                "TOWNDEF town_event 32 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 76,
+          "comment": "命運神殿, 神殿中樞",
+          "reasons": [
+            {
+              "reason": "sub_menu_script_populated",
+              "by": [
+                "TOWNDEF town_event 60 teAddTE",
+                "TOWNDEF town_event 79 teAddTE",
+                "TOWNDEF town_event 80 teAddTE",
+                "TOWNDEF town_event 81 teAddTE"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_瑪哈亞鎮": {
+      "point_id": 23,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": [
+        {
+          "code": 88,
+          "comment": "第一次進入瑪哈亞鎮",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail021 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 89,
+          "comment": "瑪哈亞鎮武器店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail021 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 90,
+          "comment": "瑪哈亞鎮護甲店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail021 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 91,
+          "comment": "瑪哈亞鎮道具店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail021 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 93,
+          "comment": "瑪哈亞鎮酒館服務生",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail021 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 94,
+          "comment": "瑪哈亞鎮酒館年輕女性",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail021 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 95,
+          "comment": "瑪哈亞鎮酒館老人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail021 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 96,
+          "comment": "瑪哈亞鎮酒館神秘男子",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail021 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 97,
+          "comment": "瑪哈亞鎮酒館翼人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "story072 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 98,
+          "comment": "瑪哈亞鎮酒館年輕女性選擇一",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 94 teSelectInsertEvent",
+                "TOWNDEF town_event 100 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 99,
+          "comment": "瑪哈亞鎮酒館年輕女性選擇二",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 94 teSelectInsertEvent",
+                "TOWNDEF town_event 100 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 100,
+          "comment": "瑪哈亞鎮酒館年輕女性二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 99 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 101,
+          "comment": "瑪哈亞鎮酒館年輕女性三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 98 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 102,
+          "comment": "瑪哈亞鎮酒館年輕女性四(完成)",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 109 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 123,
+          "comment": "瑪哈亞鎮酒館神秘男子",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 96 teExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 92,
+          "comment": "瑪哈亞鎮酒館",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [89, 90, 91] are all script-added"
+              ],
+              "ensured_by": [
+                "TOWNDEF town_event 109 teAddTE",
+                "TOWNDEF town_event 98 teAddSelfTE",
+                "TOWNDEF town_event 99 teAddSelfTE",
+                "story072 actAddTE",
+                "winfail021 actAddTE"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_戈黎塔尼港": {
+      "point_id": 25,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": [
+        {
+          "code": 179,
+          "comment": "戈黎塔尼港道具店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 175 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 181,
+          "comment": "戈黎塔尼港港口搬運工人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 175 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 182,
+          "comment": "戈黎塔尼港港口船員",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 175 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 183,
+          "comment": "戈黎塔尼港港口船員選一",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 182 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 184,
+          "comment": "戈黎塔尼港港口船員選二",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 182 teSelectInsertEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 180,
+          "comment": "戈黎塔尼港港口",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [179] are all script-added"
+              ],
+              "ensured_by": [
+                "TOWNDEF town_event 175 teAddTE"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_亞雷比斯": {
+      "point_id": 27,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": [
+        {
+          "code": 185,
+          "comment": "第一次進入亞雷比斯",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail026 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 186,
+          "comment": "亞雷比斯飾品店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail026 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 187,
+          "comment": "亞雷比斯道具店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail026 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 188,
+          "comment": "亞雷比斯長老的家",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail026 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 189,
+          "comment": "亞雷比斯長老的家二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 188 teAddSelfTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 190,
+          "comment": "亞雷比斯長老的家三",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail028 actAddTE"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_沙羅尼亞": {
+      "point_id": 35,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": [
+        {
+          "code": 157,
+          "comment": "第一次進入沙羅尼亞",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail034 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 158,
+          "comment": "沙羅尼亞武器店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail034 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 159,
+          "comment": "沙羅尼亞護甲店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail034 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 160,
+          "comment": "沙羅尼亞道具店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail034 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 162,
+          "comment": "沙羅尼亞酒館老闆",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail034 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 163,
+          "comment": "沙羅尼亞酒館翼族女性",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail034 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 164,
+          "comment": "沙羅尼亞酒館旅行商人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "TOWNDEF town_event 40 teAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 165,
+          "comment": "沙羅尼亞酒館緹娜等人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail034 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 166,
+          "comment": "第一次離開沙羅尼亞",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail034 actSetTownExitExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 167,
+          "comment": "沙羅尼亞酒館與緹娜等人會合",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "TOWNDEF town_event 165 teExecEvent",
+                "TOWNDEF town_event 166 teExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 161,
+          "comment": "沙羅尼亞酒館",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [158, 159, 160] are all script-added"
+              ],
+              "ensured_by": [
+                "TOWNDEF town_event 40 teAddTE",
+                "winfail034 actAddTE"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "town_斐達克": {
+      "point_id": 42,
+      "tree": {
+        "0": []
+      },
+      "entries": [],
+      "excluded": [
+        {
+          "code": 168,
+          "comment": "第一次進入斐達克",
+          "reasons": [
+            {
+              "reason": "exec_target_only",
+              "by": [
+                "winfail073 actSetTownExecEvent"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 169,
+          "comment": "斐達克武器店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 170,
+          "comment": "斐達克護甲店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 171,
+          "comment": "斐達克道具店",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 173,
+          "comment": "斐達克酒館服務生",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 174,
+          "comment": "斐達克酒館妖精",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 175,
+          "comment": "斐達克酒館妖精二",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "story074 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 176,
+          "comment": "斐達克酒館商人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 177,
+          "comment": "斐達克酒館退伍軍人",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 178,
+          "comment": "斐達克旅館",
+          "reasons": [
+            {
+              "reason": "added_at_runtime",
+              "by": [
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        },
+        {
+          "code": 172,
+          "comment": "斐達克酒館",
+          "reasons": [
+            {
+              "reason": "town_script_populated",
+              "by": [
+                "shop events [169, 170, 171] are all script-added"
+              ],
+              "ensured_by": [
+                "story074 actAddTE",
+                "winfail073 actAddTE"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "unassigned": [
+    {
+      "code": 113,
+      "comment": "酒館神秘男子二",
+      "reasons": []
+    },
+    {
+      "code": 114,
+      "comment": "酒館神秘男子三",
+      "reasons": []
+    },
+    {
+      "code": 115,
+      "comment": "酒館神秘男子四",
+      "reasons": []
+    },
+    {
+      "code": 116,
+      "comment": "酒館神秘男子五",
+      "reasons": []
+    },
+    {
+      "code": 117,
+      "comment": "酒館神秘男子六",
+      "reasons": []
+    },
+    {
+      "code": 118,
+      "comment": "酒館神秘男子七",
+      "reasons": []
+    },
+    {
+      "code": 119,
+      "comment": "酒館神秘男子八",
+      "reasons": []
+    },
+    {
+      "code": 120,
+      "comment": "酒館神秘男子九",
+      "reasons": []
+    },
+    {
+      "code": 121,
+      "comment": "酒館神秘男子選一",
+      "reasons": [
+        {
+          "reason": "exec_target_only",
+          "by": [
+            "TOWNDEF town_event 113 teSelectInsertEvent",
+            "TOWNDEF town_event 114 teSelectInsertEvent",
+            "TOWNDEF town_event 115 teSelectInsertEvent",
+            "TOWNDEF town_event 116 teSelectInsertEvent",
+            "TOWNDEF town_event 117 teSelectInsertEvent",
+            "TOWNDEF town_event 118 teSelectInsertEvent",
+            "TOWNDEF town_event 119 teSelectInsertEvent",
+            "TOWNDEF town_event 120 teSelectInsertEvent",
+            "TOWNDEF town_event 123 teSelectInsertEvent"
+          ]
+        }
+      ]
+    },
+    {
+      "code": 122,
+      "comment": "酒館神秘男子選二",
+      "reasons": [
+        {
+          "reason": "exec_target_only",
+          "by": [
+            "TOWNDEF town_event 113 teSelectInsertEvent",
+            "TOWNDEF town_event 114 teSelectInsertEvent",
+            "TOWNDEF town_event 115 teSelectInsertEvent",
+            "TOWNDEF town_event 116 teSelectInsertEvent",
+            "TOWNDEF town_event 117 teSelectInsertEvent",
+            "TOWNDEF town_event 118 teSelectInsertEvent",
+            "TOWNDEF town_event 119 teSelectInsertEvent",
+            "TOWNDEF town_event 120 teSelectInsertEvent",
+            "TOWNDEF town_event 121 teSecretManBuyThing",
+            "TOWNDEF town_event 123 teSelectInsertEvent"
+          ]
+        }
+      ]
+    },
+    {
+      "code": 137,
+      "comment": "克里夫二",
+      "reasons": [
+        {
+          "reason": "added_at_runtime",
+          "by": [
+            "TOWNDEF town_event 136 teAddSelfTE"
+          ]
+        }
+      ]
+    },
+    {
+      "code": 152,
+      "comment": "回到港口清除路線",
+      "reasons": [
+        {
+          "reason": "no_show_name"
+        },
+        {
+          "reason": "exec_target_only",
+          "by": [
+            "TOWNDEF town_event 138 teSetExecEvent"
+          ]
+        }
+      ]
+    },
+    {
+      "code": 191,
+      "comment": null,
+      "reasons": [
+        {
+          "reason": "no_show_name"
+        },
+        {
+          "reason": "exec_target_only",
+          "by": [
+            "TOWNDEF town_event 108 teCheckItemExecEvent"
+          ]
+        }
+      ]
+    }
+  ],
+  "statistics": {
+    "towns": 12,
+    "towns_with_roots": 3,
+    "root_entries": 11,
+    "nested_entries": 7,
+    "excluded": 160,
+    "unassigned": 13,
+    "runtime_added_events": 99,
+    "script_ensured_sub_menus": 13,
+    "exec_target_events": 49,
+    "script_actions": 70
+  }
+}

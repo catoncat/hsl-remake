@@ -1,0 +1,51 @@
+{
+  "schema": "hsl_level_battle.v1",
+  "id": "authored_minimal_battle",
+  "title": "最小手寫戰鬥（tracer）",
+  "rule_adapter": "winfail",
+  "player_unit_id": "hero",
+  "resources": {
+    "map_texture": "res://content/imported/hsl/chapter01/battle002/level2.png",
+    "terrain": "res://content/generated/hsl/static/hsl01/level002_terrain.json",
+    "battle_seed": "res://content/generated/hsl/chapter01/battle501_seed.json",
+    "attack_ranges": "res://content/generated/hsl/chapter01/attack_ranges.json",
+    "consumables": "res://content/imported/hsl/chapter01/consumables.json",
+    "progression": "res://content/imported/hsl/chapter01/progression.json",
+    "actor_walk_manifest": "res://content/imported/hsl/chapter01/battle500/actor_walk_frames/actor_walk_manifest.json",
+    "actor_audio": "res://content/imported/hsl/chapter01/battle500/actor_audio.json",
+    "interface_audio": "res://content/imported/hsl/shared/interface_audio/manifest.json",
+    "combat_animation": "res://content/imported/hsl/chapter01/combat_animation/manifest.json",
+    "portraits": "res://content/imported/hsl/chapter01/portraits/manifest.json"
+  },
+  "opening": {"actor_bindings": {"SID_雷歐納德/1": {"unit_id": "hero"}}},
+  "scenario_rules": {"initial_objective_phase": "clear"},
+  "playable_units": [
+    {
+      "id": "hero", "actor_id": "001", "battle_actor_role": "player_controlled", "player_commandable": true,
+      "coord": [6, 8], "hp": 120, "max_hp": 120, "mp": 0, "max_mp": 0, "live_speed": 14, "action_ready": true,
+      "move_point": 5, "base_move_point": 5, "no_attack": false, "weapon_code": 2,
+      "equipment": [{"slot": "weapon", "item_code": 2, "name": "闊刃劍"}],
+      "combat_profile": {"live_attack_damage": 54, "live_hit_ratio": 98, "live_defense": 43, "avoid_hit_ratio": 0, "str": 16, "dex": 16, "attack_back": 12, "resist_by_type": {"0": 16, "1": 14, "2": 13, "3": 16, "4": 12}, "mind": 8, "con": 12, "live_magic_attack": 17, "attack_damagex2": 14, "base_steal_ratio": 0, "steal_ratio": 12, "weapon_magic_attack_type": -1, "weapon_damage_variance_lo": 0, "weapon_damage_variance_hi": 0},
+      "growth_profile": {"model": "native_job_stats_v1", "job_code": 80, "allocation": "manual", "caps": {"str": 90, "dex": 88, "mind": 80, "con": 94}, "source": {"attack_power": 0, "magic_attack_power": 0, "defense": 6, "speed": 0, "hit_point": 96, "magic_point": 0, "avoid_hit_ratio": 0, "attack_back": 0, "attack_damagex2": 14, "mode": 65536, "has_magic": false, "base_resist_by_type": {"0": 10, "1": 10, "2": 10, "3": 10, "4": 10}}},
+      "status_flags": 0, "status_counters": {"poison": 0, "paralysis": 0, "no_magic": 0}
+    },
+    {
+      "id": "wolf_1", "actor_id": "036", "class_id": "Enemy036", "battle_actor_role": "enemy_ai", "player_commandable": false,
+      "coord": [9, 8], "hp": 20, "max_hp": 20, "mp": 0, "max_mp": 0, "live_speed": 12, "action_ready": true,
+      "move_point": 5, "base_move_point": 5, "no_attack": false, "weapon_code": 33,
+      "equipment": [{"slot": "weapon", "item_code": 33, "name": "爪"}],
+      "combat_profile": {"live_attack_damage": 47, "live_hit_ratio": 90, "live_defense": 13, "avoid_hit_ratio": 0, "str": 20, "dex": 16, "attack_back": 12, "resist_by_type": {"0": 5, "1": 5, "2": 6, "3": 5, "4": 4}, "mind": 1, "con": 20, "live_magic_attack": 28, "attack_damagex2": 8, "base_steal_ratio": 0, "steal_ratio": 12, "weapon_magic_attack_type": -1, "weapon_damage_variance_lo": 0, "weapon_damage_variance_hi": 0},
+      "growth_profile": {"model": "native_job_stats_v1", "job_code": 92, "allocation": "fixed_template", "caps": {"str": 92, "dex": 84, "mind": 78, "con": 98}, "source": {"attack_power": 0, "magic_attack_power": 0, "defense": 0, "speed": 0, "hit_point": 0, "magic_point": 0, "avoid_hit_ratio": 0, "attack_back": 0, "attack_damagex2": 0, "mode": 131072, "has_magic": false, "base_resist_by_type": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0}}},
+      "status_flags": 0, "status_counters": {"poison": 0, "paralysis": 0, "no_magic": 0}
+    },
+    {
+      "id": "wolf_2", "actor_id": "036", "class_id": "Enemy036", "battle_actor_role": "enemy_ai", "player_commandable": false,
+      "coord": [6, 11], "hp": 20, "max_hp": 20, "mp": 0, "max_mp": 0, "live_speed": 11, "action_ready": true,
+      "move_point": 5, "base_move_point": 5, "no_attack": false, "weapon_code": 33,
+      "equipment": [{"slot": "weapon", "item_code": 33, "name": "爪"}],
+      "combat_profile": {"live_attack_damage": 47, "live_hit_ratio": 90, "live_defense": 13, "avoid_hit_ratio": 0, "str": 20, "dex": 16, "attack_back": 12, "resist_by_type": {"0": 5, "1": 5, "2": 6, "3": 5, "4": 4}, "mind": 1, "con": 20, "live_magic_attack": 28, "attack_damagex2": 8, "base_steal_ratio": 0, "steal_ratio": 12, "weapon_magic_attack_type": -1, "weapon_damage_variance_lo": 0, "weapon_damage_variance_hi": 0},
+      "growth_profile": {"model": "native_job_stats_v1", "job_code": 92, "allocation": "fixed_template", "caps": {"str": 92, "dex": 84, "mind": 78, "con": 98}, "source": {"attack_power": 0, "magic_attack_power": 0, "defense": 0, "speed": 0, "hit_point": 0, "magic_point": 0, "avoid_hit_ratio": 0, "attack_back": 0, "attack_damagex2": 0, "mode": 131072, "has_magic": false, "base_resist_by_type": {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0}}},
+      "status_flags": 0, "status_counters": {"poison": 0, "paralysis": 0, "no_magic": 0}
+    }
+  ]
+}

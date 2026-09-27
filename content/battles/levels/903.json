@@ -1,0 +1,172 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 903,
+  "battle": {
+    "id": "battle_903_level903",
+    "title": "哈莫特沙漠　魔騎士團",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "哈莫特沙漠　魔騎士團 · 敵軍已清除",
+      "fail_0": "哈莫特沙漠　魔騎士團 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 39,
+      "players": 8
+    },
+    "unresolved_semantics": [
+      "STORY903 shares the level-24 desert map and opening roster; the point-24 winfail021 replacement route is represented by the dedicated battle scenario while source map binding remains resource-derived.",
+      "WINFAIL903 uses the same 053/054 scripted arrivals and dialogue as the source variant. Action order is preserved by the shared interpreter; native scheduler timing, collision and branch ownership remain provisional.",
+      "The battle is registered as the point-24 魔騎士團 replacement selected by WINFAIL021. Its hand-off and reward behavior follow the shared battle contract and do not claim original global RNG equivalence."
+    ]
+  },
+  "story_scene": {
+    "id": "story_903_hamot_desert_dark_knights_opening",
+    "title": "哈莫特沙漠・魔騎士團（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "哈莫特沙漠　魔騎士團",
+      "hint": "戰鬥部分（level 903）尚未重製　　空格／點擊：回到大地圖（哈莫特沙漠）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the eight controlled slots (咕嚕 is a conditional install) and the 31 EVEF enemies (captain 024 with 027 / 030 / 031 / 044) have no battle scenario yet (P-024, multi-slot party); the preview shows the EVEF placements and STORY903 walks only — the winfail903 body (round-10 / all-but-049 event 2: three 024, three 044, two 031, one 027, two 030 walk in from (96,992); round-15 / event 5: eight 049 riders, 克羅蒂 053 and 塔克斯 054 walk in from (192,-64) and speak 1634-1653 before leaving) belongs to the not-yet-remade battle",
+      "level 903 is the level-24 variant winfail021's win section arms with actBMSetPointEvent 24,903,0 (static-derived): STORY903 is STORY024 plus 雷特's line 1629, winfail903 shifts the events to rounds 10 / 15 and rewrites the 魔騎士團 lines (1648-1653); both share obj-024.obs's object codes through OBJ-024.H — the seed's object header is OBJ-ALL.H (no obj-903.h; STORY903 includes OBJ-ALL.H before OBJ-024.H), so the winfail insert symbols obj_Story_Level_Enemy24 / 44 / 31 / 27 / 30 / 49 / 53 / 54 are not listed in script_objects",
+      "actShowSectionName SHAPE01\\WORD024.SHP: the level shows level 24's title 哈莫特沙漠 (the PAK has no WORD903); the card title 哈莫特沙漠　魔騎士團 is a remake label for the 903 variant, not a resource title",
+      "Enemy024 carries obj_Data8 = -1 / obj_Data9 = 1 in obj-903.obs (as in obj-024.obs); the fields are recorded only, their engine meaning is not resolved by the preview"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "024",
+      "027",
+      "030",
+      "031",
+      "044",
+      "049",
+      "053",
+      "054"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "024",
+      "053",
+      "054"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_ENEMY024": "377",
+    "SID_ENEMY053": "8",
+    "SID_ENEMY054": "650"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-903.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-903.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived); walks in, dead message only",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-903.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived); walks in, dead message only",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-903.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived); walks in, dead message only",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-903.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived); walks in, dead message only",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-903.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived); speaks 1629 in STORY903",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-903.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived); walks in, dead message only",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-903.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); conditional install, left out of the preview (STORY903 still walks the token)",
+    "SID_ENEMY024": "same remake label as levels 51 / 6 / 24 (377 重裝兵); PLAYERS.TXT character 24 name field is 306 (???), provisional; obj-903.obs Enemy024 carries obj_Data8 = -1 / obj_Data9 = 1 as level 24 does (fields recorded only)",
+    "SID_ENEMY053": "PLAYERS.TXT character 53 name field = name_8 -> resource.h 8 = 克羅蒂 (resource-derived name); speaks only in the winfail903 event-5 arrival of the 魔騎士團 (inserted as obj_Story_Level_Enemy53, OBJ-024.H), not in the opening",
+    "SID_ENEMY054": "PLAYERS.TXT character 54 name field = 650 塔克斯 (resource-derived name); speaks only in the winfail903 event-5 arrival (inserted as obj_Story_Level_Enemy54, OBJ-024.H), not in the opening"
+  },
+  "comments": {
+    "story_scene": [
+      "lane alt902: side-route replacement battles 902 / 903 / 904 — special levels a script arms",
+      "onto a main-line big-map point in place of the point's own level; none has a shape of its",
+      "own, each obj-90N.obs 地圖管理員 names the base level's map (resource-derived, SR-075 binding).",
+      "Level 903 (哈莫特沙漠 variant): winfail021's win section arms big-map point 24 with",
+      "actBMSetPointEvent 24,903,0, so reaching 哈莫特沙漠 after 回音之谷 opens this level instead of"
+    ],
+    "cast": [
+      "lane alt902: side-route replacement battles 902 / 903 / 904.",
+      "Level 903 (哈莫特沙漠 variant winfail021 arms on point 24; Level24.SHP by the obs 地圖管理員): level",
+      "24's cast — the eight-slot party (咕嚕 008 is a conditional install) and the Wosfita captain 024",
+      "with 027 / 030 / 031 / 044 troops in the EVEF; the formal winfail path also inserts 049 riders, 克羅蒂",
+      "053 in her 009 sprite and 塔克斯 054, so all three are included for scripts and dialogue."
+    ],
+    "speakers": [
+      "lane alt902: the side-route replacement battles 902 / 903 / 904.",
+      "Level 903 (哈莫特沙漠 variant: winfail021's win arms big-map point 24 with actBMSetPointEvent",
+      "24,903,0; obj-903.obs 地圖管理員 names Level24.SHP): the eight-slot party (咕嚕 有才產生) walks",
+      "down from the north edge, the Wosfita captain 024 and 雷特 / 雷歐納德 speak; winfail903 brings",
+      "the 魔騎士團 — 塔克斯 054 and 克羅蒂 053 (as an enemy) — who speak in event 5."
+    ]
+  }
+}

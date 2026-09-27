@@ -1,0 +1,80 @@
+{
+  "failures": [],
+  "level": 6,
+  "records": [
+    {
+      "camera": "(763.6884, 318.7536)",
+      "capture": "00-framed",
+      "motion": false
+    },
+    {
+      "camera": "(800.0, 272.0)",
+      "capture": "dialogue-950",
+      "motion": false
+    },
+    {
+      "camera": "(800.0, 240.0)",
+      "capture": "dialogue-951",
+      "motion": false
+    },
+    {
+      "camera": "(800.0, 272.0)",
+      "capture": "dialogue-952",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 304.0)",
+      "capture": "first-control",
+      "motion": false
+    },
+    {
+      "first_control": {
+        "interaction": "action_menu",
+        "players": 4,
+        "units": 27
+      }
+    },
+    {
+      "camera": "(688.0, 304.0)",
+      "capture": "win-dialogue-958",
+      "motion": false
+    },
+    {
+      "camera": "(752.0, 272.0)",
+      "capture": "win-dialogue-959",
+      "motion": false
+    },
+    {
+      "camera": "(656.0, 240.0)",
+      "capture": "win-dialogue-960",
+      "motion": false
+    },
+    {
+      "camera": "(752.0, 272.0)",
+      "capture": "win-dialogue-961",
+      "motion": false
+    },
+    {
+      "camera": "(720.0, 240.0)",
+      "capture": "win-dialogue-790",
+      "motion": false
+    },
+    {
+      "camera": "(720.0, 240.0)",
+      "capture": "result",
+      "motion": false
+    },
+    {
+      "result": {
+        "outcome": "victory_boss",
+        "resolved": {
+          "code": 0,
+          "key": "win_0",
+          "kind": "win",
+          "outcome": "victory_boss"
+        }
+      }
+    }
+  ],
+  "schema": "hsl_battle_review.v1"
+}

@@ -1,0 +1,661 @@
+{
+  "schema": "hsl_ai_skill_render_review.v1",
+  "review_date": "2026-09-16",
+  "original_game_execution": false,
+  "fixture": true,
+  "overrides": "Synthetic positions, HP400, speed queue and commandable successor; real scene WRD blocking; magic tendency100; selected spell use_ratio100 and other spell0. Poison uses source actor025 on an isolated test roster. No RNG replacement, damage/result assignment or time acceleration.",
+  "screen": 1,
+  "window_position": "(3840, 882)",
+  "input": "Viewport mouse events on actual Wait; normal Runtime AI and timers",
+  "routes": [
+    {
+      "spell": "fire",
+      "source_actor_id": "026",
+      "from": "(7, 7)",
+      "to": "(6, 8)",
+      "path": [
+        "(7, 7)",
+        "(7, 8)",
+        "(6, 8)"
+      ],
+      "mp_before": 30,
+      "mp_after": 22,
+      "payment": {
+        "after": 22,
+        "amount": 8,
+        "before": 30,
+        "native_affordable": true,
+        "native_required": 8,
+        "ok": true,
+        "resource": "mp"
+      },
+      "skill_id": "magic:magicFIRE:magicCode01",
+      "target_id": "leonard",
+      "damage": 21,
+      "hit": true,
+      "affected_count": 0,
+      "decision": {
+        "attempts": [
+          {
+            "bucket": 4,
+            "draws": [
+              {
+                "bound": 32,
+                "value": 11
+              },
+              {
+                "bound": 100,
+                "value": 6
+              },
+              {
+                "bound": 100,
+                "value": 10
+              }
+            ],
+            "index": 0,
+            "skill_ids": [
+              "magic:magicFIRE:magicCode01",
+              "magic:magicAIR:magicCode01"
+            ],
+            "source": "0x40c770",
+            "visited": [
+              1,
+              0
+            ]
+          }
+        ],
+        "bucket_order": {
+          "area_first": false,
+          "draws": [
+            {
+              "bound": 100,
+              "value": 40
+            }
+          ],
+          "evidence_tier": "static-derived",
+          "order": [
+            4,
+            3
+          ],
+          "source": "0x40d4e0"
+        },
+        "composition_evidence": "provisional",
+        "coverage": 1,
+        "position_selection": {
+          "distance": 3,
+          "draws": [
+            {
+              "bound": 2,
+              "value": 0
+            }
+          ],
+          "evidence_tier": "static-derived",
+          "index": 1,
+          "source": "0x40d200..0x40d2b0",
+          "whole_native_planner": false
+        },
+        "primary_target_id": "leonard",
+        "skill_id": "magic:magicFIRE:magicCode01",
+        "source": "original_ai_skills",
+        "threat": "(8, 7)",
+        "threat_policy": "nearest living foe within eight cells, deterministic equal-distance row-major order"
+      },
+      "moving": true,
+      "casting": true,
+      "handoff": true,
+      "next_actor": "enemy023_1",
+      "feedback": []
+    },
+    {
+      "spell": "wind",
+      "source_actor_id": "026",
+      "from": "(7, 7)",
+      "to": "(7, 9)",
+      "path": [
+        "(7, 7)",
+        "(7, 8)",
+        "(7, 9)"
+      ],
+      "mp_before": 30,
+      "mp_after": 22,
+      "payment": {
+        "after": 22,
+        "amount": 8,
+        "before": 30,
+        "native_affordable": true,
+        "native_required": 8,
+        "ok": true,
+        "resource": "mp"
+      },
+      "skill_id": "magic:magicAIR:magicCode01",
+      "target_id": "leonard",
+      "damage": 13,
+      "hit": true,
+      "affected_count": 0,
+      "decision": {
+        "attempts": [
+          {
+            "bucket": 3,
+            "draws": [],
+            "index": -1,
+            "skill_ids": [],
+            "source": "0x40c770",
+            "visited": []
+          },
+          {
+            "bucket": 4,
+            "draws": [
+              {
+                "bound": 32,
+                "value": 4
+              },
+              {
+                "bound": 100,
+                "value": 25
+              },
+              {
+                "bound": 100,
+                "value": 66
+              }
+            ],
+            "index": 1,
+            "skill_ids": [
+              "magic:magicFIRE:magicCode01",
+              "magic:magicAIR:magicCode01"
+            ],
+            "source": "0x40c770",
+            "visited": [
+              0,
+              1
+            ]
+          }
+        ],
+        "bucket_order": {
+          "area_first": true,
+          "draws": [
+            {
+              "bound": 100,
+              "value": 15
+            }
+          ],
+          "evidence_tier": "static-derived",
+          "order": [
+            3,
+            4
+          ],
+          "source": "0x40d4e0"
+        },
+        "composition_evidence": "provisional",
+        "coverage": 1,
+        "position_selection": {
+          "distance": 3,
+          "draws": [
+            {
+              "bound": 2,
+              "value": 1
+            }
+          ],
+          "evidence_tier": "static-derived",
+          "index": 5,
+          "source": "0x40d200..0x40d2b0",
+          "whole_native_planner": false
+        },
+        "primary_target_id": "leonard",
+        "skill_id": "magic:magicAIR:magicCode01",
+        "source": "original_ai_skills",
+        "threat": "(8, 7)",
+        "threat_policy": "nearest living foe within eight cells, deterministic equal-distance row-major order"
+      },
+      "moving": true,
+      "casting": true,
+      "handoff": true,
+      "next_actor": "enemy023_1",
+      "feedback": []
+    },
+    {
+      "spell": "poison",
+      "source_actor_id": "025",
+      "from": "(8, 10)",
+      "to": "(7, 10)",
+      "path": [
+        "(8, 10)",
+        "(7, 10)"
+      ],
+      "mp_before": 100,
+      "mp_after": 90,
+      "payment": {
+        "after": 90,
+        "amount": 10,
+        "before": 100,
+        "native_affordable": true,
+        "native_required": 10,
+        "ok": true,
+        "resource": "mp"
+      },
+      "skill_id": "magic:magicAIR:magicCode05",
+      "target_id": "area-center",
+      "damage": 0,
+      "hit": true,
+      "affected_count": 3,
+      "decision": {
+        "attempts": [
+          {
+            "bucket": 3,
+            "draws": [
+              {
+                "bound": 32,
+                "value": 20
+              },
+              {
+                "bound": 100,
+                "value": 88
+              }
+            ],
+            "index": 0,
+            "skill_ids": [
+              "magic:magicAIR:magicCode05"
+            ],
+            "source": "0x40c770",
+            "visited": [
+              0
+            ]
+          }
+        ],
+        "bucket_order": {
+          "area_first": true,
+          "draws": [
+            {
+              "bound": 100,
+              "value": 44
+            }
+          ],
+          "evidence_tier": "static-derived",
+          "order": [
+            3,
+            4
+          ],
+          "source": "0x40d4e0"
+        },
+        "composition_evidence": "provisional",
+        "coverage": 3,
+        "position_selection": {
+          "distance": 3,
+          "draws": [],
+          "evidence_tier": "static-derived",
+          "index": 0,
+          "source": "0x40d200..0x40d2b0",
+          "whole_native_planner": false
+        },
+        "primary_target_id": "leonard",
+        "skill_id": "magic:magicAIR:magicCode05",
+        "source": "original_ai_skills",
+        "threat": "(10, 10)",
+        "threat_policy": "nearest living foe within eight cells, deterministic equal-distance row-major order"
+      },
+      "moving": true,
+      "casting": true,
+      "handoff": true,
+      "next_actor": "enemy023_1",
+      "feedback": [
+        {
+          "bounds": "[P: (318.0, 261.7369), S: (36.0, 27.0)]",
+          "text": "中毒"
+        },
+        {
+          "bounds": "[P: (350.0, 222.7369), S: (36.0, 27.0)]",
+          "text": "中毒"
+        },
+        {
+          "bounds": "[P: (382.0, 261.7369), S: (36.0, 27.0)]",
+          "text": "中毒"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "file": "fire-before.png",
+      "source": "ignored/ai-skill-review/fire-before.png",
+      "sha256": "e8c274fd6af87cceb605e1854fd2e3536c917e4f03a1b5fd1c759a33c027cd09"
+    },
+    {
+      "file": "fire-cast.png",
+      "source": "ignored/ai-skill-review/fire-cast.png",
+      "sha256": "d8720abcd0b0b91e3387e5c87f43fb00c688c42c1540199a90a2f1f52cb0691f"
+    },
+    {
+      "file": "wind-cast.png",
+      "source": "ignored/ai-skill-review/wind-cast.png",
+      "sha256": "82b66e0b90c4eb7260c173b2b1f24b39641058d70f57097685d5141d97e9588e"
+    },
+    {
+      "file": "poison-cast.png",
+      "source": "ignored/ai-skill-review/poison-cast.png",
+      "sha256": "08ee65f8f56cf1e451d6c1e5561cf1959c8fc11626ebe070dc6fd0e0bbc54882"
+    },
+    {
+      "file": "poison-handoff.png",
+      "source": "ignored/ai-skill-review/poison-handoff.png",
+      "sha256": "3abbb434509388c81cc952a2714ae3f7e9fa02edf21ed0e4aabbee2505908890"
+    },
+    {
+      "file": "default-result.png",
+      "source": "ignored/first-battle-playthrough/advance/result.png",
+      "sha256": "5a779b92020fe7fc33655c6a47148e910f53d3303c8c49b4c8bd3e02ccaeaf05"
+    }
+  ],
+  "source_receipt_sha256": "99a80b093878ad864f7745b609f07d37945f147825c493a633529566f6c5f426",
+  "default_playthrough": {
+    "actions": [
+      {
+        "action": "move",
+        "cell": [
+          13,
+          14
+        ],
+        "exp": 0.0,
+        "hp": 30.0,
+        "level": 1.0,
+        "stamina": 0,
+        "turn": 1
+      },
+      {
+        "action": "commit_move",
+        "exp": 0.0,
+        "hp": 30,
+        "level": 1.0,
+        "stamina": 0,
+        "turn": 1
+      },
+      {
+        "action": "attack",
+        "exp": 18,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 10,
+        "target": "enemy021_4",
+        "turn": 2
+      },
+      {
+        "action": "move",
+        "cell": [
+          13,
+          12
+        ],
+        "exp": 18,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 10,
+        "turn": 3
+      },
+      {
+        "action": "attack",
+        "exp": 48,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 15,
+        "target": "enemy021_3",
+        "turn": 3
+      },
+      {
+        "action": "move",
+        "cell": [
+          15,
+          12
+        ],
+        "exp": 48,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 15,
+        "turn": 4
+      },
+      {
+        "action": "attack",
+        "exp": 68,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 20,
+        "target": "Enemy021_reinforcement_12",
+        "turn": 4
+      },
+      {
+        "action": "special",
+        "exp": 75,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 0,
+        "target": "Enemy021_reinforcement_14",
+        "turn": 5
+      },
+      {
+        "action": "wait",
+        "exp": 75,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 0,
+        "turn": 6
+      },
+      {
+        "action": "move",
+        "cell": [
+          14,
+          10
+        ],
+        "exp": 75,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 0,
+        "turn": 7
+      },
+      {
+        "action": "commit_move",
+        "exp": 75,
+        "hp": 21,
+        "level": 1.0,
+        "stamina": 0,
+        "turn": 7
+      }
+    ],
+    "captured_views": [
+      "status",
+      "map-range",
+      "map-cursor",
+      "map-target",
+      "attacker-shot",
+      "defender-shot"
+    ],
+    "dialogue": [
+      "372",
+      "372",
+      "372",
+      "396",
+      "397",
+      "374",
+      "372",
+      "372",
+      "372",
+      "372",
+      "368",
+      "369",
+      "369",
+      "372",
+      "372",
+      "371"
+    ],
+    "elapsed_seconds": 209.606,
+    "opening": [
+      "363",
+      "364",
+      "365",
+      "366",
+      "367",
+      "364",
+      "1101"
+    ],
+    "outcome": "victory_escape",
+    "player": {
+      "action_ready": true,
+      "actor_id": "001",
+      "ai_call_target_id": "",
+      "attack_range_evidence": {
+        "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+        "evidence_tier": "resource-derived",
+        "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+      },
+      "battle_actor_role": "player_controlled",
+      "combat_profile": {
+        "attack_back": 0.0,
+        "avoid_hit_ratio": 0.0,
+        "con": 12.0,
+        "dex": 16.0,
+        "live_attack_damage": 54.0,
+        "live_defense": 43.0,
+        "live_hit_ratio": 98.0,
+        "live_magic_attack": 17.0,
+        "mind": 8.0,
+        "resist_by_type": {
+          "0": 16.0,
+          "1": 14.0,
+          "2": 13.0,
+          "3": 16.0,
+          "4": 12.0
+        },
+        "str": 16.0
+      },
+      "combat_stats_evidence_tier": "provisional",
+      "combat_stats_source": "Native 0x448840 unadjusted template attack/defense/hit; PLAYERS str/dex/resists, absent resists modeled as zero. NPC level adjustment unresolved",
+      "coord": "(14, 10)",
+      "defeated": false,
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        }
+      ],
+      "exp": 75,
+      "grid_coord": "(14, 10)",
+      "growth_profile": {
+        "caps": {
+          "con": 94.0,
+          "dex": 88.0,
+          "mind": 80.0,
+          "str": 90.0
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_growth_refresh.json",
+        "job_code": 80.0,
+        "model": "native_swordman_v1",
+        "source": {
+          "actor_id": "001",
+          "attack_back": 0.0,
+          "attack_power": 0.0,
+          "avoid_hit_ratio": 0.0,
+          "base_resist_by_type": {
+            "0": 10.0,
+            "1": 10.0,
+            "2": 10.0,
+            "3": 10.0,
+            "4": 10.0
+          },
+          "defense": 6.0,
+          "has_magic": false,
+          "hit_point": 6.0,
+          "job": "jobSwordMan",
+          "job_code": 80.0,
+          "magic_attack_power": 0.0,
+          "magic_point": 0.0,
+          "speed": 0.0
+        }
+      },
+      "hit_bonus_accum": 0,
+      "hp": 21,
+      "id": "leonard",
+      "inventory": [
+        241,
+        241,
+        241,
+        246,
+        0,
+        0,
+        0,
+        0
+      ],
+      "kill_exp": 30.0,
+      "kills": 1,
+      "level": 1.0,
+      "live_speed": 14.0,
+      "live_speed_evidence_tier": "provisional",
+      "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+      "max_hp": 30.0,
+      "max_mp": 0.0,
+      "move_point": 5.0,
+      "move_point_evidence_tier": "static-derived",
+      "move_point_source": "PLAYERS.TXT move_point=5",
+      "move_range": 5,
+      "mp": 0.0,
+      "pending_stat_points": 0,
+      "player_commandable": true,
+      "position_evidence_tier": "static-derived",
+      "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+      "position_source": {
+        "evef_record_index": 20.0,
+        "object_code": 6.0,
+        "placement_world": [
+          480.0,
+          640.0
+        ]
+      },
+      "speed": 14,
+      "stamina": 0,
+      "status_counters": {
+        "no_magic": 0.0,
+        "poison": 0.0
+      },
+      "status_flags": 0,
+      "vitals_evidence_tier": "provisional",
+      "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+      "weapon_code": 2.0
+    },
+    "policy": "advance",
+    "restart": true,
+    "time_scale": 1.0,
+    "turn": 7,
+    "visual_samples": {
+      "live-cue-cursor": {
+        "sequence": 1,
+        "turn": 2
+      },
+      "live-cue-range": {
+        "sequence": 1,
+        "turn": 2
+      },
+      "live-cue-target": {
+        "sequence": 1,
+        "turn": 2
+      },
+      "live-hurt": {
+        "sequence": 1,
+        "turn": 2
+      },
+      "live-windup": {
+        "sequence": 1,
+        "turn": 2
+      }
+    }
+  }
+}

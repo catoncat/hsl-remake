@@ -1,0 +1,155 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 77,
+  "battle": {
+    "id": "battle_077_level77",
+    "title": "破滅的命運 · 毀滅天使",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "破滅的命運 · 席德爾戰勝",
+      "fail_0": "破滅的命運 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 27,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "The final-chapter map is inherited from level 58 through the seed alias; no map texture is copied.",
+      "Random-position insertion, deletion and actor slot actions use the shared provisional loop RNG contract documented in original_random_position.md; one source end position remains unaligned until the native random slot is measured.",
+      "The late Enemy059 insert uses the reviewed Enemy059 source template, portrait, panel title and combat profile; SID_ENEMY059 binds to that true transformed unit. The source random-position and transformation presentation timing remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_077_shidell_final_opening",
+    "title": "破滅的命運・席德爾（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "破滅的命運",
+      "hint": "戰鬥部分（level 77）尚未重製　　空格／點擊：回到大地圖（克萊恩城）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the nine-slot party (咕嚕 is a conditional install) and the enemy roster have no battle scenario yet (chapter-3 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "actSetPlayerUndead SID_ENEMY056 is recorded, not applied; the winfail077 evolution (actSetPlayerPosToRandom0, actInsertStoryObjectRandomPos 白光, actDeleteRandomPosObject, actInsertObjectRandomPos obj_Story_Level_Enemy59, the 席德爾 / 雷特 exchange 2361-2368 and the late win status) belongs to the not-yet-remade battle",
+      "the 死妖精王 (SHAPE\\058-P.SHP, defProcStandObject) corpse is drawn as a stand object; STORY077's actDeletePosObject 295,273,8,defProcStandObject removes it after the 白光 (position_object_delete, remake radius reading)"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "033",
+      "034",
+      "035",
+      "056",
+      "059"
+    ],
+    "speakers": [
+      "001",
+      "006",
+      "009",
+      "056",
+      "059"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY056": "652",
+    "SID_ENEMY059": "652"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-077.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-077.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-077.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-077.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-077.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-077.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-077.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-077.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-077.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY056": "PLAYERS.TXT character 56 name field = 652 席德爾 (resource-derived name)",
+    "SID_ENEMY059": "PLAYERS.TXT character 59 name field = 652 席德爾 (the same name resource as character 56; the win board calls the form 毀滅天使 席德爾, message 2532) (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 77 (final: WORD077 破滅的命運 / EXTINCT FATE): the throne hall — 席德爾 056 stands over the",
+      "dead elf king (死妖精王, the static 058-P corpse) with 033 / 034 / 035 undead; a 白光 flash deletes",
+      "the corpse; he declares his evolution for destruction. winfail077 event 0 (his HP low) swaps him for",
+      "毀滅天使 059 at a random slot; win -> 82,82."
+    ],
+    "cast": [
+      "Level 77 (final: 席德爾 056 -> 毀滅天使 059): 033 / 034 / 035 undead in the EVEF; winfail077",
+      "event 0 re-inserts him as Enemy059 at a random slot; the 死妖精王 058-P corpse is a stand object."
+    ],
+    "speakers": [
+      "Level 77 (final 77: 席德爾 056 evolves into 毀滅天使 059 through the winfail077 event; winfail077 -> 82,82)."
+    ]
+  }
+}

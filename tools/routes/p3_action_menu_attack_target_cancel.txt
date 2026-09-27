@@ -1,0 +1,25 @@
+# HSL Original: action menu -> attack target select -> action menu
+# Coordinates are window-relative, based on the 640x480 game viewport.
+#
+# Precondition:
+# - The game is at the first battle player-turn action menu.
+# - The action menu is expected to be visible during player command choice.
+#
+# Input contract:
+# - Use the same battle menu rule as p2: raw `click` first hovers/selects a
+#   command icon, then `menuclick` confirms it.
+# - Do not use keyboard confirmation for battle commands.
+# - Right click returns from target selection to the action menu.
+
+screenshot before_action_menu
+
+# The attack command icon center observed in the current p3 capture.
+click 310 205
+wait 1
+menuclick 310 205
+wait 1
+screenshot after_attack_command
+
+menurclick 320 240
+wait 1
+screenshot after_cancel_back

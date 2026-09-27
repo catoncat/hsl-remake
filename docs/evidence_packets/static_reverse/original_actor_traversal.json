@@ -1,0 +1,12516 @@
+{
+  "schema": "hsl_actor_traversal_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "sources": {
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c"
+  },
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "anchors": [
+    {
+      "address": "0x4440f7",
+      "bytes": "56e8d329000083c40485c074046a06eb026a028b86a40000008b15c81b4c008bc8c1e1072bc88b848a2c0100005056e815b3fcff83c40cc786",
+      "meaning": "Player Move selects flight mode6, otherwise ground mode2, and passes live movement."
+    },
+    {
+      "address": "0x40cd42",
+      "bytes": "55a3106b470089442418e87f9d030083c40485c074288b85a40000008b15c81b4c008bc86a06c1e1072bc88b848a2c0100005055e8c526000083c40ceb2b55e82aedffff8b15c81b4c00508b85a40000008bc8c1e1072bc88b848a2c0100005055e89826000083c410",
+      "meaning": "AI casting positions select mode6 or the actor faction mode before the same flood."
+    },
+    {
+      "address": "0x40bab0",
+      "bytes": "8b4424048b15c81b4c008b80a40000008bc8c1e1072bc8b8000001008b4c8a2885c87406b802000000c3f7c1000002007406b803000000c3f7c1000004007405b807000000c3",
+      "meaning": "Ground faction helper: player bit first, then enemy, then NPC."
+    },
+    {
+      "address": "0x446ad0",
+      "bytes": "8b4c240433c08b89a40000008bd1c1e2072bd18b0dc81b4c00f68491a0000000017405b801000000c3",
+      "meaning": "Fly queries actor capability bit1."
+    },
+    {
+      "address": "0x446b30",
+      "bytes": "8b4c240433c08b89a40000008bd1c1e2072bd18b0dc81b4c00f68491a0000000107405b801000000c3",
+      "meaning": "No-block queries actor capability bit0x10."
+    },
+    {
+      "address": "0x40f1c4",
+      "bytes": "a0ee40002af040002fef400042ef400016ef400036ef4000f3ef400049ef400050ef400057ef40005eef4000",
+      "meaning": "Eleven primary flood branch addresses; mode6 is the distinct flight branch."
+    },
+    {
+      "address": "0x443c7c",
+      "bytes": "e8bfdffcff83c408a9000007000f84b80000008b0d901a4c008b158c1a4c005152e85e3bfcff83c40885c0741150e8812e000083c40485c00f85",
+      "meaning": "Player landing inspects occupied faction cells, with the no-block exception."
+    },
+    {
+      "address": "0x443d47",
+      "bytes": "a900001000754fa1901a4c008b0d8c1a4c005051e8f0ccfcff83c40885c0743666ff868c000000",
+      "meaning": "Empty no-stop cells are refused, then positive movement coverage is required."
+    },
+    {
+      "address": "0x44c294",
+      "bytes": "680c8f4700896c244ce8ce1b02008b44244c83c4403bc5740da1fc1a4c00838c30a0000000018d4c",
+      "meaning": "PLAYERS move_fly loader and capability update."
+    },
+    {
+      "address": "0x44c2f4",
+      "bytes": "68f48e4700e8721b02008b44241c83c4103bc5740da1fc1a4c00838c30a0000000108d44240c896c",
+      "meaning": "PLAYERS no_block loader and capability update."
+    }
+  ],
+  "helper": [
+    {
+      "input": {
+        "side": 65536,
+        "flags": 0
+      },
+      "native": {
+        "ground": 2,
+        "flying": false,
+        "no_block": false,
+        "mode": 2
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 32
+    },
+    {
+      "input": {
+        "side": 65536,
+        "flags": 1
+      },
+      "native": {
+        "ground": 2,
+        "flying": true,
+        "no_block": false,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "side": 65536,
+        "flags": 16
+      },
+      "native": {
+        "ground": 2,
+        "flying": false,
+        "no_block": true,
+        "mode": 2
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "side": 65536,
+        "flags": 17
+      },
+      "native": {
+        "ground": 2,
+        "flying": true,
+        "no_block": true,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "side": 131072,
+        "flags": 0
+      },
+      "native": {
+        "ground": 3,
+        "flying": false,
+        "no_block": false,
+        "mode": 3
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "side": 131072,
+        "flags": 1
+      },
+      "native": {
+        "ground": 3,
+        "flying": true,
+        "no_block": false,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 35
+    },
+    {
+      "input": {
+        "side": 131072,
+        "flags": 16
+      },
+      "native": {
+        "ground": 3,
+        "flying": false,
+        "no_block": true,
+        "mode": 3
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 35
+    },
+    {
+      "input": {
+        "side": 131072,
+        "flags": 17
+      },
+      "native": {
+        "ground": 3,
+        "flying": true,
+        "no_block": true,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "side": 262144,
+        "flags": 0
+      },
+      "native": {
+        "ground": 7,
+        "flying": false,
+        "no_block": false,
+        "mode": 7
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "side": 262144,
+        "flags": 1
+      },
+      "native": {
+        "ground": 7,
+        "flying": true,
+        "no_block": false,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "side": 262144,
+        "flags": 16
+      },
+      "native": {
+        "ground": 7,
+        "flying": false,
+        "no_block": true,
+        "mode": 7
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "side": 262144,
+        "flags": 17
+      },
+      "native": {
+        "ground": 7,
+        "flying": true,
+        "no_block": true,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "side": 196608,
+        "flags": 0
+      },
+      "native": {
+        "ground": 2,
+        "flying": false,
+        "no_block": false,
+        "mode": 2
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 32
+    },
+    {
+      "input": {
+        "side": 196608,
+        "flags": 1
+      },
+      "native": {
+        "ground": 2,
+        "flying": true,
+        "no_block": false,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "side": 196608,
+        "flags": 16
+      },
+      "native": {
+        "ground": 2,
+        "flying": false,
+        "no_block": true,
+        "mode": 2
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "side": 196608,
+        "flags": 17
+      },
+      "native": {
+        "ground": 2,
+        "flying": true,
+        "no_block": true,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "side": 327680,
+        "flags": 0
+      },
+      "native": {
+        "ground": 2,
+        "flying": false,
+        "no_block": false,
+        "mode": 2
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 32
+    },
+    {
+      "input": {
+        "side": 327680,
+        "flags": 1
+      },
+      "native": {
+        "ground": 2,
+        "flying": true,
+        "no_block": false,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "side": 327680,
+        "flags": 16
+      },
+      "native": {
+        "ground": 2,
+        "flying": false,
+        "no_block": true,
+        "mode": 2
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "side": 327680,
+        "flags": 17
+      },
+      "native": {
+        "ground": 2,
+        "flying": true,
+        "no_block": true,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "side": 393216,
+        "flags": 0
+      },
+      "native": {
+        "ground": 3,
+        "flying": false,
+        "no_block": false,
+        "mode": 3
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "side": 393216,
+        "flags": 1
+      },
+      "native": {
+        "ground": 3,
+        "flying": true,
+        "no_block": false,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 35
+    },
+    {
+      "input": {
+        "side": 393216,
+        "flags": 16
+      },
+      "native": {
+        "ground": 3,
+        "flying": false,
+        "no_block": true,
+        "mode": 3
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 35
+    },
+    {
+      "input": {
+        "side": 393216,
+        "flags": 17
+      },
+      "native": {
+        "ground": 3,
+        "flying": true,
+        "no_block": true,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "side": 458752,
+        "flags": 0
+      },
+      "native": {
+        "ground": 2,
+        "flying": false,
+        "no_block": false,
+        "mode": 2
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 32
+    },
+    {
+      "input": {
+        "side": 458752,
+        "flags": 1
+      },
+      "native": {
+        "ground": 2,
+        "flying": true,
+        "no_block": false,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "side": 458752,
+        "flags": 16
+      },
+      "native": {
+        "ground": 2,
+        "flying": false,
+        "no_block": true,
+        "mode": 2
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "side": 458752,
+        "flags": 17
+      },
+      "native": {
+        "ground": 2,
+        "flying": true,
+        "no_block": true,
+        "mode": 6
+      },
+      "normal_return": true,
+      "entry": "0x40bab0/0x446ad0/0x446b30",
+      "instructions": 34
+    }
+  ],
+  "flood": [
+    {
+      "input": {
+        "mode": 2,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3558
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 4488
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            65536
+          ],
+          [
+            4,
+            1,
+            65536
+          ],
+          [
+            4,
+            2,
+            65536
+          ],
+          [
+            4,
+            3,
+            65536
+          ],
+          [
+            4,
+            4,
+            65536
+          ],
+          [
+            4,
+            5,
+            65536
+          ],
+          [
+            4,
+            6,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3558
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            131072
+          ],
+          [
+            4,
+            1,
+            131072
+          ],
+          [
+            4,
+            2,
+            131072
+          ],
+          [
+            4,
+            3,
+            131072
+          ],
+          [
+            4,
+            4,
+            131072
+          ],
+          [
+            4,
+            5,
+            131072
+          ],
+          [
+            4,
+            6,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3311
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16384
+          ],
+          [
+            4,
+            1,
+            16384
+          ],
+          [
+            4,
+            2,
+            16384
+          ],
+          [
+            4,
+            3,
+            16384
+          ],
+          [
+            4,
+            4,
+            16384
+          ],
+          [
+            4,
+            5,
+            16384
+          ],
+          [
+            4,
+            6,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3311
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2688
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2948
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 14930
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 16833
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            65536
+          ],
+          [
+            4,
+            1,
+            65536
+          ],
+          [
+            4,
+            2,
+            65536
+          ],
+          [
+            4,
+            3,
+            65536
+          ],
+          [
+            4,
+            4,
+            65536
+          ],
+          [
+            4,
+            5,
+            65536
+          ],
+          [
+            4,
+            6,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 14930
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            131072
+          ],
+          [
+            4,
+            1,
+            131072
+          ],
+          [
+            4,
+            2,
+            131072
+          ],
+          [
+            4,
+            3,
+            131072
+          ],
+          [
+            4,
+            4,
+            131072
+          ],
+          [
+            4,
+            5,
+            131072
+          ],
+          [
+            4,
+            6,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 13254
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16384
+          ],
+          [
+            4,
+            1,
+            16384
+          ],
+          [
+            4,
+            2,
+            16384
+          ],
+          [
+            4,
+            3,
+            16384
+          ],
+          [
+            4,
+            4,
+            16384
+          ],
+          [
+            4,
+            5,
+            16384
+          ],
+          [
+            4,
+            6,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 13254
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9107
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 11934
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 4488
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3558
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            65536
+          ],
+          [
+            4,
+            1,
+            65536
+          ],
+          [
+            4,
+            2,
+            65536
+          ],
+          [
+            4,
+            3,
+            65536
+          ],
+          [
+            4,
+            4,
+            65536
+          ],
+          [
+            4,
+            5,
+            65536
+          ],
+          [
+            4,
+            6,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3311
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            131072
+          ],
+          [
+            4,
+            1,
+            131072
+          ],
+          [
+            4,
+            2,
+            131072
+          ],
+          [
+            4,
+            3,
+            131072
+          ],
+          [
+            4,
+            4,
+            131072
+          ],
+          [
+            4,
+            5,
+            131072
+          ],
+          [
+            4,
+            6,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3558
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16384
+          ],
+          [
+            4,
+            1,
+            16384
+          ],
+          [
+            4,
+            2,
+            16384
+          ],
+          [
+            4,
+            3,
+            16384
+          ],
+          [
+            4,
+            4,
+            16384
+          ],
+          [
+            4,
+            5,
+            16384
+          ],
+          [
+            4,
+            6,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3311
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2688
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2948
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 16833
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 14930
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            65536
+          ],
+          [
+            4,
+            1,
+            65536
+          ],
+          [
+            4,
+            2,
+            65536
+          ],
+          [
+            4,
+            3,
+            65536
+          ],
+          [
+            4,
+            4,
+            65536
+          ],
+          [
+            4,
+            5,
+            65536
+          ],
+          [
+            4,
+            6,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 13254
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            131072
+          ],
+          [
+            4,
+            1,
+            131072
+          ],
+          [
+            4,
+            2,
+            131072
+          ],
+          [
+            4,
+            3,
+            131072
+          ],
+          [
+            4,
+            4,
+            131072
+          ],
+          [
+            4,
+            5,
+            131072
+          ],
+          [
+            4,
+            6,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 14930
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16384
+          ],
+          [
+            4,
+            1,
+            16384
+          ],
+          [
+            4,
+            2,
+            16384
+          ],
+          [
+            4,
+            3,
+            16384
+          ],
+          [
+            4,
+            4,
+            16384
+          ],
+          [
+            4,
+            5,
+            16384
+          ],
+          [
+            4,
+            6,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 13254
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9107
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 11934
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2026
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2026
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            65536
+          ],
+          [
+            4,
+            1,
+            65536
+          ],
+          [
+            4,
+            2,
+            65536
+          ],
+          [
+            4,
+            3,
+            65536
+          ],
+          [
+            4,
+            4,
+            65536
+          ],
+          [
+            4,
+            5,
+            65536
+          ],
+          [
+            4,
+            6,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2026
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            131072
+          ],
+          [
+            4,
+            1,
+            131072
+          ],
+          [
+            4,
+            2,
+            131072
+          ],
+          [
+            4,
+            3,
+            131072
+          ],
+          [
+            4,
+            4,
+            131072
+          ],
+          [
+            4,
+            5,
+            131072
+          ],
+          [
+            4,
+            6,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2026
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16384
+          ],
+          [
+            4,
+            1,
+            16384
+          ],
+          [
+            4,
+            2,
+            16384
+          ],
+          [
+            4,
+            3,
+            16384
+          ],
+          [
+            4,
+            4,
+            16384
+          ],
+          [
+            4,
+            5,
+            16384
+          ],
+          [
+            4,
+            6,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 1651
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2030
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2025
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9230
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9230
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            65536
+          ],
+          [
+            4,
+            1,
+            65536
+          ],
+          [
+            4,
+            2,
+            65536
+          ],
+          [
+            4,
+            3,
+            65536
+          ],
+          [
+            4,
+            4,
+            65536
+          ],
+          [
+            4,
+            5,
+            65536
+          ],
+          [
+            4,
+            6,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9230
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            131072
+          ],
+          [
+            4,
+            1,
+            131072
+          ],
+          [
+            4,
+            2,
+            131072
+          ],
+          [
+            4,
+            3,
+            131072
+          ],
+          [
+            4,
+            4,
+            131072
+          ],
+          [
+            4,
+            5,
+            131072
+          ],
+          [
+            4,
+            6,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9230
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16384
+          ],
+          [
+            4,
+            1,
+            16384
+          ],
+          [
+            4,
+            2,
+            16384
+          ],
+          [
+            4,
+            3,
+            16384
+          ],
+          [
+            4,
+            4,
+            16384
+          ],
+          [
+            4,
+            5,
+            16384
+          ],
+          [
+            4,
+            6,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 5835
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9258
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 8627
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 4488
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 4488
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            65536
+          ],
+          [
+            4,
+            1,
+            65536
+          ],
+          [
+            4,
+            2,
+            65536
+          ],
+          [
+            4,
+            3,
+            65536
+          ],
+          [
+            4,
+            4,
+            65536
+          ],
+          [
+            4,
+            5,
+            65536
+          ],
+          [
+            4,
+            6,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3311
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            131072
+          ],
+          [
+            4,
+            1,
+            131072
+          ],
+          [
+            4,
+            2,
+            131072
+          ],
+          [
+            4,
+            3,
+            131072
+          ],
+          [
+            4,
+            4,
+            131072
+          ],
+          [
+            4,
+            5,
+            131072
+          ],
+          [
+            4,
+            6,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3311
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16384
+          ],
+          [
+            4,
+            1,
+            16384
+          ],
+          [
+            4,
+            2,
+            16384
+          ],
+          [
+            4,
+            3,
+            16384
+          ],
+          [
+            4,
+            4,
+            16384
+          ],
+          [
+            4,
+            5,
+            16384
+          ],
+          [
+            4,
+            6,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3311
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2688
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 2,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 2948
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 16833
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 16833
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            65536
+          ],
+          [
+            4,
+            1,
+            65536
+          ],
+          [
+            4,
+            2,
+            65536
+          ],
+          [
+            4,
+            3,
+            65536
+          ],
+          [
+            4,
+            4,
+            65536
+          ],
+          [
+            4,
+            5,
+            65536
+          ],
+          [
+            4,
+            6,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 13254
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            131072
+          ],
+          [
+            4,
+            1,
+            131072
+          ],
+          [
+            4,
+            2,
+            131072
+          ],
+          [
+            4,
+            3,
+            131072
+          ],
+          [
+            4,
+            4,
+            131072
+          ],
+          [
+            4,
+            5,
+            131072
+          ],
+          [
+            4,
+            6,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 13254
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16384
+          ],
+          [
+            4,
+            1,
+            16384
+          ],
+          [
+            4,
+            2,
+            16384
+          ],
+          [
+            4,
+            3,
+            16384
+          ],
+          [
+            4,
+            4,
+            16384
+          ],
+          [
+            4,
+            5,
+            16384
+          ],
+          [
+            4,
+            6,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 13254
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9107
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 11934
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16777216
+          ],
+          [
+            4,
+            1,
+            16777216
+          ],
+          [
+            4,
+            2,
+            16777216
+          ],
+          [
+            4,
+            3,
+            16777216
+          ],
+          [
+            4,
+            4,
+            16777216
+          ],
+          [
+            4,
+            5,
+            16777216
+          ],
+          [
+            4,
+            6,
+            16777216
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 11820
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            33554432
+          ],
+          [
+            4,
+            1,
+            33554432
+          ],
+          [
+            4,
+            2,
+            33554432
+          ],
+          [
+            4,
+            3,
+            33554432
+          ],
+          [
+            4,
+            4,
+            33554432
+          ],
+          [
+            4,
+            5,
+            33554432
+          ],
+          [
+            4,
+            6,
+            33554432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 10015
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            50331648
+          ],
+          [
+            4,
+            1,
+            50331648
+          ],
+          [
+            4,
+            2,
+            50331648
+          ],
+          [
+            4,
+            3,
+            50331648
+          ],
+          [
+            4,
+            4,
+            50331648
+          ],
+          [
+            4,
+            5,
+            50331648
+          ],
+          [
+            4,
+            6,
+            50331648
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9107
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9107
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 2,
+        "cells": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            4,
+            5,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 12689
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 3,
+        "cells": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            4,
+            5,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9135
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16777216
+          ],
+          [
+            4,
+            1,
+            16777216
+          ],
+          [
+            4,
+            2,
+            16777216
+          ],
+          [
+            4,
+            3,
+            16777216
+          ],
+          [
+            4,
+            4,
+            16777216
+          ],
+          [
+            4,
+            5,
+            16777216
+          ],
+          [
+            4,
+            6,
+            16777216
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 11820
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            33554432
+          ],
+          [
+            4,
+            1,
+            33554432
+          ],
+          [
+            4,
+            2,
+            33554432
+          ],
+          [
+            4,
+            3,
+            33554432
+          ],
+          [
+            4,
+            4,
+            33554432
+          ],
+          [
+            4,
+            5,
+            33554432
+          ],
+          [
+            4,
+            6,
+            33554432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 10015
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            50331648
+          ],
+          [
+            4,
+            1,
+            50331648
+          ],
+          [
+            4,
+            2,
+            50331648
+          ],
+          [
+            4,
+            3,
+            50331648
+          ],
+          [
+            4,
+            4,
+            50331648
+          ],
+          [
+            4,
+            5,
+            50331648
+          ],
+          [
+            4,
+            6,
+            50331648
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9107
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9107
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 2,
+        "cells": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            4,
+            5,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 12689
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 3,
+        "cells": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            4,
+            5,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9135
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            16777216
+          ],
+          [
+            4,
+            1,
+            16777216
+          ],
+          [
+            4,
+            2,
+            16777216
+          ],
+          [
+            4,
+            3,
+            16777216
+          ],
+          [
+            4,
+            4,
+            16777216
+          ],
+          [
+            4,
+            5,
+            16777216
+          ],
+          [
+            4,
+            6,
+            16777216
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9272
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            33554432
+          ],
+          [
+            4,
+            1,
+            33554432
+          ],
+          [
+            4,
+            2,
+            33554432
+          ],
+          [
+            4,
+            3,
+            33554432
+          ],
+          [
+            4,
+            4,
+            33554432
+          ],
+          [
+            4,
+            5,
+            33554432
+          ],
+          [
+            4,
+            6,
+            33554432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9272
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            50331648
+          ],
+          [
+            4,
+            1,
+            50331648
+          ],
+          [
+            4,
+            2,
+            50331648
+          ],
+          [
+            4,
+            3,
+            50331648
+          ],
+          [
+            4,
+            4,
+            50331648
+          ],
+          [
+            4,
+            5,
+            50331648
+          ],
+          [
+            4,
+            6,
+            50331648
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9258
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            4,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9258
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 2,
+        "cells": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            4,
+            5,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9272
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 3,
+        "cells": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            1,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            3,
+            0
+          ],
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            4,
+            5,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9258
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              4,
+              3
+            ],
+            "side": 131072,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 12183
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              4,
+              3
+            ],
+            "side": 131072,
+            "no_block": true
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 19644
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              4,
+              3
+            ],
+            "side": 65536,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 12183
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              4,
+              3
+            ],
+            "side": 65536,
+            "no_block": true
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 19644
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              4,
+              3
+            ],
+            "side": 131072,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9230
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              4,
+              3
+            ],
+            "side": 131072,
+            "no_block": true
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9230
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            3,
+            3,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 654
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            0,
+            3,
+            4278190080
+          ],
+          [
+            1,
+            3,
+            4278190080
+          ],
+          [
+            2,
+            3,
+            4278190080
+          ],
+          [
+            3,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            4278190080
+          ],
+          [
+            6,
+            3,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3300
+    },
+    {
+      "input": {
+        "mode": 2,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            3,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4244635648
+          ],
+          [
+            2,
+            3,
+            4261412864
+          ],
+          [
+            3,
+            2,
+            4227858432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          4,
+          5,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 1610
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            3,
+            3,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 654
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            0,
+            3,
+            4278190080
+          ],
+          [
+            1,
+            3,
+            4278190080
+          ],
+          [
+            2,
+            3,
+            4278190080
+          ],
+          [
+            3,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            4278190080
+          ],
+          [
+            6,
+            3,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3300
+    },
+    {
+      "input": {
+        "mode": 3,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            3,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4244635648
+          ],
+          [
+            2,
+            3,
+            4261412864
+          ],
+          [
+            3,
+            2,
+            4227858432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          4,
+          5,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 1610
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            3,
+            3,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9246
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            0,
+            3,
+            4278190080
+          ],
+          [
+            1,
+            3,
+            4278190080
+          ],
+          [
+            2,
+            3,
+            4278190080
+          ],
+          [
+            3,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            4278190080
+          ],
+          [
+            6,
+            3,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9294
+    },
+    {
+      "input": {
+        "mode": 6,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            3,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4244635648
+          ],
+          [
+            2,
+            3,
+            4261412864
+          ],
+          [
+            3,
+            2,
+            4227858432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 9302
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            3,
+            3,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 654
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            0,
+            3,
+            4278190080
+          ],
+          [
+            1,
+            3,
+            4278190080
+          ],
+          [
+            2,
+            3,
+            4278190080
+          ],
+          [
+            3,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            5,
+            3,
+            4278190080
+          ],
+          [
+            6,
+            3,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 3300
+    },
+    {
+      "input": {
+        "mode": 7,
+        "budget": 4,
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "base_height": 0,
+        "cells": [
+          [
+            3,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4244635648
+          ],
+          [
+            2,
+            3,
+            4261412864
+          ],
+          [
+            3,
+            2,
+            4227858432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          4,
+          5,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "entry": "0x40f440",
+      "instructions": 1610
+    }
+  ],
+  "landing": [
+    {
+      "input": {
+        "flags": 0,
+        "present": false,
+        "no_block": false
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "flags": 0,
+        "present": false,
+        "no_block": true
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "flags": 0,
+        "present": true,
+        "no_block": false
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "flags": 0,
+        "present": true,
+        "no_block": true
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "flags": 1048576,
+        "present": false,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443d9d"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "flags": 1048576,
+        "present": false,
+        "no_block": true
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443d9d"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "flags": 1048576,
+        "present": true,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443d9d"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "flags": 1048576,
+        "present": true,
+        "no_block": true
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443d9d"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 34
+    },
+    {
+      "input": {
+        "flags": 65536,
+        "present": false,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 65536,
+        "present": false,
+        "no_block": true
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 65536,
+        "present": true,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 109
+    },
+    {
+      "input": {
+        "flags": 65536,
+        "present": true,
+        "no_block": true
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1709
+    },
+    {
+      "input": {
+        "flags": 131072,
+        "present": false,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 131072,
+        "present": false,
+        "no_block": true
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 131072,
+        "present": true,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 109
+    },
+    {
+      "input": {
+        "flags": 131072,
+        "present": true,
+        "no_block": true
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1709
+    },
+    {
+      "input": {
+        "flags": 262144,
+        "present": false,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 262144,
+        "present": false,
+        "no_block": true
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 262144,
+        "present": true,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 109
+    },
+    {
+      "input": {
+        "flags": 262144,
+        "present": true,
+        "no_block": true
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1709
+    },
+    {
+      "input": {
+        "flags": 1114112,
+        "present": false,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 1114112,
+        "present": false,
+        "no_block": true
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 1114112,
+        "present": true,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 109
+    },
+    {
+      "input": {
+        "flags": 1114112,
+        "present": true,
+        "no_block": true
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1709
+    },
+    {
+      "input": {
+        "flags": 8716288,
+        "present": false,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 8716288,
+        "present": false,
+        "no_block": true
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1659
+    },
+    {
+      "input": {
+        "flags": 8716288,
+        "present": true,
+        "no_block": false
+      },
+      "native": {
+        "accepted": false,
+        "stop_address": "0x443cba"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 109
+    },
+    {
+      "input": {
+        "flags": 8716288,
+        "present": true,
+        "no_block": true
+      },
+      "native": {
+        "accepted": true,
+        "stop_address": "0x443d4e"
+      },
+      "normal_return": false,
+      "entry": "0x443c6f",
+      "instructions": 1709
+    }
+  ],
+  "limits": [
+    "Single-cell original wrapper/flood and trait helpers return normally; no unknown callee is stubbed.",
+    "Landing executes a player input prefix and stops before UI, reachability or movement callbacks.",
+    "Source actor initialization, large-footprint movement/targeting and renderer timing are separate.",
+    "A shortest whole-map route and deterministic equal-cost tie order are remake composition, not the original global search cache."
+  ]
+}

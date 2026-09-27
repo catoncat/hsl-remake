@@ -1,0 +1,270 @@
+{
+  "schema": "hsl_inventory_equipment_static.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "layout": {
+    "roster_global": "0x4c1bc8",
+    "roster_stride": 508,
+    "object_roster_index_offset": "0xa4",
+    "inventory_offset": "0x138",
+    "inventory_capacity": 8,
+    "empty_item_code": 0,
+    "equipment_offset": "0xec",
+    "equipment_slot_types": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      6
+    ],
+    "item_global": "0x4c1b40",
+    "item_stride": 176,
+    "item_type_offset": "0x8",
+    "item_flags2_offset": "0xa4",
+    "item_job_mask_offset": "0xa8"
+  },
+  "functions": {
+    "insert": {
+      "entry": "0x436e30",
+      "end_exclusive": "0x436e74",
+      "success": 1,
+      "full": 0,
+      "behavior": "First empty slot; duplicate codes do not merge."
+    },
+    "remove": {
+      "entry": "0x436e80",
+      "end_exclusive": "0x436eca",
+      "behavior": "Shift following slots left and clear the last slot. Return value not treated as a success flag. Caller must reject negative index."
+    },
+    "tail": {
+      "entry": "0x436ed0",
+      "end_exclusive": "0x436eef",
+      "behavior": "Return actor inventory slot 7, not an item count."
+    },
+    "equip": {
+      "entry": "0x436f30",
+      "end_exclusive": "0x437001",
+      "failure": -1,
+      "success": "Return old item code after replacing slot. Check job, type and old item flags2 bit 1."
+    },
+    "unequip": {
+      "entry": "0x437020",
+      "end_exclusive": "0x437075",
+      "blocked": 0,
+      "success": "Return old code and clear slot. Caller validates slot index."
+    },
+    "job_bit": {
+      "entry": "0x4464f0",
+      "table": "0x446588",
+      "behavior": "Jobs 80..100 map to bits 0..20; other jobs return -1. Equip separately exempts job 1000."
+    },
+    "take_off_loader": {
+      "field_string": "0x47886c",
+      "lookup": "0x4481d7",
+      "set_bit": "0x4481ec..0x4481f2",
+      "store": "0x448207",
+      "behavior": "Nonzero take_off sets flags2 bit 1, which blocks replacement/unequip."
+    },
+    "apply_equipment": {
+      "entry": "0x448420",
+      "behavior": "Apply type-specific base contribution and common numeric/passive fields."
+    },
+    "refresh": {
+      "entry": "0x448840",
+      "six_equipment_calls": "0x44b5de..0x44b627",
+      "clamps": "0x44b62c..0x44b81b"
+    }
+  },
+  "ui_anchors": {
+    "held_item_code": "0x4c1ce4",
+    "inventory_pickup": "0x4292aa",
+    "equipment_setter_call": "0x429e24",
+    "hold_returned_old_item": "0x429e3f",
+    "refresh_after_replace": "0x429e59",
+    "refresh_after_unequip": "0x429ea1",
+    "battle_equip_state": "0x444185: state 7 from obj_Data8; mode 4 item UI then state 76",
+    "battle_drop_state": "0x4441ac: state 8 from obj_Data8; mode 5 item UI then state 76",
+    "state_correction": "Menu rtus order cannot infer state IDs. Corrected with original obj-051.obs and click handler 0x43e887/0x43e891; see original_item_actions.json.",
+    "battle_common_return": "Status-root 0x438160 returns held items or refuses full-bag closure, then 0x4389ce increments parent76 to77; 0x444c19 returns to item-menu state3. See original_item_actions.json."
+  },
+  "live_policy": {
+    "inventory": "Eight integer code slots; ordered duplicate entries; first-hole insertion; left-compacting removal.",
+    "replace": "Confirm once, remove selected inventory entry, exchange equipment, append old equipment, refresh, then commit atomically.",
+    "unequip": "Refuse when backpack has no room; weapons must be replaced until an unarmed range is established.",
+    "action": "Equipment and discard preserve the action; ordinary original window closure now has static evidence. Confirmation and reversible pending movement remain remake interaction policies.",
+    "same_code": "No-op rejection; native setter itself can return the same old code.",
+    "scope": "Leonard/SwordMan refresh; supported numeric equipment only. Unsupported nonzero passive effects reject equip."
+  },
+  "verification_boundary": {
+    "new_native_execution": false,
+    "original_ui_execution": false,
+    "existing_native_oracle": "original_growth_refresh.json: ten fixtures, equipped and unequipped",
+    "offline_tests": "tests/run_inventory_equipment_tests.gd; tools/test_hsl_equipment_data.py",
+    "unresolved": [
+      "Original full Give session, same-code exchanges and movement flags; ordinary Equip/Drop held-return and closing subsequently traced in original_item_actions.json",
+      "Original give/use range and complete action consumption; important-item protection and free discard subsequently restored",
+      "Sorting and cross-character drag exchange",
+      "Unarmed range",
+      "All other class refreshes",
+      "Status passives, weapon critical/magic variance and movement bonuses"
+    ]
+  },
+  "instruction_anchors": [
+    {
+      "address": "0x436e4c",
+      "bytes": "8d8a38010000",
+      "reviewed_meaning": "Inventory starts at actor+0x138."
+    },
+    {
+      "address": "0x436e52",
+      "bytes": "833900740c",
+      "reviewed_meaning": "Insert branches on empty code 0, not matching item code."
+    },
+    {
+      "address": "0x436e57",
+      "bytes": "4083c10483f8087cf2",
+      "reviewed_meaning": "Advance one DWORD until exactly eight slots have been checked."
+    },
+    {
+      "address": "0x436e60",
+      "bytes": "33c0c3",
+      "reviewed_meaning": "Full insert returns 0 without a slot write."
+    },
+    {
+      "address": "0x436e67",
+      "bytes": "898c8238010000b801000000c3",
+      "reviewed_meaning": "Write new code to first empty slot and return 1."
+    },
+    {
+      "address": "0x436e9e",
+      "bytes": "b9070000002bca7822",
+      "reviewed_meaning": "Removal copies 7-index following slots; oversized index exits."
+    },
+    {
+      "address": "0x436ead",
+      "bytes": "8db4903c0100008dbc9038010000f3a5",
+      "reviewed_meaning": "Copy following DWORDs one slot left with rep movsd."
+    },
+    {
+      "address": "0x436ebf",
+      "bytes": "c7805401000000000000c3",
+      "reviewed_meaning": "Clear last slot at actor+0x154, then return."
+    },
+    {
+      "address": "0x436ee7",
+      "bytes": "8b848a54010000c3",
+      "reviewed_meaning": "Tail helper returns the last item code."
+    },
+    {
+      "address": "0x436f68",
+      "bytes": "3de80300007421",
+      "reviewed_meaning": "Job 1000 bypasses the ordinary job mask gate."
+    },
+    {
+      "address": "0x436f84",
+      "bytes": "8b86a8000000d3e285c2746a",
+      "reviewed_meaning": "Check item+0xa8 against the job bit; zero intersection rejects."
+    },
+    {
+      "address": "0x436f94",
+      "bytes": "83f8057761",
+      "reviewed_meaning": "Unsigned slot index above 5 rejects."
+    },
+    {
+      "address": "0x436f99",
+      "bytes": "b902000000",
+      "reviewed_meaning": "CL=2 is retained for the old-equipment blocking-bit test."
+    },
+    {
+      "address": "0x437004",
+      "bytes": "a56f4300ac6f4300b46f4300bc6f4300c46f4300c46f4300",
+      "reviewed_meaning": "Six slot/type dispatch destinations; accessories share the type-6 case."
+    },
+    {
+      "address": "0x436fca",
+      "bytes": "8bbc85ec000000",
+      "reviewed_meaning": "Keep old equipped code in EDI."
+    },
+    {
+      "address": "0x436fe0",
+      "bytes": "848c32a4000000740a",
+      "reviewed_meaning": "Old item+0xa4 bit 1 must be clear before writing replacement."
+    },
+    {
+      "address": "0x436ff3",
+      "bytes": "899c85ec0000008bc75f5e5d5bc3",
+      "reviewed_meaning": "Write new equipped code then return old code from EDI."
+    },
+    {
+      "address": "0x437060",
+      "bytes": "f6c3025b740333c0c3",
+      "reviewed_meaning": "Unequip uses the same bit; blocked returns 0."
+    },
+    {
+      "address": "0x437069",
+      "bytes": "c78491ec00000000000000c3",
+      "reviewed_meaning": "Allowed unequip clears selected slot and returns retained old code."
+    },
+    {
+      "address": "0x47886c",
+      "bytes": "74616b655f6f666600",
+      "reviewed_meaning": "Original NUL-terminated field name: take_off."
+    },
+    {
+      "address": "0x4481d7",
+      "bytes": "686c884700e8efe4ffff",
+      "reviewed_meaning": "Loader looks up take_off through the numeric field helper."
+    },
+    {
+      "address": "0x4481ea",
+      "bytes": "740a8b4424100c0289442410",
+      "reviewed_meaning": "Nonzero take_off adds flag value 2."
+    },
+    {
+      "address": "0x448207",
+      "bytes": "899439a4000000",
+      "reviewed_meaning": "Store assembled flags at item+0xa4."
+    },
+    {
+      "address": "0x4292aa",
+      "bytes": "a3e41c4c00e8ccdb0000",
+      "reviewed_meaning": "UI holds selected code at 0x4c1ce4, then removes its inventory slot."
+    },
+    {
+      "address": "0x429283",
+      "bytes": "8b54241c5255e8a2db0000",
+      "reviewed_meaning": "UI inserts its previously held code through the same first-empty helper."
+    },
+    {
+      "address": "0x429e18",
+      "bytes": "a1e41c4c005585c07452",
+      "reviewed_meaning": "UI reads held code; zero selects unequip, nonzero replacement."
+    },
+    {
+      "address": "0x429e24",
+      "bytes": "e807d1000083c40c83f8ff",
+      "reviewed_meaning": "UI calls replacement setter and tests return against -1."
+    },
+    {
+      "address": "0x429e3f",
+      "bytes": "a3e41c4c00",
+      "reviewed_meaning": "Successful replacement makes old equipment the held code."
+    },
+    {
+      "address": "0x429e59",
+      "bytes": "e8e2e90100",
+      "reviewed_meaning": "Successful replacement calls unified stat refresh."
+    },
+    {
+      "address": "0x429e75",
+      "bytes": "e8a6d1000083c408a3e41c4c00",
+      "reviewed_meaning": "Unequip result becomes the held code."
+    },
+    {
+      "address": "0x429ea1",
+      "bytes": "e89ae90100",
+      "reviewed_meaning": "Successful unequip calls unified stat refresh."
+    }
+  ]
+}

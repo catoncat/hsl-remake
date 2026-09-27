@@ -1,0 +1,2651 @@
+{
+  "schema": "hsl_position_equipment_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "sources": {
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "RANGE.H": "940d6deff193170531ef9752dd95de5684be460fd9725dc727cdf165a529c420",
+    "RANGE.TXT": "780274e8526a0542aeb4ce9ea69e5b5250ff0fbe6a60a5e017cc88b9c06020d2"
+  },
+  "cases": [
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 0,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 0,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 0,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 0,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 0,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 0,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 1,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 1,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 1,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 1,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 1,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 1,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 2,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 2,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 2,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 2,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 2,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 2,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 3,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 3,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 3,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 3,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 3,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 3,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 15,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 15,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 15,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 15,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 15,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 15,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 20,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 20,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 20,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 20,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 20,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 0,
+        "base": 20,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 0,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 0,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 17
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 0,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 0,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 18
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 0,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 0,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 18
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 1,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 1,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 18
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 1,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 2
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 1,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 19
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 1,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 2
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 1,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 19
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 2,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 2
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 2,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 19
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 2,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 3
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 2,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 2,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 3
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 2,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 3,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 3
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 3,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 3,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 4
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 3,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 3,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 4
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 3,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 15,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 15
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 15,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 15,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 16
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 15,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 15,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 16
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 15,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 20,
+        "effects": 0,
+        "size": 0
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 23,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 20,
+        "effects": 0,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 20,
+        "effects": 1,
+        "size": 0
+      },
+      "native": {
+        "value": 21
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 20,
+        "effects": 1,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 20,
+        "effects": 4097,
+        "size": 0
+      },
+      "native": {
+        "value": 21
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "range",
+        "weapon": 1,
+        "base": 20,
+        "effects": 4097,
+        "size": 1
+      },
+      "native": {
+        "value": 20
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 0,
+        "silence": 0,
+        "effects": 0
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 187,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 0,
+        "silence": 0,
+        "effects": 1
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 188,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 0,
+        "silence": 0,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 187,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 0,
+        "silence": 2,
+        "effects": 0
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 188,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 0,
+        "silence": 2,
+        "effects": 1
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 189,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 0,
+        "silence": 2,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 188,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 1,
+        "silence": 0,
+        "effects": 0
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 183,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 1,
+        "silence": 0,
+        "effects": 1
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 184,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 1,
+        "silence": 0,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 183,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 1,
+        "silence": 2,
+        "effects": 0
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 184,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 1,
+        "silence": 2,
+        "effects": 1
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 185,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 0,
+        "special": 1,
+        "silence": 2,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 184,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 0,
+        "silence": 0,
+        "effects": 0
+      },
+      "native": {
+        "commands": "nopqzv"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 186,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 0,
+        "silence": 0,
+        "effects": 1
+      },
+      "native": {
+        "commands": "nopqzv"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 187,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 0,
+        "silence": 0,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "nopqzv"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 186,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 0,
+        "silence": 2,
+        "effects": 0
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 189,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 0,
+        "silence": 2,
+        "effects": 1
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 190,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 0,
+        "silence": 2,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "nopqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 189,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 1,
+        "silence": 0,
+        "effects": 0
+      },
+      "native": {
+        "commands": "nopqzvw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 189,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 1,
+        "silence": 0,
+        "effects": 1
+      },
+      "native": {
+        "commands": "nopqzvw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 190,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 1,
+        "silence": 0,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "nopqzvw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 189,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 1,
+        "silence": 2,
+        "effects": 0
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 185,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 1,
+        "silence": 2,
+        "effects": 1
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 186,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 0,
+        "magic": 1,
+        "special": 1,
+        "silence": 2,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "nopqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 185,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 0,
+        "silence": 0,
+        "effects": 0
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 213,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 0,
+        "silence": 0,
+        "effects": 1
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 214,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 0,
+        "silence": 0,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 213,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 0,
+        "silence": 2,
+        "effects": 0
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 214,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 0,
+        "silence": 2,
+        "effects": 1
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 215,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 0,
+        "silence": 2,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 214,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 1,
+        "silence": 0,
+        "effects": 0
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 209,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 1,
+        "silence": 0,
+        "effects": 1
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 210,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 1,
+        "silence": 0,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 209,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 1,
+        "silence": 2,
+        "effects": 0
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 210,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 1,
+        "silence": 2,
+        "effects": 1
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 211,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 0,
+        "special": 1,
+        "silence": 2,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 210,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 0,
+        "silence": 0,
+        "effects": 0
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 214,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 0,
+        "silence": 0,
+        "effects": 1
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 215,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 0,
+        "silence": 0,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "opqzv"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 212,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 0,
+        "silence": 2,
+        "effects": 0
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 215,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 0,
+        "silence": 2,
+        "effects": 1
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 216,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 0,
+        "silence": 2,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "opqz"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 215,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 1,
+        "silence": 0,
+        "effects": 0
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 210,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 1,
+        "silence": 0,
+        "effects": 1
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 211,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 1,
+        "silence": 0,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "opqzvw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 215,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 1,
+        "silence": 2,
+        "effects": 0
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 211,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 1,
+        "silence": 2,
+        "effects": 1
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 212,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "menu",
+        "moved": 1,
+        "magic": 1,
+        "special": 1,
+        "silence": 2,
+        "effects": 4096
+      },
+      "native": {
+        "commands": "opqzw"
+      },
+      "normal_return": false,
+      "stop_address": "0x43ebf3",
+      "instructions": 211,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "getter",
+        "effects": 0
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "getter",
+        "effects": 1
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "getter",
+        "effects": 8
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "getter",
+        "effects": 4096
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "getter",
+        "effects": 4097
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "getter",
+        "effects": 32768
+      },
+      "native": {
+        "value": 0
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 19,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "getter",
+        "effects": 65535
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 20,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "ai",
+        "effects": 0
+      },
+      "native": {
+        "moving_search": false
+      },
+      "normal_return": false,
+      "stop_address": "0x40d439",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "ai",
+        "effects": 1
+      },
+      "native": {
+        "moving_search": false
+      },
+      "normal_return": false,
+      "stop_address": "0x40d439",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "ai",
+        "effects": 8
+      },
+      "native": {
+        "moving_search": false
+      },
+      "normal_return": false,
+      "stop_address": "0x40d439",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "ai",
+        "effects": 4096
+      },
+      "native": {
+        "moving_search": true
+      },
+      "normal_return": false,
+      "stop_address": "0x40d404",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "ai",
+        "effects": 4097
+      },
+      "native": {
+        "moving_search": true
+      },
+      "normal_return": false,
+      "stop_address": "0x40d404",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "ai",
+        "effects": 32768
+      },
+      "native": {
+        "moving_search": false
+      },
+      "normal_return": false,
+      "stop_address": "0x40d439",
+      "instructions": 24,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "ai",
+        "effects": 65535
+      },
+      "native": {
+        "moving_search": true
+      },
+      "normal_return": false,
+      "stop_address": "0x40d404",
+      "instructions": 25,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 1,
+        "effects": 0
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 1,
+        "effects": 1
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 1,
+        "effects": 4097
+      },
+      "native": {
+        "value": 1
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 2,
+        "effects": 0
+      },
+      "native": {
+        "value": 2
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 2,
+        "effects": 1
+      },
+      "native": {
+        "value": 2
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 2,
+        "effects": 4097
+      },
+      "native": {
+        "value": 2
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 9,
+        "effects": 0
+      },
+      "native": {
+        "value": 9
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 9,
+        "effects": 1
+      },
+      "native": {
+        "value": 9
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "magic_range",
+        "base": 9,
+        "effects": 4097
+      },
+      "native": {
+        "value": 9
+      },
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 9,
+      "actor_unchanged": true
+    }
+  ],
+  "gear": [
+    {
+      "input": {
+        "codes": [],
+        "capability": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 491
+        },
+        {
+          "values": {
+            "effects": 0,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 491
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [],
+        "capability": 1024
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 491
+        },
+        {
+          "values": {
+            "effects": 0,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 491
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          232
+        ],
+        "capability": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4096,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 578
+        },
+        {
+          "values": {
+            "effects": 4096,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 578
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          232
+        ],
+        "capability": 1024
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4096,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 581
+        },
+        {
+          "values": {
+            "effects": 4096,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 581
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          233
+        ],
+        "capability": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 1,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 578
+        },
+        {
+          "values": {
+            "effects": 1,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 578
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          233
+        ],
+        "capability": 1024
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4097,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 581
+        },
+        {
+          "values": {
+            "effects": 4097,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 581
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          236
+        ],
+        "capability": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4097,
+            "move": 4
+          },
+          "normal_return": true,
+          "instructions": 578
+        },
+        {
+          "values": {
+            "effects": 4097,
+            "move": 4
+          },
+          "normal_return": true,
+          "instructions": 578
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          236
+        ],
+        "capability": 1024
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4097,
+            "move": 4
+          },
+          "normal_return": true,
+          "instructions": 581
+        },
+        {
+          "values": {
+            "effects": 4097,
+            "move": 4
+          },
+          "normal_return": true,
+          "instructions": 581
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          232,
+          233
+        ],
+        "capability": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4097,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 665
+        },
+        {
+          "values": {
+            "effects": 4097,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 665
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          232,
+          233
+        ],
+        "capability": 1024
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4097,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 671
+        },
+        {
+          "values": {
+            "effects": 4097,
+            "move": 3
+          },
+          "normal_return": true,
+          "instructions": 671
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          236,
+          236
+        ],
+        "capability": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4097,
+            "move": 5
+          },
+          "normal_return": true,
+          "instructions": 665
+        },
+        {
+          "values": {
+            "effects": 4097,
+            "move": 5
+          },
+          "normal_return": true,
+          "instructions": 665
+        }
+      ]
+    },
+    {
+      "input": {
+        "codes": [
+          236,
+          236
+        ],
+        "capability": 1024
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4097,
+            "move": 5
+          },
+          "normal_return": true,
+          "instructions": 671
+        },
+        {
+          "values": {
+            "effects": 4097,
+            "move": 5
+          },
+          "normal_return": true,
+          "instructions": 671
+        }
+      ]
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x447dc2",
+      "bytes": "565368408a4700e802e9ffff83c40c3bc5894424147404095c2410565368348a4700",
+      "meaning": "ITEM add_attack_range sets effect bit1."
+    },
+    {
+      "address": "0x447f08",
+      "bytes": "565368b8894700e8bce7ffff83c40c3bc589442414740b8b44241080cc1089442410",
+      "meaning": "ITEM move_magic_use sets effect1000."
+    },
+    {
+      "address": "0x44c48f",
+      "bytes": "6a0168b8894700e8d51902008b44241c83c4103bc57416a1fc1a4c008b8c30a000000080cd04898c30a00000008d",
+      "meaning": "PLAYERS move_magic_use maps to capability400."
+    },
+    {
+      "address": "0x448753",
+      "bytes": "ce8089908c010000f6c504740f8b908c01000080ce1089908c010000",
+      "meaning": "Nonempty equipment application maps capability400 to effect1000."
+    },
+    {
+      "address": "0x409090",
+      "bytes": "8b4424048b15c81b4c008b80a40000008bc8c1e1072bc833c08d0c8af6818c010000017405b8010000006683792c008b89ec0000008d14898d0c517424c1e104750333c0c38b15401b4c008b8c0a840000008d44081183f8147e1fb814000000c3c1e104750333c0c38b15401b4c00568bb40a8400000003c65ec3",
+      "meaning": "Weapon range code adds one boolean flag; large actors have a separate capped17 offset."
+    },
+    {
+      "address": "0x43eadc",
+      "bytes": "85ed741057e88af7fcff83c40485c0750383e6fdf6432402740383e6fd",
+      "meaning": "Moved menu hides magic without effect1000; silence hides it independently."
+    },
+    {
+      "address": "0x40d3f7",
+      "bytes": "56e8730e000083c40485c074358b442428",
+      "meaning": "AI selects movable-cast search only with effect1000."
+    },
+    {
+      "address": "0x4097d0",
+      "bytes": "8b4c240833c08b148da02c4c008b4c240c8b0c8a85c974038b4108c3909090908b4c240433c08b148d",
+      "meaning": "Magic range returns its own table range without reading weapon bonus."
+    }
+  ],
+  "limits": [
+    "Menu/AI stop before drawing or search; complete engine dispatch is not executed.",
+    "Large-actor range offset is recorded only, not permission to enable large actor footprints.",
+    "Equipment uses source item values and synthetic actor/slot input; no original gameplay or full source loader."
+  ]
+}

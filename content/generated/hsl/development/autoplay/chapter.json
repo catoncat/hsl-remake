@@ -1,0 +1,216 @@
+{
+  "schema": "hsl_autoplay_chapter.v1",
+  "brain": "lookahead",
+  "policy": "candidate_plans_lookahead_v1",
+  "tries_limit": 3,
+  "base_seed": 1,
+  "round_limit": 60,
+  "start": "campaign",
+  "start_note": "campaign: the campaign's start_level with no carry; ohm_village: the big map after 歐姆村 with a fresh party (the explorer's start); every later scene through the runtime's hand-offs (tests/support/StoryExplorer.gd)",
+  "evidence_tier": "current-godot",
+  "note": "The first chapter walked by the story explorer with every formal battle fought by the autoplay commander named in `brain` (tests/support/Autoplay.gd, tests/support/AutoplayBrain.gd) and the party's growth carried through the product hand-offs; a lost battle is replayed with the next loop seed up to tries_limit. A run cut off by HSL_CHAPTER_BUDGET_SECONDS records the battle it did not start in budget_exhausted. The global RNG (encounter dice, town events) is seeded from base_seed, so one tree rewrites this file byte-identically. Not evidence about original balance.",
+  "game_clear": false,
+  "walk_outcome": "stuck",
+  "stuck_at": {
+    "level": 53,
+    "scenario": "battle_053.json",
+    "outcome": "fail",
+    "battle_outcome": {
+      "result": "defeat",
+      "reason": "fallen"
+    },
+    "tries": 3,
+    "party": {
+      "tina": 2
+    }
+  },
+  "budget_seconds": 600,
+  "budget_exhausted": {},
+  "knobs": {
+    "gold": "normal",
+    "stat_scale": 1.0
+  },
+  "battles_fought": 3,
+  "battles_won": 2,
+  "retries": 2,
+  "scenes": [
+    "battle_051.json",
+    "battle_052.json",
+    "story_058.json",
+    "story_060.json",
+    "battle_053.json"
+  ],
+  "towns": [],
+  "battles": [
+    {
+      "level": 51,
+      "scenario": "battle_051.json",
+      "outcome": "win",
+      "battle_outcome": {
+        "result": "victory",
+        "reason": "enemies_cleared"
+      },
+      "tries": 1,
+      "party": {
+        "leonard": 1
+      },
+      "attempts": [
+        {
+          "seed": 1,
+          "outcome": "win",
+          "battle_outcome": {
+            "result": "victory",
+            "reason": "enemies_cleared"
+          },
+          "rounds": 8,
+          "plan_kinds": {
+            "hold_line": 2,
+            "advance": 3,
+            "bait": 1,
+            "special": 1,
+            "escape": 1
+          },
+          "lookahead": {
+            "simulations": 41,
+            "skipped": 0,
+            "fallbacks": 0,
+            "rejected": 1,
+            "relaxed": 1,
+            "mutations": 0,
+            "committed": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 52,
+      "scenario": "battle_052.json",
+      "outcome": "win",
+      "battle_outcome": {
+        "result": "victory",
+        "reason": "boss"
+      },
+      "tries": 1,
+      "party": {
+        "leonard": 2
+      },
+      "attempts": [
+        {
+          "seed": 1,
+          "outcome": "win",
+          "battle_outcome": {
+            "result": "victory",
+            "reason": "boss"
+          },
+          "rounds": 23,
+          "plan_kinds": {
+            "objective": 10,
+            "focus": 1,
+            "hold_line": 2,
+            "special": 2,
+            "advance": 1,
+            "protect_hero": 2,
+            "heal": 4,
+            "cure": 1
+          },
+          "lookahead": {
+            "simulations": 178,
+            "skipped": 0,
+            "fallbacks": 0,
+            "rejected": 2,
+            "relaxed": 1,
+            "mutations": 0,
+            "committed": 6
+          }
+        }
+      ]
+    },
+    {
+      "level": 53,
+      "scenario": "battle_053.json",
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "tries": 3,
+      "party": {
+        "tina": 2
+      },
+      "attempts": [
+        {
+          "seed": 1,
+          "outcome": "fail",
+          "battle_outcome": {
+            "result": "defeat",
+            "reason": "fallen"
+          },
+          "rounds": 14,
+          "plan_kinds": {
+            "escape": 10,
+            "hold_line": 1,
+            "heal": 1,
+            "special": 1
+          },
+          "lookahead": {
+            "simulations": 73,
+            "skipped": 0,
+            "fallbacks": 0,
+            "rejected": 6,
+            "relaxed": 2,
+            "mutations": 0,
+            "committed": 0
+          }
+        },
+        {
+          "seed": 2,
+          "outcome": "fail",
+          "battle_outcome": {
+            "result": "defeat",
+            "reason": "fallen"
+          },
+          "rounds": 14,
+          "plan_kinds": {
+            "escape": 11,
+            "heal": 1,
+            "special": 1
+          },
+          "lookahead": {
+            "simulations": 59,
+            "skipped": 0,
+            "fallbacks": 0,
+            "rejected": 7,
+            "relaxed": 0,
+            "mutations": 0,
+            "committed": 0
+          }
+        },
+        {
+          "seed": 3,
+          "outcome": "fail",
+          "battle_outcome": {
+            "result": "defeat",
+            "reason": "fallen"
+          },
+          "rounds": 21,
+          "plan_kinds": {
+            "escape": 12,
+            "hold_line": 3,
+            "heal": 1,
+            "magic": 3,
+            "special": 1
+          },
+          "lookahead": {
+            "simulations": 101,
+            "skipped": 0,
+            "fallbacks": 0,
+            "rejected": 1,
+            "relaxed": 0,
+            "mutations": 0,
+            "committed": 0
+          }
+        }
+      ]
+    }
+  ]
+}

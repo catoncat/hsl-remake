@@ -1,0 +1,1863 @@
+{
+  "schema": "hsl_support_magic_native.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "rolls": [
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 9,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 417
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 9,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 417
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 80,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 106,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 419
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 80,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 106,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 419
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 149,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 420
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 149,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 420
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 4
+        }
+      ],
+      "native": {
+        "value": 8,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 417
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 4
+        }
+      ],
+      "native": {
+        "value": 8,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 417
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 80,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 4
+        }
+      ],
+      "native": {
+        "value": 102,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 419
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 80,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 4
+        }
+      ],
+      "native": {
+        "value": 102,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 419
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 4
+        }
+      ],
+      "native": {
+        "value": 144,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 420
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 4
+        }
+      ],
+      "native": {
+        "value": 144,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 420
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "native": {
+        "value": 7,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 417
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "native": {
+        "value": 7,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 417
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 80,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "native": {
+        "value": 100,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 419
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 80,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "native": {
+        "value": 100,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 419
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "native": {
+        "value": 140,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 420
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "native": {
+        "value": 140,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 420
+    }
+  ],
+  "applications": [
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 10,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 4,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "instructions": 498,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 95,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 2,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "instructions": 503,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 0,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "instructions": 503,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 49,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "instructions": 506,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 95,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 2,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "instructions": 506,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 0,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "instructions": 506,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 8,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 3,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "instructions": 498,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 95,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 2,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "instructions": 503,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 0,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "instructions": 503,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 49,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "instructions": 506,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 95,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 2,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "instructions": 506,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "heal",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 589827,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 589827,
+        "no_magic": 2,
+        "status_flags": 3,
+        "contribution": 0,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 7,
+          "value": 4
+        },
+        {
+          "bound": 7,
+          "value": 1
+        }
+      ],
+      "instructions": 506,
+      "stop_address": "0x40ac04",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 0,
+        "no_magic": 0
+      },
+      "native": {
+        "hp": 1,
+        "poison": 0,
+        "no_magic": 0,
+        "status_flags": 0,
+        "contribution": 0,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 118,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 0,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 1,
+        "poison": 0,
+        "no_magic": 2,
+        "status_flags": 2,
+        "contribution": 0,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 118,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 327681,
+        "no_magic": 0
+      },
+      "native": {
+        "hp": 1,
+        "poison": 0,
+        "no_magic": 0,
+        "status_flags": 0,
+        "contribution": 24,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 134,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 327681,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 1,
+        "poison": 0,
+        "no_magic": 2,
+        "status_flags": 2,
+        "contribution": 24,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 134,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 3276809,
+        "no_magic": 0
+      },
+      "native": {
+        "hp": 1,
+        "poison": 0,
+        "no_magic": 0,
+        "status_flags": 0,
+        "contribution": 120,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 134,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 1,
+        "max_hp": 100,
+        "poison": 3276809,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 1,
+        "poison": 0,
+        "no_magic": 2,
+        "status_flags": 2,
+        "contribution": 120,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 134,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 0,
+        "no_magic": 0
+      },
+      "native": {
+        "hp": 100,
+        "poison": 0,
+        "no_magic": 0,
+        "status_flags": 0,
+        "contribution": 0,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 118,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 0,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 0,
+        "no_magic": 2,
+        "status_flags": 2,
+        "contribution": 0,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 118,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 327681,
+        "no_magic": 0
+      },
+      "native": {
+        "hp": 100,
+        "poison": 0,
+        "no_magic": 0,
+        "status_flags": 0,
+        "contribution": 24,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 134,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 327681,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 0,
+        "no_magic": 2,
+        "status_flags": 2,
+        "contribution": 24,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 134,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 3276809,
+        "no_magic": 0
+      },
+      "native": {
+        "hp": 100,
+        "poison": 0,
+        "no_magic": 0,
+        "status_flags": 0,
+        "contribution": 120,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 134,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 1,
+        "channel": 0,
+        "low": 24,
+        "high": 36,
+        "hit_ratio": 100,
+        "status_hit_ratio": 100,
+        "level": 1,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "resistance": 0,
+        "kind": "cure",
+        "hp": 100,
+        "max_hp": 100,
+        "poison": 3276809,
+        "no_magic": 2
+      },
+      "native": {
+        "hp": 100,
+        "poison": 0,
+        "no_magic": 2,
+        "status_flags": 2,
+        "contribution": 120,
+        "hit_bonus_local": 7
+      },
+      "draws": [],
+      "instructions": 134,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    }
+  ],
+  "limits": [
+    "Only the isolated numeric helper returns normally. Heal/cure are applicator prefixes before callbacks.",
+    "No original spell UI, whole AI dispatcher, experience distribution or battle initialization is asserted.",
+    "Living targets only; cure clears poison and preserves silence. Supplied state is synthetic."
+  ]
+}

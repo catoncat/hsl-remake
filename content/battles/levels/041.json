@@ -1,0 +1,149 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 41,
+  "battle": {
+    "id": "battle_041_level41",
+    "title": "悲嘆之湖 · 兄弟的抉擇",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "悲嘆之湖 · 兄弟的抉擇",
+      "fail_0": "悲嘆之湖 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 25,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY041 opens with the seven registered party slots plus 克羅蒂 against the 049/065/056 field; the conditional 咕嚕 slot is an EVEF 有才產生 install fielded only when the campaign carry holds the member.",
+      "WINFAIL041 uses the enemy-056 HP condition for its win status and chains the victory to level 73; the source battle scheduler and 席德爾 undead handling remain provisional.",
+      "The lake map and multi-wave insertions are resource-derived; occupied or blocked remake cells use the assembler nearest-free policy."
+    ]
+  },
+  "story_scene": {
+    "id": "story_041_lake_of_lament_opening",
+    "title": "悲嘆之湖（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "悲嘆之湖",
+      "hint": "戰鬥部分（level 41）尚未重製　　空格／點擊：回到大地圖（悲嘆之湖）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party (咕嚕 is a conditional install) and the enemy roster have no battle scenario yet (chapter-2 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "actSetPlayerUndead SID_ENEMY056 is recorded, not applied: 席德爾's undead flag belongs to the not-yet-remade battle"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "033",
+      "034",
+      "035",
+      "049",
+      "056",
+      "065"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009",
+      "056"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY056": "652"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-041.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-041.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-041.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-041.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-041.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-041.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-041.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-041.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY056": "PLAYERS.TXT character 56 name field = 652 席德爾 (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 41 (悲嘆之湖, point 41, a Battle point): the party walks north to the lake, 雷歐納德",
+      "tells its history, 琥 spots the enemy, the level music starts as 049 / 065 arrive and",
+      "席德爾 056 (雷特's brother) walks down from the north edge; the brothers' exchange.",
+      "actPlayMusic 9 opens on track 9 (the track level 12 requests with the same token); actPlayLevelMusic in mid-opening resolves level 41 to track 17 (table",
+      "0x477b44)."
+    ],
+    "cast": [
+      "Level 41 (悲嘆之湖): 席德爾 056 with 049 / 065."
+    ],
+    "speakers": [
+      "Level 41 (悲嘆之湖): 席德爾 056 (雷特's brother) confronts 克羅蒂 and 雷特."
+    ]
+  }
+}

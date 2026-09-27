@@ -1,0 +1,558 @@
+{
+  "schema": "hsl_skill_targets.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "sources": {
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c",
+    "RANGE.TXT": "780274e8526a0542aeb4ce9ea69e5b5250ff0fbe6a60a5e017cc88b9c06020d2"
+  },
+  "archive_headers": {
+    "TYPE.H": "9fb1ed8632c04361a35004508e0e2ca18a3bea89dd2b331471a202ca9c9cf673",
+    "RANGE.TXT": "06be30b49bb1852ba8d1e0b814b60a24882391efede0e6a4815e38cfd1663b40"
+  },
+  "native_execution": true,
+  "instruction_anchors": [
+    {
+      "address": "0x409868",
+      "bytes": "8b4124c3",
+      "meaning": "Magic function getter reads record+0x24."
+    },
+    {
+      "address": "0x409888",
+      "bytes": "8b4128c3",
+      "meaning": "Special function getter reads record+0x28."
+    },
+    {
+      "address": "0x444e9e",
+      "bytes": "25620f0000",
+      "meaning": "Magic uses the function mask 0xf62."
+    },
+    {
+      "address": "0x444ea5",
+      "bytes": "f7d81bc06afff7d883c002",
+      "meaning": "Convert intersection to target mode2 or3."
+    },
+    {
+      "address": "0x44504a",
+      "bytes": "a9628f0100",
+      "meaning": "Special uses the different function mask 0x18f62."
+    },
+    {
+      "address": "0x445053",
+      "bytes": "c705782c4c0003000000",
+      "meaning": "Special support mask selects mode3."
+    },
+    {
+      "address": "0x44507f",
+      "bytes": "c705782c4c0002000000",
+      "meaning": "Other special functions select mode2."
+    },
+    {
+      "address": "0x444f08",
+      "bytes": "e8d3b1fcff",
+      "meaning": "Magic passes effect range and target mode to the coverage builder."
+    },
+    {
+      "address": "0x4450e0",
+      "bytes": "e8fbaffcff",
+      "meaning": "Special uses the same coverage builder."
+    },
+    {
+      "address": "0x41049c",
+      "bytes": "550141005501410061014100",
+      "meaning": "Coverage modes1/2 exclude0x10000; mode3 excludes0x20000."
+    },
+    {
+      "address": "0x410155",
+      "bytes": "c705506d4c0000000100",
+      "meaning": "First exclusion is pmPlayer from TYPE.H."
+    },
+    {
+      "address": "0x410161",
+      "bytes": "c705506d4c0000000200",
+      "meaning": "Second exclusion is pmEnemy from TYPE.H."
+    },
+    {
+      "address": "0x4103cc",
+      "bytes": "85ca890d606d4c00740e81e10000070081f9000007007551",
+      "meaning": "Center rejects an excluded map mode except full0x70000 marker."
+    },
+    {
+      "address": "0x410410",
+      "bytes": "25000087003d00008500",
+      "meaning": "A separate0x850000 marker test follows the actor lookup."
+    },
+    {
+      "address": "0x410432",
+      "bytes": "881428",
+      "meaning": "Accepted center sets a coverage byte."
+    },
+    {
+      "address": "0x410553",
+      "bytes": "803c39007445",
+      "meaning": "Only nonzero coverage cells are enumerated."
+    },
+    {
+      "address": "0x41055f",
+      "bytes": "e89c72ffff",
+      "meaning": "Enumerator looks up an original actor at the cell."
+    },
+    {
+      "address": "0x410579",
+      "bytes": "390674214183c6043bca7cf4",
+      "meaning": "Repeated actor pointers are excluded from the result list."
+    },
+    {
+      "address": "0x410585",
+      "bytes": "89449500",
+      "meaning": "Append the unique actor pointer."
+    },
+    {
+      "address": "0x4105da",
+      "bytes": "8b0d541a4c0033c03bca7d0b8b448d0041890d541a4c00",
+      "meaning": "Return one cached target and increment the iterator; exhausted returns zero."
+    }
+  ],
+  "source_function_modes": {
+    "magicFun_Attack": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_Heal": {
+      "magic": 3,
+      "special": 3
+    },
+    "magicFun_Paralysis": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_Poison": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_NoMagic": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_DefUp": {
+      "magic": 3,
+      "special": 3
+    },
+    "magicFun_AttUp": {
+      "magic": 3,
+      "special": 3
+    },
+    "magicFun_AllUp": {
+      "magic": 3,
+      "special": 3
+    },
+    "magicFun_CureParalysis": {
+      "magic": 3,
+      "special": 3
+    },
+    "magicFun_CurePoison": {
+      "magic": 3,
+      "special": 3
+    },
+    "magicFun_CureNoMagic": {
+      "magic": 3,
+      "special": 3
+    },
+    "magicFun_Weaken": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_CureWeaken": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_ClearAtDfUp": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_HealMP": {
+      "magic": 2,
+      "special": 3
+    },
+    "magicFun_ActiveAgain": {
+      "magic": 2,
+      "special": 3
+    },
+    "magicFun_StealGold": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_StealItem": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_CancelActive": {
+      "magic": 2,
+      "special": 2
+    },
+    "magicFun_StealHP": {
+      "magic": 2,
+      "special": 2
+    }
+  },
+  "cases": [
+    {
+      "mode": 2,
+      "map_flags": 0,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3598
+    },
+    {
+      "mode": 2,
+      "map_flags": 0,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    },
+    {
+      "mode": 2,
+      "map_flags": 65536,
+      "present": false,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 2,
+      "map_flags": 65536,
+      "present": true,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 2,
+      "map_flags": 131072,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3598
+    },
+    {
+      "mode": 2,
+      "map_flags": 131072,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    },
+    {
+      "mode": 2,
+      "map_flags": 262144,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3598
+    },
+    {
+      "mode": 2,
+      "map_flags": 262144,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    },
+    {
+      "mode": 2,
+      "map_flags": 327680,
+      "present": false,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 2,
+      "map_flags": 327680,
+      "present": true,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 2,
+      "map_flags": 393216,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3598
+    },
+    {
+      "mode": 2,
+      "map_flags": 393216,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    },
+    {
+      "mode": 2,
+      "map_flags": 458752,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3601
+    },
+    {
+      "mode": 2,
+      "map_flags": 458752,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 484
+    },
+    {
+      "mode": 2,
+      "map_flags": 8716288,
+      "present": false,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 2,
+      "map_flags": 8716288,
+      "present": true,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 3,
+      "map_flags": 0,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3598
+    },
+    {
+      "mode": 3,
+      "map_flags": 0,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    },
+    {
+      "mode": 3,
+      "map_flags": 65536,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3598
+    },
+    {
+      "mode": 3,
+      "map_flags": 65536,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    },
+    {
+      "mode": 3,
+      "map_flags": 131072,
+      "present": false,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 3,
+      "map_flags": 131072,
+      "present": true,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 3,
+      "map_flags": 262144,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3598
+    },
+    {
+      "mode": 3,
+      "map_flags": 262144,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    },
+    {
+      "mode": 3,
+      "map_flags": 327680,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3598
+    },
+    {
+      "mode": 3,
+      "map_flags": 327680,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    },
+    {
+      "mode": 3,
+      "map_flags": 393216,
+      "present": false,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 3,
+      "map_flags": 393216,
+      "present": true,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 332
+    },
+    {
+      "mode": 3,
+      "map_flags": 458752,
+      "present": false,
+      "coverage": 1,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 3601
+    },
+    {
+      "mode": 3,
+      "map_flags": 458752,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 484
+    },
+    {
+      "mode": 3,
+      "map_flags": 8716288,
+      "present": false,
+      "coverage": 0,
+      "target_found": false,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 1964
+    },
+    {
+      "mode": 3,
+      "map_flags": 8716288,
+      "present": true,
+      "coverage": 1,
+      "target_found": true,
+      "normal_returns": 3,
+      "next_target": 0,
+      "actor_and_map_unchanged": true,
+      "instructions": 481
+    }
+  ],
+  "limits": [
+    "1x1 synthetic coverage/roster, original full builder/enumerator returns with original callees; no stubs.",
+    "Function-to-mode mapping is static-reviewed, not a full spell dispatcher execution.",
+    "Large actor footprint, obstacles, directional propagation, special NoMagic flag lifecycle, AI mode selection and all support effects remain outside these fixtures.",
+    "Product supports exact Attack-only/single-target effects and current explicit battle roles; other functions fail rather than silently becoming damage."
+  ]
+}

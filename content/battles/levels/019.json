@@ -1,0 +1,96 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 19,
+  "battle": {
+    "id": "battle_019_level19",
+    "title": "利魯瑪山地 · 山地的阻擊",
+    "initial_focus_unit_id": "rett",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "利魯瑪山地 · 敵軍已清除"
+    },
+    "expected": {
+      "units": 5,
+      "players": 1
+    },
+    "unresolved_semantics": [
+      "STORY019 opens with 雷特 against four Enemy041; WINFAIL019 adds Enemy041/043/038 waves and a later party arrival sequence from the seed timeline.",
+      "The conditional party members installed by the later script (001-005 and 007) are not installed in the preview opening (provisional; replacement evidence is original_player_install.md slot registration).",
+      "The mountain map placements, later reinforcements and source timing remain resource-derived inputs with remake presentation pacing."
+    ]
+  },
+  "story_scene": {
+    "id": "story_019_liruma_highlands_opening",
+    "title": "利魯瑪山地（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      }
+    },
+    "end_card": {
+      "title": "利魯瑪山地",
+      "hint": "戰鬥部分（level 19）尚未重製　　空格／點擊：回到大地圖（利魯瑪山地）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the single controlled slot 雷特 (slot 5, jobWingWarrior 92) and the four 041 soldiers have no battle scenario yet (P-024); the preview shows the EVEF placements and STORY019 walks only",
+      "移動背景01 (mapobjMoveBG) is drawn under the map and follows the camera by obj_Score/640, obj_HitPoint/480 (360/240; docs/evidence_packets/static_reverse/original_map_object_drift.md)"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "038",
+      "041",
+      "043"
+    ],
+    "speakers": [
+      "006",
+      "041",
+      "001",
+      "002",
+      "004",
+      "007"
+    ]
+  },
+  "speakers": {
+    "SID_雷特": "5",
+    "SID_ENEMY041": "306"
+  },
+  "speaker_policy": {
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-019.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_ENEMY041": "PLAYERS.TXT character 41 name field = 306 (???); kept as the original unnamed label (那可那魯 soldier, no name reveal)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 19 (利魯瑪山地, bigmap.dat point 19): 雷特 alone (slot 5, the only EVEF install) is cornered",
+      "by four 041 soldiers who call him a traitor; winfail019's win hands off to the camp council",
+      "level 19. STORY904 is STORY019 byte for byte (track 9, 雷特 alone, four 041 soldiers, WORD019);",
+      "winfail904 differs from winfail019 in one town write only (薛維斯港 event 41 gets child 133",
+      "instead of 130) — the party arrives by script in event 1 and the win hands off to 19,69 (營地・",
+      "大陸的真相). level904.wrd is level019.wrd with 12 bytes changed, the BIN moves eight bytes.",
+      "actPlayMusic 9 opens on track 9; the closing actPlayLevelMusic gives level 19 track 17 (0x477b44), while in",
+      "STORY904 it has no table track (the resolver 0x42c1c0 returns -1 for levels >= 100), so track 9 plays on.",
+      "Back to the big map standing at 利魯瑪山地 (point 19); the skip_battle row offers winfail904's",
+      "win section (薛維斯港 events 36 / 41 rewritten, point 19 -> 525 Visit / ratio 100, next 19,69)."
+    ],
+    "cast": [
+      "Level 19 (利魯瑪山地): 雷特 006 alone against four 041 soldiers."
+    ],
+    "speakers": [
+      "Level 19 (利魯瑪山地, STORY019 / WINFAIL019): 雷特 alone (slot 5) is cornered by four 041 soldiers who call him a traitor."
+    ]
+  }
+}

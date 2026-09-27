@@ -1,0 +1,206 @@
+{
+  "schema": "hsl_remake_options.v1",
+  "note": "重製選項的注册表（docs/OPTIONS.md）：一张卡＝一个选项，字段即选项卡模板；page 是设置页版面（重制设计，照负责人的网页预览：分组、说明与预设联动；规则类分组本期不放——开场气力已照原版实现，不做成选项）。玩家可见的文字放在 name／label／text／title 键下（繁体原文，显示时经简体接缝）。read_points 为空＝还没有模块读这个键（B1 只建底座）。",
+  "options": [
+    {
+      "id": "OPT-TREASURE",
+      "name": "寶箱顯示",
+      "tier": "experience",
+      "layer": "appearance",
+      "info": true,
+      "original_value": "original",
+      "comfort_value": "shown",
+      "values": [
+        {"id": "original", "label": "原版（隱藏，踩上發現）", "text": "原版：多數寶箱不畫，踩上先響發現音再領（1／2／3／6／19 關全部隱藏）。"},
+        {"id": "shown", "label": "全部畫出", "text": "改良：全部畫成閉箱並提示發現；領取規則兩邊相同。"}
+      ],
+      "why": "不查攻略也能拿全宝物；领取规则（踩上即领、零随机、重开重置）两边完全相同",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": ["game/battle/scene/BattleSceneRuntime.gd:_read_treasure_option（_ready 读一次；重製選項页关闭且有值变了经 remake_options_changed 再读并重画宝箱）→ treasure_view.reveal_all_chests（BattleTreasurePresentation.chest_drawn：画不画、悬停提示、发现音）"],
+      "evidence": ["treasure-rules", "treasure-caption", "docs/evidence_packets/static_reverse/original_treasure.md"],
+      "work": "S"
+    },
+    {
+      "id": "OPT-INFO",
+      "name": "戰鬥資訊公開",
+      "tier": "experience",
+      "layer": "presentation",
+      "info": true,
+      "original_value": "original",
+      "comfort_value": "public",
+      "values": [
+        {"id": "original", "label": "原版", "text": "原版：選目標不顯示命中率與擊數；沒交過手的敵人印 ???；飄字只有數字。"},
+        {"id": "public", "label": "公開", "text": "改良：頭頂顯示命中率與擊數、敵人數值始終可見、飄字帶暴擊、反擊、擊倒等說明。"}
+      ],
+      "why": "原版命中率全靠猜，敌人要先挨一刀才知深浅；想看着数字打的玩家可以选",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": ["game/battle/scene/BattlePresentation.gd:preview_target", "game/battle/scene/BattlePresentation.gd:_show_strike", "game/battle/scene/BattlePresentation.gd:_present_impact", "game/battle/scene/BattleStatusPanel.gd:show_unit（状态页每次打开读一次）→ public：原版值未交手单位印 ???、没有永久加值行与属性／抗性悬停说明；公開 时一律视为已知并恢复这两样", "game/battle/scene/BattleStatusPanel.gd:opens_for（点非己方指挥单位时读一次，BattleSceneInput 调）→ 原版值未交手单位不开页（0x443cfa）；公開 时一律开页", "game/battle/scene/BattleTurnEndCue.gd:_spawn"],
+      "evidence": ["floater-extra-words", "identity-bar-bits", "UI6 ea45f5b4", "KNOWN 3fad7816", "docs/evidence_packets/static_reverse/original_identity_bar.md"],
+      "work": "M"
+    },
+    {
+      "id": "OPT-GUIDE",
+      "name": "操作提示",
+      "tier": "experience",
+      "layer": "presentation",
+      "info": true,
+      "original_value": "original",
+      "comfort_value": "hints",
+      "values": [
+        {"id": "original", "label": "原版", "text": "原版：行動環只有圖標，移動只畫範圍，撤離格只在劇本插入時畫。"},
+        {"id": "hints", "label": "提示", "text": "改良：圖標下加說明、移動路徑線與「移動 3/5」費用欄、撤離格常駐、待機與再次行動提示。"}
+      ],
+      "why": "新手第一次玩看得懂该点哪里、能走到哪",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": [
+        "game/battle/scene/BattleCommandMenu.gd:rebuild（行动环每次打开读一次）→ captions：原版值只画图标；提示 时每个图标下加说明字（放在悬停放大后的图标下方，不盖图标像素）",
+        "game/battle/scene/BattlePresentation.gd:show_selection（进入移动选格读一次）→ move_hints：原版值只画移动范围与选格；提示 时加路径线（BattleMovementPreview）、「移動 3 / 5」费用栏与「可通過，不能停留」「無法到達」「移動後不能施法」等说明",
+        "game/battle/scene/BattlePresentation.gd:_ready（建场景读一次；重製選項页关闭且有值变了经 remake_options_changed 再读）→ escape_marks：原版值只画剧本插入的 obj_Story_Show_Pos 标记；提示 时撤离阶段每个撤离格常驻金色半透明格（ESCAPEMARK 644178ea 之前的画法）",
+        "game/battle/scene/BattleNavigationCue.gd:begin（每个 AI 行动读一次）→ 原版值无提示、不停顿、不画 AI 走位线；提示 时「待機」「守候 · 尚餘 N 次」「麻痺 · 無法行動」停 0.55 s、AI 走位画路径线",
+        "game/battle/scene/BattleExtraActionCue.gd:refresh（每次第二次行动出现时读一次）→ hints：原版值不显示、不停顿；提示 时「再次行動」并停 0.55 s",
+        "game/battle/scene/BattleStatusPanel.gd:show_unit（状态页每次打开读一次）→ hint_buttons：原版值状态页没有按钮条；提示 时底部加「保存 F5」「讀取 F9」「待領物品」「返回」（「成長點」随 OPT-GROWTH 暂缓路径，有点数就显示）"
+      ],
+      "evidence": ["command-menu-captions", "move-path-overlay", "wait-cue", "extra-action-cue", "ESCAPEMARK 644178ea"],
+      "work": "M"
+    },
+    {
+      "id": "OPT-GROWTH",
+      "name": "升級加點方式",
+      "tier": "experience",
+      "layer": "presentation",
+      "info": false,
+      "original_value": "original",
+      "comfort_value": "merged",
+      "values": [
+        {"id": "original", "label": "原版（每級一窗，點滿才關）", "text": "原版：每升一級一個窗，點數沒分完不能關。"},
+        {"id": "merged", "label": "合成一窗，可暫緩", "text": "改良：一次升多級合成一個窗，可右鍵暫緩，狀態頁「成長點」隨時再分；最終屬性相同。"}
+      ],
+      "why": "战斗中途不被加点窗卡住，可以看完局势再加；最终属性两边相同",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": ["game/battle/scene/BattleGrowthPanel.gd:show_unit（升級窗每次打開讀一次，含狀態頁「成長點」重開）→ postpone_allowed（原版值：window_points 每窗一級 5 點，BattleSceneMenus.allocate_growth 點 OK 後接著開下一級的窗，handle_input 右鍵／Esc 被吞不關窗；合成一窗，可暫緩 時一窗給全部點數，右鍵／Esc 關窗、點數留著，狀態頁「成長點」再分）"],
+      "evidence": ["growth-point-reserve", "growth-window-timing", "docs/evidence_packets/static_reverse/original_growth_window.md", "GROWTHWIN cc1a4709"],
+      "work": "S"
+    },
+    {
+      "id": "OPT-PACE",
+      "name": "演出節奏",
+      "tier": "experience",
+      "layer": "presentation",
+      "info": false,
+      "original_value": "original",
+      "comfort_value": "fast",
+      "values": [
+        {"id": "original", "label": "原版", "text": "原版：切入特寫與地圖演出原速，劇情走位不能快進。"},
+        {"id": "fast", "label": "快", "text": "快：切入特寫與地圖演出 2 倍，確認鍵快進劇情走位。"},
+        {"id": "fastest", "label": "極快", "text": "極快：在「快」之上切入特寫不上畫面，直接出結果數字。"}
+      ],
+      "why": "127 场战斗反复看同样的切入很耗时间",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": [
+        "game/battle/scene/BattleCombatCutin.gd:play（每次交锋第一段入队时读一次）→ pace（CombatPresentationTiming.PACE_CLOSEUP：原版 1、快 2、極快 16）乘在本节点每帧 delta 上；極快 时切入层 visible=false，片段照序跑完，impact／released 信号、地图伤害数字与经验照常",
+        "game/battle/scene/BattleAttackCue.gd:begin（每次地图起手范围演出读一次）→ pace（PACE_MAP：原版 1、快／極快 2）",
+        "game/battle/scene/MagicImpactPresentation.gd:begin（每次法术受者血条与数字读一次）→ pace（PACE_MAP）",
+        "game/battle/runtime/BattleOpeningCoordinator.gd:handle_input（对白外每次确认读一次）→ 原版值不快进，剧情走位与镜头照原速；快／極快 时 fast_forward_motion 落位"
+      ],
+      "evidence": ["script-fast-forward", "game/battle/runtime/CombatPresentationTiming.gd", "docs/evidence_packets/runtime_observations/system_menu/README.md#預備動作0x477c14-bit1"],
+      "work": "M"
+    },
+    {
+      "id": "OPT-RETRY",
+      "name": "敗北後重來",
+      "tier": "experience",
+      "layer": "presentation",
+      "info": false,
+      "original_value": "original",
+      "comfort_value": "retry",
+      "values": [
+        {"id": "original", "label": "原版（回標題）", "text": "原版：敗北 → GAME OVER → 回標題，沒有重新挑戰。"},
+        {"id": "retry", "label": "可重新挑戰本戰", "text": "改良：GAME OVER 畫面加「重新挑戰本戰」，以進入本戰時的隊伍重打一次。"}
+      ],
+      "why": "没存档就得从回憶錄重走；这相当于原版在首次行动时存一份戰場記錄，不给新能力",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": ["game/title/GameOverScreen.gd:_ready（GAME OVER 畫面建好時讀一次）→ retry_offered：原版值 GAME OVER 字放大淡入後任意鍵或 160 tick 淡出回標題；可重新挑戰本戰 時原版時序走完才畫「重新挑戰本戰／回到標題」兩行、不自動離開，重新挑戰把進入本戰的交接 CampaignProgress.last_entry（戰場記錄讀檔去掉 load_checkpoint）重設為 pending 再進 BattleSceneRuntime"],
+      "evidence": ["game-over-screen", "docs/evidence_packets/static_reverse/original_battle_end_flow.md", "RESULTPAGE a6963e2c"],
+      "work": "S"
+    },
+    {
+      "id": "OPT-CURSOR",
+      "name": "游標",
+      "tier": "experience",
+      "layer": "appearance",
+      "info": false,
+      "original_value": "original",
+      "comfort_value": "original",
+      "values": [
+        {"id": "original", "label": "原版（畫面內權杖）", "text": "原版：紅寶石權杖畫在 640×480 畫面裡，隨窗口放大。"},
+        {"id": "hardware", "label": "系統硬體游標", "text": "改良：用系統硬體游標顯示同一支權杖（不放大、不晚一幀）。"}
+      ],
+      "why": "软件画的光标比鼠标晚至少一帧，大窗口下权杖被放大发糊",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": ["game/cursor/GameCursor.gd:_read_cursor_option（自動加載 GameCursor._ready 讀一次；重製選項頁關閉且有值變了經 remake_options_changed 再讀）→ hardware：原版值權杖畫進 640×480 畫面隨窗口放大；系統硬體游標 時不畫進畫面，Input.set_custom_mouse_cursor 以同一張 CURSOR01..10 圖與熱點交給系統游標（apply_frame 每換一幀換一次）"],
+      "evidence": ["cursor-hide-item-icon", "docs/evidence_packets/runtime_observations/game_cursor/README.md", "CURSOR 84eb5465"],
+      "work": "S"
+    },
+    {
+      "id": "OPT-FONT",
+      "name": "字體",
+      "tier": "experience",
+      "layer": "appearance",
+      "info": false,
+      "original_value": "original",
+      "comfort_value": "original",
+      "values": [
+        {"id": "original", "label": "原版點陣字", "text": "原版：FONT.24／FONT.15 點陣字。"},
+        {"id": "system", "label": "系統字", "text": "改良：系統字（高分屏更清楚）。已開的畫面下次打開時換字。"}
+      ],
+      "why": "高分屏下系统字更清楚",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": [
+        "game/text/OriginalBitmapFont.gd:install（自动加载 SimplifiedDisplay._enter_tree 读一次；重製選項页关闭且有值变了经 remake_options_changed 再读）→ ThemeDB 默认主题 default_font：原版值＝OriginalBitmapFont.font()（FONT.24／FONT.15 两面），改良值＝game/assets/ui_font.tres"
+      ],
+      "evidence": ["bitmap-font"],
+      "work": "S"
+    }
+  ],
+  "page": {
+    "window": {"rect": [0, 2, 640, 476], "margin": 22},
+    "heading": {"title": "重製選項", "y": 12, "font": 20},
+    "crumb": {"text": "設定選項 › 重製選項", "y": 20, "right_inset": 108, "font": 12},
+    "hotkey": {"text": "Tab 開關", "y": 20, "left_inset": 108, "font": 12},
+    "presets": {
+      "label": "預設",
+      "y": 40,
+      "label_x": 40,
+      "button_x": 84,
+      "button_size": [66, 24],
+      "gap": 8,
+      "font": 15,
+      "buttons": [
+        {"id": "original", "label": "原版", "text": "＝全部照原版", "author": {"label": "作者默認", "text": "＝本故事作者的預設"}},
+        {"id": "comfort", "label": "舒適", "text": "＝改良全開"},
+        {"id": "custom", "label": "自定", "text": "＝逐項自定"}
+      ]
+    },
+    "groups": [
+      {"id": "experience", "title": "體驗改良", "text": "隨時可改，不進存檔"}
+    ],
+    "group_height": 20,
+    "first_group_y": 68,
+    "rows": {"pitch": 41, "height": 39, "name_y": 1, "name_font": 16, "tag_font": 11, "segment_y": 3, "segment_font": 14, "segment_height": 20, "segment_padding": 9, "text_y": 21, "text_font": 13},
+    "tags": [
+      {"id": "presentation", "label": "演出"},
+      {"id": "appearance", "label": "外觀"},
+      {"id": "rules", "label": "規則"},
+      {"id": "info", "label": "資訊"}
+    ],
+    "entry": {"label": "重製選項 ›", "rect": [230, 396, 180, 28], "font": 16}
+  }
+}

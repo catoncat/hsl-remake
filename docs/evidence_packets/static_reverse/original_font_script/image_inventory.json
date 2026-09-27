@@ -1,0 +1,626 @@
+{
+ "schema": "hsl_baked_text_image_inventory.v1",
+ "evidence_tier": "resource-derived",
+ "claim": "Every tracked image that bakes CJK text into its pixels, with the text as drawn and its script form. Read by eye from 1x／0.6x contact sheets (2026-09-24, R6-L9b). All images are original hsl.pak shapes: content/authored and game/assets bake no text. Images without text (sprites, portraits, maps, effects, command icons BCMD／command_menu, world-map tracks and town backdrops, BOARD02, WINDOW20／31／50／60／70／90, bars) are not listed.",
+ "forms": {
+  "simplified": "every CJK glyph is the simplified form or a form both scripts share",
+  "traditional": "carries traditional-only forms",
+  "no_cjk": "label without CJK text (kept so the panel family is complete)"
+ },
+ "images": [
+  {
+   "path": "content/imported/hsl/shared/panels/WINDOW21.png",
+   "sha256": "b0efa91b5956610f6f6849c7aa01fbd8c7cb9de4393bdfc53b5fcf782e11bf93",
+   "glyphs": "力量 反应 精神 体质 攻击力 防御力 魔击力 敏捷度 移动力",
+   "form": "simplified",
+   "used_by": "game/battle/scene/BattleStatusPanel.gd, BattleGrowthPanel.gd (状态页／升级窗左栏)"
+  },
+  {
+   "path": "content/imported/hsl/shared/shape_previews/battle_ui/WINDOW10.SHP.png",
+   "sha256": "cacd267fdadc3d17bc456dbe789d6347d1672c0312154388443d8f0939bd422e",
+   "glyphs": "等级 经验 生命力 魔法力 气力 姓名 称号 种族 状态",
+   "form": "simplified",
+   "used_by": "game/battle/scene/BattleVitals.gd, BattlePresentation.gd, game/world/TownShopScreen.gd (状态页上栏)"
+  },
+  {
+   "path": "content/imported/hsl/shared/shape_previews/battle_ui/WINDOW30.SHP.png",
+   "sha256": "b68cc4a36ad7bd336e9f0c91c7e85759dcbb46e1507f614e979a1df483ca84d9",
+   "glyphs": "武 头 体 脚 饰 饰",
+   "form": "simplified",
+   "used_by": "game/battle/scene/BattleEquipmentView.gd, BattleGrowthPanel.gd (装备栏)"
+  },
+  {
+   "path": "content/imported/hsl/shared/panels/WINDOW41.png",
+   "sha256": "b85828e3b61fcb97e3bc3ed51c6c1130e2c409f5780b26cfdc09eaa03a7ec575",
+   "glyphs": "残馀点数",
+   "form": "simplified",
+   "used_by": "game/battle/scene/BattleGrowthPanel.gd (升级窗剩余点数)",
+   "note": "馀 matches the FONT.24 glyph of 餘"
+  },
+  {
+   "path": "content/imported/hsl/shared/shape_previews/battle_ui/WINDOW40.SHP.png",
+   "sha256": "4efe4e34272b5cb45bd681a8747d5c37f8500a9370b8a1b4e743e67b50339c25",
+   "glyphs": "$",
+   "form": "no_cjk",
+   "used_by": "game/battle/scene/BattleLootPanel.gd, BattleStatusPanel.gd, game/world/TownShopScreen.gd (金钱框)"
+  },
+  {
+   "path": "content/imported/hsl/shared/shape_previews/battle_ui/BT_OK.SHP.png",
+   "sha256": "f6286c8abbfecf58b809fdcd05cc6c49a619cc72ca9bb76b6c004c3f080ac740",
+   "glyphs": "OK",
+   "form": "no_cjk",
+   "used_by": "game/battle/scene/BattleGrowthPanel.gd"
+  },
+  {
+   "path": "content/imported/hsl/shared/shape_previews/battle_ui/KILL_000.SHP.png",
+   "sha256": "a82ef71dc24bb1e6615717c2e7d180c8752ea6edd9c54a5d7d860d0799e3f036",
+   "glyphs": "KILL",
+   "form": "no_cjk",
+   "used_by": "(not used by game/)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title002.SHP.png",
+   "sha256": "5c50d5958e528345d562de5da3f4150fe7b338788448b350f500879ccb46a063",
+   "glyphs": "幻世錄 ~The Legend of Fancy Realm~",
+   "form": "traditional",
+   "used_by": "game/title/TitleScreen.gd via global/title/manifest.json (标题 logo)",
+   "note": "logo artwork: 錄 is the traditional form in the original shape; kept as the brand mark (decision item in the R6-L9 report)",
+   "kept": "title logo artwork (幻世錄 lettering with the English subtitle); the remake keeps the original brand mark — redrawing 錄→录 in the painted logo is a user decision (R6-L9 report)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title021.SHP.png",
+   "sha256": "5f48c714175566aeb6d264cea0c114eb227c95d8989e9fb198d5371f2d050453",
+   "glyphs": "开始新故事 战场记录 离开游戏",
+   "form": "simplified",
+   "used_by": "game/title/TitleScreen.gd via manifest (标题圆环菜单)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title024.SHP.png",
+   "sha256": "009b40834fec6a6d669adf415834c2d768d7572fcbca3ce97b2ee7a3b420d6e7",
+   "glyphs": "开始新故事",
+   "form": "simplified",
+   "used_by": "TitleScreen (亮起项)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title025.SHP.png",
+   "sha256": "484083fa854b6bc07443d0036e024b7c2032ffc6afdd9469a5223c09cbf23273",
+   "glyphs": "战场记录",
+   "form": "simplified",
+   "used_by": "TitleScreen (亮起项)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title026.SHP.png",
+   "sha256": "fde493646b584e9f073d37e35a7330da53c2fb82ca617cfd849c4c1f26dddbc9",
+   "glyphs": "离开游戏",
+   "form": "simplified",
+   "used_by": "TitleScreen (亮起项)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title012.SHP.png",
+   "sha256": "63ad2ddb4fdb109c23b3b785c49ad870ff61d811192876148ba4b7e85b22289e",
+   "glyphs": "GAME OVER",
+   "form": "no_cjk",
+   "used_by": "game/title/GameOverScreen.gd"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title031.SHP.png",
+   "sha256": "6ad750738487979fe81e3bbce7312b9de8f38455008877518bf75d95393cc3da",
+   "glyphs": "回忆录",
+   "form": "simplified",
+   "used_by": "game/battle/scene/BattleSystemMenu.gd (回憶錄 列表)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title032.SHP.png",
+   "sha256": "2c8e5afaa89e06afa4270bc5ae4084e7eb566f8aaa914e0ccf46068956b51c3a",
+   "glyphs": "读取回忆录",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu (抬头)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title033.SHP.png",
+   "sha256": "206f4deb96405c6e86dee3f7bb44d6cbe69f1cd051a3645a6417eeb098c075a5",
+   "glyphs": "储存回忆录",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu (抬头)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title039.SHP.png",
+   "sha256": "3d8d04dc9c3d423a3ab04a7116c60442729b74fcc6a8eb5f83e06a6465ed9808",
+   "glyphs": "设定选项 场景效果 预备动作 音效音量 音乐音量 off on min max",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu (設定選項)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title041.SHP.png",
+   "sha256": "6ff8b87e69f9fd654005d5af8964b1e3d19ca4a36705156b326e4f0c9849eea3",
+   "glyphs": "任务说明 储存战场记录 读取回忆录 读取战场记录 设定选项 回主选单",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu (战中系统卷轴)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title051.SHP.png",
+   "sha256": "a61326efb9dcbf52138a316ebf21728532a4ce2c45727ab7805ba91d5853fe00",
+   "glyphs": "整理装备 储存回忆录 读取回忆录 读取战场记录 设定选项 回主选单",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu, game/world/WorldMapRuntime.gd (战间卷轴)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title061.SHP.png",
+   "sha256": "343067a6fe0881ead6eb021cb9f299f3c7a7c00562220fa41cd2604b4bb5cecb",
+   "glyphs": "确定 取消",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title062.SHP.png",
+   "sha256": "d12d8dfd05492958f0782816a1fde02078feb7d4ae216e4b62ee1c3259738465",
+   "glyphs": "确定",
+   "form": "simplified",
+   "used_by": "(not used by game/)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title063.SHP.png",
+   "sha256": "e6b07e26a77ee34ba8514ec101a4ee442ead67a0d38c37bb9ef109fe1a5f69dc",
+   "glyphs": "取消",
+   "form": "simplified",
+   "used_by": "(not used by game/)"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Over001.SHP.png",
+   "sha256": "3cff026cd6c6a5d4e62a3f1cabf114d8917a494448de8ca6047721aa5681abe3",
+   "glyphs": "结局正文（随着妖精王的逝世……“乱”才刚开始）",
+   "form": "simplified",
+   "used_by": "game/title/GameClearScreen.gd"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Over002.SHP.png",
+   "sha256": "66042d3b7879b0f7bd506ac11d5f8c16c96bb1b74a37b52232a2fe86f4cfd8cb",
+   "glyphs": "在战乱开始後没有多久，刚复兴的拉尔斯帝国即宣布投降……",
+   "form": "simplified",
+   "used_by": "(not used by game/)",
+   "note": "後 is kept traditional exactly like the FONT.24 glyph of 後"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/workteam.SHP.png",
+   "sha256": "c48c959785f5de39e998a6dfea6d2ed17eb73a5a60fc0ea0c3610ade96262285",
+   "glyphs": "製作小組 企畫 2D美術 3D模型 主程式 工具程式 遊戲引擎 動畫 音樂 音效 測試 ＋人名（鄧彥志 陳彥名 楊漢昶 許泰滄 奧汀科技 華大衛 黃博聖 施懷宇 吳致松 鄭淑芬 賴柏州 張啓新 劉信 廖荷婷……） 劇終",
+   "form": "traditional",
+   "used_by": "game/title/GameClearScreen.gd (通关制作名单)",
+   "note": "the only baked traditional text a player sees; redrawn simplified by hsl generate workteam_simplified",
+   "simplified_replacement": {
+    "path": "content/generated/hsl/title/workteam_simplified.png",
+    "sha256": "7e3deb87ffecdd031ac6b1e734babcea553d0a63aac4ad904832bccaf9362e4e",
+    "generator": "tools/hsltools/assets/workteam_simplified.py",
+    "redrawn_with_font24": "製組畫鄧彥術陳楊漢遊戲則動樂許滄奧測試華衛黃聖懷吳鄭賴張啟劉劇終",
+    "shape_lettering_kept_for": "作小企志林汝伋2D美名3模型昶主程式工具引擎居文音泰效汀科技大博施宇致松淑芬王浩辰逸青柏州新奉平信江霖廖荷婷"
+   }
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title042.SHP.png",
+   "sha256": "60519b45827d73ce71e6e66ae84fe8f23ec18a8b03a80fd2491cf1ab5362902c",
+   "glyphs": "系统卷轴亮起项（同 Title041 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title043.SHP.png",
+   "sha256": "d9080f9f5d2aace744d4864a3c2be982082be0991dc50f5de2df503ef1abc934",
+   "glyphs": "系统卷轴亮起项（同 Title041 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title044.SHP.png",
+   "sha256": "9e87668715ee58756e39e2865ba6fe023e0fa433ced966bccccc3bd047cd2333",
+   "glyphs": "系统卷轴亮起项（同 Title041 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title045.SHP.png",
+   "sha256": "38116663201854cd5fa27d70b05680b7f1972fc569dc48cb27ab826b44d22b15",
+   "glyphs": "系统卷轴亮起项（同 Title041 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title046.SHP.png",
+   "sha256": "8d1534ff83e067ab565a35aa3105200d1d4e9116d42db2f2be26a002b76e563a",
+   "glyphs": "系统卷轴亮起项（同 Title041 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title047.SHP.png",
+   "sha256": "196a03d3b262159cc73b6df5fe223404591b702d27f5ad0a6ec2318a93d9512a",
+   "glyphs": "系统卷轴亮起项（同 Title041 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title052.SHP.png",
+   "sha256": "53dc29afca883d52cee1866da60eac4df637346bfac0b1cbcd2f6a8bff4bab27",
+   "glyphs": "战间卷轴亮起项（同 Title051 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title053.SHP.png",
+   "sha256": "2a3a1d66e7faf14f776da4e90918c1368180dcc30c848a3d30669d9021a7ea45",
+   "glyphs": "战间卷轴亮起项（同 Title051 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title054.SHP.png",
+   "sha256": "301f72071b2011a377ae7070dfc60d6bd42b740af5c4da3e2b6c6ffd767628c0",
+   "glyphs": "战间卷轴亮起项（同 Title051 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title055.SHP.png",
+   "sha256": "ad1ab7c9266f00a20ea1ed5749ab15730dd7b81f8aee463a43c390250d004834",
+   "glyphs": "战间卷轴亮起项（同 Title051 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title056.SHP.png",
+   "sha256": "ff18b2ad617cb3e20ea7788097ed8f68f75b4204d2be4dab127ddfa039d0b813",
+   "glyphs": "战间卷轴亮起项（同 Title051 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/global/title/previews/Title057.SHP.png",
+   "sha256": "8efd9f921afa8e16664bca896c153c2ae6ea006ccbae1b2ded70e5c66a6b76ac",
+   "glyphs": "战间卷轴亮起项（同 Title051 各行）",
+   "form": "simplified",
+   "used_by": "BattleSystemMenu"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle001/section_title.png",
+   "sha256": "d15cb21e2a3019c9984282801749b750771b2bd00fdd2c40b006f092f031689f",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle002/section_title.png",
+   "sha256": "a468cf33fcad8f96c2cc2b90a6d47fa40c4ab4b0a25d907538a0b2306235fb47",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle003/section_title.png",
+   "sha256": "4aae55eabef1869a6c75262ba90c1bbcfae53ed6fe710c934a102c9eb4d3d970",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle005/section_title.png",
+   "sha256": "decfebaaa36be261c91b2ae2d75efbf36d16ff4807d5848434dbee1aab51c1ec",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle006/section_title.png",
+   "sha256": "5ce83e8737d77e9468491bf2390e8ca75f605afd9ce98d051561e09057b208c2",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle007/section_title.png",
+   "sha256": "68c03e89399b99f2baf8c69cac52e43e43d92e5b54645ead8d1ba41f3f157e33",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle010/section_title.png",
+   "sha256": "643c5fd9df97f40d17cd64e358407eee34088af699b6c83e34b8699d7e312137",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle012/section_title.png",
+   "sha256": "90cbde3a41892341183feffeafc16828b4a9e28960a10c3f9c84fbd90b9ba916",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle013/section_title.png",
+   "sha256": "a6b13ee17e8ae637be7754202b2b94dc34320738559de19daa7dba8140ed1027",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle015/section_title.png",
+   "sha256": "a43e2df680b2f22510e7fa22adc123c8655c59281f733f9f87f02617cf09cb84",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle017/section_title.png",
+   "sha256": "627088cb95cd5719bae3833cf1ae0ee14870014da81fea40332d86e9e8c2e20c",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle018/section_title.png",
+   "sha256": "1841dba7e9b32ee91a320e926ccc4d59b5c3114dece514ce91a51094297e3bac",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle019/section_title.png",
+   "sha256": "de8527c18b346273867e358cfa992a70ba829fa98a70e85badbfe4948c61de0b",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle021/section_title.png",
+   "sha256": "e287839f918f05b7910a350ff7675ee1d5bf541c0c2a82bb8dfdde52ec1fdb10",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle022/section_title.png",
+   "sha256": "89af9c69c31a0c9ce5bb321ec72b93207c3c1afa975959fe8ca8de5f10394310",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle024/section_title.png",
+   "sha256": "cd256d002fadc6a655e9992c8a1b4d09e8f5e1ad39bfb620edfe647f8611096d",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle026/section_title.png",
+   "sha256": "909ef44c023c6f74093f7dde16c3bfb081f4f800208f2c895309e62470b30c1f",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle028/section_title.png",
+   "sha256": "6a1c0bb18bdd570f52aeb33bece29bccec0c5d793227b50ae7196f2932f20534",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle029/section_title.png",
+   "sha256": "9471e93e2ad5f85c1be053926f3760db7602134b730d4ceeb6cc89992414d066",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle030/section_title.png",
+   "sha256": "3588ff0b202a93a52893edcaccfc0af6c8fdbdb6559def0a4299e3e5a369213e",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle031/section_title.png",
+   "sha256": "dcb4b4030f7a60729c34d18b54043eba7d4b7a3c48d8ef844f235be2b56e1dc1",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle032/section_title.png",
+   "sha256": "10c80cd638b3229f0741f9feddd561179b5e2c0cd4fd1514ad138b6e5087d759",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle033/section_title.png",
+   "sha256": "6a218a66e9f3f622571d7c3e07b457610d1d528c7547ae5649177aac5227e38a",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle034/section_title.png",
+   "sha256": "1f878508f3e1e67942eca2b41f3aa70b5c9a447daa63b2d15ee32239759c91d8",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle036/section_title.png",
+   "sha256": "38e89d6ca011e8460e631353d6ac19acc7de6df27efd21221880d276a780ef90",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle037/section_title.png",
+   "sha256": "4d4b6a4e7256b7531ef8ad381a417df06dcc24c61ae76c8f75e5f2ca8cc320ea",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle038/section_title.png",
+   "sha256": "2943892867075edef51a8a2d334c3b0456a56aeeb7770399e69e18ba5ec9ae2d",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle039/section_title.png",
+   "sha256": "dc1515123f2120a247aa1eb2ddd445b798d24e2cf1372bfb0d70e264c881404c",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle040/section_title.png",
+   "sha256": "8e03f494306d51ab95a8aae512e80b1d089cb839ef8ed62567da80b64ee4049e",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle041/section_title.png",
+   "sha256": "16a7951b77880dd5d162344a676bbc741643b3671875ceb528087c3bb9103189",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle043/section_title.png",
+   "sha256": "fd8f2babe15470809335380149d3c8d73a4f452aedce25a61b10da9065d3a346",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle044/section_title.png",
+   "sha256": "63dcc5708b6d009add4470c1a4de974bf271a2b9b5a9d93e81f03599221e4fa7",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle045/section_title.png",
+   "sha256": "5a4268945c6cedbd4bec1ad325bc72d9582007d6bc53633e76ce7d0c6ee0f03f",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle051/section_title.png",
+   "sha256": "834ce431f1652f462caf8e714b02314a0012f9be50a20fb4a4cb5116dce8499a",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle052/section_title.png",
+   "sha256": "6492a508a7d268efcbdbbe32432407ba9563c8a75c7259aa2902d753a1a86fd6",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle053/section_title.png",
+   "sha256": "cb348b9e6c4dca04451b93f70a4082180563cf45d2582888427590319bd8e3a4",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle059/section_title.png",
+   "sha256": "5a1782d71fc35e6a315f97fc7ad5fdcdeb8ebc633d27efefe2f9b085d9b74f48",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle075/section_title.png",
+   "sha256": "1984e15c682384be19515176eade805f820e4731ce3074321d51d6d55ce562f4",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle076/section_title.png",
+   "sha256": "f49bd7d15f38c4249d98f43d7eb38a7c78b53cadcda9f55414ca254749b521f5",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle077/section_title.png",
+   "sha256": "7dcc3bb19c7f17a0734fafcb910f5e2e37b0e2c3bd82dbdfe509677a90031b3d",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle078/section_title.png",
+   "sha256": "22a8d5fb8cad292e1f6f4dbeb429380e53eb6266c4e41eaa4abbe0e7c9c4782c",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle079/section_title.png",
+   "sha256": "93e544737117570e55172086b35227f396cec79ede126527e775ed73e938fb96",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle080/section_title.png",
+   "sha256": "441aa092389007906b84247ba77c9843224359376c2d84c97f7aaf5947f8df1c",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle900/section_title.png",
+   "sha256": "733b298112554c65afd27ddfad8e7086f364762265ea95482c5a7d2baaf078c4",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle901/section_title.png",
+   "sha256": "626f506f03ca4d9381d0cdf80ab95806569374b651e16814154c0d446f544c0a",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle902/section_title.png",
+   "sha256": "580b4b6ad4987f910323bde2ec95903965641c9d0c56f03eab884280f9d5a15e",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle903/section_title.png",
+   "sha256": "cd256d002fadc6a655e9992c8a1b4d09e8f5e1ad39bfb620edfe647f8611096d",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/battle904/section_title.png",
+   "sha256": "de8527c18b346273867e358cfa992a70ba829fa98a70e85badbfe4948c61de0b",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  },
+  {
+   "path": "content/imported/hsl/chapter01/section_title.png",
+   "sha256": "834ce431f1652f462caf8e714b02314a0012f9be50a20fb4a4cb5116dce8499a",
+   "glyphs": "关卡标题卡（弃卒、宣战、残光、自觉与宿命……全部 49 张）",
+   "form": "simplified",
+   "used_by": "game/battle/runtime/opening/OpeningCinematics.gd (关卡标题)"
+  }
+ ]
+}

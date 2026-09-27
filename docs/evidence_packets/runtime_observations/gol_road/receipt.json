@@ -1,0 +1,6070 @@
+{
+  "schema": "hsl_gol_road_curated_review.v1",
+  "evidence_tier": "runtime-measured",
+  "native_execution": false,
+  "measurement_scope": "Rendered Godot remake, not original native gameplay.",
+  "processes": [
+    {
+      "name": "render-support-natural",
+      "log": "ignored/gol-road/render-support-natural.log",
+      "log_sha256": "276efa275b095bd935665eb1bc38f0b454bf7b1ac4f25ebbd4b3d83c594b8f2c",
+      "exit_code": 0,
+      "unchanged_during_verification": true,
+      "pid": 75467,
+      "screen": 0,
+      "elapsed_seconds": 196.923,
+      "checks": 14485,
+      "setup": "Unchanged formal GolRoad scene, source001/003/028 initial roster and source event002. No post-input model, health, inventory, ability or RNG injection.",
+      "raw_receipt": "ignored/gol-road/natural-final.json",
+      "raw_receipt_sha256": "12be42fe90b89684713d8218b7b11435d6014b2ac2c9b031722184d56ac61ec2"
+    },
+    {
+      "name": "render-extended-final",
+      "log": "ignored/gol-road/render-extended-final.log",
+      "log_sha256": "b7a5ee00d86838f8ca8ede947e408bbd561cb777716331a753d3fb327d6eec72",
+      "exit_code": 0,
+      "unchanged_during_verification": true,
+      "pid": 35417,
+      "screen": 0,
+      "elapsed_seconds": 75.075,
+      "checks": 4699,
+      "setup": "Natural is the unchanged formal GolRoad source roster and event. Arrival sets three earlier raider deaths, one 1HP raider, wounded Leonard, fast Hu with White Wings and test guards no_attack before any input; real attack triggers birth, source dialogue and current turns. Defeat starts after an explicitly pre-played source event with Tina1HP and one adjacent, fast, accurate lethal pursuer. Campaign reads the exact natural victory checkpoint in a fresh process, with no synthetic outcome. No post-input health, ability, resource, RNG or model injection. Source global RNG/timing equivalence is not claimed.",
+      "raw_receipt": "ignored/gol-road/extended-final.json",
+      "raw_receipt_sha256": "2f4ca0885974cc1019e62a64a1e4242ae03387f371fd9005a8b531484dadb404"
+    }
+  ],
+  "routes": [
+    {
+      "mode": "natural",
+      "process": "render-support-natural",
+      "initialization_rng_before": 179288973,
+      "initialization_rng_after": 1436325396,
+      "initial_actor_ids": [
+        "hu",
+        "leonard",
+        "actor028_1",
+        "actor028_2",
+        "actor028_3",
+        "actor028_4",
+        "actor028_5"
+      ],
+      "final_actors": [
+        {
+          "id": "hu",
+          "actor_id": "003",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(9, 8)",
+          "hp": 40,
+          "max_hp": 41,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 5,
+          "level": 5,
+          "exp": 2,
+          "pending_stat_points": 5,
+          "equipment": [
+            {
+              "item_code": 61.0,
+              "name": "長弓",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 123.0,
+              "name": "皮鎧",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 24.0,
+            "dex": 16.0,
+            "mind": 7.0,
+            "con": 20.0
+          }
+        },
+        {
+          "id": "leonard",
+          "actor_id": "001",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(12, 7)",
+          "hp": 24,
+          "max_hp": 33,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 36,
+          "level": 2,
+          "exp": 87,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 2.0,
+              "name": "闊刃劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 125.0,
+              "name": "騎士鎧甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            241,
+            241,
+            246,
+            246,
+            246,
+            241,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 18,
+            "dex": 17,
+            "mind": 9,
+            "con": 13
+          }
+        },
+        {
+          "id": "actor028_1",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(15, 11)",
+          "hp": 30,
+          "max_hp": 30,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 8,
+          "level": 2,
+          "exp": 56,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "departed": true,
+          "defeated": false,
+          "attributes": {
+            "str": 14,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1592594996,
+            "rng_after": 1651881453,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 14
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 220,
+              "kill_exp": 40,
+              "level": 2,
+              "raised": true,
+              "sampled_level": 2,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 2,
+                "magic_attack_power": 0,
+                "magic_point": 2,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 2
+            }
+          }
+        },
+        {
+          "id": "actor028_2",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(13, 11)",
+          "hp": 0,
+          "max_hp": 35,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 8,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1651881453,
+            "rng_after": 1623008527,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 16
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 230,
+              "kill_exp": 40,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 5,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 8
+            }
+          }
+        },
+        {
+          "id": "actor028_3",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(13, 11)",
+          "hp": 0,
+          "max_hp": 26,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 12,
+            "dex": 15,
+            "mind": 10,
+            "con": 15
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1623008527,
+            "rng_after": 67807108,
+            "result": {
+              "attributes": {
+                "con": 15,
+                "dex": 15,
+                "mind": 10,
+                "str": 12
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 200,
+              "kill_exp": 35,
+              "level": 1,
+              "raised": false,
+              "sampled_level": 1,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 0,
+                "magic_attack_power": 0,
+                "magic_point": 0,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        },
+        {
+          "id": "actor028_4",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(14, 10)",
+          "hp": 0,
+          "max_hp": 31,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 2,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 14,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 67807108,
+            "rng_after": 215157185,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 14
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 220,
+              "kill_exp": 40,
+              "level": 2,
+              "raised": true,
+              "sampled_level": 2,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 3,
+                "magic_attack_power": 0,
+                "magic_point": 2,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 1
+            }
+          }
+        },
+        {
+          "id": "actor028_5",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(14, 10)",
+          "hp": 0,
+          "max_hp": 36,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 1,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 215157185,
+            "rng_after": 179288973,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 16
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 240,
+              "kill_exp": 42,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 6,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 6
+            }
+          }
+        },
+        {
+          "id": "tina",
+          "actor_id": "002",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(11, 7)",
+          "hp": 36,
+          "max_hp": 36,
+          "mp": 19,
+          "max_mp": 19,
+          "stamina": 0,
+          "level": 2,
+          "exp": 0.0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 82.0,
+              "name": "錫杖",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 122.0,
+              "name": "袍",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            },
+            {
+              "item_code": 201.0,
+              "name": "護身符",
+              "slot": "accessory1"
+            }
+          ],
+          "inventory": [
+            241,
+            244,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 16.0,
+            "dex": 11.0,
+            "mind": 15.0,
+            "con": 15.0
+          },
+          "script_creation": {
+            "action_index": 0,
+            "firing_index": 0,
+            "kind": "registered_player",
+            "player_growth": {
+              "actor_id": "002",
+              "attributes": {
+                "con": 15,
+                "dex": 11,
+                "mind": 15,
+                "str": 16
+              },
+              "before": 1,
+              "level": 2,
+              "unit_id": "tina"
+            },
+            "policy": "source_script_actor_v1",
+            "rng_after": 179288973,
+            "rng_before": 179288973,
+            "symbol": "obj_Story_Player2"
+          }
+        },
+        {
+          "id": "Enemy023_script_0_3",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(6, 8)",
+          "hp": 0,
+          "max_hp": 41,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 19,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "script_creation": {
+            "action_index": 3,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1819769362,
+            "rng_before": 179288973,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 179288973,
+            "rng_after": 1819769362,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 19
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 120,
+              "kill_exp": 23,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 6,
+                "magic_attack_power": 0,
+                "magic_point": 5,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 4
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_5",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(7, 8)",
+          "hp": 0,
+          "max_hp": 46,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 4,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 21,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "script_creation": {
+            "action_index": 5,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1199340009,
+            "rng_before": 1819769362,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 1819769362,
+            "rng_after": 1199340009,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 21
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 130,
+              "kill_exp": 25,
+              "level": 4,
+              "raised": true,
+              "sampled_level": 4,
+              "source_gains": {
+                "attack_power": 2,
+                "hit_point": 8,
+                "magic_attack_power": 0,
+                "magic_point": 4,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 10
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_7",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(0, 19)",
+          "hp": 29,
+          "max_hp": 29,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 15,
+            "dex": 14,
+            "mind": 9,
+            "con": 14
+          },
+          "script_creation": {
+            "action_index": 7,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 689434900,
+            "rng_before": 1199340009,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 1199340009,
+            "rng_after": 689434900,
+            "result": {
+              "attributes": {
+                "con": 14,
+                "dex": 14,
+                "mind": 9,
+                "str": 15
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 100,
+              "kill_exp": 20,
+              "level": 1,
+              "raised": false,
+              "sampled_level": 1,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 0,
+                "magic_attack_power": 0,
+                "magic_point": 0,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_9",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(5, 8)",
+          "hp": 0,
+          "max_hp": 40,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 19,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "script_creation": {
+            "action_index": 9,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1436325396,
+            "rng_before": 689434900,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 689434900,
+            "rng_after": 1436325396,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 19
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 120,
+              "kill_exp": 23,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 5,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        }
+      ],
+      "outcome": "victory_optional_clear",
+      "turn": 10,
+      "saves": 3,
+      "restarted": false,
+      "fired": [
+        {
+          "context": "attack",
+          "key": "event_0",
+          "turn": 6
+        },
+        {
+          "context": "terminal",
+          "key": "win_0",
+          "turn": 10
+        }
+      ],
+      "resolved": {
+        "code": 0,
+        "key": "win_0",
+        "kind": "win",
+        "outcome": "victory_optional_clear"
+      },
+      "sounds": [
+        "res://content/generated/hsl/remake_music/gol_mountain_road.ogg",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/battle002/actor_audio/attack09.wav",
+        "res://content/imported/hsl/shared/interface_audio/hit_bow.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/miss0001.wav",
+        "res://content/imported/hsl/shared/interface_audio/hit_axe.wav",
+        "res://content/imported/hsl/shared/interface_audio/level_up.wav",
+        "res://content/imported/hsl/shared/interface_audio/use_item.wav",
+        "res://content/imported/hsl/shared/poison_arrow/shoot.wav",
+        "res://content/imported/hsl/shared/poison_arrow/hit.wav"
+      ],
+      "learning_texts": [],
+      "installations": [
+        {
+          "install": {
+            "actor_id": "002",
+            "created": true,
+            "position": "(0, 672)",
+            "symbol": "obj_Story_Player2",
+            "unit_id": "tina"
+          },
+          "source_event_id": "winfail002_event_0_01_story_object_insert",
+          "time_ms": 131336
+        },
+        {
+          "install": {
+            "actor_id": "023",
+            "created": true,
+            "position": "(0, 672)",
+            "symbol": "obj_Story_Level2_Enemy23",
+            "unit_id": "Enemy023_script_0_3"
+          },
+          "source_event_id": "winfail002_event_0_04_object_insert",
+          "time_ms": 134011
+        },
+        {
+          "install": {
+            "actor_id": "023",
+            "created": true,
+            "position": "(0, 672)",
+            "symbol": "obj_Story_Level2_Enemy23",
+            "unit_id": "Enemy023_script_0_5"
+          },
+          "source_event_id": "winfail002_event_0_06_object_insert",
+          "time_ms": 134095
+        },
+        {
+          "install": {
+            "actor_id": "023",
+            "created": true,
+            "position": "(0, 704)",
+            "symbol": "obj_Story_Level2_Enemy23",
+            "unit_id": "Enemy023_script_0_7"
+          },
+          "source_event_id": "winfail002_event_0_08_object_insert",
+          "time_ms": 134177
+        },
+        {
+          "install": {
+            "actor_id": "023",
+            "created": true,
+            "position": "(0, 672)",
+            "symbol": "obj_Story_Level2_Enemy23",
+            "unit_id": "Enemy023_script_0_9"
+          },
+          "source_event_id": "winfail002_event_0_10_object_insert",
+          "time_ms": 134261
+        }
+      ],
+      "decisions": [
+        {
+          "actor": "hu",
+          "coord": "(22, 16)",
+          "hp": 40,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 0,
+          "to": "(21, 12)",
+          "turn": 1
+        },
+        {
+          "actor": "hu",
+          "coord": "(21, 12)",
+          "hp": 40,
+          "kind": "wait",
+          "mp": 0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "actor": "leonard",
+          "coord": "(20, 17)",
+          "hp": 30,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 0,
+          "to": "(20, 12)",
+          "turn": 1
+        },
+        {
+          "actor": "leonard",
+          "coord": "(20, 12)",
+          "hp": 30,
+          "kind": "wait",
+          "mp": 0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "actor": "hu",
+          "coord": "(21, 12)",
+          "hp": 40,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 0,
+          "to": "(17, 11)",
+          "turn": 2
+        },
+        {
+          "actor": "hu",
+          "coord": "(17, 11)",
+          "hp": 40,
+          "kind": "wait",
+          "mp": 0,
+          "stamina": 0,
+          "turn": 2
+        },
+        {
+          "actor": "leonard",
+          "coord": "(20, 12)",
+          "hp": 30,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 0,
+          "to": "(16, 11)",
+          "turn": 2
+        },
+        {
+          "actor": "leonard",
+          "coord": "(16, 11)",
+          "hp": 30,
+          "kind": "wait",
+          "mp": 0,
+          "stamina": 0,
+          "turn": 2
+        },
+        {
+          "actor": "hu",
+          "coord": "(17, 11)",
+          "hp": 40,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 0,
+          "to": "(15, 12)",
+          "turn": 3
+        },
+        {
+          "actor": "hu",
+          "coord": "(15, 12)",
+          "hp": 40,
+          "kind": "ordinary",
+          "mp": 0,
+          "stamina": 0,
+          "target": "actor028_5",
+          "turn": 3
+        },
+        {
+          "actor": "leonard",
+          "coord": "(16, 11)",
+          "hp": 30,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 0,
+          "to": "(14, 11)",
+          "turn": 3
+        },
+        {
+          "actor": "leonard",
+          "coord": "(14, 11)",
+          "hp": 30,
+          "kind": "ordinary",
+          "mp": 0,
+          "stamina": 0,
+          "target": "actor028_3",
+          "turn": 3
+        },
+        {
+          "actor": "hu",
+          "coord": "(15, 12)",
+          "hp": 40,
+          "kind": "ordinary",
+          "mp": 0,
+          "stamina": 4,
+          "target": "actor028_5",
+          "turn": 4
+        },
+        {
+          "actor": "leonard",
+          "coord": "(14, 11)",
+          "hp": 22,
+          "kind": "ordinary",
+          "mp": 0,
+          "stamina": 11,
+          "target": "actor028_4",
+          "turn": 4
+        },
+        {
+          "actor": "hu",
+          "coord": "(15, 12)",
+          "hp": 40,
+          "kind": "ordinary",
+          "mp": 0,
+          "stamina": 9,
+          "target": "actor028_2",
+          "turn": 5
+        },
+        {
+          "actor": "leonard",
+          "coord": "(14, 11)",
+          "hp": 15,
+          "kind": "heal_item",
+          "mp": 0,
+          "stamina": 22,
+          "turn": 5
+        },
+        {
+          "actor": "hu",
+          "coord": "(15, 12)",
+          "hp": 23,
+          "kind": "heal_item",
+          "mp": 0,
+          "stamina": 19,
+          "turn": 6
+        },
+        {
+          "actor": "leonard",
+          "coord": "(14, 11)",
+          "hp": 24,
+          "kind": "ordinary",
+          "mp": 0,
+          "stamina": 28,
+          "target": "actor028_2",
+          "turn": 6
+        },
+        {
+          "actor": "hu",
+          "coord": "(15, 12)",
+          "hp": 26,
+          "kind": "heal_item",
+          "mp": 0,
+          "stamina": 25,
+          "turn": 7
+        },
+        {
+          "actor": "leonard",
+          "coord": "(14, 11)",
+          "hp": 24,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 33,
+          "to": "(10, 12)",
+          "turn": 7
+        },
+        {
+          "actor": "leonard",
+          "coord": "(10, 12)",
+          "hp": 24,
+          "kind": "wait",
+          "mp": 0,
+          "stamina": 33,
+          "turn": 7
+        },
+        {
+          "actor": "tina",
+          "coord": "(14, 10)",
+          "hp": 36,
+          "kind": "retreat_healer",
+          "mp": 19,
+          "stamina": 0,
+          "to": "(13, 12)",
+          "turn": 7
+        },
+        {
+          "actor": "tina",
+          "coord": "(13, 12)",
+          "hp": 36,
+          "kind": "wait",
+          "mp": 19,
+          "stamina": 0,
+          "turn": 7
+        },
+        {
+          "actor": "hu",
+          "coord": "(15, 12)",
+          "hp": 40,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 25,
+          "to": "(13, 13)",
+          "turn": 8
+        },
+        {
+          "actor": "hu",
+          "coord": "(13, 13)",
+          "hp": 40,
+          "kind": "wait",
+          "mp": 0,
+          "stamina": 25,
+          "turn": 8
+        },
+        {
+          "actor": "leonard",
+          "coord": "(10, 12)",
+          "hp": 24,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 33,
+          "to": "(8, 9)",
+          "turn": 8
+        },
+        {
+          "actor": "leonard",
+          "coord": "(8, 9)",
+          "hp": 24,
+          "kind": "wait",
+          "mp": 0,
+          "stamina": 33,
+          "turn": 8
+        },
+        {
+          "actor": "tina",
+          "coord": "(13, 12)",
+          "hp": 36,
+          "kind": "retreat_healer",
+          "mp": 19,
+          "stamina": 0,
+          "to": "(11, 9)",
+          "turn": 8
+        },
+        {
+          "actor": "tina",
+          "coord": "(11, 9)",
+          "hp": 36,
+          "kind": "wait",
+          "mp": 19,
+          "stamina": 0,
+          "turn": 8
+        },
+        {
+          "actor": "hu",
+          "coord": "(13, 13)",
+          "hp": 40,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 25,
+          "to": "(11, 10)",
+          "turn": 9
+        },
+        {
+          "actor": "hu",
+          "coord": "(11, 10)",
+          "hp": 40,
+          "kind": "wait",
+          "mp": 0,
+          "stamina": 25,
+          "turn": 9
+        },
+        {
+          "actor": "leonard",
+          "coord": "(8, 9)",
+          "hp": 24,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 33,
+          "to": "(8, 8)",
+          "turn": 9
+        },
+        {
+          "actor": "leonard",
+          "coord": "(8, 8)",
+          "hp": 24,
+          "kind": "ordinary",
+          "mp": 0,
+          "stamina": 33,
+          "target": "Enemy023_script_0_5",
+          "turn": 9
+        },
+        {
+          "actor": "tina",
+          "coord": "(11, 9)",
+          "hp": 36,
+          "kind": "retreat_healer",
+          "mp": 19,
+          "stamina": 0,
+          "to": "(11, 7)",
+          "turn": 9
+        },
+        {
+          "actor": "tina",
+          "coord": "(11, 7)",
+          "hp": 36,
+          "kind": "wait",
+          "mp": 19,
+          "stamina": 0,
+          "turn": 9
+        },
+        {
+          "actor": "hu",
+          "coord": "(11, 10)",
+          "hp": 40,
+          "kind": "move",
+          "mp": 0,
+          "stamina": 25,
+          "to": "(9, 8)",
+          "turn": 10
+        },
+        {
+          "actor": "hu",
+          "center": "(6, 8)",
+          "coord": "(9, 8)",
+          "hp": 40,
+          "kind": "poison_arrow",
+          "mp": 0,
+          "stamina": 25,
+          "turn": 10
+        }
+      ],
+      "script_transactions": [
+        {
+          "policy": "source_script_actor_v1",
+          "firing_index": 0,
+          "key": "event_0",
+          "rng_before": 179288973,
+          "rng_after": 1436325396,
+          "created_ids": [
+            "tina",
+            "Enemy023_script_0_3",
+            "Enemy023_script_0_5",
+            "Enemy023_script_0_7",
+            "Enemy023_script_0_9"
+          ],
+          "placements": [
+            {
+              "adjusted": false,
+              "coord": "(14, 10)",
+              "requested": "(14, 10)",
+              "unit_id": "tina"
+            },
+            {
+              "adjusted": false,
+              "coord": "(0, 16)",
+              "requested": "(0, 16)",
+              "unit_id": "Enemy023_script_0_3"
+            },
+            {
+              "adjusted": false,
+              "coord": "(4, 16)",
+              "requested": "(4, 16)",
+              "unit_id": "Enemy023_script_0_5"
+            },
+            {
+              "adjusted": false,
+              "coord": "(4, 17)",
+              "requested": "(4, 17)",
+              "unit_id": "Enemy023_script_0_7"
+            },
+            {
+              "adjusted": false,
+              "coord": "(2, 18)",
+              "requested": "(2, 18)",
+              "unit_id": "Enemy023_script_0_9"
+            }
+          ]
+        },
+        {
+          "policy": "source_script_actor_v1",
+          "firing_index": 1,
+          "key": "win_0",
+          "rng_before": 1436325396,
+          "rng_after": 1436325396,
+          "created_ids": [],
+          "placements": [
+            {
+              "adjusted": true,
+              "coord": "(0, 19)",
+              "requested": "(0, 21)",
+              "unit_id": "Enemy023_script_0_7"
+            },
+            {
+              "adjusted": false,
+              "coord": "(12, 7)",
+              "requested": "(12, 7)",
+              "unit_id": "leonard"
+            }
+          ]
+        }
+      ],
+      "combat": [
+        {
+          "sequence": 1,
+          "attacker_id": "hu",
+          "defender_id": "actor028_5",
+          "hit": true,
+          "actual_damage": 28
+        },
+        {
+          "sequence": 2,
+          "attacker_id": "leonard",
+          "defender_id": "actor028_3",
+          "hit": true,
+          "actual_damage": 26
+        },
+        {
+          "sequence": 3,
+          "attacker_id": "actor028_2",
+          "defender_id": "leonard",
+          "hit": false,
+          "actual_damage": 0
+        },
+        {
+          "sequence": 4,
+          "attacker_id": "actor028_5",
+          "defender_id": "leonard",
+          "hit": true,
+          "actual_damage": 8
+        },
+        {
+          "sequence": 5,
+          "attacker_id": "hu",
+          "defender_id": "actor028_5",
+          "hit": true,
+          "actual_damage": 8
+        },
+        {
+          "sequence": 6,
+          "attacker_id": "leonard",
+          "defender_id": "actor028_4",
+          "hit": true,
+          "actual_damage": 31
+        },
+        {
+          "sequence": 7,
+          "attacker_id": "actor028_2",
+          "defender_id": "leonard",
+          "hit": true,
+          "actual_damage": 7
+        },
+        {
+          "sequence": 8,
+          "attacker_id": "hu",
+          "defender_id": "actor028_2",
+          "hit": true,
+          "actual_damage": 26
+        },
+        {
+          "sequence": 9,
+          "attacker_id": "actor028_1",
+          "defender_id": "hu",
+          "hit": true,
+          "actual_damage": 17
+        },
+        {
+          "sequence": 10,
+          "attacker_id": "actor028_2",
+          "defender_id": "leonard",
+          "hit": true,
+          "actual_damage": 9
+        },
+        {
+          "sequence": 11,
+          "attacker_id": "actor028_1",
+          "defender_id": "hu",
+          "hit": true,
+          "actual_damage": 14
+        },
+        {
+          "sequence": 12,
+          "attacker_id": "leonard",
+          "defender_id": "actor028_2",
+          "hit": true,
+          "actual_damage": 9
+        },
+        {
+          "sequence": 13,
+          "attacker_id": "leonard",
+          "defender_id": "Enemy023_script_0_5",
+          "hit": true,
+          "actual_damage": 12
+        },
+        {
+          "sequence": 14,
+          "attacker_id": "hu",
+          "defender_id": "Enemy023_script_0_3",
+          "hit": true,
+          "actual_damage": 41,
+          "skill_id": "special:magicMIND:magicCode03",
+          "resource_payment": {
+            "after": 5,
+            "amount": 20,
+            "before": 25,
+            "native_affordable": true,
+            "native_required": 20,
+            "ok": true,
+            "resource": "stamina"
+          }
+        }
+      ],
+      "ai_actions": [
+        {
+          "actor_id": "actor028_2",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_5",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_1",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_4",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_3",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_2",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_5",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_1",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_4",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_3",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_2",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_5",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_1",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_4",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_3",
+          "kind": "move"
+        },
+        {
+          "sequence": 3,
+          "actor_id": "actor028_2",
+          "kind": "move_then_attack",
+          "target_id": "leonard"
+        },
+        {
+          "sequence": 4,
+          "actor_id": "actor028_5",
+          "kind": "move_then_attack",
+          "target_id": "leonard"
+        },
+        {
+          "actor_id": "actor028_1",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_4",
+          "kind": "move"
+        },
+        {
+          "sequence": 7,
+          "actor_id": "actor028_2",
+          "kind": "attack",
+          "target_id": "leonard"
+        },
+        {
+          "sequence": 9,
+          "actor_id": "actor028_1",
+          "kind": "move_then_attack",
+          "target_id": "hu"
+        },
+        {
+          "sequence": 10,
+          "actor_id": "actor028_2",
+          "kind": "attack",
+          "target_id": "leonard"
+        },
+        {
+          "sequence": 11,
+          "actor_id": "actor028_1",
+          "kind": "attack",
+          "target_id": "hu"
+        },
+        {
+          "actor_id": "Enemy023_script_0_5",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_3",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_9",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_7",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_5",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_3",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_9",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_7",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_5",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_3",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_9",
+          "kind": "move"
+        },
+        {
+          "actor_id": "Enemy023_script_0_7",
+          "kind": "move"
+        }
+      ]
+    },
+    {
+      "mode": "arrival",
+      "process": "render-extended-final",
+      "initialization_rng_before": 179288973,
+      "initialization_rng_after": 1436325396,
+      "initial_actor_ids": [
+        "hu",
+        "leonard",
+        "actor028_1",
+        "actor028_2",
+        "actor028_3",
+        "actor028_4",
+        "actor028_5"
+      ],
+      "final_actors": [
+        {
+          "id": "hu",
+          "actor_id": "003",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(22, 16)",
+          "hp": 40,
+          "max_hp": 40,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 5,
+          "level": 4,
+          "exp": 46,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 61.0,
+              "name": "長弓",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 123.0,
+              "name": "皮鎧",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            },
+            {
+              "item_code": 227,
+              "slot": "accessory2"
+            }
+          ],
+          "inventory": [
+            241,
+            241,
+            246,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 24.0,
+            "dex": 16.0,
+            "mind": 7.0,
+            "con": 20.0
+          }
+        },
+        {
+          "id": "leonard",
+          "actor_id": "001",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(20, 17)",
+          "hp": 29,
+          "max_hp": 30,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0.0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 2.0,
+              "name": "闊刃劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 125.0,
+              "name": "騎士鎧甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            241,
+            241,
+            241,
+            246,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 16.0,
+            "dex": 16.0,
+            "mind": 8.0,
+            "con": 12.0
+          }
+        },
+        {
+          "id": "actor028_1",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(4, 2)",
+          "hp": 30,
+          "max_hp": 30,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 2,
+          "level": 2,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            246,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "departed": true,
+          "defeated": false,
+          "attributes": {
+            "str": 14,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1592594996,
+            "rng_after": 1651881453,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 14
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 220,
+              "kill_exp": 40,
+              "level": 2,
+              "raised": true,
+              "sampled_level": 2,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 2,
+                "magic_attack_power": 0,
+                "magic_point": 2,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 2
+            }
+          }
+        },
+        {
+          "id": "actor028_2",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(22, 13)",
+          "hp": 0,
+          "max_hp": 35,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1651881453,
+            "rng_after": 1623008527,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 16
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 230,
+              "kill_exp": 40,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 5,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 8
+            }
+          }
+        },
+        {
+          "id": "actor028_3",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(7, 2)",
+          "hp": 0,
+          "max_hp": 26,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 12,
+            "dex": 15,
+            "mind": 10,
+            "con": 15
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1623008527,
+            "rng_after": 67807108,
+            "result": {
+              "attributes": {
+                "con": 15,
+                "dex": 15,
+                "mind": 10,
+                "str": 12
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 200,
+              "kill_exp": 35,
+              "level": 1,
+              "raised": false,
+              "sampled_level": 1,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 0,
+                "magic_attack_power": 0,
+                "magic_point": 0,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        },
+        {
+          "id": "actor028_4",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(3, 4)",
+          "hp": 0,
+          "max_hp": 31,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 2,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            241,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 14,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 67807108,
+            "rng_after": 215157185,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 14
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 220,
+              "kill_exp": 40,
+              "level": 2,
+              "raised": true,
+              "sampled_level": 2,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 3,
+                "magic_attack_power": 0,
+                "magic_point": 2,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 1
+            }
+          }
+        },
+        {
+          "id": "actor028_5",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(6, 4)",
+          "hp": 0,
+          "max_hp": 36,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 215157185,
+            "rng_after": 179288973,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 16
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 240,
+              "kill_exp": 42,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 6,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 6
+            }
+          }
+        },
+        {
+          "id": "tina",
+          "actor_id": "002",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(20, 16)",
+          "hp": 36,
+          "max_hp": 36,
+          "mp": 13,
+          "max_mp": 19,
+          "stamina": 0,
+          "level": 2,
+          "exp": 6,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 82.0,
+              "name": "錫杖",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 122.0,
+              "name": "袍",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            },
+            {
+              "item_code": 201.0,
+              "name": "護身符",
+              "slot": "accessory1"
+            }
+          ],
+          "inventory": [
+            241,
+            244,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 16.0,
+            "dex": 11.0,
+            "mind": 15.0,
+            "con": 15.0
+          },
+          "script_creation": {
+            "action_index": 0,
+            "firing_index": 0,
+            "kind": "registered_player",
+            "player_growth": {
+              "actor_id": "002",
+              "attributes": {
+                "con": 15,
+                "dex": 11,
+                "mind": 15,
+                "str": 16
+              },
+              "before": 1,
+              "level": 2,
+              "unit_id": "tina"
+            },
+            "policy": "source_script_actor_v1",
+            "rng_after": 179288973,
+            "rng_before": 179288973,
+            "symbol": "obj_Story_Player2"
+          }
+        },
+        {
+          "id": "Enemy023_script_0_3",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(0, 16)",
+          "hp": 41,
+          "max_hp": 41,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 4,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 19,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "script_creation": {
+            "action_index": 3,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1819769362,
+            "rng_before": 179288973,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 179288973,
+            "rng_after": 1819769362,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 19
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 120,
+              "kill_exp": 23,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 6,
+                "magic_attack_power": 0,
+                "magic_point": 5,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 4
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_5",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(4, 16)",
+          "hp": 46,
+          "max_hp": 46,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 10,
+          "level": 4,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            246,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 21,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "script_creation": {
+            "action_index": 5,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1199340009,
+            "rng_before": 1819769362,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 1819769362,
+            "rng_after": 1199340009,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 21
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 130,
+              "kill_exp": 25,
+              "level": 4,
+              "raised": true,
+              "sampled_level": 4,
+              "source_gains": {
+                "attack_power": 2,
+                "hit_point": 8,
+                "magic_attack_power": 0,
+                "magic_point": 4,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 10
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_7",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(4, 17)",
+          "hp": 29,
+          "max_hp": 29,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            248,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 15,
+            "dex": 14,
+            "mind": 9,
+            "con": 14
+          },
+          "script_creation": {
+            "action_index": 7,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 689434900,
+            "rng_before": 1199340009,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 1199340009,
+            "rng_after": 689434900,
+            "result": {
+              "attributes": {
+                "con": 14,
+                "dex": 14,
+                "mind": 9,
+                "str": 15
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 100,
+              "kill_exp": 20,
+              "level": 1,
+              "raised": false,
+              "sampled_level": 1,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 0,
+                "magic_attack_power": 0,
+                "magic_point": 0,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_9",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(2, 18)",
+          "hp": 40,
+          "max_hp": 40,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            248,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 19,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "script_creation": {
+            "action_index": 9,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1436325396,
+            "rng_before": 689434900,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 689434900,
+            "rng_after": 1436325396,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 19
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 120,
+              "kill_exp": 23,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 5,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        }
+      ],
+      "outcome": "",
+      "turn": 3,
+      "saves": 3,
+      "restarted": false,
+      "fired": [
+        {
+          "context": "attack",
+          "key": "event_0",
+          "turn": 1
+        }
+      ],
+      "resolved": {},
+      "sounds": [
+        "res://content/generated/hsl/remake_music/gol_mountain_road.ogg",
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/battle002/actor_audio/attack09.wav",
+        "res://content/imported/hsl/shared/interface_audio/hit_bow.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/chapter01/support_magic/mheal006.wav"
+      ],
+      "learning_texts": [],
+      "installations": [
+        {
+          "install": {
+            "actor_id": "002",
+            "created": true,
+            "position": "(0, 672)",
+            "symbol": "obj_Story_Player2",
+            "unit_id": "tina"
+          },
+          "source_event_id": "winfail002_event_0_01_story_object_insert",
+          "time_ms": 13106
+        },
+        {
+          "install": {
+            "actor_id": "023",
+            "created": true,
+            "position": "(0, 672)",
+            "symbol": "obj_Story_Level2_Enemy23",
+            "unit_id": "Enemy023_script_0_3"
+          },
+          "source_event_id": "winfail002_event_0_04_object_insert",
+          "time_ms": 15883
+        },
+        {
+          "install": {
+            "actor_id": "023",
+            "created": true,
+            "position": "(0, 672)",
+            "symbol": "obj_Story_Level2_Enemy23",
+            "unit_id": "Enemy023_script_0_5"
+          },
+          "source_event_id": "winfail002_event_0_06_object_insert",
+          "time_ms": 16052
+        },
+        {
+          "install": {
+            "actor_id": "023",
+            "created": true,
+            "position": "(0, 704)",
+            "symbol": "obj_Story_Level2_Enemy23",
+            "unit_id": "Enemy023_script_0_7"
+          },
+          "source_event_id": "winfail002_event_0_08_object_insert",
+          "time_ms": 16241
+        },
+        {
+          "install": {
+            "actor_id": "023",
+            "created": true,
+            "position": "(0, 672)",
+            "symbol": "obj_Story_Level2_Enemy23",
+            "unit_id": "Enemy023_script_0_9"
+          },
+          "source_event_id": "winfail002_event_0_10_object_insert",
+          "time_ms": 16407
+        }
+      ],
+      "decisions": [],
+      "script_transactions": [
+        {
+          "policy": "source_script_actor_v1",
+          "firing_index": 0,
+          "key": "event_0",
+          "rng_before": 179288973,
+          "rng_after": 1436325396,
+          "created_ids": [
+            "tina",
+            "Enemy023_script_0_3",
+            "Enemy023_script_0_5",
+            "Enemy023_script_0_7",
+            "Enemy023_script_0_9"
+          ],
+          "placements": [
+            {
+              "adjusted": false,
+              "coord": "(20, 16)",
+              "requested": "(20, 16)",
+              "unit_id": "tina"
+            },
+            {
+              "adjusted": false,
+              "coord": "(0, 16)",
+              "requested": "(0, 16)",
+              "unit_id": "Enemy023_script_0_3"
+            },
+            {
+              "adjusted": false,
+              "coord": "(4, 16)",
+              "requested": "(4, 16)",
+              "unit_id": "Enemy023_script_0_5"
+            },
+            {
+              "adjusted": false,
+              "coord": "(4, 17)",
+              "requested": "(4, 17)",
+              "unit_id": "Enemy023_script_0_7"
+            },
+            {
+              "adjusted": false,
+              "coord": "(2, 18)",
+              "requested": "(2, 18)",
+              "unit_id": "Enemy023_script_0_9"
+            }
+          ]
+        }
+      ],
+      "combat": [
+        {
+          "sequence": 1,
+          "attacker_id": "hu",
+          "defender_id": "actor028_2",
+          "hit": true,
+          "actual_damage": 1
+        },
+        {
+          "sequence": 2,
+          "attacker_id": "tina",
+          "defender_id": "leonard",
+          "hit": true,
+          "actual_damage": 0,
+          "skill_id": "magic:magicWATER:magicCode06",
+          "magic_key": "heal",
+          "resource_payment": {
+            "after": 13,
+            "amount": 6,
+            "before": 19,
+            "native_affordable": true,
+            "native_required": 6,
+            "ok": true,
+            "resource": "mp"
+          },
+          "healing": 19
+        }
+      ],
+      "ai_actions": [
+        {
+          "actor_id": "Enemy023_script_0_5",
+          "kind": "wait"
+        },
+        {
+          "actor_id": "Enemy023_script_0_3",
+          "kind": "wait"
+        },
+        {
+          "actor_id": "Enemy023_script_0_9",
+          "kind": "wait"
+        },
+        {
+          "actor_id": "Enemy023_script_0_7",
+          "kind": "wait"
+        }
+      ]
+    },
+    {
+      "mode": "defeat_tina",
+      "process": "render-extended-final",
+      "initialization_rng_before": 1436325396,
+      "initialization_rng_after": 1436325396,
+      "initial_actor_ids": [
+        "hu",
+        "leonard",
+        "actor028_1",
+        "actor028_2",
+        "actor028_3",
+        "actor028_4",
+        "actor028_5",
+        "tina",
+        "Enemy023_script_0_3",
+        "Enemy023_script_0_5",
+        "Enemy023_script_0_7",
+        "Enemy023_script_0_9"
+      ],
+      "final_actors": [
+        {
+          "id": "hu",
+          "actor_id": "003",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(22, 16)",
+          "hp": 40,
+          "max_hp": 40,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 4,
+          "exp": 0.0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 61.0,
+              "name": "長弓",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 123.0,
+              "name": "皮鎧",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            241,
+            241,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 24.0,
+            "dex": 16.0,
+            "mind": 7.0,
+            "con": 20.0
+          }
+        },
+        {
+          "id": "leonard",
+          "actor_id": "001",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(20, 17)",
+          "hp": 30,
+          "max_hp": 30,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0.0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 2.0,
+              "name": "闊刃劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 125.0,
+              "name": "騎士鎧甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            241,
+            241,
+            241,
+            246,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 16.0,
+            "dex": 16.0,
+            "mind": 8.0,
+            "con": 12.0
+          }
+        },
+        {
+          "id": "actor028_1",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(4, 2)",
+          "hp": 30,
+          "max_hp": 30,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 2,
+          "level": 2,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            246,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "departed": true,
+          "defeated": false,
+          "attributes": {
+            "str": 14,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1592594996,
+            "rng_after": 1651881453,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 14
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 220,
+              "kill_exp": 40,
+              "level": 2,
+              "raised": true,
+              "sampled_level": 2,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 2,
+                "magic_attack_power": 0,
+                "magic_point": 2,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 2
+            }
+          }
+        },
+        {
+          "id": "actor028_2",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(5, 1)",
+          "hp": 0,
+          "max_hp": 35,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            246,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1651881453,
+            "rng_after": 1623008527,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 16
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 230,
+              "kill_exp": 40,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 5,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 8
+            }
+          }
+        },
+        {
+          "id": "actor028_3",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(7, 2)",
+          "hp": 0,
+          "max_hp": 26,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 12,
+            "dex": 15,
+            "mind": 10,
+            "con": 15
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1623008527,
+            "rng_after": 67807108,
+            "result": {
+              "attributes": {
+                "con": 15,
+                "dex": 15,
+                "mind": 10,
+                "str": 12
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 200,
+              "kill_exp": 35,
+              "level": 1,
+              "raised": false,
+              "sampled_level": 1,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 0,
+                "magic_attack_power": 0,
+                "magic_point": 0,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        },
+        {
+          "id": "actor028_4",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(3, 4)",
+          "hp": 0,
+          "max_hp": 31,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 2,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            241,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 14,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 67807108,
+            "rng_after": 215157185,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 14
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 220,
+              "kill_exp": 40,
+              "level": 2,
+              "raised": true,
+              "sampled_level": 2,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 3,
+                "magic_attack_power": 0,
+                "magic_point": 2,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 1
+            }
+          }
+        },
+        {
+          "id": "actor028_5",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(6, 4)",
+          "hp": 0,
+          "max_hp": 36,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 215157185,
+            "rng_after": 179288973,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 16
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 240,
+              "kill_exp": 42,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 6,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 6
+            }
+          }
+        },
+        {
+          "id": "tina",
+          "actor_id": "002",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(20, 16)",
+          "hp": 0,
+          "max_hp": 36,
+          "mp": 19,
+          "max_mp": 19,
+          "stamina": 0,
+          "level": 2,
+          "exp": 0.0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 82.0,
+              "name": "錫杖",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 122.0,
+              "name": "袍",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            },
+            {
+              "item_code": 201.0,
+              "name": "護身符",
+              "slot": "accessory1"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16.0,
+            "dex": 11.0,
+            "mind": 15.0,
+            "con": 15.0
+          },
+          "script_creation": {
+            "action_index": 0,
+            "firing_index": 0,
+            "kind": "registered_player",
+            "player_growth": {
+              "actor_id": "002",
+              "attributes": {
+                "con": 15,
+                "dex": 11,
+                "mind": 15,
+                "str": 16
+              },
+              "before": 1,
+              "level": 2,
+              "unit_id": "tina"
+            },
+            "policy": "source_script_actor_v1",
+            "rng_after": 179288973,
+            "rng_before": 179288973,
+            "symbol": "obj_Story_Player2"
+          }
+        },
+        {
+          "id": "Enemy023_script_0_3",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(19, 16)",
+          "hp": 41,
+          "max_hp": 41,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 9,
+          "level": 3,
+          "exp": 37,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 19,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "script_creation": {
+            "action_index": 3,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1819769362,
+            "rng_before": 179288973,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 179288973,
+            "rng_after": 1819769362,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 19
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 120,
+              "kill_exp": 23,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 6,
+                "magic_attack_power": 0,
+                "magic_point": 5,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 4
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_5",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(4, 16)",
+          "hp": 46,
+          "max_hp": 46,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 10,
+          "level": 4,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            246,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 21,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "script_creation": {
+            "action_index": 5,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1199340009,
+            "rng_before": 1819769362,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 1819769362,
+            "rng_after": 1199340009,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 21
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 130,
+              "kill_exp": 25,
+              "level": 4,
+              "raised": true,
+              "sampled_level": 4,
+              "source_gains": {
+                "attack_power": 2,
+                "hit_point": 8,
+                "magic_attack_power": 0,
+                "magic_point": 4,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 10
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_7",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(4, 17)",
+          "hp": 29,
+          "max_hp": 29,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            246,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 15,
+            "dex": 14,
+            "mind": 9,
+            "con": 14
+          },
+          "script_creation": {
+            "action_index": 7,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 689434900,
+            "rng_before": 1199340009,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 1199340009,
+            "rng_after": 689434900,
+            "result": {
+              "attributes": {
+                "con": 14,
+                "dex": 14,
+                "mind": 9,
+                "str": 15
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 100,
+              "kill_exp": 20,
+              "level": 1,
+              "raised": false,
+              "sampled_level": 1,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 0,
+                "magic_attack_power": 0,
+                "magic_point": 0,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_9",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(2, 18)",
+          "hp": 40,
+          "max_hp": 40,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            248,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 19,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "script_creation": {
+            "action_index": 9,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1436325396,
+            "rng_before": 689434900,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 689434900,
+            "rng_after": 1436325396,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 19
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 120,
+              "kill_exp": 23,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 5,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        }
+      ],
+      "outcome": "defeat_leonard",
+      "turn": 1,
+      "saves": 2,
+      "restarted": true,
+      "fired": [
+        {
+          "context": "round",
+          "key": "event_0",
+          "turn": 1
+        },
+        {
+          "context": "terminal",
+          "key": "fail_2",
+          "turn": 1
+        }
+      ],
+      "resolved": {
+        "code": 2,
+        "key": "fail_2",
+        "kind": "fail",
+        "outcome": "defeat_leonard"
+      },
+      "sounds": [
+        "res://content/generated/hsl/remake_music/gol_mountain_road.ogg",
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav"
+      ],
+      "learning_texts": [],
+      "installations": [],
+      "decisions": [],
+      "script_transactions": [
+        {
+          "policy": "source_script_actor_v1",
+          "firing_index": 0,
+          "key": "event_0",
+          "rng_before": 179288973,
+          "rng_after": 1436325396,
+          "created_ids": [
+            "tina",
+            "Enemy023_script_0_3",
+            "Enemy023_script_0_5",
+            "Enemy023_script_0_7",
+            "Enemy023_script_0_9"
+          ],
+          "placements": [
+            {
+              "adjusted": false,
+              "coord": "(20, 16)",
+              "requested": "(20, 16)",
+              "unit_id": "tina"
+            },
+            {
+              "adjusted": false,
+              "coord": "(0, 16)",
+              "requested": "(0, 16)",
+              "unit_id": "Enemy023_script_0_3"
+            },
+            {
+              "adjusted": false,
+              "coord": "(4, 16)",
+              "requested": "(4, 16)",
+              "unit_id": "Enemy023_script_0_5"
+            },
+            {
+              "adjusted": false,
+              "coord": "(4, 17)",
+              "requested": "(4, 17)",
+              "unit_id": "Enemy023_script_0_7"
+            },
+            {
+              "adjusted": false,
+              "coord": "(2, 18)",
+              "requested": "(2, 18)",
+              "unit_id": "Enemy023_script_0_9"
+            }
+          ]
+        },
+        {
+          "policy": "source_script_actor_v1",
+          "firing_index": 1,
+          "key": "fail_2",
+          "rng_before": 1436325396,
+          "rng_after": 1436325396,
+          "created_ids": [],
+          "placements": []
+        }
+      ],
+      "combat": [
+        {
+          "sequence": 1,
+          "attacker_id": "Enemy023_script_0_3",
+          "defender_id": "tina",
+          "hit": true,
+          "actual_damage": 1
+        }
+      ],
+      "ai_actions": [
+        {
+          "sequence": 1,
+          "actor_id": "Enemy023_script_0_3",
+          "kind": "attack",
+          "target_id": "tina"
+        }
+      ]
+    },
+    {
+      "mode": "campaign",
+      "process": "render-extended-final",
+      "initialization_rng_before": 179288973,
+      "initialization_rng_after": 1436325396,
+      "initial_actor_ids": [
+        "hu",
+        "leonard",
+        "actor028_1",
+        "actor028_2",
+        "actor028_3",
+        "actor028_4",
+        "actor028_5"
+      ],
+      "final_actors": [
+        {
+          "id": "hu",
+          "actor_id": "003",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(9, 8)",
+          "hp": 40,
+          "max_hp": 41,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 5,
+          "level": 5,
+          "exp": 2,
+          "pending_stat_points": 5,
+          "equipment": [
+            {
+              "item_code": 61.0,
+              "name": "長弓",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 123.0,
+              "name": "皮鎧",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 24.0,
+            "dex": 16.0,
+            "mind": 7.0,
+            "con": 20.0
+          }
+        },
+        {
+          "id": "leonard",
+          "actor_id": "001",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(12, 7)",
+          "hp": 24,
+          "max_hp": 33,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 36,
+          "level": 2,
+          "exp": 87,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 2.0,
+              "name": "闊刃劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 125.0,
+              "name": "騎士鎧甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            241,
+            241,
+            246,
+            246,
+            246,
+            241,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 18,
+            "dex": 17,
+            "mind": 9,
+            "con": 13
+          }
+        },
+        {
+          "id": "actor028_1",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(15, 11)",
+          "hp": 30,
+          "max_hp": 30,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 8,
+          "level": 2,
+          "exp": 56,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "departed": true,
+          "defeated": false,
+          "attributes": {
+            "str": 14,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1592594996,
+            "rng_after": 1651881453,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 14
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 220,
+              "kill_exp": 40,
+              "level": 2,
+              "raised": true,
+              "sampled_level": 2,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 2,
+                "magic_attack_power": 0,
+                "magic_point": 2,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 2
+            }
+          }
+        },
+        {
+          "id": "actor028_2",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(13, 11)",
+          "hp": 0,
+          "max_hp": 35,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 8,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1651881453,
+            "rng_after": 1623008527,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 16
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 230,
+              "kill_exp": 40,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 5,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 8
+            }
+          }
+        },
+        {
+          "id": "actor028_3",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(13, 11)",
+          "hp": 0,
+          "max_hp": 26,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 12,
+            "dex": 15,
+            "mind": 10,
+            "con": 15
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 1623008527,
+            "rng_after": 67807108,
+            "result": {
+              "attributes": {
+                "con": 15,
+                "dex": 15,
+                "mind": 10,
+                "str": 12
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 200,
+              "kill_exp": 35,
+              "level": 1,
+              "raised": false,
+              "sampled_level": 1,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 0,
+                "magic_attack_power": 0,
+                "magic_point": 0,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        },
+        {
+          "id": "actor028_4",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(14, 10)",
+          "hp": 0,
+          "max_hp": 31,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 2,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 14,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 67807108,
+            "rng_after": 215157185,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 14
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 220,
+              "kill_exp": 40,
+              "level": 2,
+              "raised": true,
+              "sampled_level": 2,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 3,
+                "magic_attack_power": 0,
+                "magic_point": 2,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 1
+            }
+          }
+        },
+        {
+          "id": "actor028_5",
+          "actor_id": "028",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(14, 10)",
+          "hp": 0,
+          "max_hp": 36,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 1,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 21.0,
+              "name": "鋼斧",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 151.0,
+              "name": "頭巾",
+              "slot": "head"
+            },
+            {
+              "item_code": 121.0,
+              "name": "布衣",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 16,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "entry_growth_summary": {
+            "actor_id": "028",
+            "rng_before": 215157185,
+            "rng_after": 179288973,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 16
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 240,
+              "kill_exp": 42,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 6,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 6
+            }
+          }
+        },
+        {
+          "id": "tina",
+          "actor_id": "002",
+          "battle_actor_role": "player_controlled",
+          "player_commandable": true,
+          "coord": "(11, 7)",
+          "hp": 36,
+          "max_hp": 36,
+          "mp": 19,
+          "max_mp": 19,
+          "stamina": 0,
+          "level": 2,
+          "exp": 0.0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 82.0,
+              "name": "錫杖",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 122.0,
+              "name": "袍",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            },
+            {
+              "item_code": 201.0,
+              "name": "護身符",
+              "slot": "accessory1"
+            }
+          ],
+          "inventory": [
+            241,
+            244,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 16.0,
+            "dex": 11.0,
+            "mind": 15.0,
+            "con": 15.0
+          },
+          "script_creation": {
+            "action_index": 0,
+            "firing_index": 0,
+            "kind": "registered_player",
+            "player_growth": {
+              "actor_id": "002",
+              "attributes": {
+                "con": 15,
+                "dex": 11,
+                "mind": 15,
+                "str": 16
+              },
+              "before": 1,
+              "level": 2,
+              "unit_id": "tina"
+            },
+            "policy": "source_script_actor_v1",
+            "rng_after": 179288973,
+            "rng_before": 179288973,
+            "symbol": "obj_Story_Player2"
+          }
+        },
+        {
+          "id": "Enemy023_script_0_3",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(6, 8)",
+          "hp": 0,
+          "max_hp": 41,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 19,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "script_creation": {
+            "action_index": 3,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1819769362,
+            "rng_before": 179288973,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 179288973,
+            "rng_after": 1819769362,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 19
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 120,
+              "kill_exp": 23,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 6,
+                "magic_attack_power": 0,
+                "magic_point": 5,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 4
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_5",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(7, 8)",
+          "hp": 0,
+          "max_hp": 46,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 4,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 21,
+            "dex": 17,
+            "mind": 12,
+            "con": 17
+          },
+          "script_creation": {
+            "action_index": 5,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1199340009,
+            "rng_before": 1819769362,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 1819769362,
+            "rng_after": 1199340009,
+            "result": {
+              "attributes": {
+                "con": 17,
+                "dex": 17,
+                "mind": 12,
+                "str": 21
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 130,
+              "kill_exp": 25,
+              "level": 4,
+              "raised": true,
+              "sampled_level": 4,
+              "source_gains": {
+                "attack_power": 2,
+                "hit_point": 8,
+                "magic_attack_power": 0,
+                "magic_point": 4,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 10
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_7",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(0, 19)",
+          "hp": 29,
+          "max_hp": 29,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 1,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": false,
+          "attributes": {
+            "str": 15,
+            "dex": 14,
+            "mind": 9,
+            "con": 14
+          },
+          "script_creation": {
+            "action_index": 7,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 689434900,
+            "rng_before": 1199340009,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 1199340009,
+            "rng_after": 689434900,
+            "result": {
+              "attributes": {
+                "con": 14,
+                "dex": 14,
+                "mind": 9,
+                "str": 15
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 100,
+              "kill_exp": 20,
+              "level": 1,
+              "raised": false,
+              "sampled_level": 1,
+              "source_gains": {
+                "attack_power": 0,
+                "hit_point": 0,
+                "magic_attack_power": 0,
+                "magic_point": 0,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        },
+        {
+          "id": "Enemy023_script_0_9",
+          "actor_id": "023",
+          "battle_actor_role": "enemy_ai",
+          "player_commandable": false,
+          "coord": "(5, 8)",
+          "hp": 0,
+          "max_hp": 40,
+          "mp": 0,
+          "max_mp": 0,
+          "stamina": 0,
+          "level": 3,
+          "exp": 0,
+          "pending_stat_points": 0,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "learned_skills": [],
+          "defeated": true,
+          "attributes": {
+            "str": 19,
+            "dex": 16,
+            "mind": 11,
+            "con": 16
+          },
+          "script_creation": {
+            "action_index": 9,
+            "firing_index": 0,
+            "kind": "npc",
+            "policy": "source_script_actor_v1",
+            "rng_after": 1436325396,
+            "rng_before": 689434900,
+            "symbol": "obj_Story_Level2_Enemy23"
+          },
+          "entry_growth_summary": {
+            "actor_id": "023",
+            "rng_before": 689434900,
+            "rng_after": 1436325396,
+            "result": {
+              "attributes": {
+                "con": 16,
+                "dex": 16,
+                "mind": 11,
+                "str": 19
+              },
+              "cap_fallback": false,
+              "exp": 0,
+              "gold": 120,
+              "kill_exp": 23,
+              "level": 3,
+              "raised": true,
+              "sampled_level": 3,
+              "source_gains": {
+                "attack_power": 1,
+                "hit_point": 5,
+                "magic_attack_power": 0,
+                "magic_point": 3,
+                "speed": 0
+              },
+              "source_level": 1,
+              "stamina": 0
+            }
+          }
+        }
+      ],
+      "outcome": "victory_optional_clear",
+      "turn": 10,
+      "saves": 0,
+      "restarted": false,
+      "fired": [
+        {
+          "context": "attack",
+          "key": "event_0",
+          "turn": 6
+        },
+        {
+          "context": "terminal",
+          "key": "win_0",
+          "turn": 10
+        }
+      ],
+      "resolved": {
+        "code": 0,
+        "key": "win_0",
+        "kind": "win",
+        "outcome": "victory_optional_clear"
+      },
+      "sounds": [
+        "res://content/generated/hsl/remake_music/gol_mountain_road.ogg"
+      ],
+      "learning_texts": [],
+      "installations": [],
+      "decisions": [],
+      "script_transactions": [
+        {
+          "policy": "source_script_actor_v1",
+          "firing_index": 0,
+          "key": "event_0",
+          "rng_before": 179288973,
+          "rng_after": 1436325396,
+          "created_ids": [
+            "tina",
+            "Enemy023_script_0_3",
+            "Enemy023_script_0_5",
+            "Enemy023_script_0_7",
+            "Enemy023_script_0_9"
+          ],
+          "placements": [
+            {
+              "adjusted": false,
+              "coord": "(14, 10)",
+              "requested": "(14, 10)",
+              "unit_id": "tina"
+            },
+            {
+              "adjusted": false,
+              "coord": "(0, 16)",
+              "requested": "(0, 16)",
+              "unit_id": "Enemy023_script_0_3"
+            },
+            {
+              "adjusted": false,
+              "coord": "(4, 16)",
+              "requested": "(4, 16)",
+              "unit_id": "Enemy023_script_0_5"
+            },
+            {
+              "adjusted": false,
+              "coord": "(4, 17)",
+              "requested": "(4, 17)",
+              "unit_id": "Enemy023_script_0_7"
+            },
+            {
+              "adjusted": false,
+              "coord": "(2, 18)",
+              "requested": "(2, 18)",
+              "unit_id": "Enemy023_script_0_9"
+            }
+          ]
+        },
+        {
+          "policy": "source_script_actor_v1",
+          "firing_index": 1,
+          "key": "win_0",
+          "rng_before": 1436325396,
+          "rng_after": 1436325396,
+          "created_ids": [],
+          "placements": [
+            {
+              "adjusted": true,
+              "coord": "(0, 19)",
+              "requested": "(0, 21)",
+              "unit_id": "Enemy023_script_0_7"
+            },
+            {
+              "adjusted": false,
+              "coord": "(12, 7)",
+              "requested": "(12, 7)",
+              "unit_id": "leonard"
+            }
+          ]
+        }
+      ],
+      "combat": [
+        {
+          "sequence": 14,
+          "attacker_id": "hu",
+          "defender_id": "Enemy023_script_0_3",
+          "hit": true,
+          "actual_damage": 41,
+          "skill_id": "special:magicMIND:magicCode03",
+          "resource_payment": {
+            "after": 5,
+            "amount": 20,
+            "before": 25,
+            "native_affordable": true,
+            "native_required": 20,
+            "ok": true,
+            "resource": "stamina"
+          }
+        }
+      ],
+      "ai_actions": [
+        {
+          "actor_id": "actor028_2",
+          "kind": "move"
+        },
+        {
+          "actor_id": "actor028_5",
+          "kind": "move"
+        }
+      ],
+      "campaign_stages": [
+        "res://content/battles/story_055.json",
+        "res://content/battles/story_056.json",
+        "res://content/world/world_map_scene.json"
+      ],
+      "carry": {
+        "claim_limit": "Remake campaign policy; original inter-level persistence is not proven.",
+        "evidence_tier": "provisional",
+        "from_outcome": "victory_optional_clear",
+        "from_scenario_id": "battle_005_level2",
+        "initialization_rng": 1436325396.0,
+        "loop": {
+          "gold": 1260.0
+        },
+        "restore_vitals": true,
+        "schema": "hsl_campaign_carry.v1",
+        "units": {
+          "hu": {
+            "actor_id": "003",
+            "attributes": {
+              "con": 20.0,
+              "dex": 16.0,
+              "mind": 7.0,
+              "str": 24.0
+            },
+            "equipment": [
+              {
+                "item_code": 61.0,
+                "name": "長弓",
+                "slot": "weapon"
+              },
+              {
+                "item_code": 153.0,
+                "name": "鐵護輪",
+                "slot": "head"
+              },
+              {
+                "item_code": 123.0,
+                "name": "皮鎧",
+                "slot": "armor"
+              },
+              {
+                "item_code": 181.0,
+                "name": "皮靴",
+                "slot": "foot"
+              }
+            ],
+            "exp": 2.0,
+            "inventory": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kill_count": 4.0,
+            "learned_skills": [],
+            "level": 5.0,
+            "pending_stat_points": 5.0,
+            "permanent_gains": {
+              "attack_power": 0.0,
+              "defense": 0.0,
+              "magic_attack_power": 0.0,
+              "resist_0": 0.0,
+              "resist_1": 0.0,
+              "resist_2": 0.0,
+              "resist_3": 0.0,
+              "resist_4": 0.0,
+              "speed": 0.0
+            },
+            "weapon_code": 61.0
+          },
+          "leonard": {
+            "actor_id": "001",
+            "attributes": {
+              "con": 13.0,
+              "dex": 17.0,
+              "mind": 9.0,
+              "str": 18.0
+            },
+            "equipment": [
+              {
+                "item_code": 2.0,
+                "name": "闊刃劍",
+                "slot": "weapon"
+              },
+              {
+                "item_code": 153.0,
+                "name": "鐵護輪",
+                "slot": "head"
+              },
+              {
+                "item_code": 125.0,
+                "name": "騎士鎧甲",
+                "slot": "armor"
+              },
+              {
+                "item_code": 181.0,
+                "name": "皮靴",
+                "slot": "foot"
+              }
+            ],
+            "exp": 87.0,
+            "inventory": [
+              241.0,
+              241.0,
+              246.0,
+              246.0,
+              246.0,
+              241.0,
+              0.0,
+              0.0
+            ],
+            "kill_count": 3.0,
+            "learned_skills": [],
+            "level": 2.0,
+            "pending_stat_points": 0.0,
+            "permanent_gains": {
+              "attack_power": 0.0,
+              "defense": 0.0,
+              "magic_attack_power": 0.0,
+              "resist_0": 0.0,
+              "resist_1": 0.0,
+              "resist_2": 0.0,
+              "resist_3": 0.0,
+              "resist_4": 0.0,
+              "speed": 0.0
+            },
+            "weapon_code": 2.0
+          },
+          "tina": {
+            "actor_id": "002",
+            "attributes": {
+              "con": 15.0,
+              "dex": 11.0,
+              "mind": 15.0,
+              "str": 16.0
+            },
+            "equipment": [
+              {
+                "item_code": 82.0,
+                "name": "錫杖",
+                "slot": "weapon"
+              },
+              {
+                "item_code": 152.0,
+                "name": "皮帽",
+                "slot": "head"
+              },
+              {
+                "item_code": 122.0,
+                "name": "袍",
+                "slot": "armor"
+              },
+              {
+                "item_code": 181.0,
+                "name": "皮靴",
+                "slot": "foot"
+              },
+              {
+                "item_code": 201.0,
+                "name": "護身符",
+                "slot": "accessory1"
+              }
+            ],
+            "exp": 0.0,
+            "inventory": [
+              241.0,
+              244.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "kill_count": 0.0,
+            "learned_skills": [],
+            "level": 2.0,
+            "pending_stat_points": 0.0,
+            "permanent_gains": {
+              "attack_power": 0.0,
+              "defense": 0.0,
+              "magic_attack_power": 0.0,
+              "resist_0": 0.0,
+              "resist_1": 0.0,
+              "resist_2": 0.0,
+              "resist_3": 0.0,
+              "resist_4": 0.0,
+              "speed": 0.0
+            },
+            "weapon_code": 82.0
+          }
+        }
+      },
+      "fresh_process_checkpoint": true
+    }
+  ],
+  "frames": [
+    {
+      "file": "natural-first-control.png",
+      "sha256": "88ad52d6e3a647fe1f0af80c61596370376832c1b2ce7dbb86185036ff9ecad4",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "natural-install-1.png",
+      "sha256": "ea39e1d8d730dcd899016f10284ebe3dd45394064bedee9784d6ee1ccf7f8bf4",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "natural-install-5.png",
+      "sha256": "0ecaaa719ff63f3c7b1980060f0ac61ed6dc07f2acf75f57bdda408bfd36d8f1",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "natural-arrow-impact-1.png",
+      "sha256": "032418f7446993814e2786cad816f32a05b57f6d7b2ed06b9e5c05fe5afae988",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "natural-result.png",
+      "sha256": "e1d3fc0ac3c0d06a37326fd83da03047d75577afb33523943905909a1db458e8",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "arrival-experience-2.png",
+      "sha256": "55775296ecc32490b7d1f55f4ac9c0b7a92e79609952151dff91ba60c507f4b9",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "defeat_tina-result.png",
+      "sha256": "cd513ab1ab88a372f59a88c02a30170c77a6108d576406423aaf40e6aba73040",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "defeat_tina-restarted.png",
+      "sha256": "4b0162b030a4c7b8802dac496d0ad69d181ed11f12a0cd9f4fb7a2943e769843",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "campaign-stage-story_055.png",
+      "sha256": "2dd0ce57214197f0fd78624d67b0d161c557b60987d8011eeffbf9f2e8524649",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "campaign-stage-story_056.png",
+      "sha256": "72fd0fc6a8e4eb3b1a16abf4bd526a25d7a95476493c18b93a77343e5c55c12a",
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "campaign-carried-party.png",
+      "sha256": "e55e955778b345b54644e59da1d8f5acde38f04b9bca29ecd594b97dc8c75df1",
+      "size": [
+        640,
+        480
+      ]
+    }
+  ],
+  "limits": [
+    "Natural default encounter and declared initial-condition fixtures are different evidence.",
+    "Campaign uses the exact natural victory save in a new process, not a fabricated result.",
+    "Gameplay RNG and real time are unmodified; original global-stream/timing equivalence is not claimed.",
+    "Earlier nonzero processes are retained only in ignored logs and are not counted as full passes."
+  ]
+}

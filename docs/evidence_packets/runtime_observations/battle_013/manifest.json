@@ -1,0 +1,105 @@
+{
+  "failures": [],
+  "level": 13,
+  "records": [
+    {
+      "camera": "(496.0, 1040.0)",
+      "capture": "00-framed",
+      "motion": false
+    },
+    {
+      "camera": "(560.0, 1008.0)",
+      "capture": "dialogue-1782",
+      "motion": false
+    },
+    {
+      "camera": "(496.0, 944.0)",
+      "capture": "dialogue-1783",
+      "motion": false
+    },
+    {
+      "camera": "(432.0, 976.0)",
+      "capture": "dialogue-1784",
+      "motion": false
+    },
+    {
+      "camera": "(496.0, 944.0)",
+      "capture": "dialogue-1785",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 976.0)",
+      "capture": "dialogue-1786",
+      "motion": false
+    },
+    {
+      "camera": "(496.0, 944.0)",
+      "capture": "dialogue-1834",
+      "motion": false
+    },
+    {
+      "camera": "(496.0, 944.0)",
+      "capture": "dialogue-1787",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 272.0)",
+      "capture": "first-control",
+      "motion": false
+    },
+    {
+      "first_control": {
+        "interaction": "ai_resolving",
+        "players": 7,
+        "units": 16
+      }
+    },
+    {
+      "camera": "(496.0, 1040.0)",
+      "capture": "win-dialogue-1788",
+      "motion": false
+    },
+    {
+      "camera": "(496.0, 1040.0)",
+      "capture": "win-dialogue-1789",
+      "motion": false
+    },
+    {
+      "camera": "(432.0, 1040.0)",
+      "capture": "win-dialogue-1790",
+      "motion": false
+    },
+    {
+      "camera": "(432.0, 1040.0)",
+      "capture": "win-dialogue-1791",
+      "motion": false
+    },
+    {
+      "camera": "(496.0, 1040.0)",
+      "capture": "win-dialogue-1792",
+      "motion": false
+    },
+    {
+      "camera": "(496.0, 1040.0)",
+      "capture": "win-dialogue-1793",
+      "motion": false
+    },
+    {
+      "camera": "(496.0, 1040.0)",
+      "capture": "result",
+      "motion": false
+    },
+    {
+      "result": {
+        "outcome": "victory_escape",
+        "resolved": {
+          "code": 0,
+          "key": "win_0",
+          "kind": "win",
+          "outcome": "victory_escape"
+        }
+      }
+    }
+  ],
+  "schema": "hsl_battle_review.v1"
+}

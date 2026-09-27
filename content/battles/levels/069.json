@@ -1,0 +1,105 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 69,
+  "story_scene": {
+    "id": "story_069_camp_continent_truth",
+    "title": "營地・大陸的真相",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the EVEF 夜晚聲 (mapobjPlayBGSound, WAV\\NIGHT001.WAV) is exported as a background_sound placement and its WAV into sounds/; BattleSceneRuntime loops it at a remake level without positional attenuation",
+      "actBMSetTrackFlag 18,bmpmHidden is a big-map write applied by the campaign hand-off (WorldScriptActions), not by the scene itself"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-069.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-069.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-069.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-069.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-069.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-069.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-069.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "level 69 (19,69). actPlayMusic 9 opens on track 9; actPlayLevelMusic resolves level 19 to",
+      "track 17 (0x477b44).",
+      "Level 69 (winfail019 / winfail904 -> 19,69): the camp after 利魯瑪山地 (level55 alias by 地圖管理員):",
+      "雷特 lays out 那可那魯's designs, 嚎 adds 冀羅's, 雷歐納德 walks over and asks everyone to choose;",
+      "all seven stay. The script hides track 18 and returns to the big map at point 19."
+    ],
+    "cast": [
+      "Level 69 (camp after 利魯瑪山地, story-only): the seven-member party (雷特 006 has joined)."
+    ],
+    "speakers": [
+      "Level 69 (camp, story-only, winfail019 / winfail904 -> 19,69): 雷特 explains 那可那魯's designs, 嚎 adds",
+      "冀羅's, 雷歐納德 asks everyone to choose; the seven-member party all stay."
+    ]
+  }
+}

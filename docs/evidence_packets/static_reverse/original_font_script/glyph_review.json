@@ -1,0 +1,35 @@
+{
+ "schema": "hsl_original_font_glyph_review.v1",
+ "evidence_tier": "resource-derived",
+ "claim": "How the original FONT.24 draws every traditional-only character (OpenCC TSCharacters key) that the remake text sources use. Read by eye from the glyph bitmaps (4x／3x nearest-neighbour sheets, doubtful glyphs re-read at 3x and as text rows); the OpenCC table only names the candidate forms. FONT.15 was spot-checked (說體後職) and agrees.",
+ "font": "@:\\data\\Font.24 in hsl.pak (tools/hsltools/sources/original_font.py: glyph slot = hsl01.exe 0x460c32 table of 0x45f798 ordinals)",
+ "candidate_reference": "tools/hsltools/data/opencc/TSCharacters.txt (OpenCC, Apache-2.0)",
+ "reviewed_count": 672,
+ "drawn_as_opencc_first": "丟並亂亞佈佔來係倆倉個們偉偵偽備傢傭傳傷僕價儀億優儲兇兒內兩冊凍凱別則剎剛創剷劇劉劍劑勁動務勝勞勢勳勸區協卻厭參吳員問啟喚喪單喲嗎嗚嘆嘗嘯噴嚇嚐嚕嚴囂國圍圓圖團執堅報場塊塗塵墮墳壓壞壯壺壽夠夢夾奧奪奮學宮實寧審寫寬寶將專尋對導屍層屬島峽嵐帥師帳帶幀幣幫幹幾庫廢廳弒張強彈彥徑從復恥悶惡愛態慘慚慟慣慮慶慾憐憑憤憶應懲懷懺懼戀戰戲戶捨採揚換揮損搗撈撐撫擁擇擊擋擔據擴擺擾攆攜敗敵數斬斷時暫曉書會朧東柵桿條棄棲楊業極榮槍樂樑標樞樣樹橋機檔檻欄權歐歡歲歷歸殘殺殼毀氣決沒況涼淒淚淨淪淵減測渾湧準溫滄滅滾滿漢漸潔潰澤濤濱瀕灣災為烏無煩熱熾燈燒營燻燼爭爾牆牽犧狀猶獄獅獎獨獲獵獸獻現瑩瑪環產甦畢畫異當瘋療癒發盜盞盡監盤盧眾瞞確磚礎礙礦禍禦禮禱稟種稱積穢穩穫竊節範築簡簽籠籤糞糾紀約紅紋納純級細紹終組絆結絕給統絲綁經綠維緊線緞緣編緩練緹縛縫縱總績織繞繩繼續纏罰罵罷羅羈羨義習翹聖聞聯聰聲聽脅脫腦腳膽臉臨與興舉艱華萊萬葉蒼蓋蓮薩藍藥蘊蘭處虛虜號虧蛻蝕蟲蠻術衛衝補裝裡製複襪襲見規視親覺覽觀觸訂計訊討訓託記訝訪設許訴註詐詛詞試詩話該誇認誘語誠誤說誰調談請諒論謀謂謊謎講謝謠證識議護譽讀變讓讚貓負財貢貨貪貫責貴買費貿資賊賢賣賤質賭賴購贈贊贏趕跡蹟軀車軌軍較輕輝輩輪輸轉轍辦辯迴這連進遊運過達遜遠適遲遷選遺還邊鄉鄧鄭醜釋釘銀銳鋒鋼錄錘錢錫錯鍵鎖鎧鎮鏡鐮鐵長門閃閉開閒間闆闇闊闖關陣陰陳陸陽隊階際隨險隱隻雖雙雜雞離難雲電霧靈靜鞏響頁頂項順須預頒頓領頭頰頻顆題顏願類顧顯風飄飛飯飾館饒馬駐駕騎騙騰驅驗驚骯髒體髮鬆鬥鬧鬨魎魚魯鱗鳥鳴麗黃點龍",
+ "drawn_as_other_candidate": {
+  "囉": "罗",
+  "鍊": "链",
+  "餘": "馀"
+ },
+ "drawn_traditional": "乾夥後徵於殭麼",
+ "slot_swapped": {
+  "職": {
+   "drawn": "翻",
+   "note": "the 職 slot (Big5 C2BE) holds the 翻 glyph and the 翻 slot (C2BD) holds 职: the original prints 職業 as 翻业 and 翻騰 as 职腾 (font bug); the remake shows 职 and keeps 翻"
+  }
+ },
+ "not_representable": {
+  "噁": {
+   "drawn": "𫫇",
+   "note": "口+恶 (U+2BAC7, CJK Ext-E) is missing from the system UI font; the remake shows 恶"
+  }
+ },
+ "unresolved": {
+  "鍾": "left component 钅 or 金 not resolvable at 24 px (read as 金 at 3x); the remake uses OpenCC 钟",
+  "針": "left component 钅 or 金 not resolvable at 24 px; the remake uses OpenCC 针",
+  "魘": "upper part reads as 广/厂 over 鬼, possibly a 魔-like glyph; the remake uses OpenCC 魇"
+ },
+ "no_big5_slot": {
+  "絶": "Japanese form of 絕, only in English notes (絶技); not in Big5, so the original has no glyph; the remake maps it to 绝 (OpenCC)"
+ }
+}

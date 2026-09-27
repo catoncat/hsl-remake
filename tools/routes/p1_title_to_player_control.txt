@@ -1,0 +1,112 @@
+# HSL Original: Title screen -> first battle player-control state
+# Coordinates are window-relative, based on 640x480 game viewport.
+# This route intentionally stops before opening the action menu.
+#
+# Runtime p1 needs p01-before_player_control at the no-menu playable state,
+# then a separate bounded menu-open input for edge/after action-menu traces.
+# Do not append the default route's final rclick/after_rclick steps here.
+
+wait 5                    # let the game finish loading / show title
+screenshot title_loaded
+
+# Main menu: "新的故事" (New Story) is typically the first option.
+# Click center of window to advance past any splash.
+click 320 240
+wait 2
+screenshot after_first_click
+
+# If there's a menu, click "新的故事" area (typically upper portion).
+click 320 200
+wait 3
+screenshot new_story_selected
+
+# Confirm selection
+click 320 200
+wait 2
+screenshot new_story_confirmed
+
+# Opening transitions
+wait 5                    # let transition play
+screenshot transition_1
+
+click 320 240
+wait 3
+screenshot transition_2
+
+click 320 240
+wait 3
+screenshot transition_3
+
+click 320 240
+wait 3
+screenshot transition_4
+
+# First battle map loads, opening dialogue begins
+wait 3
+screenshot battle_map_loaded
+
+# Dialogue advance. The dialogue panel is roughly in the bottom 1/3.
+click 320 400             # click dialogue area
+wait 1
+screenshot dialogue_01
+
+click 320 400
+wait 1
+screenshot dialogue_02
+
+click 320 400
+wait 1
+screenshot dialogue_03
+
+click 320 400
+wait 1
+screenshot dialogue_04
+
+click 320 400
+wait 1
+screenshot dialogue_05
+
+click 320 400
+wait 1
+screenshot dialogue_06
+
+click 320 400
+wait 1
+screenshot dialogue_07
+
+click 320 400
+wait 1
+screenshot dialogue_08
+
+click 320 400
+wait 1
+screenshot dialogue_09
+
+click 320 400
+wait 1
+screenshot dialogue_10
+
+# Extra clicks in case there are more dialogue lines.
+click 320 400
+wait 1
+screenshot dialogue_11
+
+click 320 400
+wait 1
+screenshot dialogue_12
+
+click 320 400
+wait 1
+screenshot dialogue_13
+
+click 320 400
+wait 1
+screenshot dialogue_14
+
+click 320 400
+wait 1
+screenshot dialogue_15
+
+# Stop here for p01-before_player_control capture.
+wait 2
+screenshot playable_check

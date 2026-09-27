@@ -1,0 +1,966 @@
+{
+ "schema": "hsl_steam_classic_files.v1",
+ "app": 4030150,
+ "depot": 4030151,
+ "manifest": "8466173651794257887",
+ "manifest_date": "2026-09-23",
+ "root": "GAME-PAK",
+ "note": "sha1 null = zero-byte file (DepotDownloader lists an all-zero hash for empty files)",
+ "files": [
+  {
+   "path": "hsl-cn.pak",
+   "size": 287687381,
+   "sha1": "eda5c32071a5b7c0aeb7e5f7fbf873b6dba98146"
+  },
+  {
+   "path": "hsl.exe",
+   "size": 806912,
+   "sha1": "6d5008051db0cf090dacd396e87d3c8a075905e5"
+  },
+  {
+   "path": "hsl.pak",
+   "size": 287661653,
+   "sha1": "16f322512b28bfceb7d13643bc1a6626487e6268"
+  },
+  {
+   "path": "Magpie/cache/fonts_zh-hant_120",
+   "size": 3226679,
+   "sha1": "6aa9260d7b72f55c75edd8e2f3ac99c3547bd3b7"
+  },
+  {
+   "path": "Magpie/cache/FSR#FSR_EASU_0000_6110c4251b164378",
+   "size": 47649,
+   "sha1": "eb2665c98dfd081aa3728442182344be124b4bdd"
+  },
+  {
+   "path": "Magpie/cache/FSR#FSR_RCAS_0000_144a205358c53429",
+   "size": 18302,
+   "sha1": "015b042da9a731347d92c1be0fcf79c7b5bcb1bb"
+  },
+  {
+   "path": "Magpie/config/config.json",
+   "size": 4875,
+   "sha1": "7a5bdfc999d220a51e0f5fdd154fa8b21a6f164b"
+  },
+  {
+   "path": "Magpie/effects/ACNet.hlsl",
+   "size": 241339,
+   "sha1": "63314cb31915aa22a21657c4f75c4491078f7709"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_3D_AA_Upscale_US.hlsl",
+   "size": 14075,
+   "sha1": "07b84de728bfc990de9f6ebe89b9c3d51835264d"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_3D_Upscale_US.hlsl",
+   "size": 13972,
+   "sha1": "11dfe8ee1ad0d99d7ba2d35fe93b4393efe50f3f"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Denoise_Bilateral_Mean.hlsl",
+   "size": 3430,
+   "sha1": "5048c023cd613d30cab65a51c84703414cdb8918"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Denoise_Bilateral_Median.hlsl",
+   "size": 3916,
+   "sha1": "e8942dea61dd6aef97dcf9bddd65f325d7b806a6"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Denoise_Bilateral_Mode.hlsl",
+   "size": 4297,
+   "sha1": "e3ada2cda99a626d46d66f3ba527caa603b4afcc"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_L.hlsl",
+   "size": 75860,
+   "sha1": "98ff052b0ed111f3f51cc6e775480e7dae2b5347"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_M.hlsl",
+   "size": 43142,
+   "sha1": "3a1048128f8561ab90f4e8c39f29b07bd4fa7c96"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_S.hlsl",
+   "size": 20597,
+   "sha1": "1da8159565055e8b9f8ec70e01a335becc2c7ede"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_Soft_L.hlsl",
+   "size": 75918,
+   "sha1": "6c4bd36d425ff3495b913504fbd85dc8e5088ebf"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_Soft_M.hlsl",
+   "size": 43215,
+   "sha1": "56daa743bc79e6a4ff66329b2db75d79d023e16f"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_Soft_S.hlsl",
+   "size": 20654,
+   "sha1": "0c367f5235fe467ff231b01eac3435370e01e6dd"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_Soft_UL.hlsl",
+   "size": 319790,
+   "sha1": "167e0c381240d54792101a89041f604653766d8b"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_Soft_VL.hlsl",
+   "size": 154154,
+   "sha1": "ca3a762dc0ea6e2bee5c28c3bbea09c699ec0ece"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_UL.hlsl",
+   "size": 319688,
+   "sha1": "685d85fd631a2b7463dce43f19dbeefc8934f6c2"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Restore_VL.hlsl",
+   "size": 154125,
+   "sha1": "74eb693e32eceeabeae2a12b81ba197b53a8decf"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Thin_HQ.hlsl",
+   "size": 7945,
+   "sha1": "e997c51a35ffc468480b7105dbc41eb0ff5e0a2d"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_Denoise_L.hlsl",
+   "size": 77373,
+   "sha1": "6948cb7fad4ab1b21724ef462ae3b7482a0a8be9"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_Denoise_S.hlsl",
+   "size": 21976,
+   "sha1": "4801adc767e446796e2db83bcf1ef1cc59730d1a"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_Denoise_UL.hlsl",
+   "size": 296755,
+   "sha1": "f958aa4cafc93c91e777e9e3ef37a1454fe34a49"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_Denoise_VL.hlsl",
+   "size": 154080,
+   "sha1": "2edacccd0a7bc92dae6fdba5b0bd98e65debfe5d"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_GAN_x2_M.hlsl",
+   "size": 152116,
+   "sha1": "f80c67ae27e6bd43b4c3ef468c578d9783fd9f0b"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_GAN_x2_S.hlsl",
+   "size": 79294,
+   "sha1": "28a98a90f0e19eb971b588d6f21ff99df47f2054"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_GAN_x3_L.hlsl",
+   "size": 246137,
+   "sha1": "37ef34ab9788d34376bee3e0fec5852d8da93f3e"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_L.hlsl",
+   "size": 77282,
+   "sha1": "29b83a9187147eaf951f033cc9bfe5eb10e8987c"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_S.hlsl",
+   "size": 21930,
+   "sha1": "adf0eab84d7c2fa39040c5851927ee4250067b87"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_UL.hlsl",
+   "size": 297137,
+   "sha1": "fef6e52447e010a4c378898ee77b8a04b676b518"
+  },
+  {
+   "path": "Magpie/effects/Anime4K/Anime4K_Upscale_VL.hlsl",
+   "size": 154123,
+   "sha1": "a45c8930beecf3dd7e5e21d4b25f9657768d7f4a"
+  },
+  {
+   "path": "Magpie/effects/Bicubic.hlsl",
+   "size": 3085,
+   "sha1": "e69cfc69f0e269f36d553e328b1f067ed6757bab"
+  },
+  {
+   "path": "Magpie/effects/Bilinear.hlsl",
+   "size": 274,
+   "sha1": "5d1387450cdf0bf86300dae3af24436547f8219f"
+  },
+  {
+   "path": "Magpie/effects/CAS/CAS.hlsl",
+   "size": 8323,
+   "sha1": "3690c591f97b1f856121e9bb5fc91b57b1586db1"
+  },
+  {
+   "path": "Magpie/effects/CAS/CAS_Scaling.hlsl",
+   "size": 23742,
+   "sha1": "013baed70829d2fbd065e8564ce469257869ef13"
+  },
+  {
+   "path": "Magpie/effects/CRT/CRT_Easymode.hlsl",
+   "size": 6315,
+   "sha1": "eabd110c7f31fc615f58a2e9a72e39c264428972"
+  },
+  {
+   "path": "Magpie/effects/CRT/CRT_Geom.hlsl",
+   "size": 10733,
+   "sha1": "d4371603f8c190e9e85318cab2173d2648d7bd1b"
+  },
+  {
+   "path": "Magpie/effects/CRT/CRT_Hyllian.hlsl",
+   "size": 7292,
+   "sha1": "f63b12d48ca44b462a90bd01b712815e4bea0be9"
+  },
+  {
+   "path": "Magpie/effects/CRT/CRT_Lottes.hlsl",
+   "size": 8768,
+   "sha1": "d79a0d2373c1bb4766292303d5fbed9722bc26a5"
+  },
+  {
+   "path": "Magpie/effects/CRT/GTU_v050.hlsl",
+   "size": 5434,
+   "sha1": "fcd9c979b276551ca152d48ade6988f06071305d"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-16x16C-NVL-DN.hlsl",
+   "size": 1130269,
+   "sha1": "48471336998318269e7ddee256bc08b8c3e402d5"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-16x16C-NVL.hlsl",
+   "size": 1130427,
+   "sha1": "32de23fa0d0ea8b0615bb81dfcb559c079bd80b1"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-2x4C-NVL-DN.hlsl",
+   "size": 19722,
+   "sha1": "554fbb7b4a3f662c37472cf58ace502266215a06"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-2x4C-NVL.hlsl",
+   "size": 19713,
+   "sha1": "d7fa1a0cf8e84baa6150b9647723ac09df2c3ff8"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-3x4C-NVL-DN.hlsl",
+   "size": 25031,
+   "sha1": "1dc0296a69fe982600e065f1b079bec7bf3f6c66"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-3x4C-NVL.hlsl",
+   "size": 25023,
+   "sha1": "b65367f9e25b58c92630b408bebf05adc6c849d5"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-4x16C-NVL-DN.hlsl",
+   "size": 302783,
+   "sha1": "b14542d5b41ff57834127efa1e0971e368e49123"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-4x16C-NVL.hlsl",
+   "size": 302831,
+   "sha1": "5da8467945cbe01db2b67b46855a947cd39a0552"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-4x4C-NVL-DN.hlsl",
+   "size": 30277,
+   "sha1": "85102b25a35e1d5890e55569dde9fa2a4bc2e692"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-4x4C-NVL.hlsl",
+   "size": 30309,
+   "sha1": "8d25748e69ae1a09a49a4f75c32f7cae19ff6ef1"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-4x8C-NVL-DN.hlsl",
+   "size": 88599,
+   "sha1": "2746a18d7124496b122066b41c6dcbc3032c5434"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-4x8C-NVL.hlsl",
+   "size": 88599,
+   "sha1": "9a88234a61c5a380c994cf3d015886e1038f9da0"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-6x8C-NVL-DN.hlsl",
+   "size": 125346,
+   "sha1": "8e3ddf9b93a25b93a921321e9c1052ae7bb140ab"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-6x8C-NVL.hlsl",
+   "size": 125330,
+   "sha1": "4e2b6fcd9f36d0870023138e2e6acdf6ad231977"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-8x16C-NVL-DN.hlsl",
+   "size": 578722,
+   "sha1": "71140511e641549ecb28a5591e66387a1b804480"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-8x16C-NVL.hlsl",
+   "size": 578551,
+   "sha1": "faa6f35050f8f3f6b0d9fbeab2a666c78fec6634"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-8x4C-NVL-DN.hlsl",
+   "size": 51504,
+   "sha1": "9b68de7725cce49ea6d7d773048e601e3fa59dc6"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-8x4C-NVL.hlsl",
+   "size": 51508,
+   "sha1": "9c32f10741d1f11ecb71d8e1644d1c0621feee72"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-8x8C-NVL-DN.hlsl",
+   "size": 162082,
+   "sha1": "de67914511de88a9652aaf8d9b0f711ff4985b17"
+  },
+  {
+   "path": "Magpie/effects/CuNNy/CuNNy-8x8C-NVL.hlsl",
+   "size": 162227,
+   "sha1": "03622b7ef244f2ec2aeadfbca16fcd3e3915252e"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-3x12-NVL.hlsl",
+   "size": 83189,
+   "sha1": "10bf73501c35f06d0d84f64d1ace0406c3d442e5"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-4x12-NVL.hlsl",
+   "size": 101899,
+   "sha1": "8285b8e18135d9797dd0f1fec358c6e5f1b809ba"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-4x16-NVL.hlsl",
+   "size": 165387,
+   "sha1": "3428c60867a9ba686a81527324ec2a0b8f97bc34"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-4x24-NVL.hlsl",
+   "size": 338364,
+   "sha1": "2d190923037d4b50c682bff537d4d21f0c6b5ad1"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-4x32-NVL.hlsl",
+   "size": 573627,
+   "sha1": "b0570474b417f6bae249ff528a140884893f71a8"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-8x32-NVL.hlsl",
+   "size": 1079908,
+   "sha1": "8f669dbb107c1e9a382cdc34b56980c2121467b8"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-fast-NVL.hlsl",
+   "size": 42435,
+   "sha1": "bf45fe9e7e438e49f0cf2945c35744a77cc0e93a"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-faster-NVL.hlsl",
+   "size": 27378,
+   "sha1": "42d656db20fce39ea63bb8b32539ec4b4794631e"
+  },
+  {
+   "path": "Magpie/effects/CuNNy2/CuNNy-veryfast-NVL.hlsl",
+   "size": 21157,
+   "sha1": "a72cf8d8344defd5a071bea921353e2fc11cfe7d"
+  },
+  {
+   "path": "Magpie/effects/Deband.hlsl",
+   "size": 3771,
+   "sha1": "20064b91a0b71f28d24f14a9d81c2c5ba437dce4"
+  },
+  {
+   "path": "Magpie/effects/FSR/FSR_EASU.hlsl",
+   "size": 16933,
+   "sha1": "a6fdfdbdf271293220127fbfcefb3c78da50f89d"
+  },
+  {
+   "path": "Magpie/effects/FSR/FSR_RCAS.hlsl",
+   "size": 7421,
+   "sha1": "206f0b1fa69684c1a3e5c2b16353065cc1961c50"
+  },
+  {
+   "path": "Magpie/effects/FSRCNNX/FSRCNNX.hlsl",
+   "size": 81495,
+   "sha1": "f294ad441d74eb410146e204dd7c66c42fc6ce0f"
+  },
+  {
+   "path": "Magpie/effects/FSRCNNX/FSRCNNX_LineArt.hlsl",
+   "size": 81481,
+   "sha1": "6e616ec59a1e05681e6984a3fb47da2c271e1011"
+  },
+  {
+   "path": "Magpie/effects/FXAA/FXAA.hlsli",
+   "size": 6887,
+   "sha1": "46ed2311dc878e24c89c378d6228e0039e28a11a"
+  },
+  {
+   "path": "Magpie/effects/FXAA/FXAA_High.hlsl",
+   "size": 1490,
+   "sha1": "8124e45ed2993b77e228b6a1e4fddf9c1a3dea9c"
+  },
+  {
+   "path": "Magpie/effects/FXAA/FXAA_Medium.hlsl",
+   "size": 1490,
+   "sha1": "0f65618901223bb7d35946aa093ffc4f4e6d5864"
+  },
+  {
+   "path": "Magpie/effects/FXAA/FXAA_Ultra.hlsl",
+   "size": 1490,
+   "sha1": "404b76b0cf647c91fd0e43612818cc56b4f8a5d5"
+  },
+  {
+   "path": "Magpie/effects/ImageAdjustment.hlsl",
+   "size": 2540,
+   "sha1": "7820fab43a010853eb95f755cc511227a88c1499"
+  },
+  {
+   "path": "Magpie/effects/Jinc.hlsl",
+   "size": 3914,
+   "sha1": "8b3301bc9525cce2442e758d2016039a86302887"
+  },
+  {
+   "path": "Magpie/effects/Lanczos.hlsl",
+   "size": 2878,
+   "sha1": "92c3bc2289c9d7e95b2b8ecf2f947b2ffbcfb886"
+  },
+  {
+   "path": "Magpie/effects/Nearest.hlsl",
+   "size": 273,
+   "sha1": "2e65a7b90c0257458a8014892e0881cb85c7c411"
+  },
+  {
+   "path": "Magpie/effects/NIS/Coef_Scale.dds",
+   "size": 1152,
+   "sha1": "7c8220398daa12aaf4fec10a010dd98d9a4dff3d"
+  },
+  {
+   "path": "Magpie/effects/NIS/Coef_USM.dds",
+   "size": 1152,
+   "sha1": "2b15fb418fef9aa17cc573a3391618030b2d0d65"
+  },
+  {
+   "path": "Magpie/effects/NIS/NIS.hlsl",
+   "size": 2924,
+   "sha1": "a841cf2017b95cfaf506630e298284cae1f7b4d5"
+  },
+  {
+   "path": "Magpie/effects/NIS/NIS_Scaler.hlsli",
+   "size": 38796,
+   "sha1": "eaf1f607d56e10f544b00f29db514381f88540f6"
+  },
+  {
+   "path": "Magpie/effects/NIS/NVSharpen.hlsl",
+   "size": 2737,
+   "sha1": "eef1fe7f67cd921c99ca5ae2f7776839c4c83491"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns128_win8x4.hlsl",
+   "size": 266364,
+   "sha1": "e5834e4191f10e29e95709b44d366e85a6ecd955"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns128_win8x6.hlsl",
+   "size": 390393,
+   "sha1": "bd471d93d428cf8a751d78c06d28f5b9c9e1663b"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns16_win8x4.hlsl",
+   "size": 41993,
+   "sha1": "d111168ee110c7d24ecb9ea44cc13eba36bfa37e"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns16_win8x6.hlsl",
+   "size": 58485,
+   "sha1": "a9505cd1e69347adeaba19f8866da6088e2cae97"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns256_win8x4.hlsl",
+   "size": 523382,
+   "sha1": "3b48c8c670a744145eb739703b9d752fecd90b1a"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns256_win8x6.hlsl",
+   "size": 769926,
+   "sha1": "81094ec4b62b3f3b6502c45fa42405ef947c3cf6"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns32_win8x4.hlsl",
+   "size": 73966,
+   "sha1": "98197d4710decc064bd43b6c108cf311f2383f5f"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns32_win8x6.hlsl",
+   "size": 105971,
+   "sha1": "fda3f45f68533923b1cf53d0f82c15b5fc75c777"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns64_win8x4.hlsl",
+   "size": 137913,
+   "sha1": "2a85ffc983d44ea3a593aefbc4c12cb214086bd1"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/NNEDI3_nns64_win8x6.hlsl",
+   "size": 200763,
+   "sha1": "e6e60301026cb8b25bf6e2a0f60141d83787c922"
+  },
+  {
+   "path": "Magpie/effects/NNEDI3/prescalers.hlsli",
+   "size": 2717,
+   "sha1": "8ed8962f9a0ccc97ee5e0c9674e8aacd1e07552b"
+  },
+  {
+   "path": "Magpie/effects/Pixel Art/MMPX.hlsl",
+   "size": 4873,
+   "sha1": "44f1d07d47d3b63d6605a9d940e44f2b530bfad8"
+  },
+  {
+   "path": "Magpie/effects/Pixel Art/Pixellate.hlsl",
+   "size": 1601,
+   "sha1": "0ace1e7a1cd9e5c8aa1807d6a0edc32ccd4a45b1"
+  },
+  {
+   "path": "Magpie/effects/Pixel Art/SharpBilinear.hlsl",
+   "size": 1152,
+   "sha1": "0e9a3d86502db6542c5ca8b6db0df1e2a826098b"
+  },
+  {
+   "path": "Magpie/effects/RAVU/prescalers.hlsli",
+   "size": 2717,
+   "sha1": "8ed8962f9a0ccc97ee5e0c9674e8aacd1e07552b"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_3x_lut2_f16.dds",
+   "size": 17408,
+   "sha1": "04eb401fde7700f8342c16b2b97def91ddc35c8e"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_3x_lut3_f16.dds",
+   "size": 45056,
+   "sha1": "7955386b26ea141e759c7e98e283a6b96721ed0c"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_3x_lut4_f16.dds",
+   "size": 86528,
+   "sha1": "8c38fa74f40162b1d586f0eb6ff44c319675e019"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_3x_R2.hlsl",
+   "size": 6905,
+   "sha1": "728932ff2d2fabed7a8359dded260fc375de773a"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_3x_R2_RGB.hlsl",
+   "size": 7790,
+   "sha1": "67d12a01e32ff84beca14f2a1c13cc69a07635d2"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_3x_R3.hlsl",
+   "size": 9439,
+   "sha1": "6808fb9d692f8118bb5ed5186e9c1e47657b4056"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_3x_R3_RGB.hlsl",
+   "size": 11065,
+   "sha1": "cf18944027a24a537fa5e138ac8a6e48f1f71055"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_3x_R4.hlsl",
+   "size": 14304,
+   "sha1": "58bbb834ade262bcc4e3f1420dc2134f3a9b51f8"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_3x_R4_RGB.hlsl",
+   "size": 17294,
+   "sha1": "35ee870c0d63d713e6637a88c1b0be3e3242cac9"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Lite_AR_R2.hlsl",
+   "size": 8642,
+   "sha1": "ee283b2a1c064cff4c0d234e2241a7f1f28ba640"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Lite_AR_R3.hlsl",
+   "size": 10696,
+   "sha1": "b6bf21710c30b44b4f47164eb8f73bdb49fe52e4"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Lite_AR_R4.hlsl",
+   "size": 14825,
+   "sha1": "88dddd0e3a7d3efa7a309844905066e6892b1bbd"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_lite_lut2_f16.dds",
+   "size": 11648,
+   "sha1": "9e7d8736ca906ab910371aae0b58c427c9ca6c48"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_lite_lut3_f16.dds",
+   "size": 30080,
+   "sha1": "1ff4f2a66c023cf10dbf4da12f8ed695625cc1cf"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_lite_lut4_f16.dds",
+   "size": 57728,
+   "sha1": "807855258843a1bcfdc1d2da21767369433c1373"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Lite_R2.hlsl",
+   "size": 6419,
+   "sha1": "220645d20003cec3da46b9ab917f858649cda934"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Lite_R3.hlsl",
+   "size": 7611,
+   "sha1": "f9d219f3758bea7ba5803a14d865af5dfe97a275"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Lite_R4.hlsl",
+   "size": 11734,
+   "sha1": "bb3e79317336222d9acac913494e8737bcd16edb"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_lut2_f16.dds",
+   "size": 10496,
+   "sha1": "4cb9d8f822c11127fda68aa96c6ed37a8dca140e"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_lut3_f16.dds",
+   "size": 26048,
+   "sha1": "87dc4095a18ff982e6dea91709884158771c4865"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_lut4_f16.dds",
+   "size": 41600,
+   "sha1": "e28d4e2bcc09d905bc1a056ad065edc0327459b2"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_R2.hlsl",
+   "size": 17871,
+   "sha1": "0794340c91d6ee702033b5beeb455d8ca83afc55"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_R2_RGB.hlsl",
+   "size": 18371,
+   "sha1": "57d9b1d6afde72cfe84e38ec33e7479c61ac721c"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_R3.hlsl",
+   "size": 24012,
+   "sha1": "c77ef46488a1a5ee8920a3fd4a64e74215586b61"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_R3_RGB.hlsl",
+   "size": 24752,
+   "sha1": "502272ce99759d6b5b94c300b074fc8e70bc80d8"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_R4.hlsl",
+   "size": 41527,
+   "sha1": "81ea4d2402820a12aca5623e81976ca83099b207"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_R4_RGB.hlsl",
+   "size": 42687,
+   "sha1": "8e799563872bc6ef1b1e989f17ed5ab4e1a8c9c8"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Zoom_AR_R2.hlsl",
+   "size": 11009,
+   "sha1": "de41113e22e1cbba27a8c6339c03e401514cd78f"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Zoom_AR_R2_RGB.hlsl",
+   "size": 12466,
+   "sha1": "f8c8f34683df72329b1a82b5ce74080742c3c521"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Zoom_AR_R3.hlsl",
+   "size": 13510,
+   "sha1": "723f094b1b1d4f4a2d6451d7982132f4a83d49f2"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Zoom_AR_R3_RGB.hlsl",
+   "size": 15639,
+   "sha1": "d30462c75b7b01104a1ca08bc19349a4df141169"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_zoom_lut2_ar_f16.dds",
+   "size": 373376,
+   "sha1": "a22497148422a6ff7e979ad988f567f514b16e7a"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_zoom_lut2_f16.dds",
+   "size": 373376,
+   "sha1": "dd57a2f01eb0f8c09f83a3b136288a4d4f594c47"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_zoom_lut3_ar_f16.dds",
+   "size": 373376,
+   "sha1": "a22497148422a6ff7e979ad988f567f514b16e7a"
+  },
+  {
+   "path": "Magpie/effects/RAVU/ravu_zoom_lut3_f16.dds",
+   "size": 933248,
+   "sha1": "b37ab8ea400277725ed4c9d19b06acca63700dce"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Zoom_R2.hlsl",
+   "size": 7836,
+   "sha1": "fae82291c825cd6644b831c878c7f9a14494bf78"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Zoom_R2_RGB.hlsl",
+   "size": 8301,
+   "sha1": "6309542ac1f46960e07942519c257cf3f4acb576"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Zoom_R3.hlsl",
+   "size": 10211,
+   "sha1": "84a7ca21c3022f1bd0de5fd049a6cf00a9376716"
+  },
+  {
+   "path": "Magpie/effects/RAVU/RAVU_Zoom_R3_RGB.hlsl",
+   "size": 11348,
+   "sha1": "4b37e3cd9ef4f714e5139d30cfbcdd4dff832f46"
+  },
+  {
+   "path": "Magpie/effects/SGSR.hlsl",
+   "size": 4766,
+   "sha1": "ab0ea720a3726c6e7d38107c686643577529398a"
+  },
+  {
+   "path": "Magpie/effects/Sharpen/AdaptiveSharpen.hlsl",
+   "size": 8691,
+   "sha1": "1e72eda1e88850fc4dd8af58432ed249adc8c705"
+  },
+  {
+   "path": "Magpie/effects/Sharpen/FineSharp.hlsl",
+   "size": 13627,
+   "sha1": "8c0eaa7a2000cf26c129f43fa17fe8131558bcc1"
+  },
+  {
+   "path": "Magpie/effects/Sharpen/LCAS.hlsl",
+   "size": 2716,
+   "sha1": "50db719d0f4318bc001d18784958f6cc92d9c44b"
+  },
+  {
+   "path": "Magpie/effects/Sharpen/LumaSharpen.hlsl",
+   "size": 8269,
+   "sha1": "4e30dfb2d604ee4ad816d6c4b6c35842ec8d7841"
+  },
+  {
+   "path": "Magpie/effects/SMAA/AreaTex.dds",
+   "size": 358528,
+   "sha1": "074d1144d1b7040389131586fb4bacb9aaa9b83f"
+  },
+  {
+   "path": "Magpie/effects/SMAA/SearchTex.dds",
+   "size": 1152,
+   "sha1": "c60468567ef7202ed4d275dd944f947c12688bed"
+  },
+  {
+   "path": "Magpie/effects/SMAA/SMAA.hlsli",
+   "size": 36065,
+   "sha1": "6f32985abd8d163347f8effffe2d7fe942b94111"
+  },
+  {
+   "path": "Magpie/effects/SMAA/SMAA_High.hlsl",
+   "size": 1458,
+   "sha1": "d3768a1c622717479b2e0c940423b02a7cbbe55a"
+  },
+  {
+   "path": "Magpie/effects/SMAA/SMAA_Low.hlsl",
+   "size": 1451,
+   "sha1": "568e42701ca9e42fbbb7c10cbe066069f7d166b0"
+  },
+  {
+   "path": "Magpie/effects/SMAA/SMAA_Medium.hlsl",
+   "size": 1454,
+   "sha1": "a41d934d77d1e3a64f4a2f5b31f837d7de89926f"
+  },
+  {
+   "path": "Magpie/effects/SMAA/SMAA_Ultra.hlsl",
+   "size": 1459,
+   "sha1": "939f6e52cf87b35e2f65b562d55c7dcac1383763"
+  },
+  {
+   "path": "Magpie/effects/SSimDownscaler.hlsl",
+   "size": 10637,
+   "sha1": "24f9c108a7760fe4c6aad49c8860d5045d5ad8e0"
+  },
+  {
+   "path": "Magpie/effects/xBRZ/xBRZ_2x.hlsl",
+   "size": 10907,
+   "sha1": "e92a125f6e372eee9b563de7a90f96658ebc9212"
+  },
+  {
+   "path": "Magpie/effects/xBRZ/xBRZ_3x.hlsl",
+   "size": 11825,
+   "sha1": "d593cbb939570cd2e198b01da0f178d7f4edad71"
+  },
+  {
+   "path": "Magpie/effects/xBRZ/xBRZ_4x.hlsl",
+   "size": 15976,
+   "sha1": "9ff0fb056427bcf534a01a7e7c14e2a15306748a"
+  },
+  {
+   "path": "Magpie/effects/xBRZ/xBRZ_5x.hlsl",
+   "size": 18179,
+   "sha1": "15ac6c49fef621c10313a421b44867628d01bc29"
+  },
+  {
+   "path": "Magpie/effects/xBRZ/xBRZ_6x.hlsl",
+   "size": 20214,
+   "sha1": "900c608fdfe3a64d855b94d1f3ab1d9ffe8a1321"
+  },
+  {
+   "path": "Magpie/effects/xBRZ/xBRZ_Freescale.hlsl",
+   "size": 13216,
+   "sha1": "13a90210a7ac06cc26c4926834bcac53b35577f8"
+  },
+  {
+   "path": "Magpie/LICENSE",
+   "size": 35823,
+   "sha1": "1eba7caf09a39110ad2f542e3ed8700d1a69c6d3"
+  },
+  {
+   "path": "Magpie/Magpie.exe",
+   "size": 3114496,
+   "sha1": "28c1d8ee3b936a46b8ed00cb0cb0b8154ac76a60"
+  },
+  {
+   "path": "Magpie/Microsoft.UI.Xaml.dll",
+   "size": 5853216,
+   "sha1": "3b3d20f158299f04649a93bb552a092e07068626"
+  },
+  {
+   "path": "Magpie/NOTICE.txt",
+   "size": 3034,
+   "sha1": "f618f5bfb97367fbd540787a2b05b62100c9ba82"
+  },
+  {
+   "path": "Magpie/portable",
+   "size": 0,
+   "sha1": null
+  },
+  {
+   "path": "Magpie/resources.pri",
+   "size": 2462328,
+   "sha1": "82ac794681a11cecfec3555c59111e6a55de457d"
+  },
+  {
+   "path": "movie.pak",
+   "size": 70931518,
+   "sha1": "891df4f8a72649b014a12e2729a938fcf5a5ba0a"
+  },
+  {
+   "path": "music/02.wav",
+   "size": 5629844,
+   "sha1": "7ddcd10ad72fc7ec3c34ce14db4d1a3867f613bb"
+  },
+  {
+   "path": "music/03.wav",
+   "size": 4249216,
+   "sha1": "daf8b4cbb842bd0853ec82c3ad6950620964f0de"
+  },
+  {
+   "path": "music/04.wav",
+   "size": 4845684,
+   "sha1": "203e28656c9e9ab534a2a706def3d13e5929b3b3"
+  },
+  {
+   "path": "music/05.wav",
+   "size": 5671200,
+   "sha1": "03b12cd65569a0a35946c302c4f415c37d7c2371"
+  },
+  {
+   "path": "music/06.wav",
+   "size": 7076140,
+   "sha1": "2dc5d655da9895f205133209d72fffffc3bd315f"
+  },
+  {
+   "path": "music/07.wav",
+   "size": 6072984,
+   "sha1": "c5b82c0e56c6e66d7bb03a907f38f0fa7844c123"
+  },
+  {
+   "path": "music/08.wav",
+   "size": 5454180,
+   "sha1": "3e51dde5b07b9c069cf49981394a1fceb44b7723"
+  },
+  {
+   "path": "music/09.wav",
+   "size": 6081056,
+   "sha1": "367d3eea891672fc6853932667f5f4a1f3e5ecb1"
+  },
+  {
+   "path": "music/10.wav",
+   "size": 4267400,
+   "sha1": "5c3ce603d71ec063dc9f4c0d8f32c335d288eef9"
+  },
+  {
+   "path": "music/11.wav",
+   "size": 7546692,
+   "sha1": "9643370c1fa06fdb534f4dd25b4c035965bc51c5"
+  },
+  {
+   "path": "music/12.wav",
+   "size": 8491424,
+   "sha1": "cbd5a2267dbe9c1f09c168c7c3f2b484b2ae3bfd"
+  },
+  {
+   "path": "music/13.wav",
+   "size": 11404816,
+   "sha1": "7d09ec926ab46de032369c679e5514ebb6526888"
+  },
+  {
+   "path": "music/14.wav",
+   "size": 12250084,
+   "sha1": "0cccdf60a81e47d08ffec4972fa682510c0a318d"
+  },
+  {
+   "path": "music/15.wav",
+   "size": 5353212,
+   "sha1": "9dd3547e340cbea7dfb0ee65b64c894e35d4dcd5"
+  },
+  {
+   "path": "music/16.wav",
+   "size": 10727812,
+   "sha1": "3bf8e1d727c19ccc0723bd94aecee0cd875c7035"
+  },
+  {
+   "path": "music/17.wav",
+   "size": 11872612,
+   "sha1": "79cc8444d24d6e8985d33279bdd1788e3eec3f7c"
+  },
+  {
+   "path": "music/18.wav",
+   "size": 12545652,
+   "sha1": "85466fc050c960d67b65ebe93490e9076abadfc0"
+  },
+  {
+   "path": "music/19.wav",
+   "size": 11380372,
+   "sha1": "a0df9414f5281f56b7449cfb8ce4ecdab04aa9e8"
+  },
+  {
+   "path": "music/null.wav",
+   "size": 44144,
+   "sha1": "87c748d89b654f72ea66494a139ca710440bfe98"
+  },
+  {
+   "path": "Readme.txt",
+   "size": 4749,
+   "sha1": "0d79a857fbf86facb6e941b8ab300a0d7bcd758e"
+  }
+ ]
+}

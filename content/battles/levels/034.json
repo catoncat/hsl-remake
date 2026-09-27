@@ -1,0 +1,133 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 34,
+  "battle": {
+    "id": "battle_034_level34",
+    "title": "沙羅尼亞近郊 · 突圍前夕",
+    "initial_focus_unit_id": "tina",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "沙羅尼亞近郊 · 敵軍已清除",
+      "fail_0": "沙羅尼亞近郊 · 緹娜 陣亡"
+    },
+    "expected": {
+      "units": 23,
+      "players": 4
+    },
+    "unresolved_semantics": [
+      "STORY034 opens with 緹娜 leading four controlled slots (002/003/004/005), three 062 villagers, and the resource-derived 036/037/038 enemy field. WINFAIL034 event_0 reaches round 6 and inserts five 023 plus four 044 units from the source script.",
+      "WINFAIL034 event_1 clears undead on SID_ENEMY023 serials 1-5, then applies actSetPlayerMode with pmEnemy and flag 0 to SID_ENEMY023 serials 1-5 and SID_ENEMY044 serials 1-4. WinfailScenarioRules._apply_player_mode maps this existing source operation to enemy_ai in the sole PlayLoop; this is static-derived from original_player_mode.md plus resource-derived event order, while native refresh timing remains provisional.",
+      "WINFAIL034 win_0 has no next level and uses actSetBMWalkToPoint 32,35 after the town / big-map writes; the shared skip_battle / winfail hand-off applies this existing path. Battle insertion, villager protection and reward timing remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_034_saronia_outskirts_opening",
+    "title": "沙羅尼亞近郊（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      }
+    },
+    "lead_unit_id": "tina",
+    "end_card": {
+      "title": "沙羅尼亞近郊",
+      "hint": "戰鬥部分（level 34）尚未重製　　空格／點擊：回到大地圖（沙羅尼亞近郊）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the four controlled slots (緹娜 leads), the 062 villagers to protect and the 036 / 037 / 038 enemies have no battle scenario yet (WINFAIL034 brings 023 / 044 at round 6); the preview shows the EVEF placements and STORY034 walks only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "002",
+      "003",
+      "004",
+      "005",
+      "023",
+      "036",
+      "037",
+      "038",
+      "044",
+      "062"
+    ],
+    "speakers": [
+      "002",
+      "003",
+      "004",
+      "005",
+      "023",
+      "062"
+    ]
+  },
+  "speakers": {
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_ENEMY062": "656",
+    "SID_ENEMY023": "376"
+  },
+  "speaker_policy": {
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_ENEMY062": "PLAYERS.TXT character 62 name field is 306 (???); the obs names the objects Enemy062(村民), so 656 村民 is the same remake speaker label as level 1, provisional",
+    "SID_ENEMY023": "PLAYERS.TXT character 23 name field is 306 (???); 376 一般兵 is the same remake label as level 51, provisional"
+  },
+  "sweep_fixture": {
+    "mode": "rounds",
+    "expect_win_status": 0,
+    "rounds": [
+      6
+    ],
+    "clear_phases": 4,
+    "expect_win_unarmed_before": true,
+    "expect_undecided_after_rounds": true,
+    "note": "WINFAIL034 holds until event_0 (round 6) inserts the 023/044 escort and event_1 (monsters cleared) turns them hostile and arms win_0."
+  },
+  "comments": {
+    "battle": [
+      "STORY034 arms only fail 0/1 and event 0: the battle holds until event_1 (all",
+      "036/037/038 monsters dead) turns the inserted 023/044 hostile and arms win_0",
+      "(actInsertWinStatus 0). Arming win_0 early would end the battle at once, because",
+      "actCheckEnemy counts a class with no unit on the field as fallen."
+    ],
+    "story_scene": [
+      "Level 34 (沙羅尼亞近郊, point 34): 緹娜's group walks in from the west, three 062 villagers",
+      "flee east, 036 / 037 / 038 pour in from the east and south. The winfail win section",
+      "arms the 沙羅尼亞 town events and walks the party on (actSetBMWalkToPoint 32,35).",
+      "actPlayMusic,9 opens on track 9; the closing actPlayLevelMusic",
+      "resolves level 34 to track 17 (0x477b44)."
+    ],
+    "cast": [
+      "Level 34: 緹娜's group, the fleeing 062 villagers and 036 / 037 / 038; WINFAIL034 brings",
+      "Wosfita soldiers 023 / archers 044 (023 speaks)."
+    ],
+    "speakers": [
+      "Level 34 (STORY034 / WINFAIL034): 緹娜's group walks in from the west, the 062 villagers flee, 036 / 037 / 038 close in; WINFAIL034 brings Wosfita soldiers 023 / archers 044 (023 speaks)."
+    ]
+  }
+}

@@ -1,0 +1,4802 @@
+{
+  "schema": "hsl_ai_stat_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "cases": [
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 0,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 3,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        },
+        {
+          "bound": 99,
+          "value": 2
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 180,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 0,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 3,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        },
+        {
+          "bound": 99,
+          "value": 2
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 180,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 0,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 3,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        },
+        {
+          "bound": 99,
+          "value": 2
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 180,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 4,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 4,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 4,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 8,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 8,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 8,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 12,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 12,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 12,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 16,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 16,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 16,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 20,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 20,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 20,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 24,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 24,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 24,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 28,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 28,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          0
+        ],
+        "attempted": 28,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 99,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 0,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 4,
+        "next_roll": 1,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 0,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 4,
+        "next_roll": 30,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 0,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 4,
+        "next_roll": 99,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 4,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 1,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 4,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 30,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 4,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 99,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 8,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 1,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 8,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 30,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 8,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 99,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 12,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 6
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 12,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 6
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 12,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 99,
+        "mode": 6
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 16,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 20,
+        "next_roll": 1,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 16,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 20,
+        "next_roll": 30,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 16,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 20,
+        "next_roll": 99,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 20,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 20,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 20,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 99,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 24,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 24,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 24,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 99,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 28,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 28,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          100,
+          100,
+          100
+        ],
+        "attempted": 28,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 99,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 0,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 131,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 0,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 131,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 0,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 131,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 4,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 4,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 4,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 8,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 8,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 8,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 12,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 6
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 12,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 6
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 12,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 99,
+        "mode": 6
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 16,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 16,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 16,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 32,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 122,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 20,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 20,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 20,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 24,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 24,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 24,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 28,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 28,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          0,
+          0,
+          100
+        ],
+        "attempted": 28,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 99,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 0,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 4,
+        "next_roll": 1,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 0,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 28,
+        "mode": 4
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 71,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 0,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 28,
+        "mode": 4
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 71,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 4,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 1,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 4,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 30,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 4,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 8,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 12,
+        "next_roll": 1,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 8,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 8,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 6
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 73,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 12,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 6
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 12,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 6
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 12,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 16,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 20,
+        "next_roll": 1,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 16,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 4
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 71,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 16,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 4
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 71,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 20,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 20,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 4
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 13,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 20,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 24,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 3
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x441035",
+      "instructions": 11,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 24,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 24,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 28,
+        "mode": 0
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 64,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 28,
+        "roll": 1,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 1,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 28,
+        "roll": 30,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 30,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "rates": [
+          10,
+          30,
+          50
+        ],
+        "attempted": 28,
+        "roll": 99,
+        "seed": 7
+      },
+      "result": {
+        "attempted": 28,
+        "next_roll": 99,
+        "mode": 0
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x440ef1",
+      "instructions": 6,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [],
+        "flags": 0,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [],
+        "flags": 7,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [],
+        "flags": 16,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [],
+        "flags": 32,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [],
+        "flags": 48,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [],
+        "flags": 64,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [],
+        "flags": 112,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [],
+        "flags": 119,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 15,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32
+        ],
+        "flags": 0,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32
+        ],
+        "flags": 7,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32
+        ],
+        "flags": 16,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32
+        ],
+        "flags": 32,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32
+        ],
+        "flags": 48,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32
+        ],
+        "flags": 64,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32
+        ],
+        "flags": 112,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32
+        ],
+        "flags": 119,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          64
+        ],
+        "flags": 0,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          64
+        ],
+        "flags": 7,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          64
+        ],
+        "flags": 16,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          64
+        ],
+        "flags": 32,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          64
+        ],
+        "flags": 48,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          64
+        ],
+        "flags": 64,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          64
+        ],
+        "flags": 112,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          64
+        ],
+        "flags": 119,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32,
+          64
+        ],
+        "flags": 0,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32,
+          64
+        ],
+        "flags": 7,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32,
+          64
+        ],
+        "flags": 16,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32,
+          64
+        ],
+        "flags": 32,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 81,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32,
+          64
+        ],
+        "flags": 48,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 86,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32,
+          64
+        ],
+        "flags": 64,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32,
+          64
+        ],
+        "flags": 112,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 86,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          32,
+          64
+        ],
+        "flags": 119,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 86,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          256
+        ],
+        "flags": 0,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          256
+        ],
+        "flags": 7,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          256
+        ],
+        "flags": 16,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          256
+        ],
+        "flags": 32,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          256
+        ],
+        "flags": 48,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 47,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          256
+        ],
+        "flags": 64,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          256
+        ],
+        "flags": 112,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          256
+        ],
+        "flags": 119,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 52,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          96
+        ],
+        "flags": 0,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 48,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          96
+        ],
+        "flags": 7,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 48,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          96
+        ],
+        "flags": 16,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 53,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          96
+        ],
+        "flags": 32,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 53,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          96
+        ],
+        "flags": 48,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 53,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          96
+        ],
+        "flags": 64,
+        "seed": 1
+      },
+      "result": 1,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 48,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          96
+        ],
+        "flags": 112,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 53,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "useful",
+        "masks": [
+          96
+        ],
+        "flags": 119,
+        "seed": 1
+      },
+      "result": 0,
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 53,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 0,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          0
+        ],
+        "masks": [],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2075,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 1,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          0
+        ],
+        "masks": [],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2136,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 8,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          0
+        ],
+        "masks": [],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2319,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 9,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          0
+        ],
+        "masks": [],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2380,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          32
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 0,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          0
+        ],
+        "masks": [],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2075,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          32
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 1,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          3,
+          0
+        ],
+        "masks": [
+          16
+        ],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2178,
+      "calls": 2
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          32
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 8,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          3,
+          5,
+          0
+        ],
+        "masks": [
+          16,
+          0
+        ],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2477,
+      "calls": 3
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          32
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 9,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          3,
+          5,
+          9,
+          0
+        ],
+        "masks": [
+          16,
+          0,
+          0
+        ],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2580,
+      "calls": 4
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          64
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 0,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          0
+        ],
+        "masks": [],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2075,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          64
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 1,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          0
+        ],
+        "masks": [],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2173,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          64
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 8,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          5,
+          6,
+          0
+        ],
+        "masks": [
+          0,
+          32
+        ],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2477,
+      "calls": 3
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          64
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 9,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          5,
+          6,
+          9,
+          0
+        ],
+        "masks": [
+          0,
+          32,
+          0
+        ],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2580,
+      "calls": 4
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          32,
+          64
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 0,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          0
+        ],
+        "masks": [],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2075,
+      "calls": 1
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          32,
+          64
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 1,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          3,
+          0
+        ],
+        "masks": [
+          16
+        ],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2178,
+      "calls": 2
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          32,
+          64
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 8,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          3,
+          5,
+          6,
+          0
+        ],
+        "masks": [
+          16,
+          0,
+          32
+        ],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2550,
+      "calls": 4
+    },
+    {
+      "input": {
+        "kind": "scan",
+        "masks": [
+          32,
+          64
+        ],
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "flags": 0
+          },
+          {
+            "coord": [
+              11,
+              11
+            ],
+            "side": 131072,
+            "flags": 16
+          },
+          null,
+          {
+            "coord": [
+              18,
+              18
+            ],
+            "side": 131072,
+            "flags": 7
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 131072,
+            "flags": 32
+          },
+          {
+            "coord": [
+              13,
+              10
+            ],
+            "side": 131072,
+            "flags": 48
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "flags": 0
+          },
+          {
+            "coord": [
+              19,
+              10
+            ],
+            "side": 131072,
+            "flags": 0
+          }
+        ],
+        "radius": 9,
+        "seed": 1
+      },
+      "result": {
+        "indices": [
+          3,
+          5,
+          6,
+          9,
+          0
+        ],
+        "masks": [
+          16,
+          0,
+          32,
+          0
+        ],
+        "cursor": 200
+      },
+      "draws": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 2653,
+      "calls": 5
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x440e3d",
+      "bytes": "f685980000000475333bb3dc0100007f07bf03000000eb0d6a63e8247e01008bf083c404468b8d9800000083c90485ff898d980000000f85bc010000f685980000000875333bb3e00100007f07bf04000000eb0d6a63e8e87d01008bf083c404468b8d9800000083c90885ff898d980000000f8580010000f685980000001075333bb3e40100007f07bf06000000eb0d6a63e8ac7d01008bf083c404468b8d9800000083c91085ff898d980000000f8544010000",
+      "meaning": "Healing, status, then attack aid priority; bit10/mode6 uses ai_help_attack."
+    },
+    {
+      "address": "0x40c480",
+      "bytes": "538b5c240c5556578b7c241433ed8b47048b4f08894424188b44241cc1e30585c0894c24140f859700000057e86ff5ffff83c404a3201a4c0033c03dc8000000a3301a4c000f8d820000008b3485c0344c0085f6746c3bf7746856e840f5ffff8b0d201a4c0083c4043bc175558b4424188b56042bc29933c22bc23bc37f438b4424148b56082bc29933c22bc23bc37f3156e8b9fdffff8bf05689742424e8cd17000083c40885c0750d56e8501c000083c40485c0740b8b15301a4c008d6a01eb0fa1301a4c0040e96effffff8b74241c85ed740a8b44242085c0740289305f8bc55e5d5bc3",
+      "meaning": "Complete same-side square-radius positive-state scan with persistent cursor, excluding owner."
+    },
+    {
+      "address": "0x40c2d0",
+      "bytes": "8b4424048b15c81b4c008b80a40000008bc8c1e1072bc88b448a2483e070c3",
+      "meaning": "Complete positive-state getter returns flags & 0x70."
+    },
+    {
+      "address": "0x40dcf0",
+      "bytes": "a1781b4c00535556578b782433ed85ff74498b70208b5c24144f33c033c9668b06668b4e025051e834bbffff83c40833c9a8407405b910000000a820740383c920f6c401740383c94085c9740485cb74118b76048bc74f85c075bf5f8bc55e5d5bc35f5e5db8010000005bc3",
+      "meaning": "Complete magic buff list predicate tests mapped buff flags against present positive states."
+    }
+  ],
+  "limits": [
+    "Full buff scans/usefulness helpers; priority ends before whole dispatcher. No callee stubs.",
+    "Synthetic legal roster/bucket inputs; no claim of whole original AI navigation or learning."
+  ]
+}

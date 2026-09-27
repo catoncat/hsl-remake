@@ -1,0 +1,267 @@
+{
+  "schema": "hsl_first_battle_rendered_polish.v1",
+  "observed_date": "2026-09-08",
+  "routes": [
+    {
+      "actions": [
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 2
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 3
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 4
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 5
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 6
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 7
+        },
+        {
+          "action": "move",
+          "cell": [
+            15,
+            12
+          ],
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 8
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 8
+        },
+        {
+          "action": "move",
+          "cell": [
+            14,
+            10
+          ],
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 9
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 9
+        }
+      ],
+      "dialogue": [
+        "396",
+        "397",
+        "368",
+        "368",
+        "369",
+        "369",
+        "369",
+        "369",
+        "371"
+      ],
+      "elapsed_seconds": 122.939,
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "outcome": "victory_escape",
+      "policy": "hold",
+      "restart": true,
+      "time_scale": 1.0,
+      "turn": 9,
+      "player": {
+        "id": "leonard",
+        "hp": 30.0,
+        "max_hp": 30.0,
+        "level": 1.0,
+        "exp": 0.0,
+        "stamina": 0,
+        "pending_stat_points": 0,
+        "inventory": {
+          "241": 3.0,
+          "246": 1.0
+        }
+      },
+      "raw_receipt_sha256": "5c9db039f72dc8310c017e08b4c36c58fce7c24776a9363e6789dacfa74ef2df"
+    },
+    {
+      "actions": [
+        {
+          "action": "move",
+          "cell": [
+            13,
+            14
+          ],
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "attack",
+          "exp": 19,
+          "hp": 22,
+          "level": 1.0,
+          "stamina": 10,
+          "target": "enemy021_4",
+          "turn": 2
+        },
+        {
+          "action": "wait",
+          "exp": 19,
+          "hp": 22,
+          "level": 1.0,
+          "stamina": 10,
+          "turn": 2
+        },
+        {
+          "action": "move",
+          "cell": [
+            13,
+            12
+          ],
+          "exp": 19,
+          "hp": 22,
+          "level": 1.0,
+          "stamina": 10,
+          "turn": 3
+        },
+        {
+          "action": "attack",
+          "exp": 48,
+          "hp": 22,
+          "level": 1.0,
+          "stamina": 15,
+          "target": "enemy021_3",
+          "turn": 3
+        },
+        {
+          "action": "wait",
+          "exp": 48,
+          "hp": 22,
+          "level": 1.0,
+          "stamina": 15,
+          "turn": 3
+        },
+        {
+          "action": "special",
+          "exp": 69,
+          "hp": 5,
+          "level": 1.0,
+          "stamina": 5,
+          "target": "enemy021_5",
+          "turn": 4
+        },
+        {
+          "action": "wait",
+          "exp": 69,
+          "hp": 5,
+          "level": 1.0,
+          "stamina": 5,
+          "turn": 4
+        }
+      ],
+      "dialogue": [
+        "396",
+        "397",
+        "304"
+      ],
+      "elapsed_seconds": 79.166,
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "outcome": "defeat_leonard",
+      "policy": "advance",
+      "restart": true,
+      "time_scale": 1.0,
+      "turn": 5,
+      "player": {
+        "id": "leonard",
+        "hp": 0,
+        "max_hp": 30.0,
+        "level": 1.0,
+        "exp": 69,
+        "stamina": 10,
+        "pending_stat_points": 0,
+        "inventory": {
+          "241": 3.0,
+          "246": 1.0
+        }
+      },
+      "raw_receipt_sha256": "a1d48bbb1f83bac395930bd42833d8ba18a4b3011f5070f7c7f790fc02c7ef3c"
+    }
+  ]
+}

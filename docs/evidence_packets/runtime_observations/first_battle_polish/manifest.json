@@ -1,0 +1,73 @@
+{
+  "schema": "hsl_first_battle_polish_evidence.v1",
+  "observed_date": "2026-09-08",
+  "claim_limit": "Remake implementation and observed routes; fixtures are not natural battle progression; source art does not establish native handler/timing equivalence.",
+  "files": {
+    "growth-preview.png": {
+      "sha256": "68ac315aa0133ebd2f80097dbccdfe717bf2cee878ba5ed0b302dafe3c8e2dc7",
+      "evidence": "rendered_controlled_fixture"
+    },
+    "growth-confirmed-status.png": {
+      "sha256": "c4bd9572ab3e893f12f338038099a73932da93e4257bdc3bfec5da9c193f2f36",
+      "evidence": "rendered_controlled_fixture"
+    },
+    "items-self-and-ally.png": {
+      "sha256": "bd31db1907a332f602775c2945e4eaf9d5f3b5bda3be59675ee7ea3ee5c9e5c7",
+      "evidence": "rendered_controlled_fixture"
+    },
+    "source-art.png": {
+      "sha256": "6099d6b551607dd88979b8fbdd29ccaffc46298d8eb6c9ee2f03789e04831622",
+      "evidence": "source_art_review"
+    },
+    "combat-impact.png": {
+      "sha256": "33a73bf7fa0f729a45b0fb271fee85fc5042e562eaaf4773b11322b48876ecc7",
+      "evidence": "rendered_controlled_fixture"
+    },
+    "combat-counter-impact.png": {
+      "sha256": "693c3ebb82ec879414a364b8812b4dddd43488f7e951daaffcf942ac31549855",
+      "evidence": "rendered_controlled_fixture"
+    },
+    "skill-travel.png": {
+      "sha256": "93f5e9e972229751bacbba96f70beaf14fa492f0ef59c627b2962d60dba5cc70",
+      "evidence": "rendered_controlled_fixture"
+    },
+    "skill-impact.png": {
+      "sha256": "ac487cbee13294f467519dc9c23c0b346926c6fa944efea7c495a77ad4c054f8",
+      "evidence": "rendered_controlled_fixture"
+    },
+    "magic-impact.png": {
+      "sha256": "3403db402963ae3f64bf9d17254ae03f6f3893926ab20cbf0f9ad557cf358b7d",
+      "evidence": "rendered_controlled_fixture"
+    },
+    "hold-result.png": {
+      "sha256": "6cde00d13c4b56cc45f31b132f9ae4e135f74a537f02628eeffd7e4737d455cf",
+      "evidence": "normal_speed_rendered_route"
+    },
+    "advance-result.png": {
+      "sha256": "da457af68ee1f360980647d49ec1af7c948ce2bef9a08d159081d419aecbdeb3",
+      "evidence": "normal_speed_rendered_route"
+    },
+    "playthroughs.json": {
+      "sha256": "57fac335692503dc0b568f95e3b13323610f4be03778337af16241d147d66f95",
+      "evidence": "rendered_route"
+    },
+    "balance.json": {
+      "sha256": "3d694e114312684f0add100ad3fbb498afdd75d08c51510fe469a56861798f7c",
+      "evidence": "bounded_rules_audit"
+    }
+  },
+  "implementation_sha256": {
+    "game/sim/ProgressionRules.gd": "7190d3e69807fab5b61c86860e8ae4e8ba540da162399053d83477b1fbac2161",
+    "game/battle/first_scene/FirstScenePlayLoop.gd": "4775f5c30dbeae1b9c408fee5ae5c359bfd6466f3d017f793d78139b6049e2e1",
+    "game/battle/first_scene/FirstSceneRuntime.gd": "2d11b2ca822348e349d2e26490115eb6874acf9d948cfd7ecaefbc2de906bd30",
+    "game/battle/first_scene/FirstBattleGrowthPanel.gd": "4c39371086fe002aa00691c373dc6d970576d9cfda82d1a8ab261589afd39f73",
+    "game/battle/first_scene/FirstBattleItemPanel.gd": "98901878fcfca645b8c8d57eb3266a5525f3535800cdaf695384acb98faaddcf",
+    "game/battle/first_scene/FirstBattleStatusPanel.gd": "b878c5891cd7871670bee629c110bb8ca20b0b467537c2222ac155eeebae48bf",
+    "game/battle/first_scene/FirstBattleCombatCutin.gd": "8c89f02fc44ef343abdf65a04620147220e0b7d8207b04402762c71115b37cd0",
+    "game/battle/first_scene/FirstBattlePresentation.gd": "6b983cc4d669ae9824436af8821a9c9c4f21369eb420e0e0c3990361dbb29792",
+    "tests/run_first_battle_playthrough.gd": "05622ae097c19ca7862611f7ac7ca6c0f7c6037b832dc126eb6582e3c014d9d6",
+    "tests/audit_first_battle_balance.gd": "11956074a7fa61b705f684b3d667e2fa85faf2b6f78ed18b1a7023245fb649d2",
+    "content/imported/hsl/chapter01/combat_animation/manifest.json": "98b30a7c865ea556aa1420be79fed91a137b2e90e38f6b513a0b07e0acb5dc2f",
+    "content/imported/hsl/chapter01/item_art/manifest.json": "205137d27b5e9cecdf39addcdcd33edd2788cd76012a1fe397e03132f88284ec"
+  }
+}

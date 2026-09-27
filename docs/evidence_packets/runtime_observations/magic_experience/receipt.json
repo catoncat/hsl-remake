@@ -1,0 +1,1375 @@
+{
+  "actual_input": "Inherited Viewport.push_input mouse, wheel and key events; no combat RNG replacement or result assignment",
+  "fixture": true,
+  "native_execution": false,
+  "normal_clock": 1.0,
+  "overrides": "Four source-rendered actors with fixed positions/speed and no reinforcements; Leonard explicitly granted test magic and compatible synthetic 100MP source growth; HP100 enemies except declared 1HP kills; controlled successor. Base skill hit_ratio100 for this deterministic success capture. Mixed-area fire has synthetic range1Cell, not original Wind/Fire geometry. Cure adds poison to two allies and silence to the recipient. Fire-kill carries guaranteed important loot; final route starts after report with one enemy. Original default grants and values are unchanged.",
+  "screen": 0,
+  "window_position": "(60, 128)",
+  "window_size": "(640, 480)",
+  "schema": "godot_magic_experience_review.v1",
+  "routes": [
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30.0,
+        "max_mp": 100,
+        "mp": 92,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "exp": 15,
+      "experience_events": [
+        {
+          "base": 15,
+          "exp_after": 15,
+          "exp_before": 0,
+          "gained": 15,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "level": 1.0,
+      "mode": "wind",
+      "next_actor": "enemy023_1",
+      "outcome": "",
+      "pending_points": 0,
+      "phases": {
+        "damage-number": true,
+        "experience": true,
+        "receiver-bars": true
+      },
+      "receipt": {
+        "actual_damage": 31,
+        "affected_targets": [
+          {
+            "actual_damage": 31,
+            "attacker_id": "leonard",
+            "damage": 31,
+            "defender_hp_after": 69,
+            "defender_hp_before": 100,
+            "defender_id": "enemy021_1",
+            "evidence_tier": "static-derived",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 31,
+              "draws": [
+                {
+                  "bound": 15,
+                  "value": 1
+                },
+                {
+                  "bound": 4,
+                  "value": 1
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 0,
+              "kill_multiplier": 100,
+              "kill_word_after": 0,
+              "killed": false,
+              "kills_added": 0,
+              "points": 15,
+              "source": "0x40a5d0",
+              "subtotal": 16,
+              "target_level": 1
+            },
+            "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+            "hit": true,
+            "magic_key": "wind",
+            "magic_name": "風刃",
+            "native_contribution": 31,
+            "native_damage_roll": {
+              "hit_bonus_after": 0,
+              "hit_check_passed": true,
+              "hit_rate": 100,
+              "hit_roll": 98,
+              "sampled": 20,
+              "value": 31
+            },
+            "resource_payment": {
+              "after": 92,
+              "amount": 8,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 8,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicAIR:magicCode01",
+            "status_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 31,
+        "defender_hp_after": 69,
+        "defender_hp_before": 100,
+        "defender_id": "enemy021_1",
+        "evidence_tier": "static-derived",
+        "experience": {
+          "base": 15,
+          "exp_after": 15,
+          "exp_before": 0,
+          "gained": 15,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 31,
+          "draws": [
+            {
+              "bound": 15,
+              "value": 1
+            },
+            {
+              "bound": 4,
+              "value": 1
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 15,
+          "source": "0x40a5d0",
+          "subtotal": 16,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 15,
+          "base": 15,
+          "multiplier": 1,
+          "reason": "",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+        "hit": true,
+        "magic_key": "wind",
+        "magic_name": "風刃",
+        "native_contribution": 31,
+        "native_damage_roll": {
+          "hit_bonus_after": 0,
+          "hit_check_passed": true,
+          "hit_rate": 100,
+          "hit_roll": 98,
+          "sampled": 20,
+          "value": 31
+        },
+        "resource_payment": {
+          "after": 92,
+          "amount": 8,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 8,
+          "ok": true,
+          "resource": "mp"
+        },
+        "rewards": {
+          "gold": 0,
+          "item_count": 0,
+          "kills": []
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicAIR:magicCode01",
+        "status_effects": []
+      }
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          281,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 33,
+        "max_mp": 118,
+        "mp": 92,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "exp": 33,
+      "experience_events": [
+        {
+          "base": 34,
+          "exp_after": 33,
+          "exp_before": 99,
+          "gained": 34,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "level": 2.0,
+      "mode": "fire_kill",
+      "next_actor": "enemy023_1",
+      "outcome": "",
+      "pending_points": 0,
+      "phases": {
+        "damage-number": true,
+        "experience": true,
+        "gold": true,
+        "growth": true,
+        "kill": true,
+        "last-words": true,
+        "loot": true,
+        "receiver-bars": true
+      },
+      "receipt": {
+        "actual_damage": 1,
+        "affected_targets": [
+          {
+            "actual_damage": 1,
+            "attacker_id": "leonard",
+            "damage": 1,
+            "defender_hp_after": 0,
+            "defender_hp_before": 1,
+            "defender_id": "enemy021_1",
+            "evidence_tier": "static-derived",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 1,
+              "draws": [
+                {
+                  "bound": 0,
+                  "value": 0
+                },
+                {
+                  "bound": 7,
+                  "value": 2
+                }
+              ],
+              "kill_chain_before": 1,
+              "kill_exp": 20,
+              "kill_multiplier": 150,
+              "kill_word_after": 65538,
+              "killed": true,
+              "kills_added": 1,
+              "points": 34,
+              "source": "0x40a5d0",
+              "subtotal": 25,
+              "target_level": 1
+            },
+            "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+            "hit": true,
+            "magic_key": "fire",
+            "magic_name": "幻火",
+            "native_contribution": 1,
+            "native_damage_roll": {
+              "hit_bonus_after": 0,
+              "hit_check_passed": true,
+              "hit_rate": 100,
+              "hit_roll": 23,
+              "sampled": 24,
+              "value": 35
+            },
+            "resource_payment": {
+              "after": 92,
+              "amount": 8,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 8,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicFIRE:magicCode01",
+            "status_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 1,
+        "defender_hp_after": 0,
+        "defender_hp_before": 1,
+        "defender_id": "enemy021_1",
+        "evidence_tier": "static-derived",
+        "experience": {
+          "base": 34,
+          "exp_after": 33,
+          "exp_before": 99,
+          "gained": 34,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 1,
+          "draws": [
+            {
+              "bound": 0,
+              "value": 0
+            },
+            {
+              "bound": 7,
+              "value": 2
+            }
+          ],
+          "kill_chain_before": 1,
+          "kill_exp": 20,
+          "kill_multiplier": 150,
+          "kill_word_after": 65538,
+          "killed": true,
+          "kills_added": 1,
+          "points": 34,
+          "source": "0x40a5d0",
+          "subtotal": 25,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 34,
+          "base": 34,
+          "multiplier": 1,
+          "reason": "",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+        "hit": true,
+        "kill_chain": 2,
+        "magic_key": "fire",
+        "magic_name": "幻火",
+        "native_contribution": 1,
+        "native_damage_roll": {
+          "hit_bonus_after": 0,
+          "hit_check_passed": true,
+          "hit_rate": 100,
+          "hit_roll": 23,
+          "sampled": 24,
+          "value": 35
+        },
+        "resource_payment": {
+          "after": 92,
+          "amount": 8,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 8,
+          "ok": true,
+          "resource": "mp"
+        },
+        "rewards": {
+          "gold": 100,
+          "item_count": 1,
+          "kills": [
+            {
+              "attacker_id": "leonard",
+              "defender_id": "enemy021_1",
+              "gold": 100
+            }
+          ]
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicFIRE:magicCode01",
+        "status_effects": []
+      }
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 31,
+        "max_mp": 118,
+        "mp": 92,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "exp": 42,
+      "experience_events": [
+        {
+          "base": 43,
+          "exp_after": 42,
+          "exp_before": 99,
+          "gained": 43,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "level": 2.0,
+      "mode": "mixed_area",
+      "next_actor": "enemy023_1",
+      "outcome": "",
+      "pending_points": 5,
+      "phases": {
+        "damage-number": true,
+        "experience": true,
+        "gold": true,
+        "growth": true,
+        "last-words": true,
+        "receiver-bars": true
+      },
+      "receipt": {
+        "actual_damage": 35,
+        "affected_targets": [
+          {
+            "actual_damage": 35,
+            "attacker_id": "leonard",
+            "damage": 35,
+            "defender_hp_after": 65,
+            "defender_hp_before": 100,
+            "defender_id": "enemy021_1",
+            "evidence_tier": "static-derived",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 35,
+              "draws": [
+                {
+                  "bound": 17,
+                  "value": 9
+                },
+                {
+                  "bound": 8,
+                  "value": 5
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 0,
+              "kill_multiplier": 100,
+              "kill_word_after": 0,
+              "killed": false,
+              "kills_added": 0,
+              "points": 23,
+              "source": "0x40a5d0",
+              "subtotal": 28,
+              "target_level": 1
+            },
+            "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+            "hit": true,
+            "magic_key": "fire",
+            "magic_name": "幻火",
+            "native_contribution": 35,
+            "native_damage_roll": {
+              "hit_bonus_after": 0,
+              "hit_check_passed": true,
+              "hit_rate": 100,
+              "hit_roll": 57,
+              "sampled": 24,
+              "value": 35
+            },
+            "resource_payment": {
+              "after": 92,
+              "amount": 8,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 8,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicFIRE:magicCode01",
+            "status_effects": []
+          },
+          {
+            "actual_damage": 1,
+            "attacker_id": "leonard",
+            "damage": 1,
+            "defender_hp_after": 0,
+            "defender_hp_before": 1,
+            "defender_id": "enemy021_2",
+            "evidence_tier": "static-derived",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 1,
+              "draws": [
+                {
+                  "bound": 0,
+                  "value": 0
+                },
+                {
+                  "bound": 7,
+                  "value": 5
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 20,
+              "kill_multiplier": 100,
+              "kill_word_after": 65537,
+              "killed": true,
+              "kills_added": 1,
+              "points": 20,
+              "source": "0x40a5d0",
+              "subtotal": 25,
+              "target_level": 1
+            },
+            "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+            "hit": true,
+            "magic_key": "fire",
+            "magic_name": "幻火",
+            "native_contribution": 1,
+            "native_damage_roll": {
+              "hit_bonus_after": 0,
+              "hit_check_passed": true,
+              "hit_rate": 100,
+              "hit_roll": 71,
+              "sampled": 30,
+              "value": 41
+            },
+            "resource_payment": {
+              "after": 92,
+              "amount": 8,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 8,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicFIRE:magicCode01",
+            "status_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 35,
+        "defender_hp_after": 65,
+        "defender_hp_before": 100,
+        "defender_id": "enemy021_1",
+        "evidence_tier": "static-derived",
+        "experience": {
+          "base": 43,
+          "exp_after": 42,
+          "exp_before": 99,
+          "gained": 43,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 35,
+          "draws": [
+            {
+              "bound": 17,
+              "value": 9
+            },
+            {
+              "bound": 8,
+              "value": 5
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 23,
+          "source": "0x40a5d0",
+          "subtotal": 28,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 43,
+          "base": 43,
+          "multiplier": 1,
+          "reason": "",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+        "hit": true,
+        "kill_chain": 1,
+        "magic_key": "fire",
+        "magic_name": "幻火",
+        "native_contribution": 35,
+        "native_damage_roll": {
+          "hit_bonus_after": 0,
+          "hit_check_passed": true,
+          "hit_rate": 100,
+          "hit_roll": 57,
+          "sampled": 24,
+          "value": 35
+        },
+        "resource_payment": {
+          "after": 92,
+          "amount": 8,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 8,
+          "ok": true,
+          "resource": "mp"
+        },
+        "rewards": {
+          "gold": 100,
+          "item_count": 0,
+          "kills": [
+            {
+              "attacker_id": "leonard",
+              "defender_id": "enemy021_2",
+              "gold": 100
+            }
+          ]
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicFIRE:magicCode01",
+        "status_effects": []
+      }
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 31,
+        "max_mp": 118,
+        "mp": 94,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "exp": 8,
+      "experience_events": [
+        {
+          "base": 9,
+          "exp_after": 8,
+          "exp_before": 99,
+          "gained": 9,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "level": 2.0,
+      "mode": "heal_xp",
+      "next_actor": "enemy023_1",
+      "outcome": "",
+      "pending_points": 5,
+      "phases": {
+        "experience": true,
+        "growth": true,
+        "support": true
+      },
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 59,
+            "defender_hp_before": 20,
+            "defender_id": "enemy023_1",
+            "evidence_tier": "static-derived",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 19,
+              "draws": [
+                {
+                  "bound": 9,
+                  "value": 2
+                },
+                {
+                  "bound": 3,
+                  "value": 2
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 0,
+              "kill_multiplier": 100,
+              "kill_word_after": 0,
+              "killed": false,
+              "kills_added": 0,
+              "points": 9,
+              "source": "0x40a5d0",
+              "subtotal": 11,
+              "target_level": 1
+            },
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 39,
+            "hit": true,
+            "magic_key": "heal",
+            "magic_name": "治癒之水",
+            "native_contribution": 19,
+            "resource_payment": {
+              "after": 94,
+              "amount": 6,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 6,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode06",
+            "support_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 0,
+        "defender_hp_after": 59,
+        "defender_hp_before": 20,
+        "defender_id": "enemy023_1",
+        "evidence_tier": "static-derived",
+        "experience": {
+          "base": 9,
+          "exp_after": 8,
+          "exp_before": 99,
+          "gained": 9,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 19,
+          "draws": [
+            {
+              "bound": 9,
+              "value": 2
+            },
+            {
+              "bound": 3,
+              "value": 2
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 9,
+          "source": "0x40a5d0",
+          "subtotal": 11,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 9,
+          "base": 9,
+          "multiplier": 1,
+          "reason": "",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+        "healing": 39,
+        "hit": true,
+        "magic_key": "heal",
+        "magic_name": "治癒之水",
+        "native_contribution": 19,
+        "resource_payment": {
+          "after": 94,
+          "amount": 6,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 6,
+          "ok": true,
+          "resource": "mp"
+        },
+        "rewards": {
+          "gold": 0,
+          "item_count": 0,
+          "kills": []
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode06",
+        "support_effects": []
+      }
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 31,
+        "max_mp": 118,
+        "mp": 96,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0
+        },
+        "status_flags": 0
+      },
+      "exp": 50,
+      "experience_events": [
+        {
+          "base": 51,
+          "exp_after": 50,
+          "exp_before": 99,
+          "gained": 51,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "level": 2.0,
+      "mode": "cure_xp",
+      "next_actor": "enemy023_1",
+      "outcome": "",
+      "pending_points": 5,
+      "phases": {
+        "experience": true,
+        "growth": true,
+        "support": true
+      },
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 30,
+            "defender_hp_before": 30,
+            "defender_id": "leonard",
+            "evidence_tier": "static-derived",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 36,
+              "draws": [
+                {
+                  "bound": 18,
+                  "value": 12
+                },
+                {
+                  "bound": 9,
+                  "value": 3
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 0,
+              "kill_multiplier": 100,
+              "kill_word_after": 0,
+              "killed": false,
+              "kills_added": 0,
+              "points": 29,
+              "source": "0x40a5d0",
+              "subtotal": 32,
+              "target_level": 1
+            },
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 0,
+            "hit": true,
+            "magic_key": "cure_poison",
+            "magic_name": "驅毒",
+            "native_contribution": 36,
+            "resource_payment": {
+              "after": 96,
+              "amount": 4,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 4,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode05",
+            "support_effects": [
+              {
+                "after_word": 0,
+                "before_word": 655362,
+                "removed": true,
+                "status": "poison"
+              }
+            ]
+          },
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 20,
+            "defender_hp_before": 20,
+            "defender_id": "enemy023_1",
+            "evidence_tier": "static-derived",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 36,
+              "draws": [
+                {
+                  "bound": 18,
+                  "value": 4
+                },
+                {
+                  "bound": 6,
+                  "value": 0
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 0,
+              "kill_multiplier": 100,
+              "kill_word_after": 0,
+              "killed": false,
+              "kills_added": 0,
+              "points": 22,
+              "source": "0x40a5d0",
+              "subtotal": 22,
+              "target_level": 1
+            },
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 0,
+            "hit": true,
+            "magic_key": "cure_poison",
+            "magic_name": "驅毒",
+            "native_contribution": 36,
+            "resource_payment": {
+              "after": 96,
+              "amount": 4,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 4,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode05",
+            "support_effects": [
+              {
+                "after_word": 0,
+                "before_word": 655362,
+                "removed": true,
+                "status": "poison"
+              }
+            ]
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 0,
+        "defender_hp_after": 20,
+        "defender_hp_before": 20,
+        "defender_id": "enemy023_1",
+        "evidence_tier": "static-derived",
+        "experience": {
+          "base": 51,
+          "exp_after": 50,
+          "exp_before": 99,
+          "gained": 51,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 36,
+          "draws": [
+            {
+              "bound": 18,
+              "value": 4
+            },
+            {
+              "bound": 6,
+              "value": 0
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 22,
+          "source": "0x40a5d0",
+          "subtotal": 22,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 51,
+          "base": 51,
+          "multiplier": 1,
+          "reason": "",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+        "healing": 0,
+        "hit": true,
+        "magic_key": "cure_poison",
+        "magic_name": "驅毒",
+        "native_contribution": 36,
+        "resource_payment": {
+          "after": 96,
+          "amount": 4,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 4,
+          "ok": true,
+          "resource": "mp"
+        },
+        "rewards": {
+          "gold": 0,
+          "item_count": 0,
+          "kills": []
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode05",
+        "support_effects": [
+          {
+            "after_word": 0,
+            "before_word": 655362,
+            "removed": true,
+            "status": "poison"
+          }
+        ]
+      }
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          281,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 31,
+        "max_mp": 118,
+        "mp": 92,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "exp": 23,
+      "experience_events": [
+        {
+          "base": 24,
+          "exp_after": 23,
+          "exp_before": 99,
+          "gained": 24,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "level": 2.0,
+      "mode": "final_kill",
+      "next_actor": "",
+      "outcome": "victory_optional_clear",
+      "pending_points": 5,
+      "phases": {
+        "damage-number": true,
+        "experience": true,
+        "gold": true,
+        "last-words": true,
+        "loot": true,
+        "receiver-bars": true
+      },
+      "receipt": {
+        "actual_damage": 1,
+        "affected_targets": [
+          {
+            "actual_damage": 1,
+            "attacker_id": "leonard",
+            "damage": 1,
+            "defender_hp_after": 0,
+            "defender_hp_before": 1,
+            "defender_id": "enemy021_1",
+            "evidence_tier": "static-derived",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 1,
+              "draws": [
+                {
+                  "bound": 0,
+                  "value": 0
+                },
+                {
+                  "bound": 7,
+                  "value": 1
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 20,
+              "kill_multiplier": 100,
+              "kill_word_after": 65537,
+              "killed": true,
+              "kills_added": 1,
+              "points": 24,
+              "source": "0x40a5d0",
+              "subtotal": 25,
+              "target_level": 1
+            },
+            "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+            "hit": true,
+            "magic_key": "fire",
+            "magic_name": "幻火",
+            "native_contribution": 1,
+            "native_damage_roll": {
+              "hit_bonus_after": 0,
+              "hit_check_passed": true,
+              "hit_rate": 100,
+              "hit_roll": 47,
+              "sampled": 25,
+              "value": 36
+            },
+            "resource_payment": {
+              "after": 92,
+              "amount": 8,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 8,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicFIRE:magicCode01",
+            "status_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 1,
+        "defender_hp_after": 0,
+        "defender_hp_before": 1,
+        "defender_id": "enemy021_1",
+        "evidence_tier": "static-derived",
+        "experience": {
+          "base": 24,
+          "exp_after": 23,
+          "exp_before": 99,
+          "gained": 24,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 1,
+          "draws": [
+            {
+              "bound": 0,
+              "value": 0
+            },
+            {
+              "bound": 7,
+              "value": 1
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 20,
+          "kill_multiplier": 100,
+          "kill_word_after": 65537,
+          "killed": true,
+          "kills_added": 1,
+          "points": 24,
+          "source": "0x40a5d0",
+          "subtotal": 25,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 24,
+          "base": 24,
+          "multiplier": 1,
+          "reason": "",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+        "hit": true,
+        "kill_chain": 1,
+        "magic_key": "fire",
+        "magic_name": "幻火",
+        "native_contribution": 1,
+        "native_damage_roll": {
+          "hit_bonus_after": 0,
+          "hit_check_passed": true,
+          "hit_rate": 100,
+          "hit_roll": 47,
+          "sampled": 25,
+          "value": 36
+        },
+        "resource_payment": {
+          "after": 92,
+          "amount": 8,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 8,
+          "ok": true,
+          "resource": "mp"
+        },
+        "rewards": {
+          "gold": 100,
+          "item_count": 1,
+          "kills": [
+            {
+              "attacker_id": "leonard",
+              "defender_id": "enemy021_1",
+              "gold": 100
+            }
+          ]
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicFIRE:magicCode01",
+        "status_effects": []
+      }
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30.0,
+        "max_mp": 100,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "exp": 0,
+      "experience_events": [],
+      "level": 1.0,
+      "mode": "empty_mp",
+      "next_actor": "enemy023_1",
+      "outcome": "",
+      "pending_points": 0,
+      "phases": {},
+      "receipt": {}
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30.0,
+        "max_mp": 100,
+        "mp": 100,
+        "status_counters": {
+          "no_magic": 1,
+          "poison": 0.0
+        },
+        "status_flags": 2
+      },
+      "exp": 0,
+      "experience_events": [],
+      "level": 1.0,
+      "mode": "silence",
+      "next_actor": "enemy023_1",
+      "outcome": "",
+      "pending_points": 0,
+      "phases": {},
+      "receipt": {}
+    }
+  ],
+  "images_sha256": {
+    "wind-receiver-bars.png": "4f30bc6772ae0d8d29e1db54eeac92c9a8806fbaa9613f9aeb5a36781c62401d",
+    "wind-damage-number.png": "43e002f9cbb53d2b478278edcf2fcbc0494abcde09e5ebc7c645d637d1bc87e9",
+    "mixed_area-receiver-bars.png": "4a1751159a1e56ca306f3a446877647eff76237c0b2d7162c79df2b1ed3dbde1",
+    "fire_kill-kill.png": "315bcc2be2fae4165dfd68756a75375241951ecc87f8620f80348c26c6a8b42a",
+    "fire_kill-experience.png": "4e9dd0dabbc23ebe0befcbfcf2b5032ed94d265b5ecb64558c231230174177f1",
+    "fire_kill-growth.png": "76ff61b33fca8d0ce80fc2a22da10a5aafce7334b26c8ca39099bc7338468da3",
+    "heal_xp-experience.png": "2f5ccb40818f7b72c5c7fc70103e98bac2f7600b80111298352a23ab24cbce1a",
+    "cure_xp-experience.png": "67bea6c2bf138c837ed003ec3305893312d2c9c5a21a73396f4f3e2156d9c6f1",
+    "cure_xp-status.png": "c3bc65487ef030a76394277e01ffbf96a2f921ad306646a39087cdd33014e8f9",
+    "empty_mp-disabled.png": "bbd06e3acb37032755c04c2c23e925952c292b72ec4611fc5ca1407ea08d1d22",
+    "silence-disabled.png": "5eb63cf0f55fb32d233780a690b737127fc899d6286d74a0dff9036b79e8d980",
+    "final_kill-restored-result.png": "f0f23f105d1a9ea60e8945abc3ffc834bce12ac759f8ba369299cb4ee842f9d1"
+  },
+  "attempts": [
+    {
+      "process_exit": 1,
+      "retained": [
+        "fire_kill",
+        "heal_xp",
+        "cure_xp",
+        "final_kill"
+      ],
+      "error": "Disabled-only fixture referenced absent last_combat; engine script error meant the whole first process was NOT a PASS. Completed named routes retained with this limitation. Initial wind/area bar height was then corrected and rerun."
+    },
+    {
+      "process_exit": 0,
+      "retained": [
+        "wind",
+        "mixed_area",
+        "empty_mp",
+        "silence"
+      ],
+      "marker": "MAGIC_EXPERIENCE_RENDER_PASS routes=4",
+      "scope": "Final seven-pixel resource bars, native wind/area settlement, unavailable-MP and silence UI paths"
+    }
+  ],
+  "validation_scope": "Eight named normal-clock real-input routes across sequential processes. No natural skill grants or whole-original-game equivalence claimed."
+}

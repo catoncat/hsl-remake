@@ -1,0 +1,4038 @@
+{
+  "schema": "hsl_ai_calls_native.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "cases": [
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 0,
+        "tag": 0
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          0
+        ],
+        "recipients": [
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1543
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 0,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          5
+        ],
+        "recipients": [
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1543
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 0,
+        "tag": 200
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          200
+        ],
+        "recipients": [
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1543
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 0,
+        "tag": 65535
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          65535
+        ],
+        "recipients": [
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1543
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 1,
+        "tag": 0
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          0,
+          null,
+          0
+        ],
+        "recipients": [
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1546
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 1,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1546
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 1,
+        "tag": 200
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          200,
+          null,
+          200
+        ],
+        "recipients": [
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1546
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 1,
+        "tag": 65535
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          65535,
+          null,
+          65535
+        ],
+        "recipients": [
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1546
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 4,
+        "tag": 0
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          0,
+          null,
+          0
+        ],
+        "recipients": [
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1546
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 4,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1546
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 4,
+        "tag": 200
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          200,
+          null,
+          200
+        ],
+        "recipients": [
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1546
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 4,
+        "tag": 65535
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          65535,
+          null,
+          65535
+        ],
+        "recipients": [
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1546
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "tag": 0
+      },
+      "result": {
+        "tags": [
+          7,
+          0,
+          9,
+          10,
+          11,
+          0,
+          null,
+          0
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1549
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          5,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1549
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "tag": 200
+      },
+      "result": {
+        "tags": [
+          7,
+          200,
+          9,
+          10,
+          11,
+          200,
+          null,
+          200
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1549
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "tag": 65535
+      },
+      "result": {
+        "tags": [
+          7,
+          65535,
+          9,
+          10,
+          11,
+          65535,
+          null,
+          65535
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1549
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 6,
+        "tag": 0
+      },
+      "result": {
+        "tags": [
+          7,
+          0,
+          0,
+          10,
+          11,
+          0,
+          null,
+          0
+        ],
+        "recipients": [
+          1,
+          2,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1552
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 6,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          5,
+          5,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          2,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1552
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 6,
+        "tag": 200
+      },
+      "result": {
+        "tags": [
+          7,
+          200,
+          200,
+          10,
+          11,
+          200,
+          null,
+          200
+        ],
+        "recipients": [
+          1,
+          2,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1552
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 6,
+        "tag": 65535
+      },
+      "result": {
+        "tags": [
+          7,
+          65535,
+          65535,
+          10,
+          11,
+          65535,
+          null,
+          65535
+        ],
+        "recipients": [
+          1,
+          2,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1552
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 512,
+        "tag": 0
+      },
+      "result": {
+        "tags": [
+          7,
+          0,
+          0,
+          10,
+          11,
+          0,
+          null,
+          0
+        ],
+        "recipients": [
+          1,
+          2,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1552
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 512,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          5,
+          5,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          2,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1552
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 512,
+        "tag": 200
+      },
+      "result": {
+        "tags": [
+          7,
+          200,
+          200,
+          10,
+          11,
+          200,
+          null,
+          200
+        ],
+        "recipients": [
+          1,
+          2,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1552
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 512,
+        "tag": 65535
+      },
+      "result": {
+        "tags": [
+          7,
+          65535,
+          65535,
+          10,
+          11,
+          65535,
+          null,
+          65535
+        ],
+        "recipients": [
+          1,
+          2,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1552
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 0,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          13
+        ],
+        "recipients": [],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1399
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          10,
+          5,
+          12,
+          null,
+          13
+        ],
+        "recipients": [
+          4
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1438
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131328,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          5,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1549
+    },
+    {
+      "input": {
+        "kind": "broadcast",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "tag": 5
+      },
+      "result": {
+        "tags": [
+          7,
+          8,
+          9,
+          5,
+          11,
+          12,
+          null,
+          13
+        ],
+        "recipients": [
+          3
+        ],
+        "stop": "normal_return"
+      },
+      "normal_return": true,
+      "instructions": 1439
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 0
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 0,
+        "excluded_word": 65535
+      },
+      "result": {
+        "tags": [
+          0,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          13
+        ],
+        "recipients": [],
+        "target": 0,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 7
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 5
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 0,
+        "excluded_word": 65535
+      },
+      "result": {
+        "tags": [
+          0,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          13
+        ],
+        "recipients": [],
+        "target": 5,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 24
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 6
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 0,
+        "excluded_word": 65535
+      },
+      "result": {
+        "tags": [
+          0,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          13
+        ],
+        "recipients": [],
+        "target": 0,
+        "stop": "0x43f73e"
+      },
+      "normal_return": false,
+      "instructions": 18
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 0,
+        "excluded_word": 65535
+      },
+      "result": {
+        "tags": [
+          0,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          13
+        ],
+        "recipients": [],
+        "target": 0,
+        "stop": "0x43f73e"
+      },
+      "normal_return": false,
+      "instructions": 16
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 2
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 0,
+        "excluded_word": 21
+      },
+      "result": {
+        "tags": [
+          0,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          13
+        ],
+        "recipients": [],
+        "target": 0,
+        "stop": "0x43f73e"
+      },
+      "normal_return": false,
+      "instructions": 26
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 2
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 0,
+        "excluded_word": 0
+      },
+      "result": {
+        "tags": [
+          0,
+          8,
+          9,
+          10,
+          11,
+          12,
+          null,
+          13
+        ],
+        "recipients": [],
+        "target": 2,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 20
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 0
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 5,
+        "excluded_word": 65535
+      },
+      "result": {
+        "tags": [
+          0,
+          5,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "target": 5,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 1562
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 5
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 5,
+        "excluded_word": 65535
+      },
+      "result": {
+        "tags": [
+          5,
+          5,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "target": 5,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 1562
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 6
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 5,
+        "excluded_word": 65535
+      },
+      "result": {
+        "tags": [
+          6,
+          5,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "target": 5,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 1562
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 7
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 5,
+        "excluded_word": 65535
+      },
+      "result": {
+        "tags": [
+          7,
+          5,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "target": 5,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 1562
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 2
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 5,
+        "excluded_word": 21
+      },
+      "result": {
+        "tags": [
+          2,
+          5,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "target": 5,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 1562
+    },
+    {
+      "input": {
+        "kind": "adopt",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 2
+          },
+          {
+            "coord": [
+              13,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 8
+          },
+          {
+            "coord": [
+              14,
+              14
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 21,
+            "tag": 9
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "removed": false,
+            "object_code": 24,
+            "tag": 10
+          },
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 65536,
+            "removed": false,
+            "object_code": 0,
+            "tag": 11
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 131072,
+            "removed": true,
+            "object_code": 21,
+            "tag": 12
+          },
+          null,
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "removed": false,
+            "object_code": 26,
+            "tag": 13
+          }
+        ],
+        "radius": 5,
+        "ordinary": 5,
+        "excluded_word": 0
+      },
+      "result": {
+        "tags": [
+          2,
+          5,
+          9,
+          10,
+          11,
+          5,
+          null,
+          5
+        ],
+        "recipients": [
+          1,
+          5,
+          7
+        ],
+        "target": 5,
+        "stop": "0x43f74e"
+      },
+      "normal_return": false,
+      "instructions": 1562
+    }
+  ],
+  "limits": [
+    "Broadcast executes original callees to normal return; no removed-object filter exists in that helper.",
+    "Adoption starts with the original search result supplied in EAX. It is a prefix, not a full AI normal return.",
+    "Stops before 0x40c110 support handling or 0x40c620 ability preparation; neither is stubbed.",
+    "No original target-lock, wait-round, death cleanup, healing, path or full-turn equivalence claim."
+  ]
+}

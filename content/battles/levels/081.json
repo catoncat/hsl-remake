@@ -1,0 +1,125 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 81,
+  "story_scene": {
+    "id": "story_081_elf_king_confession",
+    "title": "妖精王的告白",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "王座廳",
+      "hint": "劇情結束　　空格／點擊：回到大地圖（克萊恩城）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "actEnterStorageWindow opens the hosted between-battle 整理裝備 screen over the carried party and holds the scene until it closes (provisional: the original window's contents are not measured); actKeepPlayerST (recorded as player_stamina_keep) keeps the ST the party entered with into level 59 (CampaignProgress.start_story_handoff → CampaignCarryRules.pass_level_entry)",
+      "the scene chains to level 59 (actSetNextPlayLevelEvent 59,59); when 59 is registered the hand-off follows, otherwise the scene ends on the card"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "058"
+    ],
+    "speakers": [
+      "001",
+      "005",
+      "009",
+      "058"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY058": "657"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-081.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-081.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-081.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-081.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-081.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-081.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-081.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-081.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-081.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY058": "PLAYERS.TXT character 58 name field = 657 克里歐司 (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 81 (story-only, winfail076 -> 81,81; the LEVEL58 throne hall): the beaten 克里歐司 058 confesses",
+      "the elves' despair, the 魔騎士團 and the 魔神 he raised from 悲嘆之湖, acknowledges 雪拉 as his daughter",
+      "and dies (actDeleteObject); storage window, ST kept, actSetNextPlayLevelEvent 59,59 (the 地劫神 fight)."
+    ],
+    "cast": [
+      "Level 81 (story-only): the dying elf king 058 confesses to the party."
+    ],
+    "speakers": [
+      "Level 81 (story-only, winfail076 -> 81,81): the dying elf king's confession; 雪拉 calls him 父親."
+    ]
+  }
+}

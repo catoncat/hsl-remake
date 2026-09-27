@@ -1,0 +1,527 @@
+{
+  "schema": "hsl_first_scene_opening_choreography_packet.v1",
+  "checked_date": "2026-09-01",
+  "purpose": "Evidence-bounded opening choreography packet for BattleSceneRuntime and follow-on implementation.",
+  "source_policy": "Only local original-runtime promoted frames, STORY051 resource-derived action tokens, imported map-object evidence, actor walk manifest, and current Godot capture manifests are used. Superseded Godot captures, uncurated candidate frames, raw capture trees, and directory-level labels are not choreography truth.",
+  "evidence_tier": "mixed-runtime-measured-resource-derived-godot-rendered-provisional",
+  "sources": {
+    "visual_index": {
+      "path": "docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.json",
+      "schema": "hsl_first_battle_visual_evidence_index.v1",
+      "evidence_tier": "",
+      "capture_status": "present"
+    },
+    "opening_timeline": {
+      "path": "content/imported/hsl/chapter01/opening_timeline.json",
+      "schema": "hsl_first_scene_opening_timeline.v1",
+      "evidence_tier": "resource-derived",
+      "capture_status": "present"
+    },
+    "map_objects": {
+      "path": "content/imported/hsl/chapter01/map_objects.json",
+      "schema": "hsl_chapter01_imported_map_objects_ir.v1",
+      "evidence_tier": "resource_imported",
+      "capture_status": "present"
+    },
+    "map_object_visibility": {
+      "path": "content/imported/hsl/chapter01/map_object_visibility_evidence.json",
+      "schema": "hsl_chapter01_map_object_visibility_evidence.v1",
+      "evidence_tier": "resource_imported",
+      "capture_status": "present"
+    },
+    "actor_walk_manifest": {
+      "path": "content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json",
+      "schema": "hsl_actor_walk_manifest.v1",
+      "evidence_tier": "resource-derived",
+      "capture_status": "present"
+    },
+    "runtime_capture": {
+      "path": "ignored/first-scene-dev-interaction-harness/latest/manifest.json",
+      "schema": "hsl_first_scene_runtime_capture.v1",
+      "evidence_tier": "godot-rendered-provisional",
+      "capture_status": "missing_generated_capture"
+    },
+    "opening_capture": {
+      "path": "ignored/first-scene-opening-captures/latest/manifest.json",
+      "schema": "hsl_first_scene_opening_capture.v1",
+      "evidence_tier": "godot-rendered-provisional",
+      "capture_status": "missing_generated_capture"
+    },
+    "opening_autoplay_capture": {
+      "path": "ignored/first-scene-dev-opening-autoplay-harness/latest/manifest.json",
+      "schema": "hsl_first_scene_opening_autoplay_capture.v1",
+      "evidence_tier": "godot-rendered-provisional",
+      "capture_status": "missing_generated_capture"
+    }
+  },
+  "visual_evidence": [
+    {
+      "id": "first_control_action_menu",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/first_control_action_menu.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "first-control action menu open",
+      "use_for": [
+        "first-control viewport reference",
+        "action menu placement around Leonard",
+        "actor/menu relative positions",
+        "foreground overlap context"
+      ],
+      "not_for": [
+        "movement range grid",
+        "move cancel behavior",
+        "exact command handler identity"
+      ]
+    },
+    {
+      "id": "opening_dialogue_leonard",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_dialogue_leonard.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "Leonard dialogue UI over lower formation",
+      "use_for": [
+        "dialogue UI placement",
+        "Leonard portrait/message box visual anchor",
+        "dialogue-stage lower formation context"
+      ],
+      "not_for": [
+        "first-control idle",
+        "action menu placement",
+        "Move overlay",
+        "message text source decoding"
+      ]
+    },
+    {
+      "id": "opening_dialogue_map_only_gap",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_dialogue_map_only_gap.png",
+      "status": "candidate",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "map-only gap during dialogue sequence; no dialogue box, action menu, or Move overlay visible",
+      "use_for": [
+        "candidate lower formation cross-check",
+        "dialogue transition visual gap",
+        "camera crop near first-control context"
+      ],
+      "not_for": [
+        "confirmed first-control idle with no UI",
+        "proof that player control has started",
+        "action menu placement",
+        "Move overlay"
+      ]
+    },
+    {
+      "id": "opening_dialogue_soldier",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_dialogue_soldier.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "soldier dialogue UI over lower formation",
+      "use_for": [
+        "dialogue UI placement",
+        "soldier portrait/message box visual anchor",
+        "dialogue-stage actor focus cross-check"
+      ],
+      "not_for": [
+        "first-control idle",
+        "action menu placement",
+        "Move overlay",
+        "message text source decoding"
+      ]
+    },
+    {
+      "id": "opening_lower_formation_before_dialogue",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_lower_formation_before_dialogue.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "battle map lower formation before dialogue UI appears",
+      "use_for": [
+        "player-entry lower formation visual anchor",
+        "pre-dialogue map camera crop",
+        "Leonard and friendly actor visible positions before dialogue"
+      ],
+      "not_for": [
+        "confirmed first-control idle with no UI",
+        "action menu placement",
+        "Move overlay",
+        "complete actor entry paths"
+      ]
+    },
+    {
+      "id": "opening_transition_castle_wall_frame",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_transition_castle_wall_frame.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "opening castle-wall transition graphic, not battlefield camera",
+      "use_for": [
+        "opening transition sequence anchor",
+        "negative guard against mistaking transition frames for map camera frames"
+      ],
+      "not_for": [
+        "gate bridge battlefield view",
+        "unit formation",
+        "first-control handoff",
+        "movement range grid"
+      ]
+    },
+    {
+      "id": "opening_transition_rain_frame",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_transition_rain_frame.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "opening rain/background transition before battlefield map",
+      "use_for": [
+        "opening transition visual anchor",
+        "original-runtime recording alignment point"
+      ],
+      "not_for": [
+        "battlefield formation",
+        "camera pan curve",
+        "first-control handoff",
+        "movement range grid"
+      ]
+    },
+    {
+      "id": "p1_route_action_menu_13",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/p1_route_action_menu_13.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "first-control action menu route frame",
+      "use_for": [
+        "first-control action menu cross-check",
+        "menu placement around Leonard",
+        "first-control camera crop after route confirmation"
+      ],
+      "not_for": [
+        "first-control idle with no UI",
+        "Move overlay",
+        "complete actor entry paths"
+      ]
+    },
+    {
+      "id": "p1_route_upper_formation_11",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/p1_route_upper_formation_11.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "upper gate/bridge formation route frame with multiple units visible",
+      "use_for": [
+        "upper enemy/friendly formation candidate",
+        "gate bridge camera crop",
+        "foreground bridge and tree overlap context"
+      ],
+      "not_for": [
+        "first-control idle",
+        "action menu placement",
+        "Move overlay",
+        "complete actor entry path timing"
+      ]
+    },
+    {
+      "id": "p1_route_upper_formation_12",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/p1_route_upper_formation_12.png",
+      "status": "confirmed",
+      "evidence_tier": "runtime-measured",
+      "visual_state": "upper gate/bridge formation route frame with unit positions advanced from p1_route_upper_formation_11",
+      "use_for": [
+        "upper enemy/friendly formation candidate",
+        "gate bridge camera crop",
+        "opening route unit-position cross-check"
+      ],
+      "not_for": [
+        "first-control idle",
+        "action menu placement",
+        "Move overlay",
+        "complete actor entry path timing"
+      ]
+    }
+  ],
+  "script_timeline": {
+    "schema": "hsl_first_scene_opening_timeline.v1",
+    "path": "content/imported/hsl/chapter01/opening_timeline.json",
+    "event_count": 20,
+    "direct_actor_motion_count": 1,
+    "direct_actor_motion_tokens": [
+      {
+        "id": "story051_02_actor_walk_disp_wait",
+        "actor_token": "SID_PLAYER0",
+        "source_token": "actWalkDispWait(SID_PLAYER0,1,0,-96,2)",
+        "args": [
+          "SID_PLAYER0",
+          "1",
+          "0",
+          "-96",
+          "2"
+        ],
+        "evidence_tier": "resource-derived"
+      }
+    ],
+    "dialogue_message_ids": [
+      "363",
+      "364",
+      "365",
+      "366",
+      "367",
+      "364",
+      "1101"
+    ],
+    "dialogue_actor_tokens": [
+      "SID_ENEMY021",
+      "SID_ENEMY023",
+      "SID_ENEMY024",
+      "SID_PLAYER0"
+    ],
+    "contract_not_proven": [
+      "original message box layout",
+      "message box layout",
+      "exact delay time scale",
+      "complete enemy gate-entry choreography",
+      "camera curve",
+      "actor foot anchors and path timing",
+      "handler side effects beyond preserved action tokens"
+    ]
+  },
+  "actor_choreography": [
+    {
+      "actor_token": "SID_PLAYER0",
+      "unit_id": "leonard",
+      "actor_id": "001",
+      "role": "player_commanded",
+      "motion_status": "direct_story051_walk_token",
+      "direct_motion_tokens": [
+        "actWalkDispWait(SID_PLAYER0,1,0,-96,2)"
+      ],
+      "dialogue_message_ids": [
+        "363",
+        "367"
+      ],
+      "actor_walk_manifest_status": "present",
+      "evidence_tier": "resource-derived",
+      "provisional": true
+    },
+    {
+      "actor_token": "SID_ENEMY021",
+      "unit_id": "enemy021_1",
+      "actor_id": "021",
+      "role": "enemy_force",
+      "motion_status": "dialogue_actor_only_no_direct_walk_token",
+      "direct_motion_tokens": [],
+      "dialogue_message_ids": [
+        "1101"
+      ],
+      "actor_walk_manifest_status": "present",
+      "evidence_tier": "resource-derived",
+      "provisional": true
+    },
+    {
+      "actor_token": "SID_ENEMY023",
+      "unit_id": "enemy023_1",
+      "actor_id": "023",
+      "role": "ai_controlled_ally",
+      "motion_status": "dialogue_actor_only_no_direct_walk_token",
+      "direct_motion_tokens": [],
+      "dialogue_message_ids": [
+        "364",
+        "366"
+      ],
+      "actor_walk_manifest_status": "present",
+      "evidence_tier": "resource-derived",
+      "provisional": true
+    },
+    {
+      "actor_token": "SID_ENEMY024",
+      "unit_id": "enemy024_1",
+      "actor_id": "024",
+      "role": "ai_controlled_ally",
+      "motion_status": "dialogue_actor_only_no_direct_walk_token",
+      "direct_motion_tokens": [],
+      "dialogue_message_ids": [
+        "365",
+        "364"
+      ],
+      "actor_walk_manifest_status": "present",
+      "evidence_tier": "resource-derived",
+      "provisional": true
+    },
+    {
+      "actor_token": "SID_ENEMY026",
+      "unit_id": "enemy026_1",
+      "actor_id": "026",
+      "role": "enemy_force",
+      "motion_status": "known_first_scene_actor_no_story051_motion_token",
+      "direct_motion_tokens": [],
+      "dialogue_message_ids": [],
+      "actor_walk_manifest_status": "present",
+      "evidence_tier": "resource-derived",
+      "provisional": true
+    }
+  ],
+  "choreography_segments": [
+    {
+      "id": "transition_context",
+      "claim": "Opening transition visual anchors exist, but they are not battlefield camera or actor path proof.",
+      "original_runtime_evidence_ids": [
+        "opening_transition_rain_frame",
+        "opening_transition_castle_wall_frame"
+      ],
+      "godot_capture_stages": [
+        "opening_music",
+        "opening_delay"
+      ],
+      "implementation_status": "visual_anchor_only",
+      "can_drive_runtime_motion": false,
+      "not_proven": [
+        "battlefield camera crop",
+        "actor formation",
+        "camera curve"
+      ]
+    },
+    {
+      "id": "upper_gate_bridge_context",
+      "claim": "Upper gate/bridge formation frames constrain candidate camera context and foreground overlap.",
+      "original_runtime_evidence_ids": [
+        "p1_route_upper_formation_11",
+        "p1_route_upper_formation_12"
+      ],
+      "godot_capture_stages": [
+        "opening_music",
+        "opening_delay"
+      ],
+      "implementation_status": "candidate_camera_anchor",
+      "can_drive_runtime_motion": false,
+      "not_proven": [
+        "complete enemy entry path",
+        "first-control idle",
+        "continuous camera movement"
+      ]
+    },
+    {
+      "id": "leonard_story_walk",
+      "claim": "STORY051 contains exactly one direct opening walk token, for SID_PLAYER0/Leonard.",
+      "source_tokens": [
+        "actWalkDispWait(SID_PLAYER0,1,0,-96,2)"
+      ],
+      "original_runtime_evidence_ids": [
+        "opening_lower_formation_before_dialogue"
+      ],
+      "godot_capture_stages": [
+        "actor_walk_token"
+      ],
+      "implementation_status": "current_godot_provisional_motion",
+      "can_drive_runtime_motion": true,
+      "not_proven": [
+        "exact path coordinate semantics",
+        "speed",
+        "facing",
+        "foot anchor"
+      ]
+    },
+    {
+      "id": "dialogue_lower_context",
+      "claim": "Dialogue actor/message id order is resource-derived and constrained by lower-formation original-runtime frames.",
+      "dialogue_message_ids": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "dialogue_actor_tokens": [
+        "SID_PLAYER0",
+        "SID_ENEMY023",
+        "SID_ENEMY024",
+        "SID_ENEMY023",
+        "SID_PLAYER0",
+        "SID_ENEMY024",
+        "SID_ENEMY021"
+      ],
+      "original_runtime_evidence_ids": [
+        "opening_dialogue_leonard",
+        "opening_dialogue_map_only_gap",
+        "opening_dialogue_soldier"
+      ],
+      "godot_capture_stages": [
+        "dialogue_message_363"
+      ],
+      "implementation_status": "original_resource_dialogue_overlay",
+      "can_drive_runtime_motion": false,
+      "not_proven": [
+        "original message box layout",
+        "first-control idle"
+      ]
+    },
+    {
+      "id": "status_and_first_control_handoff",
+      "claim": "Status token order and Godot autoplay handoff are implemented as provisional queue consumption.",
+      "original_runtime_evidence_ids": [
+        "first_control_action_menu",
+        "p1_route_action_menu_13"
+      ],
+      "godot_capture_stages": [
+        "status_tokens_setup",
+        "winfail_board_refresh",
+        "autoplay_first_control"
+      ],
+      "implementation_status": "compressed_autoplay_handoff",
+      "final_opening_capture_event": "",
+      "final_autoplay_event": "",
+      "can_drive_runtime_motion": false,
+      "not_proven": [
+        "original status handler side effects",
+        "exact handoff frame",
+        "first_control_idle_no_menu"
+      ]
+    }
+  ],
+  "current_godot_consumption": {
+    "runtime_capture_path": "ignored/first-scene-dev-interaction-harness/latest/manifest.json",
+    "opening_capture_path": "ignored/first-scene-opening-captures/latest/manifest.json",
+    "opening_autoplay_capture_path": "ignored/first-scene-dev-opening-autoplay-harness/latest/manifest.json",
+    "generated_capture_status": {
+      "runtime_capture": "missing_generated_capture",
+      "opening_capture": "missing_generated_capture",
+      "opening_autoplay_capture": "missing_generated_capture"
+    },
+    "runtime_capture_count": 0,
+    "opening_capture_count": 0,
+    "autoplay_capture_count": 0,
+    "opening_final_camera_stage": "",
+    "autoplay_final_camera_stage": "",
+    "autoplay_final_event": "",
+    "map_object_spawn_count": 0,
+    "runtime_contract_opening_choreography_packet_schema": "",
+    "runtime_contract_opening_choreography_motion_driver_segments": [],
+    "opening_capture_choreography_packet_schema": "",
+    "opening_capture_motion_driver_segments": [],
+    "opening_capture_segment_record_stages": [],
+    "opening_capture_camera_contract_stages": [],
+    "autoplay_capture_choreography_packet_schema": "",
+    "autoplay_capture_motion_driver_segments": [],
+    "autoplay_capture_segment_record_stages": [],
+    "autoplay_capture_camera_contract_stages": [],
+    "runtime_consumption_status": "current_godot_provisional_presentation",
+    "claim_limit": "Current Godot captures prove queue consumption and visible scaffolding only; they do not prove original choreography."
+  },
+  "missing_original_truth": [
+    "first_control_idle_no_menu",
+    "complete_enemy_gate_entry_paths",
+    "complete_friendly_entry_paths",
+    "continuous_camera_curve",
+    "original_delay_time_scale",
+    "dialogue_text_source",
+    "actor_foot_anchor_and_path_timing"
+  ],
+  "forbidden_inferences": [
+    "Do not infer enemy or allied entry paths from dialogue speaker tokens alone.",
+    "Do not treat p1_route_upper_formation_11/12 as first-control idle truth.",
+    "Do not treat opening_dialogue_map_only_gap as proof that player control has started.",
+    "Do not treat the current Godot token overlay as original UI or original handler timing.",
+    "Do not convert EVEF placement candidates or map-object anchors into final actor foot positions."
+  ],
+  "next_implementation_gate": [
+    "Consume direct STORY051 actor token only for Leonard's provisional motion unless another handler/source proves more paths.",
+    "Before adding enemy/friendly entry paths, produce either static handler evidence or a promoted original-runtime frame sequence/contact sheet.",
+    "Before declaring first-control formation truth, resolve first_control_idle_no_menu or equivalent narrow evidence.",
+    "Before upgrading camera choreography, replace candidate anchors with a continuous camera curve or measured frame sequence."
+  ],
+  "provisional": true
+}

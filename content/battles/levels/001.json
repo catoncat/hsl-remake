@@ -1,0 +1,90 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 1,
+  "story_scene": {
+    "id": "story_001_ohm_village_opening",
+    "title": "歐姆村（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      }
+    },
+    "end_card": {
+      "title": "歐姆村",
+      "hint": "戰鬥部分（level 1）尚未重製　　空格／點擊：進入大地圖（歐姆村）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the controlled pair 雷歐納德 / 琥 (jobBowMan 83) and the raiders 028 (jobThief 88) / 036 (jobWingWarrior 92) have no job model yet (P-024); the preview shows their EVEF placements and STORY001 walks only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "003",
+      "028",
+      "036",
+      "061",
+      "062"
+    ],
+    "speakers": [
+      "001",
+      "003",
+      "028",
+      "061",
+      "062"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_琥": "2",
+    "SID_ENEMY061": "656",
+    "SID_ENEMY062": "656",
+    "SID_ENEMY028": "632"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-001.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-001.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_ENEMY061": "PLAYERS.TXT character 61 name field is 306 (???); obj-001.obs names the object Enemy061(村民), so 656 村民 is the remake speaker label, provisional",
+    "SID_ENEMY062": "PLAYERS.TXT character 62 name field is 306 (???); obj-001.obs names the object Enemy062(村民), so 656 村民 is the remake speaker label, provisional",
+    "SID_ENEMY028": "PLAYERS.TXT character 28 name field is 306 (???), job jobThief; the STORY001/winfail001 lines call the raiders 盜賊, so 632 盜賊 is the remake speaker label, provisional (no original name reveal)",
+    "defNoOne": "narration token without a speaker; presented without name or portrait"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 1 (歐姆村, the first main-chapter battle) is gated on the jobBowMan /",
+      "jobThief / jobWingWarrior models (P-024); its STORY001 opening — the village",
+      "morning, 雷歐納德 and 琥, the raiders' approach from the south — is remade as a",
+      "preview that stops at first player control with a not-remade card.",
+      "Two named player installs (EVEF 雷歐納德 / 琥); STORY001 addresses them as",
+      "SID_雷歐納德 / SID_琥 rather than SID_PLAYERn.",
+      "STORY001 also opens on actPlayMusic,8 (track 8).",
+      "actPlayLevelMusic at the end of the opening: table 0x477b44 gives level 1",
+      "track 13.",
+      "After the not-remade battle the campaign continues on the big map at",
+      "歐姆村 (bigmap.dat point 1): the card exits to campaign.json's world_map",
+      "scene instead of restarting the prologue. The skipped level-1 battle",
+      "outcome (winfail001 win actions) is not applied — an explicit gap."
+    ],
+    "cast": [
+      "Level 1 (first main-chapter battle): Leonard and 琥 (controlled slots 0/2),",
+      "two villager objects, the raider chief 028 and the winged raiders 036."
+    ],
+    "speakers": [
+      "Level 1 (first main-chapter battle, STORY001): EXTRAS.H names the controlled",
+      "slots (SID_雷歐納德 = 0, SID_琥 = 2); obj-001.obs player-install objects carry the",
+      "same slot in obj_Data9 and PLAYERS characters 1/3 resolve name_0/name_2."
+    ]
+  }
+}

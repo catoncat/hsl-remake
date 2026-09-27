@@ -1,0 +1,2584 @@
+{
+  "schema": "hsl_gameplay_reference.v1",
+  "source": {
+    "name": "record.mp4",
+    "sha256": "84b90ebc879c4044ce77b8db0063334dd4b3dadb4522e59b27d5fe78f3b83fe4",
+    "bytes": 368546140,
+    "recording_size": [
+      638,
+      480
+    ],
+    "project_logical_size": [
+      640,
+      480
+    ],
+    "fps": [
+      30,
+      1
+    ],
+    "duration_seconds": 489.5,
+    "frame_count": 14685,
+    "video_codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio_codec": "aac",
+    "original_game_attribution": "user-confirmed; not a binary/version identity check",
+    "archive_hint": "../hsl-fork-raw-archive-20260914-gameplay",
+    "frame_index_convention": "zero-based decoded frame; seconds = frame / 30",
+    "audit": {
+      "exported_frames": 637,
+      "pixel_matched_frames": 637,
+      "unmatched_frames": 0,
+      "method": "RGB24 decoded pixel MD5 matched against every source video frame",
+      "semantic_review": "18 contact sheets and selected native frames; not all 14685 frames",
+      "original_readme_sha256": "a6f375c78fe377c90b9528e48371223daa6ddee55b12cc49a7a285c3ecb300d2",
+      "original_manifest_sha256": "810bc5a0f0ffcdf9f357ee271412c4a8b1f3877bac712561a5d8c51760eba3a3"
+    },
+    "limitations": [
+      "638-wide recording is not a native 640-wide capture",
+      "Screenflare watermark obscures lower-right pixels",
+      "lossy recording cannot establish original palette, alpha or font identity",
+      "sample/export ordinal is not a source frame index or phase boundary",
+      "audio not audited; source recording fps is not simulation tick rate"
+    ]
+  },
+  "categories": [
+    {
+      "id": "01_title_and_opening",
+      "label": "标题、开场与任务文字",
+      "contact_sheet": "01_title_and_opening/contact_sheet.jpg",
+      "exported_frame_count": 50,
+      "retained_frames": [
+        "01_title_and_opening/frame_001.png",
+        "01_title_and_opening/frame_038.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            7
+          ]
+        },
+        {
+          "export_ordinal": 5,
+          "source_frames": [
+            67
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            127
+          ]
+        },
+        {
+          "export_ordinal": 13,
+          "source_frames": [
+            187
+          ]
+        },
+        {
+          "export_ordinal": 17,
+          "source_frames": [
+            247
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            307
+          ]
+        },
+        {
+          "export_ordinal": 26,
+          "source_frames": [
+            382
+          ]
+        },
+        {
+          "export_ordinal": 30,
+          "source_frames": [
+            442
+          ]
+        },
+        {
+          "export_ordinal": 34,
+          "source_frames": [
+            502
+          ]
+        },
+        {
+          "export_ordinal": 38,
+          "source_frames": [
+            562
+          ]
+        },
+        {
+          "export_ordinal": 42,
+          "source_frames": [
+            622
+          ]
+        },
+        {
+          "export_ordinal": 46,
+          "source_frames": [
+            682
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "02_dialogue_system",
+      "label": "对白、淡出与标题相邻片段",
+      "contact_sheet": "02_dialogue_system/contact_sheet.jpg",
+      "exported_frame_count": 45,
+      "retained_frames": [
+        "02_dialogue_system/frame_004.png",
+        "02_dialogue_system/frame_016.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            214
+          ]
+        },
+        {
+          "export_ordinal": 4,
+          "source_frames": [
+            244
+          ]
+        },
+        {
+          "export_ordinal": 8,
+          "source_frames": [
+            284
+          ]
+        },
+        {
+          "export_ordinal": 12,
+          "source_frames": [
+            324
+          ]
+        },
+        {
+          "export_ordinal": 16,
+          "source_frames": [
+            364
+          ]
+        },
+        {
+          "export_ordinal": 19,
+          "source_frames": [
+            394
+          ]
+        },
+        {
+          "export_ordinal": 23,
+          "source_frames": [
+            434
+          ]
+        },
+        {
+          "export_ordinal": 27,
+          "source_frames": [
+            474
+          ]
+        },
+        {
+          "export_ordinal": 31,
+          "source_frames": [
+            514
+          ]
+        },
+        {
+          "export_ordinal": 34,
+          "source_frames": [
+            544
+          ]
+        },
+        {
+          "export_ordinal": 38,
+          "source_frames": [
+            584
+          ]
+        },
+        {
+          "export_ordinal": 42,
+          "source_frames": [
+            624
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "03_action_ring_menu",
+      "label": "六项菜单样本与移动选择",
+      "contact_sheet": "03_action_ring_menu/contact_sheet.jpg",
+      "exported_frame_count": 24,
+      "retained_frames": [
+        "03_action_ring_menu/frame_007.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            933
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            948
+          ]
+        },
+        {
+          "export_ordinal": 5,
+          "source_frames": [
+            963
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            978
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            993
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            1008
+          ]
+        },
+        {
+          "export_ordinal": 13,
+          "source_frames": [
+            1023
+          ]
+        },
+        {
+          "export_ordinal": 15,
+          "source_frames": [
+            1038
+          ]
+        },
+        {
+          "export_ordinal": 17,
+          "source_frames": [
+            1053
+          ]
+        },
+        {
+          "export_ordinal": 19,
+          "source_frames": [
+            1068
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            1083
+          ]
+        },
+        {
+          "export_ordinal": 23,
+          "source_frames": [
+            1098
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "04_movement_range_and_cursor",
+      "label": "方形移动格与镜头浏览",
+      "contact_sheet": "04_movement_range_and_cursor/contact_sheet.jpg",
+      "exported_frame_count": 24,
+      "retained_frames": [
+        "04_movement_range_and_cursor/frame_001.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            1057
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            1087
+          ]
+        },
+        {
+          "export_ordinal": 5,
+          "source_frames": [
+            1117
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            1147
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            1177
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            1207
+          ]
+        },
+        {
+          "export_ordinal": 13,
+          "source_frames": [
+            1237
+          ]
+        },
+        {
+          "export_ordinal": 15,
+          "source_frames": [
+            1267
+          ]
+        },
+        {
+          "export_ordinal": 17,
+          "source_frames": [
+            1297
+          ]
+        },
+        {
+          "export_ordinal": 19,
+          "source_frames": [
+            1327
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            1357
+          ]
+        },
+        {
+          "export_ordinal": 23,
+          "source_frames": [
+            1387
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "05_system_scroll_menu",
+      "label": "系统菜单开合与状态页相邻片段",
+      "contact_sheet": "05_system_scroll_menu/contact_sheet.jpg",
+      "exported_frame_count": 12,
+      "retained_frames": [
+        "05_system_scroll_menu/frame_003.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            1384
+          ]
+        },
+        {
+          "export_ordinal": 2,
+          "source_frames": [
+            1394
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            1404
+          ]
+        },
+        {
+          "export_ordinal": 4,
+          "source_frames": [
+            1414
+          ]
+        },
+        {
+          "export_ordinal": 5,
+          "source_frames": [
+            1424
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            1434
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            1444
+          ]
+        },
+        {
+          "export_ordinal": 8,
+          "source_frames": [
+            1454
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            1464
+          ]
+        },
+        {
+          "export_ordinal": 10,
+          "source_frames": [
+            1474
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            1484
+          ]
+        },
+        {
+          "export_ordinal": 12,
+          "source_frames": [
+            1494
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "06_status_and_stats_screen",
+      "label": "状态、装备提示和技能页",
+      "contact_sheet": "06_status_and_stats_screen/contact_sheet.jpg",
+      "exported_frame_count": 30,
+      "retained_frames": [
+        "06_status_and_stats_screen/frame_006.png",
+        "06_status_and_stats_screen/frame_028.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            1477
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            1507
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            1552
+          ]
+        },
+        {
+          "export_ordinal": 8,
+          "source_frames": [
+            1582
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            1627
+          ]
+        },
+        {
+          "export_ordinal": 13,
+          "source_frames": [
+            1657
+          ]
+        },
+        {
+          "export_ordinal": 16,
+          "source_frames": [
+            1702
+          ]
+        },
+        {
+          "export_ordinal": 18,
+          "source_frames": [
+            1732
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            1777
+          ]
+        },
+        {
+          "export_ordinal": 23,
+          "source_frames": [
+            1807
+          ]
+        },
+        {
+          "export_ordinal": 26,
+          "source_frames": [
+            1852
+          ]
+        },
+        {
+          "export_ordinal": 28,
+          "source_frames": [
+            1882
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "07_item_equip_and_trade",
+      "label": "道具子菜单、持物光标与目标选择；未证明完整双人交换",
+      "contact_sheet": "07_item_equip_and_trade/contact_sheet.jpg",
+      "exported_frame_count": 40,
+      "retained_frames": [
+        "07_item_equip_and_trade/frame_011.png",
+        "07_item_equip_and_trade/frame_017.png",
+        "07_item_equip_and_trade/frame_031.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            2257
+          ]
+        },
+        {
+          "export_ordinal": 4,
+          "source_frames": [
+            2302
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            2347
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            2407
+          ]
+        },
+        {
+          "export_ordinal": 14,
+          "source_frames": [
+            2452
+          ]
+        },
+        {
+          "export_ordinal": 17,
+          "source_frames": [
+            2497
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            2557
+          ]
+        },
+        {
+          "export_ordinal": 24,
+          "source_frames": [
+            2602
+          ]
+        },
+        {
+          "export_ordinal": 27,
+          "source_frames": [
+            2647
+          ]
+        },
+        {
+          "export_ordinal": 31,
+          "source_frames": [
+            2707
+          ]
+        },
+        {
+          "export_ordinal": 34,
+          "source_frames": [
+            2752
+          ]
+        },
+        {
+          "export_ordinal": 37,
+          "source_frames": [
+            2797
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "08_attack_target_selection",
+      "label": "气刃斩目标选择；原交付误标普通攻击",
+      "contact_sheet": "08_attack_target_selection/contact_sheet.jpg",
+      "exported_frame_count": 20,
+      "retained_frames": [
+        "08_attack_target_selection/frame_004.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            2013
+          ]
+        },
+        {
+          "export_ordinal": 2,
+          "source_frames": [
+            2021
+          ]
+        },
+        {
+          "export_ordinal": 4,
+          "source_frames": [
+            2036
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            2051
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            2058
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            2073
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            2088
+          ]
+        },
+        {
+          "export_ordinal": 12,
+          "source_frames": [
+            2096
+          ]
+        },
+        {
+          "export_ordinal": 14,
+          "source_frames": [
+            2111
+          ]
+        },
+        {
+          "export_ordinal": 16,
+          "source_frames": [
+            2126
+          ]
+        },
+        {
+          "export_ordinal": 17,
+          "source_frames": [
+            2133
+          ]
+        },
+        {
+          "export_ordinal": 19,
+          "source_frames": [
+            2148
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "09_special_skill_selection",
+      "label": "气刃斩菜单、列表与取消",
+      "contact_sheet": "09_special_skill_selection/contact_sheet.jpg",
+      "exported_frame_count": 24,
+      "retained_frames": [
+        "09_special_skill_selection/frame_007.png",
+        "09_special_skill_selection/frame_013.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            2943
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            2958
+          ]
+        },
+        {
+          "export_ordinal": 5,
+          "source_frames": [
+            2973
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            2988
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            3003
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            3018
+          ]
+        },
+        {
+          "export_ordinal": 13,
+          "source_frames": [
+            3033
+          ]
+        },
+        {
+          "export_ordinal": 15,
+          "source_frames": [
+            3048
+          ]
+        },
+        {
+          "export_ordinal": 17,
+          "source_frames": [
+            3063
+          ]
+        },
+        {
+          "export_ordinal": 19,
+          "source_frames": [
+            3078
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            3093
+          ]
+        },
+        {
+          "export_ordinal": 23,
+          "source_frames": [
+            3108
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "10_combat_normal_soldier",
+      "label": "帝国兵攻击、一般兵受击和后续地图",
+      "contact_sheet": "10_combat_normal_soldier/contact_sheet.jpg",
+      "exported_frame_count": 35,
+      "retained_frames": [
+        "10_combat_normal_soldier/frame_009.png",
+        "10_combat_normal_soldier/frame_015.png",
+        "10_combat_normal_soldier/frame_021.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            4202
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            4214
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            4232
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            4250
+          ]
+        },
+        {
+          "export_ordinal": 12,
+          "source_frames": [
+            4268
+          ]
+        },
+        {
+          "export_ordinal": 15,
+          "source_frames": [
+            4286
+          ]
+        },
+        {
+          "export_ordinal": 18,
+          "source_frames": [
+            4304
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            4322
+          ]
+        },
+        {
+          "export_ordinal": 24,
+          "source_frames": [
+            4340
+          ]
+        },
+        {
+          "export_ordinal": 27,
+          "source_frames": [
+            4358
+          ]
+        },
+        {
+          "export_ordinal": 30,
+          "source_frames": [
+            4376
+          ]
+        },
+        {
+          "export_ordinal": 33,
+          "source_frames": [
+            4394
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "11_combat_knight_and_mage",
+      "label": "重装兵攻击、法师受击和后续地图",
+      "contact_sheet": "11_combat_knight_and_mage/contact_sheet.jpg",
+      "exported_frame_count": 40,
+      "retained_frames": [
+        "11_combat_knight_and_mage/frame_007.png",
+        "11_combat_knight_and_mage/frame_014.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            9602
+          ]
+        },
+        {
+          "export_ordinal": 4,
+          "source_frames": [
+            9620
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            9638
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            9662
+          ]
+        },
+        {
+          "export_ordinal": 14,
+          "source_frames": [
+            9680
+          ]
+        },
+        {
+          "export_ordinal": 17,
+          "source_frames": [
+            9698
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            9722
+          ]
+        },
+        {
+          "export_ordinal": 24,
+          "source_frames": [
+            9740
+          ]
+        },
+        {
+          "export_ordinal": 27,
+          "source_frames": [
+            9758
+          ]
+        },
+        {
+          "export_ordinal": 31,
+          "source_frames": [
+            9782
+          ]
+        },
+        {
+          "export_ordinal": 34,
+          "source_frames": [
+            9800
+          ]
+        },
+        {
+          "export_ordinal": 37,
+          "source_frames": [
+            9818
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "12_leonard_normal_attack",
+      "label": "雷欧纳德普通攻击、死亡对白与KILL字样",
+      "contact_sheet": "12_leonard_normal_attack/contact_sheet.jpg",
+      "exported_frame_count": 42,
+      "retained_frames": [
+        "12_leonard_normal_attack/frame_004.png",
+        "12_leonard_normal_attack/frame_008.png",
+        "12_leonard_normal_attack/frame_015.png",
+        "12_leonard_normal_attack/frame_022.png",
+        "12_leonard_normal_attack/frame_039.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            7532
+          ]
+        },
+        {
+          "export_ordinal": 4,
+          "source_frames": [
+            7547
+          ]
+        },
+        {
+          "export_ordinal": 8,
+          "source_frames": [
+            7567
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            7582
+          ]
+        },
+        {
+          "export_ordinal": 15,
+          "source_frames": [
+            7602
+          ]
+        },
+        {
+          "export_ordinal": 18,
+          "source_frames": [
+            7617
+          ]
+        },
+        {
+          "export_ordinal": 22,
+          "source_frames": [
+            7637
+          ]
+        },
+        {
+          "export_ordinal": 25,
+          "source_frames": [
+            7652
+          ]
+        },
+        {
+          "export_ordinal": 29,
+          "source_frames": [
+            7672
+          ]
+        },
+        {
+          "export_ordinal": 32,
+          "source_frames": [
+            7687
+          ]
+        },
+        {
+          "export_ordinal": 36,
+          "source_frames": [
+            7707
+          ]
+        },
+        {
+          "export_ordinal": 39,
+          "source_frames": [
+            7722
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "13_leonard_special_skill_cutin",
+      "label": "气刃斩特写、受击与死亡对白",
+      "contact_sheet": "13_leonard_special_skill_cutin/contact_sheet.jpg",
+      "exported_frame_count": 80,
+      "retained_frames": [
+        "13_leonard_special_skill_cutin/frame_001.png",
+        "13_leonard_special_skill_cutin/frame_007.png",
+        "13_leonard_special_skill_cutin/frame_014.png",
+        "13_leonard_special_skill_cutin/frame_027.png",
+        "13_leonard_special_skill_cutin/frame_041.png",
+        "13_leonard_special_skill_cutin/frame_047.png",
+        "13_leonard_special_skill_cutin/frame_054.png",
+        "13_leonard_special_skill_cutin/frame_055.png",
+        "13_leonard_special_skill_cutin/frame_067.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            5761
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            5784
+          ]
+        },
+        {
+          "export_ordinal": 14,
+          "source_frames": [
+            5810
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            5836
+          ]
+        },
+        {
+          "export_ordinal": 27,
+          "source_frames": [
+            5859
+          ]
+        },
+        {
+          "export_ordinal": 34,
+          "source_frames": [
+            5885
+          ]
+        },
+        {
+          "export_ordinal": 41,
+          "source_frames": [
+            5911
+          ]
+        },
+        {
+          "export_ordinal": 47,
+          "source_frames": [
+            5934
+          ]
+        },
+        {
+          "export_ordinal": 54,
+          "source_frames": [
+            5960
+          ]
+        },
+        {
+          "export_ordinal": 61,
+          "source_frames": [
+            5986
+          ]
+        },
+        {
+          "export_ordinal": 67,
+          "source_frames": [
+            6009
+          ]
+        },
+        {
+          "export_ordinal": 74,
+          "source_frames": [
+            6035
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "14_tactical_map_magic_aoe",
+      "label": "幻火地图演出、单个可辨受击目标与结算",
+      "contact_sheet": "14_tactical_map_magic_aoe/contact_sheet.jpg",
+      "exported_frame_count": 60,
+      "retained_frames": [
+        "14_tactical_map_magic_aoe/frame_006.png",
+        "14_tactical_map_magic_aoe/frame_016.png",
+        "14_tactical_map_magic_aoe/frame_036.png",
+        "14_tactical_map_magic_aoe/frame_041.png",
+        "14_tactical_map_magic_aoe/frame_046.png",
+        "14_tactical_map_magic_aoe/frame_051.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            9962
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            9987
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            10012
+          ]
+        },
+        {
+          "export_ordinal": 16,
+          "source_frames": [
+            10037
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            10062
+          ]
+        },
+        {
+          "export_ordinal": 26,
+          "source_frames": [
+            10087
+          ]
+        },
+        {
+          "export_ordinal": 31,
+          "source_frames": [
+            10112
+          ]
+        },
+        {
+          "export_ordinal": 36,
+          "source_frames": [
+            10137
+          ]
+        },
+        {
+          "export_ordinal": 41,
+          "source_frames": [
+            10162
+          ]
+        },
+        {
+          "export_ordinal": 46,
+          "source_frames": [
+            10187
+          ]
+        },
+        {
+          "export_ordinal": 51,
+          "source_frames": [
+            10212
+          ]
+        },
+        {
+          "export_ordinal": 56,
+          "source_frames": [
+            10237
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "15_post_attack_settlement_floats",
+      "label": "EXP、金钱和后续地图",
+      "contact_sheet": "15_post_attack_settlement_floats/contact_sheet.jpg",
+      "exported_frame_count": 30,
+      "retained_frames": [
+        "15_post_attack_settlement_floats/frame_006.png",
+        "15_post_attack_settlement_floats/frame_011.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            6032
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            6042
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            6057
+          ]
+        },
+        {
+          "export_ordinal": 8,
+          "source_frames": [
+            6067
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            6082
+          ]
+        },
+        {
+          "export_ordinal": 13,
+          "source_frames": [
+            6092
+          ]
+        },
+        {
+          "export_ordinal": 16,
+          "source_frames": [
+            6107
+          ]
+        },
+        {
+          "export_ordinal": 18,
+          "source_frames": [
+            6117
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            6132
+          ]
+        },
+        {
+          "export_ordinal": 23,
+          "source_frames": [
+            6142
+          ]
+        },
+        {
+          "export_ordinal": 26,
+          "source_frames": [
+            6157
+          ]
+        },
+        {
+          "export_ordinal": 28,
+          "source_frames": [
+            6167
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "16_loot_spoils_screen",
+      "label": "获得物品、取物前后与持物操作",
+      "contact_sheet": "16_loot_spoils_screen/contact_sheet.jpg",
+      "exported_frame_count": 32,
+      "retained_frames": [
+        "16_loot_spoils_screen/frame_003.png",
+        "16_loot_spoils_screen/frame_006.png",
+        "16_loot_spoils_screen/frame_008.png",
+        "16_loot_spoils_screen/frame_019.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            7773
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            7788
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            7811
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            7833
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            7848
+          ]
+        },
+        {
+          "export_ordinal": 14,
+          "source_frames": [
+            7871
+          ]
+        },
+        {
+          "export_ordinal": 17,
+          "source_frames": [
+            7893
+          ]
+        },
+        {
+          "export_ordinal": 19,
+          "source_frames": [
+            7908
+          ]
+        },
+        {
+          "export_ordinal": 22,
+          "source_frames": [
+            7931
+          ]
+        },
+        {
+          "export_ordinal": 25,
+          "source_frames": [
+            7953
+          ]
+        },
+        {
+          "export_ordinal": 27,
+          "source_frames": [
+            7968
+          ]
+        },
+        {
+          "export_ordinal": 30,
+          "source_frames": [
+            7991
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "17_story_events_and_victory",
+      "label": "报告、目标变更与后续战斗",
+      "contact_sheet": "17_story_events_and_victory/contact_sheet.jpg",
+      "exported_frame_count": 30,
+      "retained_frames": [
+        "17_story_events_and_victory/frame_013.png",
+        "17_story_events_and_victory/frame_018.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            12217
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            12247
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            12292
+          ]
+        },
+        {
+          "export_ordinal": 8,
+          "source_frames": [
+            12322
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            12367
+          ]
+        },
+        {
+          "export_ordinal": 13,
+          "source_frames": [
+            12397
+          ]
+        },
+        {
+          "export_ordinal": 16,
+          "source_frames": [
+            12442
+          ]
+        },
+        {
+          "export_ordinal": 18,
+          "source_frames": [
+            12472
+          ]
+        },
+        {
+          "export_ordinal": 21,
+          "source_frames": [
+            12517
+          ]
+        },
+        {
+          "export_ordinal": 23,
+          "source_frames": [
+            12547
+          ]
+        },
+        {
+          "export_ordinal": 26,
+          "source_frames": [
+            12592
+          ]
+        },
+        {
+          "export_ordinal": 28,
+          "source_frames": [
+            12622
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    },
+    {
+      "id": "18_ending_and_next_scene",
+      "label": "战斗结束及宫殿过场；排除桌面尾帧",
+      "contact_sheet": "18_ending_and_next_scene/contact_sheet.jpg",
+      "exported_frame_count": 19,
+      "retained_frames": [
+        "18_ending_and_next_scene/frame_004.png",
+        "18_ending_and_next_scene/frame_007.png",
+        "18_ending_and_next_scene/frame_010.png",
+        "18_ending_and_next_scene/frame_014.png"
+      ],
+      "contact_tiles": [
+        {
+          "export_ordinal": 1,
+          "source_frames": [
+            14407
+          ]
+        },
+        {
+          "export_ordinal": 2,
+          "source_frames": [
+            14422
+          ]
+        },
+        {
+          "export_ordinal": 3,
+          "source_frames": [
+            14437
+          ]
+        },
+        {
+          "export_ordinal": 4,
+          "source_frames": [
+            14452
+          ]
+        },
+        {
+          "export_ordinal": 5,
+          "source_frames": [
+            14467
+          ]
+        },
+        {
+          "export_ordinal": 6,
+          "source_frames": [
+            14482
+          ]
+        },
+        {
+          "export_ordinal": 7,
+          "source_frames": [
+            14497
+          ]
+        },
+        {
+          "export_ordinal": 8,
+          "source_frames": [
+            14512
+          ]
+        },
+        {
+          "export_ordinal": 9,
+          "source_frames": [
+            14527
+          ]
+        },
+        {
+          "export_ordinal": 10,
+          "source_frames": [
+            14542
+          ]
+        },
+        {
+          "export_ordinal": 11,
+          "source_frames": [
+            14557
+          ]
+        },
+        {
+          "export_ordinal": 12,
+          "source_frames": [
+            14572
+          ]
+        },
+        {
+          "export_ordinal": 13,
+          "source_frames": [
+            14587
+          ]
+        },
+        {
+          "export_ordinal": 14,
+          "source_frames": [
+            14602
+          ]
+        },
+        {
+          "export_ordinal": 15,
+          "source_frames": [
+            14617
+          ]
+        },
+        {
+          "export_ordinal": 16,
+          "source_frames": [
+            14632
+          ]
+        }
+      ],
+      "scope": "sampled sequence, may include adjacent UI states; not exhaustive coverage"
+    }
+  ],
+  "assets": [
+    {
+      "path": "01_title_and_opening/frame_001.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7
+      ],
+      "rgb_md5": "8d9c44ba421fd5cbe0deb8381654fe20",
+      "sha256": "82984455c13c031a0bc77017cbb3c54fe2535b9a04fea170579adea1fe23e56c",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "01_title_and_opening/frame_038.png",
+      "kind": "video_frame",
+      "source_frames": [
+        562
+      ],
+      "rgb_md5": "64e8070ddba554f7e062c84c5343e9b7",
+      "sha256": "78923630b3d841731343d6c9580919509761b74cd382ce4a0a42659276160695",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "02_dialogue_system/frame_004.png",
+      "kind": "video_frame",
+      "source_frames": [
+        244
+      ],
+      "rgb_md5": "367db93b0c8807339c37f62328124d12",
+      "sha256": "5e1422a6ed267e27f3865093afe9a5d38072393a1fc93d8d096a0492ea31ab92",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "02_dialogue_system/frame_016.png",
+      "kind": "video_frame",
+      "source_frames": [
+        364
+      ],
+      "rgb_md5": "2aace0807d81196039110664cff11d1b",
+      "sha256": "d1420fc03863a61cc26d07963b851701d91c49419c959a8d8a7eb520a734c094",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "03_action_ring_menu/frame_007.png",
+      "kind": "video_frame",
+      "source_frames": [
+        978
+      ],
+      "rgb_md5": "3cffa6f4551564fb10806af7377e2974",
+      "sha256": "f6396d7d50c293306d5cd1d35a836e62437fc831835ff6b4f08c920e9024f3d3",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "04_movement_range_and_cursor/frame_001.png",
+      "kind": "video_frame",
+      "source_frames": [
+        1057
+      ],
+      "rgb_md5": "85794e2fc542824e3e4429d8ab6e2cd7",
+      "sha256": "bb4b8a0eeeff0d39e611c860afb4bb7482a85e233cef4c45444e081cee7c1500",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "05_system_scroll_menu/frame_003.png",
+      "kind": "video_frame",
+      "source_frames": [
+        1404
+      ],
+      "rgb_md5": "3d137aead612328b12e259498588d75f",
+      "sha256": "a8dbc5a1cd4a1fc9529d4f42cd7bcae327942a73cd82975d3f9ee6418672ddd1",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "06_status_and_stats_screen/frame_006.png",
+      "kind": "video_frame",
+      "source_frames": [
+        1552
+      ],
+      "rgb_md5": "aa929b4ab8b74c9f853df620deed4950",
+      "sha256": "6f087ad9f2daa5fcbf43ef8aea16fe83fd221d24aaa6a0623a841f5d7f4015d3",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "06_status_and_stats_screen/frame_028.png",
+      "kind": "video_frame",
+      "source_frames": [
+        1882
+      ],
+      "rgb_md5": "669f9cea32e90b9d9f971ab8437fc4ea",
+      "sha256": "07af8fb5fadfc641fad5590a64a3de7b50835113b324623484072a4b1b4ae817",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "07_item_equip_and_trade/frame_011.png",
+      "kind": "video_frame",
+      "source_frames": [
+        2407
+      ],
+      "rgb_md5": "841e89ebd9120adf887d4bcb8d4232b3",
+      "sha256": "9938c202ab635bdcc0388d76d990d1c7e0b20746ee1d9fa29e2b8a307fe43f3e",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "07_item_equip_and_trade/frame_017.png",
+      "kind": "video_frame",
+      "source_frames": [
+        2497
+      ],
+      "rgb_md5": "37e51438de938f80c3a71a07ce23dadd",
+      "sha256": "3ea81fa946acbf1ed3f5cec36b9f9e51f0f44db62cbf6e66e6f0dbbeecee4525",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "07_item_equip_and_trade/frame_031.png",
+      "kind": "video_frame",
+      "source_frames": [
+        2707
+      ],
+      "rgb_md5": "bf8987cdc52921492b08168c958069cf",
+      "sha256": "8dcbbed2249a15b127e657e48f17b11252979b3331fcec5dbefbeacc26ad53ae",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "08_attack_target_selection/frame_004.png",
+      "kind": "video_frame",
+      "source_frames": [
+        2036
+      ],
+      "rgb_md5": "dadef0f983825f21a0460e25957246e4",
+      "sha256": "964c9fe69e7a5bee3f766343ce4c469e366f8f501014c69f9df73ab03f464302",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "09_special_skill_selection/frame_007.png",
+      "kind": "video_frame",
+      "source_frames": [
+        2988
+      ],
+      "rgb_md5": "0e21c175ce3bddd6a01223959470e86f",
+      "sha256": "c02df98b117678eea35f60aba248d6a9cdc3d5e2e2d1c68c2cb1eebdccff08a9",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "09_special_skill_selection/frame_013.png",
+      "kind": "video_frame",
+      "source_frames": [
+        3033
+      ],
+      "rgb_md5": "5a7907750e85c99efc371517c2255781",
+      "sha256": "7ad3274c6a770e80589704a81343b8872fc81e5bed175816f7955c52816fe6f8",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "10_combat_normal_soldier/frame_009.png",
+      "kind": "video_frame",
+      "source_frames": [
+        4250
+      ],
+      "rgb_md5": "06778086c0d8c5315eded8f2a801b7a2",
+      "sha256": "d2deca64360a595560b2a1a21a90e898f4589224c0c533a98c756fdef8ff8926",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "10_combat_normal_soldier/frame_015.png",
+      "kind": "video_frame",
+      "source_frames": [
+        4286
+      ],
+      "rgb_md5": "9803027634bfe3c07e25de5b0cdaf525",
+      "sha256": "4a7d5e85990cb865d2b77f4aa8cc015cbc8519ba279283caf0d7ea9a05537402",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "10_combat_normal_soldier/frame_021.png",
+      "kind": "video_frame",
+      "source_frames": [
+        4322
+      ],
+      "rgb_md5": "465e61bdd0ddb47664a6980c96aab42f",
+      "sha256": "1e726f55c932bab93f00aec67e50a663bb314a7d29259a69a8b083a9c86b78a2",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "11_combat_knight_and_mage/frame_007.png",
+      "kind": "video_frame",
+      "source_frames": [
+        9638
+      ],
+      "rgb_md5": "c3aabeb66a3539c84e477d17648cf5e6",
+      "sha256": "af58fcd7b3f6d0ff4c4dde6c965acce8413d97278b4222a4a7bab82c0b93d1ca",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "11_combat_knight_and_mage/frame_014.png",
+      "kind": "video_frame",
+      "source_frames": [
+        9680
+      ],
+      "rgb_md5": "6958a38f8eb788e9b474f884b5e64505",
+      "sha256": "c69d8fb4a84a4a7be925ab3afcb6e67223c811aeae83acc9ac00ae6a201b1210",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "12_leonard_normal_attack/frame_004.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7547
+      ],
+      "rgb_md5": "a41125dae4594aea89da9f0c661d06b4",
+      "sha256": "5857984c48ed8fa2385249acd410727c502f1460716ef5426a787209a289c49d",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "12_leonard_normal_attack/frame_008.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7567
+      ],
+      "rgb_md5": "3af952a98eb863ed69a128914a6377ab",
+      "sha256": "d7f6dc6cb40c5706e200b3a531d2cea45186a4e1d3eaea69715ea7428e732d5f",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "12_leonard_normal_attack/frame_015.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7602
+      ],
+      "rgb_md5": "9fc5ab590abd20adbfb3273f2888c2c6",
+      "sha256": "0e3f64736999ed8488a74fe130a4fda53c78a8c76ca07af2fd4123192436746f",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "12_leonard_normal_attack/frame_022.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7637
+      ],
+      "rgb_md5": "b4b8581ced362520784b7b9771af9f7a",
+      "sha256": "c3c5bc53de8753f5bec959d8ba3f73a877502b226c14d39dc1d6ea20cd6123e1",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "12_leonard_normal_attack/frame_039.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7722
+      ],
+      "rgb_md5": "39cca8448a24a40885ee00adefd3cff7",
+      "sha256": "b4ac8ea7400ffaa471499e0aec4758f0c24321ddab673791dca74a5464ec2c56",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_001.png",
+      "kind": "video_frame",
+      "source_frames": [
+        5761
+      ],
+      "rgb_md5": "f605955841183d6165f008a8c38d06e4",
+      "sha256": "29d903588dffd4067e2429aaf897693b7e02af1693153a9578ed3a32bf563f63",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_007.png",
+      "kind": "video_frame",
+      "source_frames": [
+        5784
+      ],
+      "rgb_md5": "db0682f007c00e00773210fc97ec2d31",
+      "sha256": "ea4eef8619c3a1b306bc23c0c7f8cda9d5d42c7affc8e9e019660620e650b1b2",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_014.png",
+      "kind": "video_frame",
+      "source_frames": [
+        5810
+      ],
+      "rgb_md5": "22a2b894addd6449495a4803fe174176",
+      "sha256": "9f03a996a7a799a31d2460275f6f0145ec5d3694e7bae9fd05942a4c95c34e54",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_027.png",
+      "kind": "video_frame",
+      "source_frames": [
+        5859
+      ],
+      "rgb_md5": "a91428fa9e95c9f27ad4e2c7ddce53bc",
+      "sha256": "5d89abc4c07df5099416d98b447c5476c5eb1c146c8608e6e0f92b54cbddefe6",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_041.png",
+      "kind": "video_frame",
+      "source_frames": [
+        5911
+      ],
+      "rgb_md5": "d263bb3a45bd32a488e28e0d25ab777e",
+      "sha256": "b5568491cdf1d7ce99d3ab2a32c9ff88a57fb58ace38253eb18a844a99358099",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_047.png",
+      "kind": "video_frame",
+      "source_frames": [
+        5934
+      ],
+      "rgb_md5": "b130e4cc3150dffd9ed6269e073f483f",
+      "sha256": "a332092bc4a1f1f2327d60aa13751ead7d5fb21dbb293470d737e4ec9cc74ef7",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_054.png",
+      "kind": "video_frame",
+      "source_frames": [
+        5960
+      ],
+      "rgb_md5": "faa047f334d0f9ca68b6cc0478441636",
+      "sha256": "7824e5f26a5a7f75631a0d940b592b5155d5863ce3ed82b1fcfce648a20f4449",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_055.png",
+      "kind": "video_frame",
+      "source_frames": [
+        5964
+      ],
+      "rgb_md5": "f772071531a689544ac5932ce0ab4c49",
+      "sha256": "0b6057d1d36b1287f9a72f020c6ea2696bc512a5011bf221b11e2ddb0620fd10",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/frame_067.png",
+      "kind": "video_frame",
+      "source_frames": [
+        6009
+      ],
+      "rgb_md5": "475e00ed826e9f3a6aac6c6ca8d7e5a8",
+      "sha256": "1d25bd2adfdf582438ef6e24a76145c24a892ba9deff16cf1090b2f7afd068f7",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "14_tactical_map_magic_aoe/frame_006.png",
+      "kind": "video_frame",
+      "source_frames": [
+        9987
+      ],
+      "rgb_md5": "9447c19211f4cc437badb8cd4758b182",
+      "sha256": "7960f2e69bc0f54ecc66de053a8db654e138641c32f8a1bdfc82422c35672c91",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "14_tactical_map_magic_aoe/frame_016.png",
+      "kind": "video_frame",
+      "source_frames": [
+        10037
+      ],
+      "rgb_md5": "af3a98c9d6bf73026eac1f6ce44f68ec",
+      "sha256": "069a40b87b1274da041b94a7f919b1b49c840dcfe30766f542e5d322689b0aa5",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "14_tactical_map_magic_aoe/frame_036.png",
+      "kind": "video_frame",
+      "source_frames": [
+        10137
+      ],
+      "rgb_md5": "3ea3bd6ce7aa8e8e9a61aa2d572c6ce0",
+      "sha256": "1f475c7efb15b78c841f1b01c942b2a9711348350b5322d82823f9b048e83e51",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "14_tactical_map_magic_aoe/frame_041.png",
+      "kind": "video_frame",
+      "source_frames": [
+        10162
+      ],
+      "rgb_md5": "ec68395f8da8b089486217ceb759345d",
+      "sha256": "5f46fad3e181c738c7d6f88651af9adf6e1f9770c3e8f85d5bb4313ef560648a",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "14_tactical_map_magic_aoe/frame_046.png",
+      "kind": "video_frame",
+      "source_frames": [
+        10187
+      ],
+      "rgb_md5": "55297624b5b12fce0057cb87aca924ad",
+      "sha256": "291441a8b49cf49fd71d844dfff1cfdfb455a24dd835e797f413f8331c594f93",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "14_tactical_map_magic_aoe/frame_051.png",
+      "kind": "video_frame",
+      "source_frames": [
+        10212
+      ],
+      "rgb_md5": "d7e485ab497c7645402e45bfa4ab9d24",
+      "sha256": "f7e2450e29da6f18d3f44223c0e23aeeab3c47ea9f40981d441f8a7ae9feffa0",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "15_post_attack_settlement_floats/frame_006.png",
+      "kind": "video_frame",
+      "source_frames": [
+        6057
+      ],
+      "rgb_md5": "9b8ae94ae1a480108b02e1bc9e293745",
+      "sha256": "0469ef4be389199d99d0a06cd2d4ff9426eeb9c88a652615d6f190b63362888d",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "15_post_attack_settlement_floats/frame_011.png",
+      "kind": "video_frame",
+      "source_frames": [
+        6082
+      ],
+      "rgb_md5": "53ad315174a498481083c669c144c458",
+      "sha256": "3b9f34f1eae36481c461e47d7e304057e23455ab4c91c6d5d912f712472f0a13",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "16_loot_spoils_screen/frame_003.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7788
+      ],
+      "rgb_md5": "72e8a8687c68b657ee3f786d9eddc9ab",
+      "sha256": "dce285a9e49674835193b0c21e93ed6f368d67316526ee5a24a899a781985742",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "16_loot_spoils_screen/frame_006.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7811
+      ],
+      "rgb_md5": "29b68e9f8af5d9091d5f9526aef7f04d",
+      "sha256": "2f850625ed6378bd6557ccfaa97f5a1f2f77e48409b60673707ee0530f5198b0",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "16_loot_spoils_screen/frame_008.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7826
+      ],
+      "rgb_md5": "ec345624af412fa77579c74e6304d1c6",
+      "sha256": "5879176f1a456b79f31059d611098733b39f67502b372ca328c40ae3a0dcf934",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "16_loot_spoils_screen/frame_019.png",
+      "kind": "video_frame",
+      "source_frames": [
+        7908
+      ],
+      "rgb_md5": "76333885c6e00ca4a27e7447420825c7",
+      "sha256": "3ae53c61af2fa98d3b16bbc13b1e5f5ab7d7db5bf35038517568fbf91fd8550b",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "17_story_events_and_victory/frame_013.png",
+      "kind": "video_frame",
+      "source_frames": [
+        12397
+      ],
+      "rgb_md5": "bd8dacc7de795373aec173f74714868f",
+      "sha256": "6274b22f0903ace963ec47710cf71ad110d0a05398627bd5c4ad9c10b8c417d0",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "17_story_events_and_victory/frame_018.png",
+      "kind": "video_frame",
+      "source_frames": [
+        12472
+      ],
+      "rgb_md5": "a3a0cc58a0fb39251bd1932aef92fc4c",
+      "sha256": "4dcc2c7d637133c94ee9cad0a2b6a4d62f73ed247232ed4f249f954cb7db80ab",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "18_ending_and_next_scene/frame_004.png",
+      "kind": "video_frame",
+      "source_frames": [
+        14452
+      ],
+      "rgb_md5": "30308459a81d628a4974da46b6b02189",
+      "sha256": "45e9e4b58b6fd4bf6cdfae1507df88f1a447155cd1fc7b8c10358f187ba3a9cc",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "18_ending_and_next_scene/frame_007.png",
+      "kind": "video_frame",
+      "source_frames": [
+        14497
+      ],
+      "rgb_md5": "f5e66f279028845d432dfd3575c10705",
+      "sha256": "d5c6e679c8f29251588ea2ea907d8b1139eb889570dcf7d6fff5bda35757cc0d",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "18_ending_and_next_scene/frame_010.png",
+      "kind": "video_frame",
+      "source_frames": [
+        14542
+      ],
+      "rgb_md5": "1ad3d6a6d605cee9915afc181050d94b",
+      "sha256": "7f4edeab6c73c765354808e6fd47cb6ece5214963d22901a0622d9e5291ae35f",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "18_ending_and_next_scene/frame_014.png",
+      "kind": "video_frame",
+      "source_frames": [
+        14602
+      ],
+      "rgb_md5": "611dc29ff9dc7e89e8a4d29abc43a6a8",
+      "sha256": "ad2d4b33bf50eec7717ec8cd8e0e0e145fb39a63a75993339f8eaf99be4f218a",
+      "size": [
+        638,
+        480
+      ]
+    },
+    {
+      "path": "01_title_and_opening/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "4a0d83e55f1b15dba995412f0ce85bef9aeef2825ceb57ea51401874e8fdabaf",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "02_dialogue_system/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "99810153f750f08b43a4cf267cdb510d8274370bfc462e6feebd7356f54f3580",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "03_action_ring_menu/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "dd564e7e1ad913756aacc83ab1cab6f728c108ddbca2ad89c9ef7e4dce640302",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "04_movement_range_and_cursor/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "bdbf79b91f64729eb733353bf7498dd3dcd2337311ed5f326208d8d24b66e197",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "05_system_scroll_menu/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "2ddb06761e65689905434626ab38e4bca67dd786c7df0a1ef581e7ad72dacdec",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "06_status_and_stats_screen/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "bc209c55caf3da76a4161dde95f4e421114d4a8eb5b85da74e519ad5065e19a4",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "07_item_equip_and_trade/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "e2ac04ebd177dc13d4068aee901f72aed4f354f12468cfde6b3c5382e20a28ef",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "08_attack_target_selection/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "98850f7c97c5be884b23eb8d242f913969611c08344a43de211e91f2cf748908",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "09_special_skill_selection/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "986382f195526ac7a6e854b7a88c1046f6d9ece5e52c98919c856274d0e024bf",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "10_combat_normal_soldier/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "3856c8bf1bb799042ab1f410f020b101837a703d70c617a3929bb8d63047760f",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "11_combat_knight_and_mage/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "3886e147b29e4a919dcec95ee121d3d5d1fa61921cb652b458875012771b86f1",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "12_leonard_normal_attack/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "3916db6008ce373255509c6b96fabdd06f2740d65983848a2c23d7fbb32dcb4a",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "13_leonard_special_skill_cutin/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "5f96b07c083049478335572e0c2f0772d31ac16ed5c98849652f39f4f03cf7ee",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "14_tactical_map_magic_aoe/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "58dada9fa681cb3d35e81e205f3feb01f89f5c2f6f2bb1b40ff7bcb1fef0557c",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "15_post_attack_settlement_floats/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "58ef87a3dab6e0a1bec39d9b4717da60127d177a5a5746fe616340fb995617c8",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "16_loot_spoils_screen/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "e3ba23875fedfda503daa9bf0107b99797a4f88ca2f6bd0760411a8672d01ad9",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "17_story_events_and_victory/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "3bdabefd68c94c1e89c3ac47d67b2bf068fcdc7c68e39f7ac656fa6881077de9",
+      "size": [
+        1280,
+        720
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "18_ending_and_next_scene/contact_sheet.jpg",
+      "kind": "contact_sheet",
+      "sha256": "b21b3263e37c111a8227559b3be6eabaadd7fcfd32413134d357a09ff06fad12",
+      "size": [
+        1276,
+        960
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/combat_window10_card_detail.png",
+      "kind": "legacy_detail",
+      "sha256": "ed1329bdda47d4b873f3e545d14fa3abc2572e505798947326545fd915c5e4f0",
+      "size": [
+        638,
+        160
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/dialogue_box_detail.png",
+      "kind": "legacy_detail",
+      "sha256": "d4922d84c20a3ed5eeea56d6f6f859486cd14b87fd2c457c0fd7da606ec1cf40",
+      "size": [
+        638,
+        145
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/leonard_normal_attack_strip.jpg",
+      "kind": "legacy_detail",
+      "sha256": "410713ad79a9b5211fe2f826447f63c74098a5aa8f89a545c958519597876b1b",
+      "size": [
+        1280,
+        240
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/loot_spoils_screen_detail.png",
+      "kind": "legacy_detail",
+      "sha256": "d920e334f7552350dd82c043abe22a9a215b0c2702229e283f3ab73fbcfdd34f",
+      "size": [
+        638,
+        480
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/map_magic_aoe_strip.jpg",
+      "kind": "legacy_detail",
+      "sha256": "eb72390fdb25a2957cf4f82d398f82f8277f86db51bdd0a781c3090128cc4073",
+      "size": [
+        1280,
+        240
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/radial_menu_detail.png",
+      "kind": "legacy_detail",
+      "sha256": "c49d5d9e734b203103fb22a81a1d58c563b1e26e442039774c0791ad640b1003",
+      "size": [
+        300,
+        300
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/settlement_exp_float_detail.png",
+      "kind": "legacy_detail",
+      "sha256": "84469590ad161509f7de158f4bb1788c72768b4f5fd1e7174e37b2f862b0a871",
+      "size": [
+        250,
+        200
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/settlement_gold_float_detail.png",
+      "kind": "legacy_detail",
+      "sha256": "86c76183ac2fb943e90ba0a0d47510f0b46bf24ed38bebd16cc129b273405584",
+      "size": [
+        250,
+        200
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/settlement_kill_float_detail.png",
+      "kind": "legacy_detail",
+      "sha256": "fe9839583be985a8fdb0e06ec73b82879587e389b90efbf41b625e628f6aaaf1",
+      "size": [
+        230,
+        180
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/special_cutin_progression_strip.jpg",
+      "kind": "legacy_detail",
+      "sha256": "332dd05432e21e5447826aec9b3633a65a11ba7b8dc2b50209b4a255e43adaa0",
+      "size": [
+        1600,
+        240
+      ],
+      "use": "navigation only; use source frames for measurements"
+    },
+    {
+      "path": "detail_crops/status_screen_full_detail.png",
+      "kind": "legacy_detail",
+      "sha256": "ce77cd5e97172d7f34b4fc40960b96d37d06ca7bc01373844e0057be39c6ff37",
+      "size": [
+        638,
+        480
+      ],
+      "use": "navigation only; use source frames for measurements"
+    }
+  ]
+}

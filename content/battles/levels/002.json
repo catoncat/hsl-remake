@@ -1,0 +1,88 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 2,
+  "story_scene": {
+    "id": "story_002_gol_mountain_road_opening",
+    "title": "戈爾山道（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      }
+    },
+    "end_card": {
+      "title": "戈爾山道",
+      "hint": "戰鬥部分（level 2）尚未重製　　空格／點擊：回到大地圖（戈爾山道）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the controlled pair 雷歐納德 / 琥 (jobBowMan 83) and the raiders 028 (jobThief 88) have no battle scenario yet (P-024, dual controlled slots); the preview shows their EVEF placements and STORY002 walks only",
+      "移動背景01 (mapobjMoveBG) is drawn under the map and follows the camera by obj_Score/640, obj_HitPoint/480 (180/100); 雲02 drifts left-down and wraps around the map (docs/evidence_packets/static_reverse/original_map_object_drift.md)"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "023",
+      "028"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "023",
+      "028"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_琥": "2",
+    "SID_緹娜": "1",
+    "SID_ENEMY028": "632",
+    "SID_ENEMY023": "376"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived); speaks only in the WINFAIL002 win scene",
+    "SID_ENEMY028": "PLAYERS.TXT character 28 name field is 306 (???), job jobThief; STORY002 calls them 盜賊, so 632 盜賊 is the same remake speaker label as level 1, provisional",
+    "SID_ENEMY023": "PLAYERS.TXT name field is 306 (???); 376 一般兵 is the same remake label as level 51, provisional; speaks only in the WINFAIL002 win scene",
+    "defNoOne": "narration token without a speaker; presented without name or portrait"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 2 (戈爾山道, bigmap.dat point 2) is the first battle entered from the big",
+      "map. Its battle is gated on the same job models as level 1 (琥 jobBowMan 83,",
+      "dual controlled slots); the STORY002 opening — the fleeing raiders, the",
+      "mercenaries catching up — is remade as a preview that stops at first control.",
+      "STORY002 opens on actPlayLevelMusic: the original table 0x477b44 gives level 2",
+      "track 12 (static-derived byte read; see the evidence packet).",
+      "The party came here from the big map; the card returns there standing at",
+      "戈爾山道 (the hand-off world state keeps current_point 2). winfail002's win",
+      "actions (緹娜 joins, point 3 / track flags, next level 3) are not applied."
+    ],
+    "cast": [
+      "Level 2 (戈爾山道): Leonard and 琥 (controlled slots 0/2), the five EVEF raiders",
+      "028, and the WINFAIL002 event-0 arrivals — obj_Story_Player2 (slot 1, PLAYERS",
+      "row 002 緹娜) with four escorting soldiers 023. obj_Story_Level2_Enemy36 is",
+      "declared in obj-002.h but no level-2 script inserts it."
+    ],
+    "speakers": [
+      "Level 2 (戈爾山道, STORY002 / WINFAIL002): the same EXTRAS.H slots plus SID_緹娜 = 1",
+      "(WINFAIL002 win scene); the raiders keep the level-1 remake label, the escorting",
+      "soldiers the level-51 one."
+    ]
+  }
+}

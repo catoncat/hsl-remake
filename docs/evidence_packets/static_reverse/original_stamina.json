@@ -1,0 +1,5053 @@
+{
+  "schema": "hsl_native_stamina.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "cases": [
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 2,
+        "defender": 4
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 2
+        },
+        {
+          "role": "defender",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 2,
+        "defender": 4
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 2
+        },
+        {
+          "role": "defender",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 143,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 9,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 9,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 9,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 143,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 9,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 9,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 9,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 26,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 143,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 26,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 143,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 26,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 26,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 26,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 9,
+        "damage": 26,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 143,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 2,
+        "defender": 4
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 2
+        },
+        {
+          "role": "defender",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 2,
+        "defender": 4
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 2
+        },
+        {
+          "role": "defender",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 10,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 10,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 10,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 10,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 10,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 10,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 27,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 27,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 27,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 143,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 27,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 27,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 10,
+        "damage": 27,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 2,
+        "defender": 4
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 2
+        },
+        {
+          "role": "defender",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 4,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 4,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 2,
+        "defender": 4
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 2
+        },
+        {
+          "role": "defender",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 5,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 5,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 11,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 11,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 11,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 11,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 11,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 11,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 28,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 28,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 28,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 143,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 28,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 28,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 11,
+        "damage": 28,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 0,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 0,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 2,
+        "defender": 4
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 2
+        },
+        {
+          "role": "defender",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 49,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 49,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 49,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 49,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 49,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 139,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 49,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 2,
+        "defender": 4
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 2
+        },
+        {
+          "role": "defender",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 100,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 100,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 100,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 100,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 100,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 140,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 100,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 117,
+        "hp_after": 0,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 117,
+        "hp_after": 0,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 5,
+        "defender": 10
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 5
+        },
+        {
+          "role": "defender",
+          "value": 10
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 117,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 143,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 117,
+        "hp_after": 1,
+        "attacker_level": 6,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 117,
+        "hp_after": 1,
+        "attacker_level": 13,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 141,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 117,
+        "hp_after": 1,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 3,
+        "defender": 6
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 3
+        },
+        {
+          "role": "defender",
+          "value": 6
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        },
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 0,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        },
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 16
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        },
+        {
+          "role": "defender",
+          "value": 16
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 0,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        },
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 0,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        },
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 0
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 0,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 57
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 0,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 0,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 4,
+        "defender": 0
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 4
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 0,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 57
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 0,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 64,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 8,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 8
+        },
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 64,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        },
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 64,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        },
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 64,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 8,
+        "defender": 16
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 8
+        },
+        {
+          "role": "defender",
+          "value": 16
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 64,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 148,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        },
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 64,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 148,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        },
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 64,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 8,
+        "defender": 0
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 64,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 57
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 64,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 64,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 8,
+        "defender": 0
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 64,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 57
+      },
+      "normal_return": true,
+      "steps": 148,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 64,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 148,
+      "writes": [
+        {
+          "role": "attacker",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 1024,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 0,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 1024,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 57,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 1024,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 1024,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 0,
+        "defender": 16
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 16
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 1024,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 57,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 1024,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 1024,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 0,
+        "defender": 0
+      },
+      "normal_return": true,
+      "steps": 142,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 1024,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 57,
+        "defender": 57
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 1024,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 1024,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 0,
+        "defender": 0
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 1024,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 57,
+        "defender": 57
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 1024,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 1088,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 0,
+        "defender": 8
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 8
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 1088,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 57,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 1088,
+        "defender_flags": 0
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 1088,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 0,
+        "defender": 16
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 16
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 1088,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 57,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 148,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 1088,
+        "defender_flags": 64
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 148,
+      "writes": [
+        {
+          "role": "defender",
+          "value": 60
+        }
+      ],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 1088,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 0,
+        "defender": 0
+      },
+      "normal_return": true,
+      "steps": 144,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 1088,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 57,
+        "defender": 57
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 1088,
+        "defender_flags": 1024
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 0,
+        "defender_st": 0,
+        "attacker_flags": 1088,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 0,
+        "defender": 0
+      },
+      "normal_return": true,
+      "steps": 146,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 57,
+        "defender_st": 57,
+        "attacker_flags": 1088,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 57,
+        "defender": 57
+      },
+      "normal_return": true,
+      "steps": 148,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    },
+    {
+      "input": {
+        "max_hp": 100,
+        "damage": 50,
+        "hp_after": 0,
+        "attacker_level": 14,
+        "defender_level": 10,
+        "attacker_st": 60,
+        "defender_st": 60,
+        "attacker_flags": 1088,
+        "defender_flags": 1088
+      },
+      "native": {
+        "attacker": 60,
+        "defender": 60
+      },
+      "normal_return": true,
+      "steps": 148,
+      "writes": [],
+      "rng_calls": 0,
+      "other_actor_bytes_unchanged": true
+    }
+  ],
+  "anchors": {
+    "0x40e590": {
+      "description": "Complete combat stamina gain; returns at 0x40e68c",
+      "hex": "8b54240453558b0dc81b4c008b82a4000000568bf057c1e6072bf08b442418bb030000008b80a40000008d2cb18bf0c1e6072bf08b84b1dc00000083f80a8d3cb17d05b80a0000008b4c241c3bc87e028bc8d1f83bc87c05bb040000008b87d800000085c07f01438b8d9c0000008bb79c0000002bce83f9037e014b8bb5e80000005203f3e8c6fcffff83c40485c0740203f383fe3c7e05be3c0000008b542414680004000052e804fcffff83c40885c0750689b5e80000008b6c24188bb7e800000003db5503f3e883fcffff83c40485c0740203f383fe3c7e05be3c000000680004000055e8c5fbffff83c40885c0750689b7e80000005f5e5d5bc3",
+      "sha256": "da98c70c787411d57dbd678605c882611bcc2e40df91eaf084cf42b83f015fa7"
+    },
+    "0x40e240": {
+      "description": "Predicate reads effective actor flags at +0x18c",
+      "hex": "8b4c2404568b35c81b4c008b89a400000033c08bd1c1e2072bd18b4c240c858c968c0100005e7405b801000000c3",
+      "sha256": "ff34624966432e65104aa5eb32e9755f9cb114ea98d6a2100ae29995de90aae4"
+    },
+    "0x40e2e0": {
+      "description": "Double gain predicate requests mask0x40",
+      "hex": "8b4424046a4050e854ffffff83c408c3",
+      "sha256": "93036ee022745852e1a8ecca921f824a5eb11a81bd5c78fcc84ce0c9eae99a53"
+    },
+    "0x44246c": {
+      "description": "Physical exchange tests positive result, then passes prepared damage to stamina",
+      "hex": "7f50a120434c00892d482c4c0025fffffeffa320434c003bf574175357e85271fcffa1e02a4c00505357e8f5c0fcff",
+      "sha256": "78151505273db41246485a74ee7a85911acf90266c37fd548904632a6795f880"
+    },
+    "0x447e82": {
+      "description": "ITEM st_x2 maps to effect mask0x40",
+      "hex": "565368fc894700e842e8ffff83c40c3bc589442414740a8b4424100c4089442410",
+      "sha256": "c8eee236d3e277849a44545b2f2d044bf537bcdaceec3c57a1609cda7bbf5277"
+    },
+    "0x448183": {
+      "description": "ITEM no_addst maps to effect mask0x400",
+      "hex": "56536888884700e841e5ffff83c40c3bc589442414740b8b44241080cc0489442410",
+      "sha256": "924d942bfa4aca2190f07dbf3471a2b8eba376f15ca7625417b5b91c480ea1c0"
+    },
+    "0x448709": {
+      "description": "Equipment application ORs item flags into actor effective flags",
+      "hex": "8b91a00000008bb08c0100000bf289b08c01",
+      "sha256": "c9c1989deba81c989a3639e95ea9c8cced7bb57c42fc1669e8e9f645c1a92f01"
+    },
+    "0x44b678": {
+      "description": "Next-level threshold uses actor level field+0x9c",
+      "hex": "8b869c000000408d04808d0480d1e03dd007000089868c000000",
+      "sha256": "d6962840232006cecfe0a1c8f1fe9c06863f6070fdef052ffed03a47f7096655"
+    }
+  }
+}

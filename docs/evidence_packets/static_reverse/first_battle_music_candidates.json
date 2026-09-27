@@ -1,0 +1,175 @@
+{
+  "schema": "hsl_music_source_candidates.v1",
+  "checked": "2026-09-05",
+  "status": "candidate_mapping_not_integrated",
+  "required_native_track": 19,
+  "native_level": 51,
+  "cd_listing_url": "https://www.omega.idv.tw/kdb120/viewthread.php?threadid=5692",
+  "gamerip_listing_url": "https://downloads.khinsider.com/game-soundtracks/album/the-legend-of-fancy-realm-windows-gamerip-1995",
+  "cd_track_1": "MODE1/2352 data",
+  "cd_audio_indices_2_through_19": [
+    "41:25:04",
+    "42:30:54",
+    "43:20:16",
+    "44:16:43",
+    "45:22:05",
+    "46:43:07",
+    "47:53:17",
+    "48:57:02",
+    "50:07:49",
+    "50:57:11",
+    "52:24:41",
+    "54:02:04",
+    "56:13:15",
+    "58:34:05",
+    "59:36:38",
+    "61:39:52",
+    "63:55:48",
+    "66:19:22"
+  ],
+  "timing_comparison": [
+    {
+      "cd_track": 2,
+      "rip_track": 1,
+      "cd_span_seconds": 65.667,
+      "rip_listed_seconds": 64,
+      "difference_seconds": 1.667
+    },
+    {
+      "cd_track": 3,
+      "rip_track": 2,
+      "cd_span_seconds": 49.493,
+      "rip_listed_seconds": 48,
+      "difference_seconds": 1.493
+    },
+    {
+      "cd_track": 4,
+      "rip_track": 3,
+      "cd_span_seconds": 56.36,
+      "rip_listed_seconds": 55,
+      "difference_seconds": 1.36
+    },
+    {
+      "cd_track": 5,
+      "rip_track": 4,
+      "cd_span_seconds": 65.493,
+      "rip_listed_seconds": 64,
+      "difference_seconds": 1.493
+    },
+    {
+      "cd_track": 6,
+      "rip_track": 5,
+      "cd_span_seconds": 81.027,
+      "rip_listed_seconds": 80,
+      "difference_seconds": 1.027
+    },
+    {
+      "cd_track": 7,
+      "rip_track": 6,
+      "cd_span_seconds": 70.133,
+      "rip_listed_seconds": 69,
+      "difference_seconds": 1.133
+    },
+    {
+      "cd_track": 8,
+      "rip_track": 7,
+      "cd_span_seconds": 63.8,
+      "rip_listed_seconds": 62,
+      "difference_seconds": 1.8
+    },
+    {
+      "cd_track": 9,
+      "rip_track": 8,
+      "cd_span_seconds": 70.627,
+      "rip_listed_seconds": 69,
+      "difference_seconds": 1.627
+    },
+    {
+      "cd_track": 10,
+      "rip_track": 9,
+      "cd_span_seconds": 49.493,
+      "rip_listed_seconds": 48,
+      "difference_seconds": 1.493
+    },
+    {
+      "cd_track": 11,
+      "rip_track": 10,
+      "cd_span_seconds": 87.4,
+      "rip_listed_seconds": 86,
+      "difference_seconds": 1.4
+    },
+    {
+      "cd_track": 12,
+      "rip_track": 11,
+      "cd_span_seconds": 97.507,
+      "rip_listed_seconds": 96,
+      "difference_seconds": 1.507
+    },
+    {
+      "cd_track": 13,
+      "rip_track": 12,
+      "cd_span_seconds": 131.147,
+      "rip_listed_seconds": 129,
+      "difference_seconds": 2.147
+    },
+    {
+      "cd_track": 14,
+      "rip_track": 13,
+      "cd_span_seconds": 140.867,
+      "rip_listed_seconds": 139,
+      "difference_seconds": 1.867
+    },
+    {
+      "cd_track": 15,
+      "rip_track": 14,
+      "cd_span_seconds": 62.44,
+      "rip_listed_seconds": 61,
+      "difference_seconds": 1.44
+    },
+    {
+      "cd_track": 16,
+      "rip_track": 15,
+      "cd_span_seconds": 123.187,
+      "rip_listed_seconds": 122,
+      "difference_seconds": 1.187
+    },
+    {
+      "cd_track": 17,
+      "rip_track": 16,
+      "cd_span_seconds": 135.947,
+      "rip_listed_seconds": 135,
+      "difference_seconds": 0.947
+    },
+    {
+      "cd_track": 18,
+      "rip_track": 17,
+      "cd_span_seconds": 143.653,
+      "rip_listed_seconds": 142,
+      "difference_seconds": 1.653
+    }
+  ],
+  "inference": "The 18 rip tracks appear to correspond to CD audio tracks 2 through 19, with short inter-track gaps removed. Rip Track 18 is therefore a candidate for native music/19.wav.",
+  "limits": [
+    "Public catalogue metadata only; no original music file hash or PCM comparison.",
+    "The rip page lists 1995 while the photographed-disc listing identifies 1998; do not propagate the rip year as a verified game date.",
+    "Final CD track length is absent from this cue listing, so the Track 18 mapping remains an inference."
+  ],
+  "local_search": {
+    "wine_install": "no music directory",
+    "downloads_game_copy": "EXE and movie.pak only",
+    "archived_original_copy": "no music directory",
+    "spotlight_exact_19_wav": "no hits",
+    "documents_downloads_game_disc_or_music_archive": "no matching archive found",
+    "archive_directory_scan": {
+      "scope": "Documents and Downloads, including ignored/hidden paths; ZIP entry names only",
+      "counts": {
+        "archives_found": 45,
+        "zip_inspected": 44,
+        "non_zip": 1,
+        "read_errors": 0
+      },
+      "matching_entries": 0
+    },
+    "mounted_game_disc": "No game disc or music volume identified in mounted volume names"
+  }
+}

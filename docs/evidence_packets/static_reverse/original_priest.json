@@ -1,0 +1,2637 @@
+{
+  "schema": "hsl_priest_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "sources": {
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c",
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "SHAPEDEF.H": "73b5592fd2ba7d09d835b9ec0a72afd719a48e3f8219a7da9393a73586a1aee4",
+    "OBJ-ALL.H": "66208d395eae7e66670aaa867e5b19ad72c61d5e3d2144b103d71d66e60e3a8f",
+    "STORY053.TXT": "5b97a73d735037df077d11a597c8c812f70804d306e0fd29a61a315e2954136c"
+  },
+  "stats": [
+    {
+      "input": {
+        "actor": "002",
+        "name": "initial",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 1,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 9999,
+        "mp": 9999,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 35,
+            "max_mp": 19,
+            "current_hp": 35,
+            "current_mp": 19,
+            "attack": 37,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 51,
+            "move_point": 5,
+            "exp_threshold": 100,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 943,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 35,
+            "max_mp": 19,
+            "current_hp": 35,
+            "current_mp": 19,
+            "attack": 37,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 51,
+            "move_point": 5,
+            "exp_threshold": 100,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_2",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 2,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 36,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 38,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 36,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 38,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_9",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 9,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 43,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 45,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 67,
+            "move_point": 5,
+            "exp_threshold": 500,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 43,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 45,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 67,
+            "move_point": 5,
+            "exp_threshold": 500,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_10",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 10,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 44,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 46,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 69,
+            "move_point": 5,
+            "exp_threshold": 550,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 949,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 44,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 46,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 69,
+            "move_point": 5,
+            "exp_threshold": 550,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 949,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_19",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 19,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 53,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 50,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 87,
+            "move_point": 5,
+            "exp_threshold": 1000,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 949,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 53,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 50,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 87,
+            "move_point": 5,
+            "exp_threshold": 1000,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 949,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_20",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 20,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 51,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 89,
+            "move_point": 5,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 949,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 51,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 89,
+            "move_point": 5,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 949,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_21",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 21,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 55,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 51,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 90,
+            "move_point": 5,
+            "exp_threshold": 1100,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 955,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 55,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 51,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 90,
+            "move_point": 5,
+            "exp_threshold": 1100,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 955,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_22",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 22,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 56,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 51,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 91,
+            "move_point": 5,
+            "exp_threshold": 1150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 955,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 56,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 51,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 91,
+            "move_point": 5,
+            "exp_threshold": 1150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 955,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_23",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 23,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 57,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 51,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 92,
+            "move_point": 5,
+            "exp_threshold": 1200,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 955,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 57,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 51,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 92,
+            "move_point": 5,
+            "exp_threshold": 1200,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 955,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_44",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 44,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 78,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 57,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 113,
+            "move_point": 5,
+            "exp_threshold": 2000,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 956,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 78,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 57,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 113,
+            "move_point": 5,
+            "exp_threshold": 2000,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 956,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "level_99",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 99,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 133,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 70,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 168,
+            "move_point": 5,
+            "exp_threshold": 2000,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 956,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 133,
+            "max_mp": 19,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 70,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 168,
+            "move_point": 5,
+            "exp_threshold": 2000,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 956,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "str_plus1",
+        "attributes": {
+          "str": 17,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 2,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 17,
+        "mp": 3,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 36,
+            "max_mp": 19,
+            "current_hp": 17,
+            "current_mp": 3,
+            "attack": 38,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 36,
+            "max_mp": 19,
+            "current_hp": 17,
+            "current_mp": 3,
+            "attack": 38,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "dex_plus1",
+        "attributes": {
+          "str": 16,
+          "dex": 12,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 2,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 17,
+        "mp": 3,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 36,
+            "max_mp": 19,
+            "current_hp": 17,
+            "current_mp": 3,
+            "attack": 38,
+            "defense": 43,
+            "speed": 13,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 36,
+            "max_mp": 19,
+            "current_hp": 17,
+            "current_mp": 3,
+            "attack": 38,
+            "defense": 43,
+            "speed": 13,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "mind_plus1",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 16,
+          "con": 15
+        },
+        "level": 2,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 17,
+        "mp": 3,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 36,
+            "max_mp": 20,
+            "current_hp": 17,
+            "current_mp": 3,
+            "attack": 38,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 28,
+              "2": 18,
+              "3": 19,
+              "4": 22
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 36,
+            "max_mp": 20,
+            "current_hp": 17,
+            "current_mp": 3,
+            "attack": 38,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 28,
+              "2": 18,
+              "3": 19,
+              "4": 22
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "con_plus1",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 16
+        },
+        "level": 2,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 17,
+        "mp": 3,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 37,
+            "max_mp": 20,
+            "current_hp": 17,
+            "current_mp": 3,
+            "attack": 38,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 28,
+              "2": 18,
+              "3": 19,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 37,
+            "max_mp": 20,
+            "current_hp": 17,
+            "current_mp": 3,
+            "attack": 38,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 53,
+            "move_point": 5,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 21,
+              "1": 28,
+              "2": 18,
+              "3": 19,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 941,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "caps",
+        "attributes": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "level": 99,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 9999,
+        "mp": 9999,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 261,
+            "max_mp": 118,
+            "current_hp": 261,
+            "current_mp": 118,
+            "attack": 127,
+            "defense": 112,
+            "speed": 84,
+            "hit_rate": 98,
+            "magic_attack": 179,
+            "move_point": 5,
+            "exp_threshold": 2000,
+            "resist_by_type": {
+              "0": 60,
+              "1": 64,
+              "2": 60,
+              "3": 60,
+              "4": 62
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 963,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 261,
+            "max_mp": 118,
+            "current_hp": 261,
+            "current_mp": 118,
+            "attack": 127,
+            "defense": 112,
+            "speed": 84,
+            "hit_rate": 98,
+            "magic_attack": 179,
+            "move_point": 5,
+            "exp_threshold": 2000,
+            "resist_by_type": {
+              "0": 60,
+              "1": 64,
+              "2": 60,
+              "3": 60,
+              "4": 62
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 961,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "enemy_mode",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 12,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 9999,
+        "mp": 9999,
+        "mode": 131072,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 131072,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 34,
+            "max_mp": 19,
+            "current_hp": 34,
+            "current_mp": 19,
+            "attack": 47,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 73,
+            "move_point": 5,
+            "exp_threshold": 650,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 952,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 34,
+            "max_mp": 19,
+            "current_hp": 34,
+            "current_mp": 19,
+            "attack": 47,
+            "defense": 42,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 73,
+            "move_point": 5,
+            "exp_threshold": 650,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 950,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "empty_equipment",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 1,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "hp": 7,
+        "mp": 3,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 35,
+            "max_mp": 19,
+            "current_hp": 7,
+            "current_mp": 3,
+            "attack": 17,
+            "defense": 30,
+            "speed": 10,
+            "hit_rate": 0,
+            "magic_attack": 51,
+            "move_point": 5,
+            "exp_threshold": 100,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 495,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 35,
+            "max_mp": 19,
+            "current_hp": 7,
+            "current_mp": 3,
+            "attack": 17,
+            "defense": 30,
+            "speed": 10,
+            "hit_rate": 0,
+            "magic_attack": 51,
+            "move_point": 5,
+            "exp_threshold": 100,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 495,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "long_staff",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 20,
+        "equipment": [
+          87,
+          152,
+          122,
+          181,
+          201,
+          0
+        ],
+        "hp": 13,
+        "mp": 2,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 13,
+            "current_mp": 2,
+            "attack": 91,
+            "defense": 42,
+            "speed": 16,
+            "hit_rate": 90,
+            "magic_attack": 95,
+            "move_point": 5,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 949,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 13,
+            "current_mp": 2,
+            "attack": 91,
+            "defense": 42,
+            "speed": 16,
+            "hit_rate": 90,
+            "magic_attack": 95,
+            "move_point": 5,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 949,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "recovery",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 20,
+        "equipment": [
+          94,
+          159,
+          145,
+          187,
+          223,
+          224
+        ],
+        "hp": 13,
+        "mp": 2,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 13,
+            "current_mp": 2,
+            "attack": 155,
+            "defense": 112,
+            "speed": 44,
+            "hit_rate": 99,
+            "magic_attack": 119,
+            "move_point": 5,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 1036,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 13,
+            "current_mp": 2,
+            "attack": 155,
+            "defense": 112,
+            "speed": 44,
+            "hit_rate": 99,
+            "magic_attack": 119,
+            "move_point": 5,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 1036,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "half_repeat",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 20,
+        "equipment": [
+          82,
+          152,
+          122,
+          181,
+          218,
+          227
+        ],
+        "hp": 13,
+        "mp": 2,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 13,
+            "current_mp": 2,
+            "attack": 51,
+            "defense": 40,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 89,
+            "move_point": 5,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 1036,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 13,
+            "current_mp": 2,
+            "attack": 51,
+            "defense": 40,
+            "speed": 12,
+            "hit_rate": 98,
+            "magic_attack": 89,
+            "move_point": 5,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 1036,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "002",
+        "name": "range_mobility",
+        "attributes": {
+          "str": 16,
+          "dex": 11,
+          "mind": 15,
+          "con": 15
+        },
+        "level": 20,
+        "equipment": [
+          87,
+          152,
+          122,
+          187,
+          233,
+          236
+        ],
+        "hp": 13,
+        "mp": 2,
+        "mode": 65536,
+        "base_move": 5
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 85,
+        "allocation": "manual",
+        "caps": {
+          "str": 88,
+          "dex": 88,
+          "mind": 88,
+          "con": 88
+        },
+        "source": {
+          "attack_power": 0,
+          "magic_attack_power": 0,
+          "defense": 18,
+          "speed": 0,
+          "hit_point": 8,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 18,
+          "mode": 65536,
+          "has_magic": true,
+          "base_resist_by_type": {
+            "0": 10,
+            "1": 14,
+            "2": 10,
+            "3": 10,
+            "4": 12
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_priest.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 13,
+            "current_mp": 2,
+            "attack": 91,
+            "defense": 40,
+            "speed": 36,
+            "hit_rate": 90,
+            "magic_attack": 95,
+            "move_point": 6,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 1036,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 54,
+            "max_mp": 19,
+            "current_hp": 13,
+            "current_mp": 2,
+            "attack": 91,
+            "defense": 40,
+            "speed": 36,
+            "hit_rate": 90,
+            "magic_attack": 95,
+            "move_point": 6,
+            "exp_threshold": 1050,
+            "resist_by_type": {
+              "0": 21,
+              "1": 27,
+              "2": 18,
+              "3": 18,
+              "4": 21
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 18
+          },
+          "instructions": 1036,
+          "normal_return": true
+        }
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "input": {
+        "slot": 0,
+        "object_code": 800,
+        "previous_template": 29
+      },
+      "object_code": 800,
+      "template_index": 1,
+      "copy_return": 1,
+      "template_sha256": "9db31c6dbc31efcafcbb8ddae352bd54b2148591493056553eb0f71f872d71dd",
+      "live_sha256": "9db31c6dbc31efcafcbb8ddae352bd54b2148591493056553eb0f71f872d71dd",
+      "normal_returns": 4,
+      "prefix_entry": "0x407eff",
+      "prefix_stop": "0x407f14",
+      "instructions": 185
+    },
+    {
+      "input": {
+        "slot": 1,
+        "object_code": 801,
+        "previous_template": 29
+      },
+      "object_code": 801,
+      "template_index": 2,
+      "copy_return": 2,
+      "template_sha256": "487ff46824120611afe15c14f9ef6191760dd2718aaa4683312f7e2d581ff349",
+      "live_sha256": "487ff46824120611afe15c14f9ef6191760dd2718aaa4683312f7e2d581ff349",
+      "normal_returns": 4,
+      "prefix_entry": "0x407eff",
+      "prefix_stop": "0x407f14",
+      "instructions": 197
+    },
+    {
+      "input": {
+        "slot": 2,
+        "object_code": 802,
+        "previous_template": 29
+      },
+      "object_code": 802,
+      "template_index": 3,
+      "copy_return": 3,
+      "template_sha256": "851618c9ac511cfc95aeaa2264c9d2f3f719dab8134d41dfc5d53b109509bdd8",
+      "live_sha256": "851618c9ac511cfc95aeaa2264c9d2f3f719dab8134d41dfc5d53b109509bdd8",
+      "normal_returns": 4,
+      "prefix_entry": "0x407eff",
+      "prefix_stop": "0x407f14",
+      "instructions": 209
+    },
+    {
+      "input": {
+        "slot": 19,
+        "object_code": 819,
+        "previous_template": 29
+      },
+      "object_code": 819,
+      "template_index": 20,
+      "copy_return": 20,
+      "template_sha256": "1f47842f6d7c952957f52ad38913db9e92c4c44befa71103d044618737f4f518",
+      "live_sha256": "1f47842f6d7c952957f52ad38913db9e92c4c44befa71103d044618737f4f518",
+      "normal_returns": 4,
+      "prefix_entry": "0x407eff",
+      "prefix_stop": "0x407f14",
+      "instructions": 413
+    },
+    {
+      "input": {
+        "slot": 1,
+        "object_code": 901,
+        "previous_template": 29
+      },
+      "object_code": 901,
+      "template_index": 2,
+      "copy_return": 2,
+      "template_sha256": "487ff46824120611afe15c14f9ef6191760dd2718aaa4683312f7e2d581ff349",
+      "live_sha256": "487ff46824120611afe15c14f9ef6191760dd2718aaa4683312f7e2d581ff349",
+      "normal_returns": 4,
+      "prefix_entry": "0x407eff",
+      "prefix_stop": "0x407f14",
+      "instructions": 197
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x42c700",
+      "bytes": "8b44240483f8147d0b8b4c2408890c8560434c00c3",
+      "meaning": "Player object code is stored by zero-based party slot."
+    },
+    {
+      "address": "0x42caa0",
+      "bytes": "8b4424048b048560434c00a900000080740233c0c3909090",
+      "meaning": "Player install getter returns the enabled object code of that slot."
+    },
+    {
+      "address": "0x42cac0",
+      "bytes": "8b5424045683ceff33c0b960434c003911740e83c1044081f9b0434c007cf08bc65ec3",
+      "meaning": "Reverse lookup returns the matching zero-based party slot."
+    },
+    {
+      "address": "0x407eff",
+      "bytes": "57e8bb4b020083c40483f8ff7407408986a4000000",
+      "meaning": "Process3 binding sets actor record index to the found party slot plus one."
+    },
+    {
+      "address": "0x44cb10",
+      "bytes": "8b5424045685d25774528b44241085c07426a1fc1a4c008bcac1e1072bcac1e1028d3401a1c81b4c008d3c01b97f000000f3a55f8bc25ec3",
+      "meaning": "Player initialization copies the same one-based source template into live record."
+    },
+    {
+      "address": "0x44946f",
+      "bytes": "6a0556e8f9eeffff8b465483c4088d0c80b81f85eb51c1e103f7e98bcab856555555c1f9058bd1c1ea1f03ca8b5658f7",
+      "meaning": "Priest85 dispatch loads cap row5 before its resistance and shared priest-family arithmetic."
+    },
+    {
+      "address": "0x4786e4",
+      "bytes": "5800580058005800",
+      "meaning": "Priest caps are four88 values, distinct from Wise87."
+    },
+    {
+      "address": "0x4498c9",
+      "bytes": "8b8e140100005603c8b81f85eb51898e140100008b5e588b6e4c8d0c9bc1e105f7e98bcab8abaaaa2ac1f9058bd1c1ea1f03caf7ed03f98b4e546bc96e8bc2c1e81f03d0b81f85eb5103d78996dc000000f7e98bca8bc3c1f9058bd1c1ea1f03ca9983e20303c2c1f80203c88bc5992bc2898ee4000000d1f88d0c40c1e10403c8b81f85eb51d1e1f7e98bcac1f9058bc1c1e81f03c88b46508d14c5000000002bd0b81f85eb51c1e202f7eac1fa058bc203d1c1e81f8d4c10068b96c000000003d18996c0000000e86aeeffff8b464c8b7e5483c4048d14808d0c50b81f85eb51d1e1f7e98bcac1f9058bc1c1e81f03c8b893244992f7ef8b465003d7c1fa028bda03d1c1eb1f03da8b4e589983e2038d3c7f03c2c1f80203d8b856555555f7e98b86b40000008bcac1e91f03d303ca03c18d0cbf8986b4000000b81f85eb51d1e1f7e98b8e9c000000c1fa058bc2c1e81f03d08d144a83fa2c7e0d8d42d4992bc2d1f883c02c8bd08b46508b9ed000000083c22d8d0c4003dac1e1042bc8899ed0000000d1e1e9531b00005356e814e9ffff8b4e54b81f85eb51c1e104f7e98b46588bcac1f9058bd1",
+      "meaning": "Priest-family HP/MP/attack/defense/magic/speed terms are shared after job-specific resistance."
+    },
+    {
+      "address": "0x44b820",
+      "bytes": "648a4400ce8b4400428d440032904400929144006f944400",
+      "meaning": "Stat dispatcher entry5 routes job85 to44946f."
+    }
+  ],
+  "limits": [
+    "Full stat refresh on source002 inputs, not whole gameplay/native template parser.",
+    "Four binding/copy helper returns plus an installed-object prefix before subsequent initialization callbacks.",
+    "STORY053 deletes SID_ENEMY029 before inserting obj_Story_Player2; player slot1 maps to template002, not029.",
+    "Manual five-point allocation follows current remake policy; initial player globals, class changes and whole dispatcher remain separate."
+  ]
+}

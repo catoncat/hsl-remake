@@ -1,0 +1,176 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 902,
+  "battle": {
+    "id": "battle_902_level902",
+    "title": "艾瓦台地　尋 · 失落的通路",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "艾瓦台地　尋 · 找到通路",
+      "fail_0": "艾瓦台地　尋 · 雷歐納德 陣亡",
+      "fail_1": "艾瓦台地　尋 · 嚎 陣亡"
+    },
+    "expected": {
+      "units": 19,
+      "players": 5
+    },
+    "unresolved_semantics": [
+      "STORY902 opens with the five registered party slots and the source creature field; the inserted 嚎 object and later creature refills are interpreted by the shared winfail interpreter from the resource-derived seed.",
+      "WINFAIL902 chooses one of five aligned system-arrival pixels with actRandomSetSysArrivePos, then grants item 281 after each named party actor reaches that same point. The original global RNG sequence is not reconstructed; the remake records the choice and uses the PlayLoop initialization_rng stream.",
+      "The win arrival rectangle and next level [17,68] are resource-derived hand-off inputs. The TOWNDEF point-17 attachment and original object scheduler remain outside the battle state contract."
+    ]
+  },
+  "story_scene": {
+    "id": "story_902_eva_plateau_pass_search_opening",
+    "title": "艾瓦台地・尋（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "艾瓦台地　尋",
+      "hint": "戰鬥部分（level 902）尚未重製　　空格／點擊：回到大地圖（艾瓦台地）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the five controlled slots and the 035 / 036 / 037 / 038 mine creatures have no battle scenario yet (P-024, multi-slot party); the preview shows the EVEF placements and STORY902 walks only — the winfail902 body (creature pairs refilled by kind from the map edges in events 1-4; 嚎 inserted as obj_Story_Player7 at round 3 with lines 1366-1369, his fixed position (928,512) and the second fail status; five actRandomSetSysArrivePos cells for the pass and the finder's line 1429-1433 + 1411 with actGetItem 281 in events 7-11; the six show-position markers of the escape column x = 1248 and 雷歐納德's 1427 in event 6; the arrival win with 1428) belongs to the not-yet-remade battle",
+      "level 902 is the level-17 variant TOWNDEF 命運神殿 event 53 arms with teBMSetPointEventNotVisit 17,902 (static-derived): reaching 艾瓦台地 unvisited after that town event opens this level instead of STORY017's rescue of 克里夫 — the EVEF has no Enemy064(克里夫) / Enemy062(工人) although OBJ-902.H still defines obj_Story_Level_Enemy64 / 62 (no script inserts them); which of the two the big map opens is a world-state question the campaign registry answers, not this scene",
+      "WORD902.SHP reads 尋 / SEEK (resource title); the card title 艾瓦台地　尋 joins the big-map point name to it as a remake label",
+      "winfail902's win section also runs actAddOverScore gameoverID2,3, actSetPlayerExecMode SID_嚎 0 and (through the pass events) actGetItem 281: skip_battle applies the town / big-map writes and the over-score (actAddOverScore gameoverID2,3 feeds STORY057's dispatch), while 嚎's join and the 那可那魯 pass are not granted; the hand-off to level 68 (營地・嚎的問題) therefore reaches a camp whose 嚎 install the skipped battle would have supplied"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "007",
+      "035",
+      "036",
+      "037",
+      "038"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "007"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_嚎": "6"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-902.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-902.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-902.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-902.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived); walks in, dead message and a winfail902 pass line only",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-902.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; no EVEF install — winfail902 event 5 (round 3) inserts obj_Story_Player7 (OBJ-ALL.H 12 = slot 6) and he speaks 1366-1369; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)"
+  },
+  "sweep_fixture": {
+    "mode": "status",
+    "arrive": {
+      "unit": "leonard",
+      "cell": [
+        39,
+        18
+      ]
+    },
+    "event_statuses": [],
+    "win_statuses": [
+      0
+    ],
+    "run_hooks": false,
+    "expect_victory_resolved": true,
+    "note": "WINFAIL902 wins when 雷歐納德 reaches the 1248,576..736 pixel corridor; the multi-party arrival chain that arms win_0 is skipped."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 902 (艾瓦台地 variant): TOWNDEF 命運神殿 event 53 (teBMSetPointEventNotVisit 17,902) arms",
+      "big-map point 17 with this level while 艾瓦台地 is still unvisited, replacing level 17's rescue",
+      "of 克里夫. The five-member party walks in from the east edge (EVEF x = 1344 / 1376, off the",
+      "1280px map) to find the workers already dead (1422-1426; no 064 / 062 in the EVEF), WORD902",
+      "尋 / SEEK is shown and events 0-5 are armed. winfail902: creature pairs refill by kind",
+      "(events 1-4), 嚎 (obj_Story_Player7) arrives at round 3 and joins (event 5), the pass is",
+      "found at one of five random cells (events 7-11 -> event 6 escape column at x = 1248), win",
+      "when 雷歐納德 reaches it: actAddOverScore gameoverID2,3, point 19 -> event 904, point 17 ->",
+      "519 Visit / ratio 40, actSetNextPlayLevelEvent 17,68 (營地・嚎的問題).",
+      "STORY902 opens on actPlayLevelMusic; the original resolver 0x42c1c0 returns -1 for any",
+      "level >= 100 (static-derived), so the table names no track for 902 and actPlayLevelMusic",
+      "changes nothing (original_music.md).",
+      "Back to the big map standing at 艾瓦台地 (point 17); the skip_battle row offers winfail902's",
+      "win section (point 19 -> event 904, point 17 -> 519 Visit / ratio 40, next 17,68)."
+    ],
+    "cast": [
+      "Level 902 (艾瓦台地 variant TOWNDEF 命運神殿 event 53 arms on point 17 while unvisited; LEVEL17.SHP by",
+      "the obs 地圖管理員): the five-member party against the 035 / 036 / 037 / 038 mine creatures (the",
+      "workers are already dead — no 062 / 064 in the EVEF), and 嚎 007 whom winfail902 event 5 inserts",
+      "as obj_Story_Player7 at round 3. The party speaks in the opening, 嚎 in the winfail event."
+    ],
+    "speakers": [
+      "Level 902 (艾瓦台地 variant: TOWNDEF 命運神殿 event 53 teBMSetPointEventNotVisit 17,902 arms big-map",
+      "point 17 while unvisited; obj-902.obs 地圖管理員 names LEVEL17.SHP): the five-member party walks in",
+      "from the east edge and finds the workers dead (1422-1426); winfail902 event 5 inserts 嚎 (slot 6,",
+      "obj_Story_Player7) at round 3 and he speaks; the 035-038 creatures are silent."
+    ]
+  }
+}

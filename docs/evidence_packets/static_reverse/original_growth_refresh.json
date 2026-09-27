@@ -1,0 +1,833 @@
+{
+  "schema": "hsl_native_growth_refresh.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "entry": "0x448840",
+  "cap_loader": {
+    "entry": "0x448370",
+    "table_va": "0x4786bc",
+    "index_formula": "job_code - 80",
+    "rows": [
+      [
+        90,
+        88,
+        80,
+        94
+      ],
+      [
+        130,
+        112,
+        100,
+        110
+      ],
+      [
+        570,
+        690,
+        490,
+        750
+      ],
+      [
+        96,
+        98,
+        70,
+        88
+      ],
+      [
+        610,
+        750,
+        370,
+        550
+      ],
+      [
+        88,
+        88,
+        88,
+        88
+      ],
+      [
+        96,
+        102,
+        142,
+        112
+      ],
+      [
+        450,
+        570,
+        950,
+        550
+      ],
+      [
+        92,
+        96,
+        74,
+        90
+      ],
+      [
+        570,
+        730,
+        330,
+        690
+      ],
+      [
+        84,
+        78,
+        100,
+        90
+      ],
+      [
+        430,
+        610,
+        1250,
+        500
+      ],
+      [
+        92,
+        84,
+        78,
+        98
+      ],
+      [
+        550,
+        770,
+        390,
+        730
+      ],
+      [
+        107,
+        80,
+        66,
+        99
+      ],
+      [
+        750,
+        500,
+        350,
+        850
+      ],
+      [
+        80,
+        84,
+        80,
+        106
+      ],
+      [
+        950,
+        850,
+        650,
+        1050
+      ],
+      [
+        90,
+        82,
+        90,
+        90
+      ],
+      [
+        560,
+        710,
+        530,
+        690
+      ]
+    ],
+    "leonard_caps": {
+      "str": 90,
+      "dex": 88,
+      "mind": 80,
+      "con": 94
+    }
+  },
+  "source_profile": {
+    "actor_id": "001",
+    "job": "jobSwordMan",
+    "job_code": 80,
+    "attack_power": 0,
+    "magic_attack_power": 0,
+    "defense": 6,
+    "speed": 0,
+    "hit_point": 6,
+    "magic_point": 0,
+    "base_resist_by_type": {
+      "0": 10,
+      "1": 10,
+      "2": 10,
+      "3": 10,
+      "4": 10
+    },
+    "has_magic": false,
+    "equipment_codes": [
+      2,
+      153,
+      125,
+      181,
+      0,
+      0
+    ]
+  },
+  "initial_equipment_delta": {
+    "max_hp": 0,
+    "max_mp": 0,
+    "attack": 23,
+    "defense": 24,
+    "speed": 0,
+    "hit_rate": 98,
+    "magic_attack": 0,
+    "resist_by_type": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    }
+  },
+  "cases": [
+    {
+      "case": "baseline",
+      "attributes": {
+        "str": 16,
+        "dex": 16,
+        "mind": 8,
+        "con": 12
+      },
+      "level": 1,
+      "input_current_hp": 17,
+      "input_current_mp": 0,
+      "native_unequipped": {
+        "current_hp": 17,
+        "max_hp": 30,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 31,
+        "defense": 19,
+        "speed": 14,
+        "hit_rate": 0,
+        "magic_attack": 17,
+        "exp_threshold": 100,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      },
+      "native_equipped": {
+        "current_hp": 17,
+        "max_hp": 30,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 54,
+        "defense": 43,
+        "speed": 14,
+        "hit_rate": 98,
+        "magic_attack": 17,
+        "exp_threshold": 100,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      }
+    },
+    {
+      "case": "level_two_no_refill",
+      "attributes": {
+        "str": 16,
+        "dex": 16,
+        "mind": 8,
+        "con": 12
+      },
+      "level": 2,
+      "input_current_hp": 17,
+      "input_current_mp": 0,
+      "native_unequipped": {
+        "current_hp": 17,
+        "max_hp": 31,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 32,
+        "defense": 19,
+        "speed": 14,
+        "hit_rate": 0,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      },
+      "native_equipped": {
+        "current_hp": 17,
+        "max_hp": 31,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 55,
+        "defense": 43,
+        "speed": 14,
+        "hit_rate": 98,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      }
+    },
+    {
+      "case": "str_plus_one",
+      "attributes": {
+        "str": 17,
+        "dex": 16,
+        "mind": 8,
+        "con": 12
+      },
+      "level": 2,
+      "input_current_hp": 17,
+      "input_current_mp": 0,
+      "native_unequipped": {
+        "current_hp": 17,
+        "max_hp": 31,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 32,
+        "defense": 19,
+        "speed": 14,
+        "hit_rate": 0,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      },
+      "native_equipped": {
+        "current_hp": 17,
+        "max_hp": 31,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 55,
+        "defense": 43,
+        "speed": 14,
+        "hit_rate": 98,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      }
+    },
+    {
+      "case": "dex_plus_one",
+      "attributes": {
+        "str": 16,
+        "dex": 17,
+        "mind": 8,
+        "con": 12
+      },
+      "level": 2,
+      "input_current_hp": 17,
+      "input_current_mp": 0,
+      "native_unequipped": {
+        "current_hp": 17,
+        "max_hp": 31,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 33,
+        "defense": 19,
+        "speed": 15,
+        "hit_rate": 0,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      },
+      "native_equipped": {
+        "current_hp": 17,
+        "max_hp": 31,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 56,
+        "defense": 43,
+        "speed": 15,
+        "hit_rate": 98,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      }
+    },
+    {
+      "case": "mind_plus_one",
+      "attributes": {
+        "str": 16,
+        "dex": 16,
+        "mind": 9,
+        "con": 12
+      },
+      "level": 2,
+      "input_current_hp": 17,
+      "input_current_mp": 0,
+      "native_unequipped": {
+        "current_hp": 17,
+        "max_hp": 31,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 32,
+        "defense": 19,
+        "speed": 14,
+        "hit_rate": 0,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 17,
+          "4": 12
+        }
+      },
+      "native_equipped": {
+        "current_hp": 17,
+        "max_hp": 31,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 55,
+        "defense": 43,
+        "speed": 14,
+        "hit_rate": 98,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 17,
+          "4": 12
+        }
+      }
+    },
+    {
+      "case": "con_plus_one",
+      "attributes": {
+        "str": 16,
+        "dex": 16,
+        "mind": 8,
+        "con": 13
+      },
+      "level": 2,
+      "input_current_hp": 17,
+      "input_current_mp": 0,
+      "native_unequipped": {
+        "current_hp": 17,
+        "max_hp": 33,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 32,
+        "defense": 19,
+        "speed": 14,
+        "hit_rate": 0,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      },
+      "native_equipped": {
+        "current_hp": 17,
+        "max_hp": 33,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 55,
+        "defense": 43,
+        "speed": 14,
+        "hit_rate": 98,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 16,
+          "4": 12
+        }
+      }
+    },
+    {
+      "case": "five_point_mix",
+      "attributes": {
+        "str": 18,
+        "dex": 17,
+        "mind": 9,
+        "con": 13
+      },
+      "level": 2,
+      "input_current_hp": 17,
+      "input_current_mp": 0,
+      "native_unequipped": {
+        "current_hp": 17,
+        "max_hp": 33,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 34,
+        "defense": 19,
+        "speed": 15,
+        "hit_rate": 0,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 17,
+          "4": 12
+        }
+      },
+      "native_equipped": {
+        "current_hp": 17,
+        "max_hp": 33,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 57,
+        "defense": 43,
+        "speed": 15,
+        "hit_rate": 98,
+        "magic_attack": 18,
+        "exp_threshold": 150,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 16,
+          "1": 14,
+          "2": 13,
+          "3": 17,
+          "4": 12
+        }
+      }
+    },
+    {
+      "case": "high_attributes",
+      "attributes": {
+        "str": 61,
+        "dex": 57,
+        "mind": 46,
+        "con": 60
+      },
+      "level": 40,
+      "input_current_hp": 91,
+      "input_current_mp": 9,
+      "native_unequipped": {
+        "current_hp": 91,
+        "max_hp": 161,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 90,
+        "defense": 66,
+        "speed": 51,
+        "hit_rate": 0,
+        "magic_attack": 60,
+        "exp_threshold": 2000,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 43,
+          "1": 33,
+          "2": 31,
+          "3": 46,
+          "4": 24
+        }
+      },
+      "native_equipped": {
+        "current_hp": 91,
+        "max_hp": 161,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 113,
+        "defense": 90,
+        "speed": 51,
+        "hit_rate": 98,
+        "magic_attack": 60,
+        "exp_threshold": 2000,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 43,
+          "1": 33,
+          "2": 31,
+          "3": 46,
+          "4": 24
+        }
+      }
+    },
+    {
+      "case": "near_caps",
+      "attributes": {
+        "str": 89,
+        "dex": 87,
+        "mind": 79,
+        "con": 93
+      },
+      "level": 70,
+      "input_current_hp": 240,
+      "input_current_mp": 20,
+      "native_unequipped": {
+        "current_hp": 240,
+        "max_hp": 254,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 125,
+        "defense": 98,
+        "speed": 78,
+        "hit_rate": 0,
+        "magic_attack": 76,
+        "exp_threshold": 2000,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 50,
+          "1": 48,
+          "2": 43,
+          "3": 50,
+          "4": 32
+        }
+      },
+      "native_equipped": {
+        "current_hp": 240,
+        "max_hp": 254,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 148,
+        "defense": 122,
+        "speed": 78,
+        "hit_rate": 98,
+        "magic_attack": 76,
+        "exp_threshold": 2000,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 50,
+          "1": 48,
+          "2": 43,
+          "3": 50,
+          "4": 32
+        }
+      }
+    },
+    {
+      "case": "at_caps_clamp_current",
+      "attributes": {
+        "str": 90,
+        "dex": 88,
+        "mind": 80,
+        "con": 94
+      },
+      "level": 99,
+      "input_current_hp": 9999,
+      "input_current_mp": 9999,
+      "native_unequipped": {
+        "current_hp": 285,
+        "max_hp": 285,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 133,
+        "defense": 100,
+        "speed": 79,
+        "hit_rate": 0,
+        "magic_attack": 76,
+        "exp_threshold": 2000,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 50,
+          "1": 48,
+          "2": 44,
+          "3": 50,
+          "4": 33
+        }
+      },
+      "native_equipped": {
+        "current_hp": 285,
+        "max_hp": 285,
+        "current_mp": 0,
+        "max_mp": 0,
+        "attack": 156,
+        "defense": 124,
+        "speed": 79,
+        "hit_rate": 98,
+        "magic_attack": 76,
+        "exp_threshold": 2000,
+        "caps": {
+          "str": 90,
+          "dex": 88,
+          "mind": 80,
+          "con": 94
+        },
+        "resist_by_type": {
+          "0": 50,
+          "1": 48,
+          "2": 44,
+          "3": 50,
+          "4": 33
+        }
+      }
+    }
+  ],
+  "instruction_budget": 12000,
+  "instruction_anchors": [
+    {
+      "address": "0x448370",
+      "meaning": "job-indexed four-cap loader",
+      "bytes": "8b4424088b4c2404c1e00233d2668b1445bc86470089517433d2668b1445be86470089517833d2668b1445c086470089517c33d2668b1445c286470089"
+    },
+    {
+      "address": "0x448840",
+      "meaning": "copy base attributes and enter stat refresh",
+      "bytes": "568b74240833d2578b46288bbe9c000000a900000100750233ff8b46645389464c8b4e68894e50"
+    },
+    {
+      "address": "0x448a64",
+      "meaning": "jobSwordMan branch through derived stat setup",
+      "bytes": "6a0056e804f9ffff8b465483c4088d0c80b81f85eb51c1e103f7e98b46588bcac1f9058bd1c1ea1f03ca9983e20303c2c1f80203c883f9287e05b9280000008b960401000003d18996040100008b46548d0c408d0c88b81f85eb51d1e1f7e98bcab867666666c1f9058bd1c1ea1f03ca8b5658f7ead1fa8bc203d1c1e81f03c283f8287e05b8280000008b8e0801000003c8898e080100008b46548d0c80b81f85eb51c1e102f7e98bca8b5658c1f9058bc1c1e81f03c8b867666666f7ead1fa8bc203d1c1e81f03c283f8287e05b8280000008b9e0c01000003d8899e0c0100008b46548d0c40c1e1032bc8b81f85eb51d1e1f7e98b46588bcac1f9058bd1c1ea1f03ca9983e20303c2c1f80203c883f9287e05b9280000008b861001000003c18986100100008b46548d0c80b81f85eb51d1e1f7e98bca8b5658c1f9058bc1c1e81f03c8b8abaaaa2af7ea8bc203d1c1e81f03c283f8287e05b828000000018614010000e9f00200006a0156"
+    },
+    {
+      "address": "0x44b62c",
+      "meaning": "HP/MP template additions, EXP threshold, and current-value clamps",
+      "bytes": "0fbf86b60100008b96dc00000083c43003d0b8010000008bca8996dc0000003bc87d068986dc0000000fbf8eb40100008b86e400000003c18986e4000000790a33c9898ee4000000eb0233c98b869c000000408d04808d0480d1e03dd007000089868c0000007e0ac7868c000000d00700008b86dc0000008b96d80000003bd07e068986d80000008b86e40000008b96e00000003bd07e068986e00000008b"
+    }
+  ],
+  "model_scope": [
+    "Positive base attributes, no temporary status/buff flags, jobSwordMan (80), Leonard source template.",
+    "Initial equipment is represented as a proven constant output delta for this growth slice; equipment transactions remain a later system.",
+    "Current HP/MP are only clamped downward by 0x448840; a larger maximum does not refill either current value.",
+    "No runtime EXE emulation is used by the product."
+  ]
+}

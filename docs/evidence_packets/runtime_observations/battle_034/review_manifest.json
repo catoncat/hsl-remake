@@ -1,0 +1,105 @@
+{
+  "failures": [],
+  "level": 34,
+  "records": [
+    {
+      "camera": "(320.0, 496.0)",
+      "capture": "00-framed",
+      "motion": false
+    },
+    {
+      "camera": "(400.0, 496.0)",
+      "capture": "dialogue-380",
+      "motion": false
+    },
+    {
+      "camera": "(400.0, 592.0)",
+      "capture": "dialogue-1997",
+      "motion": false
+    },
+    {
+      "camera": "(400.0, 496.0)",
+      "capture": "dialogue-1998",
+      "motion": false
+    },
+    {
+      "camera": "(432.0, 432.0)",
+      "capture": "dialogue-1999",
+      "motion": false
+    },
+    {
+      "camera": "(432.0, 432.0)",
+      "capture": "dialogue-2000",
+      "motion": false
+    },
+    {
+      "camera": "(432.0, 432.0)",
+      "capture": "dialogue-2001",
+      "motion": false
+    },
+    {
+      "camera": "(400.0, 496.0)",
+      "capture": "dialogue-2002",
+      "motion": false
+    },
+    {
+      "camera": "(400.0, 496.0)",
+      "capture": "dialogue-2003",
+      "motion": false
+    },
+    {
+      "camera": "(720.0, 592.0)",
+      "capture": "dialogue-2004",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 560.0)",
+      "capture": "dialogue-2005",
+      "motion": false
+    },
+    {
+      "camera": "(432.0, 432.0)",
+      "capture": "dialogue-2006",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 592.0)",
+      "capture": "first-control",
+      "motion": false
+    },
+    {
+      "first_control": {
+        "interaction": "action_menu",
+        "players": 4,
+        "units": 23
+      }
+    },
+    {
+      "camera": "(320.0, 496.0)",
+      "capture": "win-dialogue-2021",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 496.0)",
+      "capture": "win-dialogue-2022",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 496.0)",
+      "capture": "result",
+      "motion": false
+    },
+    {
+      "result": {
+        "outcome": "victory_boss",
+        "resolved": {
+          "code": 0,
+          "key": "win_0",
+          "kind": "win",
+          "outcome": "victory_boss"
+        }
+      }
+    }
+  ],
+  "schema": "hsl_battle_review.v1"
+}

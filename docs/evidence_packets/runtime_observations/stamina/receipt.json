@@ -1,0 +1,369 @@
+{
+  "failures": [],
+  "fixture": true,
+  "input": "Actual viewport mouse motion/press/release; normal Runtime AI, combat and clocks",
+  "original_game_execution": false,
+  "overrides": "Three-actor roster, initial queue speeds110/3/2 with equipment refresh retaining its real speed changes; ally control, hostile024 archer same level as Leonard with hit200 and low attack8; initial ST14 or8, enemy HP500, legal source-range placements, empty AI calls and no reinforcement templates. Equipment route adds actual225/169 to inventory. No RNG replacement, direct damage/ST changes after setup, or action/result calls.",
+  "schema": "hsl_stamina_control_review.v1",
+  "window_position": "(830, 508)",
+  "window_screen": 0,
+  "routes": [
+    {
+      "earned_attack": {
+        "attacker_id": "enemy024_1",
+        "damage": 3,
+        "defender_hp_after": 27,
+        "defender_hp_before": 30,
+        "defender_id": "leonard",
+        "sequence": 1,
+        "stamina_gain": {
+          "attacker": {
+            "after": 3,
+            "before": 0,
+            "blocked": false,
+            "delta": 3,
+            "doubled": false,
+            "unit_id": "enemy024_1"
+          },
+          "base_gain": 3,
+          "defeated": false,
+          "defender": {
+            "after": 20,
+            "before": 14,
+            "blocked": false,
+            "delta": 6,
+            "doubled": false,
+            "unit_id": "leonard"
+          },
+          "evidence_tier": "static-derived",
+          "heavy_hit": false,
+          "level_penalty": false,
+          "ok": true,
+          "source_address": "0x40e590"
+        }
+      },
+      "final_st": 0,
+      "initial_positions": [
+        "(15, 17)",
+        "(17, 17)"
+      ],
+      "initial_st": 14,
+      "mode": "ordinary",
+      "next_actor": "enemy021_1",
+      "special": {
+        "hit": true,
+        "resource_payment": {
+          "after": 0,
+          "amount": 20,
+          "before": 20,
+          "native_affordable": true,
+          "native_required": 20,
+          "ok": true,
+          "resource": "stamina"
+        },
+        "sequence": 2,
+        "skill_id": "special:magicOTHER:magicCode01"
+      }
+    },
+    {
+      "blocked_attack": {
+        "attacker_id": "enemy024_1",
+        "damage": 5,
+        "defender_hp_after": 25,
+        "defender_hp_before": 30,
+        "defender_id": "leonard",
+        "sequence": 1,
+        "stamina_gain": {
+          "attacker": {
+            "after": 3,
+            "before": 0,
+            "blocked": false,
+            "delta": 3,
+            "doubled": false,
+            "unit_id": "enemy024_1"
+          },
+          "base_gain": 3,
+          "defeated": false,
+          "defender": {
+            "after": 8,
+            "before": 8,
+            "blocked": true,
+            "delta": 0,
+            "doubled": true,
+            "unit_id": "leonard"
+          },
+          "evidence_tier": "static-derived",
+          "heavy_hit": false,
+          "level_penalty": false,
+          "ok": true,
+          "source_address": "0x40e590"
+        }
+      },
+      "earned_attack": {
+        "attacker_id": "enemy024_1",
+        "damage": 3,
+        "defender_hp_after": 22,
+        "defender_hp_before": 25,
+        "defender_id": "leonard",
+        "sequence": 2,
+        "stamina_gain": {
+          "attacker": {
+            "after": 6,
+            "before": 3,
+            "blocked": false,
+            "delta": 3,
+            "doubled": false,
+            "unit_id": "enemy024_1"
+          },
+          "base_gain": 3,
+          "defeated": false,
+          "defender": {
+            "after": 20,
+            "before": 8,
+            "blocked": false,
+            "delta": 12,
+            "doubled": true,
+            "unit_id": "leonard"
+          },
+          "evidence_tier": "static-derived",
+          "heavy_hit": false,
+          "level_penalty": false,
+          "ok": true,
+          "source_address": "0x40e590"
+        }
+      },
+      "final_st": 0,
+      "initial_positions": [
+        "(15, 17)",
+        "(17, 17)"
+      ],
+      "initial_st": 8,
+      "mode": "equipment",
+      "next_actor": "enemy021_1",
+      "special": {
+        "hit": true,
+        "resource_payment": {
+          "after": 0,
+          "amount": 20,
+          "before": 20,
+          "native_affordable": true,
+          "native_required": 20,
+          "ok": true,
+          "resource": "stamina"
+        },
+        "sequence": 3,
+        "skill_id": "special:magicOTHER:magicCode01"
+      }
+    }
+  ],
+  "equipment_route_receipt": "Earlier two-route render; no equipment rule changes after this run. Later ordinary render additionally verifies hit-time projection.",
+  "default_playthrough": {
+    "actions": [
+      {
+        "action": "move",
+        "cell": [
+          13,
+          14
+        ],
+        "exp": 0.0,
+        "hp": 30.0,
+        "level": 1.0,
+        "stamina": 0,
+        "turn": 1
+      },
+      {
+        "action": "commit_move",
+        "exp": 0.0,
+        "hp": 30,
+        "level": 1.0,
+        "stamina": 0,
+        "turn": 1
+      },
+      {
+        "action": "attack",
+        "exp": 19,
+        "hp": 19,
+        "level": 1.0,
+        "stamina": 10,
+        "target": "enemy021_4",
+        "turn": 2
+      },
+      {
+        "action": "move",
+        "cell": [
+          13,
+          12
+        ],
+        "exp": 19,
+        "hp": 19,
+        "level": 1.0,
+        "stamina": 10,
+        "turn": 3
+      },
+      {
+        "action": "attack",
+        "exp": 46,
+        "hp": 19,
+        "level": 1.0,
+        "stamina": 15,
+        "target": "enemy021_3",
+        "turn": 3
+      },
+      {
+        "action": "attack",
+        "exp": 76,
+        "hp": 19,
+        "level": 1.0,
+        "stamina": 20,
+        "target": "Enemy021_reinforcement_12",
+        "turn": 4
+      },
+      {
+        "action": "special",
+        "exp": 4,
+        "hp": 8,
+        "level": 2.0,
+        "stamina": 6,
+        "target": "Enemy021_reinforcement_14",
+        "turn": 5
+      },
+      {
+        "action": "allocate_growth",
+        "exp": 4,
+        "hp": 8,
+        "level": 2.0,
+        "points": 5,
+        "stamina": 6,
+        "turn": 5
+      },
+      {
+        "action": "recovery_item",
+        "exp": 4,
+        "hp": 33,
+        "level": 2.0,
+        "stamina": 6,
+        "turn": 6
+      },
+      {
+        "action": "wait",
+        "exp": 4,
+        "hp": 14,
+        "level": 2.0,
+        "stamina": 18,
+        "turn": 7
+      },
+      {
+        "action": "recovery_item",
+        "exp": 4,
+        "hp": 33,
+        "level": 2.0,
+        "stamina": 18,
+        "turn": 8
+      },
+      {
+        "action": "move",
+        "cell": [
+          14,
+          10
+        ],
+        "exp": 4,
+        "hp": 33,
+        "level": 2.0,
+        "stamina": 18,
+        "turn": 9
+      },
+      {
+        "action": "commit_move",
+        "exp": 4,
+        "hp": 33,
+        "level": 2.0,
+        "stamina": 18,
+        "turn": 9
+      }
+    ],
+    "captured_views": [
+      "status",
+      "map-range",
+      "map-cursor",
+      "map-target",
+      "attacker-shot",
+      "defender-shot"
+    ],
+    "dialogue": [
+      "372",
+      "372",
+      "372",
+      "372",
+      "396",
+      "397",
+      "374",
+      "372",
+      "372",
+      "372",
+      "372",
+      "368",
+      "369",
+      "369",
+      "372",
+      "372",
+      "374",
+      "371"
+    ],
+    "elapsed_seconds": 233.288,
+    "opening": [
+      "363",
+      "364",
+      "365",
+      "366",
+      "367",
+      "364",
+      "1101"
+    ],
+    "outcome": "victory_escape",
+    "policy": "advance",
+    "restart": true,
+    "time_scale": 1.0,
+    "turn": 9,
+    "visual_samples": {
+      "live-cue-cursor": {
+        "sequence": 1,
+        "turn": 2
+      },
+      "live-cue-range": {
+        "sequence": 1,
+        "turn": 2
+      },
+      "live-cue-target": {
+        "sequence": 1,
+        "turn": 2
+      },
+      "live-hurt": {
+        "sequence": 1,
+        "turn": 2
+      },
+      "live-magic-fire": {
+        "sequence": 30,
+        "turn": 9
+      },
+      "live-windup": {
+        "sequence": 1,
+        "turn": 2
+      }
+    },
+    "player": {
+      "hp": 33,
+      "max_hp": 33,
+      "stamina": 18,
+      "level": 2.0,
+      "exp": 4
+    }
+  },
+  "images_sha256": {
+    "ordinary-status20.png": "f59f353cd0c6240d95b80ada0d5443d06ede35ca8cf1e21a59efbb9eace16615",
+    "ordinary-hit-before.png": "8cf4abf5042f17e507460fb30f72c71edc8b611ba0b47cb342ddfb79b4b3f371",
+    "ordinary-hit-after.png": "3291ec0e040484d5657f5d043d4681e70dbd44e106a8ad137310f7d973ea4aef",
+    "equipment-ring-preview.png": "727eded5d6e5c7ae6a171618103ff7fe3c6afbb03515da10556b9cd91d2fe615",
+    "equipment-mask-preview.png": "deafd311d475f38cd1c33e322520e66f6a8907e00f15e772863244f4617263e2",
+    "default-result.png": "7d1dc715a4eea5288911b226cca6cdf9bda07b6aa83826228fbed5d36bb1006d"
+  }
+}

@@ -1,0 +1,440 @@
+{
+  "schema": "hsl_native_growth_allowance.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "attributes": [
+    "str",
+    "dex",
+    "mind",
+    "con"
+  ],
+  "field_layout": {
+    "roster_base_global": "0x4c1bc8",
+    "object_roster_index": "0xa4",
+    "roster_stride": 508,
+    "base_offsets": [
+      100,
+      104,
+      108,
+      112
+    ],
+    "cap_offsets": [
+      116,
+      120,
+      124,
+      128
+    ]
+  },
+  "formula": "max(0, min(requested, sum(caps[i] - base[i] for i in range(4))))",
+  "levelup_request": 5,
+  "instruction_budget": 256,
+  "cases": [
+    {
+      "case": "ordinary_capacity",
+      "entry": "0x439f20",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 5,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "ordinary_capacity",
+      "entry": "0x439f70",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 5,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "three_points_left",
+      "entry": "0x439f20",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        17,
+        17,
+        9,
+        12
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 3,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "three_points_left",
+      "entry": "0x439f70",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        17,
+        17,
+        9,
+        12
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 3,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "one_point_left",
+      "entry": "0x439f20",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        16,
+        16,
+        8,
+        13
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 1,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "one_point_left",
+      "entry": "0x439f70",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        16,
+        16,
+        8,
+        13
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 1,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "at_all_caps",
+      "entry": "0x439f20",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 0,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "at_all_caps",
+      "entry": "0x439f70",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 0,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "negative_total_capacity",
+      "entry": "0x439f20",
+      "base": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "caps": [
+        19,
+        19,
+        19,
+        19
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 0,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "negative_total_capacity",
+      "entry": "0x439f70",
+      "base": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "caps": [
+        19,
+        19,
+        19,
+        19
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 0,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "mixed_deficits_not_individually_clamped",
+      "entry": "0x439f20",
+      "base": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "caps": [
+        19,
+        22,
+        20,
+        20
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 1,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "mixed_deficits_not_individually_clamped",
+      "entry": "0x439f70",
+      "base": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "caps": [
+        19,
+        22,
+        20,
+        20
+      ],
+      "requested_argument": 5,
+      "effective_request": 5,
+      "result": 1,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "requested_zero",
+      "entry": "0x439f20",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "requested_argument": 0,
+      "effective_request": 0,
+      "result": 0,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "requested_zero",
+      "entry": "0x439f70",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "requested_argument": 0,
+      "effective_request": 5,
+      "result": 5,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "requested_twelve",
+      "entry": "0x439f20",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "requested_argument": 12,
+      "effective_request": 12,
+      "result": 12,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "requested_twelve",
+      "entry": "0x439f70",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "requested_argument": 12,
+      "effective_request": 5,
+      "result": 5,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "requested_negative",
+      "entry": "0x439f20",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "requested_argument": -1,
+      "effective_request": -1,
+      "result": 0,
+      "returned": true,
+      "roster_unchanged": true
+    },
+    {
+      "case": "requested_negative",
+      "entry": "0x439f70",
+      "base": [
+        16,
+        16,
+        8,
+        12
+      ],
+      "caps": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "requested_argument": -1,
+      "effective_request": 5,
+      "result": 5,
+      "returned": true,
+      "roster_unchanged": true
+    }
+  ],
+  "instruction_anchors": [
+    {
+      "address": "0x439f20",
+      "meaning": "sum four cap-base differences; clamp requested allowance to 0..remaining total",
+      "bytes": "8b4424048b15c81b4c0056578b80a40000008bc8c1e1072bc88d048a33c983c064ba040000008b70108b382bf783c00403ce4a75f18b4424105f3bc15e7e028bc185c07d0233c0c3"
+    },
+    {
+      "address": "0x439f70",
+      "meaning": "wrapper calls allowance helper with literal five",
+      "bytes": "8b4424046a0550e8a4ffffff83c408c3"
+    },
+    {
+      "address": "0x43a1ca",
+      "meaning": "caller saves allowance and clears four allocation counters",
+      "bytes": "8b8e9c00000051e89afdffff33d2a3cc1c4c008915602c4c0083c4048915642c4c008915682c4c0089156c2c4c00"
+    },
+    {
+      "address": "0x43a224",
+      "meaning": "same caller increments level, subtracts threshold EXP and clamps it at zero",
+      "bytes": "8bb09c0000004689b09c0000008b4424108b888c0000008b90880000002bd18990880000008b4424108b888800000085c97d0ec78088000000000000008b442410"
+    }
+  ],
+  "limits": [
+    "Full return of two small allowance helpers, not the entire level-up process.",
+    "Synthetic roster and caps, including invalid-state boundary fixtures; no native cap loader proof.",
+    "Five is a point budget across four base attributes, not five choices or a flat HP/attack/defense gain.",
+    "No free-point persistence, click allocation, class change, random allocation or derived-stat refresh proof.",
+    "This packet does not change the live remake three-point growth policy."
+  ]
+}

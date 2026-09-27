@@ -1,0 +1,361 @@
+extends Control
+## The skill page (特殊技 and 魔法) as the original draws it: its status window in root mode 3
+## (special) or 2 (magic) — the WINDOW10 strip with portrait, bars and resists, the left
+## WINDOW20 column listing the skills, the `$:` WINDOW40 money box — and the 0x436d70
+## description box for the hovered row. A row the actor cannot pay is red and still shows
+## its description when hovered; clicking it does nothing. There is no title, list board,
+## cursor bar or 取消 button: right click／Esc cancel. Past nine rows the 0x446060 scroll bar
+## appears (arrows, trough paging, thumb drag, ↑↓／PgUp PgDn; no wheel). Choosing／cancelling
+## returns intent to PlayLoop.
+## provenance:
+##   rules: n/a
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5; static-derived docs/evidence_packets/static_reverse/original_getitem_window.md#描述框-0x436d70; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5 (2026-09-26 Wine frames: all four boards at offset 0, rows, red row, hover)
+##   strings: resource-derived content/imported/hsl/global/tables/MAGIC.TXT; resource-derived content/imported/hsl/global/tables/SPECIAL.TXT; resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT; static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md; static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5; runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#5 (hovered name green 236／244 in two Wine frames)
+##   audio: n/a
+signal spell_selected(skill_id: String)
+signal cancelled
+const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const Vitals = preload("res://game/battle/scene/BattleVitals.gd")
+const OriginalTick = preload("res://game/battle/runtime/OriginalTick.gd")
+## Left column: 0x43add0 docks WINDOW20 (object 132) at (12,174). 0x438160 case 2: first row
+## 8 px below the top (+0x9a), 28 px rows (+0x98), nine rows per page (0x446060). Names at
+## x+8+24 (0x4123b0); element gem MAGICON[type] at (x+15, row+2) (0x4607f9, table 0x4c3460).
+## Rows are drawn from y+8−28·pos and clipped to (x, y+8)–(x+224, y+258): the ninth row
+## loses its last 2 px.
+const LIST_AT := Vector2(12, 174)
+const LIST_SIZE := Vector2(224, 264)
+const ROW_TOP := 8
+const ROW_HEIGHT := 28
+const VISIBLE_ROWS := 9
+const LIST_CLIP_HEIGHT := 250
+## 0x434d10 lists type by type (TYPE.H magicEARTH..magicOTHER2 = 0..6), each type's owned
+## codes by bit (magicCode01 = bit 0). An authored code has no bit and follows its type's
+## original bits, as its skill_book source_order does.
+const LIST_TYPES := ["magicEARTH", "magicWATER", "magicAIR", "magicFIRE", "magicMIND", "magicOTHER", "magicOTHER2"]
+## Scroll bar 0x446060 (objects 150–153) at WINDOW20 + (200,0): WIN02BAR trough 24×264 (its
+## red arrows are baked in), BAR_UP／BAR_DOWN buttons at (5,5)／(5,243), BAR_BLK1 thumb 14 px
+## wide clipped to its height with the BAR_BLK2 foot on its last 2 px (150's draw pass).
+## Track y 22–242 of the bar (+0x6c = 16+6, +0x74 = 264−22). 0x445d70: height
+## ⌊⌊9·65536/n⌋·220/65536⌋, top 22 + ⌊220·pos/n⌋, pos in [0, n−9]. 0x445860: n ≤ 9 hides
+## all four objects and ignores the keys.
+const BAR_AT := Vector2(200, 0)
+const ARROW_UP_AT := Vector2(5, 5)
+const ARROW_DOWN_AT := Vector2(5, 243)
+const THUMB_X := 5
+const THUMB_WIDTH := 14
+const THUMB_FOOT := 2
+const TRACK_TOP := 22
+const TRACK_LENGTH := 220
+const THUMB_SCALE := 65536
+## 0x445cd0: a held arrow is drawn engFLASH with colour 0x4208, each pixel averaged with
+## (66,65,66); it steps on release only if the mouse never left it (no auto-repeat).
+const ARROW_HELD_SHADER := "shader_type canvas_item;\nvoid fragment() { COLOR.rgb = (COLOR.rgb + vec3(66.0, 65.0, 66.0) / 255.0) * 0.5; }"
+const NO_DRAG := -1
+const NAME_DX := 32
+const GEM_AT := Vector2(15, 2)
+## 0x438160 redraws the hovered name (0x4132f0 mode 1) in the 0x42c130 pulse colour — green
+## 255 − 2·|p| with red and blue bases 0 — where p is the 0x42c110 counter stepping once a tick
+## through −16..16 (33 ticks); not the @3 (205,255,205) the description title uses.
+const HOVER_GREEN_BASE := 255
+const HOVER_PULSE_HALF := 16
+## 0x43af60 docks the `$:` WINDOW40 (object 134) at (416,440); the amount right-aligned in
+## the status page's cell.
+const MONEY_AT := Vector2(416, 440)
+## Description box of 0x436d70 at the status-page position; rows (x+8, y+12+16i), 360 px centred.
+const DESCRIPTION_AT := Vector2(252, 349)
+const DESCRIPTION_SIZE := Vector2(376, 88)
+## TYPE.H magicEARTH..magicMIND = 0..4 (magicOTHER／OTHER2 have no gem and no element word);
+## RESOURCE.TXT 217–221 (0xd9 + type).
+const ELEMENT_TYPES := ["magicEARTH", "magicWATER", "magicAIR", "magicFIRE", "magicMIND"]
+const ELEMENT_WORDS := ["地系", "水系", "風系", "火系", "心靈系"]
+## TYPE.H magicFun_* bits of the table `function` field.
+const FUNCTION_BITS := {
+	"magicFun_Attack": 0x1, "magicFun_Heal": 0x2, "magicFun_Paralysis": 0x4, "magicFun_Poison": 0x8,
+	"magicFun_NoMagic": 0x10, "magicFun_DefUp": 0x20, "magicFun_AttUp": 0x40, "magicFun_AllUp": 0x100,
+	"magicFun_CureParalysis": 0x200, "magicFun_CurePoison": 0x400, "magicFun_CureNoMagic": 0x800,
+	"magicFun_Weaken": 0x1000, "magicFun_CureWeaken": 0x2000, "magicFun_ClearAtDfUp": 0x4000,
+	"magicFun_HealMP": 0x8000, "magicFun_ActiveAgain": 0x10000, "magicFun_StealGold": 0x20000,
+	"magicFun_StealItem": 0x40000, "magicFun_CancelActive": 0x80000, "magicFun_StealHP": 0x100000,
+}
+## Effect words of the power row in the order 0x433a90／0x4331b0 test them (RESOURCE.TXT ids in
+## the packet): a full group prints its one word instead of the members.
+const INFLICT_ALL := [0x101c, "所有狀態異常"]
+const INFLICT := [[0x4, "痲痺敵人"], [0x8, "中毒傷害"], [0x10, "魔法封印效果"], [0x1000, "衰弱效果"]]
+const CURE_ALL := [0x2e00, "回復人物正常狀態"]
+const CURE := [[0x2000, "解除衰弱效果"], [0x200, "解除痲痺狀態"], [0x400, "治療中毒"], [0x800, "解除魔法封印"]]
+const SUPPORT := [[0x20, "增加防禦力效果"], [0x40, "增加攻擊力效果"], [0x4000, "解除敵人附加攻防力"], [0x100, "所有魔法抗力上升"]]
+## Only the special builder 0x433a90 goes on past 0x100.
+const SPECIAL_ONLY := [[0x8000, "回復魔法"], [0x10000, "可再次行動"], [0x20000, "偷取金錢"], [0x40000, "偷取物品"], [0x80000, "取消行動"], [0x100000, "吸取敵人生命"]]
+var choices: Dictionary = {}
+var description_box: TextureRect
+var vitals: Control
+var money_label: Label
+var list: Control
+var scroll_pos := 0
+var scroll_bar: Control
+var _rows: VBoxContainer
+var _thumb: Control
+var _thumb_foot: TextureRect
+var _held_arrow: TextureRect
+var _drag_grab := NO_DRAG
+var _hover_name: Label
+var _pulse_clock := 0.0
+
+
+func _ready() -> void:
+	size = Vector2(640, 480)
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	UISkin.clear_panel(self)
+	UISkin.board(self, "WINDOW20", LIST_AT)
+	list = Control.new()
+	list.name = "Skills"
+	list.position = LIST_AT + Vector2(0, ROW_TOP)
+	list.size = Vector2(LIST_SIZE.x, LIST_CLIP_HEIGHT)
+	list.clip_contents = true
+	list.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(list)
+	_rows = VBoxContainer.new()
+	_rows.add_theme_constant_override("separation", 0)
+	list.add_child(_rows)
+	_build_scroll_bar()
+	UISkin.board(self, "WINDOW40", MONEY_AT)
+	money_label = UISkin.text(self, MONEY_AT + Vector2(80, 4), UISkin.TEXT_WHITE, UISkin.FONT_BODY, Vector2(108, 24))
+	money_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	description_box = UISkin.board(self, "WINDOW50", DESCRIPTION_AT)
+	description_box.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	description_box.size = DESCRIPTION_SIZE
+	description_box.name = "Description"
+	description_box.hide()
+	vitals = Vitals.new()
+	vitals.position = Vector2(0, 14)
+	add_child(vitals)
+	hide()
+
+
+func _process(delta: float) -> void:
+	if not visible: return
+	_pulse_clock += delta
+	if _hover_name != null: _hover_name.add_theme_color_override("font_color", hover_colour())
+
+
+## The hovered name's colour this tick (0x42c130 on the 0x42c110 counter).
+func hover_colour() -> Color:
+	var period := 2 * HOVER_PULSE_HALF + 1
+	var step := int(OriginalTick.ticks(_pulse_clock)) % period - HOVER_PULSE_HALF
+	return Color8(0, HOVER_GREEN_BASE - 2 * absi(step), 0)
+
+
+## Modal input while the page is up: right click / Esc cancel (BattleSceneRuntime.modal_panels
+## dispatch); with the scroll bar up, a new press of ↑／↓ moves one row and PgUp／PgDn nine
+## (0x445f00 key masks 4／8／0x800／0x1000). The wheel does nothing: the original window
+## procedure has no WM_MOUSEWHEEL case. Everything else is left to the rows and the bar.
+func handle_input(event: InputEvent) -> bool:
+	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT) or (event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE):
+		cancelled.emit()
+		get_viewport().set_input_as_handled()
+		return true
+	if event is InputEventKey and event.pressed and not event.echo and scroll_bar.visible:
+		var step: int = {KEY_UP: -1, KEY_DOWN: 1, KEY_PAGEUP: -VISIBLE_ROWS, KEY_PAGEDOWN: VISIBLE_ROWS}.get(event.keycode, 0)
+		if step != 0:
+			scroll_to(scroll_pos + step)
+			get_viewport().set_input_as_handled()
+			return true
+	return false
+
+
+func _build_scroll_bar() -> void:
+	scroll_bar = UISkin.board(self, "WIN02BAR", LIST_AT + BAR_AT)
+	scroll_bar.name = "ScrollBar"
+	scroll_bar.mouse_filter = Control.MOUSE_FILTER_STOP
+	scroll_bar.gui_input.connect(_trough_input)
+	_thumb = Control.new()
+	_thumb.clip_contents = true
+	_thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scroll_bar.add_child(_thumb)
+	UISkin.board(_thumb, "BAR_BLK1", Vector2.ZERO)
+	_thumb_foot = UISkin.asset(_thumb, "BAR_BLK2", Vector2.ZERO)
+	var held := ShaderMaterial.new()
+	held.shader = Shader.new()
+	held.shader.code = ARROW_HELD_SHADER
+	for step in [-1, 1]:
+		var arrow := UISkin.asset(scroll_bar, "BAR_UP" if step < 0 else "BAR_DOWN", ARROW_UP_AT if step < 0 else ARROW_DOWN_AT)
+		arrow.mouse_filter = Control.MOUSE_FILTER_STOP
+		arrow.gui_input.connect(_arrow_input.bind(arrow, step, held))
+	scroll_bar.hide()
+
+
+## Moves the list to row `pos` (clamped) and puts the thumb where 0x445d70 does.
+func scroll_to(pos: int) -> void:
+	var count := choices.size()
+	scroll_pos = clampi(pos, 0, maxi(0, count - VISIBLE_ROWS))
+	_rows.position.y = -ROW_HEIGHT * scroll_pos
+	scroll_bar.visible = count > VISIBLE_ROWS
+	if not scroll_bar.visible: return
+	var height := (VISIBLE_ROWS * THUMB_SCALE / count) * TRACK_LENGTH / THUMB_SCALE
+	_thumb.position = Vector2(THUMB_X, TRACK_TOP + TRACK_LENGTH * scroll_pos / count)
+	_thumb.size = Vector2(THUMB_WIDTH, height)
+	_thumb_foot.position.y = height - THUMB_FOOT
+
+
+## 0x445cd0: pressing an arrow holds it; leaving it lets go without a step; releasing on it
+## steps once.
+func _arrow_input(event: InputEvent, arrow: TextureRect, step: int, held: ShaderMaterial) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_held_arrow = arrow
+			arrow.material = held
+		elif _held_arrow == arrow:
+			_release_arrow()
+			scroll_to(scroll_pos + step)
+	elif event is InputEventMouseMotion and _held_arrow == arrow and not Rect2(Vector2.ZERO, arrow.size).has_point(event.position):
+		_release_arrow()
+
+
+func _release_arrow() -> void:
+	if _held_arrow != null: _held_arrow.material = null
+	_held_arrow = null
+
+
+## 0x445860 on the trough: a press above the thumb pages up nine rows, below it down nine;
+## the press then drags the thumb (grab point kept) — it follows the mouse smoothly between
+## the track ends while the list follows whole rows, pos = ⌊(top − 22 + ⌊110/n⌋)·n/220⌋; the
+## release snaps the thumb onto that row.
+func _trough_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			if event.position.y < _thumb.position.y: scroll_to(scroll_pos - VISIBLE_ROWS)
+			elif event.position.y > _thumb.position.y + _thumb.size.y: scroll_to(scroll_pos + VISIBLE_ROWS)
+			_drag_grab = int(event.position.y - _thumb.position.y)
+		elif _drag_grab != NO_DRAG:
+			_drag_grab = NO_DRAG
+			scroll_to(scroll_pos)
+	elif event is InputEventMouseMotion and _drag_grab != NO_DRAG:
+		var count := choices.size()
+		var top := clampi(int(event.position.y) - _drag_grab, TRACK_TOP, TRACK_TOP + TRACK_LENGTH)
+		scroll_to((top - TRACK_TOP + TRACK_LENGTH / (2 * count)) * count / TRACK_LENGTH)
+		_thumb.position.y = mini(top, TRACK_TOP + TRACK_LENGTH - int(_thumb.size.y) - 1)
+
+
+## Row order of the page (0x434d10): type index × 32 + code bit.
+static func list_order(option: Dictionary) -> int:
+	var fields: Dictionary = option.get("fields", {})
+	var code := str(fields.get("code", ""))
+	var bit := int(code.trim_prefix("magicCode")) - 1 if code.begins_with("magicCode") else 31
+	return LIST_TYPES.find(str(fields.get("type", ""))) * 32 + bit
+
+
+## `unit` fills the status strip (the actor); `gold` the money box.
+func show_spells(options: Array, channel: String = "magic", unit: Dictionary = {}, gold: int = 0) -> void:
+	for child in _rows.get_children():
+		_rows.remove_child(child)
+		child.queue_free()
+	choices.clear()
+	_hover_name = null
+	_release_arrow()
+	_drag_grab = NO_DRAG
+	vitals.visible = not unit.is_empty()
+	if vitals.visible: vitals.show_unit(unit)
+	money_label.text = str(gold)
+	var ordered := range(options.size())
+	ordered.sort_custom(func(a: int, b: int) -> bool:
+		var order_a := list_order(options[a])
+		var order_b := list_order(options[b])
+		return order_a < order_b or (order_a == order_b and a < b))
+	for index in ordered:
+		var option: Dictionary = options[index]
+		var fields: Dictionary = option.get("fields", {})
+		var row := Button.new()
+		row.flat = true
+		row.focus_mode = Control.FOCUS_NONE
+		row.custom_minimum_size = Vector2(LIST_SIZE.x, ROW_HEIGHT)
+		for state in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
+			row.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+		row.disabled = not option["quote"]["ok"]
+		_rows.add_child(row)
+		var element := ELEMENT_TYPES.find(str(fields.get("type", "")))
+		if element >= 0: UISkin.asset(row, "magicon%d" % (element + 1), GEM_AT)
+		# 0x434d10 codes an affordable row @1 white and one 0x409040／0x408fe0 refuses @2 red.
+		var rest := UISkin.TEXT_RED if row.disabled else UISkin.TEXT_WHITE
+		var name_label := UISkin.text(row, Vector2(NAME_DX, 0), rest, UISkin.FONT_BODY)
+		name_label.text = str(option["name"])
+		var lines := description_lines(option, channel)
+		# The hovered row's name pulses green (a red row too); no cursor bar is drawn.
+		row.mouse_entered.connect(func():
+			_hover_name = name_label
+			name_label.add_theme_color_override("font_color", hover_colour())
+			show_description(lines))
+		row.mouse_exited.connect(func():
+			if _hover_name == name_label: _hover_name = null
+			name_label.add_theme_color_override("font_color", rest)
+			hide_description())
+		row.pressed.connect(func():
+			if visible and not row.disabled and choices.get(option["id"]) == row:
+				spell_selected.emit(option["id"]))
+		choices[option["id"]] = row
+	# Every opening starts at row 0: 0x43add0 creates WINDOW20 with +0xa0 = 2 and 0x438160's first
+	# tick finds that unlike its page word (5 magic, 10 special), so it zeroes *0x4c1cd4.
+	scroll_to(0)
+	hide_description()
+	show()
+
+
+## The four description rows of one option, as 0x433a90 (special) and 0x4331b0 (magic) write
+## them: name (magic: `(地系)`…), cost (special: `, 屬性: 地系`…), power and effect words,
+## hit rate with the target count.
+static func description_lines(option: Dictionary, channel: String) -> Array:
+	var fields: Dictionary = option.get("fields", {})
+	var element := ELEMENT_TYPES.find(str(fields.get("type", "")))
+	var special := channel == "special"
+	var title := str(option["name"])
+	if not special and element >= 0: title += " (%s)" % ELEMENT_WORDS[element]
+	var cost := ("氣格消耗%s" if special else "魔法消耗%s") % str(fields.get("expend", "0"))
+	if special and element >= 0: cost += ", 屬性: %s" % ELEMENT_WORDS[element]
+	var bits := 0
+	for word in str(fields.get("function", "")).split(","):
+		bits |= int(FUNCTION_BITS.get(word.strip_edges(), 0))
+	var parts := PackedStringArray()
+	var damage: PackedStringArray = (str(fields.get("damage", "")) + ",0").split(",")
+	var bounds := "%s~%s" % [damage[0].strip_edges(), damage[1].strip_edges()]
+	if bits & 0x1: parts.append("基礎攻擊力" + bounds)
+	elif bits & 0x2: parts.append("基礎回復力" + bounds)
+	parts.append_array(_group_words(bits, INFLICT_ALL, INFLICT))
+	parts.append_array(_group_words(bits, CURE_ALL, CURE))
+	for pair in SUPPORT + (SPECIAL_ONLY if special else []):
+		if bits & int(pair[0]): parts.append(pair[1])
+	var target := "對象一名" if str(fields.get("effect_range", "")) == "range0Cell" else "對象多名"
+	var hit := ("命中率%s%%,%s" if special else "魔法命中率%s%%, %s") % [str(fields.get("hit_ratio", "0")), target]
+	return [title, cost, " ".join(parts), hit]
+
+
+static func _group_words(bits: int, whole: Array, members: Array) -> PackedStringArray:
+	if bits & int(whole[0]) == int(whole[0]): return PackedStringArray([whole[1]])
+	var words := PackedStringArray()
+	for pair in members:
+		if bits & int(pair[0]): words.append(pair[1])
+	return words
+
+
+func show_description(lines: Array) -> void:
+	if description_box == null: return
+	for child in description_box.get_children():
+		description_box.remove_child(child)
+		child.queue_free()
+	for index in range(mini(lines.size(), 4)):
+		var row := UISkin.text(description_box, Vector2(8, 12 + index * 16), UISkin.TEXT_GREEN if index == 0 else UISkin.TEXT_WHITE, UISkin.FONT_SMALL, Vector2(360, 16))
+		row.text = str(lines[index])
+		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	description_box.show()
+
+
+func hide_description() -> void:
+	if description_box != null: description_box.hide()
+
+
+## The rows currently written in the description box (tests and captures read them).
+func description_text() -> Array:
+	var rows: Array = []
+	if description_box == null or not description_box.visible: return rows
+	for child in description_box.get_children():
+		if child is Label: rows.append(child.text)
+	return rows

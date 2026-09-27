@@ -1,0 +1,180 @@
+{
+  "failures": [],
+  "level": 7,
+  "records": [
+    {
+      "camera": "(506.8582, 592.0)",
+      "capture": "00-framed",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 592.0)",
+      "capture": "dialogue-1007",
+      "motion": false
+    },
+    {
+      "camera": "(368.0, 592.0)",
+      "capture": "dialogue-1008",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 592.0)",
+      "capture": "dialogue-1009",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 592.0)",
+      "capture": "first-control",
+      "motion": false
+    },
+    {
+      "first_control": {
+        "interaction": "action_menu",
+        "players": 4,
+        "units": 25
+      }
+    },
+    {
+      "camera": "(560.0, 592.0)",
+      "capture": "win-dialogue-1010",
+      "motion": false
+    },
+    {
+      "camera": "(624.0, 592.0)",
+      "capture": "win-dialogue-1011",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 592.0)",
+      "capture": "win-dialogue-1012",
+      "motion": false
+    },
+    {
+      "camera": "(368.0, 592.0)",
+      "capture": "win-dialogue-1013",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 592.0)",
+      "capture": "win-dialogue-1014",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1015",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1016",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 592.0)",
+      "capture": "win-dialogue-1017",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1018",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 592.0)",
+      "capture": "win-dialogue-1019",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1020",
+      "motion": false
+    },
+    {
+      "camera": "(560.0, 592.0)",
+      "capture": "win-dialogue-1021",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-380",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1022",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1023",
+      "motion": false
+    },
+    {
+      "camera": "(560.0, 592.0)",
+      "capture": "win-dialogue-1024",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1025",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 592.0)",
+      "capture": "win-dialogue-1026",
+      "motion": false
+    },
+    {
+      "camera": "(368.0, 592.0)",
+      "capture": "win-dialogue-1027",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 592.0)",
+      "capture": "win-dialogue-1028",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 592.0)",
+      "capture": "win-dialogue-1029",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1030",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 592.0)",
+      "capture": "win-dialogue-1031",
+      "motion": false
+    },
+    {
+      "camera": "(464.0, 592.0)",
+      "capture": "win-dialogue-1032",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "win-dialogue-1033",
+      "motion": false
+    },
+    {
+      "camera": "(640.0, 368.0)",
+      "capture": "result",
+      "motion": false
+    },
+    {
+      "result": {
+        "outcome": "victory_boss",
+        "resolved": {
+          "code": 0,
+          "key": "win_0",
+          "kind": "win",
+          "outcome": "victory_boss"
+        }
+      }
+    }
+  ],
+  "schema": "hsl_battle_review.v1"
+}

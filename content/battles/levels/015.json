@@ -1,0 +1,158 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 15,
+  "battle": {
+    "id": "battle_015_level15",
+    "title": "深淵之沼 · 沼澤魔物",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "深淵之沼 · 敵軍已清除",
+      "fail_0": "深淵之沼 · 雷歐納德 陣亡",
+      "fail_1": "深淵之沼 · 咕嚕 陣亡"
+    },
+    "expected": {
+      "units": 19,
+      "players": 8
+    },
+    "unresolved_semantics": [
+      "STORY015 opens with seven installed party members and the resource-derived Enemy038 / Enemy037 / Enemy033 field; 咕嚕 008 is installed by WINFAIL015 event_2 after the round-27 choice with its source range3CellCircle weapon.",
+      "WINFAIL015 event_2 presents actSelectInsertEvent 1810 -> event 3 or 1811 -> event 4. The remake inserts the selected event status into the sole WinfailScenarioRules loop and splices its existing status timeline into the same prompt cutscene; source branch timing remains provisional.",
+      "The source win writes point 15 encounter event 540 and returns to the world map; reinforcement placement and native scheduler timing remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_015_abyss_swamp_opening",
+    "title": "深淵之沼（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "深淵之沼",
+      "hint": "戰鬥部分（level 15）尚未重製　　空格／點擊：回到大地圖（深淵之沼）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the eight controlled slots and the 033 / 037 / 038 creatures have no battle scenario yet (P-024, multi-slot party); the preview shows the EVEF placements and STORY015 displacement walks only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "033",
+      "034",
+      "035",
+      "037",
+      "038"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-015.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-015.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-015.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-015.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-015.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-015.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-015.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-015.obs 克羅蒂(有才產生) (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived); conditional install, left out of the preview"
+  },
+  "sweep_fixture": {
+    "mode": "choice_branch",
+    "rounds": [
+      {
+        "turn": 12,
+        "expect_event_status": 2
+      },
+      {
+        "turn": 27,
+        "select_option": 1
+      }
+    ],
+    "expect_install_unit": "gulu",
+    "note": "WINFAIL015 event 0 at round 12, event 2 (actSelectInsertEvent) at round 27; row two arms win_0 and installs 咕嚕."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 15 (深淵之沼, bigmap.dat point 15): slots 0-6 plus 克羅蒂 (有才產生) in the swamp; the",
+      "雪拉 / 雷歐納德 / 雷特 banter, then 038 / 037 / 033 creatures close in. actPlayMusic 9 opens on",
+      "track 9; actPlayLevelMusic resolves level 15 to track 12 (0x477b44)."
+    ],
+    "cast": [
+      "Level 15 (深淵之沼): slots 0-6 plus the conditional 008 / 009 party actors",
+      "against 033 / 037 / 038; 咕嚕 speaks in the choice branch and is installed by",
+      "WINFAIL015 event 2. His source 3CellCircle weapon range remains an explicit",
+      "skipped-unsupported boundary in battle assembly."
+    ],
+    "speakers": [
+      "Level 15 (深淵之沼, STORY015 / WINFAIL015): slots 0-6 plus 克羅蒂 (有才產生); 咕嚕 is not placed; only",
+      "雪拉 / 雷歐納德 / 雷特 speak, the 033 / 037 / 038 EVEF enemies are silent."
+    ]
+  }
+}

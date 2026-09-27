@@ -1,0 +1,24 @@
+{
+  "schema": "hsl_authored_level.v1",
+  "level": 200,
+  "note": "第 200 關「龍脊隘口」——為證明引擎能寫續集而手寫的一關（authored）。標題、結果標籤、初始焦點在 content/battles/levels/200.json 的 battle 分區；劇情 story.txt、勝負 winfail.txt、對白 messages.json、地形 terrain.txt 在本目錄。地圖圖片沿用第 2 關的原作圖（新地圖只需換這一條路徑）。",
+  "map_texture": "res://content/imported/hsl/chapter01/battle002/level2.png",
+  "presentation": {
+    "actor_walk_manifest": "res://content/imported/hsl/chapter01/battle500/actor_walk_frames/actor_walk_manifest.json",
+    "actor_audio": "res://content/imported/hsl/chapter01/battle500/actor_audio.json",
+    "portraits": "res://content/imported/hsl/chapter01/battle500/portraits/manifest.json",
+    "combat_animation": "res://content/imported/hsl/chapter01/combat_animation/manifest.json"
+  },
+  "units": [
+    {"id": "leonard", "actor": "001", "token": "SID_雷歐納德", "role": "player_controlled", "cell": [5, 8]},
+    {"id": "tina", "actor": "002", "token": "SID_緹娜", "role": "player_controlled", "cell": [6, 7]},
+    {"id": "reia", "actor": "102", "token": "SID_蕾雅", "role": "player_controlled", "cell": [8, 9]},
+    {"id": "toran", "actor": "103", "token": "SID_托蘭", "role": "friendly_ai", "cell": [4, 8]},
+    {"id": "wolf_1", "actor": "036", "token": "SID_ENEMY036", "role": "enemy_ai", "cell": [12, 8]},
+    {"id": "wolf_2", "actor": "036", "token": "SID_ENEMY036", "role": "enemy_ai", "cell": [14, 10]},
+    {"id": "wolf_3", "actor": "036", "token": "SID_ENEMY036", "role": "enemy_ai", "cell": [16, 6]}
+  ],
+  "objects": {
+    "obj_Level200_Wolf": {"actor": "036", "token": "SID_ENEMY036"}
+  }
+}

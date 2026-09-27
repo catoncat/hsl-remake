@@ -1,0 +1,6555 @@
+{
+  "schema": "hsl_tactical_items_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "sources": {
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c"
+  },
+  "applications": [
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 56,
+        "defense": 43,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 0,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 53,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 80,
+        "defense": 73,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 250,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 39,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 56,
+        "defense": 43,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 250,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 39,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 80,
+        "defense": 73,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 262,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 524291,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 16,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "derived": {
+        "attack": 64,
+        "defense": 43,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1990,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 262,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572871,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 80,
+        "defense": 73,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 998,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 263,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 524291,
+          "weaken": 0
+        },
+        "flags": 32,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "derived": {
+        "attack": 56,
+        "defense": 51,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1990,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 263,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966087,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 80,
+        "defense": 73,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 998,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 39,
+        "defense": 42,
+        "speed": 12,
+        "max_hp": 37,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 0,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 53,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 63,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 37,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 3,
+        "code": 250,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 39,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 39,
+        "defense": 42,
+        "speed": 12,
+        "max_hp": 37,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 3,
+        "code": 250,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 39,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 63,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 37,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 3,
+        "code": 262,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 524291,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 16,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "derived": {
+        "attack": 47,
+        "defense": 42,
+        "speed": 12,
+        "max_hp": 37,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 2152,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 3,
+        "code": 262,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572871,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 63,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 37,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1079,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 3,
+        "code": 263,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 524291,
+          "weaken": 0
+        },
+        "flags": 32,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "derived": {
+        "attack": 39,
+        "defense": 50,
+        "speed": 12,
+        "max_hp": 37,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 2152,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 3,
+        "code": 263,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966087,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 63,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 37,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1079,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 23,
+        "defense": 22,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 0,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 53,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 47,
+        "defense": 52,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 250,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 39,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 23,
+        "defense": 22,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 250,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 39,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 47,
+        "defense": 52,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 262,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 524291,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 16,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "derived": {
+        "attack": 31,
+        "defense": 22,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1962,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 262,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572871,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 47,
+        "defense": 52,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 984,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 263,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 524291,
+          "weaken": 0
+        },
+        "flags": 32,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "derived": {
+        "attack": 23,
+        "defense": 30,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1962,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 263,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966087,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 47,
+        "defense": 52,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 984,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 54,
+        "defense": 61,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 0,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 53,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 78,
+        "defense": 91,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 250,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 39,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 54,
+        "defense": 61,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 250,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 39,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 78,
+        "defense": 91,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 262,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 524291,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 16,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "derived": {
+        "attack": 62,
+        "defense": 61,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1994,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 262,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572871,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 78,
+        "defense": 91,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1000,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 263,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 524291,
+          "weaken": 0
+        },
+        "flags": 32,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "derived": {
+        "attack": 54,
+        "defense": 69,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1994,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 263,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966087,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 78,
+        "defense": 91,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1000,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 0,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 327683,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        }
+      ],
+      "derived": {
+        "attack": 56,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 2172,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 0,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 393219,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        }
+      ],
+      "derived": {
+        "attack": 57,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 2172,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 0,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 589827,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 4
+        }
+      ],
+      "derived": {
+        "attack": 60,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 2172,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 327681,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 327684,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 56,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1087,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 327681,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 327684,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 56,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1087,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 327681,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 327684,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 56,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1087,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 655367,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 655369,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 61,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 655367,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 655369,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 61,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 655367,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 655369,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 61,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572872,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572873,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572872,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572873,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572872,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572873,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 6291465,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 6291465,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 147,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 122,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 6291465,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 6291465,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 147,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 122,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 6291465,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 6291465,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 147,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 122,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 262,
+        "stamina": 40,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": true
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 51,
+        "defense": 42,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 112,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 327683,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        }
+      ],
+      "derived": {
+        "attack": 75,
+        "defense": 47,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 2172,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 393219,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        }
+      ],
+      "derived": {
+        "attack": 75,
+        "defense": 48,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 2172,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 589827,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 4
+        }
+      ],
+      "derived": {
+        "attack": 75,
+        "defense": 51,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 2172,
+      "initial_refresh_return": true,
+      "refresh_calls": 2,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 327681,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 327684,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 47,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1087,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 327681,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 327684,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 47,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1087,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 327681,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 327684,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 47,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1087,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 655367,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 655369,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 52,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 655367,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 655369,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 52,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 655367,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 655369,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 52,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1572872,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1572873,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 66,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1572872,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1572873,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 66,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1572872,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1572873,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 66,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 6291465,
+          "weaken": 0
+        },
+        "seed": 1,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 6291465,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 138,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 122,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 6291465,
+          "weaken": 0
+        },
+        "seed": 19,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 6291465,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 138,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 122,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 6291465,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 6291465,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 138,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 122,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 263,
+        "stamina": 40,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "seed": 101,
+        "outside_battle": true
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 40,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 51,
+        "defense": 42,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 112,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 1,
+        "code": 250,
+        "stamina": 0,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 20,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 61,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 35,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 1,
+        "code": 250,
+        "stamina": 39,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 59,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 61,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 35,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 1,
+        "code": 250,
+        "stamina": 40,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 60,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 61,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 35,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 125,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 1,
+        "code": 250,
+        "stamina": 59,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 60,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 61,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 35,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 127,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 1,
+        "code": 250,
+        "stamina": 60,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 60,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 61,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 35,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 127,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 80,
+        "defense": 73,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1003,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 458761
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 56,
+        "defense": 43,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 999,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 80,
+        "defense": 73,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1003,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 251,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 48,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 80,
+        "defense": 73,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1015,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 251,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 131073
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 56,
+        "defense": 43,
+        "speed": 14,
+        "max_hp": 32,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1011,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 0,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "flags": 61,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 74,
+        "defense": 67,
+        "speed": 9,
+        "max_hp": 22,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 3,
+        "code": 248,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 9,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 327683
+        },
+        "flags": 8,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 50,
+        "defense": 37,
+        "speed": 9,
+        "max_hp": 22,
+        "max_mp": 0,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1092,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 458761
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 51,
+        "defense": 42,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1088,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1092,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 251,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 48,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 75,
+        "defense": 72,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1104,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 251,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 131073
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 51,
+        "defense": 42,
+        "speed": 12,
+        "max_hp": 54,
+        "max_mp": 19,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1100,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 0,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "flags": 61,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 70,
+        "defense": 67,
+        "speed": 7,
+        "max_hp": 45,
+        "max_mp": 13,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "002",
+        "level": 20,
+        "code": 248,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 9,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 327683
+        },
+        "flags": 8,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 46,
+        "defense": 37,
+        "speed": 7,
+        "max_hp": 45,
+        "max_mp": 13,
+        "move_point": 5
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 47,
+        "defense": 52,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 989,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 458761
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 23,
+        "defense": 22,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 985,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 47,
+        "defense": 52,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 989,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 251,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 48,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 47,
+        "defense": 52,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1001,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 251,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 131073
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 23,
+        "defense": 22,
+        "speed": 11,
+        "max_hp": 33,
+        "max_mp": 30,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 997,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 0,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "flags": 61,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 44,
+        "defense": 47,
+        "speed": 6,
+        "max_hp": 25,
+        "max_mp": 22,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "level": 3,
+        "code": 248,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 9,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 327683
+        },
+        "flags": 8,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 20,
+        "defense": 17,
+        "speed": 6,
+        "max_hp": 25,
+        "max_mp": 22,
+        "move_point": 3
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 78,
+        "defense": 91,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1005,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 458761
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 54,
+        "defense": 61,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1001,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 249,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 55,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 78,
+        "defense": 91,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1005,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 251,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 0
+        },
+        "flags": 48,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 78,
+        "defense": 91,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1017,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 251,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 131073
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 0
+        },
+        "flags": 0,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 54,
+        "defense": 61,
+        "speed": 12,
+        "max_hp": 46,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 1013,
+      "initial_refresh_return": true,
+      "refresh_calls": 1,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 247,
+        "stamina": 19,
+        "words": {
+          "poison": 458755,
+          "no_magic": 3,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 458755,
+          "no_magic": 0,
+          "paralysis": 2,
+          "attack_up": 1572868,
+          "defense_up": 1966084,
+          "weaken": 327683
+        },
+        "flags": 61,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 74,
+        "defense": 84,
+        "speed": 9,
+        "max_hp": 35,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "level": 3,
+        "code": 248,
+        "stamina": 19,
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 9,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 327683
+        },
+        "seed": 7,
+        "outside_battle": false
+      },
+      "native": {
+        "words": {
+          "poison": 0,
+          "no_magic": 0,
+          "paralysis": 0,
+          "attack_up": 0,
+          "defense_up": 0,
+          "weaken": 327683
+        },
+        "flags": 8,
+        "stamina": 19,
+        "hp": 1,
+        "mp": 0,
+        "exp": 37
+      },
+      "draws": [],
+      "derived": {
+        "attack": 50,
+        "defense": 54,
+        "speed": 9,
+        "max_hp": 35,
+        "max_mp": 0,
+        "move_point": 4
+      },
+      "normal_return": false,
+      "entry": "0x409e40",
+      "stop_address": "0x40a343",
+      "instructions": 135,
+      "initial_refresh_return": true,
+      "refresh_calls": 0,
+      "base_inventory_unchanged": true
+    }
+  ],
+  "samplers": [
+    {
+      "input": {
+        "low": 5,
+        "high": 10,
+        "seed": 1
+      },
+      "native": 5,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    },
+    {
+      "input": {
+        "low": 5,
+        "high": 10,
+        "seed": 7
+      },
+      "native": 8,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    },
+    {
+      "input": {
+        "low": 5,
+        "high": 10,
+        "seed": 19
+      },
+      "native": 6,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    },
+    {
+      "input": {
+        "low": 10,
+        "high": 5,
+        "seed": 1
+      },
+      "native": 5,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": 10,
+        "high": 5,
+        "seed": 7
+      },
+      "native": 8,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": 10,
+        "high": 5,
+        "seed": 19
+      },
+      "native": 6,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": 7,
+        "high": 7,
+        "seed": 1
+      },
+      "native": 7,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": 7,
+        "high": 7,
+        "seed": 7
+      },
+      "native": 7,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": 7,
+        "high": 7,
+        "seed": 19
+      },
+      "native": 7,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": -4,
+        "high": 2,
+        "seed": 1
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    },
+    {
+      "input": {
+        "low": -4,
+        "high": 2,
+        "seed": 7
+      },
+      "native": 2,
+      "draws": [
+        {
+          "bound": 7,
+          "value": 6
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    },
+    {
+      "input": {
+        "low": -4,
+        "high": 2,
+        "seed": 19
+      },
+      "native": -4,
+      "draws": [
+        {
+          "bound": 7,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    },
+    {
+      "input": {
+        "low": 2,
+        "high": -4,
+        "seed": 1
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 7,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": 2,
+        "high": -4,
+        "seed": 7
+      },
+      "native": 2,
+      "draws": [
+        {
+          "bound": 7,
+          "value": 6
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": 2,
+        "high": -4,
+        "seed": 19
+      },
+      "native": -4,
+      "draws": [
+        {
+          "bound": 7,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 121
+    },
+    {
+      "input": {
+        "low": -8,
+        "high": -3,
+        "seed": 1
+      },
+      "native": -8,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    },
+    {
+      "input": {
+        "low": -8,
+        "high": -3,
+        "seed": 7
+      },
+      "native": -5,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    },
+    {
+      "input": {
+        "low": -8,
+        "high": -3,
+        "seed": 19
+      },
+      "native": -7,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "instructions": 124
+    }
+  ],
+  "scans": [
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 1
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 4
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 8
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 15
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 63
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 163
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 1
+      },
+      "native": 4,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 2
+      },
+      "native": 3,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 92
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 4
+      },
+      "native": 5,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 146
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 7
+      },
+      "native": 3,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 55
+      },
+      "native": 3,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 8
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 173
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 15
+      },
+      "native": 3,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 106
+    },
+    {
+      "input": {
+        "inventory": [
+          262,
+          250,
+          247,
+          246,
+          248,
+          0,
+          0,
+          0
+        ],
+        "flags": 63
+      },
+      "native": 3,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 106
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 129
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 1
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 66
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 4
+      },
+      "native": 3,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 94
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 8
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 135
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 15
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 63
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 129
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 1
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 64
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2
+      },
+      "native": 3,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 92
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 4
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 46
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 46
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 8
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 135
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 15
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 46
+    },
+    {
+      "input": {
+        "inventory": [
+          248,
+          246,
+          247,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 63
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 46
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 146
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 1
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 154
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 2
+      },
+      "native": 8,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 146
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 4
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 154
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 7
+      },
+      "native": 8,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 160
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 55
+      },
+      "native": 8,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 160
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 8
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 154
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 15
+      },
+      "native": 8,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 166
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          262,
+          263,
+          0,
+          0,
+          0,
+          0,
+          247
+        ],
+        "flags": 63
+      },
+      "native": 8,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 166
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 112
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 1
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 64
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 4
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 68
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 68
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 8
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 44
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 15
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 50
+    },
+    {
+      "input": {
+        "inventory": [
+          249,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 63
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 50
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 129
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 1
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 64
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 66
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 4
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 68
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 68
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 68
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 8
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 70
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 15
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 70
+    },
+    {
+      "input": {
+        "inventory": [
+          250,
+          251,
+          249,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 63
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 70
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 146
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 1
+      },
+      "native": 4,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 40
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 4
+      },
+      "native": 2,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 68
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 8
+      },
+      "native": 3,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 96
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 15
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          249,
+          251,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 63
+      },
+      "native": 1,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 42
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x409e10",
+      "bytes": "568b7424080fbfc6c1fe103bc67d068bc88bc68bf12bc64050e85229020083c40403c65ec3",
+      "meaning": "Signed packed endpoints are sorted and sampled inclusively with one native RNG call."
+    },
+    {
+      "address": "0x40a12b",
+      "bytes": "8b4f7485c9744033c0668b464083f8097d3583c00383f8097e05b809000000668946408b4624a81075180c1051894624e8b0fcffff5666894642e8d6e6030083c408bd010000008b7f7c85ff744033c0668b464483f8097d3583c00383f8097e05b809000000668946448b4624a82075180c2057894624e869fcffff5666894646e88fe6030083c408bd01000000",
+      "meaning": "Battle item boosts extend low-word duration by three, capped nine; existing power is not resampled."
+    },
+    {
+      "address": "0x40a275",
+      "bytes": "8b44242485c074218b96e80000004703c283f83c894424247e09b83c000000894424248986e8000000",
+      "meaning": "Item stamina adds its source amount then caps at60."
+    },
+    {
+      "address": "0x40a2f9",
+      "bytes": "a900000040740c8b5624894e3483e2fd895624",
+      "meaning": "Cure-no-magic clears only flag2 and the full no-magic counter."
+    },
+    {
+      "address": "0x40c230",
+      "bytes": "8b442404538b1d401b4c00558b88a4000000a1c81b4c008bd156c1e2072bd15733f68d0c908a542418b8010000008db9380100008b0f85c9744e8d2c898d0c69c1e10403cb394108753e8b89a0000000f6c180754384d07408f7c1000000807537f6c2027408f7c100000040752af6c2047408f7c100000020751df6c2087408f7c10000001075104683c70483fe087ca35f5e5d33c05bc38d46",
+      "meaning": "Eight-slot cure scan includes no-magic and returns the first matching one-based slot."
+    },
+    {
+      "address": "0x447f8f",
+      "bytes": "6884894700e837e7ffff83c40c3bc5894424147408814c2410000000405653687489",
+      "meaning": "ITEM cure_no_magic sets effect40000000."
+    },
+    {
+      "address": "0x447b45",
+      "bytes": "68708b47008944394ce87debffff8b15401b4c0083c44889442414",
+      "meaning": "ITEM add_st populates offset30."
+    },
+    {
+      "address": "0x447c59",
+      "bytes": "68888a470089443970e8d9eaffff8b15401b4c00566a018944244c68748a470089443a74e8beeaffff8b0d401b4c0068981e4c00566a",
+      "meaning": "ITEM local attack/defense ranges populate packed fields74/7c."
+    },
+    {
+      "address": "0x40a31f",
+      "bytes": "a900000010741d8b5624c746380000000083e2f789562456e804e503008b44242483c404",
+      "meaning": "Cure-weaken clears the whole weaken word and flag8, then falls into the shared 0x448840 refresh call; other cure bits skip it."
+    },
+    {
+      "address": "0x447fd7",
+      "bytes": "83c40c3bc5894424147408814c241000000010",
+      "meaning": "ITEM cure_weaken sets effect10000000."
+    }
+  ],
+  "anchors_sha256": "bce6c2d186a59a7f6bb8f05b1d143399f8768d574fa1a4396d5918e2341d7f63",
+  "limits": [
+    "Item prefix stops before audio/rendering and caller inventory/turn completion; no global engine equivalence.",
+    "Packed sampler and eight-slot cure helper return normally; no AI policy for self stamina or enhancement items is inferred.",
+    "Outside-battle input records the native exclusion only; remake exposes the four items in battle.",
+    "Source item fields, four source jobs and supplied conditions/actor memory are separate from natural gameplay."
+  ]
+}

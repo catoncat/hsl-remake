@@ -1,0 +1,8 @@
+{
+  "schema": "hsl_authored_actor_art.v1",
+  "art": "102",
+  "note": "蕾雅（102）的外觀——佔位美術：第一章 003 的走行幀、切入幀與臉換色（色相 +180°）並重新置於共用畫布，只為證明 content/authored/actors/ 的素材通路，不是續集美術。walk/<stand|down|right|up|left>-<n>.png 為走行幀、cutin/<n>.png 為切入幀（張數＝program_of 那一行的幀數）、portrait.png 由 characters.json portrait 指向。",
+  "walk": {"anchor": [36, 69], "fps": 8},
+  "cutin": {"program_of": "003", "anchor": [137, 310]},
+  "sounds_of": "003"
+}

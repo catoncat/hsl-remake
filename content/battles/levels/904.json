@@ -1,0 +1,113 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 904,
+  "battle": {
+    "id": "battle_904_level904",
+    "title": "利魯瑪山地 · 再訪",
+    "initial_focus_unit_id": "rett",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "利魯瑪山地 · 再訪 · 敵軍已清除",
+      "fail_0": "利魯瑪山地 · 雷特 陣亡",
+      "fail_1": "利魯瑪山地 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 5,
+      "players": 1
+    },
+    "unresolved_semantics": [
+      "STORY904 opens with 雷特 against four Enemy041; WINFAIL904 stages the later 041/043/038 waves and the six-member party insertion from the source seed.",
+      "Level 904 reuses the level-19 map binding and differs in its source terrain/object bytes; the map manager binding is resource-derived while the loader path remains provisional.",
+      "The level-904 title is a remake label."
+    ]
+  },
+  "story_scene": {
+    "id": "story_904_liruma_highlands_variant_opening",
+    "title": "利魯瑪山地・再訪（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      }
+    },
+    "end_card": {
+      "title": "利魯瑪山地　再訪",
+      "hint": "戰鬥部分（level 904）尚未重製　　空格／點擊：回到大地圖（利魯瑪山地）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the single controlled slot 雷特 (slot 5, jobWingWarrior 92) and the four 041 soldiers have no battle scenario yet (P-024); the preview shows the EVEF placements and STORY904 walks only — the winfail904 body (event 1 when 041 <= 3: eight 041 / four 043 / four 038 reinforcements, 雷特's exchange 1465-1469, the six-member party inserted as obj_Story_Player1-5 / 7 from the south-west corner with lines 1470-1482; event 2 at round 20: sixteen more; win when no enemy remains with 1484 / 1485) belongs to the not-yet-remade battle",
+      "level 904 is the level-19 variant winfail902's win section arms with actBMSetPointEvent 19,904,0 (static-derived): STORY904 is byte-identical to STORY019 and winfail904 differs from winfail019 only in actAddTE town_薛維斯港,41,3,133,131,132 (child 133 instead of 130); level904.wrd is level019.wrd with 12 bytes changed (1024 blocking cells instead of 1012) and level904.BIN moves eight bytes of the same eleven placements; obj-904.obs is byte-identical to obj-019.obs; the seed's object header is OBJ-ALL.H (no obj-904.h; STORY904 includes OBJ-ALL.H before OBJ-018.H), so the winfail insert symbols obj_Story_Level_Enemy41 / 43 / 38 (OBJ-019.H codes 98 / 97 / 99) are not listed in script_objects",
+      "移動背景01 (mapobjMoveBG) is drawn under the map and follows the camera by obj_Score/640, obj_HitPoint/480 (360/240; docs/evidence_packets/static_reverse/original_map_object_drift.md)",
+      "actShowSectionName SHAPE01\\WORD019.SHP: the level shows level 19's title 利魯瑪山地 (the PAK has no WORD904); the card title 利魯瑪山地　再訪 is a remake label for the 904 variant, not a resource title"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "038",
+      "041",
+      "043"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "041"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_ENEMY041": "306"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; no EVEF install — winfail904 event 1 inserts obj_Story_Player1 (OBJ-ALL.H 6 = slot 0) from the south-west corner; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; winfail904 event 1 inserts obj_Story_Player2 (OBJ-ALL.H 7 = slot 1); PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; winfail904 event 1 inserts obj_Story_Player3 (OBJ-ALL.H 8 = slot 2); PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived); dead message only",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; winfail904 event 1 inserts obj_Story_Player4 (OBJ-ALL.H 9 = slot 3); PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; winfail904 event 1 inserts obj_Story_Player5 (OBJ-ALL.H 10 = slot 4); PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived); dead message only",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-904.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5 — the only EVEF install; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; winfail904 event 1 inserts obj_Story_Player7 (OBJ-ALL.H 12 = slot 6); PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_ENEMY041": "PLAYERS.TXT character 41 name field = 306 (???); kept as the original unnamed label (那可那魯 soldier, no name reveal), as levels 18 / 19 / 21 / 22 read it"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 904 (利魯瑪山地 variant): winfail902's win section arms big-map point 19 with",
+      "actBMSetPointEvent 19,904,0, so after the 902 route 利魯瑪山地 opens this level instead of"
+    ],
+    "cast": [
+      "Level 904 (利魯瑪山地 variant winfail902's win arms on point 19; LEVEL19.SHP by the obs 地圖管理員, the obs",
+      "is byte-identical to obj-019.obs): 雷特 006 alone against four 041 soldiers in the EVEF; winfail904",
+      "event 1 inserts the six-member party (obj_Story_Player1-5 / 7) and the 041 / 043 / 038 reinforcements",
+      "by script. 雷特 and 041 speak in the opening, the party in the winfail event."
+    ],
+    "speakers": [
+      "Level 904 (利魯瑪山地 variant: winfail902's win arms big-map point 19 with actBMSetPointEvent 19,904,0;",
+      "obj-904.obs 地圖管理員 names LEVEL19.SHP, the obs is byte-identical to obj-019.obs): 雷特 alone (slot 5) is",
+      "cornered by four 041 soldiers (1487, 1457-1463); winfail904 event 1 inserts the six-member party",
+      "(obj_Story_Player1-5 / 7) who speak 1470-1482, and 041 keeps speaking."
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 72,
+  "story_scene": {
+    "id": "story_072_saronia_promenade",
+    "title": "沙羅尼亞・海濱步道",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      }
+    },
+    "notes": [
+      "the scene title 沙羅尼亞・海濱步道 is a remake label read from the map picture (bigmap.dat point 35 is 自治都市 沙羅尼亞); the original shows no section title here"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002"
+    ],
+    "speakers": [
+      "001",
+      "002"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 72 (from 沙羅尼亞 tavern event 167 via teSetNextPlayLevelEvent 35,72): its own",
+      "640x480 shape31\\level72.SHP seaside promenade at dusk. 雷歐納德 and 緹娜 walk in from",
+      "the west edge; he confesses to killing her father; the script adds 瑪哈亞鎮 event 92",
+      "and returns to the big map at point 35.",
+      "STORY072 opens on actPlayMusic,10 (track 10)."
+    ],
+    "cast": [
+      "Level 72 (story-only, from 瑪哈亞鎮 town event 167): 雷歐納德 and 緹娜 walk in from the west."
+    ],
+    "speakers": [
+      "Level 72 (story-only STORY072, entered from 瑪哈亞鎮 town event 167 via teSetNextPlayLevelEvent 35,72): 雷歐納德 confesses to 緹娜 (EVEF installs off the west edge)."
+    ]
+  }
+}

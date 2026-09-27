@@ -1,0 +1,49 @@
+# lane R16: second_battle.json (level 52) all-wait trace, HSL_TRACE_ROUNDS=10 HSL_TRACE_PLAYER_HP=9999 (party kept alive to watch the wait counters); only spawn lines and the upper group (emperor025, enemy026_1/2) are kept, decision JSON trimmed
+R14_REMAKE loop_seed=1 first_control round=1
+  spawn emperor025 025 role=enemy_ai hp=91/91 mp=24 (10,13) mp_move=4 level=4 items=[244, 0, 0, 0, 0, 0, 0, 0] wait=8 home=(10, 13)
+  spawn enemy026_1 026 role=enemy_ai hp=33/33 mp=30 (12,14) mp_move=3 level=1 items=[246, 0, 0, 0, 0, 0, 0, 0] wait=2 home=(12, 14)
+  spawn enemy026_2 026 role=enemy_ai hp=38/38 mp=33 (9,14) mp_move=3 level=2 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=2 home=(9, 14)
+  spawn leonard 001 role=player_controlled hp=9999/9999 mp=0 (10,35) mp_move=5 level=1 items=[241, 241, 241, 246, 0, 0, 0, 0] wait=0 home=(10, 35)
+  spawn ally023_1 023 role=friendly_ai hp=29/29 mp=0 (12,37) mp_move=5 level=1 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(12, 37)
+  spawn ally023_2 023 role=friendly_ai hp=35/35 mp=0 (8,37) mp_move=5 level=2 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(8, 37)
+  spawn ally024_1 024 role=friendly_ai hp=43/43 mp=0 (6,39) mp_move=4 level=1 items=[241, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(6, 39)
+  spawn ally024_2 024 role=friendly_ai hp=49/49 mp=0 (14,39) mp_move=4 level=2 items=[241, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(14, 39)
+  spawn enemy021_1 021 role=enemy_ai hp=28/28 mp=0 (8,15) mp_move=5 level=2 items=[241, 0, 0, 0, 0, 0, 0, 0] wait=2 home=(8, 15)
+  spawn enemy021_2 021 role=enemy_ai hp=27/27 mp=0 (10,17) mp_move=5 level=2 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=2 home=(10, 17)
+  spawn enemy021_3 021 role=enemy_ai hp=22/22 mp=0 (12,15) mp_move=5 level=1 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=2 home=(12, 15)
+  spawn enemy021_4 021 role=enemy_ai hp=22/22 mp=0 (13,18) mp_move=5 level=1 items=[241, 0, 0, 0, 0, 0, 0, 0] wait=2 home=(13, 18)
+  spawn enemy021_5 021 role=enemy_ai hp=28/28 mp=0 (8,24) mp_move=5 level=2 items=[241, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(8, 24)
+  spawn enemy021_6 021 role=enemy_ai hp=27/27 mp=0 (6,26) mp_move=5 level=2 items=[248, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(6, 26)
+  spawn enemy021_7 021 role=enemy_ai hp=22/22 mp=0 (14,24) mp_move=5 level=1 items=[248, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(14, 24)
+  spawn enemy021_8 021 role=enemy_ai hp=27/27 mp=0 (12,26) mp_move=5 level=2 items=[241, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(12, 26)
+  round 1 AI emperor025 kind=wait target= skill= wait_reason=wait_round nav=wait_round/7 |
+  round 1 AI enemy026_2 kind=wait target= skill= wait_reason=wait_round nav=wait_round/1 |
+  round 1 AI enemy026_1 kind=wait target= skill= wait_reason=wait_round nav=wait_round/1 |
+  round 2 AI emperor025 kind=wait target= skill= wait_reason=wait_round nav=wait_round/6 |
+  round 2 AI enemy026_2 kind=wait target= skill= wait_reason=wait_round nav=wait_round/0 |
+  round 2 AI enemy026_1 kind=wait target= skill= wait_reason=wait_round nav=wait_round/0 |
+  round 3 AI emperor025 kind=wait target= skill= wait_reason=wait_round nav=wait_round/5 |
+  round 3 AI enemy026_2 kind=move target= skill= wait_reason=no_accepted_action nav=new_target/0 | enemy026_2 hp 38->38 mp 33->33 (9,14)->(9,17)
+  round 3 AI enemy026_1 kind=move target= skill= wait_reason=no_accepted_action nav=new_target/0 | enemy026_1 hp 33->33 mp 30->30 (12,14)->(12,17)
+  round 4 AI emperor025 kind=wait target= skill= wait_reason=wait_round nav=wait_round/4 |
+  round 4 AI enemy026_2 kind=move target= skill= wait_reason=no_accepted_action nav=new_target/0 | enemy026_2 hp 38->38 mp 33->33 (9,17)->(9,20)
+  round 4 AI enemy026_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+  round 5 AI emperor025 kind=wait target= skill= wait_reason=wait_round nav=wait_round/3 |
+  round 5 AI enemy026_2 kind=move target= skill= wait_reason=no_accepted_action nav=target_unavailable/0 | enemy026_2 hp 38->38 mp 33->33 (9,20)->(9,23)
+  round 5 AI enemy026_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+  round 6 AI emperor025 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 |
+  round 6 AI enemy026_2 kind=move target= skill= wait_reason=no_accepted_action nav=target_unavailable/0 | enemy026_2 hp 38->38 mp 33->33 (9,23)->(9,25)
+  round 6 AI enemy026_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+  round 7 AI emperor025 kind=wait target= skill= wait_reason=wait_round nav=wait_round/1 |
+  round 7 AI enemy026_2 kind=move target= skill= wait_reason=no_accepted_action nav=retained_target/0 | enemy026_2 hp 38->38 mp 33->33 (9,25)->(9,28)
+  round 7 AI enemy026_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+  round 8 AI emperor025 kind=wait target= skill= wait_reason=wait_round nav=wait_round/0 |
+  round 8 AI enemy026_2 kind=move target= skill= wait_reason=no_accepted_action nav=retained_target/0 | enemy026_2 hp 38->38 mp 33->33 (9,28)->(9,30)
+  round 8 AI enemy026_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+  round 9 AI emperor025 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+  round 9 AI enemy026_2 kind=attack target=ally024_1 skill=magic:magicFIRE:magicCode01 wait_reason= nav=retained_target/0 | enemy026_2 hp 38->38 mp 33->25 (9,30)->(9,30); ally024_1 hp 37->14 mp 0->0 (9,33)->(9,33)
+  round 9 AI enemy026_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+  round 10 AI emperor025 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+  round 10 AI enemy026_2 kind=attack target=ally024_1 skill=magic:magicFIRE:magicCode01 wait_reason= nav=retained_target/0 | enemy026_2 hp 3->3 mp 25->17 (9,30)->(9,30); ally024_1 hp 47->27 mp 0->0 (9,33)->(9,33)
+  round 10 AI enemy026_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 |
+R14_REMAKE stop after 10 rounds

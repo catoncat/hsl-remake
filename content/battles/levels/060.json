@@ -1,0 +1,46 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 60,
+  "story_scene": {
+    "id": "story_060_wosfita_court_captive",
+    "title": "王座廳・俘虜",
+    "player_token": null,
+    "map_alias_note": "none"
+  },
+  "cast": {
+    "actors": [
+      "023",
+      "024",
+      "027",
+      "029",
+      "058"
+    ],
+    "speakers": [
+      "023",
+      "027",
+      "029",
+      "058"
+    ]
+  },
+  "speakers": {
+    "SID_ENEMY023": "376",
+    "SID_ENEMY024": "377",
+    "SID_ENEMY027": "306",
+    "SID_ENEMY029": "1",
+    "SID_ENEMY058": "657"
+  },
+  "speaker_policy": {
+    "SID_ENEMY058": "PLAYERS.TXT character 58 name field = 657 克里歐司 (resource-derived name)",
+    "SID_ENEMY029": "PLAYERS.TXT character 29 name field = name_1 -> resource.h 1 = 緹娜 (resource-derived name)",
+    "SID_ENEMY023": "PLAYERS.TXT name field is 306 (???); 376 一般兵 is the same remake label as level 51, provisional",
+    "SID_ENEMY027": "PLAYERS.TXT character 27 name field = 306 (???); kept as the original unnamed label",
+    "SID_ENEMY024": "same remake label as level 51 (377); does not speak in STORY060"
+  },
+  "comments": {
+    "story_scene": [
+      "Same hall (level060.wrd == level058.wrd), no player unit: the captured",
+      "princess 緹娜 (SID_ENEMY029) is brought before the elf king. STORY060 also",
+      "requests actPlayMusic,8 (track 8)."
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hsl_battle.v1",
+  "title": "HSL battle scenario",
+  "description": "What BattlePlayLoop.create reads from a content/battles/*.json battle (rule_adapter winfail／development_battle). Required keys are the inputs no default can stand in for; every other key listed here is optional and BattleScenario.load_file fills its `default` before the loop reads it. Presentation keys (opening, view, provenance, …) are not constrained. Which script resource the adapter reads (winfail: battle_seed, development_battle: development_objectives) is checked by create() as missing_battle_script_payload. Hand-written; validated by tools/hsltools/schema/battle.py (hsl check battle_schema) and game/battle/runtime/BattleScenario.gd.",
+  "type": "object",
+  "required": ["schema", "id", "title", "rule_adapter", "player_unit_id", "playable_units", "resources", "scenario_rules"],
+  "properties": {
+    "schema": {"type": "string"},
+    "id": {"type": "string"},
+    "title": {"type": "string"},
+    "level": {"type": "integer", "default": 0},
+    "rule_adapter": {"type": "string", "enum": ["winfail", "development_battle"]},
+    "player_unit_id": {"type": "string"},
+    "playable_units": {"type": "array", "items": {"type": "object"}, "minItems": 1},
+    "script_actor_templates": {"type": "object"},
+    "resources": {
+      "type": "object",
+      "required": ["map_texture", "terrain", "attack_ranges", "consumables", "progression"],
+      "properties": {
+        "map_texture": {"type": "string"},
+        "terrain": {"type": "string"},
+        "battle_seed": {"type": "string"},
+        "winfail_script_ir": {"type": "string"},
+        "development_objectives": {"type": "string"},
+        "attack_ranges": {"type": "string"},
+        "consumables": {"type": "string"},
+        "progression": {"type": "string"},
+        "treasures": {"type": "string"},
+        "opening_timeline": {"type": "string"},
+        "portraits": {"type": "string"}
+      }
+    },
+    "commands": {
+      "type": "object",
+      "default": {},
+      "properties": {
+        "has_magic": {"type": "boolean", "default": false},
+        "has_special": {"type": "boolean", "default": false}
+      }
+    },
+    "skill_rules": {
+      "type": "object",
+      "default": {},
+      "properties": {
+        "initial_stamina": {"type": "integer", "description": "Development fixtures only: every actor starts at this ST. Absent (every campaign level), an actor starts at its PLAYERS template stamina and a carried player at 0 unless the previous script ran actKeepPlayerST (ActorInitializationRules, CampaignCarryRules)."}
+      }
+    },
+    "scenario_rules": {
+      "type": "object",
+      "required": ["initial_objective_phase"],
+      "properties": {
+        "initial_objective_phase": {"type": "string"},
+        "allow_optional_clear_after_switch": {"type": "boolean", "default": false},
+        "events": {"type": "object", "default": {}},
+        "reinforcements": {"type": "array", "items": {"type": "object", "required": ["template_unit_id"]}, "default": []},
+        "reinforcement_spawn_cells": {"type": "array", "items": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}, "default": []},
+        "script_fallback": {
+          "type": "object",
+          "default": {},
+          "properties": {
+            "escape_zone": {"type": "array", "items": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}, "default": []}
+          }
+        }
+      }
+    }
+  }
+}

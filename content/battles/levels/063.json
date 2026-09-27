@@ -1,0 +1,58 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 63,
+  "story_scene": {
+    "id": "story_063_wosfita_court_spies",
+    "title": "王座廳・密報",
+    "player_token": null,
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the two spies speak through actShapeMessage,SHAPE\\FACE0054.SHP|SHAPE\\FACE0008.SHP,306,<id> (five lines: 997 / 998 / 1000 / 1002 / 678): the coordinator records shape_message without a handler, so their portraits and text are not shown yet; FACE0054 is not imported anywhere, FACE0008 only by town_portraits.json"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "023",
+      "027",
+      "058"
+    ],
+    "speakers": [
+      "023",
+      "027",
+      "058"
+    ],
+    "shape_faces": [
+      "SHAPE\\FACE0054.SHP",
+      "SHAPE\\FACE0008.SHP"
+    ]
+  },
+  "speakers": {
+    "SID_ENEMY023": "376",
+    "SID_ENEMY027": "306",
+    "SID_ENEMY058": "657"
+  },
+  "speaker_policy": {
+    "SID_ENEMY058": "PLAYERS.TXT character 58 name field = 657 克里歐司 (resource-derived name)",
+    "SID_ENEMY027": "PLAYERS.TXT character 27 name field = 306 (???); kept as the original unnamed label",
+    "SID_ENEMY023": "PLAYERS.TXT name field is 306 (???); 376 一般兵 is the same remake label as level 51, provisional",
+    "actShapeMessage": "the two spies speak through actShapeMessage,SHAPE\\FACE0054.SHP|SHAPE\\FACE0008.SHP,306,<id>: the token carries its own name id 306 (???) and portrait member; no SID token or PLAYERS row is involved"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 63 (chained from STORY062): the throne hall again (level58 alias, same 30x22",
+      "WRD as 58 / 60): the spies report to 克里歐司 through actShapeMessage portraits, the",
+      "attendants leave and the king muses alone; clears track 6's hidden flag and",
+      "returns to the big map at point 6. No player unit."
+    ],
+    "cast": [
+      "Level 63 (throne hall, story-only, chained from STORY062): 克里歐司 058, two 027",
+      "attendants and a 023 guard; the spies speak through actShapeMessage portraits",
+      "(FACE0054 / FACE0008), which are not PLAYERS speaker rows."
+    ],
+    "speakers": [
+      "Level 63 (throne hall, story-only STORY063, chained from STORY062): 克里歐司 058 with his",
+      "027 attendants and a 023 guard; the two spies speak through actShapeMessage",
+      "(FACE0054 / FACE0008 with name id 306), not through SID tokens."
+    ]
+  }
+}

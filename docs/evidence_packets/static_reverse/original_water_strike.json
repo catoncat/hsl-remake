@@ -1,0 +1,3007 @@
+{
+  "schema": "hsl_native_water_strike.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "source_magic_sha256": "19a1183783eca7ce3f0e6248dd8ca573cde16bf33177ee1a3c79ec8be006bd34",
+  "definition": {
+    "water": {
+      "skill_id": "magic:magicWATER:magicCode01",
+      "name": "水剎",
+      "fields": {
+        "code": "magicCode01",
+        "name": "154",
+        "type": "magicWATER",
+        "range": "range3CellCircle",
+        "effect_range": "range1Cell",
+        "expend": "8",
+        "damage": "16,24",
+        "hit_ratio": "94",
+        "function": "magicFun_Attack",
+        "use_ratio": "90",
+        "effect_proc": "eff_proc_Local",
+        "effect_code": "effCode08"
+      }
+    }
+  },
+  "rolls": [
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "native": {
+        "value": 14,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          7,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "native": {
+        "value": 13,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          19,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 14,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "native": {
+        "value": 10,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          7,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "native": {
+        "value": 9,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          19,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 10,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "native": {
+        "value": 2,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          7,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "native": {
+        "value": 2,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          19,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 2,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "native": {
+        "value": 40,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          7,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "native": {
+        "value": 39,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          19,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 40,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "native": {
+        "value": 30,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          7,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "native": {
+        "value": 29,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          19,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 30,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "native": {
+        "value": 8,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          7,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "native": {
+        "value": 7,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          19,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 8,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 5
+      },
+      "normal_return": true,
+      "instructions": 152
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": true,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "native": {
+        "value": 14,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 429
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 95,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "native": {
+        "value": 14,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 50,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ]
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 5
+      },
+      "normal_return": true,
+      "instructions": 152
+    }
+  ],
+  "applications": [
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 86,
+        "actual_damage": 14,
+        "contribution": 14,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 87,
+        "actual_damage": 13,
+        "contribution": 13,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 86,
+        "actual_damage": 14,
+        "contribution": 14,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 90,
+        "actual_damage": 10,
+        "contribution": 10,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 91,
+        "actual_damage": 9,
+        "contribution": 9,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 25,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 90,
+        "actual_damage": 10,
+        "contribution": 10,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 98,
+        "actual_damage": 2,
+        "contribution": 2,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 98,
+        "actual_damage": 2,
+        "contribution": 2,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 80,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 98,
+        "actual_damage": 2,
+        "contribution": 2,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 60,
+        "actual_damage": 40,
+        "contribution": 40,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 61,
+        "actual_damage": 39,
+        "contribution": 39,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 0,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 60,
+        "actual_damage": 40,
+        "contribution": 40,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 70,
+        "actual_damage": 30,
+        "contribution": 30,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 71,
+        "actual_damage": 29,
+        "contribution": 29,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 25,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 70,
+        "actual_damage": 30,
+        "contribution": 30,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 92,
+        "actual_damage": 8,
+        "contribution": 8,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 93,
+        "actual_damage": 7,
+        "contribution": 7,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 523,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 94,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 12,
+        "mind": 35,
+        "magic_attack": 80,
+        "resistance": 80,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 92,
+        "actual_damage": 8,
+        "contribution": 8,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 1,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 100,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": true,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 509,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": true,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 86,
+        "actual_damage": 14,
+        "contribution": 14,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 506,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 95,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 95,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 86,
+        "actual_damage": 14,
+        "contribution": 14,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 5,
+          "value": 3
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 50,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 1
+      },
+      "native": {
+        "hp": 1,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    },
+    {
+      "input": {
+        "spell": "water",
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 24,
+        "hit_ratio": 50,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 1,
+        "level": 4,
+        "mind": 21,
+        "magic_attack": 40,
+        "resistance": 0,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "hp": 100
+      },
+      "native": {
+        "hp": 100,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    }
+  ],
+  "functions": {
+    "numeric": "0x40a7b0",
+    "apply": "0x40aa80",
+    "random": "0x42c780"
+  },
+  "limits": [
+    "Original numeric helper returns; application stops before display/EXP callbacks, not a full cast.",
+    "Synthetic actor values test actual water element1, source damage/hit, resistance and current HP caps.",
+    "Cross range is source table data. Remake per-target order, whole-cast atomicity, global RNG identity and rendering clock are separate claims."
+  ]
+}

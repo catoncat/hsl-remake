@@ -1,0 +1,99 @@
+{
+  "schema": "hsl_status_effects_static.v1",
+  "evidence_tier": "static-derived",
+  "source_sha256": {
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c",
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0"
+  },
+  "source_join": {
+    "functions": {
+      "magicFun_Poison": 8,
+      "magicFun_NoMagic": 16,
+      "magicFun_Paralysis": 4
+    },
+    "initial_flags": {
+      "1": 0,
+      "21": 0,
+      "23": 0,
+      "24": 0,
+      "25": 0,
+      "26": 0
+    },
+    "antidote": {
+      "code": 246,
+      "source_field": "cure_poison",
+      "value": 1
+    }
+  },
+  "expected_original_exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "verification": {
+    "native_execution": false,
+    "new_exe_byte_check": false,
+    "source_archive_check": false,
+    "tracked_tables_checked": true,
+    "note": "Reviewed local r2 disassembly. A later byte-sampling request was refused twice; no probe or alternate byte read was run."
+  },
+  "states": {
+    "poison": {
+      "function_bit": 8,
+      "actor_flag": 1,
+      "counter_offset": "0x30",
+      "power_offset": "0x32",
+      "apply_flag": "0x40ad49",
+      "apply_duration": "0x40ad71",
+      "apply_power": "0x40ae1c"
+    },
+    "no_magic": {
+      "function_bit": 16,
+      "actor_flag": 2,
+      "counter_offset": "0x34",
+      "apply_flag": "0x40ae82",
+      "apply_duration": "0x40aeaa",
+      "player_menu_gate": "0x43eaf0",
+      "ai_gates": [
+        "0x40c5bc",
+        "0x40c5d9"
+      ]
+    },
+    "paralysis": {
+      "function_bit": 4,
+      "actor_flag": 4,
+      "counter_offset": "0x3c",
+      "apply_flag": "0x40ac97",
+      "apply_duration": "0x40acc0",
+      "live_scope": "Existing counterattack rejection only; whole wake/skip lifecycle pending."
+    }
+  },
+  "antidote": {
+    "loader": "0x447f70",
+    "loader_flag": "0x447f85",
+    "item_flag_offset": "0xa0",
+    "item_flag": "0x80000000",
+    "effect_branch": "0x40a2e6",
+    "zero_counter_word": "0x40a2f0",
+    "clear_poison_flag": "0x40a2f3",
+    "effect": "clear flag1 and the entire packed poison duration/power DWORD"
+  },
+  "post_action": {
+    "player_damage": "0x443ade..0x443b02",
+    "ai_damage": "0x441f69..0x441f8d",
+    "damage": "HP := max(1, HP - unsigned_high16(poison_word)) for living coherent poisoned actors",
+    "tick": "0x40b910",
+    "queue_after_tick": [
+      "0x443c1a->0x443c22",
+      "0x443c38->0x443c40"
+    ],
+    "duration": "If the packed DWORD is nonzero, decrement its low16. Signed low16 <= 0 clears the entire DWORD and the corresponding actor flag.",
+    "valid_live_domain": "poison/no_magic low16 1..9 when active; initial status0 uses both words0",
+    "raw_difference": "AI tests poison flag1 as well as nonzero word; the player damage block checks the word. The live model rejects inconsistent inputs."
+  },
+  "limits": [
+    "No new original function execution or EXE byte-identity test is claimed.",
+    "PLAYERS archival mismatch inherited from shared_skill_resolution.md remains unresolved.",
+    "Status infliction probability, immunity, duration RNG and potency creation are not enabled.",
+    "Paralysis wake/skip, weaken/buffs and their stat refresh are not implemented by this slice.",
+    "No-effect antidote refusal, adjacency and confirmation instead of native drag input are remake policies.",
+    "Post-action animation delays, HP/MP regeneration and death/terminal ordering remain separate."
+  ]
+}

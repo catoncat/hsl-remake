@@ -1,0 +1,257 @@
+{
+  "schema": "hsl_action_state_machine_static.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "source_member": "@:\\data\\obj-051.obs",
+  "source_sha256": "f6621854fdf4a50677877744da09015f429d2d1a627d7c8490e2bd420d5428a8",
+  "commands": {
+    "move": {
+      "object_code": 110,
+      "data8": 1,
+      "destination": "0x4440f7"
+    },
+    "attack": {
+      "object_code": 111,
+      "data8": 2,
+      "destination": "0x44413d"
+    },
+    "item": {
+      "object_code": 112,
+      "data8": 3,
+      "destination": "0x44416c"
+    },
+    "wait": {
+      "object_code": 113,
+      "data8": 4,
+      "destination": "0x4454a5"
+    },
+    "use": {
+      "object_code": 114,
+      "data8": 5,
+      "destination": "0x444a8b"
+    },
+    "give": {
+      "object_code": 115,
+      "data8": 6,
+      "destination": "0x444d6a"
+    },
+    "equip": {
+      "object_code": 116,
+      "data8": 7,
+      "destination": "0x444185"
+    },
+    "drop": {
+      "object_code": 117,
+      "data8": 8,
+      "destination": "0x4441ac"
+    },
+    "magic": {
+      "object_code": 118,
+      "data8": 9,
+      "destination": "0x4441e8"
+    },
+    "special": {
+      "object_code": 119,
+      "data8": 10,
+      "destination": "0x444223"
+    },
+    "ok": {
+      "object_code": 120,
+      "data8": 11,
+      "destination": "0x4447a7"
+    },
+    "cancel": {
+      "object_code": 121,
+      "data8": 12,
+      "destination": "0x4447a7"
+    },
+    "status": {
+      "object_code": 122,
+      "data8": 13,
+      "destination": "0x44425f"
+    }
+  },
+  "state_layout": {
+    "outer_word_offset": "0x8e",
+    "inner_word_offset": "0x8c"
+  },
+  "outer_phases": {
+    "0": "0x4439d5",
+    "1": "0x443a67",
+    "20": "0x443c4a",
+    "21": "0x4440d1"
+  },
+  "inner_states": {
+    "71": "0x444894",
+    "75": "0x44429b",
+    "76": "0x4447a7",
+    "77": "0x444c19",
+    "80": "0x4442e4",
+    "81": "0x444f3e",
+    "85": "0x4445f3",
+    "87": "0x444f3e",
+    "118": "0x444e3b",
+    "119": "0x4447a7",
+    "120": "0x444e58",
+    "150": "0x4447a7",
+    "151": "0x44500f"
+  },
+  "move_substate_table": {
+    "address": "0x445820",
+    "entries": [
+      "0x443c63",
+      "0x443e34",
+      "0x443e53",
+      "0x443e9a",
+      "0x443f10",
+      "0x443ec0",
+      "0x443ee9",
+      "0x443f10",
+      "0x444086",
+      "0x444095",
+      "0x4447a7",
+      "0x4440b7"
+    ]
+  },
+  "finish_substate_table": {
+    "address": "0x4457fc",
+    "entries": [
+      "0x4454a5",
+      "0x4447a7",
+      "0x443a86",
+      "0x443ad1",
+      "0x443b35",
+      "0x443b80",
+      "0x443ba1",
+      "0x443bba",
+      "0x443bed"
+    ]
+  },
+  "instruction_anchors": [
+    {
+      "address": "0x44412e",
+      "bytes": "c7868c00000000001400",
+      "meaning": "Move enters outer20/low0."
+    },
+    {
+      "address": "0x444086",
+      "bytes": "c7868c00000000001500",
+      "meaning": "Completed movement enters outer21/low0."
+    },
+    {
+      "address": "0x4440d1",
+      "bytes": "6639968c0000000f8507f9ffff6a0156e84aa9ffff83c40866c7868c0000004a00e9b0060000",
+      "meaning": "Post-move low0 opens mode1 and waits74; other low states use ordinary dispatch."
+    },
+    {
+      "address": "0x44429b",
+      "bytes": "5356e8eed8fcff33d233c0668b9696000000668b86940000005356895604894608e86fd7fcff6a0156e8677cffffc7868c0000000000000083c41866c7868c0000000100e9c3040000",
+      "meaning": "Cancel75 clears old occupancy, restores saved XY, sets restored occupancy, centers camera, resets outer phase and requests Move1."
+    },
+    {
+      "address": "0x4440a8",
+      "bytes": "c7868c00000000000000",
+      "meaning": "Cancelling uncommitted movement selection resets ordinary phase0/state0."
+    },
+    {
+      "address": "0x4454ac",
+      "bytes": "899e8c00000066ff868c000000",
+      "meaning": "Common finish writes EBX=0x10000 then increments low word: phase1/state1."
+    },
+    {
+      "address": "0x443c01",
+      "bytes": "33c9898e8c000000",
+      "meaning": "End of finish phase resets the complete process state."
+    },
+    {
+      "address": "0x443c1a",
+      "bytes": "e8f17cfcff83c404e8e938fcff",
+      "meaning": "First finish branch ticks status duration then advances the queue exactly once."
+    },
+    {
+      "address": "0x443c38",
+      "bytes": "e8d37cfcff83c404e8cb38fcff",
+      "meaning": "Other finish branch also ticks then advances once."
+    },
+    {
+      "address": "0x4074c8",
+      "bytes": "8b70f885f674058338007526",
+      "meaning": "Selector requires a non-null pointer and nonzero ready word."
+    },
+    {
+      "address": "0x4074ec",
+      "bytes": "e84ffeffff66ff05bc1b4c00",
+      "meaning": "Only no-ready-slots path calls rebuild and increments the round counter."
+    }
+  ],
+  "reviewed_disassembly": [
+    {
+      "address": "0x4439b6",
+      "operation": "read word object+0x8e",
+      "meaning": "Outer phase is separate from low word object+0x8c."
+    },
+    {
+      "address": "0x44412e",
+      "operation": "write DWORD object+0x8c = 0x00140000",
+      "meaning": "Move enters outer phase20, substate0; do not call this ordinary state20."
+    },
+    {
+      "address": "0x443d7f..0x443d91",
+      "operation": "copy position words object+4/+8 to +0x96/+0x94",
+      "meaning": "Remember pre-move coordinates after a successful path-selection predicate."
+    },
+    {
+      "address": "0x444086",
+      "operation": "write DWORD object+0x8c = 0x00150000",
+      "meaning": "Movement completion enters phase21, substate0."
+    },
+    {
+      "address": "0x4440d1..0x4440f2",
+      "operation": "phase21 low0 opens menu mode1 and writes low74; other low states dispatch through0x4439e5",
+      "meaning": "Post-move commands preserve the outer phase until an explicit DWORD reset."
+    },
+    {
+      "address": "0x43e96c..0x43e9ae",
+      "operation": "cancel-input path increments owner low word object+0x8c and removes menu group",
+      "meaning": "Post-move menu74 cancellation reaches75; command Data8=12 is not this cancellation route."
+    },
+    {
+      "address": "0x44429b..0x4442df",
+      "operation": "restore object+4/+8 from saved+0x96/+0x94, clear DWORD state, write low1",
+      "meaning": "Post-move cancellation restores position and requests Move again. Occupancy-helper internals are not reimplemented by this packet."
+    },
+    {
+      "address": "0x4440a8",
+      "operation": "write DWORD object+0x8c = 0",
+      "meaning": "Cancelling movement selection before walking returns to ordinary phase0/state0."
+    },
+    {
+      "address": "0x4441da / 0x444c19",
+      "operation": "write low76 / low3 only",
+      "meaning": "Equip/Drop open/close does not itself clear outer movement phase21."
+    },
+    {
+      "address": "0x444d6a / 0x444def / 0x444bff",
+      "operation": "Give loop110, compare returned/outgoing code, end only if used",
+      "meaning": "Reuse original_give_exchange for exact checked instruction bytes and limits."
+    },
+    {
+      "address": "0x444e3b",
+      "operation": "Use completion enters state4",
+      "meaning": "Reuse original_item_actions for checked bytes; state4 and Wait share the same destination."
+    }
+  ],
+  "verification": {
+    "native_execution": false,
+    "checked": "Original identity, PAK Data8, dispatch tables and the listed movement/finish anchors.",
+    "trace_instruction_bytes_checked": true
+  },
+  "limits": [
+    "The earlier slice saved disassembly only after a blocked extraction; this successor checked the listed instruction anchors directly.",
+    "Movement cost/path predicates, large-actor occupancy, complete control flags and status effects remain incomplete.",
+    "Live cancel now restores position and re-enters movement selection; confirmed inventory/equipment changes remain committed.",
+    "Attack/special completion is in original_offense_completion.json; eight bounded selector returns are separately in original_turn_selection_native.json.",
+    "Godot action_ready is completion bookkeeping. Native readiness is cleared on selection and permits a circular scan before rebuild.",
+    "No complete AI decision tree, all-class control, phase1 status tick or asynchronous callbacks are claimed."
+  ]
+}

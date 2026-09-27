@@ -1,0 +1,3012 @@
+{
+  "schema": "hsl_script_wait_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "source_action_sha256": "97df0b31463c371156bf5e09b17eaf71bc18f87f04afe01ecc74b241dc0aeeaa",
+  "vm": [
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": 0,
+        "old": 6,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          6,
+          6
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": 0,
+        "old": 6,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          6,
+          6,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": 1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          1,
+          0,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": 1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          1
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": 2,
+        "old": 9,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          2,
+          9,
+          9
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": 2,
+        "old": 9,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          9,
+          9,
+          2
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": 9999,
+        "old": 1,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          9999,
+          1,
+          1
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": 9999,
+        "old": 1,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          1,
+          1,
+          9999
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": -1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          4294967295,
+          0,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 0,
+        "value": -1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          4294967295
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": 0,
+        "old": 6,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          6,
+          6
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": 0,
+        "old": 6,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          6,
+          6,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": 1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          1,
+          0,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": 1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          1
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": 2,
+        "old": 9,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          2,
+          9,
+          9
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": 2,
+        "old": 9,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          9,
+          9,
+          2
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": 9999,
+        "old": 1,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          9999,
+          1,
+          1
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": 9999,
+        "old": 1,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          1,
+          1,
+          9999
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": -1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          4294967295,
+          0,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 26,
+        "serial": 2,
+        "value": -1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          4294967295
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": 0,
+        "old": 6,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          6,
+          6
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": 0,
+        "old": 6,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          6,
+          6,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": 1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          1,
+          0,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": 1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          1
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": 2,
+        "old": 9,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          2,
+          9,
+          9
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": 2,
+        "old": 9,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          9,
+          9,
+          2
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": 9999,
+        "old": 1,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          9999,
+          1,
+          1
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": 9999,
+        "old": 1,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          1,
+          1,
+          9999
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": -1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          4294967295,
+          0,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 23,
+        "serial": 1,
+        "value": -1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          4294967295
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": 0,
+        "old": 6,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          6,
+          6
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": 0,
+        "old": 6,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          6,
+          6,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": 1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          1,
+          0,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": 1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          1
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": 2,
+        "old": 9,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          2,
+          9,
+          9
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": 2,
+        "old": 9,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          9,
+          9,
+          2
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": 9999,
+        "old": 1,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          9999,
+          1,
+          1
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": 9999,
+        "old": 1,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          1,
+          1,
+          9999
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": -1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          4294967295,
+          0,
+          0
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 33,
+        "code": 999,
+        "serial": 1,
+        "value": -1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          4294967295
+        ],
+        "cursor_words": 2,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": 0,
+        "old": 6,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          6,
+          6
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": 0,
+        "old": 6,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          6,
+          6
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": 1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          1,
+          0,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": 1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          1,
+          0,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": 2,
+        "old": 9,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          2,
+          9,
+          9
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": 2,
+        "old": 9,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          2,
+          9,
+          9
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": 9999,
+        "old": 1,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          9999,
+          1,
+          1
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": 9999,
+        "old": 1,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          9999,
+          1,
+          1
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": -1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          4294967295,
+          0,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 0,
+        "value": -1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          4294967295,
+          0,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 102
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": 0,
+        "old": 6,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          6,
+          0,
+          6
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": 0,
+        "old": 6,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          6,
+          0,
+          6
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": 1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          1,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": 1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          1,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": 2,
+        "old": 9,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          9,
+          2,
+          9
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": 2,
+        "old": 9,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          9,
+          2,
+          9
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": 9999,
+        "old": 1,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          1,
+          9999,
+          1
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": 9999,
+        "old": 1,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          1,
+          9999,
+          1
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": -1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          4294967295,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 26,
+        "serial": 2,
+        "value": -1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          4294967295,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 137
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": 0,
+        "old": 6,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          6,
+          6,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": 0,
+        "old": 6,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          6,
+          6,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": 1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          1
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": 1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          1
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": 2,
+        "old": 9,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          9,
+          9,
+          2
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": 2,
+        "old": 9,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          9,
+          9,
+          2
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": 9999,
+        "old": 1,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          1,
+          1,
+          9999
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": 9999,
+        "old": 1,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          1,
+          1,
+          9999
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": -1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          4294967295
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 23,
+        "serial": 1,
+        "value": -1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          4294967295
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 164
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": 0,
+        "old": 6,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          6,
+          6,
+          6
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": 0,
+        "old": 6,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          6,
+          6,
+          6
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": 1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": 1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": 2,
+        "old": 9,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          9,
+          9,
+          9
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": 2,
+        "old": 9,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          9,
+          9,
+          9
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": 9999,
+        "old": 1,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          1,
+          1,
+          1
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": 9999,
+        "old": 1,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          1,
+          1,
+          1
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": -1,
+        "old": 0,
+        "previous": 0
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 34,
+        "code": 999,
+        "serial": 1,
+        "value": -1,
+        "old": 0,
+        "previous": 2
+      },
+      "native": {
+        "wait_values": [
+          0,
+          0,
+          0
+        ],
+        "cursor_words": 4,
+        "returns": 1,
+        "records_unchanged_except_wait": true
+      },
+      "normal_return": true,
+      "instructions": 1534
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 0,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 98
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 0,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 98
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 0,
+        "other_phase": 3539043,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 98
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 0,
+        "other_phase": 3539043,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 98
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 65536,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 99
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 65536,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 197
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 3473409,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 99
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 3473409,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 197
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 3538947,
+        "other_phase": 65536,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 99
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 0,
+        "phase": 3538947,
+        "other_phase": 65536,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 197
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 0,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 133
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 0,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 133
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 0,
+        "other_phase": 3539043,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 133
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 0,
+        "other_phase": 3539043,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 133
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 65536,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 134
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 65536,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 267
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 3473409,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 134
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 3473409,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 267
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 3538947,
+        "other_phase": 65536,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 134
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 26,
+        "serial": 2,
+        "phase": 3538947,
+        "other_phase": 65536,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 267
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 0,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 160
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 0,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 160
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 0,
+        "other_phase": 3539043,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 160
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 0,
+        "other_phase": 3539043,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 160
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 65536,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 161
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 65536,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 321
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 3473409,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 161
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 3473409,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 321
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 3538947,
+        "other_phase": 65536,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 0,
+        "first_cursor_words": 0,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 161
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 23,
+        "serial": 1,
+        "phase": 3538947,
+        "other_phase": 65536,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 0,
+        "returns": 2,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 321
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 0,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 0,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 0,
+        "other_phase": 3539043,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 0,
+        "other_phase": 3539043,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 65536,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 65536,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 3473409,
+        "other_phase": 0,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 3473409,
+        "other_phase": 0,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 3538947,
+        "other_phase": 65536,
+        "repeat": false
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    },
+    {
+      "input": {
+        "opcode": 88,
+        "code": 999,
+        "serial": 1,
+        "phase": 3538947,
+        "other_phase": 65536,
+        "repeat": true
+      },
+      "native": {
+        "cursor_words": 3,
+        "first_cursor_words": 3,
+        "returns": 1,
+        "records_unchanged": true,
+        "queue_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1538
+    }
+  ],
+  "wait": [
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 99,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 1
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 2
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 4
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 16
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 0,
+        "hp": 100,
+        "flags": 32
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 3
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 0
+      },
+      "native": {
+        "next": "nearby",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f62b",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 99,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 13
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 1
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 2
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 4
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 16
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 1,
+        "hp": 100,
+        "flags": 32
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 2,
+        "hp": 100,
+        "flags": 0
+      },
+      "native": {
+        "next": "nearby",
+        "wait": 1
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f62b",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 2,
+        "hp": 99,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 13
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 2,
+        "hp": 100,
+        "flags": 1
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 2,
+        "hp": 100,
+        "flags": 2
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 2,
+        "hp": 100,
+        "flags": 4
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 2,
+        "hp": 100,
+        "flags": 16
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 2,
+        "hp": 100,
+        "flags": 32
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 9999,
+        "hp": 100,
+        "flags": 0
+      },
+      "native": {
+        "next": "nearby",
+        "wait": 9998
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f62b",
+      "instructions": 12
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 9999,
+        "hp": 99,
+        "flags": 0
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 13
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 9999,
+        "hp": 100,
+        "flags": 1
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 9999,
+        "hp": 100,
+        "flags": 2
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 9999,
+        "hp": 100,
+        "flags": 4
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 9999,
+        "hp": 100,
+        "flags": 16
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    },
+    {
+      "input": {
+        "kind": "wait",
+        "wait": 9999,
+        "hp": 100,
+        "flags": 32
+      },
+      "native": {
+        "next": "normal",
+        "wait": 0
+      },
+      "normal_return": false,
+      "entry": "0x43f603",
+      "stop_address": "0x43f67f",
+      "instructions": 9
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x452388",
+      "bytes": "8b82a40000008b0e8bd083c604c1e2072bd0a1c81b4c005f898c90b80100008b44240c89b5900000005e5d5b83c448c3",
+      "meaning": "Opcode33 replaces the previous insertion actor wait DWORD and advances one argument."
+    },
+    {
+      "address": "0x4523b8",
+      "bytes": "8b4e048b165152e80cd7ffff83c40883f8ff74278b0485c0344c0085c0741c8b80a40000008b56088bc8c1e1072bc8a1c81b4c00899488b80100008b44241083c60c89b5900000005f5e5d5b83c448c3",
+      "meaning": "Opcode34 resolves the current registered code/serial and replaces wait, advancing three arguments even without a target."
+    },
+    {
+      "address": "0x4513b4",
+      "bytes": "8b4e048b06515083c608895c2464e809e7ffff83c40883f8ff742b8b0485c0344c00c744245c000000008b888c00000085c9751e8b44241089b5900000005f5e5d5b83c448c38b44245c85c00f85bd1300008b44241083ee0c89b5900000005f5e5d5b83c448c3",
+      "meaning": "Opcode88 rewinds its own cursor while the selected object phase is nonzero; idle or missing advances without changing actor data."
+    },
+    {
+      "address": "0x43f603",
+      "bytes": "8b83b801000085c07472488983b80100008b432485c0755a8b83d80000008b8bdc0000003bc1754a",
+      "meaning": "A fresh AI wait evaluation decrements a nonzero count; any status or missing HP wakes it."
+    },
+    {
+      "address": "0x43f644",
+      "bytes": "85c00f846c2800008b0c85bc344c0085c90f845d28000085b9800000000f85512800008b5c242c33d28993b8010000eb4fc783b8010000000000008b83c801",
+      "meaning": "A valid nearby target clears the remaining wait; a missing or removed target leaves the wait branch."
+    }
+  ],
+  "limits": [
+    "VM returns normally after one opcode; busy object replay invokes it again only after that object becomes idle.",
+    "Setter stores a full DWORD without clamping; live nonnegative0..10000 domain excludes unbounded/negative raw values.",
+    "AI waiting suffixes stop before nearby search or normal priority; retained-target and full navigation evidence are separate.",
+    "Object-phase waiting does not tick actor statuses, consume resources or remove the actor from the battle queue."
+  ]
+}

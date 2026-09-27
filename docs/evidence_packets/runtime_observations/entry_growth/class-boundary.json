@@ -1,0 +1,338 @@
+{
+  "schema": "hsl_entry_growth_class_boundary_review.v1",
+  "baseline": "8bad191522d23c8a6b12e42db95ccf352e7f3771",
+  "fixture": true,
+  "native_execution": false,
+  "real_control_events": true,
+  "screen": 1,
+  "window_size": "(640, 480)",
+  "time_scale": 1.0,
+  "process": {
+    "command": [
+      "tools/godot.sh",
+      "--screen",
+      "1",
+      "--script",
+      "res://tests/capture_entry_growth_review.gd",
+      "--",
+      "class_blocked"
+    ],
+    "started": "2026-09-18T11:58:37.909824+00:00",
+    "finished": "2026-09-18T11:59:03.512720+00:00",
+    "head": "8bad191522d23c8a6b12e42db95ccf352e7f3771",
+    "head_after": "8bad191522d23c8a6b12e42db95ccf352e7f3771",
+    "exit_code": 0,
+    "log": "ignored/auto-growth/class-boundary-render-reviewed.log",
+    "log_sha256": "e47877dcdcb50b45697e6095804046b58a1a4ef1a016b9dfb18d37e414a91892"
+  },
+  "pid": 18241,
+  "checks": 2603,
+  "raw_receipt": {
+    "path": "ignored/auto-growth/class-boundary-final-receipt.json",
+    "sha256": "467cbf24172f9502be3dad5412a782556d94599329db02e8077ddb2687c56e6e"
+  },
+  "route": {
+    "mode": "class_blocked",
+    "created_ids": [
+      "Enemy026_reinforcement_3"
+    ],
+    "birth_receipts": {
+      "Enemy026_reinforcement_3": {
+        "actor_id": "026",
+        "draws": [
+          {
+            "bound": 3,
+            "value": 0
+          },
+          {
+            "bound": 1,
+            "value": 0
+          },
+          {
+            "bound": 4,
+            "value": 2
+          },
+          {
+            "bound": 4,
+            "value": 2
+          },
+          {
+            "bound": 100,
+            "value": 7
+          },
+          {
+            "bound": 150,
+            "value": 111
+          },
+          {
+            "bound": 20,
+            "value": 16
+          },
+          {
+            "bound": 60,
+            "value": 51
+          },
+          {
+            "bound": 10,
+            "value": 5
+          },
+          {
+            "bound": 11,
+            "value": 2
+          }
+        ],
+        "input": {
+          "attributes": {
+            "con": 15,
+            "dex": 12,
+            "mind": 15,
+            "str": 10
+          },
+          "caps": {
+            "con": 90.0,
+            "dex": 78.0,
+            "mind": 100.0,
+            "str": 84.0
+          },
+          "exp": 0,
+          "gold": 120,
+          "job": 90,
+          "kill_exp": 16,
+          "level": 1,
+          "object_kind": 2,
+          "parameters": [
+            20,
+            1
+          ],
+          "party_levels": [
+            13,
+            12
+          ],
+          "stamina": 0
+        },
+        "origin": "script",
+        "party_ids": [
+          "thief",
+          "tina"
+        ],
+        "policy": "source_entry_growth_v1",
+        "result": {
+          "attributes": {
+            "con": 35,
+            "dex": 22,
+            "mind": 25,
+            "str": 20
+          },
+          "cap_fallback": false,
+          "exp": 0,
+          "gold": 220,
+          "kill_exp": 30,
+          "level": 11,
+          "raised": true,
+          "sampled_level": 11,
+          "source_gains": {
+            "attack_power": 10,
+            "hit_point": 25,
+            "magic_attack_power": 1,
+            "magic_point": 26,
+            "speed": 3
+          },
+          "source_level": 1,
+          "stamina": 2
+        },
+        "rng_after": 1651881453,
+        "rng_before": 1592594996
+      }
+    },
+    "rng_before": 1592594996,
+    "rng_after": 1651881453,
+    "wait_cursor": 1,
+    "script_cursor": 2,
+    "saves": 4,
+    "observed": {
+      "combat": true,
+      "experience_text": "EXP 94",
+      "finishing_attacks": 1,
+      "growth": true,
+      "movement": true
+    },
+    "outcome": "victory_boss",
+    "restarted": true
+  },
+  "combat": [
+    {
+      "sequence": 1,
+      "attacker_id": "thief",
+      "defender_id": "enemy026_1",
+      "damage": 3113,
+      "defender_hp_before": 1,
+      "defender_hp_after": 0,
+      "followups": [],
+      "counter": {},
+      "experience_basis": {
+        "attacker_level": 12,
+        "contribution": 1,
+        "draws": [
+          {
+            "bound": 0,
+            "value": 0
+          },
+          {
+            "bound": 1,
+            "value": 0
+          }
+        ],
+        "kill_chain_before": 0,
+        "kill_exp": 16,
+        "kill_multiplier": 100,
+        "kill_word_after": 65537,
+        "killed": true,
+        "kills_added": 1,
+        "points": 4,
+        "source": "0x40a5d0",
+        "subtotal": 4,
+        "target_level": 1
+      },
+      "rewards": {
+        "gold": 120,
+        "item_count": 0,
+        "kills": [
+          {
+            "attacker_id": "thief",
+            "defender_id": "enemy026_1",
+            "gold": 120
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "attacker_id": "thief",
+      "defender_id": "Enemy026_reinforcement_3",
+      "damage": 6424,
+      "defender_hp_before": 90,
+      "defender_hp_after": 0,
+      "followups": [],
+      "counter": {},
+      "experience_basis": {
+        "attacker_level": 13,
+        "contribution": 90,
+        "draws": [
+          {
+            "bound": 45,
+            "value": 41
+          },
+          {
+            "bound": 19,
+            "value": 3
+          }
+        ],
+        "kill_chain_before": 1,
+        "kill_exp": 30,
+        "kill_multiplier": 150,
+        "kill_word_after": 65538,
+        "killed": true,
+        "kills_added": 1,
+        "points": 94,
+        "source": "0x40a5d0",
+        "subtotal": 66,
+        "target_level": 11
+      },
+      "rewards": {
+        "gold": 220,
+        "item_count": 0,
+        "kills": [
+          {
+            "attacker_id": "thief",
+            "defender_id": "Enemy026_reinforcement_3",
+            "gold": 220
+          }
+        ]
+      }
+    }
+  ],
+  "images": [
+    {
+      "path": "class-victory-pending.png",
+      "capture": "class_blocked-010-class-victory-pending.png",
+      "meaning": "After the original class member dies, blocked insertion holds victory while the next independent action remains available.",
+      "sha256": "c0b8af3df3f20c4f2ed87a71abdc4af6da6ebf98a85d63fc37c4c911e3a4c21b"
+    },
+    {
+      "path": "class-birth.png",
+      "capture": "class_blocked-017-birth-stats-026.png",
+      "meaning": "Freeing the accepted tile creates exactly one grown instance; its real status shows the recorded birth level.",
+      "sha256": "eb0fc3027517fa8ad1cb1ea9efeb268c8a2d21bc6454ea9f7b68dd6c0d240aad"
+    },
+    {
+      "path": "class-victory.png",
+      "capture": "class_blocked-026-result.png",
+      "meaning": "Class-count victory follows the actual last new-target kill and instance rewards.",
+      "sha256": "09b84f832c1135e34a1e1f5667f5cf36f3721f0bc791f738e0f0489d6d5270cd"
+    },
+    {
+      "path": "class-final-restored.png",
+      "capture": "class_blocked-027-restored.png",
+      "meaning": "F9 at the terminal restores the resolved class result without another birth or reward.",
+      "sha256": "09b84f832c1135e34a1e1f5667f5cf36f3721f0bc791f738e0f0489d6d5270cd"
+    }
+  ],
+  "regression": {
+    "red": {
+      "log": "ignored/auto-growth/class-boundary-valid-red.log",
+      "sha256": "1da53c0e028356fb40674fda25fd32d26ab5103c4cd2d5e33f61477326c9ce6a"
+    },
+    "green": {
+      "log": "ignored/auto-growth/class-boundary-fixed.log",
+      "sha256": "10dd3683392a2e5a9f2a862a3cc8a8d53fa2625bc806cc3ec573b9ddadc736a5"
+    },
+    "winfail": {
+      "log": "ignored/auto-growth/class-winfail.log",
+      "sha256": "8644dd438c9437bfe868302b249feb7ad0b415b27d9ee38de12e2557de19f17b"
+    }
+  },
+  "unsuccessful_process": {
+    "command": [
+      "tools/godot.sh",
+      "--screen",
+      "1",
+      "--script",
+      "res://tests/capture_entry_growth_review.gd",
+      "--",
+      "class_blocked"
+    ],
+    "started": "2026-09-18T11:51:57.454616+00:00",
+    "finished": "2026-09-18T11:53:58.629933+00:00",
+    "head": "e299115299e23c6bec660dd988cb16e162d19a52",
+    "exit_code": 1,
+    "log": "ignored/auto-growth/class-boundary-render.log",
+    "log_sha256": "1ef74b796e3856bb8643e18d5d4e5ce52c5c74bd4cd2158c573c7a985dab42c2"
+  },
+  "superseded_process": {
+    "process": {
+      "command": [
+        "tools/godot.sh",
+        "--screen",
+        "1",
+        "--script",
+        "res://tests/capture_entry_growth_review.gd",
+        "--",
+        "class_blocked"
+      ],
+      "started": "2026-09-18T11:55:21.315772+00:00",
+      "finished": "2026-09-18T11:55:46.932526+00:00",
+      "head": "8bad191522d23c8a6b12e42db95ccf352e7f3771",
+      "exit_code": 0,
+      "log": "ignored/auto-growth/class-boundary-render-final.log",
+      "log_sha256": "e47877dcdcb50b45697e6095804046b58a1a4ef1a016b9dfb18d37e414a91892"
+    },
+    "reason": "Logical assertions passed, but manual image review found a blank generic result label. The class objective now uses the existing labelled target-victory outcome and the final route asserts nonempty result text."
+  },
+  "limits": [
+    "Authored class-count event on original051 terrain; actual controls drive attacks, blocker movement, F5/F9 and restart.",
+    "The first rendered process timed out waiting for a result while the accepted target remained alive. Its exit1 is retained; none of that process is claimed complete.",
+    "The corrected input driver uses at most eight legal current-state attacks and observes their real outcomes; it does not replace damage or random outcomes.",
+    "This is a remake insertion/terminal transaction correction, not additional native-handler or global-dispatch equivalence evidence.",
+    "The original fourteen routes remain separately archived under their original parent-process scopes."
+  ]
+}

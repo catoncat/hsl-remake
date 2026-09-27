@@ -1,0 +1,156 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 12,
+  "battle": {
+    "id": "battle_012_level12",
+    "title": "巴瀚納海峽 · 風雨中的船戰",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "巴瀚納海峽 · 船戰勝利",
+      "fail_0": "巴瀚納海峽 · 雷歐納德 陣亡",
+      "fail_1": "巴瀚納海峽 · 船殼危機"
+    },
+    "expected": {
+      "units": 103,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "The preview roster supplies seven player-controlled slots (001-007) and 32 Enemy038 boarders. Conditional slots 008/009 remain absent from the opening roster; their source installation is retained as skipped/provisional until the original registered-slot state is wired into this battle.",
+      "The 62 Enemy101 hulls and the four RainBOSS/Rain/RainSound objects remain static opening story objects, not playable units. The WINFAIL012 Enemy101 count condition therefore remains a provisional object-count boundary rather than a combat-unit claim.",
+      "WINFAIL012 round 8 fixes all 32 Enemy038 instances to source pixels; round 10 walks/deletes them, round 16/23 inserts the Enemy048 water creatures, and actSetPlayerFly is applied through the single unit dictionary. Script timing, collision, and water-creature placement remain remake pacing.",
+      "The six actChangePrevInsertObjectID(10000) writes are retained as insert receipts with no independent visual effect; source object identity and native object-table lifetime are static-derived, while the absence of a visual remake effect is provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_012_bahana_strait_opening",
+    "title": "巴瀚納海峽（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "巴瀚納海峽",
+      "hint": "戰鬥部分（level 12）尚未重製　　空格／點擊：回到大地圖（巴瀚納海峽）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    }
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "038",
+      "039",
+      "048",
+      "101"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "048"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "obj-012.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 (resource-derived)",
+    "SID_嚎": "obj-012.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 (resource-derived)",
+    "SID_咕嚕": "obj-012.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 (resource-derived)",
+    "SID_克羅蒂": "obj-012.obs 克羅蒂(有才產生) (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 (resource-derived)"
+  },
+  "sweep_fixture": {
+    "mode": "rounds",
+    "rounds": [
+      8,
+      10,
+      16,
+      23
+    ],
+    "note": "WINFAIL012 arms its terminal actTRUE only after the round-8/10/16/23 chain; the provisional static-hull fail status is held out."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 12 (巴瀚納海峽, bigmap.dat point 12, reached by ship from 薛維斯港 11): the",
+      "party on the deck in a storm — 雪拉 / 雷特 / 嚎 / 琥 banter, the rain controllers",
+      "and rain sound start, Enemy038 boarders climb aboard by displacement walks, 雷特",
+      "challenges them. The 62 Enemy101 船殼 hull pieces are stand objects (no walk",
+      "groups); 咕嚕 / 克羅蒂 are \"有才產生\" conditional installs and stay out.",
+      "actPlayMusic 9: music-table track 9."
+    ],
+    "cast": [
+      "Level 12 (巴瀚納海峽): the party on deck (slots 0-6; 咕嚕 008 / 克羅蒂 009 are",
+      "conditional installs) against the Enemy038 boarders; the 62 Enemy101 船殼 hull pieces are",
+      "registered actors like the original's (PLAYERS 101: pmNPCPlayerNoMagic, no_attack, no_block,",
+      "no_showshape: units, not drawn). WINFAIL012 inserts 海輝魔 039 by script template."
+    ],
+    "speakers": [
+      "Level 12 (巴瀚納海峽, the ship battle after 薛維斯港): the nine-slot party of the",
+      "chapter's end (EXTRAS.H slots 0-8: 雷特 5, 嚎 6, 咕嚕 7, 克羅蒂 8)."
+    ]
+  }
+}

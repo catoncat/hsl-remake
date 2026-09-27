@@ -1,0 +1,2960 @@
+{
+  "schema": "hsl_native_experience.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "cases": [
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 0,
+        "attacker_level": 1,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 16,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 0,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 16,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 0,
+        "attacker_level": 1,
+        "target_level": 10,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 16,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 0,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 16,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 0,
+        "attacker_level": 7,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 16,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 0,
+        "attacker_level": 80,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 0,
+      "draws": [],
+      "normal_return": true,
+      "instructions": 16,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 1,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 225,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 130,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 1,
+        "target_level": 10,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 5,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 224,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 7,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 224,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 80,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 224,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 2,
+        "attacker_level": 1,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 264,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 2,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 2,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 130,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 2,
+        "attacker_level": 1,
+        "target_level": 10,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 10,
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 2,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 263,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 2,
+        "attacker_level": 7,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 263,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 2,
+        "attacker_level": 80,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 263,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 5,
+        "attacker_level": 1,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 3,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 262,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 5,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 5,
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 5,
+        "attacker_level": 1,
+        "target_level": 10,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 19,
+      "draws": [
+        {
+          "bound": 7,
+          "value": 6
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 5,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 3,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 261,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 5,
+        "attacker_level": 7,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 263,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 5,
+        "attacker_level": 80,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 263,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 1,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 18,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 301,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 17,
+      "draws": [
+        {
+          "bound": 6,
+          "value": 3
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 1,
+        "target_level": 10,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 73,
+      "draws": [
+        {
+          "bound": 30,
+          "value": 27
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 18,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 300,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 7,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 3,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 261,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 80,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 3,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 261,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 21,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 8,
+          "value": 7
+        }
+      ],
+      "normal_return": true,
+      "instructions": 301,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 29,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 10,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 171,
+      "draws": [
+        {
+          "bound": 54,
+          "value": 9
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 21,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 8,
+          "value": 7
+        }
+      ],
+      "normal_return": true,
+      "instructions": 300,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 7,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 5,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 300,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 80,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 5,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 300,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 100,
+        "attacker_level": 1,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 76,
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27
+        },
+        {
+          "bound": 24,
+          "value": 7
+        }
+      ],
+      "normal_return": true,
+      "instructions": 301,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 100,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 73,
+      "draws": [
+        {
+          "bound": 30,
+          "value": 27
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 100,
+        "attacker_level": 1,
+        "target_level": 10,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 473,
+      "draws": [
+        {
+          "bound": 150,
+          "value": 27
+        }
+      ],
+      "normal_return": true,
+      "instructions": 169,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 100,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 76,
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27
+        },
+        {
+          "bound": 24,
+          "value": 7
+        }
+      ],
+      "normal_return": true,
+      "instructions": 300,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 100,
+        "attacker_level": 7,
+        "target_level": 2,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 13,
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27
+        },
+        {
+          "bound": 4,
+          "value": 3
+        }
+      ],
+      "normal_return": true,
+      "instructions": 300,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 100,
+        "attacker_level": 80,
+        "target_level": 1,
+        "target_hp": 40,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 13,
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27
+        },
+        {
+          "bound": 4,
+          "value": 3
+        }
+      ],
+      "normal_return": true,
+      "instructions": 300,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 37,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 304,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 0
+      },
+      "native": 40,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 173,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 1
+      },
+      "native": 55,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 1
+      },
+      "native": 60,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 186,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 74,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 316,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 80,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 185,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 3
+      },
+      "native": 92,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 3
+      },
+      "native": 100,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 186,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 4
+      },
+      "native": 111,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 4
+      },
+      "native": 120,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 186,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 5
+      },
+      "native": 129,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 318,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 5
+      },
+      "native": 140,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 187,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 6
+      },
+      "native": 148,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 316,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 6
+      },
+      "native": 160,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 185,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 7
+      },
+      "native": 166,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 316,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 7
+      },
+      "native": 180,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 185,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 8
+      },
+      "native": 185,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 316,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 8
+      },
+      "native": 200,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 185,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 9
+      },
+      "native": 185,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 9
+      },
+      "native": 200,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 186,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 2,
+        "target_level": 1,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 65538
+      },
+      "native": 74,
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        },
+        {
+          "bound": 14,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 316,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "contribution": 36,
+        "attacker_level": 1,
+        "target_level": 2,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 65538
+      },
+      "native": 80,
+      "draws": [
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "instructions": 185,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 40,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 6,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 278,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 76,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8
+        },
+        {
+          "bound": 12,
+          "value": 2
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "contribution": 250,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 412,
+      "draws": [
+        {
+          "bound": 125,
+          "value": 58
+        },
+        {
+          "bound": 65,
+          "value": 11
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 38,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 6,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "instructions": 278,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 66,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3
+        },
+        {
+          "bound": 9,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "contribution": 250,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 398,
+      "draws": [
+        {
+          "bound": 125,
+          "value": 88
+        },
+        {
+          "bound": 76,
+          "value": 56
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "contribution": 1,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 32,
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 6,
+          "value": 4
+        }
+      ],
+      "normal_return": true,
+      "instructions": 278,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "contribution": 20,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 64,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 6
+        },
+        {
+          "bound": 11,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          101,
+          2271560481
+        ],
+        "contribution": 250,
+        "attacker_level": 3,
+        "target_level": 3,
+        "target_hp": 0,
+        "kill_exp": 16,
+        "kill_word": 2
+      },
+      "native": 516,
+      "draws": [
+        {
+          "bound": 125,
+          "value": 121
+        },
+        {
+          "bound": 88,
+          "value": 38
+        }
+      ],
+      "normal_return": true,
+      "instructions": 317,
+      "actors_unchanged": true
+    }
+  ],
+  "suffixes": [
+    {
+      "input": {
+        "kind": "award",
+        "exp": 0,
+        "amount": 1,
+        "effects": 0
+      },
+      "native": {
+        "exp": 1,
+        "awarded": 1
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 0,
+        "amount": 1,
+        "effects": 16
+      },
+      "native": {
+        "exp": 2,
+        "awarded": 2
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 0,
+        "amount": 36,
+        "effects": 0
+      },
+      "native": {
+        "exp": 36,
+        "awarded": 36
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 0,
+        "amount": 36,
+        "effects": 16
+      },
+      "native": {
+        "exp": 72,
+        "awarded": 72
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 0,
+        "amount": 220,
+        "effects": 0
+      },
+      "native": {
+        "exp": 220,
+        "awarded": 220
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 0,
+        "amount": 220,
+        "effects": 16
+      },
+      "native": {
+        "exp": 440,
+        "awarded": 440
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 99,
+        "amount": 1,
+        "effects": 0
+      },
+      "native": {
+        "exp": 100,
+        "awarded": 1
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 99,
+        "amount": 1,
+        "effects": 16
+      },
+      "native": {
+        "exp": 101,
+        "awarded": 2
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 99,
+        "amount": 36,
+        "effects": 0
+      },
+      "native": {
+        "exp": 135,
+        "awarded": 36
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 99,
+        "amount": 36,
+        "effects": 16
+      },
+      "native": {
+        "exp": 171,
+        "awarded": 72
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 99,
+        "amount": 220,
+        "effects": 0
+      },
+      "native": {
+        "exp": 319,
+        "awarded": 220
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 99,
+        "amount": 220,
+        "effects": 16
+      },
+      "native": {
+        "exp": 539,
+        "awarded": 440
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 1800,
+        "amount": 1,
+        "effects": 0
+      },
+      "native": {
+        "exp": 1801,
+        "awarded": 1
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 1800,
+        "amount": 1,
+        "effects": 16
+      },
+      "native": {
+        "exp": 1802,
+        "awarded": 2
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 1800,
+        "amount": 36,
+        "effects": 0
+      },
+      "native": {
+        "exp": 1836,
+        "awarded": 36
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 1800,
+        "amount": 36,
+        "effects": 16
+      },
+      "native": {
+        "exp": 1872,
+        "awarded": 72
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 1800,
+        "amount": 220,
+        "effects": 0
+      },
+      "native": {
+        "exp": 2020,
+        "awarded": 220
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "award",
+        "exp": 1800,
+        "amount": 220,
+        "effects": 16
+      },
+      "native": {
+        "exp": 2240,
+        "awarded": 440
+      },
+      "normal_return": false,
+      "entry": "0x4427a9",
+      "stop_address": "0x4427e7",
+      "instructions": 39
+    },
+    {
+      "input": {
+        "kind": "finish",
+        "word": 0
+      },
+      "native": {
+        "word": 0
+      },
+      "normal_return": false,
+      "entry": "0x443c01",
+      "stop_address": "0x443c1a",
+      "instructions": 7
+    },
+    {
+      "input": {
+        "kind": "finish",
+        "word": 1
+      },
+      "native": {
+        "word": 0
+      },
+      "normal_return": false,
+      "entry": "0x443c01",
+      "stop_address": "0x443c1a",
+      "instructions": 7
+    },
+    {
+      "input": {
+        "kind": "finish",
+        "word": 8
+      },
+      "native": {
+        "word": 0
+      },
+      "normal_return": false,
+      "entry": "0x443c01",
+      "stop_address": "0x443c1a",
+      "instructions": 7
+    },
+    {
+      "input": {
+        "kind": "finish",
+        "word": 65536
+      },
+      "native": {
+        "word": 0
+      },
+      "normal_return": false,
+      "entry": "0x443c01",
+      "stop_address": "0x443c38",
+      "instructions": 8
+    },
+    {
+      "input": {
+        "kind": "finish",
+        "word": 65537
+      },
+      "native": {
+        "word": 1
+      },
+      "normal_return": false,
+      "entry": "0x443c01",
+      "stop_address": "0x443c38",
+      "instructions": 8
+    },
+    {
+      "input": {
+        "kind": "finish",
+        "word": 65544
+      },
+      "native": {
+        "word": 8
+      },
+      "normal_return": false,
+      "entry": "0x443c01",
+      "stop_address": "0x443c38",
+      "instructions": 8
+    },
+    {
+      "input": {
+        "kind": "magic_kill",
+        "word": 0,
+        "previous_kills": 0
+      },
+      "native": {
+        "word": 65537
+      },
+      "normal_return": false,
+      "entry": "0x4431da",
+      "stop_address": "0x44320d",
+      "instructions": 11
+    },
+    {
+      "input": {
+        "kind": "magic_kill",
+        "word": 0,
+        "previous_kills": 1
+      },
+      "native": {
+        "word": 65536
+      },
+      "normal_return": false,
+      "entry": "0x4431da",
+      "stop_address": "0x443213",
+      "instructions": 6
+    },
+    {
+      "input": {
+        "kind": "magic_kill",
+        "word": 3,
+        "previous_kills": 0
+      },
+      "native": {
+        "word": 65540
+      },
+      "normal_return": false,
+      "entry": "0x4431da",
+      "stop_address": "0x44320d",
+      "instructions": 11
+    },
+    {
+      "input": {
+        "kind": "magic_kill",
+        "word": 3,
+        "previous_kills": 1
+      },
+      "native": {
+        "word": 65539
+      },
+      "normal_return": false,
+      "entry": "0x4431da",
+      "stop_address": "0x443213",
+      "instructions": 6
+    },
+    {
+      "input": {
+        "kind": "magic_kill",
+        "word": 65539,
+        "previous_kills": 0
+      },
+      "native": {
+        "word": 65540
+      },
+      "normal_return": false,
+      "entry": "0x4431da",
+      "stop_address": "0x44320d",
+      "instructions": 11
+    },
+    {
+      "input": {
+        "kind": "magic_kill",
+        "word": 65539,
+        "previous_kills": 1
+      },
+      "native": {
+        "word": 65539
+      },
+      "normal_return": false,
+      "entry": "0x4431da",
+      "stop_address": "0x443213",
+      "instructions": 6
+    }
+  ],
+  "status_contributions": [
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 32,
+        "hit_ratio": 80,
+        "status_hit_ratio": 65,
+        "level": 3,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "resistance": 0,
+        "status": "poison",
+        "hp": 100,
+        "words": {
+          "poison": 0,
+          "no_magic": 0
+        },
+        "effects": 0
+      },
+      "native": {
+        "status_flags": 1,
+        "status_counters": {
+          "poison": 458754,
+          "no_magic": 0
+        },
+        "hp": 100,
+        "hit_bonus_after": 0,
+        "contribution": 20
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 78
+        },
+        {
+          "bound": 9,
+          "value": 7
+        },
+        {
+          "bound": 9,
+          "value": 8
+        }
+      ],
+      "instructions": 1153,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 32,
+        "hit_ratio": 80,
+        "status_hit_ratio": 65,
+        "level": 3,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "resistance": 0,
+        "status": "poison",
+        "hp": 100,
+        "words": {
+          "poison": 327682,
+          "no_magic": 0
+        },
+        "effects": 0
+      },
+      "native": {
+        "status_flags": 1,
+        "status_counters": {
+          "poison": 393220,
+          "no_magic": 0
+        },
+        "hp": 100,
+        "hit_bonus_after": 0,
+        "contribution": 20
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 78
+        },
+        {
+          "bound": 9,
+          "value": 7
+        },
+        {
+          "bound": 9,
+          "value": 8
+        }
+      ],
+      "instructions": 1160,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 32,
+        "hit_ratio": 80,
+        "status_hit_ratio": 65,
+        "level": 3,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "resistance": 0,
+        "status": "poison",
+        "hp": 100,
+        "words": {
+          "poison": 3276808,
+          "no_magic": 0
+        },
+        "effects": 0
+      },
+      "native": {
+        "status_flags": 1,
+        "status_counters": {
+          "poison": 3276809,
+          "no_magic": 0
+        },
+        "hp": 100,
+        "hit_bonus_after": 0,
+        "contribution": 10
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 78
+        },
+        {
+          "bound": 9,
+          "value": 7
+        },
+        {
+          "bound": 9,
+          "value": 8
+        }
+      ],
+      "instructions": 1166,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 32,
+        "hit_ratio": 80,
+        "status_hit_ratio": 65,
+        "level": 3,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "resistance": 0,
+        "status": "poison",
+        "hp": 100,
+        "words": {
+          "poison": 3276809,
+          "no_magic": 0
+        },
+        "effects": 0
+      },
+      "native": {
+        "status_flags": 1,
+        "status_counters": {
+          "poison": 3276809,
+          "no_magic": 0
+        },
+        "hp": 100,
+        "hit_bonus_after": 0,
+        "contribution": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 78
+        },
+        {
+          "bound": 9,
+          "value": 7
+        },
+        {
+          "bound": 9,
+          "value": 8
+        }
+      ],
+      "instructions": 1162,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 32,
+        "hit_ratio": 80,
+        "status_hit_ratio": 65,
+        "level": 3,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 4,
+        "resistance": 0,
+        "status": "no_magic",
+        "hp": 100,
+        "words": {
+          "poison": 0,
+          "no_magic": 0
+        },
+        "effects": 0
+      },
+      "native": {
+        "status_flags": 2,
+        "status_counters": {
+          "poison": 0,
+          "no_magic": 2
+        },
+        "hp": 100,
+        "hit_bonus_after": 7,
+        "contribution": 10
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "instructions": 697,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 32,
+        "hit_ratio": 80,
+        "status_hit_ratio": 65,
+        "level": 3,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 4,
+        "resistance": 0,
+        "status": "no_magic",
+        "hp": 100,
+        "words": {
+          "poison": 0,
+          "no_magic": 2
+        },
+        "effects": 0
+      },
+      "native": {
+        "status_flags": 2,
+        "status_counters": {
+          "poison": 0,
+          "no_magic": 4
+        },
+        "hp": 100,
+        "hit_bonus_after": 7,
+        "contribution": 10
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "instructions": 697,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 32,
+        "hit_ratio": 80,
+        "status_hit_ratio": 65,
+        "level": 3,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 4,
+        "resistance": 0,
+        "status": "no_magic",
+        "hp": 100,
+        "words": {
+          "poison": 0,
+          "no_magic": 8
+        },
+        "effects": 0
+      },
+      "native": {
+        "status_flags": 2,
+        "status_counters": {
+          "poison": 0,
+          "no_magic": 9
+        },
+        "hp": 100,
+        "hit_bonus_after": 7,
+        "contribution": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "instructions": 702,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "proc": 0,
+        "channel": 0,
+        "low": 16,
+        "high": 32,
+        "hit_ratio": 80,
+        "status_hit_ratio": 65,
+        "level": 3,
+        "mind": 10,
+        "magic_attack": 24,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 4,
+        "resistance": 0,
+        "status": "no_magic",
+        "hp": 100,
+        "words": {
+          "poison": 0,
+          "no_magic": 9
+        },
+        "effects": 0
+      },
+      "native": {
+        "status_flags": 2,
+        "status_counters": {
+          "poison": 0,
+          "no_magic": 9
+        },
+        "hp": 100,
+        "hit_bonus_after": 7,
+        "contribution": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "instructions": 698,
+      "stop_address": "0x40b831",
+      "normal_return": false
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x40a61d",
+      "bytes": "85c97f17668baaa80000008bb89000000083fd087e05bd08000000",
+      "meaning": "Dead target adds kill_exp and reads prior low-word chain, capped at eight."
+    },
+    {
+      "address": "0x40b853",
+      "bytes": "a1fc134c0085c07e1c8b4424308b4c242c5051e865edffff8b4c241c83c40803c8894c24148b4424145e5d5b83c41cc385db75248b",
+      "meaning": "Applicator converts this target contribution before returning EXP."
+    },
+    {
+      "address": "0x442b7b",
+      "bytes": "892d842c4c00892d7c2c4c00892d70294c00892d78294c00",
+      "meaning": "A new magic action clears its accumulated EXP and reward totals."
+    },
+    {
+      "address": "0x443100",
+      "bytes": "8b0d7c2c4c0003c8890d7c2c4c00",
+      "meaning": "Local magic adds each target return to the same action EXP accumulator."
+    },
+    {
+      "address": "0x444776",
+      "bytes": "56e8f457ffff83c40485c0751ba37c2c4c00",
+      "meaning": "Zero remaining growth capacity discards EXP, not gold or loot."
+    },
+    {
+      "address": "0x4427a9",
+      "bytes": "53e811bbfcff83c40485c0740203ed8b83a40000008b15c81b4c008bc86a00c1e1072bc86a0168a0424c00558d048a8b948a8800000003d5899088000000",
+      "meaning": "Final award applies equipment EXP doubling then adds to actor EXP."
+    },
+    {
+      "address": "0x442936",
+      "bytes": "8b8c8a880000008b908c0000003bca0f8ca800000053e81f76ffff83c40485c00f849700000053e8",
+      "meaning": "After payout, threshold and growth capacity govern the level-up phase."
+    },
+    {
+      "address": "0x4431da",
+      "bytes": "8b8ea800000081c900000100898ea8000000a174294c003bc5751ec70574294c00010000008b86a8000000405f8986a80000008bc55e5d5bc3",
+      "meaning": "Magic marks a kill and increments the chain only on the first kill in the cast."
+    },
+    {
+      "address": "0x443c09",
+      "bytes": "8b87a800000085c3751956898fa8000000e8f17cfcff83c404e8e938fcffe97b0b000025ffff0000568987a8000000",
+      "meaning": "Own action finish keeps the low word only when a kill mark is present."
+    },
+    {
+      "address": "0x444637",
+      "bytes": "8b97d800000033c93bd10f8f8901",
+      "meaning": "A surviving counter target clears the counterattacker chain."
+    },
+    {
+      "address": "0x447e40",
+      "bytes": "5653680c8a4700e884e8ffff83c40c3bc589442414740a8b4424100c1089442410",
+      "meaning": "ITEM exp_x2 maps to the exact final-award flag 0x10."
+    },
+    {
+      "address": "0x40ad75",
+      "bytes": "8b0dfc134c008d0480576a008d14418b4c241c8d44241841505356558915fc134c00894c242ce810",
+      "meaning": "Poison contributes ten per newly added duration unit, after cap nine."
+    },
+    {
+      "address": "0x40aeae",
+      "bytes": "8b0dfc134c008d14088d04828b54241442a3fc134c00",
+      "meaning": "Silence contributes five per newly added duration unit, after cap nine."
+    }
+  ],
+  "limits": [
+    "Contribution conversion returns normally; final award and kill-state are bounded suffixes before presentation/queue calls.",
+    "One spell accumulates per-target EXP and awards once, not a campaign or victory reward pool.",
+    "Input actor levels, kill state, contributions and equipment flags are synthetic; source initialization is separate."
+  ]
+}

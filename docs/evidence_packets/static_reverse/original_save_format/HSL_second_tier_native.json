@@ -1,0 +1,280 @@
+{
+  "schema": "hsl_original_save_native_second_tier.v1",
+  "evidence_tier": "runtime-measured",
+  "file": "HSL_second_tier_native.SAV",
+  "bytes": 3211,
+  "sha256": "f70d52688f0602f5a9b7e9baf94d81dfbf2961666cf345083798cb5c54618a9a",
+  "origin": "儲存回憶錄 written by the original (v1.06, Wine, 2026-09-21) on the big map at 命運神殿 after the generated before_second_tier_at_temple 回憶錄 was loaded and 神殿中樞 -> 祈求 ran teCheckJobUp2 for 雷歐納德 and 緹娜",
+  "header": {
+    "version": 100,
+    "camera_x": 640,
+    "camera_y": 337,
+    "current_point": 16,
+    "next_level": 16,
+    "walk_from_point": -1,
+    "level_files": 49,
+    "current_level": 16,
+    "round_counter": 0,
+    "show_track_point": 0,
+    "walk_to_point": 0,
+    "gold": 8000,
+    "level_flag": 1,
+    "leonard_level": 41,
+    "play_seconds": 15275,
+    "rng_hi": 212957692,
+    "rng_lo": 4082009603,
+    "secret_man_index": 0,
+    "secret_man_word": 0,
+    "secret_man_event": 0,
+    "serial_state": 5,
+    "over_flag": 0,
+    "over_score_1": 0,
+    "over_score_2": 0,
+    "over_score_3": 0,
+    "sys_arrive_y": 0,
+    "sys_arrive_x": 0,
+    "reserved_60": 0,
+    "reserved_64": 0
+  },
+  "registered_slots": {
+    "0": 818,
+    "1": 819,
+    "2": 802,
+    "3": 803,
+    "4": 804
+  },
+  "mode_bytes_set": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "live_records_nonzero": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "lists": [
+    {
+      "capacity": 5,
+      "count": 0
+    },
+    {
+      "capacity": 5,
+      "count": 0
+    }
+  ],
+  "encounter_ratios_all": [
+    0,
+    10,
+    14,
+    20,
+    40,
+    100
+  ],
+  "towns_nonempty": {
+    "1": {
+      "0": [
+        1,
+        2,
+        3
+      ]
+    },
+    "4": {
+      "0": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "7": [
+        8,
+        12,
+        13,
+        14
+      ]
+    },
+    "6": {
+      "0": [
+        16,
+        18,
+        45,
+        20
+      ],
+      "20": [
+        26,
+        27
+      ]
+    },
+    "11": {
+      "0": [
+        33,
+        34,
+        35,
+        36,
+        41
+      ],
+      "36": [
+        37,
+        38,
+        39
+      ],
+      "41": [
+        42,
+        44,
+        49,
+        140
+      ]
+    },
+    "14": {
+      "0": [
+        154,
+        155,
+        156,
+        145
+      ],
+      "145": [
+        147,
+        150,
+        151
+      ]
+    },
+    "16": {
+      "0": [
+        55,
+        54,
+        72,
+        76
+      ],
+      "55": [
+        85,
+        57,
+        86
+      ],
+      "72": [
+        73
+      ],
+      "76": [
+        77,
+        81
+      ]
+    }
+  },
+  "points_hidden_by_new_game": [
+    22,
+    25,
+    26,
+    27,
+    28,
+    31,
+    32,
+    33,
+    34,
+    38,
+    43
+  ],
+  "tracks_hidden": [
+    3,
+    6,
+    10,
+    20,
+    23,
+    24,
+    25,
+    26,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    37,
+    43
+  ],
+  "battle_tail_bytes": 0,
+  "generator_preset": "after_second_tier_at_temple",
+  "header_words_not_compared": [
+    "camera_y",
+    "show_track_point",
+    "walk_to_point",
+    "play_seconds"
+  ],
+  "slots_not_compared": {
+    "slots": [
+      2,
+      3,
+      4
+    ],
+    "reason": "slot codes and records are untouched before-preset input as generated on 2026-09-21 (800 + slot codes, dword-summed +0x194); the generator now follows 0x4348f0 / 0x42c700 for them"
+  },
+  "party": [
+    {
+      "slot": 0,
+      "registered_code": 818,
+      "job": 82,
+      "job_up_code": 0,
+      "job_up_flags": "0xc0000000",
+      "level": 41,
+      "max_hp": 335,
+      "items": [
+        241,
+        241,
+        246
+      ]
+    },
+    {
+      "slot": 1,
+      "registered_code": 819,
+      "job": 87,
+      "job_up_code": 0,
+      "job_up_flags": "0xc0000000",
+      "level": 40,
+      "max_hp": 284,
+      "items": [
+        241,
+        244
+      ]
+    },
+    {
+      "slot": 2,
+      "registered_code": 802,
+      "job": 84,
+      "job_up_code": 0,
+      "job_up_flags": "0x80000000",
+      "level": 35,
+      "max_hp": 115,
+      "items": [
+        241,
+        241
+      ]
+    },
+    {
+      "slot": 3,
+      "registered_code": 803,
+      "job": 89,
+      "job_up_code": 0,
+      "job_up_flags": "0x80000000",
+      "level": 35,
+      "max_hp": 129,
+      "items": [
+        241
+      ]
+    },
+    {
+      "slot": 4,
+      "registered_code": 804,
+      "job": 91,
+      "job_up_code": 0,
+      "job_up_flags": "0x80000000",
+      "level": 33,
+      "max_hp": 124,
+      "items": [
+        241,
+        244
+      ]
+    }
+  ]
+}

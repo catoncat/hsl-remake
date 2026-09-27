@@ -1,0 +1,10826 @@
+{
+  "schema": "hsl_large_actor_native.v1",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "sources": {
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c",
+    "RANGE.H": "940d6deff193170531ef9752dd95de5684be460fd9725dc727cdf165a529c420",
+    "RANGE.TXT": "780274e8526a0542aeb4ce9ea69e5b5250ff0fbe6a60a5e017cc88b9c06020d2",
+    "SHAPEDEF.TXT": "c171b1cb1c3dae8f682b64666a05533bcc57b2de6327c9462ead2e7ac3872b5e"
+  },
+  "lookup": [
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1635
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          3
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          3
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          3
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1635
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          3
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          3
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          4
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          4
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          4
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          4
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          4
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          5
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          5
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          5
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1635
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          5
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          5
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1635
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1633
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1664
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1664
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1664
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          2
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          3
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          3
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 83
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          3
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 83
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          3
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 83
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          3
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          4
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          4
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 83
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          4
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 83
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          4
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 83
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          4
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          5
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          5
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 84
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          5
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 83
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          5
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 83
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          5
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          2,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          3,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1664
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          4,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1664
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1664
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          6,
+          6
+        ]
+      },
+      "native": -1,
+      "normal_return": true,
+      "instructions": 1656
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": true,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              5,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 0,
+            "registered": false
+          }
+        ],
+        "query": [
+          5,
+          4
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 1682
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": true,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              5,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 0,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          4
+        ]
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 125
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": true,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              5,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": false
+          }
+        ],
+        "query": [
+          5,
+          4
+        ]
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 1682
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 1,
+            "no_block": true,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              5,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "query": [
+          5,
+          4
+        ]
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 125
+    }
+  ],
+  "marking": [
+    {
+      "input": {
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "large": 0
+      },
+      "native": {
+        "marked": [
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          133820,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828
+        ],
+        "cleared": [
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          2748,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828
+        ]
+      },
+      "normal_returns": 2,
+      "instructions": 93
+    },
+    {
+      "input": {
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          3,
+          3
+        ],
+        "large": 1
+      },
+      "native": {
+        "marked": [
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          133820,
+          133820,
+          133820,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          133820,
+          133820,
+          133820,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          133820,
+          133820,
+          133820,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828
+        ],
+        "cleared": [
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          2748,
+          2748,
+          2748,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          2748,
+          2748,
+          2748,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          2748,
+          2748,
+          2748,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828
+        ]
+      },
+      "normal_returns": 2,
+      "instructions": 559
+    },
+    {
+      "input": {
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "large": 0
+      },
+      "native": {
+        "marked": [
+          133820,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828
+        ],
+        "cleared": [
+          2748,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828
+        ]
+      },
+      "normal_returns": 2,
+      "instructions": 93
+    },
+    {
+      "input": {
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "large": 1
+      },
+      "native": {
+        "marked": [
+          133820,
+          133820,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          133820,
+          133820,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828
+        ],
+        "cleared": [
+          2748,
+          2748,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          2748,
+          2748,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828
+        ]
+      },
+      "normal_returns": 2,
+      "instructions": 426
+    },
+    {
+      "input": {
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          6,
+          6
+        ],
+        "large": 0
+      },
+      "native": {
+        "marked": [
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          133820
+        ],
+        "cleared": [
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          2748
+        ]
+      },
+      "normal_returns": 2,
+      "instructions": 93
+    },
+    {
+      "input": {
+        "size": [
+          7,
+          7
+        ],
+        "origin": [
+          6,
+          6
+        ],
+        "large": 1
+      },
+      "native": {
+        "marked": [
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          133820,
+          133820,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          133820,
+          133820
+        ],
+        "cleared": [
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          2748,
+          2748,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          83888828,
+          2748,
+          2748
+        ]
+      },
+      "normal_returns": 2,
+      "instructions": 406
+    }
+  ],
+  "flood": [
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 52608,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            262144
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36473,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            33554432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48852,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            67108864
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48698,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            4,
+            0
+          ],
+          [
+            6,
+            5,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            7,
+            0
+          ],
+          [
+            6,
+            8,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 52608,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 128,
+        "mode": 2,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            4,
+            0
+          ],
+          [
+            6,
+            5,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            7,
+            0
+          ],
+          [
+            6,
+            8,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 50943,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 0,
+            "side": 131072,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 0,
+            "side": 131072,
+            "no_block": true
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 52608,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            262144
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36473,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            33554432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48852,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            67108864
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48698,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            4,
+            0
+          ],
+          [
+            6,
+            5,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            7,
+            0
+          ],
+          [
+            6,
+            8,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 52608,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 128,
+        "mode": 3,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            4,
+            0
+          ],
+          [
+            6,
+            5,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            7,
+            0
+          ],
+          [
+            6,
+            8,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 50943,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 0,
+            "side": 131072,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 3,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 0,
+            "side": 131072,
+            "no_block": true
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 43482,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 31332,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          132,
+          131,
+          130,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48578,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          132,
+          131,
+          130,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48578,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            262144
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          132,
+          131,
+          130,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48578,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 43494,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            33554432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 43500,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            67108864
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 43494,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            4,
+            0
+          ],
+          [
+            6,
+            5,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            7,
+            0
+          ],
+          [
+            6,
+            8,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 43482,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 128,
+        "mode": 6,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            4,
+            0
+          ],
+          [
+            6,
+            5,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            7,
+            0
+          ],
+          [
+            6,
+            8,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 44017,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 0,
+            "side": 131072,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          132,
+          131,
+          130,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48578,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 6,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 0,
+            "side": 131072,
+            "no_block": true
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          132,
+          131,
+          130,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          131,
+          130,
+          129,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48578,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 52608,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            16384
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            65536
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            131072
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            262144
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36473,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            33554432
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48852,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            4,
+            67108864
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 48698,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            4,
+            0
+          ],
+          [
+            6,
+            5,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            7,
+            0
+          ],
+          [
+            6,
+            8,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 52608,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 128,
+        "mode": 7,
+        "budget": 4,
+        "cells": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            3,
+            0
+          ],
+          [
+            6,
+            4,
+            0
+          ],
+          [
+            6,
+            5,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            6,
+            7,
+            0
+          ],
+          [
+            6,
+            8,
+            0
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 50943,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 0,
+            "side": 131072,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          4,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 7,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 0,
+            "side": 131072,
+            "no_block": true
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 36443,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          2,
+          4
+        ],
+        "large": 0,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 6,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ],
+          [
+            4,
+            7,
+            4278190080
+          ],
+          [
+            4,
+            8,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          3,
+          4,
+          3,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          4,
+          5,
+          4,
+          0,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          5,
+          6,
+          5,
+          0,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          5,
+          6,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          5,
+          6,
+          5,
+          0,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          4,
+          5,
+          4,
+          0,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          3,
+          4,
+          3,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 31358,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          2,
+          4
+        ],
+        "large": 0,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 6,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ],
+          [
+            4,
+            7,
+            4278190080
+          ],
+          [
+            4,
+            8,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          3,
+          4,
+          3,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          4,
+          5,
+          4,
+          0,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          5,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          5,
+          6,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          5,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          4,
+          5,
+          4,
+          0,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          3,
+          4,
+          3,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 33320,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          2,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 6,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            3,
+            4278190080
+          ],
+          [
+            4,
+            5,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ],
+          [
+            4,
+            7,
+            4278190080
+          ],
+          [
+            4,
+            8,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          5,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          5,
+          6,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          5,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 54312,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          2,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 6,
+        "cells": [
+          [
+            4,
+            0,
+            4278190080
+          ],
+          [
+            4,
+            1,
+            4278190080
+          ],
+          [
+            4,
+            2,
+            4278190080
+          ],
+          [
+            4,
+            6,
+            4278190080
+          ],
+          [
+            4,
+            7,
+            4278190080
+          ],
+          [
+            4,
+            8,
+            4278190080
+          ]
+        ],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          5,
+          6,
+          0,
+          0,
+          0,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          5,
+          6,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          5,
+          6,
+          0,
+          0,
+          0,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          4,
+          5,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 66646,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          0,
+          0
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 3,
+        "cells": [],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          4,
+          3,
+          2,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          3,
+          2,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 8914,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          8,
+          8
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 3,
+        "cells": [],
+        "occupants": []
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 8860,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          2,
+          4
+        ],
+        "large": 0,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 1,
+            "side": 131072,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          3,
+          4,
+          5,
+          4,
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          3,
+          4,
+          3,
+          2,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 13215,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    },
+    {
+      "input": {
+        "size": [
+          9,
+          9
+        ],
+        "origin": [
+          2,
+          4
+        ],
+        "large": 1,
+        "base_height": 0,
+        "mode": 2,
+        "budget": 4,
+        "cells": [],
+        "occupants": [
+          {
+            "coord": [
+              6,
+              4
+            ],
+            "large": 1,
+            "side": 131072,
+            "no_block": false
+          }
+        ]
+      },
+      "native": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          3,
+          4,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          3,
+          4,
+          5,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          3,
+          4,
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          2,
+          3,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          2,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "normal_return": true,
+      "instructions": 38765,
+      "actor_unchanged": true,
+      "only_own_ring_removed": true
+    }
+  ],
+  "enumeration": [
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              2,
+              2
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "dimension": 5,
+        "center": [
+          2,
+          2
+        ],
+        "mask": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "native": [
+        0,
+        1
+      ],
+      "normal_returns": 3,
+      "instructions": 26649,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              2,
+              2
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "dimension": 5,
+        "center": [
+          2,
+          2
+        ],
+        "mask": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": [
+        0
+      ],
+      "normal_returns": 2,
+      "instructions": 484,
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              2,
+              2
+            ],
+            "large": 1,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              4,
+              4
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "dimension": 5,
+        "center": [
+          2,
+          2
+        ],
+        "mask": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "native": [
+        0,
+        1
+      ],
+      "normal_returns": 3,
+      "instructions": 1423,
+      "actor_unchanged": true
+    }
+  ],
+  "stats": [
+    {
+      "input": {
+        "actor": "039",
+        "attributes": {
+          "str": 35,
+          "dex": 20,
+          "mind": 16,
+          "con": 36
+        },
+        "level": 1,
+        "equipment": [
+          40,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "hp": 9999,
+        "mp": 9999,
+        "mode": 131072,
+        "base_move": 4,
+        "name": "initial_fixed_level1"
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 94,
+        "allocation": "fixed_template",
+        "caps": {
+          "str": 107,
+          "dex": 80,
+          "mind": 66,
+          "con": 99
+        },
+        "source": {
+          "attack_power": 26,
+          "magic_attack_power": 0,
+          "defense": 24,
+          "speed": 0,
+          "hit_point": 60,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 0,
+          "mode": 131072,
+          "has_magic": false,
+          "base_resist_by_type": {
+            "0": 20,
+            "1": 60,
+            "2": 4,
+            "3": 0,
+            "4": 0
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 137,
+            "max_mp": 0,
+            "current_hp": 137,
+            "current_mp": 0,
+            "attack": 158,
+            "defense": 64,
+            "speed": 12,
+            "hit_rate": 90,
+            "magic_attack": 4,
+            "move_point": 4,
+            "exp_threshold": 100,
+            "resist_by_type": {
+              "0": 43,
+              "1": 72,
+              "2": 19,
+              "3": 13,
+              "4": 7
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 8
+          },
+          "instructions": 603,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 137,
+            "max_mp": 0,
+            "current_hp": 137,
+            "current_mp": 0,
+            "attack": 158,
+            "defense": 64,
+            "speed": 12,
+            "hit_rate": 90,
+            "magic_attack": 4,
+            "move_point": 4,
+            "exp_threshold": 100,
+            "resist_by_type": {
+              "0": 43,
+              "1": 72,
+              "2": 19,
+              "3": 13,
+              "4": 7
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 8
+          },
+          "instructions": 601,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "039",
+        "attributes": {
+          "str": 35,
+          "dex": 20,
+          "mind": 16,
+          "con": 36
+        },
+        "level": 3,
+        "equipment": [
+          40,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "hp": 9999,
+        "mp": 9999,
+        "mode": 131072,
+        "base_move": 4,
+        "name": "level3"
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 94,
+        "allocation": "fixed_template",
+        "caps": {
+          "str": 107,
+          "dex": 80,
+          "mind": 66,
+          "con": 99
+        },
+        "source": {
+          "attack_power": 26,
+          "magic_attack_power": 0,
+          "defense": 24,
+          "speed": 0,
+          "hit_point": 60,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 0,
+          "mode": 131072,
+          "has_magic": false,
+          "base_resist_by_type": {
+            "0": 20,
+            "1": 60,
+            "2": 4,
+            "3": 0,
+            "4": 0
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 137,
+            "max_mp": 0,
+            "current_hp": 137,
+            "current_mp": 0,
+            "attack": 160,
+            "defense": 64,
+            "speed": 12,
+            "hit_rate": 90,
+            "magic_attack": 6,
+            "move_point": 4,
+            "exp_threshold": 200,
+            "resist_by_type": {
+              "0": 43,
+              "1": 72,
+              "2": 19,
+              "3": 13,
+              "4": 7
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 8
+          },
+          "instructions": 603,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 137,
+            "max_mp": 0,
+            "current_hp": 137,
+            "current_mp": 0,
+            "attack": 160,
+            "defense": 64,
+            "speed": 12,
+            "hit_rate": 90,
+            "magic_attack": 6,
+            "move_point": 4,
+            "exp_threshold": 200,
+            "resist_by_type": {
+              "0": 43,
+              "1": 72,
+              "2": 19,
+              "3": 13,
+              "4": 7
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 8
+          },
+          "instructions": 601,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "039",
+        "attributes": {
+          "str": 36,
+          "dex": 21,
+          "mind": 18,
+          "con": 37
+        },
+        "level": 2,
+        "equipment": [
+          40,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "hp": 9999,
+        "mp": 9999,
+        "mode": 131072,
+        "base_move": 4,
+        "name": "allocation"
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 94,
+        "allocation": "fixed_template",
+        "caps": {
+          "str": 107,
+          "dex": 80,
+          "mind": 66,
+          "con": 99
+        },
+        "source": {
+          "attack_power": 26,
+          "magic_attack_power": 0,
+          "defense": 24,
+          "speed": 0,
+          "hit_point": 60,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 0,
+          "mode": 131072,
+          "has_magic": false,
+          "base_resist_by_type": {
+            "0": 20,
+            "1": 60,
+            "2": 4,
+            "3": 0,
+            "4": 0
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 140,
+            "max_mp": 0,
+            "current_hp": 140,
+            "current_mp": 0,
+            "attack": 160,
+            "defense": 66,
+            "speed": 12,
+            "hit_rate": 90,
+            "magic_attack": 5,
+            "move_point": 4,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 44,
+              "1": 73,
+              "2": 20,
+              "3": 13,
+              "4": 7
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 8
+          },
+          "instructions": 603,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 140,
+            "max_mp": 0,
+            "current_hp": 140,
+            "current_mp": 0,
+            "attack": 160,
+            "defense": 66,
+            "speed": 12,
+            "hit_rate": 90,
+            "magic_attack": 5,
+            "move_point": 4,
+            "exp_threshold": 150,
+            "resist_by_type": {
+              "0": 44,
+              "1": 73,
+              "2": 20,
+              "3": 13,
+              "4": 7
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 8
+          },
+          "instructions": 601,
+          "normal_return": true
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "039",
+        "attributes": {
+          "str": 35,
+          "dex": 20,
+          "mind": 16,
+          "con": 36
+        },
+        "level": 3,
+        "equipment": [
+          40,
+          0,
+          138,
+          0,
+          236,
+          227
+        ],
+        "hp": 1,
+        "mp": 0,
+        "mode": 131072,
+        "base_move": 4,
+        "name": "equipment_refresh"
+      },
+      "profile": {
+        "model": "native_job_stats_v1",
+        "job_code": 94,
+        "allocation": "fixed_template",
+        "caps": {
+          "str": 107,
+          "dex": 80,
+          "mind": 66,
+          "con": 99
+        },
+        "source": {
+          "attack_power": 26,
+          "magic_attack_power": 0,
+          "defense": 24,
+          "speed": 0,
+          "hit_point": 60,
+          "magic_point": 0,
+          "avoid_hit_ratio": 0,
+          "attack_back": 0,
+          "attack_damagex2": 0,
+          "mode": 131072,
+          "has_magic": false,
+          "base_resist_by_type": {
+            "0": 20,
+            "1": 60,
+            "2": 4,
+            "3": 0,
+            "4": 0
+          }
+        },
+        "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json"
+      },
+      "native": [
+        {
+          "values": {
+            "max_hp": 137,
+            "max_mp": 0,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 160,
+            "defense": 134,
+            "speed": 25,
+            "hit_rate": 90,
+            "magic_attack": 6,
+            "move_point": 6,
+            "exp_threshold": 200,
+            "resist_by_type": {
+              "0": 43,
+              "1": 72,
+              "2": 19,
+              "3": 13,
+              "4": 7
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 8
+          },
+          "instructions": 861,
+          "normal_return": true
+        },
+        {
+          "values": {
+            "max_hp": 137,
+            "max_mp": 0,
+            "current_hp": 1,
+            "current_mp": 0,
+            "attack": 160,
+            "defense": 134,
+            "speed": 25,
+            "hit_rate": 90,
+            "magic_attack": 6,
+            "move_point": 6,
+            "exp_threshold": 200,
+            "resist_by_type": {
+              "0": 43,
+              "1": 72,
+              "2": 19,
+              "3": 13,
+              "4": 7
+            },
+            "avoid_hit_ratio": 0,
+            "attack_back": 12,
+            "attack_damagex2": 8
+          },
+          "instructions": 861,
+          "normal_return": true
+        }
+      ]
+    }
+  ],
+  "ai_defaults": [
+    {
+      "field": "ai_help_otherhp",
+      "initial_output": 0,
+      "native": 0,
+      "entry": "0x44c93a",
+      "stop_address": "0x44c970",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 49,
+      "bytes": "8d44241c50576a01898c32d801000068248d4700896c242ce8191502008b15fc1a4c008b4c242c8d44242c50576a01898c32dc010000"
+    },
+    {
+      "field": "ai_help_otherhp",
+      "initial_output": 123456,
+      "native": 0,
+      "entry": "0x44c93a",
+      "stop_address": "0x44c970",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 49,
+      "bytes": "8d44241c50576a01898c32d801000068248d4700896c242ce8191502008b15fc1a4c008b4c242c8d44242c50576a01898c32dc010000"
+    },
+    {
+      "field": "ai_help_status",
+      "initial_output": 0,
+      "native": 0,
+      "entry": "0x44c961",
+      "stop_address": "0x44c997",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 49,
+      "bytes": "8d44242c50576a01898c32dc01000068148d4700896c243ce8f21402008b15fc1a4c008b4c243c8d44243c50576a01898c32e0010000"
+    },
+    {
+      "field": "ai_help_status",
+      "initial_output": 123456,
+      "native": 0,
+      "entry": "0x44c961",
+      "stop_address": "0x44c997",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 49,
+      "bytes": "8d44242c50576a01898c32dc01000068148d4700896c243ce8f21402008b15fc1a4c008b4c243c8d44243c50576a01898c32e0010000"
+    },
+    {
+      "field": "ai_help_attack",
+      "initial_output": 0,
+      "native": 0,
+      "entry": "0x44c988",
+      "stop_address": "0x44c9bd",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 47,
+      "bytes": "8d44243c50576a01898c32e001000068048d4700896c244ce8cb1402008b15fc1a4c008b4c244c83c4408d44240c898c32e4010000"
+    },
+    {
+      "field": "ai_help_attack",
+      "initial_output": 123456,
+      "native": 0,
+      "entry": "0x44c988",
+      "stop_address": "0x44c9bd",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 47,
+      "bytes": "8d44243c50576a01898c32e001000068048d4700896c244ce8cb1402008b15fc1a4c008b4c244c83c4408d44240c898c32e4010000"
+    },
+    {
+      "field": "ai_magic_multi_first",
+      "initial_output": 0,
+      "native": 0,
+      "entry": "0x44c9b2",
+      "stop_address": "0x44c9e8",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 49,
+      "bytes": "8d44240c898c32e4010000896c240c50576a0168ec8c4700e8a11402008b15fc1a4c008b4c241c8d44241c50576a01898c32f4010000"
+    },
+    {
+      "field": "ai_magic_multi_first",
+      "initial_output": 123456,
+      "native": 0,
+      "entry": "0x44c9b2",
+      "stop_address": "0x44c9e8",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 49,
+      "bytes": "8d44240c898c32e4010000896c240c50576a0168ec8c4700e8a11402008b15fc1a4c008b4c241c8d44241c50576a01898c32f4010000"
+    },
+    {
+      "field": "ai_att_special",
+      "initial_output": 0,
+      "native": 0,
+      "entry": "0x44ca00",
+      "stop_address": "0x44ca36",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 49,
+      "bytes": "8d44242c898c32e801000050896c2430576a0168d48c4700e8531402008b15fc1a4c008b4c243c8d44243c50576a01898c32ec010000"
+    },
+    {
+      "field": "ai_att_special",
+      "initial_output": 123456,
+      "native": 0,
+      "entry": "0x44ca00",
+      "stop_address": "0x44ca36",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 49,
+      "bytes": "8d44242c898c32e801000050896c2430576a0168d48c4700e8531402008b15fc1a4c008b4c243c8d44243c50576a01898c32ec010000"
+    },
+    {
+      "field": "ai_att_magic",
+      "initial_output": 0,
+      "native": 0,
+      "entry": "0x44ca27",
+      "stop_address": "0x44ca5c",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 47,
+      "bytes": "8d44243c50576a01898c32ec01000068c48c4700896c244ce82c1402008b15fc1a4c008b4c244c83c4408d44240c898c32f0010000"
+    },
+    {
+      "field": "ai_att_magic",
+      "initial_output": 123456,
+      "native": 0,
+      "entry": "0x44ca27",
+      "stop_address": "0x44ca5c",
+      "normal_return": false,
+      "parser_executed": true,
+      "instructions": 47,
+      "bytes": "8d44243c50576a01898c32ec01000068c48c4700896c244ce82c1402008b15fc1a4c008b4c244c83c4408d44240c898c32f0010000"
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x407800",
+      "bytes": "51538b5c240c558b6c2414b8c0344c0056c1fb0557c744241000000000c1fd058944241c8b3885ff0f84e60000008bb7a40000008b57048b4f088bc6c1e0072bc68b35c81b4c00c1fa05c1f90566837c862c00c74424180000000075153bd30f85af0000003bcd0f85a7000000e9910000008d42ff3bc3750f8d41ff3bc57508c7442418010000003bd3750b8d41ff3bc57504ff4424188d42013bc3750b8d71ff3bf57504ff4424188d72ff3bf375083bcd7504ff4424183bd375083bcd7504ff4424183bc375083bcd7504ff4424188d72ff3bf3750e8d71013bf575078b74241846eb048b7424183bd375088d51013bd57501463bc37506413bcd75014685f6741157e827f2030083c40485c07424897c24108b44241c83c0043de0374c008944241c0f8cfafeffff8b4424105f5e5d5b59c38bc75f5e5d5b59c3",
+      "meaning": "Registered actor lookup uses center or 3x3 body and prefers ordinary blockers over no_block actors; no HP gate."
+    },
+    {
+      "address": "0x411ae0",
+      "bytes": "8b44240453578b15c81b4c008b78048b58088b80a40000008bc8c1e1072bc8c1ff05c1fb0566837c8a2c0075128b442410505357e827feffff83c40c5f5bc355568b7424188d6bff8d47ff565550e80dfeffff565557e805feffff8d4701565550e8fafdffff568d6fff5355e8effdffff565357e8e7fdffff568d4701535089442460e8d8fdffff83c44843565355e8ccfdffff565357e8c4fdffff8b4c2430565351e8b8fdffff83c4245e5d5f5bc3",
+      "meaning": "Occupancy setter writes center and eight neighbors for a large actor."
+    },
+    {
+      "address": "0x411b90",
+      "bytes": "8b44240453578b15c81b4c008b78048b58088b80a40000008bc8c1e1072bc8c1ff05c1fb0566837c8a2c0075128b442410505357e8c7fdffff83c40c5f5bc355568b7424188d6bff8d47ff565550e8adfdffff565557e8a5fdffff8d4701565550e89afdffff568d6fff5355e88ffdffff565357e887fdffff568d4701535089442460e878fdffff83c44843565355e86cfdffff565357e864fdffff8b4c2430565351e858fdffff83c4245e5d5f5bc3",
+      "meaning": "Occupancy clearer visits the same footprint."
+    },
+    {
+      "address": "0x40ecc0",
+      "bytes": "8b4c2408a1781a4c00535556578bf98d14082bf83bfa7f668b6c241c8b5c24148bf38d14182bf03bf27f4b3b35a8634c0075083b3db0634c00742f6a005756e83cfeffff83c40c8944241c85c57536833d546d4c0006740d33c08a44241f3dff0000007420a1781a4c00468d0c183bf17eb98b4c2418478d14083bfa7ea25f5e5d33c05bc35f5e5db8010000005bc390",
+      "meaning": "Whole-body clearance checks all nine cells except the original actor center; outside-grid flags read as zero."
+    },
+    {
+      "address": "0x40f440",
+      "bytes": "53558b6c240c33c08b15c81b4c00a3741a4c00a3781a4c008b85a40000008b5d088bc8c1e1072bc856578b7d048d048a5589442418c1ff05c1fb05e8a0c5ffff8b4c241883c4048bf06683792c0074728d43ff8d4fff565051c705781a4c0001000000e8e82400008d43ff565057e8dd2400008d43ff8d4f01565051894c2438e8cb240000568d47ff5350e8c02400008b542444565352e8b424000043568d47ff5350e8a824000083c448565357e89d2400008b442420565350e89124000083c4188b4c241c8b542418515255e8eefcffff83c40c5f5e5d5bc3",
+      "meaning": "Large flood wrapper sets large mode and removes own eight-cell ring before the full original flood."
+    },
+    {
+      "address": "0x4104d0",
+      "bytes": "83ec088b0d3c6b4700538b1d446d4c008bc1992bc255568b35406b4700d1f82bd88bc6992bc28b2d881b4c008bd0a1406d4c00d1fa578b7c241c2bc233d23bfa895c24140f85ba00000085f68915541a4c008915501a4c008954241c0f8ea8000000c1e00583c0108944241033ff85c97e74c1e30583c3100faf4c241c030d4c1b4c00803c390074458b4424105053e89c72ffff83c40885c0742d8b15501a4c0033c985d27e0e8bf5390674214183c6043bca7cf4894495008b15501a4c00428915501a4c00eb068b15501a4c008b0d3c6b47004783c3203bf97c9c8b35406b47008b5c24148b44241c8b7c24104083c7203bc68944241c897c24100f8c6affffffeb068b15501a4c008b0d541a4c0033c03bca7d0b8b448d0041890d541a4c005f5e5d5b83c408c3",
+      "meaning": "Effect-mask actor enumeration calls body-aware lookup and deduplicates registered pointers."
+    },
+    {
+      "address": "0x409090",
+      "bytes": "8b4424048b15c81b4c008b80a40000008bc8c1e1072bc833c08d0c8af6818c010000017405b8010000006683792c008b89ec0000008d14898d0c517424c1e104750333c0c38b15401b4c008b8c0a840000008d44081183f8147e1fb814000000c3c1e104750333c0c38b15401b4c00568bb40a8400000003c65ec3",
+      "meaning": "Large weapon range is base index plus seventeen and boolean extension, capped at twenty."
+    }
+  ],
+  "limits": [
+    "Lookup/marking/flood/enumerator and stat helpers return normally; effect-mask inputs are synthetic completed masks, not full original spell-grid construction.",
+    "AI missing-field probes are bounded loader suffixes executing the original parser on an empty section; stop before the next field, not a full template-loader return.",
+    "Original lookup follows registered object pointers even at zero HP. Current game filters defeated actors at the shared lifecycle seam.",
+    "Movement removes only own ring side flags from its scratch map. Current game instead derives occupancy afresh and never mutates terrain.",
+    "Outside map body cells are ignored by native queries; the center stays in map. Full-body NO_STOP policy is the explicit current placement adapter.",
+    "Source039 has no fixed level declaration; level1 is the existing remake fixed-template policy. Eight numeric refresh returns do not claim original level selection.",
+    "Original global map lifecycle, equal path ties and full rendering remain separate."
+  ]
+}

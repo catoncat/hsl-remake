@@ -1,0 +1,128 @@
+extends SceneTree
+
+## Lane R14 driver (kept as text beside the packet; run from any res:// path): boot battle_017 from the product opening, make every player
+## unit 待機, and log each AI action (actor, kind, from→to, target, HP deltas) for the
+## first ROUNDS rounds, so the remake's opening can be set beside the original run.
+
+const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
+const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const Autoplay = preload("res://tests/support/Autoplay.gd")
+const Loop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+
+const ROUNDS := 3 # HSL_TRACE_ROUNDS overrides; HSL_TRACE_SCENARIO overrides the scenario (lane R16: level 52 wait check)
+var failures: Array[String] = []
+
+
+func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _assert_true(condition: bool, message: String) -> void:
+	if not condition:
+		failures.append(message)
+
+
+func _roster(loop: Dictionary) -> Dictionary:
+	var rows := {}
+	for unit in loop.get("units", []):
+		rows[str(unit["id"])] = {"hp": int(unit.get("hp", 0)), "mp": int(unit.get("mp", 0)), "coord": unit.get("coord", Vector2i.ZERO), "living": Loop.Presence.living(unit)}
+	return rows
+
+
+func _diff(before: Dictionary, after: Dictionary) -> String:
+	var parts: Array[String] = []
+	for id in after:
+		var a: Dictionary = after[id]
+		var b: Dictionary = before.get(id, a)
+		if a["hp"] != b["hp"] or a["mp"] != b["mp"] or a["coord"] != b["coord"] or a["living"] != b["living"]:
+			parts.append("%s hp %d->%d mp %d->%d (%d,%d)->(%d,%d)%s" % [id, b["hp"], a["hp"], b["mp"], a["mp"], b["coord"].x, b["coord"].y, a["coord"].x, a["coord"].y, "" if a["living"] else " DEAD"])
+	return "; ".join(parts)
+
+
+func _run() -> void:
+	CampaignProgress.pending = {}
+	CampaignProgress.resume_prompt_in_headless = false
+	var loop_seed := Autoplay.ensure_loop_seed()
+	var scene = RuntimeScene.instantiate()
+	scene.scenario_path = OS.get_environment("HSL_TRACE_SCENARIO") if OS.get_environment("HSL_TRACE_SCENARIO") != "" else "res://content/battles/battle_017.json"
+	var rounds := int(OS.get_environment("HSL_TRACE_ROUNDS")) if OS.get_environment("HSL_TRACE_ROUNDS").is_valid_int() else ROUNDS
+	scene.startup_mode = "product_opening"
+	root.add_child(scene)
+	await process_frame
+	await process_frame
+	await Autoplay.reach_first_control(self, scene, "level 17", _assert_true)
+	scene.set_process(false)
+	var loop: Dictionary = scene.play_loop
+	if OS.get_environment("HSL_TRACE_PLAYER_HP").is_valid_int():
+		# Observation aid only: keep the waiting party alive long enough to watch the enemy
+		# wait counters run out (level 52: emperor 8 rounds). Not a product rule.
+		for unit in loop["units"]:
+			if str(unit.get("battle_actor_role", "")) == Loop.ROLE_PLAYER:
+				unit["max_hp"] = int(OS.get_environment("HSL_TRACE_PLAYER_HP"))
+				unit["hp"] = unit["max_hp"]
+	print("R14_REMAKE loop_seed=%d first_control round=%d" % [loop_seed, int(loop.get("turn", 1))])
+	for unit in loop.get("units", []):
+		var c: Vector2i = unit.get("coord", Vector2i.ZERO)
+		print("  spawn %s %s role=%s hp=%d/%d mp=%d (%d,%d) mp_move=%s level=%s items=%s wait=%s home=%s" % [str(unit["id"]), str(unit.get("actor_id", "")), str(unit.get("battle_actor_role", "")), int(unit.get("hp", 0)), int(unit.get("max_hp", 0)), int(unit.get("mp", 0)), c.x, c.y, str(unit.get("move_point", "?")), str(unit.get("level", "?")), str(unit.get("items", unit.get("inventory", "?"))), str(unit.get("ai_wait_remaining", "?")), str(unit.get("ai_home_coord", "?"))])
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 1
+	var steps := 0
+	while steps < 2000:
+		steps += 1
+		if str(loop.get("battle_outcome", "")) != "":
+			print("R14_REMAKE battle_outcome=%s round=%d" % [str(loop["battle_outcome"]), int(loop.get("turn", 1))])
+			break
+		if int(loop.get("turn", 1)) > rounds:
+			print("R14_REMAKE stop after %d rounds" % rounds)
+			break
+		if not bool(loop.get("scenario_ok", false)):
+			print("R14_REMAKE scenario_error=%s" % str(loop.get("scenario_error", "")))
+			break
+		if Loop.loot_waiting(loop):
+			var settlement: Dictionary = loop["settlement"]
+			loop = Loop.finish_rewards(loop, int(settlement["sequence"]), int(settlement["revision"]), false, true)
+			continue
+		match str(loop.get("interaction", "")):
+			"action_menu":
+				var id := str(loop.get("selected_unit_id", ""))
+				if Loop.action_exhausted(loop):
+					loop = Loop.finish_exhausted_action(loop)
+					continue
+				var waited := Loop.choose_command(loop, "wait")
+				if waited == loop:
+					print("R14_REMAKE no wait for %s commands=%s" % [id, str((loop.get("command_menu", {}) as Dictionary).get("commands", []))])
+					break
+				print("  round %d PLAYER %s wait" % [int(loop.get("turn", 1)), id])
+				loop = waited
+			"ai_resolving":
+				var before := _roster(loop)
+				var round_number := int(loop.get("turn", 1))
+				var actor := str(Loop.summary(loop).get("current_actor_id", ""))
+				var stepped := Loop.step_ai_turn(loop, rng)
+				if stepped == loop:
+					print("R14_REMAKE stalled at %s" % actor)
+					break
+				var action: Dictionary = stepped.get("last_ai_action", {})
+				if action != loop.get("last_ai_action", {}):
+					var decision: Dictionary = action.get("ai_decision", {})
+					var friendly := str(Loop._unit(loop, str(action.get("actor_id", actor))).get("battle_actor_role", "")) == Loop.ROLE_FRIENDLY
+					var navigation: Dictionary = decision.get("target_selection", {})
+					print("  round %d AI %s kind=%s target=%s skill=%s wait_reason=%s nav=%s/%s%s decision=%s | %s" % [round_number, str(action.get("actor_id", actor)), str(action.get("kind", "")), str(action.get("target_id", "")), str(action.get("skill_id", action.get("magic_id", ""))), str(action.get("wait_reason", "")), str(navigation.get("reason", "")), str(navigation.get("wait_remaining", "")), (" filters=%s" % JSON.stringify(decision.get("candidate_filters", {}))) if friendly else "", (JSON.stringify(decision) if str(action.get("actor_id", actor)) == "actor064_1" else JSON.stringify(decision).left(120)), _diff(before, _roster(stepped))])
+				loop = stepped
+			_:
+				# scene phase (cutscene / result page): let the scene run it, then take the loop back
+				scene.play_loop = loop
+				scene._sync_from_play_loop()
+				scene.set_process(true)
+				for _frame in range(600):
+					await process_frame
+					if str(scene.play_loop.get("interaction", "")) in ["action_menu", "ai_resolving", "battle_result"]:
+						break
+				scene.set_process(false)
+				loop = scene.play_loop
+				print("  scene phase -> interaction=%s" % str(loop.get("interaction", "")))
+				if str(loop.get("interaction", "")) not in ["action_menu", "ai_resolving", "battle_result"]:
+					break
+	for failure in failures:
+		push_error(failure)
+	quit(0)

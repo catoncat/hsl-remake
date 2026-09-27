@@ -1,0 +1,80 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 51,
+  "battle": {
+    "id": "battle_051_cannon_fodder",
+    "title": "棄卒 · 死守與撤離",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "hold",
+    "result_labels": {
+      "win_0": "棄卒 · 敵軍已清除",
+      "win_1": "棄卒 · 撤離成功",
+      "fail_0": "棄卒 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 12,
+      "players": 1
+    },
+    "derive_escape_zone": true,
+    "unresolved_semantics": [
+      "WINFAIL051: events 0/1 keep three Enemy021 and two Enemy026 on the field by inserting at the gate (267,209) until round 6 deletes them; event 2 (round 4) speaks the waiting lines; event 3 (round 6) walks the messenger in, sends one 026 and one 021 off through the gate and arms both win statuses (enemy clear / 雷歐納德 arrives at the gate cell). The round mapping (counter starts at 1, +1 per queue wrap, actCheckRoundNumber holds from round num) and the scan cadence (after every completed action, before the queue advances, so a round-N event follows round N's first action) are static-derived (original_round_display.md); insertion pacing and walk paths are remake pacing, interpreted by WinfailScenarioRules like every other level.",
+      "The messenger object obj_Story_Level51_Object1 (actChangePrevInsertObjectID 10000) speaks message 368; its speaker label 拉爾斯帝國兵 (305) and portrait row 021 are remake labels (provisional)."
+    ]
+  },
+  "story_scene": {
+    "id": "story_051_cannon_fodder_opening",
+    "title": "棄卒（開場預覽）",
+    "player_token": "SID_PLAYER0",
+    "battle_opening_preview": true,
+    "end_card": {
+      "title": "棄卒",
+      "hint": "第一戰由 battle_051.json 正式重製；本預覽只到首次控制"
+    },
+    "notes": [
+      "STORY051: 雷歐納德 walks 96 px forward, the two soldiers and 雷歐納德 exchange six lines, the 021 line 1101, 雷歐納德's dead message 304, section title WORD051, fail status 0 and event statuses 0-3."
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "021",
+      "023",
+      "024",
+      "026"
+    ],
+    "speakers": [
+      "001",
+      "021",
+      "023",
+      "024"
+    ]
+  },
+  "speakers": {
+    "SID_PLAYER0": "0",
+    "SID_ENEMY021": "305",
+    "SID_ENEMY023": "376",
+    "SID_ENEMY024": "377",
+    "10000": "305",
+    "0": "0"
+  },
+  "speaker_policy": {
+    "SID_PLAYER0": "EXTRAS.H #define SID_PLAYER0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_ENEMY021": "PLAYERS.TXT character 21 name field is 306 (???); 305 拉爾斯帝國兵 is the remake speaker label, provisional",
+    "SID_ENEMY023": "PLAYERS.TXT character 23 name field is 306 (???); 376 一般兵 is the remake speaker label, provisional",
+    "SID_ENEMY024": "PLAYERS.TXT character 24 name field is 306 (???); 377 重裝兵 is the remake speaker label, provisional",
+    "10000": "WINFAIL051 event 3 messenger: obj_Story_Level51_Object1 (Enemy021 shapes) renamed by actChangePrevInsertObjectID 10000 before actMessage 10000,1,368; 305 拉爾斯帝國兵 is the same remake label as SID_ENEMY021, provisional",
+    "0": "WINFAIL051 fail 0 board label `message = 0,122`: numeric player id 0 = SID_PLAYER0 = controlled slot 0 (EXTRAS.H), resource.h 0 = 雷歐納德 (resource-derived)"
+  },
+  "sweep_fixture": {
+    "mode": "clear",
+    "advance_turn": 6,
+    "note": "WINFAIL051 event 3 arms both win statuses at round 6; advance that phase (messenger and departures) before the artificial clear."
+  },
+  "map_objects": {
+    "layer_overrides": {
+      "8": "foreground",
+      "13": "foreground"
+    },
+    "evidence": "runtime-measured: the two bridge rails 橋02 (record 8, bar004b) / 橋01 (record 13, bar004a) draw in front of the actors in the original upper-formation frames p1_route_upper_formation_11/12 (docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.json; calibrations kept in content/imported/hsl/chapter01/map_object_alignment.json); the generic obj-field reading (planeObject1, no collide box) would put them under the actors"
+  }
+}

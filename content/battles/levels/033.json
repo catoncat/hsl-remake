@@ -1,0 +1,121 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 33,
+  "battle": {
+    "id": "battle_033_level33",
+    "title": "黃昏之丘　陰 · 不死軍團",
+    "initial_focus_unit_id": "tina",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "黃昏之丘　陰 · 敵軍已清除",
+      "fail_0": "黃昏之丘　陰 · 緹娜 陣亡"
+    },
+    "expected": {
+      "units": 15,
+      "players": 4
+    },
+    "unresolved_semantics": [
+      "STORY033 opens 緹娜、琥、漢克斯、雪拉 against the source undead field; later winfail actions preserve the source dialogue and item-252 recovery request for 席德爾.",
+      "WINFAIL033 returns through the source big-map walk target [31,32]; town/world-map state is handled by the shared hand-off path.",
+      "Enemy undead presentation and scripted recovery timing remain provisional beyond the resource-derived roster and token order."
+    ]
+  },
+  "story_scene": {
+    "id": "story_033_dusk_hill_opening",
+    "title": "黃昏之丘　陰（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      }
+    },
+    "end_card": {
+      "title": "黃昏之丘　陰",
+      "hint": "戰鬥部分（level 33）尚未重製　　空格／點擊：回到大地圖（黃昏之丘　陰）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "shape_of_its_own",
+    "notes": [
+      "the four controlled slots (緹娜 leads; no 雷歐納德) and the 056 / 049 / 033 / 034 / 035 undead have no battle scenario yet (WINFAIL033 is an escape to the south edge); the preview shows the EVEF placements and STORY033 walks only",
+      "actSetPlayerUndead SID_ENEMY056 is recorded, not applied"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "002",
+      "003",
+      "004",
+      "005",
+      "033",
+      "034",
+      "035",
+      "049",
+      "056"
+    ],
+    "speakers": [
+      "002",
+      "003",
+      "004",
+      "005",
+      "056"
+    ]
+  },
+  "speakers": {
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_ENEMY056": "652"
+  },
+  "speaker_policy": {
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_ENEMY056": "PLAYERS.TXT character 56 name field = 652 席德爾 (resource-derived name)"
+  },
+  "sweep_fixture": {
+    "mode": "status",
+    "players": "defeat",
+    "event_statuses": [
+      4
+    ],
+    "note": "WINFAIL033 uses the same player-count gate as 031; its big-map walk has no windowed consumer in the sweep."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 33 (黃昏之丘 陰, point 33): its obs 地圖管理員 names Level32.SHP (aliased). 緹娜's group",
+      "(琥 / 漢克斯 / 雪拉) walks in from the north, 席德爾 056 with 049 / 033 / 034 / 035 undead",
+      "meets them; the script marks the south-edge escape row. The winfail win section has no",
+      "next level (actSetBMWalkToPoint 31,32).",
+      "actPlayMusic,8 opens on track 8; actPlayLevelMusic mid-script resolves level 33",
+      "to track 18 (0x477b44)."
+    ],
+    "cast": [
+      "Level 33: 緹娜's group (琥 / 漢克斯 / 雪拉) against 席德爾 056 with 049 / 033 / 034 / 035 undead."
+    ],
+    "speakers": [
+      "Level 33 (STORY033 / WINFAIL033): 緹娜's group (琥, 漢克斯, 雪拉) walks in from the north, 席德爾 056 with 049 / 033 / 034 / 035 undead speaks."
+    ]
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 32,
+  "battle": {
+    "id": "battle_032_level32",
+    "title": "拉格納沼地 · 毒霧中的戰鬥",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "拉格納沼地 · 敵軍已清除",
+      "fail_0": "拉格納沼地 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 23,
+      "players": 4
+    },
+    "unresolved_semantics": [
+      "STORY032 opens 雷歐納德、雷特、嚎 against the 023/027/044 field; 咕嚕 008 is an EVEF 有才產生 install fielded only when the campaign carry holds the member.",
+      "WINFAIL032 applies 傲 item 252 recovery and the serial-bounded poison-gas object installation. World coordinates are preserved as presentation requests; serial cursor behavior is the provisional remake read documented in original_use_item_no_attack.md.",
+      "The win hand-off uses source big-map target [33,34]; gas object collision and native wait timing remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_032_ragna_marsh_opening",
+    "title": "拉格納沼地（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "拉格納沼地",
+      "hint": "戰鬥部分（level 32）尚未重製　　空格／點擊：回到大地圖（拉格納沼地）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "shape_of_its_own",
+    "notes": [
+      "the three (four with 咕嚕) controlled slots and the 023 / 044 / 027 Wosfita force have no battle scenario yet (WINFAIL032 brings 傲 055 at round 10 and the 噴人沼氣 poison gas belongs to the battle); the preview shows the EVEF placements and STORY032 displacement walks only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "006",
+      "007",
+      "008",
+      "023",
+      "027",
+      "044",
+      "049",
+      "055"
+    ],
+    "speakers": [
+      "001",
+      "006",
+      "007",
+      "023",
+      "027",
+      "044",
+      "055"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_ENEMY023": "376",
+    "SID_ENEMY044": "1627",
+    "SID_ENEMY027": "306",
+    "SID_ENEMY055": "651"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_ENEMY023": "PLAYERS.TXT character 23 name field is 306 (???); 376 一般兵 is the same remake label as level 51, provisional",
+    "SID_ENEMY044": "PLAYERS.TXT character 44 name field is 306 (???), job_show_name 1627 沃斯菲塔弓兵 is the remake speaker label, provisional",
+    "SID_ENEMY027": "PLAYERS.TXT character 27 name field = 306 (???); kept as the original unnamed label",
+    "SID_ENEMY055": "PLAYERS.TXT character 55 name field = 651 傲 (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 32 (拉格納沼地, point 32): its obs 地圖管理員 names Level33.SHP (the seed aliases it,",
+      "the WRD grid matches). 雷歐納德's group walks in from the north, ten 023, six 044 and",
+      "three 027 come from the west and speak; 咕嚕 is a conditional install. The winfail win",
+      "section has no next level (actSetBMWalkToPoint 33,34).",
+      "actPlayLevelMusic first: table 0x477b44 gives level 32 track 19, the first battle's",
+      "track."
+    ],
+    "cast": [
+      "Level 32: 雷歐納德's group against Wosfita soldiers 023 / archers 044 / mages 027; WINFAIL032",
+      "brings 傲 055 with 049 riders."
+    ],
+    "speakers": [
+      "Level 32 (STORY032 / WINFAIL032): 雷歐納德's group walks in from the north, Wosfita soldiers 023 / archers 044 / mages 027 come from the west and speak; WINFAIL032 brings 傲 055."
+    ]
+  }
+}

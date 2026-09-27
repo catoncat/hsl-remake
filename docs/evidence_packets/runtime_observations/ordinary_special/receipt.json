@@ -1,0 +1,1176 @@
+{
+  "fixture": true,
+  "native_execution": false,
+  "real_control_events": true,
+  "normal_clock": 1.0,
+  "overrides": "Three source-rendered actors; explicit positions, speeds, HP500 (1HP lethal targets), source-compatible growth and inventory fixture6/7/216. Actual WRD retained. Ordinary accuracy100 and controlled effective counter/critical rates0/100 for reproducible branch observation; equipment routes use the actual refreshed rates. Special hit100 in success routes. Critical kill starts at99EXP and chain1; final kill after report, no reinforcements. No RNG replacement, direct result assignment or clock acceleration. Default first-battle values and grants are unchanged.",
+  "screen": 1,
+  "window_position": "(3260, 622)",
+  "window_size": "(640, 480)",
+  "schema": "godot_ordinary_special_review.v1",
+  "routes": [
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 482,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 500,
+        "max_mp": 0.0,
+        "mp": 0.0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "cues": [
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        },
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        }
+      ],
+      "exp": 18,
+      "level": 1.0,
+      "mode": "ordinary",
+      "next_actor": "leonard",
+      "observed": {
+        "experience": true,
+        "primary-impact": true,
+        "primary-windup": true
+      },
+      "outcome": "",
+      "receipt": {
+        "actual_damage": 32,
+        "attacker_id": "leonard",
+        "counter": {},
+        "critical": true,
+        "critical_rate": 100,
+        "critical_roll": 14,
+        "damage": 32,
+        "defender_hp_after": 468,
+        "defender_hp_before": 500,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 18,
+          "exp_after": 18,
+          "exp_before": 0,
+          "gained": 18,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 32,
+          "draws": [
+            {
+              "bound": 16,
+              "value": 4
+            },
+            {
+              "bound": 6,
+              "value": 2
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 18,
+          "source": "0x40a5d0",
+          "subtotal": 20,
+          "target_level": 1
+        },
+        "hit": true,
+        "hit_rate": 100,
+        "hit_roll": 76,
+        "native_contribution": 32,
+        "queued_damage": 20,
+        "sequence": 1,
+        "stamina_gain": {
+          "attacker": {
+            "after": 23,
+            "before": 20,
+            "blocked": false,
+            "delta": 3,
+            "doubled": false,
+            "unit_id": "leonard"
+          },
+          "base_gain": 3,
+          "defeated": false,
+          "defender": {
+            "after": 6,
+            "before": 0,
+            "blocked": false,
+            "delta": 6,
+            "doubled": false,
+            "unit_id": "enemy021_1"
+          },
+          "evidence_tier": "static-derived",
+          "heavy_hit": false,
+          "level_penalty": false,
+          "ok": true,
+          "source_address": "0x40e590"
+        }
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 31,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 33,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "cues": [
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        }
+      ],
+      "exp": 30,
+      "level": 2.0,
+      "mode": "critical_kill",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "dialogue": true,
+        "experience": true,
+        "gold": true,
+        "growth": true,
+        "kill": true,
+        "primary-impact": true,
+        "primary-windup": true
+      },
+      "outcome": "",
+      "receipt": {
+        "actual_damage": 1,
+        "attacker_id": "leonard",
+        "counter": {},
+        "critical": true,
+        "critical_rate": 100,
+        "critical_roll": 17,
+        "damage": 28,
+        "defender_hp_after": 0,
+        "defender_hp_before": 1,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 31,
+          "exp_after": 30,
+          "exp_before": 99,
+          "gained": 31,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 1,
+          "draws": [
+            {
+              "bound": 0,
+              "value": 0
+            },
+            {
+              "bound": 7,
+              "value": 4
+            }
+          ],
+          "kill_chain_before": 1,
+          "kill_exp": 20,
+          "kill_multiplier": 150,
+          "kill_word_after": 65538,
+          "killed": true,
+          "kills_added": 1,
+          "points": 31,
+          "source": "0x40a5d0",
+          "subtotal": 25,
+          "target_level": 1
+        },
+        "hit": true,
+        "hit_rate": 100,
+        "hit_roll": 44,
+        "native_contribution": 1,
+        "queued_damage": 15,
+        "sequence": 1,
+        "stamina_gain": {
+          "attacker": {
+            "after": 24,
+            "before": 20,
+            "blocked": false,
+            "delta": 4,
+            "doubled": false,
+            "unit_id": "leonard"
+          },
+          "base_gain": 4,
+          "defeated": true,
+          "defender": {
+            "after": 8,
+            "before": 0,
+            "blocked": false,
+            "delta": 8,
+            "doubled": false,
+            "unit_id": "enemy021_1"
+          },
+          "evidence_tier": "static-derived",
+          "heavy_hit": false,
+          "level_penalty": false,
+          "ok": true,
+          "source_address": "0x40e590"
+        }
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/shared/interface_audio/level_up.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 480,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 500,
+        "max_mp": 0.0,
+        "mp": 0.0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "cues": [
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        },
+        {
+          "counter": true,
+          "phase": "release"
+        },
+        {
+          "counter": true,
+          "phase": "impact"
+        }
+      ],
+      "exp": 8,
+      "level": 1.0,
+      "mode": "counter",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "counter-impact": true,
+        "counter-windup": true,
+        "experience": true,
+        "primary-impact": true,
+        "primary-windup": true
+      },
+      "outcome": "",
+      "receipt": {
+        "actual_damage": 15,
+        "attacker_id": "leonard",
+        "counter": {
+          "actual_damage": 20,
+          "attacker_id": "enemy021_1",
+          "critical": true,
+          "critical_rate": 100,
+          "critical_roll": 3,
+          "damage": 20,
+          "defender_hp_after": 480,
+          "defender_hp_before": 500,
+          "defender_id": "leonard",
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 20,
+            "draws": [
+              {
+                "bound": 10,
+                "value": 1
+              },
+              {
+                "bound": 3,
+                "value": 2
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 9,
+            "source": "0x40a5d0",
+            "subtotal": 11,
+            "target_level": 1
+          },
+          "hit": true,
+          "hit_rate": 100,
+          "hit_roll": 36,
+          "native_contribution": 20,
+          "queued_damage": 13,
+          "stamina_gain": {
+            "attacker": {
+              "after": 9,
+              "before": 6,
+              "blocked": false,
+              "delta": 3,
+              "doubled": false,
+              "unit_id": "enemy021_1"
+            },
+            "base_gain": 3,
+            "defeated": false,
+            "defender": {
+              "after": 29,
+              "before": 23,
+              "blocked": false,
+              "delta": 6,
+              "doubled": false,
+              "unit_id": "leonard"
+            },
+            "evidence_tier": "static-derived",
+            "heavy_hit": false,
+            "level_penalty": false,
+            "ok": true,
+            "source_address": "0x40e590"
+          }
+        },
+        "critical": false,
+        "critical_rate": 0,
+        "critical_roll": 84,
+        "damage": 15,
+        "defender_hp_after": 485,
+        "defender_hp_before": 500,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 8,
+          "exp_after": 8,
+          "exp_before": 0,
+          "gained": 8,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 15,
+          "draws": [
+            {
+              "bound": 7,
+              "value": 2
+            },
+            {
+              "bound": 3,
+              "value": 2
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 8,
+          "source": "0x40a5d0",
+          "subtotal": 10,
+          "target_level": 1
+        },
+        "hit": true,
+        "hit_rate": 100,
+        "hit_roll": 88,
+        "native_contribution": 15,
+        "queued_damage": 15,
+        "sequence": 1,
+        "stamina_gain": {
+          "attacker": {
+            "after": 23,
+            "before": 20,
+            "blocked": false,
+            "delta": 3,
+            "doubled": false,
+            "unit_id": "leonard"
+          },
+          "base_gain": 3,
+          "defeated": false,
+          "defender": {
+            "after": 6,
+            "before": 0,
+            "blocked": false,
+            "delta": 6,
+            "doubled": false,
+            "unit_id": "enemy021_1"
+          },
+          "evidence_tier": "static-derived",
+          "heavy_hit": false,
+          "level_penalty": false,
+          "ok": true,
+          "source_address": "0x40e590"
+        }
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          7,
+          216,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "cues": [
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        }
+      ],
+      "exp": 45,
+      "level": 1.0,
+      "mode": "elemental_equipment",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience": true,
+        "primary-impact": true,
+        "primary-windup": true
+      },
+      "outcome": "",
+      "receipt": {
+        "actual_damage": 79,
+        "attacker_id": "leonard",
+        "counter": {},
+        "critical": false,
+        "critical_rate": 14,
+        "critical_roll": 77,
+        "damage": 79,
+        "defender_hp_after": 421,
+        "defender_hp_before": 500,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 45,
+          "exp_after": 45,
+          "exp_before": 0,
+          "gained": 45,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 79,
+          "draws": [
+            {
+              "bound": 39,
+              "value": 13
+            },
+            {
+              "bound": 16,
+              "value": 10
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 45,
+          "source": "0x40a5d0",
+          "subtotal": 55,
+          "target_level": 1
+        },
+        "hit": true,
+        "hit_rate": 96,
+        "hit_roll": 85,
+        "native_contribution": 79,
+        "queued_damage": 79,
+        "sequence": 1,
+        "stamina_gain": {
+          "attacker": {
+            "after": 23,
+            "before": 20,
+            "blocked": false,
+            "delta": 3,
+            "doubled": false,
+            "unit_id": "leonard"
+          },
+          "base_gain": 3,
+          "defeated": false,
+          "defender": {
+            "after": 6,
+            "before": 0,
+            "blocked": false,
+            "delta": 6,
+            "doubled": false,
+            "unit_id": "enemy021_1"
+          },
+          "evidence_tier": "static-derived",
+          "heavy_hit": false,
+          "level_penalty": false,
+          "ok": true,
+          "source_address": "0x40e590"
+        }
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          2,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "cues": [
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        }
+      ],
+      "exp": 60,
+      "level": 1.0,
+      "mode": "critical_equipment",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience": true,
+        "primary-impact": true,
+        "primary-windup": true
+      },
+      "outcome": "",
+      "receipt": {
+        "actual_damage": 92,
+        "attacker_id": "leonard",
+        "counter": {},
+        "critical": false,
+        "critical_rate": 40,
+        "critical_roll": 49,
+        "damage": 92,
+        "defender_hp_after": 408,
+        "defender_hp_before": 500,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 60,
+          "exp_after": 60,
+          "exp_before": 0,
+          "gained": 60,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 92,
+          "draws": [
+            {
+              "bound": 46,
+              "value": 20
+            },
+            {
+              "bound": 21,
+              "value": 10
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 60,
+          "source": "0x40a5d0",
+          "subtotal": 70,
+          "target_level": 1
+        },
+        "hit": true,
+        "hit_rate": 82,
+        "hit_roll": 71,
+        "native_contribution": 92,
+        "queued_damage": 92,
+        "sequence": 1,
+        "stamina_gain": {
+          "attacker": {
+            "after": 23,
+            "before": 20,
+            "blocked": false,
+            "delta": 3,
+            "doubled": false,
+            "unit_id": "leonard"
+          },
+          "base_gain": 3,
+          "defeated": false,
+          "defender": {
+            "after": 6,
+            "before": 0,
+            "blocked": false,
+            "delta": 6,
+            "doubled": false,
+            "unit_id": "enemy021_1"
+          },
+          "evidence_tier": "static-derived",
+          "heavy_hit": false,
+          "level_penalty": false,
+          "ok": true,
+          "source_address": "0x40e590"
+        }
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 500,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 500,
+        "max_mp": 0.0,
+        "mp": 0.0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "cues": [
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        }
+      ],
+      "exp": 45,
+      "level": 1.0,
+      "mode": "special",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience": true,
+        "primary-impact": true,
+        "primary-windup": true
+      },
+      "outcome": "",
+      "receipt": {
+        "actual_damage": 54,
+        "attacker_id": "leonard",
+        "damage": 54,
+        "defender_hp_after": 446,
+        "defender_hp_before": 500,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 45,
+          "exp_after": 45,
+          "exp_before": 0,
+          "gained": 45,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 54,
+          "draws": [
+            {
+              "bound": 27,
+              "value": 16
+            },
+            {
+              "bound": 13,
+              "value": 1
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 45,
+          "source": "0x40a5d0",
+          "subtotal": 46,
+          "target_level": 1
+        },
+        "hit": true,
+        "hit_rate": 100,
+        "hit_roll": 50,
+        "native_contribution": 54,
+        "native_damage_roll": {
+          "hit_bonus_after": 0,
+          "hit_check_passed": true,
+          "hit_rate": 100,
+          "hit_roll": 50,
+          "sampled": 45,
+          "value": 54
+        },
+        "resource_payment": {
+          "after": 0,
+          "amount": 20,
+          "before": 20,
+          "native_affordable": true,
+          "native_required": 20,
+          "ok": true,
+          "resource": "stamina"
+        },
+        "sequence": 1,
+        "skill_id": "special:magicOTHER:magicCode01",
+        "skill_name": "氣刃斬"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/shared/first_skill/attack.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 500,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 500,
+        "max_mp": 0.0,
+        "mp": 0.0,
+        "status_counters": {
+          "no_magic": 1,
+          "poison": 0.0
+        },
+        "status_flags": 2
+      },
+      "cues": [
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        }
+      ],
+      "exp": 38,
+      "level": 1.0,
+      "mode": "special_silenced",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience": true,
+        "primary-impact": true,
+        "primary-windup": true
+      },
+      "outcome": "",
+      "receipt": {
+        "actual_damage": 49,
+        "attacker_id": "leonard",
+        "damage": 49,
+        "defender_hp_after": 451,
+        "defender_hp_before": 500,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 38,
+          "exp_after": 38,
+          "exp_before": 0,
+          "gained": 38,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 49,
+          "draws": [
+            {
+              "bound": 24,
+              "value": 15
+            },
+            {
+              "bound": 12,
+              "value": 4
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 38,
+          "source": "0x40a5d0",
+          "subtotal": 42,
+          "target_level": 1
+        },
+        "hit": true,
+        "hit_rate": 100,
+        "hit_roll": 72,
+        "native_contribution": 49,
+        "native_damage_roll": {
+          "hit_bonus_after": 0,
+          "hit_check_passed": true,
+          "hit_rate": 100,
+          "hit_roll": 72,
+          "sampled": 40,
+          "value": 49
+        },
+        "resource_payment": {
+          "after": 0,
+          "amount": 20,
+          "before": 20,
+          "native_affordable": true,
+          "native_required": 20,
+          "ok": true,
+          "resource": "stamina"
+        },
+        "sequence": 1,
+        "skill_id": "special:magicOTHER:magicCode01",
+        "skill_name": "氣刃斬"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/shared/first_skill/attack.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 500,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 500,
+        "max_mp": 0.0,
+        "mp": 0.0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "cues": [],
+      "exp": 0.0,
+      "level": 1.0,
+      "mode": "insufficient",
+      "next_actor": "enemy023_1",
+      "observed": {},
+      "outcome": "",
+      "receipt": {},
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    },
+    {
+      "actor": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 31,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 31,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "cues": [
+        {
+          "counter": false,
+          "phase": "release"
+        },
+        {
+          "counter": false,
+          "phase": "impact"
+        }
+      ],
+      "exp": 32,
+      "level": 2.0,
+      "mode": "final_kill",
+      "next_actor": "",
+      "observed": {
+        "dialogue": true,
+        "experience": true,
+        "gold": true,
+        "kill": true,
+        "primary-impact": true,
+        "primary-windup": true
+      },
+      "outcome": "victory_optional_clear",
+      "receipt": {
+        "actual_damage": 1,
+        "attacker_id": "leonard",
+        "damage": 1,
+        "defender_hp_after": 0,
+        "defender_hp_before": 1,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 33,
+          "exp_after": 32,
+          "exp_before": 99,
+          "gained": 33,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 1,
+          "draws": [
+            {
+              "bound": 0,
+              "value": 0
+            },
+            {
+              "bound": 7,
+              "value": 3
+            }
+          ],
+          "kill_chain_before": 1,
+          "kill_exp": 20,
+          "kill_multiplier": 150,
+          "kill_word_after": 65538,
+          "killed": true,
+          "kills_added": 1,
+          "points": 33,
+          "source": "0x40a5d0",
+          "subtotal": 25,
+          "target_level": 1
+        },
+        "hit": true,
+        "hit_rate": 100,
+        "hit_roll": 21,
+        "native_contribution": 1,
+        "native_damage_roll": {
+          "hit_bonus_after": 0,
+          "hit_check_passed": true,
+          "hit_rate": 100,
+          "hit_roll": 21,
+          "sampled": 46,
+          "value": 55
+        },
+        "resource_payment": {
+          "after": 0,
+          "amount": 20,
+          "before": 20,
+          "native_affordable": true,
+          "native_required": 20,
+          "ok": true,
+          "resource": "stamina"
+        },
+        "sequence": 1,
+        "skill_id": "special:magicOTHER:magicCode01",
+        "skill_name": "氣刃斬"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/shared/first_skill/attack.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/shared/interface_audio/level_up.wav"
+      ],
+      "validation": "This named route completed with no failed assertions; process scope is listed separately."
+    }
+  ],
+  "images_sha256": {
+    "ordinary-next-round.png": "09077c34f55b6096c50d55508789e798bea61b3c4f22479e660fa13dc65f0917",
+    "critical_kill-primary-impact.png": "a48c6d520ba2724450f0d17396c2010c5e12104bae3a029839d40e91823b507d",
+    "critical_kill-experience.png": "22cb16c277995bb0194c4f27a06067b4f13368d1a4a6c71721d6ab15afd4da93",
+    "critical_kill-growth.png": "442a5e3a8db06841f53bf80a41754fbe72e187b17513a58860cdd85b653f838a",
+    "counter-counter-impact.png": "d2df3b2566d179ca5ee27b9a6e4d5a39f1fb16ccb551b1a02d011aab889f050c",
+    "elemental_equipment-equip-6.png": "b8b641ca399337479e000367019a1f16076b8c91a0fabd1fa36fd75f55f18a22",
+    "critical_equipment-equip-216.png": "1ed0a3ef62561f05f3914b6e151a1bc0d762e85e6a0369975f51ba71b508d267",
+    "special_silenced-primary-impact.png": "8cbdc9fbb37aae28cfe5ecfd9d929baa3aba8dfadd1b65a2db3c336345a95b16",
+    "insufficient-disabled.png": "0cea043f4b1455dda2b232416c4cb086fc3e0c195d835d08d9090b68769bfa7b",
+    "final_kill-restored-victory.png": "0eedf7552a6a9fdaebd3ccffbb4a8b67b70d66d266ea2d5a9275352b27431494",
+    "default-hold-result.png": "dc0eeb3030480714fe5e05b9f1c96e49a32cc611e714d04d4dde2feebab0ad2d",
+    "default-advance-result.png": "f8a4c9c9cddfa1875603d3715d81685742ccd16799b39b1f478a9fae32fe909c"
+  },
+  "validation_scope": "Nine named routes across sequential processes. Latest production change only adds the special release event and avoids ordinary attack sound duplication; all four affected special/gate/result routes reverified together.",
+  "attempts": [
+    {
+      "retained": [
+        "ordinary",
+        "critical_kill",
+        "counter"
+      ],
+      "process_exit": 1,
+      "later_failure": "Equipment legitimately missed; harness incorrectly expected an EXP event. Corrected to require no EXP on a miss; named earlier routes passed."
+    },
+    {
+      "retained": [
+        "elemental_equipment",
+        "critical_equipment"
+      ],
+      "process_exit": 1,
+      "later_failure": "Special played source sound without emitting its shared release event. Product event seam fixed and affected routes rerun; named equipment routes passed."
+    },
+    {
+      "retained": [
+        "special",
+        "special_silenced",
+        "insufficient",
+        "final_kill"
+      ],
+      "process_exit": 0,
+      "marker": "ORDINARY_SPECIAL_RENDER_PASS"
+    }
+  ]
+}

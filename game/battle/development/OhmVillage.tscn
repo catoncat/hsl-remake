@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://game/battle/scene/BattleSceneRuntime.tscn" id="1"]
+
+[node name="OhmVillage" instance=ExtResource("1")]
+scenario_path = "res://content/battles/ohm_village_battle.json"
+startup_mode = "product_opening"

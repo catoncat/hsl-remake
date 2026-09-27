@@ -1,0 +1,58 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://game/battle/scene/BattleSceneRuntime.gd" id="1_runtime"]
+
+[ext_resource type="Script" path="res://game/battle/scene/BattlePresentation.gd" id="2_battle_presentation"]
+
+[ext_resource type="Script" path="res://game/battle/scene/BattleCommandMenu.gd" id="3_command_menu"]
+
+[ext_resource type="Script" path="res://game/battle/scene/BattleDialogue.gd" id="5_dialogue"]
+
+[ext_resource type="Script" path="res://game/battle/runtime/RangeCellOverlay.gd" id="6_range_cells"]
+
+[node name="BattleSceneRuntime" type="Node2D"]
+script = ExtResource("1_runtime")
+
+[node name="BattleMusic" type="AudioStreamPlayer" parent="."]
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="MapBackdrop" type="Sprite2D" parent="World"]
+centered = false
+
+[node name="MapObjectsBack" type="Node2D" parent="World"]
+
+[node name="MoveOverlay" type="Node2D" parent="World"]
+visible = false
+script = ExtResource("6_range_cells")
+
+[node name="Actors" type="Node2D" parent="World"]
+
+[node name="MapObjectsForeground" type="Node2D" parent="World"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ActionMenu" type="Control" parent="UI"]
+script = ExtResource("3_command_menu")
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 280.0
+offset_top = 160.0
+offset_right = 400.0
+offset_bottom = 320.0
+
+[node name="OpeningOverlay" type="Control" parent="UI"]
+script = ExtResource("5_dialogue")
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 0.0
+offset_top = 320.0
+offset_right = 640.0
+offset_bottom = 480.0
+
+[node name="BattlePresentation" type="Node2D" parent="."]
+script = ExtResource("2_battle_presentation")

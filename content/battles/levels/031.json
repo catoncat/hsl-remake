@@ -1,0 +1,113 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 31,
+  "battle": {
+    "id": "battle_031_level31",
+    "title": "漆黑之森 · 黑暗騎士的伏擊",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "漆黑之森 · 通往王座廳",
+      "fail_0": "漆黑之森 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 10,
+      "players": 4
+    },
+    "unresolved_semantics": [
+      "STORY031 opens 雷歐納德、雷特、嚎 against 傲 and the 049 riders; 咕嚕 008 is an EVEF 有才產生 install fielded only when the campaign carry holds the member.",
+      "WINFAIL031 uses the source item 252 self-recovery action for 傲 when his HP condition fires; the dispatcher chain and actor inventory are static/resource-derived while item-252 native timing remains provisional.",
+      "The win hand-off is the source [31,71] event; the throne-hall scene remains a separate campaign route."
+    ]
+  },
+  "story_scene": {
+    "id": "story_031_dark_forest_opening",
+    "title": "漆黑之森（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "漆黑之森",
+      "hint": "戰鬥部分（level 31）尚未重製　　空格／點擊：回到大地圖（漆黑之森）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the three (four with 咕嚕) controlled slots, 傲 055 and the 049 riders have no battle scenario yet (WINFAIL031 is an escape to the north edge); the preview shows the EVEF placements and STORY031 displacement walks only",
+      "咕嚕(有才產生) speaks line 1912 in STORY031 but is a conditional install left out of the preview: the line plays with his name and portrait without a bound actor"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "006",
+      "007",
+      "008",
+      "049",
+      "055"
+    ],
+    "speakers": [
+      "001",
+      "006",
+      "007",
+      "008",
+      "055"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_ENEMY055": "651"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived)",
+    "SID_ENEMY055": "PLAYERS.TXT character 55 name field = 651 傲 (resource-derived name)",
+    "defNoOne": "narration token without a speaker; presented without name or portrait"
+  },
+  "sweep_fixture": {
+    "mode": "status",
+    "players": "defeat",
+    "event_statuses": [
+      4
+    ],
+    "note": "WINFAIL031 arms win_0 from event_4 after the controlled roster has departed."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 31 (漆黑之森, point 31, winfail031 -> 31,71): 雷歐納德, 雷特, 嚎 (and 咕嚕 when",
+      "present) talk in the dark forest, 傲 055 and the 049 riders come up from the south;",
+      "the script marks the north-edge escape row with show-position objects.",
+      "actPlayMusic,9 opens on track 9; actPlayLevelMusic mid-script",
+      "resolves level 31 to track 13 (0x477b44)."
+    ],
+    "cast": [
+      "Level 31: 雷歐納德 / 雷特 / 嚎 (咕嚕 008 is a conditional install but speaks) against 傲 055",
+      "and the 049 riders."
+    ],
+    "speakers": [
+      "Level 31 (STORY031 / WINFAIL031 -> 31,71): 雷歐納德, 雷特, 嚎 and 咕嚕 (conditional install, but he speaks 1912) talk, then 傲 055 attacks with 049 riders; one defNoOne narration line."
+    ]
+  }
+}

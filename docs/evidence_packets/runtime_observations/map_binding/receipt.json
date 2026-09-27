@@ -1,0 +1,834 @@
+{
+  "schema": "hsl_map_binding_review.v1",
+  "native_execution": false,
+  "routes": [
+    {
+      "level": 61,
+      "baseline_head": "1e8630867949a9a3c555fd279c096fbd618211ba",
+      "source_diff_sha256": "6f292d085a0dfb1ab452bb4daada3b0212d1d66d54d29d722ddebf32c68b308b",
+      "process": {
+        "command": [
+          "tools/godot.sh",
+          "--screen",
+          "0",
+          "--script",
+          "res://tests/capture_map_binding_review.gd",
+          "--",
+          "--level=61"
+        ],
+        "started_at": "2026-09-18T20:37:53.139155+00:00",
+        "finished_at": "2026-09-18T20:38:08.228874+00:00",
+        "exit_code": 0,
+        "unchanged_during_verification": true,
+        "log": "ignored/map-binding/render61.log",
+        "log_sha256": "0c1b39d6aaffd816318d03d652b208888503094e36d73ef44f272a825c25735e"
+      },
+      "render": {
+        "failures": [],
+        "isolated_user_directory": true,
+        "maps": [
+          {
+            "level": 61,
+            "map_member": "@:\\shape41\\level55.SHP",
+            "png_sha256": "3f50833dfff332ba86094606bcc3acf4807bc6c85e7abeee52b208b389b83018",
+            "rgba_sha256": "75a26f78958aca2aa37294b32adaa010d66568631995069ac5a406fd807a83a0",
+            "scene": "res://content/battles/story_061.json",
+            "size": [
+              640.0,
+              480.0
+            ],
+            "source_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6"
+          }
+        ],
+        "native_execution": false,
+        "pid": 6891,
+        "real_control_events": true,
+        "requested_level": 61,
+        "schema": "hsl_map_binding_render.v1",
+        "screen": 0,
+        "time_scale": 1.0
+      },
+      "completion": {
+        "case": "story_scene_061",
+        "elapsed_seconds": 11.029,
+        "handed_off": true,
+        "summary": {
+          "active": true,
+          "camera_records": [
+            {
+              "scroll": false,
+              "source_event_id": "story061_04_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "hanks"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_06_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "tina"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_08_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "hanks"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_10_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "leonard"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_12_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "hanks"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_13_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "tina"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_15_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "hanks"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_17_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "tina"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_18_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "hanks"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_20_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "hu"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_22_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "leonard"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story061_24_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "hu"
+            }
+          ],
+          "claim_limit": "Compiled STORY token order with explicit remake pacing; original delay units, walk paths, camera curves and handler side effects are not proven.",
+          "current_event_id": "story061_29_next_level_event",
+          "current_event_kind": "next_level_event",
+          "cutscene_key": "",
+          "cutscene_mode": false,
+          "cutscene_records": [],
+          "end_card_options": [],
+          "end_card_selected": 0,
+          "inserted_unit_ids": [],
+          "last_transition": {
+            "finished": false,
+            "from_event_id": "story061_28_town_exec_event",
+            "from_index": 28,
+            "schema": "hsl_scene_timeline_transition.v1",
+            "to_event_id": "story061_29_next_level_event",
+            "to_index": 29,
+            "trigger": "automatic_stage"
+          },
+          "motion_count": 1,
+          "next_level_event": [
+            3,
+            49
+          ],
+          "reinforcement_records": [],
+          "schema": "hsl_battle_opening_coordinator.v1",
+          "skipped_records": [],
+          "sound_records": [],
+          "source_script": "story061",
+          "status_tokens": {
+            "board_visible": false,
+            "dead_message": {},
+            "event": [],
+            "fail": [],
+            "win": []
+          },
+          "step_count": 29,
+          "story_finished": false,
+          "story_mode": true,
+          "story_records": [
+            {
+              "kind": "music_track",
+              "source_event_id": "story061_00_music_track",
+              "status": "remake_score_playing",
+              "track": "8"
+            },
+            {
+              "args": [
+                "3",
+                "bmpmHidden"
+              ],
+              "kind": "bigmap_track_flag_clear",
+              "params": {
+                "flag": "bmpmHidden",
+                "id": 3.0
+              },
+              "source_event_id": "story061_26_bigmap_track_flag_clear",
+              "status": "recorded_no_handler"
+            },
+            {
+              "args": [
+                "2"
+              ],
+              "kind": "bigmap_show_track_point",
+              "params": {
+                "id": 2.0
+              },
+              "source_event_id": "story061_27_bigmap_show_track_point",
+              "status": "recorded_no_handler"
+            },
+            {
+              "args": [
+                "town_歐姆村",
+                "10"
+              ],
+              "kind": "town_exec_event",
+              "params": {
+                "event": 10.0,
+                "town_id": "town_歐姆村"
+              },
+              "source_event_id": "story061_28_town_exec_event",
+              "status": "recorded_no_handler"
+            },
+            {
+              "kind": "next_level_event",
+              "next_level_event": [
+                3,
+                49
+              ],
+              "source_event_id": "story061_29_next_level_event"
+            }
+          ],
+          "wait_remaining": 7.96666666666588e-05
+        }
+      }
+    },
+    {
+      "level": 56,
+      "baseline_head": "1e8630867949a9a3c555fd279c096fbd618211ba",
+      "source_diff_sha256": "6f292d085a0dfb1ab452bb4daada3b0212d1d66d54d29d722ddebf32c68b308b",
+      "process": {
+        "command": [
+          "tools/godot.sh",
+          "--screen",
+          "0",
+          "--script",
+          "res://tests/capture_map_binding_review.gd",
+          "--",
+          "--level=56"
+        ],
+        "started_at": "2026-09-18T20:38:33.609904+00:00",
+        "finished_at": "2026-09-18T20:38:48.754682+00:00",
+        "exit_code": 0,
+        "unchanged_during_verification": true,
+        "log": "ignored/map-binding/render56.log",
+        "log_sha256": "7fdee0c01522ca86f8c3e31e18ca56e51a19c53b4d84858224f76f822d3c8f65"
+      },
+      "render": {
+        "failures": [],
+        "isolated_user_directory": true,
+        "maps": [
+          {
+            "level": 56,
+            "map_member": "@:\\shape41\\level56.SHP",
+            "png_sha256": "51efa178fb7b50ba51140e822280f8fe68d8732fa3392d98e2d4cb6594e7251b",
+            "rgba_sha256": "202e02a2376d75de0b1bee65ef9ac68477238de0f01b07398b5b29d83f4aa057",
+            "scene": "res://content/battles/story_056.json",
+            "size": [
+              640.0,
+              480.0
+            ],
+            "source_sha256": "e1ae4d91a0793eaea6e67822f947a95b8d72c0d6f10c01a3caed5c7726fce144"
+          }
+        ],
+        "native_execution": false,
+        "pid": 8866,
+        "real_control_events": true,
+        "requested_level": 56,
+        "schema": "hsl_map_binding_render.v1",
+        "screen": 0,
+        "time_scale": 1.0
+      },
+      "completion": {
+        "case": "story_scene_056",
+        "elapsed_seconds": 11.586,
+        "handed_off": true,
+        "summary": {
+          "active": true,
+          "camera_records": [
+            {
+              "scroll": false,
+              "source_event_id": "story056_06_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "leonard"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_08_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "tina"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_10_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "leonard"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_11_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "tina"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_12_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "leonard"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_13_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "tina"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_14_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "leonard"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_16_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "leonard"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_18_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "tina"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story056_20_dialogue_message_id",
+              "target": "(320.0, 240.0)",
+              "unit_id": "leonard"
+            }
+          ],
+          "claim_limit": "Compiled STORY token order with explicit remake pacing; original delay units, walk paths, camera curves and handler side effects are not proven.",
+          "current_event_id": "story056_25_actor_walk_and_delete_wait",
+          "current_event_kind": "actor_walk_and_delete_wait",
+          "cutscene_key": "",
+          "cutscene_mode": false,
+          "cutscene_records": [],
+          "end_card_options": [],
+          "end_card_selected": 0,
+          "inserted_unit_ids": [],
+          "last_transition": {
+            "finished": false,
+            "from_event_id": "story056_24_opening_delay",
+            "from_index": 24,
+            "schema": "hsl_scene_timeline_transition.v1",
+            "to_event_id": "story056_25_actor_walk_and_delete_wait",
+            "to_index": 25,
+            "trigger": "automatic_stage"
+          },
+          "motion_count": 4,
+          "next_level_event": [],
+          "reinforcement_records": [],
+          "schema": "hsl_battle_opening_coordinator.v1",
+          "skipped_records": [],
+          "sound_records": [],
+          "source_script": "story056",
+          "status_tokens": {
+            "board_visible": false,
+            "dead_message": {},
+            "event": [],
+            "fail": [],
+            "win": []
+          },
+          "step_count": 25,
+          "story_finished": false,
+          "story_mode": true,
+          "story_records": [
+            {
+              "kind": "music_track",
+              "source_event_id": "story056_00_music_track",
+              "status": "remake_score_playing",
+              "track": "8"
+            },
+            {
+              "anchor_world": "(304.0, 272.0)",
+              "kind": "story_object_insert",
+              "source_event_id": "story056_02_story_object_insert",
+              "spawned_unit_id": "tina",
+              "symbol": "obj_Story_Player2"
+            },
+            {
+              "kind": "actor_deleted",
+              "unit_id": "leonard"
+            },
+            {
+              "kind": "actor_deleted",
+              "unit_id": "hu"
+            },
+            {
+              "kind": "actor_deleted",
+              "unit_id": "tina"
+            }
+          ],
+          "wait_remaining": 0.0193045555555572
+        }
+      }
+    },
+    {
+      "level": 60,
+      "baseline_head": "1e8630867949a9a3c555fd279c096fbd618211ba",
+      "source_diff_sha256": "6f292d085a0dfb1ab452bb4daada3b0212d1d66d54d29d722ddebf32c68b308b",
+      "process": {
+        "command": [
+          "tools/godot.sh",
+          "--screen",
+          "0",
+          "--script",
+          "res://tests/capture_map_binding_review.gd",
+          "--",
+          "--level=60"
+        ],
+        "started_at": "2026-09-18T20:38:48.851625+00:00",
+        "finished_at": "2026-09-18T20:39:15.300137+00:00",
+        "exit_code": 0,
+        "unchanged_during_verification": true,
+        "log": "ignored/map-binding/render60.log",
+        "log_sha256": "3dfd55eadf78b068678995184589b65c969adf70e7a217f54624b192fe0af312"
+      },
+      "render": {
+        "failures": [],
+        "isolated_user_directory": true,
+        "maps": [
+          {
+            "level": 60,
+            "map_member": "@:\\shape41\\level58.SHP",
+            "png_sha256": "0509b443e5ebcc6f90b4ffa0779dc21da4093381d3cfb4e6cde8d9bd5054a3d8",
+            "rgba_sha256": "8a89d075f1545d166ad68a9afdec86f217ed802e7b84edecded7a09d65bbcdc0",
+            "scene": "res://content/battles/story_060.json",
+            "size": [
+              960.0,
+              720.0
+            ],
+            "source_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028"
+          }
+        ],
+        "native_execution": false,
+        "pid": 9330,
+        "real_control_events": true,
+        "requested_level": 60,
+        "schema": "hsl_map_binding_render.v1",
+        "screen": 0,
+        "time_scale": 1.0
+      },
+      "completion": {
+        "case": "story_scene_060",
+        "elapsed_seconds": 23.371,
+        "handed_off": true,
+        "summary": {
+          "active": true,
+          "camera_records": [
+            {
+              "scroll": false,
+              "source_event_id": "story060_00_background_object_target",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": true,
+              "source_event_id": "story060_03_camera_object_target",
+              "target": "(400.0, 480.0)",
+              "unit_id": "actor023_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_05_dialogue_message_id",
+              "target": "(320.0, 400.0)",
+              "unit_id": "actor023_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_06_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_07_dialogue_message_id",
+              "target": "(320.0, 400.0)",
+              "unit_id": "actor023_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_15_dialogue_message_id",
+              "target": "(320.0, 400.0)",
+              "unit_id": "actor023_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_17_dialogue_message_id",
+              "target": "(368.0, 304.0)",
+              "unit_id": "actor027_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_18_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_19_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_20_dialogue_message_id",
+              "target": "(320.0, 464.0)",
+              "unit_id": "actor029_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_21_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_22_dialogue_message_id",
+              "target": "(320.0, 464.0)",
+              "unit_id": "actor029_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_24_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_25_dialogue_message_id",
+              "target": "(320.0, 464.0)",
+              "unit_id": "actor029_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_26_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_27_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_28_dialogue_message_id",
+              "target": "(368.0, 480.0)",
+              "unit_id": "actor023_2"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_31_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_33_dialogue_message_id",
+              "target": "(320.0, 464.0)",
+              "unit_id": "actor029_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_34_dialogue_message_id",
+              "target": "(320.0, 272.0)",
+              "unit_id": "actor058_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_35_dialogue_message_id",
+              "target": "(320.0, 400.0)",
+              "unit_id": "actor023_1"
+            },
+            {
+              "scroll": false,
+              "source_event_id": "story060_38_dialogue_message_id",
+              "target": "(320.0, 480.0)",
+              "unit_id": "actor023_1"
+            }
+          ],
+          "claim_limit": "Compiled STORY token order with explicit remake pacing; original delay units, walk paths, camera curves and handler side effects are not proven.",
+          "current_event_id": "story060_40_actor_walk_and_delete_wait",
+          "current_event_kind": "actor_walk_and_delete_wait",
+          "cutscene_key": "",
+          "cutscene_mode": false,
+          "cutscene_records": [],
+          "end_card_options": [],
+          "end_card_selected": 0,
+          "inserted_unit_ids": [],
+          "last_transition": {
+            "finished": false,
+            "from_event_id": "story060_39_actor_walk_and_delete",
+            "from_index": 39,
+            "schema": "hsl_scene_timeline_transition.v1",
+            "to_event_id": "story060_40_actor_walk_and_delete_wait",
+            "to_index": 40,
+            "trigger": "automatic_stage"
+          },
+          "motion_count": 11,
+          "next_level_event": [],
+          "reinforcement_records": [],
+          "schema": "hsl_battle_opening_coordinator.v1",
+          "skipped_records": [],
+          "sound_records": [],
+          "source_script": "story060",
+          "status_tokens": {
+            "board_visible": false,
+            "dead_message": {},
+            "event": [],
+            "fail": [],
+            "win": []
+          },
+          "step_count": 40,
+          "story_finished": false,
+          "story_mode": true,
+          "story_records": [
+            {
+              "kind": "music_track",
+              "source_event_id": "story060_01_music_track",
+              "status": "remake_score_playing",
+              "track": "8"
+            },
+            {
+              "kind": "actor_deleted",
+              "unit_id": "actor023_2"
+            },
+            {
+              "kind": "actor_deleted",
+              "unit_id": "actor023_3"
+            }
+          ],
+          "wait_remaining": 0.617397875854472
+        }
+      }
+    }
+  ],
+  "frames": [
+    {
+      "level": 61,
+      "file": "061-00-camp-framed.png",
+      "sha256": "cdbf931a0d32b0cc9e03cbd5652d7d547f38ff238e941ce7039ef52a76619530",
+      "reviewed_at_original_size": true
+    },
+    {
+      "level": 61,
+      "file": "061-dialogue-847.png",
+      "sha256": "eb6202a0edee268da7919abe7c58a6f039376ae17e9e32e5714f53fd38450af0",
+      "reviewed_at_original_size": true
+    },
+    {
+      "level": 56,
+      "file": "056-00-camp-morning-framed.png",
+      "sha256": "cc0d7226756a6b64da521d44b2da07bb52197bb852e0a0372ea557e91e998208",
+      "reviewed_at_original_size": true
+    },
+    {
+      "level": 56,
+      "file": "056-dialogue-819.png",
+      "sha256": "454ccce6f1518f8691a6af5b218575e33b8a89cc5c31f94b10a7925c1047b238",
+      "reviewed_at_original_size": true
+    },
+    {
+      "level": 60,
+      "file": "060-00-throne-framed.png",
+      "sha256": "8e8ee8badd33333a33cb3429b8992b1d7338d0166ac91d59a2ca23ce1063abc1",
+      "reviewed_at_original_size": true
+    },
+    {
+      "level": 60,
+      "file": "060-scene-end-handoff.png",
+      "sha256": "14a5c9baeae2c225b2b7417391498671e5959a5d8cddd174774ce77810296572",
+      "reviewed_at_original_size": true
+    }
+  ],
+  "real_pak_rebuilds": [
+    {
+      "level": 55,
+      "output": "content/generated/hsl/chapter01/battle055_seed.json",
+      "original_map": {
+        "member": "@:\\shape41\\level55.SHP",
+        "package": "hsl.pak",
+        "byte_length": 619236,
+        "sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6"
+      },
+      "map_size": [
+        640,
+        480
+      ],
+      "grid_size": [
+        20,
+        15
+      ],
+      "pixel_file_sha256": "3f50833dfff332ba86094606bcc3acf4807bc6c85e7abeee52b208b389b83018",
+      "isolated_output": false
+    },
+    {
+      "level": 56,
+      "output": "content/generated/hsl/chapter01/battle056_seed.json",
+      "original_map": {
+        "member": "@:\\shape41\\level56.SHP",
+        "package": "hsl.pak",
+        "byte_length": 619236,
+        "sha256": "e1ae4d91a0793eaea6e67822f947a95b8d72c0d6f10c01a3caed5c7726fce144"
+      },
+      "map_size": [
+        640,
+        480
+      ],
+      "grid_size": [
+        20,
+        15
+      ],
+      "pixel_file_sha256": "51efa178fb7b50ba51140e822280f8fe68d8732fa3392d98e2d4cb6594e7251b",
+      "isolated_output": false
+    },
+    {
+      "level": 60,
+      "output": "content/generated/hsl/chapter01/battle060_seed.json",
+      "original_map": {
+        "member": "@:\\shape41\\level58.SHP",
+        "package": "hsl.pak",
+        "byte_length": 1389636,
+        "sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028"
+      },
+      "map_size": [
+        960,
+        720
+      ],
+      "grid_size": [
+        30,
+        22
+      ],
+      "pixel_file_sha256": "0509b443e5ebcc6f90b4ffa0779dc21da4093381d3cfb4e6cde8d9bd5054a3d8",
+      "isolated_output": false
+    },
+    {
+      "level": 61,
+      "output": "content/generated/hsl/chapter01/battle061_seed.json",
+      "original_map": {
+        "member": "@:\\shape41\\level55.SHP",
+        "package": "hsl.pak",
+        "byte_length": 619236,
+        "sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6"
+      },
+      "map_size": [
+        640,
+        480
+      ],
+      "grid_size": [
+        20,
+        15
+      ],
+      "pixel_file_sha256": "3f50833dfff332ba86094606bcc3acf4807bc6c85e7abeee52b208b389b83018",
+      "isolated_output": false
+    },
+    {
+      "level": 32,
+      "output": "ignored/map-binding/level32-seed.json",
+      "original_map": {
+        "member": "@:\\shape31\\level33.SHP",
+        "package": "hsl.pak",
+        "byte_length": 1678948,
+        "sha256": "ae7ef4c20541848f181dffb4562b41b72e72765df1f97abe2b7263375c40e8fa"
+      },
+      "map_size": [
+        704,
+        1184
+      ],
+      "grid_size": [
+        22,
+        37
+      ],
+      "pixel_file_sha256": "bfe93f650aa3c83c76d5b27fb3858a6e5befdc4d851a4c854e003b8c7bbdc8e5",
+      "isolated_output": true
+    },
+    {
+      "level": 33,
+      "output": "ignored/map-binding/level33-seed.json",
+      "original_map": {
+        "member": "@:\\shape31\\Level32.SHP",
+        "package": "hsl.pak",
+        "byte_length": 1852836,
+        "sha256": "6f8f58a942c635fba0ee227645db6dc04a49ad44994336264640f6329f7d8a9f"
+      },
+      "map_size": [
+        960,
+        960
+      ],
+      "grid_size": [
+        30,
+        30
+      ],
+      "pixel_file_sha256": "14ed9a54595ad011fe0cd2ea18d737dd6fc394a7a5f1bf943482ed7942505786",
+      "isolated_output": true
+    },
+    {
+      "level": 66,
+      "output": "ignored/map-binding/level66-seed.json",
+      "original_map": {
+        "member": "@:\\shape41\\level55.SHP",
+        "package": "hsl.pak",
+        "byte_length": 619236,
+        "sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6"
+      },
+      "map_size": [
+        640,
+        480
+      ],
+      "grid_size": [
+        20,
+        15
+      ],
+      "pixel_file_sha256": "4d3fb3658665772a2b5856424f02901c7213c25182c5d45f9802a7ba2ad7f048",
+      "isolated_output": true
+    }
+  ],
+  "limits": [
+    "The three rendered routes use existing original story configurations with isolated user directories; no story/camera rules are replaced.",
+    "55/56/60/61 were rebuilt to their product locations with no tracked data change; 32/33/66 outputs are isolated and do not create new chapter scenes.",
+    "Raw image comparison emits a repository-only Image.load_from_file export warning; product Runtime continues loading the imported Texture2D normally.",
+    "These receipts validate the remake integration, not original rendering timing or the unexecuted native fallback."
+  ]
+}

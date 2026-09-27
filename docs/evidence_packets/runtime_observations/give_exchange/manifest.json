@@ -1,0 +1,11 @@
+{
+  "schema": "hsl_give_render_review.v1",
+  "fixture": true,
+  "files": {
+    "give-target-choice.png": "85fa9d3aee4531ef968650e7f49421d895f229b048e414a6eb25e8274d3ee97c",
+    "give-two-items.png": "818c0ab47ef2924542228f6837d34fba295566787dcb595a4bc3353853accf6a",
+    "full-exchange-confirmation.png": "37c78cb6bcc990bb05eb3bdc86f8e60d944ec5290bda4f37c8e409661d342324",
+    "full-exchange-result.png": "0237dc76ca6830e7efaf191f71e74fb2c213419f2c8cd085c49dab5d87e72741",
+    "receipt.json": "102d5f6a02360adc5521d8493108394b546ecd0b1b171280b4346bf76fce18bf"
+  }
+}

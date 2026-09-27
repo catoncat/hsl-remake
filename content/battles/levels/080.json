@@ -1,0 +1,159 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 80,
+  "battle": {
+    "id": "battle_080_level80",
+    "title": "禁忌之魂 · 敵軍已清除",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "禁忌之魂 · 墳場地下通關",
+      "fail_0": "禁忌之魂 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 33,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY080 opens with the seven carried party members against the resource-derived Enemy033／034／035 field; the 咕嚕／克羅蒂 slots are EVEF 有才產生 installs fielded only when the campaign carry holds them.",
+      "EVEF record 45 is the 怨念體 Enemy068 (PLAYERS 68: pmEnemy, size_type 1, 1200 HP source, move 0, eight source spells) standing in its own SHAPE\\68-001 frame at (23,11); it is PlayLoop unit actor068_1 with a 3×3 footprint, and WINFAIL080 event 3 (actCheckEnemy 1,SID_ENEMY068) opens the four obj_Story_Level_ClearWall cells only when it falls. Its standing frame direction, cast pacing and the native AI scheduler are provisional.",
+      "WINFAIL080 is a scripted graveyard progression: sword-arrival events delete stand objects, grant items 112 and 15, then arm the win status; the remake preserves requests and coordinator order without claiming native object physics.",
+      "The source win advances to level 38 event 49 without a battle reward block; presentation pacing, object identity and the original scheduler remain provisional."
+    ],
+    "footprint_radius_overrides": {
+      "068": 1
+    }
+  },
+  "story_scene": {
+    "id": "story_080_graveyard_underground_opening",
+    "title": "禁忌之魂・墳場地下（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "禁忌之魂",
+      "hint": "戰鬥部分（level 80）尚未重製　　空格／點擊：回到大地圖（幽闇墳場）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party (咕嚕 and 克羅蒂 are conditional installs; 克羅蒂 speaks but is not placed) and the enemy roster have no battle scenario yet (chapter-3 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "the 068 怨念體 (Enemy068, SHAPE\\68-001.SHP without SHAPEDEF walk groups) stands in its own standing frame as a cast actor (actor068_1, the level-80 battle unit); winfail080 event 2 (its first attack, messages 2493-2495) and event 3 (its death: four obj_Story_Level_ClearWall inserts) run in the battle",
+      "winfail080 events 0 / 1 (arrival at (608,128) / (608,416): SWORD001, 白光圈 / 黑光圈, delete the 劍 + 光 stand objects, actGetItem 112 血祭 / 15 忌魂, defNoOne lines 2541 / 2542, win status once both are gone) belong to the not-yet-remade battle; skip_battle offers the win section's 38,gameBigMapLevel (its 白光圈 / 黑光圈 flashes are not played)"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "033",
+      "034",
+      "035",
+      "068"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "009"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-080.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-080.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-080.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-080.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-080.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-080.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-080.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-080.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-080.obs 克羅蒂(有才產生) (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence"
+  },
+  "sweep_fixture": {
+    "mode": "clear",
+    "arm_win_statuses": [
+      0
+    ],
+    "note": "WINFAIL080's victory is a pure scripted progression after the two object-arrival branches; the recorded win status is forced."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 80 (winfail038 -> 80,80; WORD080 禁忌之魂 / TABOO SOUL; its own 1280x960 shape31\\Level80.SHP):",
+      "the sealed vault under the 幽闇墳場 — 033 / 034 / 035 undead around seven 水晶 crystals, two 劍 blades",
+      "with 光 flashes (the 血祭 / 忌魂 dark weapons winfail080 events 0 / 1 pick up), the 068 怨念體 (standing",
+      "SHAPE\\68-001) and four treasure boxes; the party walks in from the west edge. winfail080 win (actTRUE:",
+      "both items taken) -> 38,gameBigMapLevel."
+    ],
+    "cast": [
+      "Level 80 (墳場 underground): 033 / 034 / 035 undead; the 068 怨念體 stands in SHAPE\\68-001 (no walk",
+      "group, one standing frame) as a PlayLoop enemy; 克羅蒂 / 咕嚕 are conditional installs."
+    ],
+    "speakers": [
+      "Level 80 (墳場 underground, winfail038 -> 80,80): 緹娜 / 克羅蒂 / 雷歐納德 speak; 克羅蒂 and 咕嚕 are conditional installs; the 068 怨念 never speaks; two defNoOne item lines."
+    ]
+  }
+}

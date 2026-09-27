@@ -1,0 +1,67 @@
+# 原 AI 自救检查与残血敌方机会
+
+> evidence: static-derived · status: live · functions: 0x40bf70, 0x40c110, 0x40c1d0, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x44fa80 · tools: hsltools/probes/ai_priority.py, run_ai_priority_tests.gd · updated: 2026-09-14
+
+Checked 2026-09-14，SR-037，基线 `304c5c2`。机器证据：[original_ai_priority.json](original_ai_priority.json)；原 EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。
+
+`tools/hsltools/probes/ai_priority.py` 在合成内存中执行未替换的原 x86 指令和 RNG，限定已读代码区间与16384条指令。146组包含 **98次正常返回、48次明确停止的 caller prefix**：敌方扫描60组、自身血量33组、背包选择5组正常返回；优先级48组只执行前两种检查。独立 Python 模型和 Godot 规则重放同样的实际 RNG 样本，核对输出与消耗。证据为 `static-derived`，不是 Wine 自然游玩、整场随机序列或完整 AI 等价。
+
+## 1. 先区分自救与进攻
+
+原 parser 把 `ai_check_dying` 写入 actor+0x1d4（`0x44c8f8..0x44c917`），`ai_check_hp` 写入+0x1d8（`0x44c926..0x44c942`）。当前66角色来源 profiles 已保留这两个明确声明，本批没有自行补默认倾向。
+
+`0x440db1..0x440e3d` 每次进入先抽 `rand(99)+1`。未尝试的自身HP检查先与+0x1d8比较，成功选择 mode2、登记attempt bit2；随后才轮到+0x1d4 的残血敌方检查，成功mode1、登记bit1。已尝试位跳过，失败检查另外抽一次99，包括当前支持范围的最后一个失败分支。48组覆盖不同倾向、尝试位和种子，保存当时的模式、位与下一随机样本。
+
+prefix 在 `0x441035` 的状态写入之前或 `0x440e3d` 的后续辅助检查之前停止，未执行完整dispatcher。全局对象尝试位不直接搬成第二份 Godot 战斗状态；当前选择调用仅使用局部变量。
+
+## 2. 自身低血量与背包顺序
+
+`0x40c110` 计算 `raw=floor(max_hp*(12+rand(18))/100)`，然后按以下路径形成自身门槛：raw<10时为`10+raw%10`，raw>160时为`160+raw%16`，其余保留raw。最终需要同时满足`max_hp-hp>=10`和`hp<=threshold`。它不是普通10～160夹紧，也不等于敌方扫描的公式。33组正常返回覆盖不足10缺血、上下界余数、健康与低血量。
+
+`0x40c1d0` 顺序扫描 actor+0x138 的八格库存，跳过0；ITEM记录+8的type必须为1，+0x2c的add_hp非零。返回第一件符合条件物品的槽号+1，不比较药效大小，不消费RNG。5组原返回检查空包、空槽、装备带HP加成却不是消耗品、大小药顺序和最后一格。
+
+原自救caller在`0x43fa29..0x43fac1`先检查自身血量，随后按类别循环尝试可用回复手段；普通类别命中`0x40c1d0`后在`0x4406d7`进入物品状态。当前只接入已注册回血药的自救，未注册的回复魔法／特殊技不会被AI创造出来。物品实际效果沿已有 `ItemUseRules.prepare` 和有序库存规则，本批未另执行原用药效果函数。
+
+## 3. 残血敌方扫描
+
+`0x40bf70` 依登记槽顺序扫描，第三参数为起始零基槽；返回槽+1，0表示未找到。调用者把上一次的返回值作为下一次起始槽，跳过已经尝试但无法攻击的对象。`0x43f994/0x43f9f6` 保留了这一继续扫描路径。
+
+与普通目标的圆形搜索不同，这里要求各轴`abs(delta)<=find_range*32`，即**包含边界的方形**。跳过null、自身及阵营掩码`0x870000`有交集的对象。每个符合空间条件的敌方抽一次`rand(18)`；`threshold=clamp(floor(max_hp*(12+rand(18))/100),10,80)`。10～80是**最终绝对HP门槛**，不是百分比。首个`hp<=threshold`并通过SID排除的对象返回，不按最低HP或距离再排序。
+
+SID排除在血量抽样之后；原函数本身没有removed或HP0过滤，`0x44fa80`在removed对象上返回-1。因此新增两组从removed对象开始且排除其原SID的样例，防止把目标函数的过滤直接抄到这里。Godot产品入口把死亡对象置空，受支持SID排除仍是既有安全组合；纯原函数保留原结果和抽样顺序。
+
+## 4. 当前实际接入
+
+`AIPriorityRules` 持有纯数值、顺序、倾向与扫描规则。PlayLoop先验证两个倾向、库存、注册药品效果、所有存活对象HP/maxHP及普通圆域、机会方域和呼叫对象的可用技能输入；错误发生在任何RNG、移动、广播、扣费或队列变化之前。HP输入目前限定到1000000以使原百分比乘法不溢出signed32。
+
+每次AI行动先保留原普通目标获取／呼叫提案，再在已有可执行动作中按自救、残血机会选择。回血与库存删除由玩家和AI共同调用 `_resolve_item_use`；只有同一PlayLoop提交，收据包含HP前后、物品槽和唯一sequence。玩家外层仍走普通Use行动出口，AI外层走一次 `step_ai_turn` 交接。毒伤和状态持续时间在回血之后处理一次，禁魔不阻止用药。给友军一份现有回复药后，该友军能在自己的实际行动中使用它；正常场景仍只恢复已登记的初始库存，没有给AI凭空添加药品。
+
+残血对象必须存在本回合合法的普通攻击或带Attack function的技能意图。被封闭或超出移动／施法能力的残血对象会继续扫描，不能压掉后续可攻击目标；失败后退回已准备好的普通目标／呼叫／合法追击。近战仍选择最低合法移动费用，遵守no_attack；魔法／特殊技由准备阶段保留的确切意图进入同一个 `_resolve_skill`。独立记录攻击型技能的施放位置，防止距离更近的纯施毒意图把真正伤害技能挤掉。
+
+本批的**重制组合边界**：无可用注册药品或没有合法伤害动作时跳过对应优先级；不执行原完整辅助、target-lock、等待与所有对象状态；不保证整回合RNG相同。原普通目标与后来选择的残血目标分别保存在收据，呼叫仍传播获取阶段目标。技能及位置评分、当前注册药品子集、死亡过滤和SID预排除均没有升级为原整体AI等价。
+
+## 5. 表现与验证
+
+原玩家用药文字移到共享 `BattlePresentation.show_item_use`，玩家／AI都按唯一收据显示绿色回血／解毒文字与原用药音效。AI正常演出期间保留输入屏蔽，直到反馈结束才显示下一角色菜单；重复收据不会重复文字或声音。现有显式快进也能结束这段反馈，但不再结算物品或队列。Scene和表现模块不保存新的战斗真相。
+
+`tests/run_ai_priority_tests.gd` 包含原结果逐项重放、玩家/AI相同物品收据、真实Give后友军自救、自救优先、药不足／健康不耗药、毒／禁魔收尾、残血近战与法术、方域边界、受阻目标继续扫描、no_attack、错误输入原子性及表现快进。旧长枪测试拆分普通目标与最终机会目标断言，继续要求原地二格攻击。完整门禁最终数量和退出码写入本批提交说明。
+
+内建屏正常时钟实际Wait控件验证见 [ai_priority/README.md](../runtime_observations/ai_priority/README.md)：自救HP4→44，显示+40HP；另一回合近战／魔法选残血敌人，结束后均交接指定可控角色。测试场景的HP、位置、队列、药品和026魔法倾向100是明确夹具，不改变正常第一战，不能作为原作自然玩法证据。
+
+## 6. 后续入口更正
+
+`0x40d4e0` 是 `ai_magic_multi_first`（parser `0x44c9c5..0x44c9e1` →+0x1f4）驱动的单体／范围优先选择：`rand(100)+1`，字段0时<=30返回1，非零时>30返回1。本包当时只读原字节；后续 [技能／站位包](original_ai_skills.md) 已完成64组正常返回并接入，不再把它称作低血量或治疗资格函数。
+
+`0x40c970` 处于 `0x40c770` 结尾，不能列为独立函数入口。后续已确认`0x40c9a0`选择范围中心，`0x40cca0`枚举移动施法格。`0x40c770`按function桶和MAGIC `use_ratio`试选技能；旧称ai_percent不对应源键，parser `0x44db40..0x44db5d`明确写入+0x28。桶3／4、单体／范围先后及距离末段已进入共同技能流程，完整地图／辅助筛选、目标锁定／wait_round、owner+0x12c和可行动状态仍待接续。PLAYERS原包差异、伤害／EXP、麻痺及原死亡全局清理仍保持边界。
+
+## 复跑
+
+```sh
+python3 tools/hsl.py check ai_priority
+python3 -m unittest tools.test_hsl_native_ai_priority_probe -v
+godot --headless --path . --script res://tests/run_ai_priority_tests.gd
+uv run --with unicorn==2.1.4 python3 tools/hsl.py generate ai_priority --exe "$HSL_ORIGINAL_DIR/hsl01.exe"
+tools/verify.sh
+```
+
+只有显式`--execute`重新执行原字节；`--write`必须同时实际执行。普通门禁检查保存的原结果、覆盖和独立重放，无EXE或Wine产品依赖。原始反汇编留在ignored，未加入tracked产品输入。

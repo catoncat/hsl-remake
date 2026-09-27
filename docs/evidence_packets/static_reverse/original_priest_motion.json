@@ -1,0 +1,247 @@
+{
+  "schema": "hsl_priest_motion_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "program": [
+    4,
+    192,
+    1048576,
+    65536,
+    0,
+    1,
+    18,
+    3,
+    64,
+    0,
+    65536,
+    1048576,
+    1,
+    15,
+    5,
+    0
+  ],
+  "sources": {
+    "programs": "e27783ef3148bad8523af95c7d111f1a3ed66c7c0844c7b7cfdabefb4ef9b4ea",
+    "header": "88959ec91256978d74b9b10138cb12d4505e54789c6e0cfc3d52af0cc38a97e6"
+  },
+  "directions": {
+    "64": [
+      0,
+      65536
+    ],
+    "192": [
+      0,
+      -65536
+    ]
+  },
+  "native": {
+    "states": [
+      {
+        "y": -16,
+        "speed": 983040,
+        "flags": 8192
+      },
+      {
+        "y": -31,
+        "speed": 917504,
+        "flags": 8192
+      },
+      {
+        "y": -45,
+        "speed": 851968,
+        "flags": 8192
+      },
+      {
+        "y": -58,
+        "speed": 786432,
+        "flags": 8192
+      },
+      {
+        "y": -70,
+        "speed": 720896,
+        "flags": 8192
+      },
+      {
+        "y": -81,
+        "speed": 655360,
+        "flags": 8192
+      },
+      {
+        "y": -91,
+        "speed": 589824,
+        "flags": 8192
+      },
+      {
+        "y": -100,
+        "speed": 524288,
+        "flags": 8192
+      },
+      {
+        "y": -108,
+        "speed": 458752,
+        "flags": 8192
+      },
+      {
+        "y": -115,
+        "speed": 393216,
+        "flags": 8192
+      },
+      {
+        "y": -121,
+        "speed": 327680,
+        "flags": 8192
+      },
+      {
+        "y": -126,
+        "speed": 262144,
+        "flags": 8192
+      },
+      {
+        "y": -130,
+        "speed": 196608,
+        "flags": 8192
+      },
+      {
+        "y": -133,
+        "speed": 131072,
+        "flags": 8192
+      },
+      {
+        "y": -135,
+        "speed": 65536,
+        "flags": 8192
+      },
+      {
+        "y": -136,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "y": -136,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "y": -136,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "y": -136,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "y": -136,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "y": -136,
+        "speed": 65536,
+        "flags": 16384
+      },
+      {
+        "y": -135,
+        "speed": 131072,
+        "flags": 16384
+      },
+      {
+        "y": -133,
+        "speed": 196608,
+        "flags": 16384
+      },
+      {
+        "y": -130,
+        "speed": 262144,
+        "flags": 16384
+      },
+      {
+        "y": -126,
+        "speed": 327680,
+        "flags": 16384
+      },
+      {
+        "y": -121,
+        "speed": 393216,
+        "flags": 16384
+      },
+      {
+        "y": -115,
+        "speed": 458752,
+        "flags": 16384
+      },
+      {
+        "y": -108,
+        "speed": 524288,
+        "flags": 16384
+      },
+      {
+        "y": -100,
+        "speed": 589824,
+        "flags": 16384
+      },
+      {
+        "y": -91,
+        "speed": 655360,
+        "flags": 16384
+      },
+      {
+        "y": -81,
+        "speed": 720896,
+        "flags": 16384
+      },
+      {
+        "y": -70,
+        "speed": 786432,
+        "flags": 16384
+      },
+      {
+        "y": -58,
+        "speed": 851968,
+        "flags": 16384
+      },
+      {
+        "y": -45,
+        "speed": 917504,
+        "flags": 16384
+      },
+      {
+        "y": -31,
+        "speed": 983040,
+        "flags": 16384
+      },
+      {
+        "y": -16,
+        "speed": 1048576,
+        "flags": 16384
+      },
+      {
+        "y": 0,
+        "speed": 1048576,
+        "flags": 16384
+      },
+      {
+        "y": 0,
+        "speed": 1048576,
+        "flags": 0
+      },
+      {
+        "y": 0,
+        "speed": 1048576,
+        "flags": 0
+      }
+    ],
+    "instructions": 4462,
+    "normal_return": false,
+    "dispatcher_stop": "0x4034c6",
+    "motion_stop": "0x4035eb"
+  },
+  "limits": [
+    "Synthetic excerpt of priest speed/stop/delays plus explicit aniOver; not original parser padding or full attack execution.",
+    "Each update executes dispatcher to common drawing tail, then an independent bounded movement prefix with original callees; no rendering stubs.",
+    "Only authored vertical angles64/192 and integer fixed-point speeds are enabled; general trig/fractional movement remains separate.",
+    "Source shape/flash order uses the existing ordinary-program proof; current renderer shot/impact/clock remain remake presentation choices."
+  ]
+}

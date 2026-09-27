@@ -1,0 +1,147 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 79,
+  "battle": {
+    "id": "battle_079_level79",
+    "title": "終焉 · 咕嚕最終型態",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "終焉 · 咕嚕最終型態戰勝",
+      "fail_0": "終焉 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 9,
+      "players": 8
+    },
+    "unresolved_semantics": [
+      "The final-chapter map is inherited from level 58 through the seed alias; no map texture is copied.",
+      "Random effect coordinates are deterministic presentation records only; native effect animation timing and double-page rendering remain presentation responsibilities.",
+      "Actor057 source weapon 53 retains its resource-derived range3CellCircle weapon and its normal target offsets."
+    ]
+  },
+  "story_scene": {
+    "id": "story_079_gulu_final_form_opening",
+    "title": "終焉・咕嚕最終型態（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "終焉",
+      "hint": "戰鬥部分（level 79）尚未重製　　空格／點擊：回到大地圖（克萊恩城）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the nine-slot party (咕嚕 008 is the boss 057 here and has no install; 克羅蒂 is placed) and the enemy roster have no battle scenario yet (chapter-3 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "actSetPlayerUndead SID_ENEMY057 is recorded, not applied; winfail079's win section (actSetDoublePageMode 1 / 0, obj_Effect_OtherQuake and nine actInsertRandomObject effect bursts from OBJ-ALL.H, actDarkScreen, messages 2392-2395, actSetNextPlayLevelEvent 90,998) belongs to the not-yet-remade battle; skip_battle offers its hand-off 90,998",
+      "actSetNextPlayLevelEvent 90,998: the PAK's level998 (obj-998.h obj_gameclear*, defProcClearBOSS / defProcClearShowPlayer / defProcClearShowWorkTeam with OVERBG01 / TITLE011 / WORKTEAM / OVER001-002) is the game-clear credits screen (resource-derived); no remake scene exists for it and the first argument 90 has no level or symbol in the PAK (unresolved), so the skip destination is not registered and the card keeps its plain return",
+      "actDeleteObject SID_ENEMY058 removes the elf king in the opening; the 白光 (MAGIC\\AIR16_01) / 白光2 (MAGIC\\BALL001) story objects are exported as sprites, their motion is a remake reading"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009",
+      "057",
+      "058"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "005",
+      "009",
+      "058"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY058": "657"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-079.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-079.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-079.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-079.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-079.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-079.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-079.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-079.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY058": "PLAYERS.TXT character 58 name field = 657 克里歐司 (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 79 (winfail078 event 2 -> 79,79; WORD079 終焉 / END): the throne hall — 咕嚕最終型態 057 (咕嚕",
+      "fused with the 魔神's remains) looms over the elf king 058; 克羅蒂 / 緹娜 / 雷歐納德 react, three 白光",
+      "shots (SHOOT008) and a 白光2 burst (BOMB0009) delete the king, 雪拉 cries 父親. winfail079 win",
+      "(actSetDoublePageMode, ten actInsertRandomObject effect bursts, actDarkScreen) -> 90,998 game clear."
+    ],
+    "cast": [
+      "Level 79 (咕嚕最終型態 057 with the elf king 058): the party of eight (咕嚕 is the boss)."
+    ],
+    "speakers": [
+      "Level 79 (咕嚕最終型態 057 with the elf king 058; winfail079 -> 90,998 game clear)."
+    ]
+  }
+}

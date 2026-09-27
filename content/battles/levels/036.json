@@ -1,0 +1,166 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 36,
+  "battle": {
+    "id": "battle_036_level36",
+    "title": "薩魯司海岸 · 克羅蒂的覺醒",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "薩魯司海岸 · 敵軍已清除",
+      "fail_0": "薩魯司海岸 · 雷歐納德 陣亡",
+      "fail_1": "薩魯司海岸 · 克羅蒂 陣亡"
+    },
+    "expected": {
+      "units": 17,
+      "players": 8
+    },
+    "treasure_exclusions": {
+      "24": "source placement is outside the 37x60 remake map; retain record/item evidence but do not create an unreachable chest"
+    },
+    "unresolved_semantics": [
+      "STORY036 opens the seven carried party members against 傲, three 049 and three 032 units; 咕嚕 008 is an EVEF 有才產生 install fielded only when the campaign carry holds the member, while 克羅蒂 009 is installed by WINFAIL036 event 1.",
+      "WINFAIL036 preserves the source item-252 recovery for 傲/克羅蒂 and the pmPlayerEnemy -> pmPlayer plus no-attack transitions for 克羅蒂 through the single unit state owner.",
+      "The victory returns to the source [36,gameBigMapLevel] hand-off; the conditional install, scripted wait timing and native scheduler remain provisional.",
+      "Treasure record 24 has source world coordinate [1216,288], outside the 1184px map width; it is retained as an explicit skipped_out_of_bounds treasure rather than silently clamped or made reachable."
+    ]
+  },
+  "story_scene": {
+    "id": "story_036_salus_coast_opening",
+    "title": "薩魯司海岸（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "薩魯司海岸",
+      "hint": "戰鬥部分（level 36）尚未重製　　空格／點擊：回到大地圖（薩魯司海岸）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party (咕嚕 is a conditional install) and the enemy roster have no battle scenario yet (chapter-2 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "actSetPlayerUndead SID_ENEMY055 is recorded, not applied: 傲's undead flag belongs to the not-yet-remade battle",
+      "the EVEF 海面聲 (mapobjPlayBGSound, WAV\\WATERFALL002.WAV) is exported as a background_sound placement and its WAV into sounds/ for the scene's looping ambience"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "032",
+      "049",
+      "055",
+      "065"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009",
+      "055"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_ENEMY055": "651"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-036.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-036.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-036.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-036.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-036.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-036.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-036.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_ENEMY055": "PLAYERS.TXT character 55 name field = 651 傲 (resource-derived name)"
+  },
+  "sweep_fixture": {
+    "mode": "status",
+    "win_statuses": [
+      0
+    ],
+    "run_hooks": false,
+    "note": "WINFAIL036 has an actTRUE terminal win status; arm it instead of clearing enemies."
+  },
+  "comments": {
+    "story_scene": [
+      "lane ch2c: chapter-2 battles 36-45 as opening previews (the nine EXTRAS.H slots",
+      "0-8; 咕嚕 / 克羅蒂 stay out where the EVEF marks them 「(有才產生)」). Every level names",
+      "its own map through the obj-0NN.obs 地圖管理員 (defProcIconBG) record, matched by the",
+      "seed's shape member (resource-derived), so none of them needs a MAP_ALIASES entry.",
+      "Level 36 (薩魯司海岸, bigmap.dat point 36): the party comes ashore from the south edge,",
+      "漢克斯 rounds on 雷歐納德 over the emperor's death, the camera jumps to the far shore where",
+      "傲 055 lands with 049 dark knights and 032 and declares them the first to be erased.",
+      "actPlayMusic 9 opens on track 9 (the track level 12 requests with the same token); the closing actPlayLevelMusic resolves level 36 to track 13 (table",
+      "0x477b44)."
+    ],
+    "cast": [
+      "lane ch2c: chapter-2 battles 36-45 — the nine-slot party (咕嚕 008 / 克羅蒂 009 are",
+      "conditional installs in several EVEFs but still cast, as in level 12) and the EVEF",
+      "enemies; speakers are the SPEAKER_IDS tokens (party plus the named bosses).",
+      "Level 36 (薩魯司海岸): 傲 055 with 049 dark knights and 032; 克羅蒂 is not placed."
+    ],
+    "speakers": [
+      "lane ch2c: chapter-2 battles 36-45 (STORY0NN openings; the nine EXTRAS.H slots",
+      "0-8 = 雷歐納德 緹娜 琥 漢克斯 雪拉 雷特 嚎 咕嚕 克羅蒂; only tokens that carry an",
+      "actMessage / actMessageIfExist / actSetDeadMessage in the opening are listed) and",
+      "the story-only inn scene 74.",
+      "Level 36 (薩魯司海岸): the party lands, 漢克斯 rounds on 雷歐納德, 傲 055 arrives with",
+      "the dark knights; 咕嚕 is a conditional install and silent."
+    ]
+  }
+}

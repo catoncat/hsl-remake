@@ -1,0 +1,24 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 200,
+  "battle": {
+    "id": "battle_200_dragon_spine_pass",
+    "title": "龍脊隘口",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "龍脊隘口 · 翼狼群已驅散"
+    },
+    "treasures": false,
+    "unresolved_semantics": [
+      "Authored level (content/authored/level200/): every unit, line and condition is remake content written for the sequel tracer; nothing here claims an original counterpart."
+    ]
+  },
+  "comments": {
+    "battle": [
+      "Level 200 龍脊隘口 is the authored tracer level: three controlled units (雷歐納德, 緹娜 and the",
+      "authored 蕾雅 102) against three 翼狼 036 with a round-3 reinforcement; victory hands the",
+      "campaign to the game-clear card (winfail: actSetNextPlayLevelEvent 200,998)."
+    ]
+  }
+}

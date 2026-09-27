@@ -1,0 +1,645 @@
+{
+  "schema": "hsl_skill_resources.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "sources": {
+    "MAGIC.TXT": "19a1183783eca7ce3f0e6248dd8ca573cde16bf33177ee1a3c79ec8be006bd34",
+    "SPECIAL.TXT": "a6a5d07b2fdd7fe6cefcdc0fccab00e67e2a4bdd7a8e025ca50a9258dfa5155a",
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc"
+  },
+  "archive_sources": {
+    "MAGIC.TXT": "aa7474108f0d86e21e86673354336c76dec50768b31b569346691c790d473de3",
+    "SPECIAL.TXT": "ca284fc31eb5a0c093d17a900f38636aa88e922853425f1f8c2fff7c8c6ceb5c",
+    "ITEM.TXT": "db1d59b055244b1f54b5f42d31af1617d7b505f6a1c927be797ef0c7031529c3"
+  },
+  "source_normalization": "CRLF to LF and collapse trailing LF only; table body remains unchanged.",
+  "native_execution": true,
+  "instruction_anchors": [
+    {
+      "address": "0x44d571",
+      "bytes": "6860924700",
+      "meaning": "Load special sections into the special table family."
+    },
+    {
+      "address": "0x44d699",
+      "bytes": "6848924700",
+      "meaning": "SPECIAL numeric parser reads expend."
+    },
+    {
+      "address": "0x44d6b3",
+      "bytes": "894710",
+      "meaning": "Store special expend at record+0x10."
+    },
+    {
+      "address": "0x44d9d4",
+      "bytes": "68a4924700",
+      "meaning": "Load magic sections into the magic table family."
+    },
+    {
+      "address": "0x44db06",
+      "bytes": "6848924700",
+      "meaning": "MAGIC numeric parser reads expend."
+    },
+    {
+      "address": "0x44db20",
+      "bytes": "894310",
+      "meaning": "Store magic expend at record+0x10."
+    },
+    {
+      "address": "0x479248",
+      "bytes": "657870656e6400",
+      "meaning": "Original NUL-terminated field name expend."
+    },
+    {
+      "address": "0x409899",
+      "bytes": "a02c4c00",
+      "meaning": "Magic getter uses table-of-groups 0x4c2ca0."
+    },
+    {
+      "address": "0x4098a8",
+      "bytes": "8b4110c3",
+      "meaning": "Magic cost getter returns raw expend."
+    },
+    {
+      "address": "0x409998",
+      "bytes": "8b41108d0480c1e002c3",
+      "meaning": "Special cost getter multiplies raw expend by 20."
+    },
+    {
+      "address": "0x409020",
+      "bytes": "d1fe",
+      "meaning": "Affordability halves MP cost without a minimum-one adjustment."
+    },
+    {
+      "address": "0x409022",
+      "bytes": "8b87e00000003bc6",
+      "meaning": "Compare current MP with eligibility threshold."
+    },
+    {
+      "address": "0x409056",
+      "bytes": "8b4a108d1489",
+      "meaning": "Special affordability also begins with expend times five."
+    },
+    {
+      "address": "0x409060",
+      "bytes": "c1e202",
+      "meaning": "Special affordability completes the times-20 conversion."
+    },
+    {
+      "address": "0x40e294",
+      "bytes": "6a0250e8a4ffffff",
+      "meaning": "MP half predicate requests effect bit2 through the shared helper."
+    },
+    {
+      "address": "0x40e25e",
+      "bytes": "858c968c010000",
+      "meaning": "Effect predicate tests actor+0x18c."
+    },
+    {
+      "address": "0x448709",
+      "bytes": "8b91a00000008bb08c0100000bf289b08c010000",
+      "meaning": "Equipment application ORs item+0xa0 into actor+0x18c."
+    },
+    {
+      "address": "0x478a34",
+      "bytes": "6d705f7573655f68616c6600",
+      "meaning": "Original field name mp_use_half."
+    },
+    {
+      "address": "0x447ddf",
+      "bytes": "68348a4700",
+      "meaning": "ITEM parser requests mp_use_half."
+    },
+    {
+      "address": "0x447df4",
+      "bytes": "8b4424100c0289442410",
+      "meaning": "Nonzero mp_use_half sets effect bit2."
+    },
+    {
+      "address": "0x4481b1",
+      "bytes": "89843aa0000000",
+      "meaning": "Store the effect word in item+0xa0."
+    },
+    {
+      "address": "0x442b99",
+      "bytes": "e8f26cfcff",
+      "meaning": "Magic execution reads the same raw cost getter."
+    },
+    {
+      "address": "0x442bad",
+      "bytes": "8bc6992bc2d1f88bf07505be01000000",
+      "meaning": "Magic debit halves with truncation and enforces a minimum of one."
+    },
+    {
+      "address": "0x442bc1",
+      "bytes": "8b98e00000002bde8998e0000000",
+      "meaning": "Subtract charge once from current MP."
+    },
+    {
+      "address": "0x44529e",
+      "bytes": "e8dd46fcff",
+      "meaning": "Player special execution calls the ST cost getter."
+    },
+    {
+      "address": "0x4452af",
+      "bytes": "89afe8000000",
+      "meaning": "Player special stores remaining ST at actor+0xe8."
+    },
+    {
+      "address": "0x441cf3",
+      "bytes": "e8887cfcff",
+      "meaning": "The second special execution path uses the same getter."
+    },
+    {
+      "address": "0x441d00",
+      "bytes": "2981e8000000",
+      "meaning": "Second special execution subtracts from actor+0xe8."
+    }
+  ],
+  "cases": [
+    {
+      "channel": "magic",
+      "expend": 0,
+      "half_mp": false,
+      "available": 0,
+      "base_cost": 0,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 0,
+        "full_spell_function_return": false
+      },
+      "instructions": 63
+    },
+    {
+      "channel": "magic",
+      "expend": 0,
+      "half_mp": false,
+      "available": 1,
+      "base_cost": 0,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 1,
+        "full_spell_function_return": false
+      },
+      "instructions": 63
+    },
+    {
+      "channel": "magic",
+      "expend": 1,
+      "half_mp": false,
+      "available": 0,
+      "base_cost": 1,
+      "affordable": 0,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": -1,
+        "full_spell_function_return": false
+      },
+      "instructions": 64
+    },
+    {
+      "channel": "magic",
+      "expend": 1,
+      "half_mp": false,
+      "available": 1,
+      "base_cost": 1,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 0,
+        "full_spell_function_return": false
+      },
+      "instructions": 63
+    },
+    {
+      "channel": "magic",
+      "expend": 1,
+      "half_mp": false,
+      "available": 2,
+      "base_cost": 1,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 1,
+        "full_spell_function_return": false
+      },
+      "instructions": 63
+    },
+    {
+      "channel": "magic",
+      "expend": 3,
+      "half_mp": false,
+      "available": 2,
+      "base_cost": 3,
+      "affordable": 0,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": -1,
+        "full_spell_function_return": false
+      },
+      "instructions": 64
+    },
+    {
+      "channel": "magic",
+      "expend": 3,
+      "half_mp": false,
+      "available": 3,
+      "base_cost": 3,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 0,
+        "full_spell_function_return": false
+      },
+      "instructions": 63
+    },
+    {
+      "channel": "magic",
+      "expend": 3,
+      "half_mp": false,
+      "available": 4,
+      "base_cost": 3,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 1,
+        "full_spell_function_return": false
+      },
+      "instructions": 63
+    },
+    {
+      "channel": "magic",
+      "expend": 6,
+      "half_mp": false,
+      "available": 5,
+      "base_cost": 6,
+      "affordable": 0,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": -1,
+        "full_spell_function_return": false
+      },
+      "instructions": 64
+    },
+    {
+      "channel": "magic",
+      "expend": 6,
+      "half_mp": false,
+      "available": 6,
+      "base_cost": 6,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 0,
+        "full_spell_function_return": false
+      },
+      "instructions": 63
+    },
+    {
+      "channel": "magic",
+      "expend": 6,
+      "half_mp": false,
+      "available": 7,
+      "base_cost": 6,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 1,
+        "full_spell_function_return": false
+      },
+      "instructions": 63
+    },
+    {
+      "channel": "magic",
+      "expend": 0,
+      "half_mp": true,
+      "available": 0,
+      "base_cost": 0,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": -1,
+        "full_spell_function_return": false
+      },
+      "instructions": 72
+    },
+    {
+      "channel": "magic",
+      "expend": 0,
+      "half_mp": true,
+      "available": 1,
+      "base_cost": 0,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 0,
+        "full_spell_function_return": false
+      },
+      "instructions": 72
+    },
+    {
+      "channel": "magic",
+      "expend": 1,
+      "half_mp": true,
+      "available": 0,
+      "base_cost": 1,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": -1,
+        "full_spell_function_return": false
+      },
+      "instructions": 72
+    },
+    {
+      "channel": "magic",
+      "expend": 1,
+      "half_mp": true,
+      "available": 1,
+      "base_cost": 1,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 0,
+        "full_spell_function_return": false
+      },
+      "instructions": 72
+    },
+    {
+      "channel": "magic",
+      "expend": 3,
+      "half_mp": true,
+      "available": 0,
+      "base_cost": 3,
+      "affordable": 0,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": -1,
+        "full_spell_function_return": false
+      },
+      "instructions": 72
+    },
+    {
+      "channel": "magic",
+      "expend": 3,
+      "half_mp": true,
+      "available": 1,
+      "base_cost": 3,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 0,
+        "full_spell_function_return": false
+      },
+      "instructions": 71
+    },
+    {
+      "channel": "magic",
+      "expend": 3,
+      "half_mp": true,
+      "available": 2,
+      "base_cost": 3,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 1,
+        "full_spell_function_return": false
+      },
+      "instructions": 71
+    },
+    {
+      "channel": "magic",
+      "expend": 6,
+      "half_mp": true,
+      "available": 2,
+      "base_cost": 6,
+      "affordable": 0,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": -1,
+        "full_spell_function_return": false
+      },
+      "instructions": 72
+    },
+    {
+      "channel": "magic",
+      "expend": 6,
+      "half_mp": true,
+      "available": 3,
+      "base_cost": 6,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 0,
+        "full_spell_function_return": false
+      },
+      "instructions": 71
+    },
+    {
+      "channel": "magic",
+      "expend": 6,
+      "half_mp": true,
+      "available": 4,
+      "base_cost": 6,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "debit_block": {
+        "start": "0x442ba9",
+        "stop": "0x442bcf",
+        "remaining_mp": 1,
+        "full_spell_function_return": false
+      },
+      "instructions": 71
+    },
+    {
+      "channel": "special",
+      "expend": 0,
+      "half_mp": false,
+      "available": 0,
+      "base_cost": 0,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 34
+    },
+    {
+      "channel": "special",
+      "expend": 0,
+      "half_mp": false,
+      "available": 1,
+      "base_cost": 0,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 34
+    },
+    {
+      "channel": "special",
+      "expend": 1,
+      "half_mp": false,
+      "available": 19,
+      "base_cost": 20,
+      "affordable": 0,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 33
+    },
+    {
+      "channel": "special",
+      "expend": 1,
+      "half_mp": false,
+      "available": 20,
+      "base_cost": 20,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 34
+    },
+    {
+      "channel": "special",
+      "expend": 1,
+      "half_mp": false,
+      "available": 21,
+      "base_cost": 20,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 34
+    },
+    {
+      "channel": "special",
+      "expend": 3,
+      "half_mp": false,
+      "available": 59,
+      "base_cost": 60,
+      "affordable": 0,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 33
+    },
+    {
+      "channel": "special",
+      "expend": 3,
+      "half_mp": false,
+      "available": 60,
+      "base_cost": 60,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 34
+    },
+    {
+      "channel": "special",
+      "expend": 3,
+      "half_mp": false,
+      "available": 61,
+      "base_cost": 60,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 34
+    },
+    {
+      "channel": "special",
+      "expend": 6,
+      "half_mp": false,
+      "available": 119,
+      "base_cost": 120,
+      "affordable": 0,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 33
+    },
+    {
+      "channel": "special",
+      "expend": 6,
+      "half_mp": false,
+      "available": 120,
+      "base_cost": 120,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 34
+    },
+    {
+      "channel": "special",
+      "expend": 6,
+      "half_mp": false,
+      "available": 121,
+      "base_cost": 120,
+      "affordable": 1,
+      "normal_helper_returns": 2,
+      "eligibility_actor_unchanged": true,
+      "instructions": 34
+    }
+  ],
+  "limits": [
+    "Synthetic memory, original helper instructions, bounded calls without stubs; no original gameplay.",
+    "MP debit is an explicitly bounded internal block, not a normal whole spell function return.",
+    "Half-cost eligibility may be zero while debit is one. Product refuses charges beyond available resources.",
+    "Full skill ownership, target/state conditions, ST gain/cap, effects and other passives remain outside this packet."
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 40,
+  "battle": {
+    "id": "battle_040_level40",
+    "title": "聖靈之森 · 傲的再臨",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "聖靈之森 · 敵軍已清除"
+    },
+    "expected": {
+      "units": 18,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY040 opens with eight installed party members and the resource-derived 傲 055 plus eight Enemy049 units; 咕嚕 008 is an EVEF 有才產生 install fielded only when the campaign carry holds the member.",
+      "WINFAIL040 inserts six Enemy049/032/065 reinforcements at round 14 before the enemy-total win check; the source action order is preserved while the live reinforcement pacing is a remake reading.",
+      "Any reinforcement placement that lands outside or on blocked remake terrain remains provisional; nearest-free placement is the explicit remake read."
+    ]
+  },
+  "story_scene": {
+    "id": "story_040_holy_spirit_forest_opening",
+    "title": "聖靈之森（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "聖靈之森",
+      "hint": "戰鬥部分（level 40）尚未重製　　空格／點擊：回到大地圖（聖靈之森）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party (咕嚕 is a conditional install) and the enemy roster have no battle scenario yet (chapter-2 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "032",
+      "049",
+      "055",
+      "065"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009",
+      "055"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY055": "651"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-040.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-040.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-040.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-040.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-040.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-040.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-040.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-040.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY055": "PLAYERS.TXT character 55 name field = 651 傲 (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 40 (聖靈之森, point 40): the party walks in from the west edge, 傲 055 is back with",
+      "eight 049 dark knights and argues with 克羅蒂 and 雷歐納德 about rule by force.",
+      "actPlayLevelMusic: table 0x477b44 gives level 40 track 16 (as for level 52)."
+    ],
+    "cast": [
+      "Level 40 (聖靈之森): 傲 055 returns with eight 049."
+    ],
+    "speakers": [
+      "Level 40 (聖靈之森): 傲 055 returns and speaks with 克羅蒂 and 雷歐納德."
+    ]
+  }
+}

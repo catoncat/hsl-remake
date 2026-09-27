@@ -1,0 +1,1020 @@
+{
+  "schema": "hsl_check_player_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "execution": "Unicorn x86-32, original bytes, synthetic object table / actor records / VM objects, no stubs",
+  "entries": {
+    "lookup": "0x44fad0",
+    "condition": "0x450840",
+    "fail_scan": "0x44ecb0"
+  },
+  "lookups": [
+    {
+      "name": "absent_code",
+      "code": 0,
+      "serial": 1,
+      "placements": [],
+      "native": {
+        "result": -1
+      },
+      "normal_return": true,
+      "instructions": 1420
+    },
+    {
+      "name": "present",
+      "code": 0,
+      "serial": 1,
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "result": 0
+      },
+      "normal_return": true,
+      "instructions": 50
+    },
+    {
+      "name": "present_dead_marked",
+      "code": 0,
+      "serial": 1,
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 134217728,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "result": -1
+      },
+      "normal_return": true,
+      "instructions": 1433
+    },
+    {
+      "name": "present_hp_zero_unmarked",
+      "code": 0,
+      "serial": 1,
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 0,
+          "hp": 0
+        }
+      ],
+      "native": {
+        "result": 0
+      },
+      "normal_return": true,
+      "instructions": 50
+    },
+    {
+      "name": "present_non_actor_kind",
+      "code": 0,
+      "serial": 1,
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 1,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "result": -1
+      },
+      "normal_return": true,
+      "instructions": 1439
+    },
+    {
+      "name": "enemy_kind_in_enemy_slot",
+      "code": 21,
+      "serial": 1,
+      "placements": [
+        {
+          "slot": 25,
+          "record_index": 9,
+          "code": 21,
+          "kind": 5,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "result": 25
+      },
+      "normal_return": true,
+      "instructions": 227
+    },
+    {
+      "name": "serial_beyond_instances_returns_last_match",
+      "code": 0,
+      "serial": 2,
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "result": 0
+      },
+      "normal_return": true,
+      "instructions": 1448
+    },
+    {
+      "name": "any_player_none",
+      "code": -1,
+      "serial": 1,
+      "placements": [],
+      "native": {
+        "result": -1
+      },
+      "normal_return": true,
+      "instructions": 145
+    },
+    {
+      "name": "any_player_slot3",
+      "code": -1,
+      "serial": 1,
+      "placements": [
+        {
+          "slot": 3,
+          "record_index": 1,
+          "code": 2,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "result": 3
+      },
+      "normal_return": true,
+      "instructions": 44
+    },
+    {
+      "name": "any_enemy_slot25",
+      "code": -2,
+      "serial": 1,
+      "placements": [
+        {
+          "slot": 25,
+          "record_index": 9,
+          "code": 21,
+          "kind": 5,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "result": 25
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "name": "no_one",
+      "code": -3,
+      "serial": 1,
+      "placements": [],
+      "native": {
+        "result": -4
+      },
+      "normal_return": true,
+      "instructions": 19
+    }
+  ],
+  "conditions": [
+    {
+      "name": "absent_player_holds",
+      "ids": [
+        0
+      ],
+      "placements": [],
+      "flags": 0,
+      "native": {
+        "result": 1,
+        "pc_delta": 3,
+        "phase": 0,
+        "round": 7
+      },
+      "present": 0,
+      "normal_return": true,
+      "instructions": 1479
+    },
+    {
+      "name": "present_player_does_not_hold",
+      "ids": [
+        0
+      ],
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "flags": 0,
+      "native": {
+        "result": 0,
+        "pc_delta": 0,
+        "phase": 0,
+        "round": 7
+      },
+      "present": 1,
+      "normal_return": true,
+      "instructions": 105
+    },
+    {
+      "name": "hp_zero_unmarked_still_present",
+      "ids": [
+        0
+      ],
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 0,
+          "hp": 0
+        }
+      ],
+      "flags": 0,
+      "native": {
+        "result": 0,
+        "pc_delta": 0,
+        "phase": 0,
+        "round": 7
+      },
+      "present": 1,
+      "normal_return": true,
+      "instructions": 105
+    },
+    {
+      "name": "dead_marked_holds",
+      "ids": [
+        0
+      ],
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 134217728,
+          "hp": 50
+        }
+      ],
+      "flags": 0,
+      "native": {
+        "result": 1,
+        "pc_delta": 3,
+        "phase": 0,
+        "round": 7
+      },
+      "present": 0,
+      "normal_return": true,
+      "instructions": 1492
+    },
+    {
+      "name": "two_ids_one_present_does_not_hold",
+      "ids": [
+        0,
+        1
+      ],
+      "placements": [
+        {
+          "slot": 1,
+          "record_index": 2,
+          "code": 1,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "flags": 0,
+      "native": {
+        "result": 0,
+        "pc_delta": 0,
+        "phase": 0,
+        "round": 7
+      },
+      "present": 1,
+      "normal_return": true,
+      "instructions": 1566
+    },
+    {
+      "name": "two_ids_none_holds",
+      "ids": [
+        0,
+        1
+      ],
+      "placements": [],
+      "flags": 0,
+      "native": {
+        "result": 1,
+        "pc_delta": 4,
+        "phase": 0,
+        "round": 7
+      },
+      "present": 0,
+      "normal_return": true,
+      "instructions": 2909
+    },
+    {
+      "name": "absent_under_story_phase_rewinds",
+      "ids": [
+        0
+      ],
+      "placements": [],
+      "flags": 67108864,
+      "native": {
+        "result": 0,
+        "pc_delta": 0,
+        "phase": 0,
+        "round": 7
+      },
+      "present": 0,
+      "normal_return": true,
+      "instructions": 1483
+    }
+  ],
+  "fail_scans": [
+    {
+      "name": "no_armed_status_no_players",
+      "statuses": [
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        }
+      ],
+      "placements": [],
+      "native": {
+        "codes": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "pc_delta": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "stop": null,
+        "normal_return": true
+      },
+      "instructions": 80
+    },
+    {
+      "name": "armed_leader_present",
+      "statuses": [
+        {
+          "code": 0,
+          "ids": [
+            0
+          ]
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        }
+      ],
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "codes": [
+          0,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "pc_delta": [
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "stop": null,
+        "normal_return": true
+      },
+      "instructions": 206
+    },
+    {
+      "name": "armed_leader_alive_others_dead_marked",
+      "statuses": [
+        {
+          "code": 0,
+          "ids": [
+            0
+          ]
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        }
+      ],
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        },
+        {
+          "slot": 1,
+          "record_index": 2,
+          "code": 1,
+          "kind": 3,
+          "flags": 134217728,
+          "hp": 50
+        },
+        {
+          "slot": 2,
+          "record_index": 3,
+          "code": 2,
+          "kind": 3,
+          "flags": 134217728,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "codes": [
+          0,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "pc_delta": [
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "stop": null,
+        "normal_return": true
+      },
+      "instructions": 206
+    },
+    {
+      "name": "armed_leader_absent",
+      "statuses": [
+        {
+          "code": 0,
+          "ids": [
+            0
+          ]
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        }
+      ],
+      "placements": [],
+      "native": {
+        "codes": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "pc_delta": [
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "stop": {
+          "address": "0x453ac0",
+          "kind": 2,
+          "entry": 0,
+          "pc_delta": 3
+        },
+        "normal_return": false
+      },
+      "instructions": 1513
+    },
+    {
+      "name": "armed_leader_absent_others_alive",
+      "statuses": [
+        {
+          "code": 0,
+          "ids": [
+            0
+          ]
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        }
+      ],
+      "placements": [
+        {
+          "slot": 1,
+          "record_index": 2,
+          "code": 1,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        },
+        {
+          "slot": 2,
+          "record_index": 3,
+          "code": 2,
+          "kind": 3,
+          "flags": 0,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "codes": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "pc_delta": [
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "stop": {
+          "address": "0x453ac0",
+          "kind": 2,
+          "entry": 0,
+          "pc_delta": 3
+        },
+        "normal_return": false
+      },
+      "instructions": 1561
+    },
+    {
+      "name": "armed_second_entry_all_dead_marked",
+      "statuses": [
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": 1,
+          "ids": [
+            0
+          ]
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        },
+        {
+          "code": null,
+          "ids": []
+        }
+      ],
+      "placements": [
+        {
+          "slot": 0,
+          "record_index": 1,
+          "code": 0,
+          "kind": 3,
+          "flags": 134217728,
+          "hp": 50
+        },
+        {
+          "slot": 1,
+          "record_index": 2,
+          "code": 1,
+          "kind": 3,
+          "flags": 134217728,
+          "hp": 50
+        }
+      ],
+      "native": {
+        "codes": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "pc_delta": [
+          null,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "stop": {
+          "address": "0x453ac0",
+          "kind": 2,
+          "entry": 1,
+          "pc_delta": 3
+        },
+        "normal_return": false
+      },
+      "instructions": 1546
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x44fa8b",
+      "bytes": "f7828000000000000008",
+      "meaning": "actor_slot_is_live rejects an object carrying the 0x8000000 dead mark before reading its code."
+    },
+    {
+      "address": "0x4415d4",
+      "bytes": "8b888000000081c900000008898880000000",
+      "meaning": "Damage routine: target HP <= 0 sets the 0x8000000 mark on the object and zeroes its action word."
+    },
+    {
+      "address": "0x441da5",
+      "bytes": "8b888000000081c900000008898880000000",
+      "meaning": "Second damage path sets the same 0x8000000 mark on HP <= 0."
+    },
+    {
+      "address": "0x44448d",
+      "bytes": "8b888000000081c900000008898880000000",
+      "meaning": "Third (special) damage path sets the same 0x8000000 mark."
+    },
+    {
+      "address": "0x407720",
+      "bytes": "568b7424086683bea200000014734733c033c9668b86a0000000c70485c0344c0000000000",
+      "meaning": "Object unregistration clears its 0x4c34c0 slot and queue record; the player/enemy counters decrement below."
+    },
+    {
+      "address": "0x4077e3",
+      "bytes": "a9000002007514ff0d901b4c00c3",
+      "meaning": "Unregistration decrements 0x4c1b94 (enemy) or 0x4c1b90 (player) by the object side flag."
+    },
+    {
+      "address": "0x44ee20",
+      "bytes": "e8cbfdffffe886feffffe941ffffff",
+      "meaning": "Per-evaluation order: win scan 0x44ebf0, fail scan 0x44ecb0, event scan 0x44ed70."
+    },
+    {
+      "address": "0x44ed30",
+      "bytes": "8d049b6a006a028d04c0c1e002c70408ffffffff8b15081d4c008b84109400000050e8694d000083c40c85c0750a6a02e81b4d000083c4045f5e5bc3",
+      "meaning": "Fail scan on hold: entry code := -1, status runner 0x453ac0(pc, 2, 0); a zero return enters fail process 0x453a80(2)."
+    },
+    {
+      "address": "0x453a99",
+      "bytes": "e93291fdff",
+      "meaning": "Fail process kind 2 jumps to 0x42cbd0 (flags |= 0x88000000, next level/event 999, transition 2)."
+    },
+    {
+      "address": "0x4524de",
+      "bytes": "8b068b0d901b4c0083ee043bc80f8fd2020000",
+      "meaning": "actCheckPlayerTotalNumber (case 0x27) compares its argument with the player counter 0x4c1b90."
+    },
+    {
+      "address": "0x43a9ec",
+      "bytes": "833d901b4c0001",
+      "meaning": "Cursor cycling reads 0x4c1b90 only to decide whether another player exists."
+    },
+    {
+      "address": "0x43aa17",
+      "bytes": "833d901b4c0001",
+      "meaning": "Second cursor cycling reader of 0x4c1b90."
+    },
+    {
+      "address": "0x4076fe",
+      "bytes": "ff05901b4c00",
+      "meaning": "Registration increments 0x4c1b90 for a player-side object."
+    },
+    {
+      "address": "0x4079b6",
+      "bytes": "ff05901b4c00",
+      "meaning": "Second registration path increments 0x4c1b90."
+    },
+    {
+      "address": "0x407299",
+      "bytes": "8915901b4c008915941b4c00",
+      "meaning": "Level reset zeroes both counters."
+    },
+    {
+      "address": "0x4080b0",
+      "bytes": "8b442408568b742408a900000020",
+      "meaning": "PlayerInstall: 0x42caa0(registration[slot]) nonzero -> constructor; registered slots are fielded regardless of the previous level."
+    },
+    {
+      "address": "0x42caf0",
+      "bytes": "8b5424048b44240885c0c7049560434c0000000000741e33c042568bf2",
+      "meaning": "actDeletePlayerCode (opcode 71) is the only script path that clears a registration slot."
+    },
+    {
+      "address": "0x42c700",
+      "bytes": "8b44240483f8147d0b8b4c2408890c8560434c00",
+      "meaning": "Registration writer 0x42c700 (callers: init 0x42c869, enable 0x42cb47, job-up 0x43493d); no caller sets the 0x80000000 disable bit."
+    },
+    {
+      "address": "0x4145b4",
+      "bytes": "8b80a40000008b15c81b4c008bc8c1e1072bc8668b448a5c668985ae000000",
+      "meaning": "Message box: face word := record[speaker object +0xa4].picture (+0x5c); speaker object comes from 0x4072b0 +0xa8."
+    },
+    {
+      "address": "0x4072b0",
+      "bytes": "6a006a056a006a00e84a70050083c410",
+      "meaning": "Message box constructor stores the object-table entry of the 0x44fad0 slot as speaker (+0xa8)."
+    }
+  ],
+  "limits": [
+    "actCheckPlayer reads only the object table 0x4c34c0 through 0x44fad0/0x44fa80: HP is never consulted; the 0x8000000 mark (set by the damage routines on HP <= 0) or unregistration makes an id absent.",
+    "A code with no live object (never fielded, deleted, or dead-marked) is not counted; count 0 holds the condition and consumes 2 + num arguments. Under the story phase flag 0x4000000 the interpreter rewinds instead.",
+    "The fail scan reaches the status runner 0x453ac0 (kind 2) only through an armed status whose condition holds; execution stops at that call, so the runner, 0x453a80(2) and 0x42cbd0 are static anchors, not executed.",
+    "No executed or anchored path derives defeat from the player counter 0x4c1b90 or from an empty player side; its readers are the script opcode actCheckPlayerTotalNumber, cursor cycling and the register/unregister counters.",
+    "Whether a registered slot is fielded belongs to PlayerInstall 0x4080b0 (anchor, see original_player_install.md): registration is cleared only by actDeletePlayerCode; STORY/WINFAIL 030-034 never call it."
+  ]
+}

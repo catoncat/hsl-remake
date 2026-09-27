@@ -1,0 +1,55 @@
+# Private legal copies, extracted originals, and local research dumps.
+legal-assets/*
+!legal-assets/
+!legal-assets/README.md
+original-assets/
+asset-dumps/*
+!asset-dumps/
+!asset-dumps/README.md
+.godot/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Godot import sidecars are local generated cache for this repo unless
+# intentionally force-added with a reviewed import setting.
+*.import
+
+# Disc images and installer-era archives should not be committed.
+*.iso
+*.cue
+*.mdf
+*.mds
+*.nrg
+*.ccd
+*.img
+*.sub
+*.rar
+*.zip
+*.7z
+.ace-tool/
+.workbuddy/
+
+# Runtime capture output (screenshots, traces)
+ignored/
+
+# macOS junk
+.DS_Store
+
+# Compiled tools
+tools/hsl_window
+tools/hsl_input
+tools/*.exe
+
+# Original-derived content (docs/OPEN_SOURCE_PLAN.md): imported locally from the player's own copy with
+# `HSL_ORIGINAL_DIR=... python3 tools/hsl.py generate ...`, never committed. Checked against the tracked
+# content/generated/hsl/original_derived_manifest.json by `python3 tools/hsl.py check original_derived_manifest`.
+/content/imported/
+/content/battles/*
+!/content/battles/levels/
+!/content/battles/campaign.json
+/content/generated/**
+!/content/generated/**/
+!/content/generated/hsl/original_derived_manifest.json
+!/content/generated/hsl/remake_music/**
+!/content/generated/hsl/development/autoplay/**

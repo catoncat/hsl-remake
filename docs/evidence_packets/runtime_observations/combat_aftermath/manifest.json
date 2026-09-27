@@ -1,0 +1,372 @@
+{
+  "schema": "hsl_combat_aftermath_review.v1",
+  "date": "2026-09-15",
+  "base_commit": "d61905a6002bae62de3c6c13f43a63aee8fec5e8",
+  "evidence_tiers": [
+    "resource-derived",
+    "runtime-measured",
+    "provisional"
+  ],
+  "images": [
+    {
+      "path": "attack-hurt.png",
+      "sha256": "7cde3d2e0c4f3f8b99420b04ae7e96f69213a95fecdeb6042241e6173cb5fa9e",
+      "size": [
+        640,
+        480
+      ],
+      "source": "ignored/combat-aftermath-review/attack-hurt.png"
+    },
+    {
+      "path": "attack-last-words.png",
+      "sha256": "2ab152e75d9e8846459a7d34387123865e154eec2071db71595c7d1f65e29ffb",
+      "size": [
+        640,
+        480
+      ],
+      "source": "ignored/combat-aftermath-review/attack-last-words.png"
+    },
+    {
+      "path": "attack-fade.png",
+      "sha256": "37b21ffa2a16c733672563e0038e314fd26e35dd6d029b3bafd8dc7ae2475062",
+      "size": [
+        640,
+        480
+      ],
+      "source": "ignored/combat-aftermath-review/attack-fade.png"
+    },
+    {
+      "path": "attack-experience.png",
+      "sha256": "41d6dbe473c1bf5eb5e0156436bb27c185f52c939d158fef2806a6264db3b812",
+      "size": [
+        640,
+        480
+      ],
+      "source": "ignored/combat-aftermath-review/attack-experience.png"
+    },
+    {
+      "path": "attack-growth.png",
+      "sha256": "76dba1da9f2bf738234831caad1f608bf1112045c9887b6d5e792c95c138e0ce",
+      "size": [
+        640,
+        480
+      ],
+      "source": "ignored/combat-aftermath-review/attack-growth.png"
+    },
+    {
+      "path": "attack-successor.png",
+      "sha256": "ea664d5b1f20899b4b646efd2dc59211ab2eb869b40b24bdde4dcd0598b2ec8e",
+      "size": [
+        640,
+        480
+      ],
+      "source": "ignored/combat-aftermath-review/attack-successor.png"
+    },
+    {
+      "path": "special-hurt.png",
+      "sha256": "618207f39a5d13efc78086507bcd60b16e308e55271edce23ac19014d3536510",
+      "size": [
+        640,
+        480
+      ],
+      "source": "ignored/combat-aftermath-review/special-hurt.png"
+    },
+    {
+      "path": "hold-result.png",
+      "sha256": "de898fd394d068ced9f22843169209c2bf7c48b3837b44305db9d52e04be21b1",
+      "size": [
+        640,
+        480
+      ],
+      "source": "ignored/first-battle-playthrough/hold/result.png"
+    }
+  ],
+  "source_references": [
+    {
+      "path": "docs/evidence_packets/runtime_observations/original_gameplay_reference/12_leonard_normal_attack/contact_sheet.jpg",
+      "sha256": "3916db6008ce373255509c6b96fabdd06f2740d65983848a2c23d7fbb32dcb4a"
+    },
+    {
+      "path": "docs/evidence_packets/runtime_observations/original_gameplay_reference/15_post_attack_settlement_floats/frame_006.png",
+      "sha256": "0469ef4be389199d99d0a06cd2d4ff9426eeb9c88a652615d6f190b63362888d"
+    }
+  ],
+  "review_code_sha256": {
+    "game/battle/first_scene/FirstBattleAftermath.gd": "efb27bde5c25f8bee72b600b4649d4604b9d98f2e8583dce71a0fbdb270dbcc3",
+    "game/battle/first_scene/FirstBattlePresentation.gd": "a67801366532e9751a93ff5c0874bb39c9b8c523429942ea2840d0234eea0f50",
+    "game/battle/first_scene/FirstBattleCombatCutin.gd": "a3fca2ddff36c33072cc059a597c0f6dc4704af98ac34b52325724f37ce5a19f",
+    "game/battle/first_scene/FirstBattleCommandMenu.gd": "20c068bea064bed1e7d91757d486779fbe97b199040807bc15a836db65327656",
+    "game/battle/first_scene/FirstSceneRuntime.gd": "fdf3e0f771ee6cf9d131133857d9da271959aab0da2f8a8964532ab2e1ba3261",
+    "content/generated/hsl/combat/aftermath.json": "77dafcfff13e71e103256ddd785e4003a0427d7c747f82d1b11f656d05dd7009",
+    "tools/hsl_combat_aftermath_data.py": "6557234dccf817d9c55f2a52f4eac965c85ef3ac9b960396a725f9b6263b1da0",
+    "tools/test_hsl_combat_aftermath_data.py": "c8030d1475cd167ffc7c9426d0ffcc86fbcb73471377e1dd7d1fe9be5f819ae2",
+    "tools/verify.sh": "5fb0867bc11a210ab5fc7a18a35ab8b148df303777bb884bfc94a56fdff0c0f9",
+    "tests/run_combat_aftermath_tests.gd": "99996bcea8e367f56d554b826d522342489cbcfa25b588978e5562a2d27e6cde",
+    "tests/run_first_scene_runtime_tests.gd": "df59d49e8661afe249028c16bdbe99f7dcf6c56e6dfdac3b3de6ba4c51b7bad5",
+    "tests/run_action_handoff_tests.gd": "37164df12b1b1d1c1620c8fe094c880b9f31cae26dce4b641b8673123891e4ae",
+    "tests/run_presentation_contract_tests.gd": "48296ef6318bf8aca68894a7bec2e5caab862ddbc08a606c48178ed4910a4e38",
+    "tests/capture_combat_aftermath_review.gd": "c2ef2035ab7d12f9411e633da91d455ddd424e70505a30b908f693e6e0644ad1",
+    "tests/run_first_battle_playthrough.gd": "dacb6df049696253cc23dea00bc844b8dd6996d360c9198328b335be8504e085"
+  },
+  "rendered_review": {
+    "failures": [],
+    "fixture": "dev first-control scene; one adjacent enemy at 1 HP; Leonard 99 EXP/100 ST/speed 100; next ally speed 99 and player-controlled; queue rebuilt once before input; no RNG/result overrides",
+    "input": "Viewport.push_input mouse and Input.parse_input_event keyboard; no direct command or attack calls",
+    "normal_clock": 1.0,
+    "records": [
+      {
+        "capture": "hurt",
+        "case": "attack",
+        "growth_visible": false,
+        "menu_visible": false,
+        "message_id": "",
+        "milliseconds": 4405,
+        "reward": "",
+        "reward_visible": false,
+        "selected": "leonard",
+        "stage": "queued",
+        "victim_alpha": 1.0,
+        "victim_visible": true
+      },
+      {
+        "capture": "last-words",
+        "case": "attack",
+        "growth_visible": false,
+        "menu_visible": false,
+        "message_id": "372",
+        "milliseconds": 6621,
+        "reward": "",
+        "reward_visible": false,
+        "selected": "leonard",
+        "stage": "dialogue",
+        "victim_alpha": 1.0,
+        "victim_visible": true
+      },
+      {
+        "capture": "fade",
+        "case": "attack",
+        "growth_visible": false,
+        "menu_visible": false,
+        "message_id": "",
+        "milliseconds": 6870,
+        "reward": "",
+        "reward_visible": false,
+        "selected": "leonard",
+        "stage": "fade",
+        "victim_alpha": 0.462752342224121,
+        "victim_visible": true
+      },
+      {
+        "case": "attack",
+        "event": "experience",
+        "growth": {
+          "exp_after": 20,
+          "exp_before": 99,
+          "gained": 21,
+          "level_after": 2,
+          "level_before": 1
+        }
+      },
+      {
+        "capture": "experience",
+        "case": "attack",
+        "growth_visible": false,
+        "menu_visible": false,
+        "message_id": "",
+        "milliseconds": 7108,
+        "reward": "EXP 21\n升級！等級 2",
+        "reward_visible": true,
+        "selected": "leonard",
+        "stage": "experience",
+        "victim_alpha": 0.0,
+        "victim_visible": false
+      },
+      {
+        "capture": "growth",
+        "case": "attack",
+        "growth_visible": true,
+        "menu_visible": false,
+        "message_id": "",
+        "milliseconds": 8138,
+        "reward": "EXP 21\n升級！等級 2",
+        "reward_visible": false,
+        "selected": "leonard",
+        "stage": "idle",
+        "victim_alpha": 0.0,
+        "victim_visible": false
+      },
+      {
+        "capture": "successor",
+        "case": "attack",
+        "growth_visible": false,
+        "menu_visible": true,
+        "message_id": "",
+        "milliseconds": 8624,
+        "reward": "EXP 21\n升級！等級 2",
+        "reward_visible": false,
+        "selected": "enemy023_1",
+        "stage": "idle",
+        "victim_alpha": 0.0,
+        "victim_visible": false
+      },
+      {
+        "capture": "hurt",
+        "case": "special",
+        "growth_visible": false,
+        "menu_visible": false,
+        "message_id": "",
+        "milliseconds": 11137,
+        "reward": "",
+        "reward_visible": false,
+        "selected": "leonard",
+        "stage": "queued",
+        "victim_alpha": 1.0,
+        "victim_visible": true
+      },
+      {
+        "capture": "last-words",
+        "case": "special",
+        "growth_visible": false,
+        "menu_visible": false,
+        "message_id": "372",
+        "milliseconds": 13953,
+        "reward": "",
+        "reward_visible": false,
+        "selected": "leonard",
+        "stage": "dialogue",
+        "victim_alpha": 1.0,
+        "victim_visible": true
+      },
+      {
+        "capture": "fade",
+        "case": "special",
+        "growth_visible": false,
+        "menu_visible": false,
+        "message_id": "",
+        "milliseconds": 14203,
+        "reward": "",
+        "reward_visible": false,
+        "selected": "leonard",
+        "stage": "fade",
+        "victim_alpha": 0.481481492519379,
+        "victim_visible": true
+      },
+      {
+        "case": "special",
+        "event": "experience",
+        "growth": {
+          "exp_after": 20,
+          "exp_before": 99,
+          "gained": 21,
+          "level_after": 2,
+          "level_before": 1
+        }
+      },
+      {
+        "capture": "experience",
+        "case": "special",
+        "growth_visible": false,
+        "menu_visible": false,
+        "message_id": "",
+        "milliseconds": 14441,
+        "reward": "EXP 21\n升級！等級 2",
+        "reward_visible": true,
+        "selected": "leonard",
+        "stage": "experience",
+        "victim_alpha": 0.0,
+        "victim_visible": false
+      },
+      {
+        "capture": "growth",
+        "case": "special",
+        "growth_visible": true,
+        "menu_visible": false,
+        "message_id": "",
+        "milliseconds": 15454,
+        "reward": "EXP 21\n升級！等級 2",
+        "reward_visible": false,
+        "selected": "leonard",
+        "stage": "idle",
+        "victim_alpha": 0.0,
+        "victim_visible": false
+      },
+      {
+        "capture": "successor",
+        "case": "special",
+        "growth_visible": false,
+        "menu_visible": true,
+        "message_id": "",
+        "milliseconds": 15921,
+        "reward": "EXP 21\n升級！等級 2",
+        "reward_visible": false,
+        "selected": "enemy023_1",
+        "stage": "idle",
+        "victim_alpha": 0.0,
+        "victim_visible": false
+      }
+    ],
+    "window_position": "(3520, 660)",
+    "window_size": "(640, 480)"
+  },
+  "normal_playthrough": {
+    "policy": "hold",
+    "opening": [
+      "363",
+      "364",
+      "365",
+      "366",
+      "367",
+      "364",
+      "1101"
+    ],
+    "dialogue": [
+      "372",
+      "372",
+      "372",
+      "396",
+      "397",
+      "374",
+      "374",
+      "372",
+      "372",
+      "368",
+      "369",
+      "369",
+      "372",
+      "371"
+    ],
+    "outcome": "victory_escape",
+    "turn": 7,
+    "elapsed_seconds": 178.172,
+    "restart": true,
+    "time_scale": 1.0
+  },
+  "normal_playthrough_revision_note": "Ran before the final EXP-label vertical-offset adjustment from 84 to 112; this hold route earned no player EXP. Combat/death/turn logic was unchanged. Code hashes describe the final rendered fixture.",
+  "normal_player_result": {
+    "hp": 22,
+    "exp": 0.0,
+    "level": 1.0,
+    "stamina": 5,
+    "inventory": [
+      241,
+      241,
+      241,
+      246,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "validation_logs": {
+    "hold": {
+      "path": "ignored/combat-aftermath-review/hold.log",
+      "sha256": "ed74f87d33dfdd5a0d9bfbf135eda0c849756bdbfcc2ee7dddfb15fe9616e321"
+    },
+    "review": {
+      "path": "ignored/combat-aftermath-review/review.log",
+      "sha256": "1a5656e88eeaf06ba2a3fce44b3fa35cb118cfe21ac5aed45cb64287f6655b18"
+    }
+  },
+  "limits": "First nonzero template line and 0.45s fade/1s reward are remake choices; no native RNG selection, original clock, gold, drops or pickup equivalence. Area multi-victim tests are receipt fixtures; normal fire/wind tests use real AI skill resolution."
+}

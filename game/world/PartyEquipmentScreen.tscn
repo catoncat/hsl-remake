@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/world/PartyEquipmentScreen.gd" id="1_party_equipment"]
+
+[node name="PartyEquipmentScreen" type="CanvasLayer"]
+layer = 5
+script = ExtResource("1_party_equipment")

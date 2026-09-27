@@ -1,0 +1,10 @@
+{
+  "schema": "hsl_item_rules_visual_evidence.v1",
+  "evidence_tier": "runtime-measured",
+  "subject": "Godot controlled important-item fixture, not original-game execution",
+  "files": {
+    "important-item-protection.png": "f1ffec0e49695066da2ec4f116fc4de8a2667536aae4433b23bdcb7f27c8814d",
+    "ordinary-discard-confirmation.png": "1b86eacee777599ab4a78a0df7cef8221dd529b776990f669218f7b46db113fa",
+    "important-receipt.json": "2f94562eeb3e392c0f3a53ff06523525e9f32523df1159fe24a2d2896ddfc395"
+  }
+}

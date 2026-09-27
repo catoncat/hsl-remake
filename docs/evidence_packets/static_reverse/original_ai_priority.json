@@ -1,0 +1,7117 @@
+{
+  "schema": "hsl_ai_priority_native.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "cases": [
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 3023
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 2,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2959
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 4,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2870
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 7,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2760
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 200,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 3102
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 2,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2959
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 4,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2870
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 7,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2760
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 200,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        },
+        {
+          "bound": 18,
+          "value": 14
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 24
+          },
+          {
+            "index": 2,
+            "threshold": 26
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 326
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 2,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 2,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 183
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 4,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 5,
+        "evaluated": [
+          {
+            "index": 4,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 183
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 7,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2760
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 200,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        },
+        {
+          "bound": 18,
+          "value": 14
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 24
+          },
+          {
+            "index": 2,
+            "threshold": 26
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 326
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 2,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 2,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 183
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 4,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 5,
+        "evaluated": [
+          {
+            "index": 4,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 183
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 7,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2760
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 200,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": 0,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        },
+        {
+          "bound": 18,
+          "value": 14
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 24
+          },
+          {
+            "index": 2,
+            "threshold": 26
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 349
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": 21,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        },
+        {
+          "bound": 18,
+          "value": 14
+        },
+        {
+          "bound": 18,
+          "value": 14
+        }
+      ],
+      "result": {
+        "native": 5,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 24
+          },
+          {
+            "index": 2,
+            "threshold": 26
+          },
+          {
+            "index": 4,
+            "threshold": 26
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 536
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": 22,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        },
+        {
+          "bound": 18,
+          "value": 14
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 24
+          },
+          {
+            "index": 2,
+            "threshold": 26
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 349
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 4,
+        "excluded": 22,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 5,
+        "evaluated": [
+          {
+            "index": 4,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 195
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 10,
+            "max_hp": 20,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 2,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 10
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 199
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 11,
+            "max_hp": 20,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 10
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 2973
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 12,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 2,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 199
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 29,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 2973
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 80,
+            "max_hp": 10000,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 2,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 80
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 200
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 81,
+            "max_hp": 10000,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 80
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 2974
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 3023
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 2,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2959
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 4,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2870
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 7,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2760
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 0,
+        "cursor": 200,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 19
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 3102
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 2,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2959
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 4,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2870
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 7,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2760
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 1,
+        "cursor": 200,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        },
+        {
+          "bound": 18,
+          "value": 0
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 19
+          },
+          {
+            "index": 2,
+            "threshold": 12
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 326
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 2,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 2,
+            "threshold": 19
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 183
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 4,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 5,
+        "evaluated": [
+          {
+            "index": 4,
+            "threshold": 19
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 183
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 7,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2760
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 200,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        },
+        {
+          "bound": 18,
+          "value": 0
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 19
+          },
+          {
+            "index": 2,
+            "threshold": 12
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 326
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 2,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 2,
+            "threshold": 19
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 183
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 4,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 5,
+        "evaluated": [
+          {
+            "index": 4,
+            "threshold": 19
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 183
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 7,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 2760
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 6,
+        "cursor": 200,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [],
+      "result": {
+        "native": 0,
+        "evaluated": []
+      },
+      "normal_return": true,
+      "instructions": 54
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": 0,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        },
+        {
+          "bound": 18,
+          "value": 0
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 19
+          },
+          {
+            "index": 2,
+            "threshold": 12
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 349
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": 21,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        },
+        {
+          "bound": 18,
+          "value": 0
+        },
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 5,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 19
+          },
+          {
+            "index": 2,
+            "threshold": 12
+          },
+          {
+            "index": 4,
+            "threshold": 24
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 536
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": 22,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        },
+        {
+          "bound": 18,
+          "value": 0
+        }
+      ],
+      "result": {
+        "native": 3,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 19
+          },
+          {
+            "index": 2,
+            "threshold": 12
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 349
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 31,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          },
+          {
+            "coord": [
+              15,
+              15
+            ],
+            "side": 65536,
+            "hp": 9,
+            "max_hp": 100,
+            "sid": 21,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 393216,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 24,
+            "removed": false
+          },
+          {
+            "coord": [
+              12,
+              10
+            ],
+            "side": 65536,
+            "hp": 0,
+            "max_hp": 100,
+            "sid": 22,
+            "removed": true
+          },
+          null,
+          {
+            "coord": [
+              16,
+              10
+            ],
+            "side": 65536,
+            "hp": 1,
+            "max_hp": 100,
+            "sid": 23,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 4,
+        "excluded": 22,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 5,
+        "evaluated": [
+          {
+            "index": 4,
+            "threshold": 19
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 195
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 10,
+            "max_hp": 20,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 2,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 10
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 199
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 11,
+            "max_hp": 20,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 10
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 2973
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 12,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 2,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 19
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 199
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 29,
+            "max_hp": 100,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 19
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 2973
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 80,
+            "max_hp": 10000,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 2,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 80
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 200
+    },
+    {
+      "input": {
+        "kind": "dying",
+        "owner": 0,
+        "units": [
+          {
+            "coord": [
+              10,
+              10
+            ],
+            "side": 131072,
+            "hp": 100,
+            "max_hp": 100,
+            "sid": 26,
+            "removed": false
+          },
+          {
+            "coord": [
+              11,
+              10
+            ],
+            "side": 65536,
+            "hp": 81,
+            "max_hp": 10000,
+            "sid": 0,
+            "removed": false
+          }
+        ],
+        "radius": 5,
+        "cursor": 0,
+        "excluded": -1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "evaluated": [
+          {
+            "index": 1,
+            "threshold": 80
+          }
+        ]
+      },
+      "normal_return": true,
+      "instructions": 2974
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 1,
+        "max_hp": 10,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 12
+      },
+      "normal_return": true,
+      "instructions": 88
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 1,
+        "max_hp": 20,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 14
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 10,
+        "max_hp": 20,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 14
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 11,
+        "max_hp": 20,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 14
+      },
+      "normal_return": true,
+      "instructions": 88
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 12,
+        "max_hp": 100,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 24
+      },
+      "normal_return": true,
+      "instructions": 86
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 29,
+        "max_hp": 100,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 24
+      },
+      "normal_return": true,
+      "instructions": 87
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 150,
+        "max_hp": 1000,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 160
+      },
+      "normal_return": true,
+      "instructions": 89
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 170,
+        "max_hp": 1000,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 160
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 175,
+        "max_hp": 10000,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 160
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 176,
+        "max_hp": 10000,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 160
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 100,
+        "max_hp": 100,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 12
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 24
+      },
+      "normal_return": true,
+      "instructions": 84
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 0,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        },
+        {
+          "bound": 99,
+          "value": 41
+        },
+        {
+          "bound": 99,
+          "value": 86
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 87,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 174
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        },
+        {
+          "bound": 99,
+          "value": 41
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 42,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 2,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        },
+        {
+          "bound": 99,
+          "value": 41
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 42,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 3,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 76,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 0,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 2,
+        "next_roll": 76,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 3,
+        "next_roll": 76,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 2,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 76,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 67
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 3,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 76,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 0,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        },
+        {
+          "bound": 99,
+          "value": 41
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 42,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 125
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        },
+        {
+          "bound": 99,
+          "value": 41
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 42,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 2,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 76,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 67
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 3,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 76,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 0,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 2,
+        "next_roll": 76,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 1,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 3,
+        "next_roll": 76,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 2,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        },
+        {
+          "bound": 99,
+          "value": 41
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 42,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 3,
+        "seed": 1
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 75
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 76,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 1,
+        "max_hp": 10,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 12
+      },
+      "normal_return": true,
+      "instructions": 88
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 1,
+        "max_hp": 20,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 14
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 10,
+        "max_hp": 20,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 14
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 11,
+        "max_hp": 20,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 14
+      },
+      "normal_return": true,
+      "instructions": 88
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 12,
+        "max_hp": 100,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 21
+      },
+      "normal_return": true,
+      "instructions": 86
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 29,
+        "max_hp": 100,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 21
+      },
+      "normal_return": true,
+      "instructions": 87
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 150,
+        "max_hp": 1000,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 162
+      },
+      "normal_return": true,
+      "instructions": 89
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 170,
+        "max_hp": 1000,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 162
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 175,
+        "max_hp": 10000,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 164
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 176,
+        "max_hp": 10000,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 164
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 100,
+        "max_hp": 100,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 9
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 21
+      },
+      "normal_return": true,
+      "instructions": 84
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 0,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        },
+        {
+          "bound": 99,
+          "value": 2
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 3,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 174
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 1,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 32,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 2,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 32,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 3,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 28,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 0,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 2,
+        "next_roll": 28,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 1,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 3,
+        "next_roll": 28,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 2,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 28,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 67
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 3,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 28,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 0,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 32,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 125
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 1,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 32,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 2,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 28,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 67
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 3,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 28,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 0,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 2,
+        "next_roll": 28,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 1,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 3,
+        "next_roll": 28,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 2,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        },
+        {
+          "bound": 99,
+          "value": 31
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 32,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 3,
+        "seed": 7
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 27
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 28,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 1,
+        "max_hp": 10,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 11
+      },
+      "normal_return": true,
+      "instructions": 88
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 1,
+        "max_hp": 20,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 13
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 10,
+        "max_hp": 20,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 13
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 11,
+        "max_hp": 20,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 13
+      },
+      "normal_return": true,
+      "instructions": 88
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 12,
+        "max_hp": 100,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 19
+      },
+      "normal_return": true,
+      "instructions": 86
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 29,
+        "max_hp": 100,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 19
+      },
+      "normal_return": true,
+      "instructions": 87
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 150,
+        "max_hp": 1000,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 174
+      },
+      "normal_return": true,
+      "instructions": 89
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 170,
+        "max_hp": 1000,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 1,
+        "threshold": 174
+      },
+      "normal_return": true,
+      "instructions": 89
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 175,
+        "max_hp": 10000,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 172
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 176,
+        "max_hp": 10000,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 172
+      },
+      "normal_return": true,
+      "instructions": 90
+    },
+    {
+      "input": {
+        "kind": "self_hp",
+        "hp": 100,
+        "max_hp": 100,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 18,
+          "value": 7
+        }
+      ],
+      "result": {
+        "native": 0,
+        "threshold": 19
+      },
+      "normal_return": true,
+      "instructions": 84
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 0,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        },
+        {
+          "bound": 99,
+          "value": 63
+        },
+        {
+          "bound": 99,
+          "value": 93
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 94,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 174
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        },
+        {
+          "bound": 99,
+          "value": 63
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 64,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 2,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        },
+        {
+          "bound": 99,
+          "value": 63
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 64,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 0,
+        "dying_rate": 0,
+        "attempted": 3,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 26,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 0,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 2,
+        "next_roll": 26,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 3,
+        "next_roll": 26,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 2,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 26,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 67
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 100,
+        "dying_rate": 100,
+        "attempted": 3,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 26,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 0,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        },
+        {
+          "bound": 99,
+          "value": 63
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 64,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 125
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        },
+        {
+          "bound": 99,
+          "value": 63
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 64,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 2,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 1,
+        "attempted": 3,
+        "next_roll": 26,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 67
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 20,
+        "dying_rate": 90,
+        "attempted": 3,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 26,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 0,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 2,
+        "next_roll": 26,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 1,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 2,
+        "attempted": 3,
+        "next_roll": 26,
+        "stop": "0x441035"
+      },
+      "normal_return": false,
+      "instructions": 65
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 2,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        },
+        {
+          "bound": 99,
+          "value": 63
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 64,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "kind": "priority",
+        "self_rate": 90,
+        "dying_rate": 20,
+        "attempted": 3,
+        "seed": 19
+      },
+      "draws": [
+        {
+          "bound": 99,
+          "value": 25
+        }
+      ],
+      "result": {
+        "kind": 0,
+        "attempted": 3,
+        "next_roll": 26,
+        "stop": "0x440e3d"
+      },
+      "normal_return": false,
+      "instructions": 58
+    },
+    {
+      "input": {
+        "kind": "heal_item",
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "items": {
+          "1": {
+            "type": 1,
+            "heal_hp": 0
+          },
+          "2": {
+            "type": 2,
+            "heal_hp": 50
+          },
+          "3": {
+            "type": 1,
+            "heal_hp": 30
+          },
+          "4": {
+            "type": 1,
+            "heal_hp": 60
+          }
+        },
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 0
+      },
+      "normal_return": true,
+      "instructions": 74
+    },
+    {
+      "input": {
+        "kind": "heal_item",
+        "slots": [
+          1,
+          2,
+          3,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        "items": {
+          "1": {
+            "type": 1,
+            "heal_hp": 0
+          },
+          "2": {
+            "type": 2,
+            "heal_hp": 50
+          },
+          "3": {
+            "type": 1,
+            "heal_hp": 30
+          },
+          "4": {
+            "type": 1,
+            "heal_hp": 60
+          }
+        },
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 3
+      },
+      "normal_return": true,
+      "instructions": 60
+    },
+    {
+      "input": {
+        "kind": "heal_item",
+        "slots": [
+          4,
+          3,
+          2,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "items": {
+          "1": {
+            "type": 1,
+            "heal_hp": 0
+          },
+          "2": {
+            "type": 2,
+            "heal_hp": 50
+          },
+          "3": {
+            "type": 1,
+            "heal_hp": 30
+          },
+          "4": {
+            "type": 1,
+            "heal_hp": 60
+          }
+        },
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 1
+      },
+      "normal_return": true,
+      "instructions": 31
+    },
+    {
+      "input": {
+        "kind": "heal_item",
+        "slots": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4
+        ],
+        "items": {
+          "1": {
+            "type": 1,
+            "heal_hp": 0
+          },
+          "2": {
+            "type": 2,
+            "heal_hp": 50
+          },
+          "3": {
+            "type": 1,
+            "heal_hp": 30
+          },
+          "4": {
+            "type": 1,
+            "heal_hp": 60
+          }
+        },
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 8
+      },
+      "normal_return": true,
+      "instructions": 98
+    },
+    {
+      "input": {
+        "kind": "heal_item",
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4
+        ],
+        "items": {
+          "1": {
+            "type": 1,
+            "heal_hp": 0
+          },
+          "2": {
+            "type": 2,
+            "heal_hp": 50
+          },
+          "3": {
+            "type": 1,
+            "heal_hp": 30
+          },
+          "4": {
+            "type": 1,
+            "heal_hp": 60
+          }
+        },
+        "seed": 1
+      },
+      "draws": [],
+      "result": {
+        "native": 8
+      },
+      "normal_return": true,
+      "instructions": 80
+    }
+  ],
+  "limits": [
+    "Synthetic original instructions and RNG; no callee stubs, Wine, host input or natural gameplay.",
+    "Priority prefix stops before support checks or state dispatch; it is not a full AI normal return.",
+    "No native item effects, healing magic, targeting/path scoring or whole-turn RNG equivalence."
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 13,
+  "battle": {
+    "id": "battle_013_level13",
+    "title": "龍之息（火山） · 火山突圍",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "arrive",
+    "result_labels": {
+      "win_0": "龍之息（火山） · 到達出口",
+      "fail_0": "龍之息（火山） · 雷歐納德 陣亡",
+      "fail_1": "龍之息（火山） · 回合逾時"
+    },
+    "expected": {
+      "units": 18,
+      "players": 9
+    },
+    "footprint_radius_overrides": {
+      "051": 1
+    },
+    "unresolved_semantics": [
+      "STORY013 opens the seven controlled party members and WINFAIL013 inserts six Enemy051 plus three Enemy050 units; the battle roster and endpoints are assembled from the source preview/seed.",
+      "WINFAIL013 win_0 is the source arrival rectangle at pixels (416,288)-(448,288); the remake keeps that condition in the shared interpreter and uses the first aligned cell as the capture input.",
+      "The lava background, sword/light objects and scripted insertion timing are resource-derived requests with remake presentation pacing; blocked scripted endpoints retain the shared nearest-free policy."
+    ]
+  },
+  "story_scene": {
+    "id": "story_013_dragon_breath_volcano_opening",
+    "title": "龍之息（火山）（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "龍之息（火山）",
+      "hint": "戰鬥部分（level 13）尚未重製　　空格／點擊：回到大地圖（龍之息（火山））"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party and the 050 / 051 creatures have no battle scenario yet (P-024, multi-slot party); the preview shows the EVEF placements, STORY013 walks and the nine script inserts only",
+      "STORY013 addresses the conditional install(s) 咕嚕 / 克羅蒂 (actWalkDisp SID_咕嚕 / SID_克羅蒂, actMessage SID_克羅蒂 1787); with no bound unit their walks are skipped and their lines show with the speaker label only",
+      "actWalkDispWait,-1,... after an insert addresses the previously inserted object (script convention); the coordinator's previous-insert binding is a remake reading",
+      "the 15 溶岩背景01 (mapobjWaterMove) and 40 溶岩泡泡 (mapobjNextShape2) lava objects, the 輝煌之器 sword and the 輝煌白光 flash are drawn from map_objects.json hints; the original water motion and the sword's battle role (WINFAIL013) are not remade"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "050",
+      "051"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-013.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-013.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-013.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-013.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-013.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-013.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-013.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-013.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); conditional install, left out of the preview",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-013.obs 克羅蒂(有才產生) (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived); conditional install, left out of the preview"
+  },
+  "sweep_fixture": {
+    "mode": "status",
+    "arrive": {
+      "unit": "leonard",
+      "cell": [
+        13,
+        9
+      ],
+      "restore": true
+    },
+    "expect_no_outcome": true,
+    "note": "WINFAIL013 is an arrival objective; the source endpoint is not a valid 3x3 stop so the mirror keeps its pre-arrival footprint."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 13 (龍之息 火山, bigmap.dat point 13, entered from the 命運神殿 town event 151): the",
+      "nine-slot party walks up from the south edge of the 960x1280 lava field (咕嚕 / 克羅蒂 are",
+      "有才產生 installs), 雪拉 and 雷歐納德 spot the light of the 輝煌之器, six 051 and three 050",
+      "creatures are inserted, 克羅蒂 sends 雷歐納德 for the sword. actPlayLevelMusic: table 0x477b44",
+      "gives level 13 track 15 (as for level 10)."
+    ],
+    "cast": [
+      "Level 13 (龍之息 火山): the nine-slot party (咕嚕 008 / 克羅蒂 009 are conditional installs) and the",
+      "051 / 050 creatures STORY013 inserts; 克羅蒂 speaks (1787), the slots' dead messages name 001-007."
+    ],
+    "speakers": [
+      "Level 13 (龍之息 火山, STORY013 / WINFAIL013, bigmap point 13, reached from the 命運神殿 town event 151): the",
+      "nine-slot party walks up from the south edge (咕嚕 / 克羅蒂 are 有才產生 installs; STORY013 still",
+      "addresses SID_咕嚕 and SID_克羅蒂), the 051 / 050 creatures are script inserts."
+    ]
+  }
+}

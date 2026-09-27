@@ -1,0 +1,374 @@
+{
+  "failures": [],
+  "records": [
+    {
+      "camera": "(320.0, 336.0)",
+      "capture": "00-emperor-framed",
+      "event": "story052_02_opening_delay",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 400.0)",
+      "capture": "dialogue-379",
+      "event": "story052_03_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 336.0)",
+      "capture": "dialogue-380",
+      "event": "story052_04_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 400.0)",
+      "capture": "dialogue-381",
+      "event": "story052_05_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 432.0)",
+      "capture": "dialogue-383",
+      "event": "story052_08_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 432.0)",
+      "capture": "dialogue-384",
+      "event": "story052_10_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "party-walk-up",
+      "event": "story052_14_actor_walk_disp_wait",
+      "interaction": "opening_timeline",
+      "motion": true
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "dialogue-385",
+      "event": "story052_19_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 464.0)",
+      "capture": "dialogue-386",
+      "event": "story052_22_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 464.0)",
+      "capture": "dialogue-387",
+      "event": "story052_24_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "dialogue-388",
+      "event": "story052_46_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "dialogue-389",
+      "event": "story052_47_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 432.0)",
+      "capture": "dialogue-390",
+      "event": "story052_48_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "dialogue-391",
+      "event": "story052_49_dialogue_message_id",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "section-title",
+      "event": "story052_51_section_title_resource",
+      "interaction": "opening_timeline",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "first-control",
+      "event": "first_control_ready",
+      "interaction": "action_menu",
+      "motion": false
+    },
+    {
+      "case": "second_battle_product_opening",
+      "elapsed_seconds": 35.032,
+      "round": 0,
+      "selected_unit": "leonard",
+      "summary": {
+        "active": false,
+        "camera_records": [
+          {
+            "scroll": false,
+            "source_event_id": "story052_00_background_object_target",
+            "target": "(320.0, 336.0)",
+            "unit_id": "emperor025"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_03_dialogue_message_id",
+            "target": "(320.0, 400.0)",
+            "unit_id": "enemy026_1"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_04_dialogue_message_id",
+            "target": "(320.0, 336.0)",
+            "unit_id": "emperor025"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_05_dialogue_message_id",
+            "target": "(320.0, 400.0)",
+            "unit_id": "enemy026_2"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_06_actor_walk_disp_wait",
+            "target": "(320.0, 336.0)",
+            "unit_id": "emperor025"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_08_dialogue_message_id",
+            "target": "(320.0, 432.0)",
+            "unit_id": "emperor025"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_09_actor_walk_disp_wait",
+            "target": "(320.0, 400.0)",
+            "unit_id": "enemy026_1"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_10_dialogue_message_id",
+            "target": "(320.0, 432.0)",
+            "unit_id": "enemy026_1"
+          },
+          {
+            "scroll": true,
+            "source_event_id": "story052_13_camera_object_target",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "leonard"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_14_actor_walk_disp_wait",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "leonard"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_15_actor_walk_disp_wait",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "ally023_1"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_16_actor_walk_disp_wait",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "ally023_2"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_17_actor_walk_disp_wait",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "ally024_1"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_18_actor_walk_disp_wait",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "ally024_2"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_19_dialogue_message_id",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "leonard"
+          },
+          {
+            "scroll": true,
+            "source_event_id": "story052_20_camera_object_target",
+            "target": "(320.0, 400.0)",
+            "unit_id": "enemy026_2"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_21_actor_walk_disp_wait",
+            "target": "(320.0, 400.0)",
+            "unit_id": "enemy026_2"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_22_dialogue_message_id",
+            "target": "(320.0, 464.0)",
+            "unit_id": "enemy026_2"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_23_actor_walk_disp_wait",
+            "target": "(320.0, 432.0)",
+            "unit_id": "enemy026_1"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_24_dialogue_message_id",
+            "target": "(320.0, 464.0)",
+            "unit_id": "enemy026_1"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_27_inserted_object_walk_disp_wait",
+            "target": "(320.0, 583.0)",
+            "unit_id": "enemy021_1"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_30_inserted_object_walk_disp_wait",
+            "target": "(320.0, 583.0)",
+            "unit_id": "enemy021_2"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_33_inserted_object_walk_disp_wait",
+            "target": "(320.0, 583.0)",
+            "unit_id": "enemy021_3"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_36_inserted_object_walk_disp_wait",
+            "target": "(320.0, 583.0)",
+            "unit_id": "enemy021_4"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_38_inserted_object_walk_disp_wait",
+            "target": "(320.0, 800.0)",
+            "unit_id": "enemy021_5"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_40_inserted_object_walk_disp_wait",
+            "target": "(320.0, 800.0)",
+            "unit_id": "enemy021_6"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_42_inserted_object_walk_disp_wait",
+            "target": "(320.0, 800.0)",
+            "unit_id": "enemy021_7"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_44_inserted_object_walk_disp_wait",
+            "target": "(320.0, 800.0)",
+            "unit_id": "enemy021_8"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_46_dialogue_message_id",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "leonard"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_47_dialogue_message_id",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "ally023_1"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_48_dialogue_message_id",
+            "target": "(320.0, 432.0)",
+            "unit_id": "emperor025"
+          },
+          {
+            "scroll": false,
+            "source_event_id": "story052_49_dialogue_message_id",
+            "target": "(320.0, 1040.0)",
+            "unit_id": "leonard"
+          }
+        ],
+        "claim_limit": "Compiled STORY token order with explicit remake pacing; original delay units, walk paths, camera curves and handler side effects are not proven.",
+        "current_event_id": "first_control_ready",
+        "current_event_kind": "first_control_marker",
+        "inserted_unit_ids": [
+          "enemy021_1",
+          "enemy021_2",
+          "enemy021_3",
+          "enemy021_4",
+          "enemy021_5",
+          "enemy021_6",
+          "enemy021_7",
+          "enemy021_8"
+        ],
+        "last_transition": {
+          "finished": false,
+          "from_event_id": "story052_56_winfail_board_refresh",
+          "from_index": 56,
+          "schema": "hsl_scene_timeline_transition.v1",
+          "to_event_id": "first_control_ready",
+          "to_index": 57,
+          "trigger": "automatic_stage"
+        },
+        "motion_count": 25,
+        "schema": "hsl_battle_opening_coordinator.v1",
+        "skipped_records": [],
+        "sound_records": [
+          {
+            "resource": "WAV\\CLIP001.WAV",
+            "source_event_id": "story052_11_sound_effect",
+            "status": "not_imported_skipped"
+          }
+        ],
+        "source_script": "story052",
+        "status_tokens": {
+          "board_visible": true,
+          "dead_message": {
+            "actor_token": "SID_PLAYER0",
+            "message_id": "394",
+            "source_event_id": "story052_50_dead_message_registration"
+          },
+          "event": [
+            "0",
+            "1"
+          ],
+          "fail": [
+            "0"
+          ],
+          "win": [
+            "0"
+          ]
+        },
+        "step_count": 57,
+        "wait_remaining": -0.00000000000000000346944695195361
+      }
+    }
+  ],
+  "schema": "hsl_second_battle_opening_review.v1"
+}

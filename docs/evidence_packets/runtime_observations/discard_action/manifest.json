@@ -1,0 +1,9 @@
+{
+  "fixture": true,
+  "files_sha256": {
+    "discard-action-menu.png": "ce63c5d4085897888e5419cc91b18b7917efa00f67f0f65e1044c2a41ffa408a",
+    "discard-move-select.png": "e36974f850a690abaf75825e860a667f5be358a90479d6840ab83728f89936fb",
+    "discard-inventory-after.png": "e0f74479e0eacaacd17cb015d6f61f34437ea6908ea26b666bae966d0056373c",
+    "discard-receipt.json": "0256dbcba13d2def04c6a427af7d26fd636fd4ba4b808cfcc73d9ee7242dab49"
+  }
+}

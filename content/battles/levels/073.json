@@ -1,0 +1,184 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 73,
+  "battle": {
+    "id": "battle_073_level73",
+    "title": "悲嘆之湖・兄弟的抉擇",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "event_0": "悲嘆之湖・兄弟的抉擇 · 殺死席德爾",
+      "event_1": "悲嘆之湖・兄弟的抉擇 · 放過席德爾",
+      "event_2": "悲嘆之湖・兄弟的抉擇 · 事件結束"
+    },
+    "expected": {
+      "units": 10,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY073 opens eight controlled party members and the source Enemy056 object; the fallen Enemy056 shape set is retained as the static-derived actor presentation input.",
+      "WINFAIL073 has no win or fail section. Its event_0/event_1 are the two choice branches and both chain to unconditional event_2, so the formal battle ends by event completion and never invents a win_0 condition.",
+      "The event-branch dialogue, red-light/impact presentation, game-over flag and town/big-map writes are source-ordered records; branch timing and original object lifetime remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_073_lake_of_lament_choice",
+    "title": "悲嘆之湖・兄弟的抉擇（劇情預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "悲嘆之湖",
+      "hint": "level 73 沒有戰鬥段：兩個選擇分支都回到大地圖　　空格／點擊：回到大地圖（悲嘆之湖）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "winfail073 has no win / fail section: level 73 is the 雷特-席德爾 choice scene played on the lake map after the battle 41 victory (actSetNextPlayLevelEvent 41,73); the \"battle\" of this battle-kind seed never starts, so the card is reached only when no branch was chosen",
+      "both select branches end on actInsertEventStatus 2 / actExecWinFailProcess: event 2 (the 斐達克 town events 168-178, track 42 / point 44 hidden, actSetNextPlayLevelEvent 41,gameBigMapLevel) is appended to each compiled branch so the hand-off reaches the scene end; the original arms status 2 and lets the winfail process run it (ordering is a remake reading)",
+      "actSetOverFlag gameoverflagFreeEnemy (選擇二, sparing 席德爾) is applied to the campaign world state at hand-off (WorldScriptActions game_over_flag -> teSetOverFlag): it is the condition under which STORY057's dispatch can pick finale 77 席德爾 (EndingDispatchRules, static-derived)",
+      "actChangeShape SID_ENEMY056,1,4,SHAPE\\056-P.SHP,1 uses the single fallen frame decoded to actor_shape_sets/ (fallen); the 紅光 screen flash (MAGIC\\RED_SCREEN.SHP, defProcScreenFlash) is exported as a script object sprite, its flash process is a remake reading"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "056"
+    ],
+    "speakers": [
+      "001",
+      "005",
+      "006",
+      "056"
+    ],
+    "shape_sets": {
+      "fallen": {
+        "actor_id": "056",
+        "members": [
+          "SHAPE\\056-P.SHP"
+        ],
+        "source_token": "actChangeShape,SID_ENEMY056,1,4,SHAPE\\056-P.SHP,1"
+      }
+    }
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY056": "652"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-073.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-073.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-073.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-073.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-073.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-073.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-073.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-073.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-073.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY056": "PLAYERS.TXT character 56 name field = 652 席德爾 (resource-derived name)"
+  },
+  "sweep_fixture": {
+    "mode": "status",
+    "skip_opening": true,
+    "turn": 10,
+    "event_statuses": [
+      2
+    ],
+    "expect_no_outcome": true,
+    "commit_outcome": {
+      "result": "victory",
+      "reason": "script"
+    },
+    "finish": "pending_handoff",
+    "expect_handoff": "world_map",
+    "note": "WINFAIL073 has no win section; event_2 is the unconditional terminal hand-off after either choice branch."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 73 (after 悲嘆之湖: winfail041's win section hands over with actSetNextPlayLevelEvent",
+      "41,73): on the level-41 lake map (obj-073.obs 地圖管理員 names SHAPE41\\LEVEL41.SHP) the",
+      "beaten 席德爾 056 asks 雷特 to kill him; STORY073 ends on actSelectInsertEvent — 選擇一",
+      "(winfail073 event 0) kills him (HIT00007, the 056-P fallen shape, the 紅光 screen flash),",
+      "選擇二 (event 1, actSetOverFlag gameoverflagFreeEnemy) lets him walk off north; both",
+      "chain into event 2 (the 斐達克 town events 168-178, track 42 / point 44 hidden,",
+      "actSetNextPlayLevelEvent 41,gameBigMapLevel). winfail073 has no win / fail section,",
+      "so the seed is a battle-kind level with no battle body and no skip_battle row.",
+      "actPlayMusic 9: track 9 (the level's own",
+      "table entry is also track 9, static-derived byte read of 0x477b44)."
+    ],
+    "cast": [
+      "lane ch3: finale chain 73 / 75-82 (nine-slot party; 咕嚕 008 is a conditional install except",
+      "where noted; 克羅蒂 009 is conditional in 80). Bosses from the EVEF / winfail inserts.",
+      "Level 73 (悲嘆之湖 aftermath): 席德爾 056 defeated at the lake; winfail073 event 0 swaps him to",
+      "the single-frame 056-P fallen shape (actChangeShape ...,4,SHAPE\\056-P.SHP,1) before he vanishes."
+    ],
+    "speakers": [
+      "lane ch3: finale chain 73 / 75-82 (the nine EXTRAS.H slots; 咕嚕 is a conditional install except in 78 / 79 where he is absent / the boss 057; 80 also conditions 克羅蒂).",
+      "Level 73 (after 悲嘆之湖, winfail041 -> 41,73): 席德爾 056 defeated; 雷特 chooses (actSelectInsertEvent), 雪拉 speaks in the winfail branches."
+    ]
+  }
+}

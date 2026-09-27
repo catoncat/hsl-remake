@@ -1,0 +1,6876 @@
+{
+  "schema": "hsl_mana_strike_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "sources": {
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c"
+  },
+  "caller": [
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 64,
+      "normal_return": true,
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 60,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 65,
+      "normal_return": true,
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 64,
+      "normal_return": true,
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 60,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 65,
+      "normal_return": true,
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 64,
+      "normal_return": true,
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 60,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 0,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 0,
+        "effect_called": false
+      },
+      "draws": [],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 65,
+      "normal_return": true,
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 348,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 269,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 306,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 69,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 390,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 348,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 269,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 306,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 69,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 390,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 348,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 269,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 1,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 306,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 69,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 390,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 387,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 308,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 280,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 95,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 387,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 308,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 280,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 95,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 387,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 308,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 2,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 280,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 95,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 386,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 306,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 281,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 95,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 430,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 385,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 306,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 281,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 95,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 76,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 385,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 1,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 306,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 3,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 76,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 281,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 112,
+          "value": 95,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 2,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 386,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 2,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 306,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 324,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 113,
+          "value": 53,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 430,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 2,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 385,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 2,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 306,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 324,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 113,
+          "value": 53,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 76,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 2,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 385,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 2,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 306,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 4,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 76,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 324,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 113,
+          "value": 53,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 5,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 425,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 5,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 345,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 367,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 114,
+          "value": 13,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 430,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 5,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 425,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 5,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 345,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 367,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 114,
+          "value": 13,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 430,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 75,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 5,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 424,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 5,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 345,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 8,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 75,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 367,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience"
+        },
+        {
+          "bound": 114,
+          "value": 13,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 76,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 24,
+          "value": 7,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 425,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 76,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 24,
+          "value": 7,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 345,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 0,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 402,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 137,
+          "value": 56,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 430,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 76,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 24,
+          "value": 7,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 425,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 1,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 76,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 24,
+          "value": 7,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 345,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 1,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 0,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 402,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 137,
+          "value": 56,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 430,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 44,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 76,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 24,
+          "value": 7,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 424,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 76,
+        "effect_called": false
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 24,
+          "value": 7,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "instructions": 345,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          7,
+          2271560481
+        ],
+        "effects": 4194304,
+        "immunity": 0,
+        "poison": 0,
+        "hp": 0,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 100,
+        "remaining": 1
+      },
+      "native": {
+        "poison": 0,
+        "status": 6,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 0,
+        "mp": 44,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 402,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 50,
+          "value": 27,
+          "stage": "experience"
+        },
+        {
+          "bound": 137,
+          "value": 56,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 429,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "effects": 0,
+        "immunity": 0,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 18,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8,
+          "stage": "experience"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 408,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "effects": 0,
+        "immunity": 0,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 13,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3,
+          "stage": "experience"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 408,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "effects": 0,
+        "immunity": 128,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 18,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8,
+          "stage": "experience"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 408,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "effects": 0,
+        "immunity": 128,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 13,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3,
+          "stage": "experience"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 408,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "effects": 0,
+        "immunity": 8388608,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 18,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8,
+          "stage": "experience"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 408,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "effects": 0,
+        "immunity": 8388608,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 77,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 13,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3,
+          "stage": "experience"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 408,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "effects": 6356992,
+        "immunity": 0,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1441796,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 71,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 18,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8,
+          "stage": "experience"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "experience"
+        },
+        {
+          "bound": 100,
+          "value": 78,
+          "stage": "effects"
+        },
+        {
+          "bound": 100,
+          "value": 10,
+          "stage": "effects"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "effects"
+        },
+        {
+          "bound": 9,
+          "value": 7,
+          "stage": "effects"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "effects"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x4091b0",
+        "0x409460"
+      ],
+      "instructions": 1053,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "effects": 6356992,
+        "immunity": 0,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 71,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 13,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3,
+          "stage": "experience"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 100,
+          "value": 82,
+          "stage": "effects"
+        },
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "effects"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 677,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "effects": 6356992,
+        "immunity": 128,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 71,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 18,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8,
+          "stage": "experience"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "experience"
+        },
+        {
+          "bound": 100,
+          "value": 78,
+          "stage": "effects"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 565,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "effects": 6356992,
+        "immunity": 128,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 71,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 13,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3,
+          "stage": "experience"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 100,
+          "value": 82,
+          "stage": "effects"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 565,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          1,
+          2271560481
+        ],
+        "effects": 6356992,
+        "immunity": 8388608,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 71,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 18,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8,
+          "stage": "experience"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "experience"
+        },
+        {
+          "bound": 100,
+          "value": 78,
+          "stage": "effects"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 565,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    },
+    {
+      "input": {
+        "seed": [
+          19,
+          2271560481
+        ],
+        "effects": 6356992,
+        "immunity": 8388608,
+        "poison": 1310723,
+        "hp": 100,
+        "mp": 77,
+        "index": 0,
+        "slots": [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            3,
+            1
+          ]
+        ],
+        "contribution": 20,
+        "remaining": 0
+      },
+      "native": {
+        "poison": 1310723,
+        "status": 7,
+        "paralysis": 2,
+        "no_magic": 3,
+        "hp": 100,
+        "mp": 71,
+        "queue": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "cancelled_index": -1,
+        "experience": 13,
+        "effect_called": true
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3,
+          "stage": "experience"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience"
+        },
+        {
+          "bound": 100,
+          "value": 82,
+          "stage": "effects"
+        }
+      ],
+      "calls": [
+        "0x40a5d0",
+        "0x4095e0",
+        "0x4092d0",
+        "0x409310",
+        "0x409460"
+      ],
+      "instructions": 565,
+      "normal_return": false,
+      "entry": "0x4423c0",
+      "stop_address": "0x44248e",
+      "attacker_unchanged": true
+    }
+  ],
+  "impact": [
+    {
+      "input": {
+        "hp": 1,
+        "damage": 300,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 1,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 1,
+        "damage": 300,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 1,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 1,
+        "damage": 300,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 1,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 1,
+        "damage": 300,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 1,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 1,
+        "damage": 300,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 1,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 1,
+        "damage": 300,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 1,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 2,
+        "damage": 300,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 2,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 2,
+        "damage": 300,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 2,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 2,
+        "damage": 300,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 2,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 2,
+        "damage": 300,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 2,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 2,
+        "damage": 300,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 2,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 2,
+        "damage": 300,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 2,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 3,
+        "damage": 300,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 3,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 3,
+        "damage": 300,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 3,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 39
+    },
+    {
+      "input": {
+        "hp": 3,
+        "damage": 300,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 3,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 3,
+        "damage": 300,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 3,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 3,
+        "damage": 300,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 3,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 3,
+        "damage": 300,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 3,
+        "mp": 76,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 4,
+        "damage": 300,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 4,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 4,
+        "damage": 300,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 4,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 39
+    },
+    {
+      "input": {
+        "hp": 4,
+        "damage": 300,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 4,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 4,
+        "damage": 300,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 4,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 4,
+        "damage": 300,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 4,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 4,
+        "damage": 300,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 4,
+        "mp": 76,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 7,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 7,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 7,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 7,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 7,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 7,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 75,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 33
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 8,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 8,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 39
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 8,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 8,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 39
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 8,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 22
+    },
+    {
+      "input": {
+        "hp": 7,
+        "damage": 8,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 0,
+        "contribution": 7,
+        "mp": 75,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 2,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 98,
+        "contribution": 2,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 2,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 98,
+        "contribution": 2,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 33
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 2,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 98,
+        "contribution": 2,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 2,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 98,
+        "contribution": 2,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 33
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 2,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 98,
+        "contribution": 2,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 2,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 98,
+        "contribution": 2,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 33
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 3,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 97,
+        "contribution": 3,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 3,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 97,
+        "contribution": 3,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 3,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 97,
+        "contribution": 3,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 3,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 97,
+        "contribution": 3,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 33
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 3,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 97,
+        "contribution": 3,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 3,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 97,
+        "contribution": 3,
+        "mp": 76,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 33
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 8,
+        "mp": 0,
+        "effects": 0
+      },
+      "native": {
+        "hp": 92,
+        "contribution": 8,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 8,
+        "mp": 0,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 92,
+        "contribution": 8,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 8,
+        "mp": 1,
+        "effects": 0
+      },
+      "native": {
+        "hp": 92,
+        "contribution": 8,
+        "mp": 1,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 8,
+        "mp": 1,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 92,
+        "contribution": 8,
+        "mp": 0,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 8,
+        "mp": 77,
+        "effects": 0
+      },
+      "native": {
+        "hp": 92,
+        "contribution": 8,
+        "mp": 77,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 17
+    },
+    {
+      "input": {
+        "hp": 100,
+        "damage": 8,
+        "mp": 77,
+        "effects": 4194304
+      },
+      "native": {
+        "hp": 92,
+        "contribution": 8,
+        "mp": 75,
+        "attacker_mp": 51
+      },
+      "prefix_stop": "0x4040c2",
+      "leaf_entry": "0x409460",
+      "normal_return": true,
+      "instructions": 33
+    }
+  ],
+  "mapping": [
+    {
+      "input": {
+        "field": "attack_decmp",
+        "value": 0,
+        "before": 0
+      },
+      "native": 0,
+      "entry": "0x4480d2",
+      "stop_address": "0x4480e5",
+      "instructions": 4,
+      "normal_return": false
+    },
+    {
+      "input": {
+        "field": "attack_decmp",
+        "value": 0,
+        "before": 2097152
+      },
+      "native": 2097152,
+      "entry": "0x4480d2",
+      "stop_address": "0x4480e5",
+      "instructions": 4,
+      "normal_return": false
+    },
+    {
+      "input": {
+        "field": "attack_decmp",
+        "value": 1,
+        "before": 0
+      },
+      "native": 4194304,
+      "entry": "0x4480d2",
+      "stop_address": "0x4480e5",
+      "instructions": 5,
+      "normal_return": false
+    },
+    {
+      "input": {
+        "field": "attack_decmp",
+        "value": 1,
+        "before": 2097152
+      },
+      "native": 6291456,
+      "entry": "0x4480d2",
+      "stop_address": "0x4480e5",
+      "instructions": 5,
+      "normal_return": false
+    }
+  ],
+  "gear": [
+    {
+      "input": {
+        "job": 88,
+        "codes": [],
+        "status": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "status": 0,
+            "poison": 0,
+            "no_magic": 0,
+            "paralysis": 0,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 495
+        },
+        {
+          "values": {
+            "effects": 0,
+            "status": 0,
+            "poison": 0,
+            "no_magic": 0,
+            "paralysis": 0,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 495
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 88,
+        "codes": [],
+        "status": 7
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "status": 7,
+            "poison": 1310723,
+            "no_magic": 2,
+            "paralysis": 1,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 495
+        },
+        {
+          "values": {
+            "effects": 0,
+            "status": 7,
+            "poison": 1310723,
+            "no_magic": 2,
+            "paralysis": 1,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 495
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 88,
+        "codes": [
+          108
+        ],
+        "status": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4194304,
+            "status": 0,
+            "poison": 0,
+            "no_magic": 0,
+            "paralysis": 0,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 592
+        },
+        {
+          "values": {
+            "effects": 4194304,
+            "status": 0,
+            "poison": 0,
+            "no_magic": 0,
+            "paralysis": 0,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 592
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 88,
+        "codes": [
+          108
+        ],
+        "status": 7
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4194304,
+            "status": 7,
+            "poison": 1310723,
+            "no_magic": 2,
+            "paralysis": 1,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 592
+        },
+        {
+          "values": {
+            "effects": 4194304,
+            "status": 7,
+            "poison": 1310723,
+            "no_magic": 2,
+            "paralysis": 1,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 592
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 88,
+        "codes": [
+          102
+        ],
+        "status": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "status": 0,
+            "poison": 0,
+            "no_magic": 0,
+            "paralysis": 0,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 592
+        },
+        {
+          "values": {
+            "effects": 0,
+            "status": 0,
+            "poison": 0,
+            "no_magic": 0,
+            "paralysis": 0,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 592
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 88,
+        "codes": [
+          102
+        ],
+        "status": 7
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "status": 7,
+            "poison": 1310723,
+            "no_magic": 2,
+            "paralysis": 1,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 592
+        },
+        {
+          "values": {
+            "effects": 0,
+            "status": 7,
+            "poison": 1310723,
+            "no_magic": 2,
+            "paralysis": 1,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 592
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 88,
+        "codes": [
+          108,
+          229
+        ],
+        "status": 0
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4194432,
+            "status": 0,
+            "poison": 0,
+            "no_magic": 0,
+            "paralysis": 0,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 679
+        },
+        {
+          "values": {
+            "effects": 4194432,
+            "status": 0,
+            "poison": 0,
+            "no_magic": 0,
+            "paralysis": 0,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 679
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 88,
+        "codes": [
+          108,
+          229
+        ],
+        "status": 7
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 4194432,
+            "status": 7,
+            "poison": 1310723,
+            "no_magic": 2,
+            "paralysis": 1,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 679
+        },
+        {
+          "values": {
+            "effects": 4194432,
+            "status": 7,
+            "poison": 1310723,
+            "no_magic": 2,
+            "paralysis": 1,
+            "hp": 1,
+            "mp": 0,
+            "exp": 37,
+            "stamina": 20
+          },
+          "normal_return": true,
+          "instructions": 679
+        }
+      ]
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x4480c6",
+      "bytes": "565368e0884700e8fee5ffff83c40c3bc5894424147408814c241000004000",
+      "meaning": "Source attack_decmp parser result maps to equipment bit400000."
+    },
+    {
+      "address": "0x409460",
+      "bytes": "8b4424048b0dc81b4c008b80a40000008bd0c1e2072bd0f784918c01000000004000743a8b4424088b80a40000008bd0c1e2072bd0b8565555558d0c918b15fc134c00f7ea8bc2c1e81f03d08b81e00000002bc2790233c08981e0000000c3",
+      "meaning": "Weapon MP loss uses signed contribution/3, clamps at zero, returns without RNG or attacker gain."
+    },
+    {
+      "address": "0x404089",
+      "bytes": "8b82d800000033c9668b8fa00000002bc1890dfc134c0089442458791603c8890dfc134c007906891dfc134c0033c0894424588982d8000000",
+      "meaning": "Impact stores actual HP-capped damage in4c13fc before sound/presentation callbacks."
+    },
+    {
+      "address": "0x4095e0",
+      "bytes": "568b74240c578b7c240c5657e8dffcffff5657e818fdffff5657e861feffff83c4185f5ec3",
+      "meaning": "The same ordinary tail calls cancellation, status, then MP loss."
+    },
+    {
+      "address": "0x442483",
+      "bytes": "3bf574175357e85271fcffa1e02a4c00505357e8f5c0fcff83c414a120434c00a900000100744f25",
+      "meaning": "Positive per-target EXP allows weapon effects before final stamina, including lethal final hits."
+    },
+    {
+      "address": "0x4424be",
+      "bytes": "a1482c4c003bc574bc6681052c434c00fdff8bc868a0424c00495568a0424c00890d482c4c00",
+      "meaning": "An alive target with remaining blows bypasses the final weapon tail."
+    }
+  ],
+  "anchors_sha256": "b6dba3e88705cf8845581ca8207bfbc576a8e343c94e49efcfe22975eda73807",
+  "limits": [
+    "HP application stops before its sound call; MP leaf returns normally. Caller stops before stamina/presentation, not a whole native exchange.",
+    "The effect consumes actual capped final-strike HP loss, not queued pre-critical damage, total series loss, or awarded EXP; it gives no attacker MP.",
+    "Original caller gate and source modifier are proven; Godot global random identity and new feedback timings remain independent."
+  ]
+}

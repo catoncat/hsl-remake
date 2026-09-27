@@ -1,0 +1,770 @@
+{
+  "schema": "hsl_mana_item_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "source_sha256": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+  "cases": [
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 0,
+        "flags": 0,
+        "flying": false
+      },
+      "native": {
+        "mp": 0,
+        "restored_mp": 0,
+        "flags": 0
+      },
+      "instructions": 125,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 0,
+        "flags": 0,
+        "flying": true
+      },
+      "native": {
+        "mp": 0,
+        "restored_mp": 0,
+        "flags": 0
+      },
+      "instructions": 125,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 0,
+        "flags": 3,
+        "flying": false
+      },
+      "native": {
+        "mp": 0,
+        "restored_mp": 0,
+        "flags": 3
+      },
+      "instructions": 125,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 0,
+        "flags": 3,
+        "flying": true
+      },
+      "native": {
+        "mp": 0,
+        "restored_mp": 0,
+        "flags": 3
+      },
+      "instructions": 125,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 0,
+        "flags": 7,
+        "flying": false
+      },
+      "native": {
+        "mp": 0,
+        "restored_mp": 0,
+        "flags": 7
+      },
+      "instructions": 125,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 0,
+        "flags": 7,
+        "flying": true
+      },
+      "native": {
+        "mp": 0,
+        "restored_mp": 0,
+        "flags": 7
+      },
+      "instructions": 125,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 19,
+        "flags": 0,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 19,
+        "flags": 0
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 19,
+        "flags": 0,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 19,
+        "flags": 0
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 19,
+        "flags": 3,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 19,
+        "flags": 3
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 19,
+        "flags": 3,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 19,
+        "flags": 3
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 19,
+        "flags": 7,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 19,
+        "flags": 7
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 19,
+        "flags": 7,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 19,
+        "flags": 7
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 3,
+        "max_mp": 19,
+        "flags": 0,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 16,
+        "flags": 0
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 3,
+        "max_mp": 19,
+        "flags": 0,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 16,
+        "flags": 0
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 3,
+        "max_mp": 19,
+        "flags": 3,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 16,
+        "flags": 3
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 3,
+        "max_mp": 19,
+        "flags": 3,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 16,
+        "flags": 3
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 3,
+        "max_mp": 19,
+        "flags": 7,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 16,
+        "flags": 7
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 3,
+        "max_mp": 19,
+        "flags": 7,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 16,
+        "flags": 7
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 19,
+        "max_mp": 19,
+        "flags": 0,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 0,
+        "flags": 0
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 19,
+        "max_mp": 19,
+        "flags": 0,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 0,
+        "flags": 0
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 19,
+        "max_mp": 19,
+        "flags": 3,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 0,
+        "flags": 3
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 19,
+        "max_mp": 19,
+        "flags": 3,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 0,
+        "flags": 3
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 19,
+        "max_mp": 19,
+        "flags": 7,
+        "flying": false
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 0,
+        "flags": 7
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 19,
+        "max_mp": 19,
+        "flags": 7,
+        "flying": true
+      },
+      "native": {
+        "mp": 19,
+        "restored_mp": 0,
+        "flags": 7
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 100,
+        "flags": 0,
+        "flying": false
+      },
+      "native": {
+        "mp": 30,
+        "restored_mp": 30,
+        "flags": 0
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 100,
+        "flags": 0,
+        "flying": true
+      },
+      "native": {
+        "mp": 30,
+        "restored_mp": 30,
+        "flags": 0
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 100,
+        "flags": 3,
+        "flying": false
+      },
+      "native": {
+        "mp": 30,
+        "restored_mp": 30,
+        "flags": 3
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 100,
+        "flags": 3,
+        "flying": true
+      },
+      "native": {
+        "mp": 30,
+        "restored_mp": 30,
+        "flags": 3
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 100,
+        "flags": 7,
+        "flying": false
+      },
+      "native": {
+        "mp": 30,
+        "restored_mp": 30,
+        "flags": 7
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 0,
+        "max_mp": 100,
+        "flags": 7,
+        "flying": true
+      },
+      "native": {
+        "mp": 30,
+        "restored_mp": 30,
+        "flags": 7
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 70,
+        "max_mp": 100,
+        "flags": 0,
+        "flying": false
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 30,
+        "flags": 0
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 70,
+        "max_mp": 100,
+        "flags": 0,
+        "flying": true
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 30,
+        "flags": 0
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 70,
+        "max_mp": 100,
+        "flags": 3,
+        "flying": false
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 30,
+        "flags": 3
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 70,
+        "max_mp": 100,
+        "flags": 3,
+        "flying": true
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 30,
+        "flags": 3
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 70,
+        "max_mp": 100,
+        "flags": 7,
+        "flying": false
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 30,
+        "flags": 7
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 70,
+        "max_mp": 100,
+        "flags": 7,
+        "flying": true
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 30,
+        "flags": 7
+      },
+      "instructions": 117,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 99,
+        "max_mp": 100,
+        "flags": 0,
+        "flying": false
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 1,
+        "flags": 0
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 99,
+        "max_mp": 100,
+        "flags": 0,
+        "flying": true
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 1,
+        "flags": 0
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 99,
+        "max_mp": 100,
+        "flags": 3,
+        "flying": false
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 1,
+        "flags": 3
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 99,
+        "max_mp": 100,
+        "flags": 3,
+        "flying": true
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 1,
+        "flags": 3
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 99,
+        "max_mp": 100,
+        "flags": 7,
+        "flying": false
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 1,
+        "flags": 7
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    },
+    {
+      "input": {
+        "mp": 99,
+        "max_mp": 100,
+        "flags": 7,
+        "flying": true
+      },
+      "native": {
+        "mp": 100,
+        "restored_mp": 1,
+        "flags": 7
+      },
+      "instructions": 124,
+      "normal_return": false,
+      "stop_address": "0x40a275",
+      "entry": "0x409e40",
+      "rng_calls": 0
+    }
+  ],
+  "limits": [
+    "Source244 restores30 capped by missing MP, no RNG in this prefix; HP, statuses and inventory unchanged here.",
+    "Stops before stamina/cure/display callbacks, not full item handler or native inventory transaction.",
+    "Player/ally use and full-MP refusal reuse the current explicit remake item contract. No autonomous native AI mana-potion policy claimed."
+  ]
+}

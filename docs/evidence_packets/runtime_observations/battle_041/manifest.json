@@ -1,0 +1,17 @@
+{
+  "schema": "hsl_battle_review_packet.v1",
+  "level": 41,
+  "evidence_tier": "runtime-measured",
+  "command": "tests/capture_battle_review.gd -- --level=41",
+  "source_capture_manifest": "ignored/battle-041-review/manifest.json",
+  "first_control": {"units": 24, "players": 8, "interaction": "action_menu"},
+  "result": {"outcome": "victory_boss", "key": "win_0", "kind": "win"},
+  "records": [
+    {"capture": "00-framed", "file": "00-framed.png"},
+    {"capture": "first-control", "file": "first-control.png"},
+    {"capture": "dialogue-2155", "file": "dialogue-2155.png"},
+    {"capture": "win-dialogue-2179", "file": "win-dialogue-2179.png"},
+    {"capture": "result", "file": "result.png"}
+  ],
+  "provisional": ["camera framing", "scripted movement endpoints", "forced-victory pacing"]
+}

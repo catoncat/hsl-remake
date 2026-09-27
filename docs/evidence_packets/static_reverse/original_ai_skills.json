@@ -1,0 +1,7439 @@
+{
+  "schema": "hsl_native_ai_skills.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "cases": [
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 1,
+        "area": false,
+        "seed": 0
+      },
+      "native": [
+        4
+      ],
+      "draws": [],
+      "steps": 44,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 1,
+        "area": true,
+        "seed": 0
+      },
+      "native": [
+        3
+      ],
+      "draws": [],
+      "steps": 44,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 8,
+        "area": false,
+        "seed": 0
+      },
+      "native": [
+        4,
+        6
+      ],
+      "draws": [],
+      "steps": 58,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 8,
+        "area": true,
+        "seed": 0
+      },
+      "native": [
+        3,
+        6
+      ],
+      "draws": [],
+      "steps": 58,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 17,
+        "area": false,
+        "seed": 0
+      },
+      "native": [
+        4,
+        6
+      ],
+      "draws": [],
+      "steps": 58,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 17,
+        "area": true,
+        "seed": 0
+      },
+      "native": [
+        3,
+        6
+      ],
+      "draws": [],
+      "steps": 58,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 2,
+        "area": false,
+        "seed": 0
+      },
+      "native": [
+        2
+      ],
+      "draws": [],
+      "steps": 44,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 2,
+        "area": true,
+        "seed": 0
+      },
+      "native": [
+        1
+      ],
+      "draws": [],
+      "steps": 43,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 352,
+        "area": false,
+        "seed": 0
+      },
+      "native": [
+        5
+      ],
+      "draws": [],
+      "steps": 41,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 352,
+        "area": true,
+        "seed": 0
+      },
+      "native": [
+        5
+      ],
+      "draws": [],
+      "steps": 41,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 11776,
+        "area": false,
+        "seed": 0
+      },
+      "native": [
+        7
+      ],
+      "draws": [],
+      "steps": 40,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 11776,
+        "area": true,
+        "seed": 0
+      },
+      "native": [
+        7
+      ],
+      "draws": [],
+      "steps": 40,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 0,
+        "area": false,
+        "seed": 0
+      },
+      "native": [],
+      "draws": [],
+      "steps": 27,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "buckets",
+        "mask": 0,
+        "area": true,
+        "seed": 0
+      },
+      "native": [],
+      "draws": [],
+      "steps": 27,
+      "normal_return": true,
+      "entry": "0x407010",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 82
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 62
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 3
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 31
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 4
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 5
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 4
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 6
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 87
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 7
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 8
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 35
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 9
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 26
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 10
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 7
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 11
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 95
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 12
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 95
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 13
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 20
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 14
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 28
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 15
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 0
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 16
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 14
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 17
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 90
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 18
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 94
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 19
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 20
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 74
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 21
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 36
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 22
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 19
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 23
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 9
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 24
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 67
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 25
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 26
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 39
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 27
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 27
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 28
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 27
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 29
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 52
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 30
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 60
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 0,
+        "seed": 31
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 32
+        }
+      ],
+      "steps": 70,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 82
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 1
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 2
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 62
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 3
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 31
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 4
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 5
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 4
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 6
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 87
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 7
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 8
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 35
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 9
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 26
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 10
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 7
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 11
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 95
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 12
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 95
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 13
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 20
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 14
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 28
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 15
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 0
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 16
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 14
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 17
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 90
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 18
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 94
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 19
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 20
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 74
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 21
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 36
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 22
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 19
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 23
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 9
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 24
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 67
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 25
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 26
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 39
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 27
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 27
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 28
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 27
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 29
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 52
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 30
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 60
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "order",
+        "flag": 1,
+        "seed": 31
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 100,
+          "value": 32
+        }
+      ],
+      "steps": 69,
+      "normal_return": true,
+      "entry": "0x40d4e0",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [],
+        "seed": 0
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [],
+        "seed": 1
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [],
+        "seed": 2
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [],
+        "seed": 7
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [],
+        "seed": 19
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [],
+        "seed": 31
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0
+        ],
+        "seed": 0
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 215,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0
+        ],
+        "seed": 1
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        }
+      ],
+      "steps": 251,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0
+        ],
+        "seed": 2
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        }
+      ],
+      "steps": 239,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0
+        ],
+        "seed": 7
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 248,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0
+        ],
+        "seed": 19
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        }
+      ],
+      "steps": 218,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0
+        ],
+        "seed": 31
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        }
+      ],
+      "steps": 185,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          100
+        ],
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 202,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          100
+        ],
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        }
+      ],
+      "steps": 238,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          100
+        ],
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        }
+      ],
+      "steps": 226,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          100
+        ],
+        "seed": 7
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 235,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          100
+        ],
+        "seed": 19
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        }
+      ],
+      "steps": 205,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          100
+        ],
+        "seed": 31
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        }
+      ],
+      "steps": 172,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 70
+        }
+      ],
+      "steps": 284,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 1
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        },
+        {
+          "bound": 100,
+          "value": 78
+        }
+      ],
+      "steps": 302,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 2
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 99
+        }
+      ],
+      "steps": 296,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 7
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 206,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 19
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        }
+      ],
+      "steps": 191,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 31
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        },
+        {
+          "bound": 100,
+          "value": 83
+        }
+      ],
+      "steps": 269,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 187,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        }
+      ],
+      "steps": 205,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        }
+      ],
+      "steps": 199,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 7
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 206,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 19
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        }
+      ],
+      "steps": 191,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 31
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        }
+      ],
+      "steps": 172,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 185,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 1
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        }
+      ],
+      "steps": 197,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        }
+      ],
+      "steps": 190,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 7
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 193,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 19
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        },
+        {
+          "bound": 100,
+          "value": 82
+        }
+      ],
+      "steps": 287,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 31
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        }
+      ],
+      "steps": 172,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 0
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 70
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 1
+        },
+        {
+          "bound": 100,
+          "value": 1
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 23
+        },
+        {
+          "bound": 100,
+          "value": 98
+        },
+        {
+          "bound": 100,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 27
+        },
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 100,
+          "value": 97
+        },
+        {
+          "bound": 100,
+          "value": 72
+        },
+        {
+          "bound": 100,
+          "value": 87
+        },
+        {
+          "bound": 100,
+          "value": 98
+        },
+        {
+          "bound": 100,
+          "value": 8
+        },
+        {
+          "bound": 100,
+          "value": 98
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 84
+        },
+        {
+          "bound": 100,
+          "value": 85
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 43
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 25
+        },
+        {
+          "bound": 100,
+          "value": 39
+        },
+        {
+          "bound": 100,
+          "value": 57
+        },
+        {
+          "bound": 100,
+          "value": 32
+        },
+        {
+          "bound": 100,
+          "value": 2
+        },
+        {
+          "bound": 100,
+          "value": 51
+        },
+        {
+          "bound": 100,
+          "value": 54
+        },
+        {
+          "bound": 100,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 80
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 9
+        },
+        {
+          "bound": 100,
+          "value": 56
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 25
+        },
+        {
+          "bound": 100,
+          "value": 78
+        }
+      ],
+      "steps": 3999,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 1
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        },
+        {
+          "bound": 100,
+          "value": 78
+        },
+        {
+          "bound": 100,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 78
+        },
+        {
+          "bound": 100,
+          "value": 19
+        },
+        {
+          "bound": 100,
+          "value": 8
+        },
+        {
+          "bound": 100,
+          "value": 9
+        },
+        {
+          "bound": 100,
+          "value": 23
+        },
+        {
+          "bound": 100,
+          "value": 48
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 81
+        },
+        {
+          "bound": 100,
+          "value": 33
+        },
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 100,
+          "value": 76
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 95
+        },
+        {
+          "bound": 100,
+          "value": 29
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 79
+        },
+        {
+          "bound": 100,
+          "value": 14
+        },
+        {
+          "bound": 100,
+          "value": 23
+        },
+        {
+          "bound": 100,
+          "value": 49
+        },
+        {
+          "bound": 100,
+          "value": 53
+        },
+        {
+          "bound": 100,
+          "value": 81
+        },
+        {
+          "bound": 100,
+          "value": 35
+        },
+        {
+          "bound": 100,
+          "value": 71
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 1
+        },
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 41
+        },
+        {
+          "bound": 100,
+          "value": 51
+        },
+        {
+          "bound": 100,
+          "value": 32
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 100,
+          "value": 91
+        },
+        {
+          "bound": 100,
+          "value": 67
+        }
+      ],
+      "steps": 4035,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 2
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 99
+        },
+        {
+          "bound": 100,
+          "value": 38
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 89
+        },
+        {
+          "bound": 100,
+          "value": 70
+        },
+        {
+          "bound": 100,
+          "value": 3
+        },
+        {
+          "bound": 100,
+          "value": 27
+        },
+        {
+          "bound": 100,
+          "value": 64
+        },
+        {
+          "bound": 100,
+          "value": 81
+        },
+        {
+          "bound": 100,
+          "value": 60
+        },
+        {
+          "bound": 100,
+          "value": 43
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 82
+        },
+        {
+          "bound": 100,
+          "value": 85
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 6
+        },
+        {
+          "bound": 100,
+          "value": 51
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 54
+        },
+        {
+          "bound": 100,
+          "value": 8
+        },
+        {
+          "bound": 100,
+          "value": 49
+        },
+        {
+          "bound": 100,
+          "value": 68
+        },
+        {
+          "bound": 100,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 64
+        },
+        {
+          "bound": 100,
+          "value": 28
+        },
+        {
+          "bound": 100,
+          "value": 20
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 89
+        },
+        {
+          "bound": 100,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 88
+        },
+        {
+          "bound": 100,
+          "value": 73
+        },
+        {
+          "bound": 100,
+          "value": 98
+        },
+        {
+          "bound": 100,
+          "value": 61
+        },
+        {
+          "bound": 100,
+          "value": 81
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 43
+        },
+        {
+          "bound": 100,
+          "value": 39
+        }
+      ],
+      "steps": 4023,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 7
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 25
+        },
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 100,
+          "value": 46
+        },
+        {
+          "bound": 100,
+          "value": 74
+        },
+        {
+          "bound": 100,
+          "value": 17
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 14
+        },
+        {
+          "bound": 100,
+          "value": 64
+        },
+        {
+          "bound": 100,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 45
+        },
+        {
+          "bound": 100,
+          "value": 28
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 92
+        },
+        {
+          "bound": 100,
+          "value": 89
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 7
+        },
+        {
+          "bound": 100,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 19
+        },
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 85
+        },
+        {
+          "bound": 100,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 74
+        },
+        {
+          "bound": 100,
+          "value": 25
+        },
+        {
+          "bound": 100,
+          "value": 30
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 52
+        },
+        {
+          "bound": 100,
+          "value": 76
+        },
+        {
+          "bound": 100,
+          "value": 37
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 49
+        },
+        {
+          "bound": 100,
+          "value": 2
+        },
+        {
+          "bound": 100,
+          "value": 64
+        },
+        {
+          "bound": 100,
+          "value": 49
+        },
+        {
+          "bound": 100,
+          "value": 16
+        },
+        {
+          "bound": 100,
+          "value": 31
+        }
+      ],
+      "steps": 4032,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 19
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        },
+        {
+          "bound": 100,
+          "value": 82
+        },
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 100,
+          "value": 84
+        },
+        {
+          "bound": 100,
+          "value": 4
+        },
+        {
+          "bound": 100,
+          "value": 46
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 17
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 19
+        },
+        {
+          "bound": 100,
+          "value": 34
+        },
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 100,
+          "value": 82
+        },
+        {
+          "bound": 100,
+          "value": 45
+        },
+        {
+          "bound": 100,
+          "value": 92
+        },
+        {
+          "bound": 100,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 60
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 28
+        },
+        {
+          "bound": 100,
+          "value": 56
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 79
+        },
+        {
+          "bound": 100,
+          "value": 99
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 95
+        },
+        {
+          "bound": 100,
+          "value": 70
+        },
+        {
+          "bound": 100,
+          "value": 80
+        },
+        {
+          "bound": 100,
+          "value": 46
+        },
+        {
+          "bound": 100,
+          "value": 74
+        },
+        {
+          "bound": 100,
+          "value": 12
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 1
+        },
+        {
+          "bound": 100,
+          "value": 86
+        },
+        {
+          "bound": 100,
+          "value": 29
+        },
+        {
+          "bound": 100,
+          "value": 70
+        },
+        {
+          "bound": 100,
+          "value": 84
+        },
+        {
+          "bound": 100,
+          "value": 73
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 19
+        }
+      ],
+      "steps": 4002,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 3,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 31
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 80
+        },
+        {
+          "bound": 100,
+          "value": 14
+        },
+        {
+          "bound": 100,
+          "value": 57
+        },
+        {
+          "bound": 100,
+          "value": 65
+        },
+        {
+          "bound": 100,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 65
+        },
+        {
+          "bound": 100,
+          "value": 20
+        },
+        {
+          "bound": 100,
+          "value": 34
+        },
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 100,
+          "value": 5
+        },
+        {
+          "bound": 100,
+          "value": 92
+        },
+        {
+          "bound": 100,
+          "value": 9
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 9
+        },
+        {
+          "bound": 100,
+          "value": 40
+        },
+        {
+          "bound": 100,
+          "value": 28
+        },
+        {
+          "bound": 100,
+          "value": 13
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 12
+        },
+        {
+          "bound": 100,
+          "value": 27
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 87
+        },
+        {
+          "bound": 100,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 67
+        },
+        {
+          "bound": 100,
+          "value": 26
+        },
+        {
+          "bound": 100,
+          "value": 4
+        },
+        {
+          "bound": 100,
+          "value": 15
+        },
+        {
+          "bound": 100,
+          "value": 82
+        },
+        {
+          "bound": 100,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 52
+        },
+        {
+          "bound": 100,
+          "value": 92
+        },
+        {
+          "bound": 100,
+          "value": 91
+        },
+        {
+          "bound": 100,
+          "value": 26
+        },
+        {
+          "bound": 100,
+          "value": 72
+        },
+        {
+          "bound": 100,
+          "value": 6
+        },
+        {
+          "bound": 100,
+          "value": 68
+        },
+        {
+          "bound": 100,
+          "value": 2
+        },
+        {
+          "bound": 100,
+          "value": 93
+        }
+      ],
+      "steps": 3968,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [],
+        "seed": 0
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [],
+        "seed": 1
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [],
+        "seed": 2
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [],
+        "seed": 7
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [],
+        "seed": 19
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [],
+        "seed": 31
+      },
+      "native": -1,
+      "draws": [],
+      "steps": 29,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0
+        ],
+        "seed": 0
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 217,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0
+        ],
+        "seed": 1
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        }
+      ],
+      "steps": 253,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0
+        ],
+        "seed": 2
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        }
+      ],
+      "steps": 241,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0
+        ],
+        "seed": 7
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 250,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0
+        ],
+        "seed": 19
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        }
+      ],
+      "steps": 220,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0
+        ],
+        "seed": 31
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        }
+      ],
+      "steps": 187,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          100
+        ],
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 204,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          100
+        ],
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        }
+      ],
+      "steps": 240,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          100
+        ],
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        }
+      ],
+      "steps": 228,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          100
+        ],
+        "seed": 7
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 237,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          100
+        ],
+        "seed": 19
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        }
+      ],
+      "steps": 207,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          100
+        ],
+        "seed": 31
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        }
+      ],
+      "steps": 174,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 70
+        }
+      ],
+      "steps": 288,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 1
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        },
+        {
+          "bound": 100,
+          "value": 78
+        }
+      ],
+      "steps": 306,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 2
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 99
+        }
+      ],
+      "steps": 300,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 7
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 208,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 19
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        }
+      ],
+      "steps": 193,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          100
+        ],
+        "seed": 31
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        },
+        {
+          "bound": 100,
+          "value": 83
+        }
+      ],
+      "steps": 273,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 189,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        }
+      ],
+      "steps": 207,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        }
+      ],
+      "steps": 201,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 7
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 208,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 19
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        }
+      ],
+      "steps": 193,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          90,
+          90
+        ],
+        "seed": 31
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        }
+      ],
+      "steps": 174,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 0
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        }
+      ],
+      "steps": 187,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 1
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        }
+      ],
+      "steps": 199,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        }
+      ],
+      "steps": 192,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 7
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        }
+      ],
+      "steps": 195,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 19
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        },
+        {
+          "bound": 100,
+          "value": 82
+        }
+      ],
+      "steps": 291,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          86,
+          90,
+          0
+        ],
+        "seed": 31
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        }
+      ],
+      "steps": 174,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 0
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 70
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 1
+        },
+        {
+          "bound": 100,
+          "value": 1
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 23
+        },
+        {
+          "bound": 100,
+          "value": 98
+        },
+        {
+          "bound": 100,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 27
+        },
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 100,
+          "value": 97
+        },
+        {
+          "bound": 100,
+          "value": 72
+        },
+        {
+          "bound": 100,
+          "value": 87
+        },
+        {
+          "bound": 100,
+          "value": 98
+        },
+        {
+          "bound": 100,
+          "value": 8
+        },
+        {
+          "bound": 100,
+          "value": 98
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 84
+        },
+        {
+          "bound": 100,
+          "value": 85
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 43
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 25
+        },
+        {
+          "bound": 100,
+          "value": 39
+        },
+        {
+          "bound": 100,
+          "value": 57
+        },
+        {
+          "bound": 100,
+          "value": 32
+        },
+        {
+          "bound": 100,
+          "value": 2
+        },
+        {
+          "bound": 100,
+          "value": 51
+        },
+        {
+          "bound": 100,
+          "value": 54
+        },
+        {
+          "bound": 100,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 80
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 9
+        },
+        {
+          "bound": 100,
+          "value": 56
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 25
+        },
+        {
+          "bound": 100,
+          "value": 78
+        }
+      ],
+      "steps": 4079,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 1
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 6
+        },
+        {
+          "bound": 100,
+          "value": 78
+        },
+        {
+          "bound": 100,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 78
+        },
+        {
+          "bound": 100,
+          "value": 19
+        },
+        {
+          "bound": 100,
+          "value": 8
+        },
+        {
+          "bound": 100,
+          "value": 9
+        },
+        {
+          "bound": 100,
+          "value": 23
+        },
+        {
+          "bound": 100,
+          "value": 48
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 81
+        },
+        {
+          "bound": 100,
+          "value": 33
+        },
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 100,
+          "value": 76
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 95
+        },
+        {
+          "bound": 100,
+          "value": 29
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 79
+        },
+        {
+          "bound": 100,
+          "value": 14
+        },
+        {
+          "bound": 100,
+          "value": 23
+        },
+        {
+          "bound": 100,
+          "value": 49
+        },
+        {
+          "bound": 100,
+          "value": 53
+        },
+        {
+          "bound": 100,
+          "value": 81
+        },
+        {
+          "bound": 100,
+          "value": 35
+        },
+        {
+          "bound": 100,
+          "value": 71
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 1
+        },
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 41
+        },
+        {
+          "bound": 100,
+          "value": 51
+        },
+        {
+          "bound": 100,
+          "value": 32
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 100,
+          "value": 91
+        },
+        {
+          "bound": 100,
+          "value": 67
+        }
+      ],
+      "steps": 4115,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 2
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 99
+        },
+        {
+          "bound": 100,
+          "value": 38
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 89
+        },
+        {
+          "bound": 100,
+          "value": 70
+        },
+        {
+          "bound": 100,
+          "value": 3
+        },
+        {
+          "bound": 100,
+          "value": 27
+        },
+        {
+          "bound": 100,
+          "value": 64
+        },
+        {
+          "bound": 100,
+          "value": 81
+        },
+        {
+          "bound": 100,
+          "value": 60
+        },
+        {
+          "bound": 100,
+          "value": 43
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 82
+        },
+        {
+          "bound": 100,
+          "value": 85
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 6
+        },
+        {
+          "bound": 100,
+          "value": 51
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 54
+        },
+        {
+          "bound": 100,
+          "value": 8
+        },
+        {
+          "bound": 100,
+          "value": 49
+        },
+        {
+          "bound": 100,
+          "value": 68
+        },
+        {
+          "bound": 100,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 64
+        },
+        {
+          "bound": 100,
+          "value": 28
+        },
+        {
+          "bound": 100,
+          "value": 20
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 89
+        },
+        {
+          "bound": 100,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 88
+        },
+        {
+          "bound": 100,
+          "value": 73
+        },
+        {
+          "bound": 100,
+          "value": 98
+        },
+        {
+          "bound": 100,
+          "value": 61
+        },
+        {
+          "bound": 100,
+          "value": 81
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 43
+        },
+        {
+          "bound": 100,
+          "value": 39
+        }
+      ],
+      "steps": 4103,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 7
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 25
+        },
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 100,
+          "value": 46
+        },
+        {
+          "bound": 100,
+          "value": 74
+        },
+        {
+          "bound": 100,
+          "value": 17
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 14
+        },
+        {
+          "bound": 100,
+          "value": 64
+        },
+        {
+          "bound": 100,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 45
+        },
+        {
+          "bound": 100,
+          "value": 28
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 92
+        },
+        {
+          "bound": 100,
+          "value": 89
+        },
+        {
+          "bound": 100,
+          "value": 94
+        },
+        {
+          "bound": 100,
+          "value": 7
+        },
+        {
+          "bound": 100,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 19
+        },
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 85
+        },
+        {
+          "bound": 100,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 74
+        },
+        {
+          "bound": 100,
+          "value": 25
+        },
+        {
+          "bound": 100,
+          "value": 30
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 52
+        },
+        {
+          "bound": 100,
+          "value": 76
+        },
+        {
+          "bound": 100,
+          "value": 37
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 49
+        },
+        {
+          "bound": 100,
+          "value": 2
+        },
+        {
+          "bound": 100,
+          "value": 64
+        },
+        {
+          "bound": 100,
+          "value": 49
+        },
+        {
+          "bound": 100,
+          "value": 16
+        },
+        {
+          "bound": 100,
+          "value": 31
+        }
+      ],
+      "steps": 4112,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 19
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 56
+        },
+        {
+          "bound": 100,
+          "value": 82
+        },
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 100,
+          "value": 84
+        },
+        {
+          "bound": 100,
+          "value": 4
+        },
+        {
+          "bound": 100,
+          "value": 46
+        },
+        {
+          "bound": 100,
+          "value": 55
+        },
+        {
+          "bound": 100,
+          "value": 17
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 19
+        },
+        {
+          "bound": 100,
+          "value": 34
+        },
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 100,
+          "value": 82
+        },
+        {
+          "bound": 100,
+          "value": 45
+        },
+        {
+          "bound": 100,
+          "value": 92
+        },
+        {
+          "bound": 100,
+          "value": 22
+        },
+        {
+          "bound": 100,
+          "value": 90
+        },
+        {
+          "bound": 100,
+          "value": 60
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 28
+        },
+        {
+          "bound": 100,
+          "value": 56
+        },
+        {
+          "bound": 100,
+          "value": 62
+        },
+        {
+          "bound": 100,
+          "value": 79
+        },
+        {
+          "bound": 100,
+          "value": 99
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 95
+        },
+        {
+          "bound": 100,
+          "value": 70
+        },
+        {
+          "bound": 100,
+          "value": 80
+        },
+        {
+          "bound": 100,
+          "value": 46
+        },
+        {
+          "bound": 100,
+          "value": 74
+        },
+        {
+          "bound": 100,
+          "value": 12
+        },
+        {
+          "bound": 100,
+          "value": 50
+        },
+        {
+          "bound": 100,
+          "value": 1
+        },
+        {
+          "bound": 100,
+          "value": 86
+        },
+        {
+          "bound": 100,
+          "value": 29
+        },
+        {
+          "bound": 100,
+          "value": 70
+        },
+        {
+          "bound": 100,
+          "value": 84
+        },
+        {
+          "bound": 100,
+          "value": 73
+        },
+        {
+          "bound": 100,
+          "value": 66
+        },
+        {
+          "bound": 100,
+          "value": 19
+        }
+      ],
+      "steps": 4082,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "select",
+        "bucket": 4,
+        "rates": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "seed": 31
+      },
+      "native": -1,
+      "draws": [
+        {
+          "bound": 32,
+          "value": 0
+        },
+        {
+          "bound": 100,
+          "value": 30
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 80
+        },
+        {
+          "bound": 100,
+          "value": 14
+        },
+        {
+          "bound": 100,
+          "value": 57
+        },
+        {
+          "bound": 100,
+          "value": 65
+        },
+        {
+          "bound": 100,
+          "value": 21
+        },
+        {
+          "bound": 100,
+          "value": 65
+        },
+        {
+          "bound": 100,
+          "value": 20
+        },
+        {
+          "bound": 100,
+          "value": 34
+        },
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 100,
+          "value": 5
+        },
+        {
+          "bound": 100,
+          "value": 92
+        },
+        {
+          "bound": 100,
+          "value": 9
+        },
+        {
+          "bound": 100,
+          "value": 83
+        },
+        {
+          "bound": 100,
+          "value": 9
+        },
+        {
+          "bound": 100,
+          "value": 40
+        },
+        {
+          "bound": 100,
+          "value": 28
+        },
+        {
+          "bound": 100,
+          "value": 13
+        },
+        {
+          "bound": 100,
+          "value": 18
+        },
+        {
+          "bound": 100,
+          "value": 12
+        },
+        {
+          "bound": 100,
+          "value": 27
+        },
+        {
+          "bound": 100,
+          "value": 42
+        },
+        {
+          "bound": 100,
+          "value": 87
+        },
+        {
+          "bound": 100,
+          "value": 11
+        },
+        {
+          "bound": 100,
+          "value": 67
+        },
+        {
+          "bound": 100,
+          "value": 26
+        },
+        {
+          "bound": 100,
+          "value": 4
+        },
+        {
+          "bound": 100,
+          "value": 15
+        },
+        {
+          "bound": 100,
+          "value": 82
+        },
+        {
+          "bound": 100,
+          "value": 10
+        },
+        {
+          "bound": 100,
+          "value": 52
+        },
+        {
+          "bound": 100,
+          "value": 92
+        },
+        {
+          "bound": 100,
+          "value": 91
+        },
+        {
+          "bound": 100,
+          "value": 26
+        },
+        {
+          "bound": 100,
+          "value": 72
+        },
+        {
+          "bound": 100,
+          "value": 6
+        },
+        {
+          "bound": 100,
+          "value": 68
+        },
+        {
+          "bound": 100,
+          "value": 2
+        },
+        {
+          "bound": 100,
+          "value": 93
+        }
+      ],
+      "steps": 4048,
+      "normal_return": true,
+      "entry": "0x40c770",
+      "stop": "0x10000000",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [],
+      "steps": 40,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [],
+      "steps": 40,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [],
+      "steps": 40,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 3
+      },
+      "native": 0,
+      "draws": [],
+      "steps": 40,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 4
+      },
+      "native": 0,
+      "draws": [],
+      "steps": 40,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 5
+      },
+      "native": 0,
+      "draws": [],
+      "steps": 40,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 6
+      },
+      "native": 0,
+      "draws": [],
+      "steps": 40,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 7
+      },
+      "native": 0,
+      "draws": [],
+      "steps": 40,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 0
+      },
+      "native": 1,
+      "draws": [],
+      "steps": 93,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 1
+      },
+      "native": 1,
+      "draws": [],
+      "steps": 93,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 2
+      },
+      "native": 1,
+      "draws": [],
+      "steps": 93,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 3
+      },
+      "native": 1,
+      "draws": [],
+      "steps": 93,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 4
+      },
+      "native": 1,
+      "draws": [],
+      "steps": 93,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 5
+      },
+      "native": 1,
+      "draws": [],
+      "steps": 93,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 6
+      },
+      "native": 1,
+      "draws": [],
+      "steps": 93,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            3,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 7
+      },
+      "native": 1,
+      "draws": [],
+      "steps": 93,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            2,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 229,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            2,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 229,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            2,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 2
+      },
+      "native": 3,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "steps": 231,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            2,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 3
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 231,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            2,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 4
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 229,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            2,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 5
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 229,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            2,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 6
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 231,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            2,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 7
+      },
+      "native": 3,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "steps": 235,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 201,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 201,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 2
+      },
+      "native": 2,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "steps": 203,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 3
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 203,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 4
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 201,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 5
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 201,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 6
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 203,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 7
+      },
+      "native": 2,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "steps": 207,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 0
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 128,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 1
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 128,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 2
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 128,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 3
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "steps": 130,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 4
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 128,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 5
+      },
+      "native": 0,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "steps": 128,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 6
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "steps": 130,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    },
+    {
+      "input": {
+        "kind": "position_suffix",
+        "positions": [
+          [
+            1,
+            1
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "threat": [
+          4,
+          4
+        ],
+        "seed": 7
+      },
+      "native": 1,
+      "draws": [
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "steps": 130,
+      "normal_return": false,
+      "entry": "0x40d200",
+      "stop": "0x40d2b0",
+      "actor_unchanged": true
+    }
+  ],
+  "anchors": {
+    "0x407010": {
+      "description": "function buckets and prepend order; zero/nonzero effect range",
+      "hex": "8b4424048b4c240853558b6c2414568b74241c33db578b7c2424a91d5000007475a1781b4c003beb75368b5408188b4424283bd37405895004eb038958048b15781b4c0089440a188bd6c1e21003d789108b15781b4c0083c008ff440a1ceb3a8b5408108b4424283bd37405895004eb038958048b15781b4c0089440a108bd6c1e21003d789108b15781b4c0083c008ff440a14eb048b442428f644241402746a8b15781b4c003beb75328b540a083bd37405895004eb038958048b15781b4c0089440a088bd6c1e21003d789108b15781b4c0083c008ff440a0ceb2e8b140a3bd37405895004eb038958048b15781b4c0089040a8bd6c1e21003d789108b15781b4c0083c008ff440a04f74424146001000074368b15781b4c008b540a203bd37405895004eb038958048b15781b4c0089440a208bd6c1e21003d789108b15781b4c0083c008ff440a24f74424141c50000074368b15781b4c008b540a283bd37405895004eb038958048b15781b4c0089440a288bd6c1e21003d789108b15781b4c0083c008ff440a2c8b542414f6c62e74348b15781b4c008b540a303bd37405895004eb038958048b15781b4c00c1e61003f789440a3089308b15781b4c0083c008ff440a345f5e5d5bc3",
+      "sha256": "4c01ac10ca6e5c8b7439c70c1e6bc1485acce60904a473e4db91ac60db3bdd6a"
+    },
+    "0x40c620": {
+      "description": "owned type/code traversal, resource checks and list construction",
+      "hex": "83ec08535556578b3d781b4c00b91c00000033c0bd20394c00f3ab8b44241c8b15c81b4c008b3d781b4c008b80a40000008bc8c1e1072bc833c08d348ab91c0000008d577089742414f3ab8b86e800000033ff81c658010000894424108974241c8b4c241c33f68b1985db743cf6c30174308b45008b04b085c074268b48108d0c89c1e102394c24107c178b4828528b500c5657526a3851e853a9ffff83c4188bd0d1eb4685db75c48b74241c83c5044783c60481fd3c394c008974241c7ca18b44241433ffbda02c4c008b88e0000000894c24108d8874010000894c241c8b4c241c33f68b198a4824f6c102753e85db743af6c301742a8b45008b04b085c074208b4c24103b48107c178b4824528b500c5657526a0051e8d3a8ffff83c4188bd0d1eb4685db75ca8b4424148b5c241c83c5044783c30481fdb82c4c00895c241c7c9b5f5e5d5b83c408c3",
+      "sha256": "c2e906322dc8bd481f958ac1ad30ae12b03ecb3e6dc37255862bf9bb55601540"
+    },
+    "0x40c770": {
+      "description": "random32 start, circular traversal, random100+1 vs use_ratio",
+      "hex": "83ec148b4424185348555683f80657c744241c000000000f87e2010000ff24857cc94000a1781b4c00eb3e8b0d781b4c008d4108eb338b15781b4c008d4210eb28a1781b4c0083c018eb1e8b0d781b4c008d4120eb138b15781b4c008d4228eb08a1781b4c0083c03085c00f848e0100008b78048b1885ff897c2418895c24200f84790100006a20e883c4040083c4043bc7897c24147c062bc73bc77dfa894424108bc84885c97407408b5b044875fa33c033c9668b036a64a3402c4c00668b4b02890d542c4c008b148da02c4c008b2c82e839c404008bf08b44242c83c4044683f807754fa1402c4c008b0d542c4c00505133f6e8e6cfffff83c408f6c4047405be01000000f6c408740383ce02f6c402740383ce04f6c420740383ce082374242cf7de1bf681e638ffffff81c6c8000000eb4283f80575668b15402c4c00a1542c4c00525033ffe892cfffff83c408a8407405bf10000000a820740383cf20f6c401740383cf408b4c242c85f9750233f68b7c24183b75287e7b8b7424148b4424104e403bc789742414894424107c4a8b5c2420c744241000000000eb3f83f803740583f80475cd8b15402c4c00a1542c4c005250e824cfffff83c408f6c44074b38b4c242c80e160f6d91bc980e13881c1c80000008bf1eb9b8b5b048b44241485c00f85c5feffff8b44241c5f5e5d5b83c414c3c744241c010000008b44241c5f5e5d5b83c414c3",
+      "sha256": "ac0d1f91209d47ff03868a1f389d279754e1145a835e0c05a814b28d9a142084"
+    },
+    "0x40d4e0": {
+      "description": "ai_magic_multi_first order roll",
+      "hex": "8b4424048b15c81b4c0056578b80a40000006a648bc833ffc1e1072bc88d348ae87bb704008b8ef401000083c4044085c9740d83f81e7e125fb8010000005ec383f81eb8010000007e028bc75f5ec3",
+      "sha256": "f513441eef1bec77097538ce068379182e1361dbf52c9ada6706acf046daf73a"
+    },
+    "0x40cb42": {
+      "description": "prefer coverage containing requested target; maximum coverage",
+      "hex": "8b44243485c074418b4424283bd87f0b7537e8b7c00400a801742e8b4424248b4c24188b54243803c88b442414895c242803c2c1e105c1e00583c11083c01066894c243e668944243c85db74418b4424303bd87f0b7537e872c00400a801742e8b4c24188b5424248b44241403cac1e10583c110895c243066894c24428b4c243803c1c1e00583c0106689442440",
+      "sha256": "5e2b91c5cf23310a92c33a5ff6cc7752bcb3886d9a6e719425eee8dfd8750ac5"
+    },
+    "0x40cfea": {
+      "description": "retain maximum-coverage movement candidates",
+      "hex": "8b4c24188b15001a4c003bca7e0a890d001a4c0033c9eb0875508b0d601a4c00668b54241e668934cd62654c0066893ccd60654c00668914cd66654c00668904cd64654c004181f9fa000000890d601a4c007c16a1681a4c008b0d641a4c00a31c1a4c00890d241a4c00",
+      "sha256": "37f692b44adfc554d1ab7e790b6772dc02b2d35c0bccd873b9ef634c4c857e30"
+    },
+    "0x40d200": {
+      "description": "maximum Manhattan distance and native low-bit tie choice",
+      "hex": "8b480433db890d101a4c008b5008a1601a4c0033f685c08915081a4c0089351c1a4c000f8ed20000000fbf04f560654c008b0d081a4c00894424240fbf2cf562654c002bc1896c2430998bc88bc533ca2bca8b15101a4c002bc29933c22bc203c83bcb7e0c8bfe8bd9893d241a4c00eb277525e898b90400a80174108b351c1a4c008bfe893d241a4c00eb0c8b3d241a4c008b351c1a4c00a1601a4c00463bf089351c1a4c007c81eb068b3d241a4c00",
+      "sha256": "47de1704e59bd18efe31365125726d0e2ad596aa1febaf7e30f06359c666d5d7"
+    },
+    "0x44db40": {
+      "description": "MAGIC use_ratio parser stores descriptor+0x28; not an ai_percent source key",
+      "hex": "683c924700896c2440e8220302008b4c24408d54244052566a01894b28",
+      "sha256": "62746a5994d3c07855b51d099bdd6b3e57ca70ba9bcbf7bf7eb604d8a04b9866"
+    }
+  }
+}

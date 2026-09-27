@@ -1,0 +1,70 @@
+{
+  "failures": [],
+  "level": 26,
+  "records": [
+    {
+      "camera": "(864.0, 752.0)",
+      "capture": "00-framed",
+      "motion": false
+    },
+    {
+      "camera": "(912.0, 528.0)",
+      "capture": "dialogue-2423",
+      "motion": false
+    },
+    {
+      "camera": "(848.0, 496.0)",
+      "capture": "dialogue-2424",
+      "motion": false
+    },
+    {
+      "camera": "(912.0, 528.0)",
+      "capture": "dialogue-2425",
+      "motion": false
+    },
+    {
+      "camera": "(848.0, 496.0)",
+      "capture": "dialogue-2426",
+      "motion": false
+    },
+    {
+      "camera": "(912.0, 592.0)",
+      "capture": "dialogue-2427",
+      "motion": false
+    },
+    {
+      "camera": "(432.0, 240.0)",
+      "capture": "first-control",
+      "motion": false
+    },
+    {
+      "first_control": {
+        "interaction": "action_menu",
+        "players": 8,
+        "units": 20
+      }
+    },
+    {
+      "camera": "(912.0, 592.0)",
+      "capture": "win-dialogue-2429",
+      "motion": false
+    },
+    {
+      "camera": "(912.0, 592.0)",
+      "capture": "result",
+      "motion": false
+    },
+    {
+      "result": {
+        "outcome": "victory_optional_clear",
+        "resolved": {
+          "code": 0,
+          "key": "win_0",
+          "kind": "win",
+          "outcome": "victory_optional_clear"
+        }
+      }
+    }
+  ],
+  "schema": "hsl_battle_review.v1"
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 10,
+  "battle": {
+    "id": "battle_010_level10",
+    "title": "帕尼西亞城　廢墟 · 廢墟中的雷雨",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "帕尼西亞城　廢墟 · 怪物已清除"
+    },
+    "expected": {
+      "units": 6,
+      "players": 2
+    },
+    "unresolved_semantics": [
+      "STORY010 opens with 雷歐納德 and 緹娜 against two Enemy034 and two Enemy035; WINFAIL010 adds later waves and event-only lightning from the seed timeline.",
+      "The rain, lightning, fire and ring objects are resource-derived source placements and effects; their frame pacing and combat-time presentation remain remake reads."
+    ]
+  },
+  "story_scene": {
+    "id": "story_010_panisia_ruins_opening",
+    "title": "帕尼西亞城　廢墟（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      }
+    },
+    "end_card": {
+      "title": "帕尼西亞城　廢墟",
+      "hint": "戰鬥部分（level 10）尚未重製　　空格／點擊：回到大地圖（帕尼西雅城 廢墟）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    }
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "034",
+      "035"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)"
+  },
+  "sweep_fixture": {
+    "mode": "clear",
+    "advance_turn": 5,
+    "note": "WINFAIL010 event_3 arms the first win status at round 5; advance that phase before the artificial clear."
+  },
+  "comments": {
+    "battle": [
+      "WINFAIL010 clears the four ruin creatures, while the event statuses stage",
+      "the remaining enemy waves and lightning sequence after first control."
+    ],
+    "story_scene": [
+      "Level 10 (帕尼西亞城 廢墟, bigmap.dat point 10): 雷歐納德 and 緹娜 stand before the",
+      "ruined capital in the rain; STORY010 inserts the rain controller / rain-sound",
+      "objects, scrolls to the old tree, strikes it with lightning and fire bombs",
+      "(global OBJ-ALL.H obj_Effect_FireBomb), swaps it for the burning 樹03 stand-in",
+      "with five 火01 flames, then the 034 / 035 creatures close in. The battle body",
+      "(WINFAIL010: 琥 / 漢克斯 / 雪拉 join through obj_Story_Player3-5) is not remade.",
+      "actPlayMusic 8 opens on track 8; actPlayLevelMusic at the",
+      "end resolves level 10 to music-table track 15 (0x477b44)."
+    ],
+    "cast": [
+      "Level 10 (帕尼西亞城 廢墟): 雷歐納德 and 緹娜 face the 034 / 035 ruin creatures;",
+      "the winfail event chains speak through 琥, 漢克斯 and 雪拉 as well."
+    ],
+    "speakers": [
+      "Level 10 (帕尼西亞城 廢墟): STORY010 is spoken by 雷歐納德 and 緹娜 alone; WINFAIL010's",
+      "event chains bring in 琥, 漢克斯 and 雪拉 (the five-member party by then)."
+    ]
+  }
+}

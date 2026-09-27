@@ -1,0 +1,6 @@
+{
+  "schema": "hsl_autoplay_known_dead_ends.v1",
+  "note": "Registered battles whose autoplay run may end in a dead_end that is recorded but not yet fixed (docs/PLAYABILITY.md R2 owns the fixes). Each entry: reason category (tests/support/Autoplay.gd REASON_*), the unit whose turn it was and the round when first hit, the first observed commit. Empty means every registered battle reaches a natural outcome. The first category (party_wiped_no_defeat, 501-578: WINFAIL5NN `actCheckPlayer 1 SID_雷歐納德` unresolved because the encounter assembler emitted no opening.actor_bindings) was removed once build_encounter bound the fielded EVEF slots to their EXTRAS.H tokens (docs/evidence_packets/static_reverse/original_check_targets.md).",
+  "categories": {},
+  "levels": {}
+}

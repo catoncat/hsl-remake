@@ -1,0 +1,150 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 44,
+  "battle": {
+    "id": "battle_044_level44",
+    "title": "亞修頓大橋 · 橋上的決戰",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "亞修頓大橋 · 敵軍已清除",
+      "fail_0": "亞修頓大橋 · 雷歐納德 陣亡",
+      "fail_1": "亞修頓大橋 · 琥 陣亡"
+    },
+    "expected": {
+      "units": 84,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY044 opens with seven carried party members and the resource-derived bridge field; the converted battle preserves all 82 actor records as the opening PlayLoop roster.",
+      "WINFAIL044 has one win branch and two fail branches. The shared interpreter preserves source status/action order, while native scheduler timing, bridge collision and the high-unit-count AI pacing remain provisional.",
+      "Blocked or occupied scripted endpoints use the shared nearest-free remake policy and are recorded as provisional placement decisions; this does not claim original standing equivalence."
+    ]
+  },
+  "story_scene": {
+    "id": "story_044_ashton_bridge_opening",
+    "title": "亞修頓大橋（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "亞修頓大橋",
+      "hint": "戰鬥部分（level 44）尚未重製　　空格／點擊：回到大地圖（亞修頓大橋）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party (咕嚕 and 克羅蒂 are conditional installs) and the enemy roster have no battle scenario yet (chapter-2 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "Enemy023 / Enemy024 carry obj_Data8 = -1 / obj_Data9 = 1 in obj-044.obs; those fields are recorded only, their engine meaning is not resolved by the preview"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "021",
+      "022",
+      "023",
+      "024",
+      "027",
+      "030",
+      "031",
+      "032",
+      "044",
+      "045",
+      "049",
+      "065"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009",
+      "021",
+      "022"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-044.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-044.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-044.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-044.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-044.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-044.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-044.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-044.obs 克羅蒂(有才產生) (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived); the install is conditional (有才產生), left out by the preview; the label is kept for the message evidence"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 44 (亞修頓大橋, point 44): a slow scroll down the great bridge lined with the Wosfita",
+      "army (023 / 024 / 027 / 030 / 031 / 044 / 045 and the dark knights 032 / 049 / 065), the",
+      "party walks onto the south end, 雷歐納德 mocks the welcome and 琥 calls the charge.",
+      "actPlayLevelMusic: table 0x477b44 gives level 44 track 18 (as for levels 5 / 53)."
+    ],
+    "cast": [
+      "Level 44 (亞修頓大橋): the Wosfita army — 023 / 024 / 027 / 030 / 031 / 044 / 045 and",
+      "the dark knights 032 / 049 / 065 on the bridge."
+    ],
+    "speakers": [
+      "Level 44 (亞修頓大橋): 雷歐納德 and 琥 speak before the charge across the bridge."
+    ]
+  }
+}

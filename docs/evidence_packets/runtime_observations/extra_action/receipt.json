@@ -1,0 +1,3897 @@
+{
+  "schema": "hsl_extra_action_render.v1",
+  "fixture": true,
+  "native_execution": false,
+  "real_control_events": true,
+  "time_scale": 1,
+  "screen": 1,
+  "window_position": "(3260, 622)",
+  "window_size": "(640, 480)",
+  "overrides": "Source WRD and default art. Wings227, boots193 and sword12 explicitly in player test inventory; player actually equips through Item. Encounter coordinates/speeds/HP supplied. Owned WIND/HEAL/CURE granted only in named player/AI spell fixtures, source magic eligibility and baseMP enabled for the test player. AI026 wears Wings as fixture, chooses source category and spell use_ratio100. Double-series has durable300 baseHP/1000HP opponent, native counter100 and explicit enemy double_attack trait. Growth/clear targets1HP and player99EXP; source hit compensation1000 avoids random misses without RNG replacement. Defeat player1HP and source attacker power200. Poison/cure starts with explicit three-turn7damage poison. Terminals start after report. No assigned attack/EXP/outcome results or accelerated clock; all post-setup changes use real controls.",
+  "attempts": [
+    {
+      "file": "player-first-three.json",
+      "process_exit": 1,
+      "retained_routes": [
+        "wait_status",
+        "equip_restore",
+        "move_attack_cast"
+      ],
+      "scope": "The three retained routes passed. Later support_cure setup put an ally on source blocked terrain; the corrected route is retained from the next process."
+    },
+    {
+      "file": "combat-first.json",
+      "process_exit": 1,
+      "retained_routes": [
+        "support_cure",
+        "double_series"
+      ],
+      "scope": "These routes passed. Later growth_kill automation clicked while the restored menu was expanding. The corrected actual-control route and final cue layout are retained separately."
+    },
+    {
+      "file": "growth-final.json",
+      "process_exit": 0,
+      "retained_routes": [
+        "growth_kill"
+      ],
+      "scope": "Final menu-aware input, first kill/loot/growth/save and independent second move/cast. Final cue avoids menu bounds."
+    },
+    {
+      "file": "ai-first-cast.json",
+      "process_exit": 1,
+      "retained_routes": [
+        "ai_cast"
+      ],
+      "scope": "ai_cast passed. The subsequent support fixture incorrectly expected a second heal after injury became nonurgent. Later repeated-support fixture remains critically injured; a separate logic regression verifies reevaluation to Wait after full healing."
+    },
+    {
+      "file": "ai-support-final.json",
+      "process_exit": 0,
+      "retained_routes": [
+        "ai_support"
+      ],
+      "scope": "Critical target starts4/400HP and remains eligible for two genuine independently selected heals."
+    },
+    {
+      "file": "ai-fallback-final.json",
+      "process_exit": 0,
+      "retained_routes": [
+        "ai_no_mp",
+        "ai_silence"
+      ],
+      "scope": "Two independent physical fallback actions without invalid spell fees."
+    },
+    {
+      "file": "outcomes-final.json",
+      "process_exit": 0,
+      "retained_routes": [
+        "victory",
+        "defeat",
+        "escape"
+      ],
+      "scope": "Second-action terminal outcomes, F5/F9 and real mouse retry with original defaults."
+    }
+  ],
+  "routes": [
+    {
+      "cues": [],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "wait_status",
+      "next_actor": "enemy023_1",
+      "observed": {},
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 13,
+        "id": "leonard",
+        "inventory": [
+          193,
+          12,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 458754
+        },
+        "status_flags": 1
+      },
+      "receipts": [],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "equip_restore",
+      "next_actor": "enemy023_1",
+      "observed": {},
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          193,
+          12,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipts": [],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/generated/hsl/remake_music/abandoned_guard.ogg"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [
+        {
+          "base": 11,
+          "exp_after": 11,
+          "exp_before": 0,
+          "gained": 11,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        {
+          "base": 1,
+          "exp_after": 12,
+          "exp_before": 11,
+          "gained": 1,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "move_attack_cast",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience0": true,
+        "experience1": true,
+        "impact-0": true,
+        "impact-1": true,
+        "last_path": [
+          "(10, 8)",
+          "(10, 9)"
+        ],
+        "movement": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 9)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          193,
+          12,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 58,
+        "mp": 50,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipts": [
+        {
+          "actual_damage": 22,
+          "attacker_id": "leonard",
+          "counter": {},
+          "critical": false,
+          "damage": 22,
+          "defender_hp_after": 478,
+          "defender_hp_before": 500,
+          "defender_id": "enemy021_1",
+          "experience": {
+            "base": 11,
+            "exp_after": 11,
+            "exp_before": 0,
+            "gained": 11,
+            "level_after": 1,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 22,
+            "draws": [
+              {
+                "bound": 11,
+                "value": 3
+              },
+              {
+                "bound": 3,
+                "value": 2
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 11,
+            "source": "0x40a5d0",
+            "subtotal": 13,
+            "target_level": 1
+          },
+          "followups": [],
+          "hit": true,
+          "native_contribution": 22,
+          "sequence": 1,
+          "stamina_gain": {
+            "attacker": {
+              "after": 3,
+              "before": 0,
+              "blocked": false,
+              "delta": 3,
+              "doubled": false,
+              "unit_id": "leonard"
+            },
+            "base_gain": 3,
+            "defeated": false,
+            "defender": {
+              "after": 6,
+              "before": 0,
+              "blocked": false,
+              "delta": 6,
+              "doubled": false,
+              "unit_id": "enemy021_1"
+            },
+            "evidence_tier": "static-derived",
+            "heavy_hit": false,
+            "level_penalty": false,
+            "ok": true,
+            "source_address": "0x40e590"
+          }
+        },
+        {
+          "actual_damage": 3,
+          "affected_targets": [
+            {
+              "actual_damage": 3,
+              "attacker_id": "leonard",
+              "damage": 3,
+              "defender_hp_after": 475,
+              "defender_hp_before": 478,
+              "defender_id": "enemy021_1",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 3,
+                "draws": [
+                  {
+                    "bound": 1,
+                    "value": 0
+                  },
+                  {
+                    "bound": 0,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 1,
+                "source": "0x40a5d0",
+                "subtotal": 1,
+                "target_level": 1
+              },
+              "hit": true,
+              "magic_key": "wind",
+              "native_contribution": 3,
+              "native_damage_roll": {
+                "hit_bonus_after": 0,
+                "hit_check_passed": true,
+                "hit_rate": 96,
+                "hit_roll": 24,
+                "sampled": 18,
+                "value": 3
+              },
+              "resource_payment": {
+                "after": 50,
+                "amount": 8,
+                "before": 58,
+                "native_affordable": true,
+                "native_required": 8,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode01",
+              "status_effects": []
+            }
+          ],
+          "attacker_id": "leonard",
+          "cast_center": "(11, 8)",
+          "damage": 3,
+          "defender_hp_after": 475,
+          "defender_hp_before": 478,
+          "defender_id": "enemy021_1",
+          "experience": {
+            "base": 1,
+            "exp_after": 12,
+            "exp_before": 11,
+            "gained": 1,
+            "level_after": 1,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 3,
+            "draws": [
+              {
+                "bound": 1,
+                "value": 0
+              },
+              {
+                "bound": 0,
+                "value": 0
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 1,
+            "source": "0x40a5d0",
+            "subtotal": 1,
+            "target_level": 1
+          },
+          "hit": true,
+          "magic_key": "wind",
+          "native_contribution": 3,
+          "native_damage_roll": {
+            "hit_bonus_after": 0,
+            "hit_check_passed": true,
+            "hit_rate": 96,
+            "hit_roll": 24,
+            "sampled": 18,
+            "value": 3
+          },
+          "resource_payment": {
+            "after": 50,
+            "amount": 8,
+            "before": 58,
+            "native_affordable": true,
+            "native_required": 8,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 2,
+          "skill_id": "magic:magicAIR:magicCode01",
+          "status_effects": []
+        }
+      ],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0002.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0001.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ],
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [
+        {
+          "base": 1,
+          "exp_after": 1,
+          "exp_before": 0,
+          "gained": 1,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        {
+          "base": 67,
+          "exp_after": 68,
+          "exp_before": 1,
+          "gained": 67,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "support_cure",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience0": true,
+        "experience1": true,
+        "impact-0": true,
+        "impact-1": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 20,
+        "id": "leonard",
+        "inventory": [
+          193,
+          12,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 58,
+        "mp": 48,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0
+        },
+        "status_flags": 0
+      },
+      "receipts": [
+        {
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_id": "leonard",
+              "damage": 0,
+              "defender_hp_after": 9,
+              "defender_hp_before": 4,
+              "defender_id": "enemy023_1",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 2,
+                "draws": [
+                  {
+                    "bound": 1,
+                    "value": 0
+                  },
+                  {
+                    "bound": 0,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 1,
+                "source": "0x40a5d0",
+                "subtotal": 0,
+                "target_level": 1
+              },
+              "healing": 5,
+              "hit": true,
+              "magic_key": "heal",
+              "native_contribution": 2,
+              "resource_payment": {
+                "after": 52,
+                "amount": 6,
+                "before": 58,
+                "native_affordable": true,
+                "native_required": 6,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode06",
+              "support_effects": []
+            }
+          ],
+          "attacker_id": "leonard",
+          "cast_center": "(9, 8)",
+          "damage": 0,
+          "defender_hp_after": 9,
+          "defender_hp_before": 4,
+          "defender_id": "enemy023_1",
+          "experience": {
+            "base": 1,
+            "exp_after": 1,
+            "exp_before": 0,
+            "gained": 1,
+            "level_after": 1,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 2,
+            "draws": [
+              {
+                "bound": 1,
+                "value": 0
+              },
+              {
+                "bound": 0,
+                "value": 0
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 1,
+            "source": "0x40a5d0",
+            "subtotal": 0,
+            "target_level": 1
+          },
+          "healing": 5,
+          "hit": true,
+          "magic_key": "heal",
+          "native_contribution": 2,
+          "resource_payment": {
+            "after": 52,
+            "amount": 6,
+            "before": 58,
+            "native_affordable": true,
+            "native_required": 6,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicWATER:magicCode06",
+          "support_effects": []
+        },
+        {
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_id": "leonard",
+              "damage": 0,
+              "defender_hp_after": 20,
+              "defender_hp_before": 20,
+              "defender_id": "leonard",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 48,
+                "draws": [
+                  {
+                    "bound": 24,
+                    "value": 7
+                  },
+                  {
+                    "bound": 9,
+                    "value": 1
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 31,
+                "source": "0x40a5d0",
+                "subtotal": 32,
+                "target_level": 1
+              },
+              "healing": 0,
+              "hit": true,
+              "magic_key": "cure_poison",
+              "native_contribution": 48,
+              "resource_payment": {
+                "after": 48,
+                "amount": 4,
+                "before": 52,
+                "native_affordable": true,
+                "native_required": 4,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode05",
+              "support_effects": [
+                {
+                  "after_word": 0,
+                  "before_word": 458755,
+                  "removed": true,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_id": "leonard",
+              "damage": 0,
+              "defender_hp_after": 9,
+              "defender_hp_before": 9,
+              "defender_id": "enemy023_1",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 48,
+                "draws": [
+                  {
+                    "bound": 24,
+                    "value": 19
+                  },
+                  {
+                    "bound": 14,
+                    "value": 11
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 36,
+                "source": "0x40a5d0",
+                "subtotal": 47,
+                "target_level": 1
+              },
+              "healing": 0,
+              "hit": true,
+              "magic_key": "cure_poison",
+              "native_contribution": 48,
+              "resource_payment": {
+                "after": 48,
+                "amount": 4,
+                "before": 52,
+                "native_affordable": true,
+                "native_required": 4,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode05",
+              "support_effects": [
+                {
+                  "after_word": 0,
+                  "before_word": 458755,
+                  "removed": true,
+                  "status": "poison"
+                }
+              ]
+            }
+          ],
+          "attacker_id": "leonard",
+          "cast_center": "(8, 8)",
+          "damage": 0,
+          "defender_hp_after": 20,
+          "defender_hp_before": 20,
+          "defender_id": "leonard",
+          "experience": {
+            "base": 67,
+            "exp_after": 68,
+            "exp_before": 1,
+            "gained": 67,
+            "level_after": 1,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 48,
+            "draws": [
+              {
+                "bound": 24,
+                "value": 7
+              },
+              {
+                "bound": 9,
+                "value": 1
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 31,
+            "source": "0x40a5d0",
+            "subtotal": 32,
+            "target_level": 1
+          },
+          "healing": 0,
+          "hit": true,
+          "magic_key": "cure_poison",
+          "native_contribution": 48,
+          "resource_payment": {
+            "after": 48,
+            "amount": 4,
+            "before": 52,
+            "native_affordable": true,
+            "native_required": 4,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 2,
+          "skill_id": "magic:magicWATER:magicCode05",
+          "support_effects": [
+            {
+              "after_word": 0,
+              "before_word": 458755,
+              "removed": true,
+              "status": "poison"
+            }
+          ]
+        }
+      ],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/chapter01/support_magic/mheal006.wav",
+        "res://content/imported/hsl/chapter01/support_magic/shoot005.wav",
+        "res://content/imported/hsl/chapter01/support_magic/mheal003.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ],
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ],
+        [
+          "release",
+          "enemy021_1",
+          true
+        ],
+        [
+          "impact",
+          "enemy021_1",
+          true
+        ],
+        [
+          "release",
+          "enemy021_1",
+          true
+        ],
+        [
+          "impact",
+          "enemy021_1",
+          true
+        ],
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ],
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ],
+        [
+          "release",
+          "enemy021_1",
+          true
+        ],
+        [
+          "impact",
+          "enemy021_1",
+          true
+        ],
+        [
+          "release",
+          "enemy021_1",
+          true
+        ],
+        [
+          "impact",
+          "enemy021_1",
+          true
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 12,
+          "name": "極光之劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [
+        {
+          "base": 52,
+          "exp_after": 52,
+          "exp_before": 0,
+          "gained": 52,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        {
+          "base": 30,
+          "exp_after": 82,
+          "exp_before": 52,
+          "gained": 30,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "double_series",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience0": true,
+        "experience1": true,
+        "impact-0": true,
+        "impact-1": true,
+        "last_path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "movement": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 8)",
+        "hp": 306,
+        "id": "leonard",
+        "inventory": [
+          193,
+          241,
+          241,
+          246,
+          2,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 330,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipts": [
+        {
+          "actual_damage": 32,
+          "attacker_id": "leonard",
+          "counter": {
+            "actual_damage": 5,
+            "attacker_id": "enemy021_1",
+            "critical": false,
+            "damage": 5,
+            "defender_hp_after": 325,
+            "defender_hp_before": 330,
+            "defender_id": "leonard",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 5,
+              "draws": [
+                {
+                  "bound": 2,
+                  "value": 1
+                },
+                {
+                  "bound": 0,
+                  "value": 0
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 0,
+              "kill_multiplier": 100,
+              "kill_word_after": 0,
+              "killed": false,
+              "kills_added": 0,
+              "points": 3,
+              "source": "0x40a5d0",
+              "subtotal": 3,
+              "target_level": 1
+            },
+            "followups": [
+              {
+                "actual_damage": 5,
+                "attacker_id": "enemy021_1",
+                "critical": false,
+                "damage": 5,
+                "defender_hp_after": 320,
+                "defender_hp_before": 325,
+                "defender_id": "leonard",
+                "experience_basis": {
+                  "attacker_level": 1,
+                  "contribution": 5,
+                  "draws": [
+                    {
+                      "bound": 2,
+                      "value": 1
+                    },
+                    {
+                      "bound": 0,
+                      "value": 0
+                    }
+                  ],
+                  "kill_chain_before": 0,
+                  "kill_exp": 0,
+                  "kill_multiplier": 100,
+                  "kill_word_after": 0,
+                  "killed": false,
+                  "kills_added": 0,
+                  "points": 3,
+                  "source": "0x40a5d0",
+                  "subtotal": 3,
+                  "target_level": 1
+                },
+                "hit": true,
+                "native_contribution": 5,
+                "stamina_gain": {
+                  "attacker": {
+                    "after": 9,
+                    "before": 6,
+                    "blocked": false,
+                    "delta": 3,
+                    "doubled": false,
+                    "unit_id": "enemy021_1"
+                  },
+                  "base_gain": 3,
+                  "defeated": false,
+                  "defender": {
+                    "after": 9,
+                    "before": 3,
+                    "blocked": false,
+                    "delta": 6,
+                    "doubled": false,
+                    "unit_id": "leonard"
+                  },
+                  "evidence_tier": "static-derived",
+                  "heavy_hit": false,
+                  "level_penalty": false,
+                  "ok": true,
+                  "source_address": "0x40e590"
+                }
+              }
+            ],
+            "hit": true,
+            "native_contribution": 5
+          },
+          "critical": false,
+          "damage": 32,
+          "defender_hp_after": 968,
+          "defender_hp_before": 1000,
+          "defender_id": "enemy021_1",
+          "experience": {
+            "base": 52,
+            "exp_after": 52,
+            "exp_before": 0,
+            "gained": 52,
+            "level_after": 1,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 32,
+            "draws": [
+              {
+                "bound": 16,
+                "value": 11
+              },
+              {
+                "bound": 8,
+                "value": 2
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 26,
+            "source": "0x40a5d0",
+            "subtotal": 28,
+            "target_level": 1
+          },
+          "followups": [
+            {
+              "actual_damage": 46,
+              "attacker_id": "leonard",
+              "critical": true,
+              "damage": 46,
+              "defender_hp_after": 922,
+              "defender_hp_before": 968,
+              "defender_id": "enemy021_1",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 46,
+                "draws": [
+                  {
+                    "bound": 23,
+                    "value": 6
+                  },
+                  {
+                    "bound": 9,
+                    "value": 4
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 26,
+                "source": "0x40a5d0",
+                "subtotal": 30,
+                "target_level": 1
+              },
+              "hit": true,
+              "native_contribution": 46,
+              "stamina_gain": {
+                "attacker": {
+                  "after": 3,
+                  "before": 0,
+                  "blocked": false,
+                  "delta": 3,
+                  "doubled": false,
+                  "unit_id": "leonard"
+                },
+                "base_gain": 3,
+                "defeated": false,
+                "defender": {
+                  "after": 6,
+                  "before": 0,
+                  "blocked": false,
+                  "delta": 6,
+                  "doubled": false,
+                  "unit_id": "enemy021_1"
+                },
+                "evidence_tier": "static-derived",
+                "heavy_hit": false,
+                "level_penalty": false,
+                "ok": true,
+                "source_address": "0x40e590"
+              }
+            }
+          ],
+          "hit": true,
+          "native_contribution": 32,
+          "sequence": 1
+        },
+        {
+          "actual_damage": 30,
+          "attacker_id": "leonard",
+          "counter": {
+            "actual_damage": 7,
+            "attacker_id": "enemy021_1",
+            "critical": false,
+            "damage": 7,
+            "defender_hp_after": 313,
+            "defender_hp_before": 320,
+            "defender_id": "leonard",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 7,
+              "draws": [
+                {
+                  "bound": 3,
+                  "value": 0
+                },
+                {
+                  "bound": 0,
+                  "value": 0
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 0,
+              "kill_multiplier": 100,
+              "kill_word_after": 0,
+              "killed": false,
+              "kills_added": 0,
+              "points": 2,
+              "source": "0x40a5d0",
+              "subtotal": 2,
+              "target_level": 1
+            },
+            "followups": [
+              {
+                "actual_damage": 7,
+                "attacker_id": "enemy021_1",
+                "critical": false,
+                "damage": 7,
+                "defender_hp_after": 306,
+                "defender_hp_before": 313,
+                "defender_id": "leonard",
+                "experience_basis": {
+                  "attacker_level": 1,
+                  "contribution": 7,
+                  "draws": [
+                    {
+                      "bound": 3,
+                      "value": 2
+                    },
+                    {
+                      "bound": 1,
+                      "value": 0
+                    }
+                  ],
+                  "kill_chain_before": 0,
+                  "kill_exp": 0,
+                  "kill_multiplier": 100,
+                  "kill_word_after": 0,
+                  "killed": false,
+                  "kills_added": 0,
+                  "points": 5,
+                  "source": "0x40a5d0",
+                  "subtotal": 5,
+                  "target_level": 1
+                },
+                "hit": true,
+                "native_contribution": 7,
+                "stamina_gain": {
+                  "attacker": {
+                    "after": 18,
+                    "before": 15,
+                    "blocked": false,
+                    "delta": 3,
+                    "doubled": false,
+                    "unit_id": "enemy021_1"
+                  },
+                  "base_gain": 3,
+                  "defeated": false,
+                  "defender": {
+                    "after": 18,
+                    "before": 12,
+                    "blocked": false,
+                    "delta": 6,
+                    "doubled": false,
+                    "unit_id": "leonard"
+                  },
+                  "evidence_tier": "static-derived",
+                  "heavy_hit": false,
+                  "level_penalty": false,
+                  "ok": true,
+                  "source_address": "0x40e590"
+                }
+              }
+            ],
+            "hit": true,
+            "native_contribution": 7
+          },
+          "critical": false,
+          "damage": 30,
+          "defender_hp_after": 892,
+          "defender_hp_before": 922,
+          "defender_id": "enemy021_1",
+          "experience": {
+            "base": 30,
+            "exp_after": 82,
+            "exp_before": 52,
+            "gained": 30,
+            "level_after": 1,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 30,
+            "draws": [
+              {
+                "bound": 15,
+                "value": 3
+              },
+              {
+                "bound": 5,
+                "value": 2
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 16,
+            "source": "0x40a5d0",
+            "subtotal": 18,
+            "target_level": 1
+          },
+          "followups": [
+            {
+              "actual_damage": 33,
+              "attacker_id": "leonard",
+              "critical": false,
+              "damage": 33,
+              "defender_hp_after": 859,
+              "defender_hp_before": 892,
+              "defender_id": "enemy021_1",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 33,
+                "draws": [
+                  {
+                    "bound": 16,
+                    "value": 2
+                  },
+                  {
+                    "bound": 5,
+                    "value": 4
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 14,
+                "source": "0x40a5d0",
+                "subtotal": 18,
+                "target_level": 1
+              },
+              "hit": true,
+              "native_contribution": 33,
+              "stamina_gain": {
+                "attacker": {
+                  "after": 12,
+                  "before": 9,
+                  "blocked": false,
+                  "delta": 3,
+                  "doubled": false,
+                  "unit_id": "leonard"
+                },
+                "base_gain": 3,
+                "defeated": false,
+                "defender": {
+                  "after": 15,
+                  "before": 9,
+                  "blocked": false,
+                  "delta": 6,
+                  "doubled": false,
+                  "unit_id": "enemy021_1"
+                },
+                "evidence_tier": "static-derived",
+                "heavy_hit": false,
+                "level_penalty": false,
+                "ok": true,
+                "source_address": "0x40e590"
+              }
+            }
+          ],
+          "hit": true,
+          "native_contribution": 30,
+          "sequence": 2
+        }
+      ],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [
+        {
+          "base": 20,
+          "exp_after": 19,
+          "exp_before": 99,
+          "gained": 20,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        {
+          "base": 3,
+          "exp_after": 22,
+          "exp_before": 19,
+          "gained": 3,
+          "level_after": 2,
+          "level_before": 2,
+          "multiplier": 1
+        }
+      ],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "growth_kill",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience0": true,
+        "experience1": true,
+        "gold0": true,
+        "growth": true,
+        "impact-0": true,
+        "impact-1": true,
+        "last_path": [
+          "(10, 8)",
+          "(10, 9)"
+        ],
+        "movement": true,
+        "waited_menu_expansion": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 9)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          193,
+          12,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 33,
+        "max_mp": 59,
+        "mp": 50,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipts": [
+        {
+          "actual_damage": 1,
+          "attacker_id": "leonard",
+          "counter": {},
+          "critical": false,
+          "damage": 22,
+          "defender_hp_after": 0,
+          "defender_hp_before": 1,
+          "defender_id": "enemy021_1",
+          "experience": {
+            "base": 20,
+            "exp_after": 19,
+            "exp_before": 99,
+            "gained": 20,
+            "level_after": 2,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 1,
+            "draws": [
+              {
+                "bound": 0,
+                "value": 0
+              },
+              {
+                "bound": 7,
+                "value": 5
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 20,
+            "kill_multiplier": 100,
+            "kill_word_after": 65537,
+            "killed": true,
+            "kills_added": 1,
+            "points": 20,
+            "source": "0x40a5d0",
+            "subtotal": 25,
+            "target_level": 1
+          },
+          "followups": [],
+          "hit": true,
+          "kill_chain": 1,
+          "native_contribution": 1,
+          "sequence": 1,
+          "stamina_gain": {
+            "attacker": {
+              "after": 4,
+              "before": 0,
+              "blocked": false,
+              "delta": 4,
+              "doubled": false,
+              "unit_id": "leonard"
+            },
+            "base_gain": 4,
+            "defeated": true,
+            "defender": {
+              "after": 8,
+              "before": 0,
+              "blocked": false,
+              "delta": 8,
+              "doubled": false,
+              "unit_id": "enemy021_1"
+            },
+            "evidence_tier": "static-derived",
+            "heavy_hit": false,
+            "level_penalty": false,
+            "ok": true,
+            "source_address": "0x40e590"
+          }
+        },
+        {
+          "actual_damage": 5,
+          "affected_targets": [
+            {
+              "actual_damage": 5,
+              "attacker_id": "leonard",
+              "damage": 5,
+              "defender_hp_after": 495,
+              "defender_hp_before": 500,
+              "defender_id": "enemy021_2",
+              "experience_basis": {
+                "attacker_level": 2,
+                "contribution": 5,
+                "draws": [
+                  {
+                    "bound": 2,
+                    "value": 1
+                  },
+                  {
+                    "bound": 0,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 1,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 65537,
+                "killed": false,
+                "kills_added": 0,
+                "points": 3,
+                "source": "0x40a5d0",
+                "subtotal": 3,
+                "target_level": 1
+              },
+              "hit": true,
+              "magic_key": "wind",
+              "native_contribution": 5,
+              "native_damage_roll": {
+                "hit_bonus_after": 0,
+                "hit_check_passed": true,
+                "hit_rate": 96,
+                "hit_roll": 66,
+                "sampled": 24,
+                "value": 5
+              },
+              "resource_payment": {
+                "after": 50,
+                "amount": 8,
+                "before": 58,
+                "native_affordable": true,
+                "native_required": 8,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode01",
+              "status_effects": []
+            }
+          ],
+          "attacker_id": "leonard",
+          "cast_center": "(12, 9)",
+          "damage": 5,
+          "defender_hp_after": 495,
+          "defender_hp_before": 500,
+          "defender_id": "enemy021_2",
+          "experience": {
+            "base": 3,
+            "exp_after": 22,
+            "exp_before": 19,
+            "gained": 3,
+            "level_after": 2,
+            "level_before": 2,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 2,
+            "contribution": 5,
+            "draws": [
+              {
+                "bound": 2,
+                "value": 1
+              },
+              {
+                "bound": 0,
+                "value": 0
+              }
+            ],
+            "kill_chain_before": 1,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 65537,
+            "killed": false,
+            "kills_added": 0,
+            "points": 3,
+            "source": "0x40a5d0",
+            "subtotal": 3,
+            "target_level": 1
+          },
+          "hit": true,
+          "magic_key": "wind",
+          "native_contribution": 5,
+          "native_damage_roll": {
+            "hit_bonus_after": 0,
+            "hit_check_passed": true,
+            "hit_rate": 96,
+            "hit_roll": 66,
+            "sampled": 24,
+            "value": 5
+          },
+          "resource_payment": {
+            "after": 50,
+            "amount": 8,
+            "before": 58,
+            "native_affordable": true,
+            "native_required": 8,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 2,
+          "skill_id": "magic:magicAIR:magicCode01",
+          "status_effects": []
+        }
+      ],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/shared/interface_audio/level_up.wav",
+        "res://content/generated/hsl/remake_music/abandoned_guard.ogg",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0002.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0001.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 81.0,
+          "name": "木杖",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 152.0,
+          "name": "皮帽",
+          "slot": "head"
+        },
+        {
+          "item_code": 122.0,
+          "name": "袍",
+          "slot": "armor"
+        },
+        {
+          "item_code": 201.0,
+          "name": "護身符",
+          "slot": "accessory1"
+        },
+        {
+          "item_code": 227,
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "ai_cast",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "impact-0": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(9, 9)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 84,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipts": [
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 11,
+          "affected_targets": [
+            {
+              "actual_damage": 11,
+              "attacker_id": "enemy026_1",
+              "damage": 11,
+              "defender_hp_after": 489,
+              "defender_hp_before": 500,
+              "defender_id": "leonard",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 11,
+                "draws": [
+                  {
+                    "bound": 5,
+                    "value": 2
+                  },
+                  {
+                    "bound": 2,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 7,
+                "source": "0x40a5d0",
+                "subtotal": 7,
+                "target_level": 1
+              },
+              "hit": true,
+              "magic_key": "wind",
+              "native_contribution": 11,
+              "native_damage_roll": {
+                "hit_bonus_after": 0,
+                "hit_check_passed": true,
+                "hit_rate": 96,
+                "hit_roll": 20,
+                "sampled": 13,
+                "value": 11
+              },
+              "resource_payment": {
+                "after": 92,
+                "amount": 8,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 8,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode01",
+              "status_effects": []
+            }
+          ],
+          "attacker_id": "enemy026_1",
+          "cast_center": "(12, 9)",
+          "damage": 11,
+          "defender_hp_after": 489,
+          "defender_hp_before": 500,
+          "defender_id": "leonard",
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 11,
+            "draws": [
+              {
+                "bound": 5,
+                "value": 2
+              },
+              {
+                "bound": 2,
+                "value": 0
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 7,
+            "source": "0x40a5d0",
+            "subtotal": 7,
+            "target_level": 1
+          },
+          "hit": true,
+          "kind": "move_then_attack",
+          "magic_key": "wind",
+          "native_contribution": 11,
+          "native_damage_roll": {
+            "hit_bonus_after": 0,
+            "hit_check_passed": true,
+            "hit_rate": 96,
+            "hit_roll": 20,
+            "sampled": 13,
+            "value": 11
+          },
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(9, 9)"
+          ],
+          "resource_payment": {
+            "after": 92,
+            "amount": 8,
+            "before": 100,
+            "native_affordable": true,
+            "native_required": 8,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicAIR:magicCode01",
+          "status_effects": [],
+          "target_id": "leonard",
+          "to": "(9, 9)"
+        },
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 15,
+          "affected_targets": [
+            {
+              "actual_damage": 15,
+              "attacker_id": "enemy026_1",
+              "damage": 15,
+              "defender_hp_after": 474,
+              "defender_hp_before": 489,
+              "defender_id": "leonard",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 15,
+                "draws": [
+                  {
+                    "bound": 7,
+                    "value": 2
+                  },
+                  {
+                    "bound": 3,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 10,
+                "source": "0x40a5d0",
+                "subtotal": 10,
+                "target_level": 1
+              },
+              "hit": true,
+              "magic_key": "wind",
+              "native_contribution": 15,
+              "native_damage_roll": {
+                "hit_bonus_after": 0,
+                "hit_check_passed": true,
+                "hit_rate": 96,
+                "hit_roll": 80,
+                "sampled": 21,
+                "value": 15
+              },
+              "resource_payment": {
+                "after": 84,
+                "amount": 8,
+                "before": 92,
+                "native_affordable": true,
+                "native_required": 8,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode01",
+              "status_effects": []
+            }
+          ],
+          "attacker_id": "enemy026_1",
+          "cast_center": "(12, 9)",
+          "damage": 15,
+          "defender_hp_after": 474,
+          "defender_hp_before": 489,
+          "defender_id": "leonard",
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 15,
+            "draws": [
+              {
+                "bound": 7,
+                "value": 2
+              },
+              {
+                "bound": 3,
+                "value": 0
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 10,
+            "source": "0x40a5d0",
+            "subtotal": 10,
+            "target_level": 1
+          },
+          "hit": true,
+          "kind": "attack",
+          "magic_key": "wind",
+          "native_contribution": 15,
+          "native_damage_roll": {
+            "hit_bonus_after": 0,
+            "hit_check_passed": true,
+            "hit_rate": 96,
+            "hit_roll": 80,
+            "sampled": 21,
+            "value": 15
+          },
+          "path": [],
+          "resource_payment": {
+            "after": 84,
+            "amount": 8,
+            "before": 92,
+            "native_affordable": true,
+            "native_required": 8,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 2,
+          "skill_id": "magic:magicAIR:magicCode01",
+          "status_effects": [],
+          "target_id": "leonard",
+          "to": "(9, 9)"
+        }
+      ],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0002.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0001.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "enemy026_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ],
+        [
+          "release",
+          "enemy026_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 81.0,
+          "name": "木杖",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 152.0,
+          "name": "皮帽",
+          "slot": "head"
+        },
+        {
+          "item_code": 122.0,
+          "name": "袍",
+          "slot": "armor"
+        },
+        {
+          "item_code": 201.0,
+          "name": "護身符",
+          "slot": "accessory1"
+        },
+        {
+          "item_code": 227,
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "ai_support",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "impact-0": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(11, 10)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 88,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipts": [
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_hp_after": 31,
+              "defender_hp_before": 4,
+              "defender_id": "enemy023_1",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 13,
+                "draws": [
+                  {
+                    "bound": 6,
+                    "value": 4
+                  },
+                  {
+                    "bound": 3,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 11,
+                "source": "0x40a5d0",
+                "subtotal": 11,
+                "target_level": 1
+              },
+              "healing": 27,
+              "hit": true,
+              "magic_key": "heal",
+              "native_contribution": 13,
+              "resource_payment": {
+                "after": 94,
+                "amount": 6,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 6,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode06",
+              "support_effects": []
+            }
+          ],
+          "attacker_id": "enemy026_1",
+          "cast_center": "(12, 9)",
+          "damage": 0,
+          "defender_hp_after": 31,
+          "defender_hp_before": 4,
+          "defender_id": "enemy023_1",
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 13,
+            "draws": [
+              {
+                "bound": 6,
+                "value": 4
+              },
+              {
+                "bound": 3,
+                "value": 0
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 11,
+            "source": "0x40a5d0",
+            "subtotal": 11,
+            "target_level": 1
+          },
+          "healing": 27,
+          "hit": true,
+          "kind": "move_then_attack",
+          "magic_key": "heal",
+          "native_contribution": 13,
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(10, 8)"
+          ],
+          "resource_payment": {
+            "after": 94,
+            "amount": 6,
+            "before": 100,
+            "native_affordable": true,
+            "native_required": 6,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicWATER:magicCode06",
+          "support_effects": [],
+          "target_id": "enemy023_1",
+          "to": "(10, 8)"
+        },
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_hp_after": 58,
+              "defender_hp_before": 31,
+              "defender_id": "enemy023_1",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 13,
+                "draws": [
+                  {
+                    "bound": 6,
+                    "value": 4
+                  },
+                  {
+                    "bound": 3,
+                    "value": 2
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 9,
+                "source": "0x40a5d0",
+                "subtotal": 11,
+                "target_level": 1
+              },
+              "healing": 27,
+              "hit": true,
+              "magic_key": "heal",
+              "native_contribution": 13,
+              "resource_payment": {
+                "after": 88,
+                "amount": 6,
+                "before": 94,
+                "native_affordable": true,
+                "native_required": 6,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode06",
+              "support_effects": []
+            }
+          ],
+          "attacker_id": "enemy026_1",
+          "cast_center": "(12, 9)",
+          "damage": 0,
+          "defender_hp_after": 58,
+          "defender_hp_before": 31,
+          "defender_id": "enemy023_1",
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 13,
+            "draws": [
+              {
+                "bound": 6,
+                "value": 4
+              },
+              {
+                "bound": 3,
+                "value": 2
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 9,
+            "source": "0x40a5d0",
+            "subtotal": 11,
+            "target_level": 1
+          },
+          "healing": 27,
+          "hit": true,
+          "kind": "move_then_attack",
+          "magic_key": "heal",
+          "native_contribution": 13,
+          "path": [
+            "(10, 8)",
+            "(10, 9)",
+            "(10, 10)",
+            "(11, 10)"
+          ],
+          "resource_payment": {
+            "after": 88,
+            "amount": 6,
+            "before": 94,
+            "native_affordable": true,
+            "native_required": 6,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 2,
+          "skill_id": "magic:magicWATER:magicCode06",
+          "support_effects": [],
+          "target_id": "enemy023_1",
+          "to": "(11, 10)"
+        }
+      ],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/chapter01/support_magic/mheal006.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "enemy026_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 81.0,
+          "name": "木杖",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 152.0,
+          "name": "皮帽",
+          "slot": "head"
+        },
+        {
+          "item_code": 122.0,
+          "name": "袍",
+          "slot": "armor"
+        },
+        {
+          "item_code": 201.0,
+          "name": "護身符",
+          "slot": "accessory1"
+        },
+        {
+          "item_code": 227,
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "ai_no_mp",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "impact-0": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(11, 9)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipts": [
+        {
+          "actor_id": "enemy026_1",
+          "kind": "move",
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(9, 9)",
+            "(10, 9)"
+          ],
+          "to": "(10, 9)"
+        },
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 3,
+          "attacker_id": "enemy026_1",
+          "counter": {},
+          "critical": false,
+          "damage": 3,
+          "defender_hp_after": 497,
+          "defender_hp_before": 500,
+          "defender_id": "leonard",
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 3,
+            "draws": [
+              {
+                "bound": 1,
+                "value": 0
+              },
+              {
+                "bound": 0,
+                "value": 0
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 1,
+            "source": "0x40a5d0",
+            "subtotal": 1,
+            "target_level": 1
+          },
+          "followups": [],
+          "hit": true,
+          "kind": "move_then_attack",
+          "native_contribution": 3,
+          "path": [
+            "(10, 9)",
+            "(11, 9)"
+          ],
+          "sequence": 1,
+          "stamina_gain": {
+            "attacker": {
+              "after": 3,
+              "before": 0,
+              "blocked": false,
+              "delta": 3,
+              "doubled": false,
+              "unit_id": "enemy026_1"
+            },
+            "base_gain": 3,
+            "defeated": false,
+            "defender": {
+              "after": 6,
+              "before": 0,
+              "blocked": false,
+              "delta": 6,
+              "doubled": false,
+              "unit_id": "leonard"
+            },
+            "evidence_tier": "static-derived",
+            "heavy_hit": false,
+            "level_penalty": false,
+            "ok": true,
+            "source_address": "0x40e590"
+          },
+          "target_id": "leonard",
+          "to": "(11, 9)"
+        }
+      ],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack05.wav",
+        "res://content/imported/hsl/shared/interface_audio/hit_staff.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "enemy026_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 81.0,
+          "name": "木杖",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 152.0,
+          "name": "皮帽",
+          "slot": "head"
+        },
+        {
+          "item_code": 122.0,
+          "name": "袍",
+          "slot": "armor"
+        },
+        {
+          "item_code": 201.0,
+          "name": "護身符",
+          "slot": "accessory1"
+        },
+        {
+          "item_code": 227,
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "ai_silence",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "impact-0": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(11, 9)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 100,
+        "status_counters": {
+          "no_magic": 1,
+          "poison": 0.0
+        },
+        "status_flags": 2
+      },
+      "receipts": [
+        {
+          "actor_id": "enemy026_1",
+          "kind": "move",
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(9, 9)",
+            "(10, 9)"
+          ],
+          "to": "(10, 9)"
+        },
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 3,
+          "attacker_id": "enemy026_1",
+          "counter": {},
+          "critical": false,
+          "damage": 3,
+          "defender_hp_after": 497,
+          "defender_hp_before": 500,
+          "defender_id": "leonard",
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 3,
+            "draws": [
+              {
+                "bound": 1,
+                "value": 0
+              },
+              {
+                "bound": 0,
+                "value": 0
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 1,
+            "source": "0x40a5d0",
+            "subtotal": 1,
+            "target_level": 1
+          },
+          "followups": [],
+          "hit": true,
+          "kind": "move_then_attack",
+          "native_contribution": 3,
+          "path": [
+            "(10, 9)",
+            "(11, 9)"
+          ],
+          "sequence": 1,
+          "stamina_gain": {
+            "attacker": {
+              "after": 3,
+              "before": 0,
+              "blocked": false,
+              "delta": 3,
+              "doubled": false,
+              "unit_id": "enemy026_1"
+            },
+            "base_gain": 3,
+            "defeated": false,
+            "defender": {
+              "after": 6,
+              "before": 0,
+              "blocked": false,
+              "delta": 6,
+              "doubled": false,
+              "unit_id": "leonard"
+            },
+            "evidence_tier": "static-derived",
+            "heavy_hit": false,
+            "level_penalty": false,
+            "ok": true,
+            "source_address": "0x40e590"
+          },
+          "target_id": "leonard",
+          "to": "(11, 9)"
+        }
+      ],
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack05.wav",
+        "res://content/imported/hsl/shared/interface_audio/hit_staff.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [
+        {
+          "base": 19,
+          "exp_after": 18,
+          "exp_before": 99,
+          "gained": 19,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "victory",
+      "next_actor": "",
+      "observed": {
+        "experience1": true,
+        "gold1": true,
+        "impact-1": true,
+        "last_path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "movement": true
+      },
+      "outcome": "victory_optional_clear",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          193,
+          12,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 31,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "receipts": [
+        {
+          "actual_damage": 1,
+          "attacker_id": "leonard",
+          "counter": {},
+          "critical": false,
+          "damage": 24,
+          "defender_hp_after": 0,
+          "defender_hp_before": 1,
+          "defender_id": "enemy021_1",
+          "experience": {
+            "base": 19,
+            "exp_after": 18,
+            "exp_before": 99,
+            "gained": 19,
+            "level_after": 2,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 1,
+            "draws": [
+              {
+                "bound": 0,
+                "value": 0
+              },
+              {
+                "bound": 7,
+                "value": 6
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 20,
+            "kill_multiplier": 100,
+            "kill_word_after": 65537,
+            "killed": true,
+            "kills_added": 1,
+            "points": 19,
+            "source": "0x40a5d0",
+            "subtotal": 25,
+            "target_level": 1
+          },
+          "followups": [],
+          "hit": true,
+          "kill_chain": 1,
+          "native_contribution": 1,
+          "sequence": 1,
+          "stamina_gain": {
+            "attacker": {
+              "after": 4,
+              "before": 0,
+              "blocked": false,
+              "delta": 4,
+              "doubled": false,
+              "unit_id": "leonard"
+            },
+            "base_gain": 4,
+            "defeated": true,
+            "defender": {
+              "after": 8,
+              "before": 0,
+              "blocked": false,
+              "delta": 8,
+              "doubled": false,
+              "unit_id": "enemy021_1"
+            },
+            "evidence_tier": "static-derived",
+            "heavy_hit": false,
+            "level_penalty": false,
+            "ok": true,
+            "source_address": "0x40e590"
+          }
+        }
+      ],
+      "restarted": true,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/shared/interface_audio/level_up.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ],
+        [
+          "release",
+          "enemy021_1",
+          true
+        ],
+        [
+          "impact",
+          "enemy021_1",
+          true
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "defeat",
+      "next_actor": "",
+      "observed": {
+        "impact-1": true,
+        "last_path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "movement": true
+      },
+      "outcome": "defeat_leonard",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 8)",
+        "hp": 0,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0,
+          "poison": 0
+        },
+        "status_flags": 0
+      },
+      "receipts": [
+        {
+          "actual_damage": 18,
+          "attacker_id": "leonard",
+          "counter": {
+            "actual_damage": 1,
+            "attacker_id": "enemy021_1",
+            "critical": true,
+            "damage": 157,
+            "defender_hp_after": 0,
+            "defender_hp_before": 1,
+            "defender_id": "leonard",
+            "experience_basis": {
+              "attacker_level": 1,
+              "contribution": 1,
+              "draws": [
+                {
+                  "bound": 0,
+                  "value": 0
+                },
+                {
+                  "bound": 11,
+                  "value": 9
+                }
+              ],
+              "kill_chain_before": 0,
+              "kill_exp": 30,
+              "kill_multiplier": 100,
+              "kill_word_after": 1,
+              "killed": true,
+              "kills_added": 1,
+              "points": 28,
+              "source": "0x40a5d0",
+              "subtotal": 37,
+              "target_level": 1
+            },
+            "followups": [],
+            "hit": true,
+            "kill_chain": 1,
+            "native_contribution": 1,
+            "stamina_gain": {
+              "attacker": {
+                "after": 11,
+                "before": 6,
+                "blocked": false,
+                "delta": 5,
+                "doubled": false,
+                "unit_id": "enemy021_1"
+              },
+              "base_gain": 5,
+              "defeated": true,
+              "defender": {
+                "after": 13,
+                "before": 3,
+                "blocked": false,
+                "delta": 10,
+                "doubled": false,
+                "unit_id": "leonard"
+              },
+              "evidence_tier": "static-derived",
+              "heavy_hit": true,
+              "level_penalty": false,
+              "ok": true,
+              "source_address": "0x40e590"
+            }
+          },
+          "critical": false,
+          "damage": 18,
+          "defender_hp_after": 482,
+          "defender_hp_before": 500,
+          "defender_id": "enemy021_1",
+          "experience_basis": {
+            "attacker_level": 1,
+            "contribution": 18,
+            "draws": [
+              {
+                "bound": 9,
+                "value": 4
+              },
+              {
+                "bound": 3,
+                "value": 2
+              }
+            ],
+            "kill_chain_before": 0,
+            "kill_exp": 0,
+            "kill_multiplier": 100,
+            "kill_word_after": 0,
+            "killed": false,
+            "kills_added": 0,
+            "points": 11,
+            "source": "0x40a5d0",
+            "subtotal": 13,
+            "target_level": 1
+          },
+          "followups": [],
+          "hit": true,
+          "native_contribution": 18,
+          "sequence": 1,
+          "stamina_gain": {
+            "attacker": {
+              "after": 3,
+              "before": 0,
+              "blocked": false,
+              "delta": 3,
+              "doubled": false,
+              "unit_id": "leonard"
+            },
+            "base_gain": 3,
+            "defeated": false,
+            "defender": {
+              "after": 6,
+              "before": 0,
+              "blocked": false,
+              "delta": 6,
+              "doubled": false,
+              "unit_id": "enemy021_1"
+            },
+            "evidence_tier": "static-derived",
+            "heavy_hit": false,
+            "level_penalty": false,
+            "ok": true,
+            "source_address": "0x40e590"
+          }
+        }
+      ],
+      "restarted": true,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    },
+    {
+      "cues": [],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 227,
+          "name": "白光之翼",
+          "slot": "accessory2"
+        }
+      ],
+      "experience": [],
+      "extra_action": {
+        "owner_id": "",
+        "pending": false,
+        "sequence": 1
+      },
+      "mode": "escape",
+      "next_actor": "",
+      "observed": {
+        "last_path": [
+          "(11, 9)",
+          "(11, 10)",
+          "(12, 10)",
+          "(13, 10)",
+          "(14, 10)"
+        ],
+        "movement": true
+      },
+      "outcome": "victory_escape",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(14, 10)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          193,
+          12,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "receipts": [],
+      "restarted": true,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ],
+      "transition_seen": true,
+      "validation": "All assertions for this named route passed; process exit and scope are separately retained."
+    }
+  ],
+  "default_playthroughs": [
+    {
+      "actions": [
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 2
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 3
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 4
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 5
+        },
+        {
+          "action": "move",
+          "cell": [
+            15,
+            12
+          ],
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 6
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 6
+        },
+        {
+          "action": "move",
+          "cell": [
+            14,
+            10
+          ],
+          "exp": 0.0,
+          "hp": 19,
+          "level": 1.0,
+          "stamina": 6,
+          "turn": 7
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 19,
+          "level": 1.0,
+          "stamina": 6,
+          "turn": 7
+        }
+      ],
+      "captured_views": [
+        "status",
+        "map-range",
+        "map-cursor",
+        "map-target",
+        "attacker-shot",
+        "defender-shot"
+      ],
+      "dialogue": [
+        "372",
+        "372",
+        "372",
+        "372",
+        "396",
+        "397",
+        "372",
+        "374",
+        "374",
+        "372",
+        "368",
+        "369",
+        "369",
+        "372",
+        "371"
+      ],
+      "elapsed_seconds": 205.34,
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "outcome": "victory_escape",
+      "player": {
+        "action_ready": true,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(15, 17)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "base_move_point": 5.0,
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12.0,
+          "attack_damagex2": 14.0,
+          "avoid_hit_ratio": 0.0,
+          "con": 12.0,
+          "dex": 16.0,
+          "live_attack_damage": 54.0,
+          "live_defense": 43.0,
+          "live_hit_ratio": 98.0,
+          "live_magic_attack": 17.0,
+          "mind": 8.0,
+          "resist_by_type": {
+            "0": 16.0,
+            "1": 14.0,
+            "2": 13.0,
+            "3": 16.0,
+            "4": 12.0
+          },
+          "str": 16.0,
+          "weapon_damage_variance_hi": 0.0,
+          "weapon_damage_variance_lo": 0.0,
+          "weapon_magic_attack_type": -1.0
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native 0x448840 unadjusted template attack/defense/hit; PLAYERS str/dex/resists, absent resists modeled as zero. NPC level adjustment unresolved",
+        "coord": "(14, 10)",
+        "defeated": false,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          }
+        ],
+        "exp": 0.0,
+        "grid_coord": "(14, 10)",
+        "growth_profile": {
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_growth_refresh.json",
+          "job_code": 80.0,
+          "model": "native_swordman_v1",
+          "source": {
+            "actor_id": "001",
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "job": "jobSwordMan",
+            "job_code": 80.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 19,
+        "id": "leonard",
+        "inventory": [
+          241,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 0,
+        "kill_exp": 30.0,
+        "level": 1.0,
+        "live_speed": 14.0,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 30.0,
+        "max_mp": 0.0,
+        "move_point": 5,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+        "mp": 0.0,
+        "no_attack": false,
+        "pending_stat_points": 0,
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived",
+        "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+        "position_source": {
+          "evef_record_index": 20.0,
+          "object_code": 6.0,
+          "placement_world": [
+            480.0,
+            640.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 6,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0,
+        "traversal": {
+          "flying": false,
+          "no_block": false,
+          "size_type": 0.0
+        },
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      },
+      "policy": "hold",
+      "restart": true,
+      "time_scale": 1.0,
+      "turn": 7,
+      "visual_samples": {
+        "live-cue-cursor": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-range": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-target": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-hurt": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-magic-fire": {
+          "sequence": 15,
+          "turn": 4
+        },
+        "live-magic-wind": {
+          "sequence": 20,
+          "turn": 5
+        },
+        "live-windup": {
+          "sequence": 1,
+          "turn": 2
+        }
+      },
+      "verification_log": "ignored/extra-action/close-hold.log"
+    },
+    {
+      "actions": [
+        {
+          "action": "move",
+          "cell": [
+            15,
+            12
+          ],
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "move",
+          "cell": [
+            13,
+            11
+          ],
+          "exp": 10,
+          "hp": 22,
+          "level": 1.0,
+          "stamina": 10,
+          "turn": 2
+        },
+        {
+          "action": "attack",
+          "exp": 26,
+          "hp": 22,
+          "level": 1.0,
+          "stamina": 14,
+          "target": "enemy021_3",
+          "turn": 2
+        }
+      ],
+      "captured_views": [
+        "status",
+        "map-range",
+        "map-cursor",
+        "map-target",
+        "attacker-shot",
+        "defender-shot"
+      ],
+      "dialogue": [
+        "372",
+        "372",
+        "304"
+      ],
+      "elapsed_seconds": 79.863,
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "outcome": "defeat_leonard",
+      "player": {
+        "action_ready": false,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(15, 17)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "base_move_point": 5.0,
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12.0,
+          "attack_damagex2": 14.0,
+          "avoid_hit_ratio": 0.0,
+          "con": 12.0,
+          "dex": 16.0,
+          "live_attack_damage": 54.0,
+          "live_defense": 43.0,
+          "live_hit_ratio": 98.0,
+          "live_magic_attack": 17.0,
+          "mind": 8.0,
+          "resist_by_type": {
+            "0": 16.0,
+            "1": 14.0,
+            "2": 13.0,
+            "3": 16.0,
+            "4": 12.0
+          },
+          "str": 16.0,
+          "weapon_damage_variance_hi": 0.0,
+          "weapon_damage_variance_lo": 0.0,
+          "weapon_magic_attack_type": -1.0
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native 0x448840 unadjusted template attack/defense/hit; PLAYERS str/dex/resists, absent resists modeled as zero. NPC level adjustment unresolved",
+        "coord": "(13, 11)",
+        "defeated": true,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          }
+        ],
+        "exp": 26,
+        "grid_coord": "(13, 11)",
+        "growth_profile": {
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_growth_refresh.json",
+          "job_code": 80.0,
+          "model": "native_swordman_v1",
+          "source": {
+            "actor_id": "001",
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "job": "jobSwordMan",
+            "job_code": 80.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 0,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 0,
+        "kill_exp": 30.0,
+        "level": 1.0,
+        "live_speed": 14.0,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 30.0,
+        "max_mp": 0.0,
+        "move_point": 5,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+        "mp": 0.0,
+        "no_attack": false,
+        "pending_stat_points": 0,
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived",
+        "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+        "position_source": {
+          "evef_record_index": 20.0,
+          "object_code": 6.0,
+          "placement_world": [
+            480.0,
+            640.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 0,
+        "status_counters": {
+          "no_magic": 0,
+          "poison": 0
+        },
+        "status_flags": 0,
+        "traversal": {
+          "flying": false,
+          "no_block": false,
+          "size_type": 0.0
+        },
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      },
+      "policy": "advance",
+      "restart": true,
+      "time_scale": 1.0,
+      "turn": 3,
+      "visual_samples": {
+        "live-cue-cursor": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-range": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-target": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-hurt": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-magic-fire": {
+          "sequence": 7,
+          "turn": 2
+        },
+        "live-windup": {
+          "sequence": 1,
+          "turn": 2
+        }
+      },
+      "verification_log": "ignored/extra-action/default-advance.log"
+    }
+  ],
+  "images_sha256": {
+    "wait_status-equipment-preview.png": "f4d84ef67f1194f20e848a07afd91bb9789cdb62390d7114a4d299c16b404bc2",
+    "wait_status-second-status.png": "e444b8f1bbec2f58ce9f3aa61b0de6dd5d56b7f4733b743fb1457327c9c6bdde",
+    "equip_restore-restored.png": "a82cf821860ffb3ae5e0cc73f4c4e42397e20be29bad2db020aad7495e33351d",
+    "growth_kill-ready-0.png": "3a2ade77acb9469604e0935cdf784d12b78dfe618aa06f91157bc443f8eccc5d",
+    "growth_kill-impact-1.png": "4ca74b44b8856bfc7f5a636705c5eb04cabe8cc2e0d626712f97af4cf3c3b640",
+    "support_cure-impact-1.png": "b776123468c4385216dacda5dac9502788cc8c7751a6159612948b873cb84069",
+    "ai_support-again.png": "b0dd04aca7c270b57621caf24b88c27f8cc95ac1de0bc4e6ae966a52cc4f172d",
+    "victory-result.png": "041653129eead5c066fd44d79d1bc9549180ec68d38cbb098a4d4d2af57e49c9",
+    "defeat-result.png": "77d81c7ff928b1abcd58f297a2e4701ecfddb139e7bf6292f0faa78ce9e2fa2f",
+    "escape-result.png": "edff6d57366157d4cfdc68169e140891913221eb8945cdc4f7edb3b544b370d6",
+    "default-hold-result.png": "ba18ab78addc61beeffad596d74d3bb8586e2d942a9c630b6b7fad5e88aae8b5",
+    "default-advance-result.png": "70b7e9e5993f5d9ed04d838f56172fd54db17fa91df0ccd25322fc90fe7171bb"
+  },
+  "failed_default_attempts": [
+    {
+      "policy": "hold",
+      "outcome": "defeat_leonard",
+      "turn": 12,
+      "elapsed_seconds": 318.014,
+      "restart": true,
+      "process_exit": 1,
+      "log": "ignored/extra-action/failed-default-hold/run.log",
+      "limit": "A real failed stochastic greedy-route attempt; not relabelled as escape or a diagnosed rule regression."
+    }
+  ],
+  "validation_scope": "13 named routes verified across sequential rendered processes. Three earlier processes failed after retained successful routes; those process failures are not presented as PASS. Final cue placement is validated in growth_kill and later AI/terminal routes; preceding transactions were unchanged. Default hold later passed on unchanged gameplay rules; the prior failed attempt is retained."
+}

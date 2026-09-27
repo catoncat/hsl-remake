@@ -1,0 +1,66 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 62,
+  "story_scene": {
+    "id": "story_062_camp_hanks_warning",
+    "title": "營地・漢克斯的警告",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      }
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the EVEF 夜晚聲 (mapobjPlayBGSound, WAV\\NIGHT001.WAV) is exported as a background_sound placement and its WAV into sounds/; no runtime consumer plays EVEF-placed ambience yet"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "004"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "004"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_漢克斯": "3"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-062.obs 雷歐納德 obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-062.obs 緹娜 obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-062.obs 漢克斯 (placed off the west edge at x = -64) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 62 (winfail006 -> 6,62): the camp after 席達鎮 (dusk camp alias, provisional):",
+      "緹娜 questions 雷歐納德's motives and goes to sleep, 漢克斯 walks in with his warning;",
+      "STORY062 chains to level 63 (6,63)."
+    ],
+    "cast": [
+      "Level 62 (camp after 席達鎮, story-only): 雷歐納德, 緹娜 and 漢克斯 (琥 is not placed)."
+    ],
+    "speakers": [
+      "Level 62 (camp after 席達鎮, story-only STORY062, winfail006 -> 6,62): 緹娜 and 雷歐納德",
+      "talk, then 漢克斯 warns him; 琥 is not placed."
+    ]
+  }
+}

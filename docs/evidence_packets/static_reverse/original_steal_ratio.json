@@ -1,0 +1,8626 @@
+{
+  "schema": "hsl_native_steal_ratio.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "sources": {
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "SPECIAL.TXT": "a6a5d07b2fdd7fe6cefcdc0fccab00e67e2a4bdd7a8e025ca50a9258dfa5155a",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c"
+  },
+  "refresh": [
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": null,
+        "gear": null
+      },
+      "gear": [
+        2,
+        153,
+        125,
+        181,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 0,
+            "work": 12
+          },
+          "normal_return": true,
+          "instructions": 860
+        },
+        {
+          "values": {
+            "word": 0,
+            "work": 12
+          },
+          "normal_return": true,
+          "instructions": 860
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": null,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 0,
+            "work": 32
+          },
+          "normal_return": true,
+          "instructions": 587
+        },
+        {
+          "values": {
+            "word": 0,
+            "work": 32
+          },
+          "normal_return": true,
+          "instructions": 587
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": null,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          131,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        131,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 0,
+            "work": 52
+          },
+          "normal_return": true,
+          "instructions": 673
+        },
+        {
+          "values": {
+            "word": 0,
+            "work": 52
+          },
+          "normal_return": true,
+          "instructions": 673
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "004",
+        "level": 5,
+        "word": null,
+        "gear": null
+      },
+      "gear": [
+        102,
+        151,
+        123,
+        181,
+        201,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 30,
+            "work": 30
+          },
+          "normal_return": true,
+          "instructions": 944
+        },
+        {
+          "values": {
+            "word": 30,
+            "work": 30
+          },
+          "normal_return": true,
+          "instructions": 944
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "004",
+        "level": 5,
+        "word": null,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 30,
+            "work": 50
+          },
+          "normal_return": true,
+          "instructions": 584
+        },
+        {
+          "values": {
+            "word": 30,
+            "work": 50
+          },
+          "normal_return": true,
+          "instructions": 584
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "004",
+        "level": 5,
+        "word": null,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          131,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        131,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 30,
+            "work": 70
+          },
+          "normal_return": true,
+          "instructions": 670
+        },
+        {
+          "values": {
+            "word": 30,
+            "work": 70
+          },
+          "normal_return": true,
+          "instructions": 670
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "013",
+        "level": 5,
+        "word": null,
+        "gear": null
+      },
+      "gear": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 20,
+            "work": 20
+          },
+          "normal_return": true,
+          "instructions": 501
+        },
+        {
+          "values": {
+            "word": 20,
+            "work": 20
+          },
+          "normal_return": true,
+          "instructions": 501
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "013",
+        "level": 5,
+        "word": null,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 20,
+            "work": 40
+          },
+          "normal_return": true,
+          "instructions": 587
+        },
+        {
+          "values": {
+            "word": 20,
+            "work": 40
+          },
+          "normal_return": true,
+          "instructions": 587
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "013",
+        "level": 5,
+        "word": null,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          131,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        131,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 20,
+            "work": 60
+          },
+          "normal_return": true,
+          "instructions": 673
+        },
+        {
+          "values": {
+            "word": 20,
+            "work": 60
+          },
+          "normal_return": true,
+          "instructions": 673
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 0,
+        "gear": null
+      },
+      "gear": [
+        2,
+        153,
+        125,
+        181,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 0,
+            "work": 12
+          },
+          "normal_return": true,
+          "instructions": 860
+        },
+        {
+          "values": {
+            "word": 0,
+            "work": 12
+          },
+          "normal_return": true,
+          "instructions": 860
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 0,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 0,
+            "work": 32
+          },
+          "normal_return": true,
+          "instructions": 587
+        },
+        {
+          "values": {
+            "word": 0,
+            "work": 32
+          },
+          "normal_return": true,
+          "instructions": 587
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 1,
+        "gear": null
+      },
+      "gear": [
+        2,
+        153,
+        125,
+        181,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 1,
+            "work": 1
+          },
+          "normal_return": true,
+          "instructions": 859
+        },
+        {
+          "values": {
+            "word": 1,
+            "work": 1
+          },
+          "normal_return": true,
+          "instructions": 859
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 1,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 1,
+            "work": 21
+          },
+          "normal_return": true,
+          "instructions": 586
+        },
+        {
+          "values": {
+            "word": 1,
+            "work": 21
+          },
+          "normal_return": true,
+          "instructions": 586
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 12,
+        "gear": null
+      },
+      "gear": [
+        2,
+        153,
+        125,
+        181,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 12,
+            "work": 12
+          },
+          "normal_return": true,
+          "instructions": 859
+        },
+        {
+          "values": {
+            "word": 12,
+            "work": 12
+          },
+          "normal_return": true,
+          "instructions": 859
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 12,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 12,
+            "work": 32
+          },
+          "normal_return": true,
+          "instructions": 586
+        },
+        {
+          "values": {
+            "word": 12,
+            "work": 32
+          },
+          "normal_return": true,
+          "instructions": 586
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 30,
+        "gear": null
+      },
+      "gear": [
+        2,
+        153,
+        125,
+        181,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 30,
+            "work": 30
+          },
+          "normal_return": true,
+          "instructions": 859
+        },
+        {
+          "values": {
+            "word": 30,
+            "work": 30
+          },
+          "normal_return": true,
+          "instructions": 859
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 30,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 30,
+            "work": 50
+          },
+          "normal_return": true,
+          "instructions": 586
+        },
+        {
+          "values": {
+            "word": 30,
+            "work": 50
+          },
+          "normal_return": true,
+          "instructions": 586
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 50,
+        "gear": null
+      },
+      "gear": [
+        2,
+        153,
+        125,
+        181,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 50,
+            "work": 50
+          },
+          "normal_return": true,
+          "instructions": 859
+        },
+        {
+          "values": {
+            "word": 50,
+            "work": 50
+          },
+          "normal_return": true,
+          "instructions": 859
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 50,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 50,
+            "work": 70
+          },
+          "normal_return": true,
+          "instructions": 586
+        },
+        {
+          "values": {
+            "word": 50,
+            "work": 70
+          },
+          "normal_return": true,
+          "instructions": 586
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 200,
+        "gear": null
+      },
+      "gear": [
+        2,
+        153,
+        125,
+        181,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 200,
+            "work": 200
+          },
+          "normal_return": true,
+          "instructions": 859
+        },
+        {
+          "values": {
+            "word": 200,
+            "work": 200
+          },
+          "normal_return": true,
+          "instructions": 859
+        }
+      ]
+    },
+    {
+      "input": {
+        "actor": "001",
+        "level": 5,
+        "word": 200,
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ]
+      },
+      "gear": [
+        0,
+        0,
+        131,
+        0,
+        0,
+        0
+      ],
+      "native": [
+        {
+          "values": {
+            "word": 200,
+            "work": 220
+          },
+          "normal_return": true,
+          "instructions": 586
+        },
+        {
+          "values": {
+            "word": 200,
+            "work": 220
+          },
+          "normal_return": true,
+          "instructions": 586
+        }
+      ]
+    }
+  ],
+  "job_up": [
+    {
+      "input": {
+        "record": "004",
+        "template": "013",
+        "gear": null,
+        "flag": 2147483648
+      },
+      "native": {
+        "word": 50,
+        "work": 50,
+        "job": 89,
+        "slot_code": 809,
+        "job_up_flags": "0x80000000"
+      },
+      "template_word": 20,
+      "record_word": 30,
+      "normal_return": true,
+      "instructions": 1112
+    },
+    {
+      "input": {
+        "record": "001",
+        "template": "010",
+        "gear": null,
+        "flag": 2147483648
+      },
+      "native": {
+        "word": 0,
+        "work": 12,
+        "job": 81,
+        "slot_code": 809,
+        "job_up_flags": "0x80000000"
+      },
+      "template_word": 0,
+      "record_word": 0,
+      "normal_return": true,
+      "instructions": 1024
+    },
+    {
+      "input": {
+        "record": "010",
+        "template": "019",
+        "gear": null,
+        "flag": 1073741824
+      },
+      "native": {
+        "word": 0,
+        "work": 12,
+        "job": 82,
+        "slot_code": 809,
+        "job_up_flags": "0x40000000"
+      },
+      "template_word": 0,
+      "record_word": 0,
+      "normal_return": true,
+      "instructions": 672
+    },
+    {
+      "input": {
+        "record": "004",
+        "template": "013",
+        "gear": [
+          0,
+          0,
+          131,
+          0,
+          0,
+          0
+        ],
+        "flag": 2147483648
+      },
+      "native": {
+        "word": 50,
+        "work": 70,
+        "job": 89,
+        "slot_code": 809,
+        "job_up_flags": "0x80000000"
+      },
+      "template_word": 20,
+      "record_word": 30,
+      "normal_return": true,
+      "instructions": 752
+    },
+    {
+      "input": {
+        "record": "013",
+        "template": "004",
+        "gear": null,
+        "flag": 2147483648
+      },
+      "native": {
+        "word": 50,
+        "work": 50,
+        "job": 88,
+        "slot_code": 809,
+        "job_up_flags": "0x80000000"
+      },
+      "template_word": 30,
+      "record_word": 20,
+      "normal_return": true,
+      "instructions": 761
+    }
+  ],
+  "steal": [
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 30,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 50,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 16,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 12,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 30,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 16,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 12,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 50,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 16,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 12,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          210,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            246,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 11,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75,
+          18
+        ],
+        "stolen": {
+          "slot": 1,
+          "code": 246
+        },
+        "immediate_experience": 1,
+        "tail_experience": 10
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 17,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 2,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1877
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 30,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 50,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 23,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 16,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 9,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 3,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 14,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 30,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 23,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 16,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 9,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 3,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 14,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 50,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 23,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 16,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 9,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 3,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 14,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 23,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          210,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            246,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 14,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          75,
+          14
+        ],
+        "stolen": {
+          "slot": 1,
+          "code": 246
+        },
+        "immediate_experience": 1,
+        "tail_experience": 13
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 9,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 3,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 13,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 4,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 9,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1875
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 10,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 9
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 1,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1703
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 30,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 10,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 9
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 1,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1703
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 50,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 10,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 9
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 1,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1703
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          210,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            241,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 9,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75,
+          91,
+          18
+        ],
+        "stolen": {
+          "slot": 2,
+          "code": 241
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 90,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 17,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 3,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 2,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 2012
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 62,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 8,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          34
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 7
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 24,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 33,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 2,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 30,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 62,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 8,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          34
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 7
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 24,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 33,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 2,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 50,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 62,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 8,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          34
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 7
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 24,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 33,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 2,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 62,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 8,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          34
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 7
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 24,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 33,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 2,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          0,
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 36,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 853
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          0,
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 38,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 853
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          0,
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 26,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 853
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          0,
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 36,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 853
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          210,
+          0,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          0,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 16,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 12,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          210,
+          0,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          210,
+          0,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 10,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 9
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 1,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1703
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          246,
+          246,
+          0,
+          210,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          0,
+          210,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            246,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 246
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          246,
+          246,
+          0,
+          210,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          0,
+          210,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            246,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 16,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 246
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 12,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          246,
+          246,
+          0,
+          210,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          0,
+          210,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            246,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 246
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          246,
+          246,
+          0,
+          210,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          0,
+          210,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            246,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 10,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 246
+        },
+        "immediate_experience": 1,
+        "tail_experience": 9
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 1,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1703
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 36,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 853
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 38,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 853
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 26,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 853
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 36,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 853
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 16,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 12,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          210,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 10,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 9
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 1,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1703
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          244,
+          244,
+          254,
+          202,
+          241,
+          246,
+          248,
+          210
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          244,
+          254,
+          202,
+          241,
+          246,
+          248,
+          210,
+          0
+        ],
+        "queue": [
+          [
+            244,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 244
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          244,
+          244,
+          254,
+          202,
+          241,
+          246,
+          248,
+          210
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          244,
+          254,
+          202,
+          241,
+          246,
+          248,
+          210,
+          0
+        ],
+        "queue": [
+          [
+            244,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 11,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75,
+          18
+        ],
+        "stolen": {
+          "slot": 1,
+          "code": 244
+        },
+        "immediate_experience": 1,
+        "tail_experience": 10
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 17,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 2,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1877
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          244,
+          244,
+          254,
+          202,
+          241,
+          246,
+          248,
+          210
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          244,
+          254,
+          202,
+          241,
+          246,
+          248,
+          210,
+          0
+        ],
+        "queue": [
+          [
+            244,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 244
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          244,
+          244,
+          254,
+          202,
+          241,
+          246,
+          248,
+          210
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          244,
+          244,
+          202,
+          241,
+          246,
+          248,
+          210,
+          0
+        ],
+        "queue": [
+          [
+            254,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 9,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75,
+          91,
+          18
+        ],
+        "stolen": {
+          "slot": 2,
+          "code": 254
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 90,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 17,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 3,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 2,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 2012
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          32,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          0
+        ],
+        "queue": [
+          [
+            33,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 15,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20,
+          9
+        ],
+        "stolen": {
+          "slot": 1,
+          "code": 33
+        },
+        "immediate_experience": 1,
+        "tail_experience": 14
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 8,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 4,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 12,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 2,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1875
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75,
+          18,
+          63,
+          67,
+          22,
+          15,
+          65,
+          23
+        ],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 17,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 62,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 66,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 21,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 14,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 64,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 22,
+          "stage": "steal"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1939
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          0
+        ],
+        "queue": [
+          [
+            32,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 32
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75,
+          91,
+          18,
+          93,
+          73,
+          24,
+          35,
+          26
+        ],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 90,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 17,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 92,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 72,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 23,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 34,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 25,
+          "stage": "steal"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1939
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 62,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          32,
+          33,
+          35,
+          36,
+          37,
+          38,
+          39,
+          0
+        ],
+        "queue": [
+          [
+            34,
+            1
+          ]
+        ],
+        "contribution": 32,
+        "experience": 9,
+        "hit": true,
+        "value": 32,
+        "rolls": [
+          34,
+          39,
+          7
+        ],
+        "stolen": {
+          "slot": 2,
+          "code": 34
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 24,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 33,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 38,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 6,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 1,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1973
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 99,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          0
+        ],
+        "queue": [
+          [
+            39,
+            1
+          ]
+        ],
+        "contribution": 22,
+        "experience": 10,
+        "hit": true,
+        "value": 22,
+        "rolls": [
+          15,
+          39,
+          57,
+          39,
+          46,
+          30,
+          38,
+          3
+        ],
+        "stolen": {
+          "slot": 7,
+          "code": 39
+        },
+        "immediate_experience": 1,
+        "tail_experience": 9
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 23,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 14,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 38,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 56,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 38,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 45,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 29,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 37,
+          "stage": "steal"
+        },
+        {
+          "bound": 100,
+          "value": 2,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 11,
+          "value": 9,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 2641
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          32,
+          0,
+          210,
+          246,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          32,
+          0,
+          210,
+          246,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 989
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          32,
+          0,
+          210,
+          246,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          32,
+          0,
+          210,
+          246,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75
+        ],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 989
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 19,
+        "inventory": [
+          32,
+          0,
+          210,
+          246,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          0,
+          210,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            32,
+            1
+          ]
+        ],
+        "contribution": 26,
+        "experience": 9,
+        "hit": true,
+        "value": 26,
+        "rolls": [
+          5
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 32
+        },
+        "immediate_experience": 1,
+        "tail_experience": 8
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 4,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 1,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 13,
+          "value": 4,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 0,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          32,
+          0,
+          210,
+          246,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          32,
+          0,
+          210,
+          246,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          75
+        ],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 989
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 90,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 1,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 36,
+        "experience": 12,
+        "hit": true,
+        "value": 36,
+        "rolls": [
+          20
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 2,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 8,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 4,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 19,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 3,
+          "stage": "immediate"
+        },
+        {
+          "bound": 2,
+          "value": 1,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 18,
+          "value": 5,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 90,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 38,
+        "experience": 16,
+        "hit": true,
+        "value": 38,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 1,
+        "tail_experience": 15
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 9,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 7,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 5,
+          "value": 2,
+          "stage": "immediate"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 19,
+          "value": 12,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 4,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1742
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 90,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 11,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 9,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": false,
+        "value": 0,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 95,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 323
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 90,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 12,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 9,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": false,
+        "value": 0,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 95,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 323
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 90,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 35,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 9,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": false,
+        "value": 0,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 95,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 323
+    },
+    {
+      "input": {
+        "level": 5,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 90,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 40,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 10,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [],
+        "contribution": 0,
+        "experience": 0,
+        "hit": false,
+        "value": 0,
+        "rolls": [],
+        "stolen": null,
+        "immediate_experience": 0,
+        "tail_experience": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 99,
+          "stage": "hit"
+        }
+      ],
+      "calls": [
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 323
+    },
+    {
+      "input": {
+        "level": 1,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 28,
+        "experience": 56,
+        "hit": true,
+        "value": 28,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 2,
+        "tail_experience": 54
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 1,
+          "value": 0,
+          "stage": "immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 16,
+          "value": 2,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1478
+    },
+    {
+      "input": {
+        "level": 20,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 66,
+        "experience": 13,
+        "hit": true,
+        "value": 66,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 2,
+        "tail_experience": 11
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 36,
+          "value": 32,
+          "stage": "hit"
+        },
+        {
+          "bound": 30,
+          "value": 6,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 20,
+          "value": 17,
+          "stage": "immediate"
+        },
+        {
+          "bound": 9,
+          "value": 3,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 0,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 33,
+          "value": 25,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 3,
+          "value": 1,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1740
+    },
+    {
+      "input": {
+        "level": 120,
+        "dex": 15,
+        "mind": 15,
+        "con": 15,
+        "hit": 100,
+        "caster_word": 12,
+        "target_level": 3,
+        "target_hp": 100,
+        "seed": 7,
+        "inventory": [
+          210,
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": {
+        "hit_bonus": 0,
+        "inventory": [
+          246,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "queue": [
+          [
+            210,
+            1
+          ]
+        ],
+        "contribution": 198,
+        "experience": 41,
+        "hit": true,
+        "value": 198,
+        "rolls": [
+          75
+        ],
+        "stolen": {
+          "slot": 0,
+          "code": 210
+        },
+        "immediate_experience": 8,
+        "tail_experience": 33
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 1,
+          "stage": "hit"
+        },
+        {
+          "bound": 6,
+          "value": 5,
+          "stage": "hit"
+        },
+        {
+          "bound": 216,
+          "value": 104,
+          "stage": "hit"
+        },
+        {
+          "bound": 180,
+          "value": 66,
+          "stage": "hit"
+        },
+        {
+          "bound": 100,
+          "value": 74,
+          "stage": "steal"
+        },
+        {
+          "bound": 120,
+          "value": 57,
+          "stage": "immediate"
+        },
+        {
+          "bound": 29,
+          "value": 11,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 2,
+          "value": 0,
+          "stage": "experience_immediate"
+        },
+        {
+          "bound": 99,
+          "value": 55,
+          "stage": "experience_tail"
+        },
+        {
+          "bound": 9,
+          "value": 0,
+          "stage": "experience_tail"
+        }
+      ],
+      "calls": [
+        "0x40e6c0",
+        "0x44f2d0",
+        "0x436e80",
+        "0x40a5d0",
+        "0x40a5d0"
+      ],
+      "entry": "0x40b8f0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 1779
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x4489bd",
+      "bytes": "668b8694010000b90c000000663bc266898696010000750766898e96010000",
+      "meaning": "0x448840: +0x196 = word +0x194, or 12 when that word is 0 (same default block as +0x19e 12 / +0x1a2 8)."
+    },
+    {
+      "address": "0x4486dd",
+      "bytes": "668b514066019096010000",
+      "meaning": "0x448420: word +0x196 += item +0x40 (add_steal_ratio) for every equipped item."
+    },
+    {
+      "address": "0x434a9f",
+      "bytes": "668b889401000066018e94010000668b909801000066019698010000668b889c01000066018e9c010000668b90a0010000660196a0010000",
+      "meaning": "0x4348f0: the four low words +0x194/+0x198/+0x19c/+0x1a0 add the up-tier template words; +0x196 is left to the refresh."
+    },
+    {
+      "address": "0x447ad6",
+      "bytes": "68ac8b47008984399c000000e8e9ebffff8b15401b4c00566a0189442434689c8b4700",
+      "meaning": "ITEM loader stores add_steal_ratio into item +0x40."
+    },
+    {
+      "address": "0x40b59a",
+      "bytes": "f744243c000004000f84ed0000008b4c24408b44241c518b4c24248d5424146a0052505651e8ecf1ffff83c4188944242485c00f84c2000000c744243c000000008d9e380100008b3b85ff0f84aa0000006a64e88e1102008be85745e8c53000008b4c242833d283c408668b91960100008d54100a3bea7c138b44243c83c3044083f8088944243c7cbd",
+      "meaning": "StealItem: after the hit roll walk the eight slots; an empty slot ends the walk; rand100+1 < get_ratio+10+caster+0x196 steals the first passing item."
+    },
+    {
+      "address": "0x40b626",
+      "bytes": "6a0157e8a23c04008b4424448b5c243c5053e843b802008b4c24348b15fc134c0083c41003d185ff8915fc134c00743f8bfa8b5424208b829c00000050e8181102008b4c2434405351a3fc134c00e857efffff8b4c242483c40c03c88b44241440894c2418893dfc134c0089442414",
+      "meaning": "A stolen item enters the pending queue, the slot shifts left, the proc0 value joins the contribution and rand(level)+1 converts at once."
+    },
+    {
+      "address": "0x40e6c0",
+      "bytes": "8b4424048d0c808d1448a1401b4c00c1e2048b8402ac000000c3",
+      "meaning": "get_ratio getter reads item +0xac."
+    },
+    {
+      "address": "0x436e80",
+      "bytes": "8b4424048b15c81b4c008b80a40000008bc8c1e1072bc88d048a8b542408b9070000002bca782285c97e1456578db4903c0100008dbc9038010000f3a55f5ec7805401000000000000c3",
+      "meaning": "Target slot removal shifts the following slots left and clears the eighth."
+    }
+  ],
+  "limits": [
+    "Refresh and job-up records are PLAYERS/ITEM-sourced fixtures; the doubled 131 slot and the synthetic 001 words are marked inputs, not source combinations.",
+    "The job-up exchange is checked on +0x194/+0x196, job, slot code and flags only; its other copied fields have their own packet (original_town_job_up.md).",
+    "StealItem runs the whole 0x40aa80 through the 0x40b8f0 wrapper with a preallocated pending queue; the caster is a bare record with the +0x196 word supplied directly.",
+    "Fixed RNG seeds and synthetic inventories; no whole-battle or dispatcher parity."
+  ]
+}

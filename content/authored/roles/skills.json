@@ -1,0 +1,48 @@
+{
+  "schema": "hsl_authored_skills.v1",
+  "evidence_tier": "authored",
+  "note": "續集招式表：每行一招，欄位與 SPECIAL.TXT（channel special，絕技，耗 ST）／MAGIC.TXT（channel magic，魔法，耗 MP）的行相同，另加 channel 與 name_text（顯示名；原表用 RESOURCE.TXT 編號）。code 以 authored 開頭，id = channel:type:code。function 目前只收 magicFun_Attack（兩個通道的原生傷害公式）；其他效果族需要運行時決定。表現：special 的 attack_code／defense_code、magic 的 effect_code 指 EFFECTS.TXT 已有的腳本段，或本表 scripts 裡以 authored 開頭的新段（只能用 SkillEffectScriptPlayer 已實作的 ani*／eff* opcode 與已導入的物件、音效）。角色在對應的聲明欄位寫招式名即初始學會（龍炎斬 → special_fire），學習表 learning_tables.json 也可引用這些 id。tools/hsltools/data/authored_skills.py 驗證並長出 initial_book.json 的行與 authored_effect_scripts.json。",
+  "scripts": {
+    "authoredDragonBreath": [
+      "effPlaySound,WAV\\FIRE0006.WAV",
+      "effInsertObject,obj_Effect_FireRoundFire,0,0,effWait,30",
+      "effInsertRandomObject,obj_Effect_FireFire,0,8,48,16,10,6",
+      "effWait,40",
+      "effInsertObject,obj_Effect_FireBomb2,0,0,effWait,50",
+      "effWait,30"
+    ]
+  },
+  "skills": [
+    {
+      "channel": "special",
+      "code": "authoredDragonFlame",
+      "name_text": "龍炎斬",
+      "type": "magicFIRE",
+      "range": "range2Cell",
+      "effect_range": "range0Cell",
+      "expend": "1",
+      "damage": "48,80",
+      "hit_ratio": "95",
+      "use_ratio": "90",
+      "function": "magicFun_Attack",
+      "attackpow_ratio": "110",
+      "attack_code": "specCode31",
+      "defense_code": "specCode32"
+    },
+    {
+      "channel": "magic",
+      "code": "authoredDragonBreath",
+      "name_text": "龍息",
+      "type": "magicFIRE",
+      "range": "range4CellThrust",
+      "effect_range": "range1Cell",
+      "expend": "10",
+      "damage": "30,48",
+      "hit_ratio": "94",
+      "function": "magicFun_Attack",
+      "use_ratio": "90",
+      "effect_proc": "eff_proc_Local",
+      "effect_code": "authoredDragonBreath"
+    }
+  ]
+}

@@ -1,0 +1,1488 @@
+{
+  "schema": "hsl_native_equipment_mobility.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "sources": {
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c"
+  },
+  "cases": [
+    {
+      "input": {
+        "actor": "001",
+        "base": 5,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 502
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 511
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 5,
+        "equipment": [
+          2,
+          153,
+          125,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 861
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 870
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "021",
+        "base": 5,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 503
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 512
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "021",
+        "base": 5,
+        "equipment": [
+          1,
+          152,
+          124,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 862
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 871
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "023",
+        "base": 5,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 502
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 511
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "023",
+        "base": 5,
+        "equipment": [
+          1,
+          152,
+          124,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 861
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 870
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "base": 4,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 4,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 503
+        },
+        {
+          "level": 40,
+          "base": 4,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 513
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "024",
+        "base": 4,
+        "equipment": [
+          41,
+          154,
+          125,
+          182,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 4,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 862
+        },
+        {
+          "level": 40,
+          "base": 4,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "025",
+        "base": 4,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 4,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 492
+        },
+        {
+          "level": 40,
+          "base": 4,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 507
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "025",
+        "base": 4,
+        "equipment": [
+          5,
+          0,
+          126,
+          182,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 4,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 767
+        },
+        {
+          "level": 40,
+          "base": 4,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 782
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "base": 3,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 3,
+          "move_point": 3,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 492
+        },
+        {
+          "level": 40,
+          "base": 3,
+          "move_point": 3,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 507
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "026",
+        "base": 3,
+        "equipment": [
+          81,
+          152,
+          122,
+          0,
+          201,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 3,
+          "move_point": 3,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 846
+        },
+        {
+          "level": 40,
+          "base": 3,
+          "move_point": 3,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 861
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": -3,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": -3,
+          "move_point": 0,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 873
+        },
+        {
+          "level": 40,
+          "base": -3,
+          "move_point": 0,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 882
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": -3,
+        "equipment": [
+          2,
+          161,
+          102,
+          193,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": -3,
+          "move_point": 0,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 873
+        },
+        {
+          "level": 40,
+          "base": -3,
+          "move_point": 0,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 882
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": -3,
+        "equipment": [
+          2,
+          161,
+          138,
+          193,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": -3,
+          "move_point": 1,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1035
+        },
+        {
+          "level": 40,
+          "base": -3,
+          "move_point": 1,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1044
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 0,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 0,
+          "move_point": 0,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 0,
+          "move_point": 0,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 0,
+        "equipment": [
+          2,
+          161,
+          102,
+          193,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 0,
+          "move_point": 1,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 0,
+          "move_point": 1,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 0,
+        "equipment": [
+          2,
+          161,
+          138,
+          193,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 0,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1035
+        },
+        {
+          "level": 40,
+          "base": 0,
+          "move_point": 4,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1044
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 1,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 1,
+          "move_point": 1,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 1,
+          "move_point": 1,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 1,
+        "equipment": [
+          2,
+          161,
+          102,
+          193,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 1,
+          "move_point": 2,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 1,
+          "move_point": 2,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 1,
+        "equipment": [
+          2,
+          161,
+          138,
+          193,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 1,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1035
+        },
+        {
+          "level": 40,
+          "base": 1,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1044
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 5,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 5,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 5,
+        "equipment": [
+          2,
+          161,
+          102,
+          193,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 6,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 6,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 5,
+        "equipment": [
+          2,
+          161,
+          138,
+          193,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 9,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1035
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 9,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1044
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 10,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 10,
+          "move_point": 10,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 10,
+          "move_point": 10,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 10,
+        "equipment": [
+          2,
+          161,
+          102,
+          193,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 10,
+          "move_point": 11,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 10,
+          "move_point": 11,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 10,
+        "equipment": [
+          2,
+          161,
+          138,
+          193,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 10,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1035
+        },
+        {
+          "level": 40,
+          "base": 10,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1044
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 11,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 11,
+          "move_point": 11,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 11,
+          "move_point": 11,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 11,
+        "equipment": [
+          2,
+          161,
+          102,
+          193,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 11,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 11,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 11,
+        "equipment": [
+          2,
+          161,
+          138,
+          193,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 11,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1035
+        },
+        {
+          "level": 40,
+          "base": 11,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1044
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 12,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 12,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 12,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 12,
+        "equipment": [
+          2,
+          161,
+          102,
+          193,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 12,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 12,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 12,
+        "equipment": [
+          2,
+          161,
+          138,
+          193,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 12,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1035
+        },
+        {
+          "level": 40,
+          "base": 12,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1044
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 15,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 15,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 15,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 15,
+        "equipment": [
+          2,
+          161,
+          102,
+          193,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 15,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 872
+        },
+        {
+          "level": 40,
+          "base": 15,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 881
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 15,
+        "equipment": [
+          2,
+          161,
+          138,
+          193,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 15,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1035
+        },
+        {
+          "level": 40,
+          "base": 15,
+          "move_point": 12,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1044
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 5,
+        "equipment": [
+          2,
+          161,
+          138,
+          181,
+          0,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 6,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 861
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 6,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 870
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 5,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          231,
+          0
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 6,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 959
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 6,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 968
+        }
+      ],
+      "normal_return": true
+    },
+    {
+      "input": {
+        "actor": "001",
+        "base": 5,
+        "equipment": [
+          2,
+          161,
+          102,
+          181,
+          231,
+          231
+        ]
+      },
+      "native": [
+        {
+          "level": 1,
+          "base": 5,
+          "move_point": 7,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1046
+        },
+        {
+          "level": 40,
+          "base": 5,
+          "move_point": 7,
+          "hp": 1,
+          "mp": 0,
+          "exp": 37,
+          "stamina": 20,
+          "instructions": 1055
+        }
+      ],
+      "normal_return": true
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x447a0b",
+      "bytes": "6a0168088c470089443a2ce8b5ecffff8b0d401b4c00566a018944242868fc8b470089443934",
+      "meaning": "ITEM.add_move stores a signed additive field at item+34"
+    },
+    {
+      "address": "0x44c261",
+      "bytes": "68188f4700896c243ce8011c0200a1fc1a4c008b4c243c898c3030010000",
+      "meaning": "PLAYERS.move_point is loaded into base+130"
+    },
+    {
+      "address": "0x448987",
+      "bytes": "8b8e30010000898e2c010000",
+      "meaning": "Every refresh restores base+130 to live+12c before equipment"
+    },
+    {
+      "address": "0x4486bb",
+      "bytes": "8b51348bb02c01000003f289b02c010000",
+      "meaning": "Each equipped item adds its signed movement field to live+12c"
+    },
+    {
+      "address": "0x44b760",
+      "bytes": "8b862c01000083f80c7e07b80c000000eb063bc17d0233c089862c010000",
+      "meaning": "Final live movement clamps to zero through twelve"
+    }
+  ],
+  "limits": [
+    "Complete refresh returns with synthetic source-derived actor and equipment fields; only mobility and resource non-mutation are asserted here.",
+    "Base+130 is distinct from live+12c. Negative and oversized bases are deliberate arithmetic boundary fixtures, not default actors.",
+    "No temporary movement status, original roster initialization RNG, large-footprint flags, equip UI or original save format is executed."
+  ]
+}

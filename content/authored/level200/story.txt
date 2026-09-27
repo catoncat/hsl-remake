@@ -1,0 +1,19 @@
+; 第 200 關「龍脊隘口」開場劇情 —— 為重製版創作的內容（authored），不是原作腳本。
+; 文法與原作 STORY 腳本相同：[story] 段落內每行 action = 動作,參數,…；分號起始為註解。
+; 說話者代號（SID_…）對應 level.json units[].token；訊息編號對應 messages.json。
+#include ACTION.H
+#include OBJ-ALL.H
+#include EXTRAS.H
+
+[story]
+action = actPlayDefaultLevelMusic,2
+action = actDelay,20
+action = actWalkWait,SID_雷歐納德,1,224,256,4
+action = actMessage,SID_雷歐納德,1,1001
+action = actMessage,SID_蕾雅,1,1002
+action = actMessage,SID_ENEMY036,1,1003
+action = actSetDeadMessage,SID_雷歐納德,1,1004,0
+action = actInsertWinStatus,0
+action = actInsertFailStatus,0
+action = actInsertEventStatus,0
+action = actShowWinFailStatus

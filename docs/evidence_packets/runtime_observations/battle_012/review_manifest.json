@@ -1,0 +1,175 @@
+{
+  "failures": [],
+  "level": 12,
+  "records": [
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "00-framed",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 880.0)",
+      "capture": "dialogue-1701",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 912.0)",
+      "capture": "dialogue-1702",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 880.0)",
+      "capture": "dialogue-1703",
+      "motion": false
+    },
+    {
+      "camera": "(624.0, 1520.0)",
+      "capture": "dialogue-1704",
+      "motion": false
+    },
+    {
+      "camera": "(880.0, 496.0)",
+      "capture": "dialogue-1705",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 912.0)",
+      "capture": "dialogue-1706",
+      "motion": false
+    },
+    {
+      "camera": "(880.0, 496.0)",
+      "capture": "dialogue-1707",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "dialogue-1708",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 912.0)",
+      "capture": "dialogue-1709",
+      "motion": false
+    },
+    {
+      "camera": "(880.0, 496.0)",
+      "capture": "dialogue-728",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 912.0)",
+      "capture": "dialogue-1710",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 912.0)",
+      "capture": "first-control",
+      "motion": false
+    },
+    {
+      "first_control": {
+        "interaction": "action_menu",
+        "players": 7,
+        "units": 39
+      }
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "win-dialogue-1711",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 912.0)",
+      "capture": "win-dialogue-1712",
+      "motion": false
+    },
+    {
+      "camera": "(880.0, 496.0)",
+      "capture": "win-dialogue-1713",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "win-dialogue-1714",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 240.0)",
+      "capture": "win-dialogue-1716",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "win-dialogue-1717",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 912.0)",
+      "capture": "win-dialogue-1718",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 240.0)",
+      "capture": "win-dialogue-1719",
+      "motion": false
+    },
+    {
+      "camera": "(576.0, 1680.0)",
+      "capture": "win-dialogue-1720",
+      "motion": false
+    },
+    {
+      "camera": "(592.0, 1360.0)",
+      "capture": "win-dialogue-1721",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 1648.0)",
+      "capture": "win-dialogue-1722",
+      "motion": false
+    },
+    {
+      "camera": "(320.0, 1648.0)",
+      "capture": "win-dialogue-1723",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "win-dialogue-1724",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "win-dialogue-1725",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "win-dialogue-1726",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "win-dialogue-1727",
+      "motion": false
+    },
+    {
+      "camera": "(688.0, 592.0)",
+      "capture": "result",
+      "motion": false
+    },
+    {
+      "result": {
+        "outcome": "victory_script",
+        "resolved": {
+          "code": 0,
+          "key": "win_0",
+          "kind": "win",
+          "outcome": "victory_script"
+        }
+      }
+    }
+  ],
+  "schema": "hsl_battle_review.v1"
+}

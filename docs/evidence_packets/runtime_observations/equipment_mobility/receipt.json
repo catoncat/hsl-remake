@@ -1,0 +1,749 @@
+{
+  "fixture": true,
+  "native_execution": false,
+  "real_control_events": true,
+  "time_scale": 1.0,
+  "screen": 1,
+  "window_position": "(3260, 622)",
+  "window_size": "(640, 480)",
+  "overrides": "Three source-rendered actors on the actual WRD, initial HP/maxHP100, ordinary fixture STR/DEX20 attack20 defense0 hit100 critical/counter0, reordered speeds and controllable successor. Gear193/138/231/231 explicitly added to test inventory; source base5 remains. Actual player equipment uses native refresh and its real derived stats/probabilities. Growth/final-clear target1HP and caster99EXP, targetDEX1 ensure source hit gate rather than injected RNG. Defeat sets player1HP/enemyattack200. AI test gear prepared with same source mobility, positions selected by legal native-cost envelopes. Escape/final-clear begin after report. No change to default source grants, no RNG replacement, assigned damage/result, or accelerated clocks.",
+  "schema": "godot_equipment_mobility_review.v1",
+  "routes": [
+    {
+      "base_move_point": 5.0,
+      "changes": [
+        {
+          "after": 6,
+          "before": 5,
+          "item": 193,
+          "pending": false,
+          "slot": "foot"
+        },
+        {
+          "after": 7,
+          "before": 6,
+          "item": 138,
+          "pending": false,
+          "slot": "armor"
+        },
+        {
+          "after": 8,
+          "before": 7,
+          "item": 231,
+          "pending": false,
+          "slot": "accessory1"
+        },
+        {
+          "after": 9,
+          "before": 8,
+          "item": 231,
+          "pending": false,
+          "slot": "accessory2"
+        }
+      ],
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 138,
+          "name": "蒼空之鎧",
+          "slot": "armor"
+        },
+        {
+          "item_code": 193,
+          "name": "舞空之靴",
+          "slot": "foot"
+        },
+        {
+          "item_code": 231,
+          "name": "追風之羽",
+          "slot": "accessory1"
+        },
+        {
+          "item_code": 231,
+          "name": "追風之羽",
+          "slot": "accessory2"
+        }
+      ],
+      "exp": 22,
+      "experience": [
+        {
+          "base": 23,
+          "exp_after": 22,
+          "exp_before": 99,
+          "gained": 23,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "level": 2.0,
+      "mode": "equip_growth",
+      "move_point": 9,
+      "next_actor": "enemy023_1",
+      "observed": {
+        "dialogue": true,
+        "experience": true,
+        "gold": true,
+        "growth": true,
+        "impact": true
+      },
+      "outcome": "",
+      "receipt": {
+        "sequence": 1,
+        "attacker_id": "leonard",
+        "defender_id": "enemy021_1",
+        "damage": 49,
+        "queued_damage": 49,
+        "actual_damage": 1,
+        "hit": true,
+        "critical": false,
+        "defender_hp_before": 1,
+        "defender_hp_after": 0,
+        "experience": {
+          "base": 23,
+          "exp_after": 22,
+          "exp_before": 99,
+          "gained": 23,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 1,
+          "draws": [
+            {
+              "bound": 0,
+              "value": 0
+            },
+            {
+              "bound": 7,
+              "value": 2
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 20,
+          "kill_multiplier": 100,
+          "kill_word_after": 65537,
+          "killed": true,
+          "kills_added": 1,
+          "points": 23,
+          "source": "0x40a5d0",
+          "subtotal": 25,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 23,
+          "base": 23,
+          "multiplier": 1,
+          "reason": "",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "rewards": {
+          "gold": 100,
+          "item_count": 0,
+          "kills": [
+            {
+              "attacker_id": "leonard",
+              "defender_id": "enemy021_1",
+              "gold": 100
+            }
+          ]
+        },
+        "kill_chain": 1
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/shared/interface_audio/level_up.wav"
+      ]
+    },
+    {
+      "base_move_point": 5.0,
+      "changes": [
+        {
+          "after": 6,
+          "before": 5,
+          "item": 193,
+          "pending": false,
+          "slot": "foot"
+        },
+        {
+          "after": 5,
+          "before": 6,
+          "item": 181,
+          "pending": true,
+          "slot": "foot"
+        },
+        {
+          "after": 6,
+          "before": 5,
+          "item": 193,
+          "pending": false,
+          "slot": "foot"
+        }
+      ],
+      "cues": [],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 193,
+          "name": "舞空之靴",
+          "slot": "foot"
+        }
+      ],
+      "exp": 0.0,
+      "experience": [],
+      "level": 1.0,
+      "mode": "pending_restore",
+      "move_point": 6,
+      "next_actor": "enemy023_1",
+      "observed": {
+        "last_path": [
+          "(8, 8)",
+          "(8, 7)",
+          "(9, 7)",
+          "(10, 7)",
+          "(11, 7)",
+          "(12, 7)",
+          "(12, 6)"
+        ],
+        "movement": true
+      },
+      "outcome": "",
+      "receipt": {},
+      "sounds": [
+        "res://content/generated/hsl/remake_music/abandoned_guard.ogg",
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ]
+    },
+    {
+      "base_move_point": 5.0,
+      "changes": [],
+      "cues": [],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        }
+      ],
+      "exp": 0.0,
+      "experience": [],
+      "level": 1.0,
+      "mode": "ai_without",
+      "move_point": 5,
+      "next_actor": "enemy023_1",
+      "observed": {
+        "ai_move": true
+      },
+      "outcome": "",
+      "receipt": {
+        "actor_id": "enemy021_1",
+        "kind": "move",
+        "to": "(12, 7)",
+        "path": [
+          "(8, 8)",
+          "(8, 7)",
+          "(9, 7)",
+          "(10, 7)",
+          "(11, 7)",
+          "(12, 7)"
+        ]
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav"
+      ]
+    },
+    {
+      "base_move_point": 5.0,
+      "changes": [],
+      "cues": [
+        [
+          "release",
+          "enemy021_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy021_1",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 181.0,
+          "name": "皮靴",
+          "slot": "foot"
+        }
+      ],
+      "exp": 0.0,
+      "experience": [],
+      "level": 1.0,
+      "mode": "ai_boots",
+      "move_point": 5,
+      "next_actor": "enemy023_1",
+      "observed": {
+        "ai_move": true,
+        "impact": true
+      },
+      "outcome": "",
+      "receipt": {
+        "sequence": 1,
+        "attacker_id": "enemy021_1",
+        "defender_id": "leonard",
+        "actor_id": "enemy021_1",
+        "kind": "move_then_attack",
+        "to": "(12, 6)",
+        "path": [
+          "(8, 8)",
+          "(8, 7)",
+          "(9, 7)",
+          "(10, 7)",
+          "(11, 7)",
+          "(12, 7)",
+          "(12, 6)"
+        ],
+        "damage": 16,
+        "queued_damage": 16,
+        "actual_damage": 16,
+        "hit": true,
+        "critical": false,
+        "defender_hp_before": 100,
+        "defender_hp_after": 84,
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 16,
+          "draws": [
+            {
+              "bound": 8,
+              "value": 6
+            },
+            {
+              "bound": 4,
+              "value": 0
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 0,
+          "kill_multiplier": 100,
+          "kill_word_after": 0,
+          "killed": false,
+          "kills_added": 0,
+          "points": 15,
+          "source": "0x40a5d0",
+          "subtotal": 15,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 0,
+          "base": 15,
+          "multiplier": 1,
+          "reason": "unsupported_growth_model",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "rewards": {
+          "gold": 0,
+          "item_count": 0,
+          "kills": []
+        },
+        "target_id": "leonard"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav"
+      ]
+    },
+    {
+      "base_move_point": 5.0,
+      "changes": [
+        {
+          "after": 6,
+          "before": 5,
+          "item": 193,
+          "pending": false,
+          "slot": "foot"
+        }
+      ],
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 193,
+          "name": "舞空之靴",
+          "slot": "foot"
+        }
+      ],
+      "exp": 24,
+      "experience": [
+        {
+          "base": 25,
+          "exp_after": 24,
+          "exp_before": 99,
+          "gained": 25,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "level": 2.0,
+      "mode": "victory",
+      "move_point": 6,
+      "next_actor": "",
+      "observed": {
+        "dialogue": true,
+        "experience": true,
+        "gold": true,
+        "impact": true,
+        "last_path": [
+          "(8, 8)",
+          "(8, 7)",
+          "(9, 7)",
+          "(10, 7)",
+          "(11, 7)",
+          "(12, 7)",
+          "(12, 6)"
+        ],
+        "movement": true
+      },
+      "outcome": "victory_optional_clear",
+      "receipt": {
+        "sequence": 1,
+        "attacker_id": "leonard",
+        "defender_id": "enemy021_1",
+        "damage": 46,
+        "queued_damage": 46,
+        "actual_damage": 1,
+        "hit": true,
+        "critical": false,
+        "defender_hp_before": 1,
+        "defender_hp_after": 0,
+        "experience": {
+          "base": 25,
+          "exp_after": 24,
+          "exp_before": 99,
+          "gained": 25,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "experience_basis": {
+          "attacker_level": 1,
+          "contribution": 1,
+          "draws": [
+            {
+              "bound": 0,
+              "value": 0
+            },
+            {
+              "bound": 7,
+              "value": 0
+            }
+          ],
+          "kill_chain_before": 0,
+          "kill_exp": 20,
+          "kill_multiplier": 100,
+          "kill_word_after": 65537,
+          "killed": true,
+          "kills_added": 1,
+          "points": 25,
+          "source": "0x40a5d0",
+          "subtotal": 25,
+          "target_level": 1
+        },
+        "experience_settlement": {
+          "awarded": 25,
+          "base": 25,
+          "multiplier": 1,
+          "reason": "",
+          "scope": "completed_action",
+          "source": "0x4427a9..0x4427e7"
+        },
+        "rewards": {
+          "gold": 100,
+          "item_count": 0,
+          "kills": [
+            {
+              "attacker_id": "leonard",
+              "defender_id": "enemy021_1",
+              "gold": 100
+            }
+          ]
+        },
+        "kill_chain": 1
+      },
+      "restarted": true,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/shared/interface_audio/level_up.wav"
+      ]
+    },
+    {
+      "base_move_point": 5.0,
+      "changes": [
+        {
+          "after": 6,
+          "before": 5,
+          "item": 193,
+          "pending": false,
+          "slot": "foot"
+        }
+      ],
+      "cues": [
+        [
+          "release",
+          "enemy021_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy021_1",
+          false
+        ]
+      ],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 193,
+          "name": "舞空之靴",
+          "slot": "foot"
+        }
+      ],
+      "exp": 0.0,
+      "experience": [],
+      "level": 1.0,
+      "mode": "defeat",
+      "move_point": 6,
+      "next_actor": "",
+      "observed": {
+        "dialogue": true,
+        "impact": true
+      },
+      "outcome": "defeat_leonard",
+      "receipt": {},
+      "restarted": true,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav"
+      ]
+    },
+    {
+      "base_move_point": 5.0,
+      "changes": [
+        {
+          "after": 6,
+          "before": 5,
+          "item": 193,
+          "pending": false,
+          "slot": "foot"
+        }
+      ],
+      "cues": [],
+      "equipment": [
+        {
+          "item_code": 2.0,
+          "name": "闊刃劍",
+          "slot": "weapon"
+        },
+        {
+          "item_code": 153.0,
+          "name": "鐵護輪",
+          "slot": "head"
+        },
+        {
+          "item_code": 125.0,
+          "name": "騎士鎧甲",
+          "slot": "armor"
+        },
+        {
+          "item_code": 193,
+          "name": "舞空之靴",
+          "slot": "foot"
+        }
+      ],
+      "exp": 0.0,
+      "experience": [],
+      "level": 1.0,
+      "mode": "escape",
+      "move_point": 6,
+      "next_actor": "",
+      "observed": {
+        "dialogue": true,
+        "last_path": [
+          "(11, 7)",
+          "(11, 8)",
+          "(11, 9)",
+          "(11, 10)",
+          "(12, 10)",
+          "(13, 10)",
+          "(14, 10)"
+        ],
+        "movement": true
+      },
+      "outcome": "victory_escape",
+      "receipt": {},
+      "restarted": true,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ]
+    }
+  ],
+  "failures": [],
+  "images_sha256": {
+    "equip_growth-equip-193-foot.png": "90e682264ffd13d6759877eb52645c5f0f3ceaa2517c8e4509cc171d64a292ee",
+    "equip_growth-equip-231-accessory2.png": "66cffa287d361c7d2a031554a3ed593d3d8e57c10a4083abe11fe137a14adaf0",
+    "equip_growth-status-9.png": "244acae7614f4246f9fbe4551a2129e85829d3b1fa7df2ae184282a081d26e0e",
+    "equip_growth-growth.png": "464fb6e030a52e9be005e76bd7fb82f4dc738fc56410d6212e2813dbb9db523f",
+    "equip_growth-growth-mobility.png": "fbdd13dcd3816eafe7709c6acccaf31abe75ee5c80dff4d0c3000d662e156fc7",
+    "pending_restore-cancel-shrink.png": "7dbf4b317d5481274cc203383132a8cf0b01f6bdf38313572bf797ddf4d377e8",
+    "ai_without-ai-move.png": "80cf6a9655441476c1f7dd666334c8c8d548a56ca4ff72f1cfb22bf8fe359555",
+    "ai_boots-impact.png": "a5759f94685f456552bf34051e3e37e388fd2f094b2911fb1f9cf37ba2ab23c0",
+    "victory-result.png": "ffb95300dc9a7413b5178a203d79624f271c9c906cf25e4c754ad03234573a73",
+    "defeat-result.png": "1ae2a5324cbdc2427055e6267b70f8cf6ad601610e1456b1c5a782bc2725ccda",
+    "escape-result.png": "e4d024902fded6214a23e28d8dca57cc401830dad1f1ae45832ab2fbe3221b7d"
+  },
+  "validation_scope": "Seven complete named routes passed in one normal-clock rendered process; only the affected equipment/growth route was rerun after adding the bounded growth preview and actual wheel-to-final-line check.",
+  "attempts": [
+    {
+      "routes": [
+        "equip_growth",
+        "pending_restore",
+        "ai_without",
+        "ai_boots",
+        "victory",
+        "defeat",
+        "escape"
+      ],
+      "exit_code": 0,
+      "marker": "EQUIPMENT_MOBILITY_RENDER_PASS routes=7"
+    },
+    {
+      "routes": [
+        "equip_growth"
+      ],
+      "exit_code": 0,
+      "marker": "EQUIPMENT_MOBILITY_RENDER_PASS routes=1",
+      "scope": "Final growth scroll/confirm and retained movement"
+    }
+  ],
+  "evidence_limits": [
+    "Synthetic gear/positions/attributes are explicitly declared; default first-battle equipment and source grants did not change.",
+    "Character body variants, native full initialization/global RNG and exact original UI/timing are not asserted."
+  ]
+}

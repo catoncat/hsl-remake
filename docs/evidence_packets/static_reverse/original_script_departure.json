@@ -1,0 +1,2533 @@
+{
+  "schema": "hsl_script_departure_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "phases": [
+    {
+      "input": {
+        "phase": 53,
+        "sub": 0,
+        "ticks": 0,
+        "current": false,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 0,
+        "ticks": 0,
+        "current": false,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 0,
+        "ticks": 0,
+        "current": false,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 0,
+        "ticks": 0,
+        "current": false,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 0,
+        "ticks": 0,
+        "current": true,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 0,
+        "ticks": 0,
+        "current": true,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 0,
+        "ticks": 0,
+        "current": true,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 0,
+        "ticks": 0,
+        "current": true,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 1,
+        "current": false,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 0,
+        "record_header": 0,
+        "active": false,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 2
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x40ba20",
+        "0x44cb90",
+        "0x45e3ed"
+      ],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 1482
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 1,
+        "current": false,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 0,
+        "record_header": 0,
+        "active": false,
+        "parent_phase": 2228228,
+        "map_flags": [
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 2
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x40ba20",
+        "0x44cb90",
+        "0x45e3ed"
+      ],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 1483
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 1,
+        "current": false,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 0,
+        "record_header": 0,
+        "active": false,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 2
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x40ba20",
+        "0x44cb90",
+        "0x45e3ed"
+      ],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 1703
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 1,
+        "current": false,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 0,
+        "record_header": 0,
+        "active": false,
+        "parent_phase": 2228228,
+        "map_flags": [
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 2
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x40ba20",
+        "0x44cb90",
+        "0x45e3ed"
+      ],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 1704
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 1,
+        "current": true,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 2,
+        "record_header": 0,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x4074a0",
+        "0x40ba20",
+        "0x44cb90"
+      ],
+      "normal_return": false,
+      "stop_address": "0x4542ff",
+      "instructions": 1448
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 1,
+        "current": true,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 2,
+        "record_header": 0,
+        "active": true,
+        "parent_phase": 2228228,
+        "map_flags": [
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x4074a0",
+        "0x40ba20",
+        "0x44cb90"
+      ],
+      "normal_return": false,
+      "stop_address": "0x4542ff",
+      "instructions": 1449
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 1,
+        "current": true,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 2,
+        "record_header": 0,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x4074a0",
+        "0x40ba20",
+        "0x44cb90"
+      ],
+      "normal_return": false,
+      "stop_address": "0x4542ff",
+      "instructions": 1669
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 1,
+        "current": true,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 2,
+        "record_header": 0,
+        "active": true,
+        "parent_phase": 2228228,
+        "map_flags": [
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x4074a0",
+        "0x40ba20",
+        "0x44cb90"
+      ],
+      "normal_return": false,
+      "stop_address": "0x4542ff",
+      "instructions": 1670
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 3,
+        "current": false,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 3,
+        "current": false,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 3,
+        "current": false,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 3,
+        "current": false,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 3,
+        "current": true,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 3,
+        "current": true,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 3,
+        "current": true,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "phase": 53,
+        "sub": 1,
+        "ticks": 3,
+        "current": true,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3473409,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 7,
+        "ticks": 0,
+        "current": false,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 7,
+        "ticks": 0,
+        "current": false,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 7,
+        "ticks": 0,
+        "current": false,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 7,
+        "ticks": 0,
+        "current": false,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 7,
+        "ticks": 0,
+        "current": true,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 7,
+        "ticks": 0,
+        "current": true,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 7,
+        "ticks": 0,
+        "current": true,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 7,
+        "ticks": 0,
+        "current": true,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 16,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 1,
+        "current": false,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 0,
+        "record_header": 0,
+        "active": false,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 2
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x40ba20",
+        "0x44cb90",
+        "0x45e3ed"
+      ],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 1483
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 1,
+        "current": false,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 0,
+        "record_header": 0,
+        "active": false,
+        "parent_phase": 2228228,
+        "map_flags": [
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 2
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x40ba20",
+        "0x44cb90",
+        "0x45e3ed"
+      ],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 1484
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 1,
+        "current": false,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 0,
+        "record_header": 0,
+        "active": false,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 2
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x40ba20",
+        "0x44cb90",
+        "0x45e3ed"
+      ],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 1704
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 1,
+        "current": false,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 0,
+        "record_header": 0,
+        "active": false,
+        "parent_phase": 2228228,
+        "map_flags": [
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 2
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x40ba20",
+        "0x44cb90",
+        "0x45e3ed"
+      ],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 1705
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 1,
+        "current": true,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 2,
+        "record_header": 0,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x4074a0",
+        "0x40ba20",
+        "0x44cb90"
+      ],
+      "normal_return": false,
+      "stop_address": "0x4542ff",
+      "instructions": 1448
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 1,
+        "current": true,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 2,
+        "record_header": 0,
+        "active": true,
+        "parent_phase": 2228228,
+        "map_flags": [
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x4074a0",
+        "0x40ba20",
+        "0x44cb90"
+      ],
+      "normal_return": false,
+      "stop_address": "0x4542ff",
+      "instructions": 1449
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 1,
+        "current": true,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 2,
+        "record_header": 0,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x4074a0",
+        "0x40ba20",
+        "0x44cb90"
+      ],
+      "normal_return": false,
+      "stop_address": "0x4542ff",
+      "instructions": 1669
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 1,
+        "current": true,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 0,
+        "registered": false,
+        "queue_present": false,
+        "index": 2,
+        "record_header": 0,
+        "active": true,
+        "parent_phase": 2228228,
+        "map_flags": [
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216,
+          16777216
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [
+        "0x407940",
+        "0x40ba20",
+        "0x411b90",
+        "0x407540",
+        "0x407720",
+        "0x407540",
+        "0x4074a0",
+        "0x40ba20",
+        "0x44cb90"
+      ],
+      "normal_return": false,
+      "stop_address": "0x4542ff",
+      "instructions": 1670
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 3,
+        "current": false,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 3,
+        "current": false,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 3,
+        "current": false,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 3,
+        "current": false,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 3,
+        "current": true,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 3,
+        "current": true,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 3,
+        "current": true,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 8,
+        "ticks": 3,
+        "current": true,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538952,
+        "ticks": 2,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 99,
+        "ticks": 0,
+        "current": false,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538944,
+        "ticks": 0,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 99,
+        "ticks": 0,
+        "current": false,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538944,
+        "ticks": 0,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 99,
+        "ticks": 0,
+        "current": false,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538944,
+        "ticks": 0,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 99,
+        "ticks": 0,
+        "current": false,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538944,
+        "ticks": 0,
+        "registered": true,
+        "queue_present": true,
+        "index": 0,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 99,
+        "ticks": 0,
+        "current": true,
+        "large": 0,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538944,
+        "ticks": 0,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 99,
+        "ticks": 0,
+        "current": true,
+        "large": 0,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538944,
+        "ticks": 0,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 99,
+        "ticks": 0,
+        "current": true,
+        "large": 1,
+        "parent": false
+      },
+      "native": {
+        "phase": 3538944,
+        "ticks": 0,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    },
+    {
+      "input": {
+        "phase": 54,
+        "sub": 99,
+        "ticks": 0,
+        "current": true,
+        "large": 1,
+        "parent": true
+      },
+      "native": {
+        "phase": 3538944,
+        "ticks": 0,
+        "registered": true,
+        "queue_present": true,
+        "index": 1,
+        "record_header": 1,
+        "active": true,
+        "parent_phase": 2228227,
+        "map_flags": [
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288,
+          16908288
+        ],
+        "vitals_unchanged": true,
+        "objects": 3
+      },
+      "calls": [],
+      "normal_return": true,
+      "stop_address": "0x10000000",
+      "instructions": 33
+    }
+  ],
+  "requests": [
+    {
+      "code": 26,
+      "ordinal": 0,
+      "native_index": 0,
+      "phases": [
+        3473408,
+        3473408,
+        0
+      ],
+      "normal_return": true,
+      "instructions": 65
+    },
+    {
+      "code": 26,
+      "ordinal": 1,
+      "native_index": 0,
+      "phases": [
+        3473408,
+        3473408,
+        0
+      ],
+      "normal_return": true,
+      "instructions": 65
+    },
+    {
+      "code": 26,
+      "ordinal": 2,
+      "native_index": 1,
+      "phases": [
+        0,
+        3473408,
+        0
+      ],
+      "normal_return": true,
+      "instructions": 100
+    },
+    {
+      "code": 26,
+      "ordinal": 9,
+      "native_index": 1,
+      "phases": [
+        0,
+        3473408,
+        0
+      ],
+      "normal_return": true,
+      "instructions": 1515
+    },
+    {
+      "code": 23,
+      "ordinal": 0,
+      "native_index": 2,
+      "phases": [
+        0,
+        3473408,
+        3473408
+      ],
+      "normal_return": true,
+      "instructions": 127
+    },
+    {
+      "code": 23,
+      "ordinal": 1,
+      "native_index": 2,
+      "phases": [
+        0,
+        3473408,
+        3473408
+      ],
+      "normal_return": true,
+      "instructions": 127
+    },
+    {
+      "code": 23,
+      "ordinal": 2,
+      "native_index": 2,
+      "phases": [
+        0,
+        3473408,
+        3473408
+      ],
+      "normal_return": true,
+      "instructions": 1511
+    },
+    {
+      "code": 23,
+      "ordinal": 9,
+      "native_index": 2,
+      "phases": [
+        0,
+        3473408,
+        3473408
+      ],
+      "normal_return": true,
+      "instructions": 1511
+    },
+    {
+      "code": 999,
+      "ordinal": 0,
+      "native_index": -1,
+      "phases": [
+        0,
+        3473408,
+        0
+      ],
+      "normal_return": true,
+      "instructions": 1502
+    },
+    {
+      "code": 999,
+      "ordinal": 1,
+      "native_index": -1,
+      "phases": [
+        0,
+        3473408,
+        0
+      ],
+      "normal_return": true,
+      "instructions": 1502
+    },
+    {
+      "code": 999,
+      "ordinal": 2,
+      "native_index": -1,
+      "phases": [
+        0,
+        3473408,
+        0
+      ],
+      "normal_return": true,
+      "instructions": 1502
+    },
+    {
+      "code": 999,
+      "ordinal": 9,
+      "native_index": -1,
+      "phases": [
+        0,
+        3473408,
+        0
+      ],
+      "normal_return": true,
+      "instructions": 1502
+    }
+  ],
+  "walk_requests": [
+    {
+      "input": {
+        "code": 26,
+        "ordinal": 0,
+        "idle": false,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 68
+    },
+    {
+      "input": {
+        "code": 26,
+        "ordinal": 0,
+        "idle": false,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 68
+    },
+    {
+      "input": {
+        "code": 26,
+        "ordinal": 0,
+        "idle": true,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "native": {
+        "accepted": true,
+        "actor_data_unchanged": true,
+        "phase": 3539043,
+        "parent": true,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "normal_return": true,
+      "instructions": 134
+    },
+    {
+      "input": {
+        "code": 26,
+        "ordinal": 0,
+        "idle": true,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "native": {
+        "accepted": true,
+        "actor_data_unchanged": true,
+        "phase": 3539043,
+        "parent": true,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "normal_return": true,
+      "instructions": 134
+    },
+    {
+      "input": {
+        "code": 26,
+        "ordinal": 2,
+        "idle": false,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 103
+    },
+    {
+      "input": {
+        "code": 26,
+        "ordinal": 2,
+        "idle": false,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 103
+    },
+    {
+      "input": {
+        "code": 26,
+        "ordinal": 2,
+        "idle": true,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "native": {
+        "accepted": true,
+        "actor_data_unchanged": true,
+        "phase": 3539043,
+        "parent": true,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "normal_return": true,
+      "instructions": 169
+    },
+    {
+      "input": {
+        "code": 26,
+        "ordinal": 2,
+        "idle": true,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "native": {
+        "accepted": true,
+        "actor_data_unchanged": true,
+        "phase": 3539043,
+        "parent": true,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "normal_return": true,
+      "instructions": 169
+    },
+    {
+      "input": {
+        "code": 23,
+        "ordinal": 1,
+        "idle": false,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 130
+    },
+    {
+      "input": {
+        "code": 23,
+        "ordinal": 1,
+        "idle": false,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 130
+    },
+    {
+      "input": {
+        "code": 23,
+        "ordinal": 1,
+        "idle": true,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "native": {
+        "accepted": true,
+        "actor_data_unchanged": true,
+        "phase": 3539043,
+        "parent": true,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "normal_return": true,
+      "instructions": 196
+    },
+    {
+      "input": {
+        "code": 23,
+        "ordinal": 1,
+        "idle": true,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "native": {
+        "accepted": true,
+        "actor_data_unchanged": true,
+        "phase": 3539043,
+        "parent": true,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "normal_return": true,
+      "instructions": 196
+    },
+    {
+      "input": {
+        "code": 999,
+        "ordinal": 1,
+        "idle": false,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1504
+    },
+    {
+      "input": {
+        "code": 999,
+        "ordinal": 1,
+        "idle": false,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1504
+    },
+    {
+      "input": {
+        "code": 999,
+        "ordinal": 1,
+        "idle": true,
+        "x": 192,
+        "y": 224,
+        "speed": 2
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1504
+    },
+    {
+      "input": {
+        "code": 999,
+        "ordinal": 1,
+        "idle": true,
+        "x": 201,
+        "y": 231,
+        "speed": 6
+      },
+      "native": {
+        "accepted": false,
+        "actor_data_unchanged": true
+      },
+      "normal_return": true,
+      "instructions": 1504
+    }
+  ],
+  "relookup": [
+    {
+      "ordinal": 0,
+      "native": {
+        "index": 0,
+        "retired_registered": false,
+        "retired_active": false,
+        "selected_phase": 3473408
+      },
+      "normal_return": true,
+      "instructions": 1548
+    },
+    {
+      "ordinal": 1,
+      "native": {
+        "index": 0,
+        "retired_registered": false,
+        "retired_active": false,
+        "selected_phase": 3473408
+      },
+      "normal_return": true,
+      "instructions": 1548
+    },
+    {
+      "ordinal": 2,
+      "native": {
+        "index": 0,
+        "retired_registered": false,
+        "retired_active": false,
+        "selected_phase": 3473408
+      },
+      "normal_return": true,
+      "instructions": 2970
+    },
+    {
+      "ordinal": 9,
+      "native": {
+        "index": 0,
+        "retired_registered": false,
+        "retired_active": false,
+        "selected_phase": 3473408
+      },
+      "normal_return": true,
+      "instructions": 2970
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x450410",
+      "bytes": "8b4424088b4c24045051e8b1f6ffff83c40883f8ff741d8b0485c0344c0085c074128b54240cc7808c00000000003500895050c333c0c3",
+      "meaning": "Delete request selects a registered object and schedules state35 with parent continuation."
+    },
+    {
+      "address": "0x450450",
+      "bytes": "8b4424088b4c2404565051e870f6ffff83c40883f8ff745b8b3485c0344c0085f674508b868c00000085c075468d5424148d442410525056e843f7ffff668b4c241c8b44242866894e4a668b542420668b4c242483c40c89465066895648c7868c0000006300360066898e980000008bc65ec333c05e",
+      "meaning": "Walk/delete request requires idle target, writes destination and schedules state36/99."
+    },
+    {
+      "address": "0x454286",
+      "bytes": "8b442410466689b38c0000005f5ec7432810000000c703000000205d5b83c40cc38b4b28498bc1894b283bc77f6a8b4350",
+      "meaning": "Walking departure enters a16-tick fade only after its walking stages."
+    },
+    {
+      "address": "0x4542a7",
+      "bytes": "8b4b28498bc1894b283bc77f6a8b43503bc7740766ff808c00000053e87836fbff83c40485c0751053e84b77fbff5053e8b4d8fbff83c40ce85c32fbff538bf0e83434fbff8b93a400000052e89888ffff83c4083bf37505e80c32fbff53e8e3a0000083c40433c05f5e5d5b83c40cc3",
+      "meaning": "Fade completion advances script parent, removes map/queue/template, then unlinks the object; no reward or HP path."
+    },
+    {
+      "address": "0x407720",
+      "bytes": "568b7424086683bea200000014734733c033c9668b86a0000000c70485c0344c0000000000b840394c003930740d83c00c413da0424c007cf1eb608d044933d28d0c8540394c0089148540394c00895104895108eb4533d233c9668b96a0000000b840394c00c70495c0344c00000000003930740d83c00c413da0424c007cf1eb198d0c4933c08d148d40394c0089048d40394c00894204894208e880fdffff3bc6740485c0750a6a01e8d1fcffff83c40456e84842000083c404a9000001005e740ea9000002007514ff0d901b4c00c3a9000002007406ff0d941b4c00c3",
+      "meaning": "Departure clears registry and queue slot; current removal seeks another enabled slot."
+    },
+    {
+      "address": "0x44cb90",
+      "bytes": "8b44240485c074148b15c81b4c008bc8c1e1072bc8c7048a00000000c3",
+      "meaning": "Template removal clears record header except slot0; does not zero vitals or inventory."
+    },
+    {
+      "address": "0x45e3ed",
+      "bytes": "c800000053578b55080bd20f84830000008b8280000000a90000008074769090909025ffffff7f3b15d8194a0089828000000073068915d8194a008b4a5c8b42600bc974038941600bc0740389485c8b7a58a1ec354a008d04b88b088b193bda75078b59048918eb118bd98b4b048b013bc275f58b4104894304c701000000003b0df0354a007306890df0354a00ff0ddc194a005f5bc9c3",
+      "meaning": "Object unlink removes active flag, linked-list and bucket membership; a repeated inactive call is a no-op."
+    }
+  ]
+}

@@ -1,0 +1,6069 @@
+{
+  "schema": "hsl_paralysis_native.v1",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "sources": {
+    "MAGIC.TXT": "19a1183783eca7ce3f0e6248dd8ca573cde16bf33177ee1a3c79ec8be006bd34",
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c",
+    "RANGE.TXT": "780274e8526a0542aeb4ce9ea69e5b5250ff0fbe6a60a5e017cc88b9c06020d2"
+  },
+  "entries": [
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 0,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 0,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 0,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 0,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 0,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 0,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 3,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 3,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 3,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 3,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 3,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 3,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 4,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 4,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 4,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 4,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 4,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 4,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 7,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 7,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 7,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 7,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 7,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 0,
+        "flags": 7,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 2,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 0,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 0,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 0,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 0,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 0,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 0,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 3,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 3,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 3,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 3,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 3,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 3,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 4,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 4,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": true,
+        "phase": 65539,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4447a7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 4,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": true,
+        "phase": 65539,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4447a7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 4,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 7,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 4,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 7,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 4,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 7,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 4,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 7,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 7,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": true,
+        "phase": 65539,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4447a7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 7,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": true,
+        "phase": 65539,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4447a7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 7,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 7,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 7,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 7,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 7,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 7,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "player",
+        "active": 1,
+        "flags": 7,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x4439b4",
+      "instructions": 7,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 0,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 0,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 0,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 0,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 0,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 0,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 3,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 3,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 3,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 3,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 3,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 3,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 4,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 4,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 4,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 4,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 4,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 4,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 7,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 7,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 7,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 7,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 7,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 0,
+        "flags": 7,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 3,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 0,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 0,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 0,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 0,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 0,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 0,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 3,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 3,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 0,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 3,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 3,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 3,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 3,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 5,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 4,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": true,
+        "phase": 6553601,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x441f41",
+      "instructions": 10,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 4,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": true,
+        "phase": 6553601,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x441f41",
+      "instructions": 10,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 4,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 4,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 4,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 4,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 7,
+        "phase": 0,
+        "latch": 0
+      },
+      "native": {
+        "skipped": true,
+        "phase": 6553601,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x441f41",
+      "instructions": 10,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 7,
+        "phase": 0,
+        "latch": 1
+      },
+      "native": {
+        "skipped": true,
+        "phase": 6553601,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x441f41",
+      "instructions": 10,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 7,
+        "phase": 1,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 7,
+        "phase": 1,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 7,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 0
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    },
+    {
+      "input": {
+        "role": "ai",
+        "active": 1,
+        "flags": 7,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "native": {
+        "skipped": false,
+        "phase": 1376256,
+        "latch": 1
+      },
+      "normal_return": false,
+      "stop_address": "0x43f4c7",
+      "instructions": 8,
+      "actor_queue_unchanged": true
+    }
+  ],
+  "applications": [
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 0,
+        "seed": 1
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 0,
+        "seed": 1
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 20,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 13,
+          "value": 11
+        },
+        {
+          "bound": 13,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 0,
+        "seed": 7
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 0,
+        "seed": 7
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 20,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 13,
+          "value": 9
+        },
+        {
+          "bound": 13,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 0,
+        "seed": 101
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 0,
+        "seed": 101
+      },
+      "native": {
+        "turns": 3,
+        "flags": 7,
+        "contribution": 30,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 13,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 128,
+        "seed": 1
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 128,
+        "seed": 1
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 128,
+        "seed": 7
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 128,
+        "seed": 7
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 128,
+        "seed": 101
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 128,
+        "seed": 101
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 67108864,
+        "seed": 1
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 67108864,
+        "seed": 1
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 67108864,
+        "seed": 7
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 67108864,
+        "seed": 7
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 0,
+        "effects": 67108864,
+        "seed": 101
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 0,
+        "effects": 67108864,
+        "seed": 101
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 0,
+        "seed": 1
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 0,
+        "seed": 1
+      },
+      "native": {
+        "turns": 4,
+        "flags": 7,
+        "contribution": 20,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 13,
+          "value": 11
+        },
+        {
+          "bound": 13,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 0,
+        "seed": 7
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 0,
+        "seed": 7
+      },
+      "native": {
+        "turns": 4,
+        "flags": 7,
+        "contribution": 20,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 13,
+          "value": 9
+        },
+        {
+          "bound": 13,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 0,
+        "seed": 101
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 0,
+        "seed": 101
+      },
+      "native": {
+        "turns": 5,
+        "flags": 7,
+        "contribution": 30,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 13,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 128,
+        "seed": 1
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 128,
+        "seed": 1
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 128,
+        "seed": 7
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 128,
+        "seed": 7
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 128,
+        "seed": 101
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 128,
+        "seed": 101
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 67108864,
+        "seed": 1
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 67108864,
+        "seed": 1
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 67108864,
+        "seed": 7
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 67108864,
+        "seed": 7
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 2,
+        "effects": 67108864,
+        "seed": 101
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 2,
+        "effects": 67108864,
+        "seed": 101
+      },
+      "native": {
+        "turns": 2,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 0,
+        "seed": 1
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 0,
+        "seed": 1
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 10,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 13,
+          "value": 11
+        },
+        {
+          "bound": 13,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 702
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 0,
+        "seed": 7
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 0,
+        "seed": 7
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 10,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 13,
+          "value": 9
+        },
+        {
+          "bound": 13,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 702
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 0,
+        "seed": 101
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 0,
+        "seed": 101
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 10,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 13,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 702
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 128,
+        "seed": 1
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 128,
+        "seed": 1
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 128,
+        "seed": 7
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 128,
+        "seed": 7
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 128,
+        "seed": 101
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 128,
+        "seed": 101
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 67108864,
+        "seed": 1
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 67108864,
+        "seed": 1
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 67108864,
+        "seed": 7
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 67108864,
+        "seed": 7
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 8,
+        "effects": 67108864,
+        "seed": 101
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 8,
+        "effects": 67108864,
+        "seed": 101
+      },
+      "native": {
+        "turns": 8,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 0,
+        "seed": 1
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 0,
+        "seed": 1
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 13,
+          "value": 11
+        },
+        {
+          "bound": 13,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 0,
+        "seed": 7
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 0,
+        "seed": 7
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 13,
+          "value": 9
+        },
+        {
+          "bound": 13,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 0,
+        "seed": 101
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 296
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 0,
+        "seed": 101
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 96
+        },
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 13,
+          "value": 5
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 697
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 128,
+        "seed": 1
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 128,
+        "seed": 1
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 128,
+        "seed": 7
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 128,
+        "seed": 7
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 128,
+        "seed": 101
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 128,
+        "seed": 101
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 67108864,
+        "seed": 1
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 67108864,
+        "seed": 1
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 67108864,
+        "seed": 7
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 67108864,
+        "seed": 7
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": false,
+        "hp": 100,
+        "turns": 9,
+        "effects": 67108864,
+        "seed": 101
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    },
+    {
+      "input": {
+        "level": 3,
+        "mind": 20,
+        "magic_attack": 50,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 10,
+        "resistance": 0,
+        "no_attack": true,
+        "hp": 100,
+        "turns": 9,
+        "effects": 67108864,
+        "seed": 101
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7,
+        "contribution": 0,
+        "hp": 100
+      },
+      "draws": [],
+      "normal_return": false,
+      "stop_address": "0x40b831",
+      "instructions": 144
+    }
+  ],
+  "ticks": [
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 28
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 35
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 31
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 35
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 2,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 31
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 2,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 2,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 9,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 8,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 31
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 9,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 8,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "poison": 0,
+        "paralysis": 9,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 8,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 35
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 0,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 0,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 1,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 49
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 1,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 0,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 45
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 2,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 2,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 45
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 2,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 1,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 9,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 8,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 9,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 8,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 45
+    },
+    {
+      "input": {
+        "poison": 458753,
+        "paralysis": 9,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 0,
+        "paralysis": 8,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 31
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 0,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 0,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 0,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 1,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 0,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 45
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 1,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 0,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 2,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 2,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 1,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 2,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 1,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 37
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 9,
+        "no_magic": 0
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 8,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 34
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 9,
+        "no_magic": 1
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 8,
+        "no_magic": 0
+      },
+      "normal_return": true,
+      "instructions": 41
+    },
+    {
+      "input": {
+        "poison": 458755,
+        "paralysis": 9,
+        "no_magic": 3
+      },
+      "native": {
+        "poison": 458754,
+        "paralysis": 8,
+        "no_magic": 2
+      },
+      "normal_return": true,
+      "instructions": 37
+    }
+  ],
+  "cures": [
+    {
+      "input": {
+        "turns": 0,
+        "effects": 0
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 2
+    },
+    {
+      "input": {
+        "turns": 0,
+        "effects": 2147483648
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 2
+    },
+    {
+      "input": {
+        "turns": 0,
+        "effects": 536870912
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 6
+    },
+    {
+      "input": {
+        "turns": 1,
+        "effects": 0
+      },
+      "native": {
+        "turns": 1,
+        "flags": 7
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 2
+    },
+    {
+      "input": {
+        "turns": 1,
+        "effects": 2147483648
+      },
+      "native": {
+        "turns": 1,
+        "flags": 7
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 2
+    },
+    {
+      "input": {
+        "turns": 1,
+        "effects": 536870912
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 6
+    },
+    {
+      "input": {
+        "turns": 3,
+        "effects": 0
+      },
+      "native": {
+        "turns": 3,
+        "flags": 7
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 2
+    },
+    {
+      "input": {
+        "turns": 3,
+        "effects": 2147483648
+      },
+      "native": {
+        "turns": 3,
+        "flags": 7
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 2
+    },
+    {
+      "input": {
+        "turns": 3,
+        "effects": 536870912
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 6
+    },
+    {
+      "input": {
+        "turns": 9,
+        "effects": 0
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 2
+    },
+    {
+      "input": {
+        "turns": 9,
+        "effects": 2147483648
+      },
+      "native": {
+        "turns": 9,
+        "flags": 7
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 2
+    },
+    {
+      "input": {
+        "turns": 9,
+        "effects": 536870912
+      },
+      "native": {
+        "turns": 0,
+        "flags": 3
+      },
+      "normal_return": false,
+      "stop_address": "0x40a31f",
+      "instructions": 6
+    }
+  ],
+  "scans": [
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 0
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 1
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 2
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 4
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 7
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 8
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 78
+    },
+    {
+      "input": {
+        "slots": [
+          241,
+          31,
+          246,
+          248,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 0
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 135
+    },
+    {
+      "input": {
+        "slots": [
+          241,
+          31,
+          246,
+          248,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 1
+      },
+      "native": 3,
+      "normal_return": true,
+      "instructions": 77
+    },
+    {
+      "input": {
+        "slots": [
+          241,
+          31,
+          246,
+          248,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 2
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 141
+    },
+    {
+      "input": {
+        "slots": [
+          241,
+          31,
+          246,
+          248,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 4
+      },
+      "native": 4,
+      "normal_return": true,
+      "instructions": 107
+    },
+    {
+      "input": {
+        "slots": [
+          241,
+          31,
+          246,
+          248,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 7
+      },
+      "native": 3,
+      "normal_return": true,
+      "instructions": 81
+    },
+    {
+      "input": {
+        "slots": [
+          241,
+          31,
+          246,
+          248,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 8
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 141
+    },
+    {
+      "input": {
+        "slots": [
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 0
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 112
+    },
+    {
+      "input": {
+        "slots": [
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 1
+      },
+      "native": 2,
+      "normal_return": true,
+      "instructions": 64
+    },
+    {
+      "input": {
+        "slots": [
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 2
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "slots": [
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 4
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "slots": [
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 7
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 46
+    },
+    {
+      "input": {
+        "slots": [
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 8
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 116
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          248
+        ],
+        "mask": 0
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 95
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          248
+        ],
+        "mask": 1
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 97
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          248
+        ],
+        "mask": 2
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 97
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          248
+        ],
+        "mask": 4
+      },
+      "native": 8,
+      "normal_return": true,
+      "instructions": 91
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          248
+        ],
+        "mask": 7
+      },
+      "native": 8,
+      "normal_return": true,
+      "instructions": 95
+    },
+    {
+      "input": {
+        "slots": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          248
+        ],
+        "mask": 8
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 97
+    },
+    {
+      "input": {
+        "slots": [
+          251,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 0
+      },
+      "native": 0,
+      "normal_return": true,
+      "instructions": 129
+    },
+    {
+      "input": {
+        "slots": [
+          251,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 1
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "slots": [
+          251,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 2
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 40
+    },
+    {
+      "input": {
+        "slots": [
+          251,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 4
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 42
+    },
+    {
+      "input": {
+        "slots": [
+          251,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 7
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 38
+    },
+    {
+      "input": {
+        "slots": [
+          251,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mask": 8
+      },
+      "native": 1,
+      "normal_return": true,
+      "instructions": 44
+    }
+  ],
+  "gear": [
+    {
+      "input": {
+        "job": 80,
+        "capability": 0,
+        "codes": []
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 497
+        },
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 497
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 0,
+        "codes": [
+          2
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 594
+        },
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 594
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 0,
+        "codes": [
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 584
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 584
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 0,
+        "codes": [
+          31
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 594
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 594
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 0,
+        "codes": [
+          31,
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 681
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 681
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 0,
+        "codes": [
+          211,
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 671
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 671
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 2048,
+        "codes": []
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 497
+        },
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 497
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 2048,
+        "codes": [
+          2
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 595
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 595
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 2048,
+        "codes": [
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 585
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 585
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 2048,
+        "codes": [
+          31
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 595
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 595
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 2048,
+        "codes": [
+          31,
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 683
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 683
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 80,
+        "capability": 2048,
+        "codes": [
+          211,
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 673
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 673
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 0,
+        "codes": []
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 498
+        },
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 498
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 0,
+        "codes": [
+          2
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 595
+        },
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 595
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 0,
+        "codes": [
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 585
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 585
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 0,
+        "codes": [
+          31
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 595
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 595
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 0,
+        "codes": [
+          31,
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 682
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 682
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 0,
+        "codes": [
+          211,
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 672
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 672
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 2048,
+        "codes": []
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 498
+        },
+        {
+          "values": {
+            "effects": 0,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 498
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 2048,
+        "codes": [
+          2
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 596
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 596
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 2048,
+        "codes": [
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 586
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 586
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 2048,
+        "codes": [
+          31
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 596
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 596
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 2048,
+        "codes": [
+          31,
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 684
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 684
+        }
+      ]
+    },
+    {
+      "input": {
+        "job": 94,
+        "capability": 2048,
+        "codes": [
+          211,
+          211
+        ]
+      },
+      "native": [
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 674
+        },
+        {
+          "values": {
+            "effects": 67108864,
+            "flags": 7,
+            "paralysis": 3,
+            "poison": 458754,
+            "no_magic": 2,
+            "hp": 1,
+            "mp": 0,
+            "stamina": 20,
+            "exp": 99
+          },
+          "normal_return": true,
+          "instructions": 674
+        }
+      ]
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x443996",
+      "bytes": "3915a01b4c007416f6472404741039968c0000000f8412010000eb0233d2",
+      "meaning": "Active player with paralysis and fresh phase0 branches directly to final tail."
+    },
+    {
+      "address": "0x443ac2",
+      "bytes": "c7868c00000003000100e9d60c0000",
+      "meaning": "Skipped player writes phase10003 and bypasses the extra-action query."
+    },
+    {
+      "address": "0x43f47b",
+      "bytes": "a1a01b4c0085c07443f6462404743d8b858c00000085c07533e99e2a0000",
+      "meaning": "Active AI uses the same fresh-phase paralysis gate."
+    },
+    {
+      "address": "0x441f37",
+      "bytes": "c7858c00000001006400",
+      "meaning": "Skipped AI writes phase640001 before the shared tail."
+    },
+    {
+      "address": "0x40ac97",
+      "bytes": "83c90483c404894e248b4e3c03c883f9097e12ba090000002bd103c2790233c0b9090000008b542414894e3c8b0dfc134c008d0480428d04418954241485c0a3fc134c00741a8b44243885c07512c744243801000000eb088b7c24408b6c24208a44243c8b5c241c",
+      "meaning": "Successful paralysis adds capped turns and ten contribution per actual added turn."
+    },
+    {
+      "address": "0x40b94b",
+      "bytes": "397e3c741566ff4e3c66397e3c7f0b8b4624897e3c24fb894624",
+      "meaning": "Paralysis duration expires its whole word and flag4."
+    },
+    {
+      "address": "0x40a30c",
+      "bytes": "a900000020740c8b5624894e3c83e2fb895624",
+      "meaning": "Item cure mask20000000 clears only paralysis flag and counter."
+    },
+    {
+      "address": "0x40c230",
+      "bytes": "8b442404538b1d401b4c00558b88a4000000a1c81b4c008bd156c1e2072bd15733f68d0c908a542418b8010000008db9380100008b0f85c9744e8d2c898d0c69c1e10403cb394108753e8b89a0000000f6c180754384d07408f7c1000000807537f6c2027408f7c100000040752af6c2047408f7c100000020751df6c2087408f7c10000001075104683c70483fe087ca35f5e5d33c05bc38d46",
+      "meaning": "Eight-slot native status-cure lookup returns first matching one-based slot."
+    },
+    {
+      "address": "0x448142",
+      "bytes": "565368a0884700e882e5ffff83c40c3bc5894424147408814c241000000004565368",
+      "meaning": "ITEM avoid_paralysis maps to main effect4000000."
+    },
+    {
+      "address": "0x447fac",
+      "bytes": "56536874894700e818e7ffff83c40c3bc5894424147408814c24100000002056536868",
+      "meaning": "ITEM cure_paralysis maps to cure effect20000000."
+    },
+    {
+      "address": "0x44c37c",
+      "bytes": "6a0168cc8e4700e8e81a02008b44241c83c4103bc57416a1fc1a4c008b8c30a000000080cd08898c30a00000008d4424",
+      "meaning": "PLAYERS no_paralyze maps to innate capability800."
+    },
+    {
+      "address": "0x44876f",
+      "bytes": "f6c508740a81888c01000000000004",
+      "meaning": "Nonempty gear maps innate capability800 to effect4000000."
+    }
+  ],
+  "limits": [
+    "Synthetic actor/queue memory; original engine-enable global and fresh phase are explicit entry conditions.",
+    "Entry only changes object phase; it leaves latch, actor and queue intact before the existing final tail. Not full dispatch execution.",
+    "Spell and item stop before display/audio; duration, cure-slot selection and gear refresh return normally. No stubs.",
+    "Gear execution proves refresh effects, not item/job eligibility. Multi-cure251 appears only in native scan fixtures, not newly supported product equipment."
+  ]
+}

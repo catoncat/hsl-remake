@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://game/battle/scene/BattleSceneRuntime.tscn" id="1"]
+
+[node name="StatMagicTrial" instance=ExtResource("1")]
+startup_mode = "dev_first_control"
+scenario_path = "res://content/battles/stat_magic_trial.json"

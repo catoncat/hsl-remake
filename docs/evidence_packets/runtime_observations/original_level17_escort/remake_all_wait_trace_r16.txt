@@ -1,0 +1,71 @@
+# lane R16: battle_017.json all-wait trace (loop seed 1) after the EVEF instance words (items, wait_round, fixed point) and the fixed-point walk; decision JSON trimmed to the 064 home_approach
+R14_REMAKE loop_seed=1 first_control round=1
+  spawn actor062_1 062 role=friendly_ai hp=75/75 mp=0 (32,13) mp_move=4 level=4 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(32, 13)
+  spawn actor062_2 062 role=friendly_ai hp=82/82 mp=0 (32,16) mp_move=4 level=5 items=[241, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(32, 16)
+  spawn actor062_3 062 role=friendly_ai hp=77/77 mp=0 (35,13) mp_move=4 level=4 items=[241, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(35, 13)
+  spawn actor064_1 064 role=friendly_ai hp=87/87 mp=0 (31,14) mp_move=4 level=4 items=[241, 241, 0, 0, 0, 0, 0, 0] wait=0 home=(37, 18)
+  spawn actor038_1 038 role=enemy_ai hp=66/66 mp=0 (20,12) mp_move=6 level=4 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(20, 12)
+  spawn actor038_2 038 role=enemy_ai hp=80/80 mp=0 (26,18) mp_move=6 level=6 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(26, 18)
+  spawn actor035_1 035 role=enemy_ai hp=58/58 mp=28 (27,14) mp_move=4 level=10 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(27, 14)
+  spawn actor035_2 035 role=enemy_ai hp=58/58 mp=28 (25,15) mp_move=4 level=10 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(25, 15)
+  spawn actor037_1 037 role=enemy_ai hp=67/67 mp=0 (22,17) mp_move=4 level=6 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(22, 17)
+  spawn actor037_2 037 role=enemy_ai hp=67/67 mp=0 (22,11) mp_move=4 level=6 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(22, 11)
+  spawn actor038_3 038 role=enemy_ai hp=79/79 mp=0 (9,5) mp_move=6 level=6 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=3 home=(9, 5)
+  spawn actor038_4 038 role=enemy_ai hp=66/66 mp=0 (6,10) mp_move=6 level=4 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=3 home=(6, 10)
+  spawn actor035_3 035 role=enemy_ai hp=58/58 mp=28 (10,12) mp_move=4 level=10 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=3 home=(10, 12)
+  spawn actor035_4 035 role=enemy_ai hp=58/58 mp=28 (12,9) mp_move=4 level=10 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=3 home=(12, 9)
+  spawn actor035_5 035 role=enemy_ai hp=58/58 mp=28 (10,16) mp_move=4 level=10 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=3 home=(10, 16)
+  spawn actor037_3 037 role=enemy_ai hp=70/70 mp=0 (7,14) mp_move=4 level=7 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=3 home=(7, 14)
+  spawn actor037_4 037 role=enemy_ai hp=67/67 mp=0 (4,18) mp_move=4 level=6 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=3 home=(4, 18)
+  spawn actor036_1 036 role=enemy_ai hp=52/52 mp=0 (22,14) mp_move=5 level=4 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(22, 14)
+  spawn actor036_2 036 role=enemy_ai hp=73/73 mp=0 (1,21) mp_move=5 level=7 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=4 home=(1, 21)
+  spawn leonard 001 role=player_controlled hp=30/30 mp=0 (34,20) mp_move=5 level=1 items=[241, 241, 241, 246, 0, 0, 0, 0] wait=0 home=(34, 20)
+  spawn tina 002 role=player_controlled hp=36/36 mp=19 (35,17) mp_move=5 level=2 items=[241, 244, 0, 0, 0, 0, 0, 0] wait=0 home=(35, 17)
+  spawn hu 003 role=player_controlled hp=40/40 mp=0 (35,22) mp_move=5 level=4 items=[241, 241, 0, 0, 0, 0, 0, 0] wait=0 home=(35, 22)
+  spawn hanks 004 role=player_controlled hp=50/50 mp=0 (37,22) mp_move=5 level=7 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(37, 22)
+  spawn shera 005 role=player_controlled hp=59/59 mp=41 (38,19) mp_move=5 level=6 items=[0, 0, 0, 0, 0, 0, 0, 0] wait=0 home=(38, 19)
+  round 1 AI actor035_1 kind=move_then_attack target=actor064_1 skill= wait_reason= nav=new_target/0 decision={"action_selection":{"draws":[{"bound":99,"value":94}],"evidence_tier":"static-derived","kind":0,"ok":true,"order":[0,1, | actor064_1 hp 87->65 mp 0->0 (31,14)->(31,14); actor035_1 hp 58->58 mp 28->28 (27,14)->(30,14)
+  round 1 AI actor035_2 kind=move target= skill= wait_reason=no_accepted_action nav=new_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":3,"source":"0x43f | actor035_2 hp 58->58 mp 28->28 (25,15)->(27,14)
+  round 1 AI actor035_3 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 AI actor035_4 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 AI actor035_5 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 PLAYER hanks wait
+  round 1 PLAYER shera wait
+  round 1 AI actor037_3 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 AI actor037_1 kind=move target= skill= wait_reason=no_accepted_action nav=new_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":0,"source":"0x43f | actor037_1 hp 67->67 mp 0->0 (22,17)->(22,13)
+  round 1 AI actor037_2 kind=move target= skill= wait_reason=no_accepted_action nav=new_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":0,"source":"0x43f | actor037_2 hp 67->67 mp 0->0 (22,11)->(24,13)
+  round 1 AI actor037_4 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 AI actor036_2 kind=wait target= skill= wait_reason=wait_round nav=wait_round/3 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 PLAYER hu wait
+  round 1 AI actor062_2 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 filters={"guard_excluded":0,"living_foes":15,"unarmed":true,"without_approach":15} decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 AI actor062_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 filters={"guard_excluded":0,"living_foes":15,"unarmed":true,"without_approach":15} decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 AI actor062_3 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 filters={"guard_excluded":0,"living_foes":15,"unarmed":true,"without_approach":15} decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 AI actor064_1 kind=move target= skill= wait_reason=no_valid_action nav=new_target/0 filters={"guard_excluded":0,"living_foes":15,"unarmed":true,"without_approach":15} home_approach={"candidates": 28, "draws": [{"bound": 2, "value": 0}, {"bound": 2, "value": 1}, {"bound": 2, "value": 1}, {"bound": 2, "value": 0}, {"bound": 2, "value": 1}, {"bound": 2, "value": 0}], "evidence_tier": "static-derived", "goal": "(37, 18)", "reason": "nearest_to_point", "route_cost": 6, "source": "0x43fbd6 / 0x411080 / 0x413740"} | actor064_1 hp 65->65 mp 0->0 (31,14)->(32,17)
+  round 1 AI actor036_1 kind=move target= skill= wait_reason=no_accepted_action nav=new_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":0,"source":"0x43f | actor036_1 hp 52->52 mp 0->0 (22,14)->(26,13)
+  round 1 PLAYER leonard wait
+  round 1 AI actor038_2 kind=move_then_attack target=actor064_1 skill= wait_reason= nav=new_target/0 decision={"action_selection":{"draws":[{"bound":99,"value":58}],"evidence_tier":"static-derived","kind":0,"ok":true,"order":[0,1, | actor064_1 hp 65->33 mp 0->0 (32,17)->(32,17); actor038_2 hp 80->80 mp 0->0 (26,18)->(31,17)
+  round 1 AI actor038_3 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 AI actor038_1 kind=move target= skill= wait_reason=no_accepted_action nav=new_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":0,"source":"0x43f | actor038_1 hp 66->66 mp 0->0 (20,12)->(26,12)
+  round 1 AI actor038_4 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 1 PLAYER tina wait
+  round 2 AI actor035_1 kind=move target= skill= wait_reason=no_accepted_action nav=retained_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":3,"source":"0x43f | actor035_1 hp 58->58 mp 28->28 (30,14)->(31,14)
+  round 2 AI actor035_2 kind=move target= skill= wait_reason=no_accepted_action nav=retained_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":3,"source":"0x43f | actor035_2 hp 58->58 mp 28->28 (27,14)->(30,15)
+  round 2 AI actor035_3 kind=wait target= skill= wait_reason=wait_round nav=wait_round/1 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 AI actor035_4 kind=wait target= skill= wait_reason=wait_round nav=wait_round/1 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 AI actor035_5 kind=wait target= skill= wait_reason=wait_round nav=wait_round/1 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 PLAYER hanks wait
+  round 2 PLAYER shera wait
+  round 2 AI actor037_3 kind=wait target= skill= wait_reason=wait_round nav=wait_round/1 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 AI actor037_1 kind=move target= skill= wait_reason=no_accepted_action nav=retained_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":0,"source":"0x43f | actor037_1 hp 67->67 mp 0->0 (22,13)->(25,13)
+  round 2 AI actor037_2 kind=move target= skill= wait_reason=no_accepted_action nav=retained_target/0 decision={"call_target":{"adoption":{"broadcast":true,"consumed":false,"evidence_tier":"static-derived","index":0,"source":"0x43f | actor037_2 hp 67->67 mp 0->0 (24,13)->(28,13)
+  round 2 AI actor037_4 kind=wait target= skill= wait_reason=wait_round nav=wait_round/1 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 AI actor036_2 kind=wait target= skill= wait_reason=wait_round nav=wait_round/2 decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 PLAYER hu wait
+  round 2 AI actor062_2 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 filters={"guard_excluded":0,"living_foes":15,"unarmed":true,"without_approach":15} decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 AI actor062_1 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 filters={"guard_excluded":0,"living_foes":15,"unarmed":true,"without_approach":15} decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 AI actor062_3 kind=wait target= skill= wait_reason=no_valid_action nav=new_target/0 filters={"guard_excluded":0,"living_foes":15,"unarmed":true,"without_approach":15} decision={"call_target":{"adoption":{"broadcast":false,"consumed":false,"evidence_tier":"static-derived","index":-1,"source":"0x4 |
+  round 2 AI actor064_1 kind=move target= skill= wait_reason=no_valid_action nav=new_target/0 filters={"guard_excluded":0,"living_foes":15,"unarmed":true,"without_approach":15} home_approach={"candidates": 27, "draws": [{"bound": 2, "value": 1}, {"bound": 2, "value": 1}, {"bound": 2, "value": 0}], "evidence_tier": "static-derived", "goal": "(37, 18)", "reason": "nearest_to_point", "route_cost": 2, "source": "0x43fbd6 / 0x411080 / 0x413740"} | actor064_1 hp 33->33 mp 0->0 (32,17)->(36,17)
+  round 2 AI actor036_1 kind=move_then_attack target=actor062_1 skill= wait_reason= nav=retained_target/0 decision={"action_selection":{"draws":[{"bound":99,"value":88}],"evidence_tier":"static-derived","kind":0,"ok":true,"order":[0,1, | actor062_1 hp 75->40 mp 0->0 (32,13)->(32,13); actor036_1 hp 52->52 mp 0->0 (26,13)->(31,13)
+  round 2 PLAYER leonard wait
+  round 2 AI actor038_2 kind=move_then_attack target=actor064_1 skill= wait_reason= nav=retained_target/0 decision={"action_selection":{"draws":[{"bound":99,"value":68}],"evidence_tier":"static-derived","kind":0,"ok":true,"order":[0,1, | actor064_1 hp 33->0 mp 0->0 (36,17)->(36,17) DEAD; actor038_2 hp 80->80 mp 0->0 (31,17)->(36,18)
+R14_REMAKE battle_outcome=defeat_leonard round=2

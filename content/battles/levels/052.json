@@ -1,0 +1,80 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 52,
+  "battle": {
+    "id": "battle_002_level52",
+    "title": "惡夢的終曲 / Level 52",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "defeat_boss",
+    "result_labels": {
+      "win_0": "惡夢的終曲 · 法蘭克已擊敗",
+      "fail_0": "惡夢的終曲 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 18,
+      "players": 1
+    },
+    "derive_escape_zone": true,
+    "unit_ids": {
+      "SID_ENEMY025": "emperor025",
+      "SID_ENEMY026": "enemy026_{n}",
+      "SID_ENEMY023": "ally023_{n}",
+      "SID_ENEMY024": "ally024_{n}",
+      "obj_Story_Level52_Enemy21": "enemy021_{n}",
+      "SID_ENEMY069": "enemy069_{n}"
+    },
+    "unresolved_semantics": [
+      "STORY052 opening is played by BattleOpeningCoordinator from the compiled timeline with remake pacing; WINFAIL052 is interpreted live from the battle seed by WinfailScenarioRules (rule_adapter winfail): event1 (actCheckEnemyNumber SID_ENEMY021 2) fires once for its four inserts because the script does not re-arm it, a provisional one-shot reading backed by winfail053 event2 re-arming itself explicitly.",
+      "The four rear STORY052 Enemy021 inserts walk to (256,800) / (192,864) / (480,800) / (416,864): 32 px-aligned pixels read as cell origins by integer division like every other STORY endpoint, i.e. (8,25) / (6,27) / (15,25) / (13,27) — the same floor the original placement init applies ((coordinate & ~31) + 16 at 0x407cc0 / 0x4080b0, static-derived docs/evidence_packets/static_reverse/actor_placement_initialization.md); the former second_battle.json rounded them one cell up / left (a remake rounding artefact, dropped). No original level-52 runtime frame of these cells is in the repository (resource-derived + static-derived only).",
+      "WINFAIL052 event 1 inserts are script actor templates (obj_Story_Level52_Enemy21 → ScriptActorCreationRules): each recruit is born at its off-map insert pixel and walks to its actWalkPrevInsertObjectWait target, the same path as every other level's reinforcements.",
+      "Actor 069 (two winged warriors, jobWingWarrior, PLAYERS mode pmPlayer, wearing map sprite 022) is fielded by the install reading: each EVEF record's obj_Data9 1 swaps pmPlayer to pmEnemy (0x407ec0), so both are enemy_ai. The original confirms it: entered through 0x42da60, the two code-069 objects stand at (15,14) and (6,13) as enemies of the 023／024 allies and wait on turn 1 (runtime-measured, tools/hsltools/probes/_enemy_level.py level 52, lane AI-PRIO).",
+      "Boss level/runtime initialization is a synthetic template baseline (content/generated/hsl/actors/025.json), not a native level-52 runtime measurement."
+    ]
+  },
+  "story_scene": {
+    "id": "story_052_nightmare_finale_opening",
+    "title": "惡夢的終曲（開場預覽）",
+    "player_token": "SID_PLAYER0",
+    "battle_opening_preview": true,
+    "end_card": {
+      "title": "惡夢的終曲",
+      "hint": "第二戰由 battle_052.json 正式重製；本預覽只到首次控制"
+    },
+    "notes": [
+      "STORY052: the emperor and his two mages speak 379-384 and step forward, CLIP001 plays, 雷歐納德 and the four soldiers walk 224 px up, the eight Enemy021 inserts walk in (four with wait round 2), the exchange 388-391, 雷歐納德's dead message 394, section title WORD052, win 0 / fail 0 / events 0-1."
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "021",
+      "022",
+      "023",
+      "024",
+      "025",
+      "026",
+      "069"
+    ],
+    "speakers": [
+      "001",
+      "023",
+      "025",
+      "026"
+    ]
+  },
+  "speakers": {
+    "SID_PLAYER0": "0",
+    "SID_ENEMY021": "305",
+    "SID_ENEMY023": "376",
+    "SID_ENEMY024": "377",
+    "SID_ENEMY025": "382",
+    "SID_ENEMY026": "307"
+  },
+  "speaker_policy": {
+    "SID_ENEMY025": "PLAYERS.TXT character 25 name field = 382 (resource-derived name)",
+    "SID_ENEMY026": "PLAYERS.TXT name field is 306 (???); 307 帝國法師 is the remake speaker label, provisional",
+    "SID_ENEMY021": "same remake label as level 51 (305)",
+    "SID_ENEMY023": "same remake label as level 51 (376)",
+    "SID_ENEMY024": "same remake label as level 51 (377)"
+  }
+}

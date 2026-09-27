@@ -1,0 +1,173 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 37,
+  "battle": {
+    "id": "battle_037_level37",
+    "title": "古代神殿遺跡 · 守護者之戰",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "古代神殿遺跡 · 守護者已擊破",
+      "fail_0": "古代神殿遺跡 · 雷歐納德 陣亡",
+      "fail_1": "古代神殿遺跡 · 克羅蒂 陣亡"
+    },
+    "expected": {
+      "units": 30,
+      "players": 9
+    },
+    "job_up_targets": {
+      "008": "017"
+    },
+    "unresolved_semantics": [
+      "STORY037 opens with eight controlled party members (001-007 and 009) plus the conditional 咕嚕 008 (EVEF 有才產生 record 10, fielded only when the carry holds the member), three Enemy033 and eight Enemy035 units. The shared assembler uses the STORY endpoints and generated actor templates for these 20 units.",
+      "STORY037's five random-position beats insert the guardians as PlayLoop units: actSetRandomPos fills five slots, each actInsertObjectRandomPos installs an Enemy067 gem (guard067_n, slot + (0,32)) and an Enemy066 guardian (guard066_n, on the slot) in slot order, so SID_ENEMY067/066 serial n is slot n-1 (0x451d0f / 0x450f2c / 0x44fad0, static-derived). The native shuffle (slot i swaps with slot (i+2) mod 5 on each odd 0x458c10 draw) is not reproduced: the table order is used (provisional). STORY037 sets all ten undead; both rows refresh to max HP 1 (hit_point -10000), so they revive at 1 HP.",
+      "The gems (PLAYERS 67, pmMagicAttack 0x870000 = pmALL|0x800000, no_attack) take magic and specials only: 0x40f5d0 keeps a pmALL occupant in every player range except the weapon ranges built with flag 1 (0x409090 callers), which drop 0x800000 occupants; the AI target scan 0x40bb80 never picks a pmALL unit. WINFAIL037's pmPlayerEnemy / pmMagicAttack swaps turn a gem off and on. A gem has no AI declarations and nothing it can target, so it waits (remake reading of the empty native scan).",
+      "actPlayerJobUpProcess merges the source template 017 (jobEvilMonster 邪獸, the row PLAYERS 008 job_up_code 816 resolves to through global.obs obj_Data7) into the registered 咕嚕 slot like the town job-up (actor id 008 stays the rules key, job_up_target_actor_id / job_up_history record 017, native 0x80000000 flag) so the campaign carry replays the form in later battles; current HP/MP are kept and clamped to the new maxima (0x4348f0 / 0x407ec0 / 0x448840 write no vitals). This is consumed only when the event is armed; a member whose row declares job_up 0 is a no-op like 0x4348f0; missing target templates fail explicitly.",
+      "The level-37 token conditions and transformation action are static-derived from 0x450840 / 0x4348f0 and have focused interpreter coverage; this does not prove native scheduler, global slot-registration, RNG or frame-timing equivalence."
+    ]
+  },
+  "story_scene": {
+    "id": "story_037_ancient_temple_opening",
+    "title": "古代神殿遺跡（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "古代神殿遺跡",
+      "hint": "戰鬥部分（level 37）尚未重製　　空格／點擊：回到大地圖（古代神殿遺跡）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party (咕嚕 is a conditional install) and the enemy roster have no battle scenario yet (chapter-2 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "the five random-position beats (actSetRandomPos 5 slots, actScrollBGToRandomPos, actInsertStoryObjectRandomPos 白光, actDeleteRandomPosObject of the statue, actInsertObjectRandomPos 067 / 066) bind the guardians guard067_1..5 (MAGIC\\MIN12_11 gem, slot + (0,32)) and guard066_1..5 (050 sprite, on the slot) in slot order; the slots keep the table order (the native shuffle is not reproduced, provisional); the ten actSetPlayerUndead tokens address those units",
+      "the 白光 story object (MAGIC\\BALL001.SHP, defProcObjectMove) is exported as a sprite only; its random-slot insert point is not resolved by the preview"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "033",
+      "035",
+      "066",
+      "067"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-037.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-037.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-037.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-037.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-037.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-037.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-037.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-037.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the preview; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-037.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)"
+  },
+  "sweep_fixture": {
+    "mode": "status",
+    "event_statuses": [],
+    "win_statuses": [
+      0
+    ],
+    "run_hooks": false,
+    "note": "WINFAIL037 reaches win_0 through the optional 咕嚕 attack / job-up branch (covered by the rules suite); the sweep arms win_0 directly."
+  },
+  "comments": {
+    "battle": [
+      "0x4348f0 resolves record+0x60 (PLAYERS 008 job_up_code = obj_Player8Up1 = 816) through the",
+      "object table 0x4a2728 to global.obs 816 (Player8_Up1, obj_Data7 = 17, SHAPE\\017); obj-037.obs",
+      "declares no override, so the level-37 target is the same 017 邪獸 row the town chain names",
+      "(static-derived, docs/evidence_packets/static_reverse/original_level37_tokens.md)."
+    ],
+    "story_scene": [
+      "Level 37 (古代神殿遺跡, point 37): the party enters the temple ruins, 克羅蒂 explains them,",
+      "the level music starts as 033 / 035 undead walk in, then five random-position slots",
+      "(actSetRandomPos) each flash a 白光, delete a 不動的守護者 statue and spawn the 067 / 066",
+      "guardians in its place; the guardians are set undead and 克羅蒂 names them.",
+      "actPlayMusic 9 opens on track 9 (the track level 12 requests with the same token); actPlayLevelMusic in mid-opening resolves level 37 to track 14 (table",
+      "0x477b44).",
+      "The guardians are cast actors: 066 walks in 050's frames, 067 is the one-frame gem; the formal battle fields all ten."
+    ],
+    "cast": [
+      "Level 37 (古代神殿遺跡): 033 / 035 undead in the EVEF; the guardians 066 (shape 050) /",
+      "067 (MAGIC\\MIN12_11 gem, standing only) arrive by random-position inserts and are cast actors."
+    ],
+    "speakers": [
+      "Level 37 (古代神殿遺跡): 克羅蒂 explains the temple, 咕嚕 growls, 琥 asks about it;",
+      "the guardians 066 / 067 and the 033 / 035 undead are silent."
+    ]
+  }
+}

@@ -1,0 +1,1685 @@
+{
+  "schema": "hsl_permanent_carry_review.v1",
+  "baseline": "eedf752",
+  "fixture": true,
+  "native_execution": false,
+  "real_control_events": true,
+  "routes": [
+    {
+      "carry_receipt": {
+        "applied_unit_ids": [
+          "leonard"
+        ],
+        "errors": [],
+        "from_scenario_id": "battle_001_cannon_fodder",
+        "loop_keys": [
+          "gold"
+        ],
+        "schema": "hsl_campaign_carry.v1",
+        "skipped_unit_ids": []
+      },
+      "initial_units": [
+        {
+          "action_ready": true,
+          "actor_id": "001",
+          "ai_call_target_id": "",
+          "ai_home_coord": "(13, 10)",
+          "ai_target_id": "",
+          "ai_wait_remaining": 0,
+          "attack_range_evidence": {
+            "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+            "evidence_tier": "resource-derived",
+            "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+          },
+          "base_move_point": 5.0,
+          "battle_actor_role": "player_controlled",
+          "combat_profile": {
+            "attack_back": 12,
+            "attack_damagex2": 14,
+            "avoid_hit_ratio": 0,
+            "con": 12.0,
+            "dex": 16.0,
+            "live_attack_damage": 55,
+            "live_defense": 44,
+            "live_hit_ratio": 98,
+            "live_magic_attack": 18,
+            "mind": 8.0,
+            "resist_by_type": {
+              "0": 17,
+              "1": 15,
+              "2": 14,
+              "3": 17,
+              "4": 13
+            },
+            "str": 16.0,
+            "weapon_damage_variance_hi": 0,
+            "weapon_damage_variance_lo": 0,
+            "weapon_magic_attack_type": -1
+          },
+          "combat_stats_evidence_tier": "provisional",
+          "combat_stats_source": "Native job80/90/94 refresh including source mode, all derived resists and current equipment. NPC level adjustment remains an explicit fixed-template policy.",
+          "coord": "(13, 10)",
+          "defeated": false,
+          "equipment": [
+            {
+              "item_code": 2.0,
+              "name": "闊刃劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 153.0,
+              "name": "鐵護輪",
+              "slot": "head"
+            },
+            {
+              "item_code": 125.0,
+              "name": "騎士鎧甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            },
+            {
+              "item_code": 227,
+              "slot": "accessory2"
+            }
+          ],
+          "exp": 0.0,
+          "grid_coord": "(15, 17)",
+          "growth_profile": {
+            "allocation": "manual",
+            "caps": {
+              "con": 94.0,
+              "dex": 88.0,
+              "mind": 80.0,
+              "str": 90.0
+            },
+            "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json",
+            "job_code": 80.0,
+            "model": "native_job_stats_v1",
+            "source": {
+              "attack_back": 0.0,
+              "attack_damagex2": 14.0,
+              "attack_power": 0.0,
+              "avoid_hit_ratio": 0.0,
+              "base_resist_by_type": {
+                "0": 10.0,
+                "1": 10.0,
+                "2": 10.0,
+                "3": 10.0,
+                "4": 10.0
+              },
+              "defense": 6.0,
+              "has_magic": false,
+              "hit_point": 6.0,
+              "magic_attack_power": 0.0,
+              "magic_point": 0.0,
+              "mode": 65536.0,
+              "speed": 0.0
+            }
+          },
+          "hit_bonus_accum": 0,
+          "hp": 30,
+          "id": "leonard",
+          "inventory": [
+            253,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "kill_chain_word": 0,
+          "kill_count": 0,
+          "kill_exp": 30.0,
+          "level": 1.0,
+          "live_speed": 15,
+          "live_speed_evidence_tier": "provisional",
+          "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+          "max_hp": 30,
+          "max_mp": 0,
+          "move_point": 5,
+          "move_point_evidence_tier": "static-derived",
+          "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+          "mp": 0,
+          "no_attack": false,
+          "pending_stat_points": 0,
+          "permanent_gains": {
+            "attack_power": 1,
+            "defense": 1,
+            "magic_attack_power": 1,
+            "resist_0": 1,
+            "resist_1": 1,
+            "resist_2": 1,
+            "resist_3": 1,
+            "resist_4": 1,
+            "speed": 1
+          },
+          "player_commandable": true,
+          "position_evidence_tier": "static-derived",
+          "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+          "position_source": {
+            "evef_record_index": 20.0,
+            "object_code": 6.0,
+            "placement_world": [
+              480.0,
+              640.0
+            ]
+          },
+          "speed": 14,
+          "stamina": 0,
+          "status_counters": {
+            "no_magic": 0,
+            "paralysis": 0,
+            "poison": 0
+          },
+          "status_flags": 0,
+          "traversal": {
+            "flying": false,
+            "no_block": false,
+            "size_type": 0.0
+          },
+          "vitals_evidence_tier": "provisional",
+          "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+          "weapon_code": 2.0
+        },
+        {
+          "action_ready": true,
+          "actor_id": "021",
+          "ai_call_target_id": "",
+          "ai_home_coord": "(18, 10)",
+          "ai_target_id": "",
+          "ai_wait_remaining": 0,
+          "attack_range_evidence": {
+            "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+            "evidence_tier": "resource-derived",
+            "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+          },
+          "base_move_point": 5.0,
+          "battle_actor_role": "enemy_ai",
+          "class_id": "Enemy021",
+          "combat_profile": {
+            "attack_back": 12,
+            "attack_damagex2": 8,
+            "avoid_hit_ratio": 0,
+            "con": 12.0,
+            "dex": 15.0,
+            "live_attack_damage": 45,
+            "live_defense": 30,
+            "live_hit_ratio": 96,
+            "live_magic_attack": 18,
+            "mind": 10.0,
+            "resist_by_type": {
+              "0": 7,
+              "1": 4,
+              "2": 4,
+              "3": 7,
+              "4": 3
+            },
+            "str": 15.0,
+            "weapon_damage_variance_hi": 0,
+            "weapon_damage_variance_lo": 0,
+            "weapon_magic_attack_type": -1
+          },
+          "combat_stats_evidence_tier": "provisional",
+          "combat_stats_source": "Native job80/90/94 refresh including source mode, all derived resists and current equipment. NPC level adjustment remains an explicit fixed-template policy.",
+          "coord": "(18, 10)",
+          "defeated": false,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "exp": 0.0,
+          "grid_coord": "(17, 6)",
+          "growth_profile": {
+            "allocation": "fixed_template",
+            "caps": {
+              "con": 94.0,
+              "dex": 88.0,
+              "mind": 80.0,
+              "str": 90.0
+            },
+            "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json",
+            "job_code": 80.0,
+            "model": "native_job_stats_v1",
+            "source": {
+              "attack_back": 0.0,
+              "attack_damagex2": 0.0,
+              "attack_power": 0.0,
+              "avoid_hit_ratio": 0.0,
+              "base_resist_by_type": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "defense": 0.0,
+              "has_magic": false,
+              "hit_point": 0.0,
+              "magic_attack_power": 0.0,
+              "magic_point": 0.0,
+              "mode": 131072.0,
+              "speed": 0.0
+            }
+          },
+          "hit_bonus_accum": 0,
+          "hp": 22,
+          "id": "enemy021_1",
+          "inventory": [
+            246,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "kill_chain_word": 0,
+          "kill_count": 0,
+          "kill_exp": 20.0,
+          "level": 1.0,
+          "live_speed": 15,
+          "live_speed_evidence_tier": "provisional",
+          "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+          "max_hp": 22,
+          "max_mp": 0,
+          "move_point": 5,
+          "move_point_evidence_tier": "static-derived",
+          "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+          "mp": 0,
+          "no_attack": false,
+          "pending_stat_points": 0,
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "player_commandable": false,
+          "position_evidence_tier": "static-derived",
+          "position_note": "Enemy initializer centered level placement; NPC moves before first player control remain unresolved",
+          "position_source": {
+            "evef_record_index": 4.0,
+            "object_code": 99.0,
+            "placement_world": [
+              544.0,
+              192.0
+            ]
+          },
+          "speed": 15,
+          "stamina": 0,
+          "status_counters": {
+            "no_magic": 0,
+            "paralysis": 0,
+            "poison": 0
+          },
+          "status_flags": 0,
+          "traversal": {
+            "flying": false,
+            "no_block": false,
+            "size_type": 0.0
+          },
+          "vitals_evidence_tier": "provisional",
+          "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+          "weapon_code": 1.0
+        },
+        {
+          "action_ready": true,
+          "actor_id": "021",
+          "ai_call_target_id": "",
+          "ai_home_coord": "(19, 10)",
+          "ai_target_id": "",
+          "ai_wait_remaining": 0,
+          "attack_range_evidence": {
+            "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+            "evidence_tier": "resource-derived",
+            "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+          },
+          "base_move_point": 5.0,
+          "battle_actor_role": "enemy_ai",
+          "class_id": "Enemy021",
+          "combat_profile": {
+            "attack_back": 12,
+            "attack_damagex2": 8,
+            "avoid_hit_ratio": 0,
+            "con": 12.0,
+            "dex": 15.0,
+            "live_attack_damage": 45,
+            "live_defense": 30,
+            "live_hit_ratio": 96,
+            "live_magic_attack": 18,
+            "mind": 10.0,
+            "resist_by_type": {
+              "0": 7,
+              "1": 4,
+              "2": 4,
+              "3": 7,
+              "4": 3
+            },
+            "str": 15.0,
+            "weapon_damage_variance_hi": 0,
+            "weapon_damage_variance_lo": 0,
+            "weapon_magic_attack_type": -1
+          },
+          "combat_stats_evidence_tier": "provisional",
+          "combat_stats_source": "Native job80/90/94 refresh including source mode, all derived resists and current equipment. NPC level adjustment remains an explicit fixed-template policy.",
+          "coord": "(19, 10)",
+          "defeated": false,
+          "equipment": [
+            {
+              "item_code": 1.0,
+              "name": "長劍",
+              "slot": "weapon"
+            },
+            {
+              "item_code": 152.0,
+              "name": "皮帽",
+              "slot": "head"
+            },
+            {
+              "item_code": 124.0,
+              "name": "鎖子甲",
+              "slot": "armor"
+            },
+            {
+              "item_code": 181.0,
+              "name": "皮靴",
+              "slot": "foot"
+            }
+          ],
+          "exp": 0.0,
+          "grid_coord": "(17, 6)",
+          "growth_profile": {
+            "allocation": "fixed_template",
+            "caps": {
+              "con": 94.0,
+              "dex": 88.0,
+              "mind": 80.0,
+              "str": 90.0
+            },
+            "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json",
+            "job_code": 80.0,
+            "model": "native_job_stats_v1",
+            "source": {
+              "attack_back": 0.0,
+              "attack_damagex2": 0.0,
+              "attack_power": 0.0,
+              "avoid_hit_ratio": 0.0,
+              "base_resist_by_type": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "defense": 0.0,
+              "has_magic": false,
+              "hit_point": 0.0,
+              "magic_attack_power": 0.0,
+              "magic_point": 0.0,
+              "mode": 131072.0,
+              "speed": 0.0
+            }
+          },
+          "hit_bonus_accum": 0,
+          "hp": 22,
+          "id": "enemy021_2",
+          "inventory": [
+            246,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "kill_chain_word": 0,
+          "kill_count": 0,
+          "kill_exp": 20.0,
+          "level": 1.0,
+          "live_speed": 15,
+          "live_speed_evidence_tier": "provisional",
+          "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+          "max_hp": 22,
+          "max_mp": 0,
+          "move_point": 5,
+          "move_point_evidence_tier": "static-derived",
+          "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+          "mp": 0,
+          "no_attack": false,
+          "pending_stat_points": 0,
+          "permanent_gains": {
+            "attack_power": 0,
+            "defense": 0,
+            "magic_attack_power": 0,
+            "resist_0": 0,
+            "resist_1": 0,
+            "resist_2": 0,
+            "resist_3": 0,
+            "resist_4": 0,
+            "speed": 0
+          },
+          "player_commandable": false,
+          "position_evidence_tier": "static-derived",
+          "position_note": "Enemy initializer centered level placement; NPC moves before first player control remain unresolved",
+          "position_source": {
+            "evef_record_index": 4.0,
+            "object_code": 99.0,
+            "placement_world": [
+              544.0,
+              192.0
+            ]
+          },
+          "speed": 15,
+          "stamina": 0,
+          "status_counters": {
+            "no_magic": 0,
+            "paralysis": 0,
+            "poison": 0
+          },
+          "status_flags": 0,
+          "traversal": {
+            "flying": false,
+            "no_block": false,
+            "size_type": 0.0
+          },
+          "vitals_evidence_tier": "provisional",
+          "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+          "weapon_code": 1.0
+        }
+      ],
+      "item_receipt": [
+        {
+          "actor_before": {
+            "action_ready": true,
+            "actor_id": "001",
+            "ai_call_target_id": "",
+            "ai_home_coord": "(13, 10)",
+            "ai_target_id": "",
+            "ai_wait_remaining": 0,
+            "attack_range_evidence": {
+              "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+              "evidence_tier": "resource-derived",
+              "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+            },
+            "base_move_point": 5.0,
+            "battle_actor_role": "player_controlled",
+            "combat_profile": {
+              "attack_back": 12,
+              "attack_damagex2": 14,
+              "avoid_hit_ratio": 0,
+              "con": 12.0,
+              "dex": 16.0,
+              "live_attack_damage": 55,
+              "live_defense": 44,
+              "live_hit_ratio": 98,
+              "live_magic_attack": 18,
+              "mind": 8.0,
+              "resist_by_type": {
+                "0": 17,
+                "1": 15,
+                "2": 14,
+                "3": 17,
+                "4": 13
+              },
+              "str": 16.0,
+              "weapon_damage_variance_hi": 0,
+              "weapon_damage_variance_lo": 0,
+              "weapon_magic_attack_type": -1
+            },
+            "combat_stats_evidence_tier": "provisional",
+            "combat_stats_source": "Native job80/90/94 refresh including source mode, all derived resists and current equipment. NPC level adjustment remains an explicit fixed-template policy.",
+            "coord": "(13, 10)",
+            "defeated": false,
+            "equipment": [
+              {
+                "item_code": 2.0,
+                "name": "闊刃劍",
+                "slot": "weapon"
+              },
+              {
+                "item_code": 153.0,
+                "name": "鐵護輪",
+                "slot": "head"
+              },
+              {
+                "item_code": 125.0,
+                "name": "騎士鎧甲",
+                "slot": "armor"
+              },
+              {
+                "item_code": 181.0,
+                "name": "皮靴",
+                "slot": "foot"
+              },
+              {
+                "item_code": 227,
+                "slot": "accessory2"
+              }
+            ],
+            "exp": 0.0,
+            "grid_coord": "(15, 17)",
+            "growth_profile": {
+              "allocation": "manual",
+              "caps": {
+                "con": 94.0,
+                "dex": 88.0,
+                "mind": 80.0,
+                "str": 90.0
+              },
+              "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json",
+              "job_code": 80.0,
+              "model": "native_job_stats_v1",
+              "source": {
+                "attack_back": 0.0,
+                "attack_damagex2": 14.0,
+                "attack_power": 0.0,
+                "avoid_hit_ratio": 0.0,
+                "base_resist_by_type": {
+                  "0": 10.0,
+                  "1": 10.0,
+                  "2": 10.0,
+                  "3": 10.0,
+                  "4": 10.0
+                },
+                "defense": 6.0,
+                "has_magic": false,
+                "hit_point": 6.0,
+                "magic_attack_power": 0.0,
+                "magic_point": 0.0,
+                "mode": 65536.0,
+                "speed": 0.0
+              }
+            },
+            "hit_bonus_accum": 0,
+            "hp": 30,
+            "id": "leonard",
+            "inventory": [
+              253,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "kill_chain_word": 0,
+            "kill_count": 0,
+            "kill_exp": 30.0,
+            "level": 1.0,
+            "live_speed": 15,
+            "live_speed_evidence_tier": "provisional",
+            "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+            "max_hp": 30,
+            "max_mp": 0,
+            "move_point": 5,
+            "move_point_evidence_tier": "static-derived",
+            "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+            "mp": 0,
+            "no_attack": false,
+            "pending_stat_points": 0,
+            "permanent_gains": {
+              "attack_power": 1,
+              "defense": 1,
+              "magic_attack_power": 1,
+              "resist_0": 1,
+              "resist_1": 1,
+              "resist_2": 1,
+              "resist_3": 1,
+              "resist_4": 1,
+              "speed": 1
+            },
+            "player_commandable": true,
+            "position_evidence_tier": "static-derived",
+            "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+            "position_source": {
+              "evef_record_index": 20.0,
+              "object_code": 6.0,
+              "placement_world": [
+                480.0,
+                640.0
+              ]
+            },
+            "speed": 14,
+            "stamina": 0,
+            "status_counters": {
+              "no_magic": 0,
+              "paralysis": 0,
+              "poison": 0
+            },
+            "status_flags": 0,
+            "traversal": {
+              "flying": false,
+              "no_block": false,
+              "size_type": 0.0
+            },
+            "vitals_evidence_tier": "provisional",
+            "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+            "weapon_code": 2.0
+          },
+          "actor_id": "leonard",
+          "cured_no_magic": false,
+          "cured_paralysis": false,
+          "cured_poison": false,
+          "draws": [
+            {
+              "bound": 5,
+              "value": 1
+            }
+          ],
+          "hp_after": 30,
+          "hp_before": 30,
+          "inventory_after": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "inventory_index": 0,
+          "item_code": "253",
+          "mp_after": 0,
+          "mp_before": 0,
+          "permanent_effects": [
+            {
+              "after_gain": 3,
+              "after_raw": 3,
+              "amount": 2,
+              "before_gain": 1,
+              "before_raw": 1,
+              "kind": "attack_power",
+              "sampled": 2
+            }
+          ],
+          "restored_hp": 0,
+          "restored_mp": 0,
+          "restored_stamina": 0,
+          "rng_after": 48271,
+          "rng_before": 1,
+          "sequence": 1,
+          "stamina_after": 0,
+          "stamina_before": 0,
+          "stat_effects": [],
+          "target_before": {
+            "action_ready": true,
+            "actor_id": "001",
+            "ai_call_target_id": "",
+            "ai_home_coord": "(13, 10)",
+            "ai_target_id": "",
+            "ai_wait_remaining": 0,
+            "attack_range_evidence": {
+              "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+              "evidence_tier": "resource-derived",
+              "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+            },
+            "base_move_point": 5.0,
+            "battle_actor_role": "player_controlled",
+            "combat_profile": {
+              "attack_back": 12,
+              "attack_damagex2": 14,
+              "avoid_hit_ratio": 0,
+              "con": 12.0,
+              "dex": 16.0,
+              "live_attack_damage": 55,
+              "live_defense": 44,
+              "live_hit_ratio": 98,
+              "live_magic_attack": 18,
+              "mind": 8.0,
+              "resist_by_type": {
+                "0": 17,
+                "1": 15,
+                "2": 14,
+                "3": 17,
+                "4": 13
+              },
+              "str": 16.0,
+              "weapon_damage_variance_hi": 0,
+              "weapon_damage_variance_lo": 0,
+              "weapon_magic_attack_type": -1
+            },
+            "combat_stats_evidence_tier": "provisional",
+            "combat_stats_source": "Native job80/90/94 refresh including source mode, all derived resists and current equipment. NPC level adjustment remains an explicit fixed-template policy.",
+            "coord": "(13, 10)",
+            "defeated": false,
+            "equipment": [
+              {
+                "item_code": 2.0,
+                "name": "闊刃劍",
+                "slot": "weapon"
+              },
+              {
+                "item_code": 153.0,
+                "name": "鐵護輪",
+                "slot": "head"
+              },
+              {
+                "item_code": 125.0,
+                "name": "騎士鎧甲",
+                "slot": "armor"
+              },
+              {
+                "item_code": 181.0,
+                "name": "皮靴",
+                "slot": "foot"
+              },
+              {
+                "item_code": 227,
+                "slot": "accessory2"
+              }
+            ],
+            "exp": 0.0,
+            "grid_coord": "(15, 17)",
+            "growth_profile": {
+              "allocation": "manual",
+              "caps": {
+                "con": 94.0,
+                "dex": 88.0,
+                "mind": 80.0,
+                "str": 90.0
+              },
+              "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json",
+              "job_code": 80.0,
+              "model": "native_job_stats_v1",
+              "source": {
+                "attack_back": 0.0,
+                "attack_damagex2": 14.0,
+                "attack_power": 0.0,
+                "avoid_hit_ratio": 0.0,
+                "base_resist_by_type": {
+                  "0": 10.0,
+                  "1": 10.0,
+                  "2": 10.0,
+                  "3": 10.0,
+                  "4": 10.0
+                },
+                "defense": 6.0,
+                "has_magic": false,
+                "hit_point": 6.0,
+                "magic_attack_power": 0.0,
+                "magic_point": 0.0,
+                "mode": 65536.0,
+                "speed": 0.0
+              }
+            },
+            "hit_bonus_accum": 0,
+            "hp": 30,
+            "id": "leonard",
+            "inventory": [
+              253,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "kill_chain_word": 0,
+            "kill_count": 0,
+            "kill_exp": 30.0,
+            "level": 1.0,
+            "live_speed": 15,
+            "live_speed_evidence_tier": "provisional",
+            "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+            "max_hp": 30,
+            "max_mp": 0,
+            "move_point": 5,
+            "move_point_evidence_tier": "static-derived",
+            "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+            "mp": 0,
+            "no_attack": false,
+            "pending_stat_points": 0,
+            "permanent_gains": {
+              "attack_power": 1,
+              "defense": 1,
+              "magic_attack_power": 1,
+              "resist_0": 1,
+              "resist_1": 1,
+              "resist_2": 1,
+              "resist_3": 1,
+              "resist_4": 1,
+              "speed": 1
+            },
+            "player_commandable": true,
+            "position_evidence_tier": "static-derived",
+            "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+            "position_source": {
+              "evef_record_index": 20.0,
+              "object_code": 6.0,
+              "placement_world": [
+                480.0,
+                640.0
+              ]
+            },
+            "speed": 14,
+            "stamina": 0,
+            "status_counters": {
+              "no_magic": 0,
+              "paralysis": 0,
+              "poison": 0
+            },
+            "status_flags": 0,
+            "traversal": {
+              "flying": false,
+              "no_block": false,
+              "size_type": 0.0
+            },
+            "vitals_evidence_tier": "provisional",
+            "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+            "weapon_code": 2.0
+          },
+          "target_changes": {
+            "combat_profile": {
+              "attack_back": 12,
+              "attack_damagex2": 14,
+              "avoid_hit_ratio": 0,
+              "con": 12.0,
+              "dex": 16.0,
+              "live_attack_damage": 57,
+              "live_defense": 44,
+              "live_hit_ratio": 98,
+              "live_magic_attack": 18,
+              "mind": 8.0,
+              "resist_by_type": {
+                "0": 17,
+                "1": 15,
+                "2": 14,
+                "3": 17,
+                "4": 13
+              },
+              "str": 16.0,
+              "weapon_damage_variance_hi": 0,
+              "weapon_damage_variance_lo": 0,
+              "weapon_magic_attack_type": -1
+            },
+            "hp": 30,
+            "live_speed": 15,
+            "move_point": 5,
+            "permanent_gains": {
+              "attack_power": 3,
+              "defense": 1,
+              "magic_attack_power": 1,
+              "resist_0": 1,
+              "resist_1": 1,
+              "resist_2": 1,
+              "resist_3": 1,
+              "resist_4": 1,
+              "speed": 1
+            },
+            "status_counters": {
+              "no_magic": 0,
+              "paralysis": 0,
+              "poison": 0
+            },
+            "status_flags": 0
+          },
+          "target_id": "leonard"
+        }
+      ],
+      "mode": "carry-prepare",
+      "received_unit": {
+        "action_ready": true,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(10, 35)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "base_move_point": 5.0,
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12,
+          "attack_damagex2": 14,
+          "avoid_hit_ratio": 0,
+          "con": 12,
+          "dex": 16,
+          "live_attack_damage": 57,
+          "live_defense": 44,
+          "live_hit_ratio": 98,
+          "live_magic_attack": 18,
+          "mind": 8,
+          "resist_by_type": {
+            "0": 17,
+            "1": 15,
+            "2": 14,
+            "3": 17,
+            "4": 13
+          },
+          "str": 16,
+          "weapon_damage_variance_hi": 0,
+          "weapon_damage_variance_lo": 0,
+          "weapon_magic_attack_type": -1
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native job80/90/94 refresh including source mode, all derived resists and current equipment. NPC level adjustment remains an explicit fixed-template policy.",
+        "coord": "(10, 35)",
+        "defeated": false,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          },
+          {
+            "item_code": 227,
+            "slot": "accessory2"
+          }
+        ],
+        "exp": 0.0,
+        "grid_coord": "(10, 35)",
+        "growth_profile": {
+          "allocation": "manual",
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json",
+          "job_code": 80.0,
+          "model": "native_job_stats_v1",
+          "source": {
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "mode": 65536.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 0,
+        "kill_exp": 30.0,
+        "level": 1.0,
+        "live_speed": 15,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 30,
+        "max_mp": 0,
+        "move_point": 5,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+        "mp": 0,
+        "no_attack": false,
+        "pending_stat_points": 0,
+        "permanent_gains": {
+          "attack_power": 3,
+          "defense": 1,
+          "magic_attack_power": 1,
+          "resist_0": 1,
+          "resist_1": 1,
+          "resist_2": 1,
+          "resist_3": 1,
+          "resist_4": 1,
+          "speed": 1
+        },
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived+resource-derived",
+        "position_note": "Centered EVEF placement plus explicit STORY052 pre-control displacement",
+        "position_source": {
+          "evef_record_index": 29.0,
+          "story_delta": [
+            0.0,
+            -224.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 0,
+        "status_counters": {
+          "no_magic": 0,
+          "paralysis": 0,
+          "poison": 0
+        },
+        "status_flags": 0,
+        "traversal": {
+          "flying": false,
+          "no_block": false,
+          "size_type": 0.0
+        },
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      },
+      "saved": {
+        "carry": {
+          "claim_limit": "Remake campaign policy; original inter-level persistence is not proven.",
+          "evidence_tier": "provisional",
+          "from_outcome": "victory_escape",
+          "from_scenario_id": "battle_001_cannon_fodder",
+          "loop": {
+            "gold": 0.0
+          },
+          "restore_vitals": true,
+          "schema": "hsl_campaign_carry.v1",
+          "units": {
+            "leonard": {
+              "actor_id": "001",
+              "attributes": {
+                "con": 12.0,
+                "dex": 16.0,
+                "mind": 8.0,
+                "str": 16.0
+              },
+              "equipment": [
+                {
+                  "item_code": 2.0,
+                  "name": "闊刃劍",
+                  "slot": "weapon"
+                },
+                {
+                  "item_code": 153.0,
+                  "name": "鐵護輪",
+                  "slot": "head"
+                },
+                {
+                  "item_code": 125.0,
+                  "name": "騎士鎧甲",
+                  "slot": "armor"
+                },
+                {
+                  "item_code": 181.0,
+                  "name": "皮靴",
+                  "slot": "foot"
+                },
+                {
+                  "item_code": 227.0,
+                  "slot": "accessory2"
+                }
+              ],
+              "exp": 0.0,
+              "inventory": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "kill_count": 0.0,
+              "level": 1.0,
+              "pending_stat_points": 0.0,
+              "permanent_gains": {
+                "attack_power": 3.0,
+                "defense": 1.0,
+                "magic_attack_power": 1.0,
+                "resist_0": 1.0,
+                "resist_1": 1.0,
+                "resist_2": 1.0,
+                "resist_3": 1.0,
+                "resist_4": 1.0,
+                "speed": 1.0
+              },
+              "weapon_code": 2.0
+            }
+          }
+        },
+        "from_scenario_id": "battle_001_cannon_fodder",
+        "saved_at_unix": 1789704256.0,
+        "scenario_path": "res://content/battles/second_battle.json",
+        "schema": "hsl_campaign_progress_save.v1"
+      },
+      "source_unit": {
+        "action_ready": true,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(13, 10)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "base_move_point": 5.0,
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12,
+          "attack_damagex2": 14,
+          "avoid_hit_ratio": 0,
+          "con": 12.0,
+          "dex": 16.0,
+          "live_attack_damage": 57,
+          "live_defense": 44,
+          "live_hit_ratio": 98,
+          "live_magic_attack": 18,
+          "mind": 8.0,
+          "resist_by_type": {
+            "0": 17,
+            "1": 15,
+            "2": 14,
+            "3": 17,
+            "4": 13
+          },
+          "str": 16.0,
+          "weapon_damage_variance_hi": 0,
+          "weapon_damage_variance_lo": 0,
+          "weapon_magic_attack_type": -1
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native job80/90/94 refresh including source mode, all derived resists and current equipment. NPC level adjustment remains an explicit fixed-template policy.",
+        "coord": "(13, 10)",
+        "defeated": false,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          },
+          {
+            "item_code": 227,
+            "slot": "accessory2"
+          }
+        ],
+        "exp": 0.0,
+        "grid_coord": "(15, 17)",
+        "growth_profile": {
+          "allocation": "manual",
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json",
+          "job_code": 80.0,
+          "model": "native_job_stats_v1",
+          "source": {
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "mode": 65536.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 0,
+        "kill_exp": 30.0,
+        "level": 1.0,
+        "live_speed": 15,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 30,
+        "max_mp": 0,
+        "move_point": 5,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+        "mp": 0,
+        "no_attack": false,
+        "pending_stat_points": 0,
+        "permanent_gains": {
+          "attack_power": 3,
+          "defense": 1,
+          "magic_attack_power": 1,
+          "resist_0": 1,
+          "resist_1": 1,
+          "resist_2": 1,
+          "resist_3": 1,
+          "resist_4": 1,
+          "speed": 1
+        },
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived",
+        "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+        "position_source": {
+          "evef_record_index": 20.0,
+          "object_code": 6.0,
+          "placement_world": [
+            480.0,
+            640.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 0,
+        "status_counters": {
+          "no_magic": 0,
+          "paralysis": 0,
+          "poison": 0
+        },
+        "status_flags": 0,
+        "traversal": {
+          "flying": false,
+          "no_block": false,
+          "size_type": 0.0
+        },
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      }
+    },
+    {
+      "loaded": {
+        "carry": {
+          "claim_limit": "Remake campaign policy; original inter-level persistence is not proven.",
+          "evidence_tier": "provisional",
+          "from_outcome": "victory_escape",
+          "from_scenario_id": "battle_001_cannon_fodder",
+          "loop": {
+            "gold": 0.0
+          },
+          "restore_vitals": true,
+          "schema": "hsl_campaign_carry.v1",
+          "units": {
+            "leonard": {
+              "actor_id": "001",
+              "attributes": {
+                "con": 12.0,
+                "dex": 16.0,
+                "mind": 8.0,
+                "str": 16.0
+              },
+              "equipment": [
+                {
+                  "item_code": 2.0,
+                  "name": "闊刃劍",
+                  "slot": "weapon"
+                },
+                {
+                  "item_code": 153.0,
+                  "name": "鐵護輪",
+                  "slot": "head"
+                },
+                {
+                  "item_code": 125.0,
+                  "name": "騎士鎧甲",
+                  "slot": "armor"
+                },
+                {
+                  "item_code": 181.0,
+                  "name": "皮靴",
+                  "slot": "foot"
+                },
+                {
+                  "item_code": 227.0,
+                  "slot": "accessory2"
+                }
+              ],
+              "exp": 0.0,
+              "inventory": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "kill_count": 0.0,
+              "level": 1.0,
+              "pending_stat_points": 0.0,
+              "permanent_gains": {
+                "attack_power": 3.0,
+                "defense": 1.0,
+                "magic_attack_power": 1.0,
+                "resist_0": 1.0,
+                "resist_1": 1.0,
+                "resist_2": 1.0,
+                "resist_3": 1.0,
+                "resist_4": 1.0,
+                "speed": 1.0
+              },
+              "weapon_code": 2.0
+            }
+          }
+        },
+        "from_scenario_id": "battle_001_cannon_fodder",
+        "saved_at_unix": 1789704256.0,
+        "scenario_path": "res://content/battles/second_battle.json",
+        "schema": "hsl_campaign_progress_save.v1"
+      },
+      "mode": "carry-resume",
+      "restarted": true,
+      "restored_unit": {
+        "action_ready": true,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(10, 35)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "base_move_point": 5.0,
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12,
+          "attack_damagex2": 14,
+          "avoid_hit_ratio": 0,
+          "con": 12,
+          "dex": 16,
+          "live_attack_damage": 57,
+          "live_defense": 44,
+          "live_hit_ratio": 98,
+          "live_magic_attack": 18,
+          "mind": 8,
+          "resist_by_type": {
+            "0": 17,
+            "1": 15,
+            "2": 14,
+            "3": 17,
+            "4": 13
+          },
+          "str": 16,
+          "weapon_damage_variance_hi": 0,
+          "weapon_damage_variance_lo": 0,
+          "weapon_magic_attack_type": -1
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native job80/90/94 refresh including source mode, all derived resists and current equipment. NPC level adjustment remains an explicit fixed-template policy.",
+        "coord": "(10, 35)",
+        "defeated": false,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          },
+          {
+            "item_code": 227.0,
+            "slot": "accessory2"
+          }
+        ],
+        "exp": 0.0,
+        "grid_coord": "(10, 35)",
+        "growth_profile": {
+          "allocation": "manual",
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_job_stats.json",
+          "job_code": 80.0,
+          "model": "native_job_stats_v1",
+          "source": {
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "mode": 65536.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 0.0,
+        "kill_exp": 30.0,
+        "level": 1.0,
+        "live_speed": 15,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 30,
+        "max_mp": 0,
+        "move_point": 5,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+        "mp": 0,
+        "no_attack": false,
+        "pending_stat_points": 0.0,
+        "permanent_gains": {
+          "attack_power": 3,
+          "defense": 1,
+          "magic_attack_power": 1,
+          "resist_0": 1,
+          "resist_1": 1,
+          "resist_2": 1,
+          "resist_3": 1,
+          "resist_4": 1,
+          "speed": 1
+        },
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived+resource-derived",
+        "position_note": "Centered EVEF placement plus explicit STORY052 pre-control displacement",
+        "position_source": {
+          "evef_record_index": 29.0,
+          "story_delta": [
+            0.0,
+            -224.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 0,
+        "status_counters": {
+          "no_magic": 0,
+          "paralysis": 0,
+          "poison": 0
+        },
+        "status_flags": 0,
+        "traversal": {
+          "flying": false,
+          "no_block": false,
+          "size_type": 0.0
+        },
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      },
+      "saves": 1
+    }
+  ],
+  "runs": [
+    {
+      "mode": "carry-prepare",
+      "pid": 49089,
+      "process_exit": 0,
+      "log": "ignored/permanent-items/carry-prepare-close.log",
+      "log_sha256": "264c7c7d183f27091253cc56b257070c62feb8bc1cf124c7098bbb5c4601f8af",
+      "setup": "First battle source001 and two021 actors at turn6 adjacent to escape, declared prior one-point gains in nine fields plus actual use of253. The report withdraws one021, leaving the other. Extra-action227 is supplied. All subsequent item/move/wait/status/F5/F9/resume controls are real; only campaign file selection and save destination use an isolated harness callback, with unchanged production prepare_handoff/save_progress/take_handoff/apply/reload. Resume reads that disk record in a separate process. No user campaign save is touched.",
+      "time_scale": 1.0,
+      "screen": 1
+    },
+    {
+      "mode": "carry-resume",
+      "pid": 60993,
+      "process_exit": 0,
+      "log": "ignored/permanent-items/carry-resume-terminal.log",
+      "log_sha256": "c1a575ff0b09d3d36d0e3362db7493676bf202f8d5d156cb8e28289627898d92",
+      "setup": "First battle source001 and two021 actors at turn6 adjacent to escape, declared prior one-point gains in nine fields plus actual use of253. The report withdraws one021, leaving the other. Extra-action227 is supplied. All subsequent item/move/wait/status/F5/F9/resume controls are real; only campaign file selection and save destination use an isolated harness callback, with unchanged production prepare_handoff/save_progress/take_handoff/apply/reload. Resume reads that disk record in a separate process. No user campaign save is touched.",
+      "time_scale": 1.0,
+      "screen": 0
+    }
+  ],
+  "images": [
+    {
+      "path": "carry-prepare-item-1.png",
+      "sha256": "82d8521032545c840a8c4c945214a357b914b747bfb9c4395d49e4a297737709"
+    },
+    {
+      "path": "carry-prepare-next-battle.png",
+      "sha256": "1572aa54715e94897f5a4b24eae6d63aa386d45ac916720b54a52abf13331657"
+    },
+    {
+      "path": "carry-prepare-second-opening.png",
+      "sha256": "506412c8e23ebe184404802957bc9a0bd04f5060eb4fdc96de432a997edc2376"
+    },
+    {
+      "path": "carry-resume-resume-prompt.png",
+      "sha256": "058f6d38c7c44da3f9fb6fb9288ac2b422e6c1bd5338dba93e16481a5549cc07"
+    },
+    {
+      "path": "carry-resume-stats-leonard.png",
+      "sha256": "5a92614d7a22e04fd00b7b3b6b35d2cd3738c9d442082e760a0bb8dc5a0bafb5"
+    },
+    {
+      "path": "carry-resume-defeat-before-retry.png",
+      "sha256": "964ce5151ca70c852256a8c2b61e3b43f149c2406ce77ec646d4b00b755cf484"
+    },
+    {
+      "path": "carry-resume-retry-entry.png",
+      "sha256": "8474e3262bf283b33281f4ec0c2b936727200ce2a09791a6277f6387cf89ae08"
+    }
+  ],
+  "corrections": [
+    "The first two-unit fixture correctly cleared all enemies when the report withdrew its only021; corrected setup retains a second021.",
+    "Inherited priest movement waited for Tina instead of the current Leonard; corrected the harness owner wait.",
+    "The initial resume run reached load/status/F5/F9, then requested retry outside a terminal and was correctly refused. Final run uses actual Wait actions through defeat and clicks the result-page retry button."
+  ],
+  "limits": [
+    "Campaign prepare/save/read/apply/resume/reload are production code. The harness redirects campaign storage to its isolated file and supplies that record to the unchanged resume dialog; it does not overwrite the user campaign save.",
+    "Previous one-point acquisitions in all nine fields are declared setup; the new attack acquisition is produced by a real owned253 use. Entry values replace rather than stack; fresh-campaign reset is covered separately by the focused test.",
+    "This supplements, and does not relabel, the original16 single-battle routes. First-battle fixture positions/roster/turn and source227 are explicit; second battle runs its actual opening and enemy decisions."
+  ]
+}

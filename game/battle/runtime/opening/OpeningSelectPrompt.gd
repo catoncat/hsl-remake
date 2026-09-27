@@ -1,0 +1,126 @@
+extends RefCounted
+## actSelectInsertEvent prompt for BattleOpeningCoordinator: the choice buttons beside
+## the dialogue board and the splice of the chosen winfail chain into the timeline.
+## The coordinator keeps the readback state (`select_options` / `select_selected`,
+## reported by summary()) and the timeline cursor; this module owns only the prompt
+## controls. Prompt layout and pacing are remake readings.
+## provenance:
+##   rules: static-derived docs/evidence_packets/static_reverse/original_select_insert_event.md
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json; remake-invented (rows beside the dialogue board, shared with the town select)
+##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
+##   timing: n/a
+##   audio: n/a
+
+const UISkin = preload("res://game/battle/scene/BattleUISkin.gd")
+const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
+
+## Remake layout shared with the town select: WINDOW50 rows at the right of the dialogue board.
+const SELECT_CHOICE_ORIGIN := Vector2(380.0, 160.0)
+const SELECT_CHOICE_SIZE := Vector2(232.0, 32.0)
+const SELECT_CHOICE_GAP := 6.0
+
+var coordinator: Node
+var runtime: Node:
+	get:
+		return coordinator.runtime
+var _select_root: Control
+var _select_buttons: Array[Button] = []
+
+
+static func create(opening_coordinator: Node) -> RefCounted:
+	var prompt := new()
+	prompt.coordinator = opening_coordinator
+	return prompt
+
+
+## actSelectInsertEvent,<id>,<serial>,<num>,(<choice message id>,<event code>)*num: the
+## speaker's choice between winfail event chains (STORY900: 選擇一 kicks the soldier and
+## leaves, 選擇二 fights). The prompt lists the choice messages beside the dialogue
+## board; the chosen chain, precompiled by tools/hsl_story_scene.py into
+## opening.select_event_timelines["event_<code>"], is spliced into the timeline right
+## after this token and plays on. Without a compiled chain the choice is recorded only.
+func _show_select_prompt(event: Dictionary) -> void:
+	var args: Array = event.get("args", [])
+	var count := int(str(args[2])) if args.size() > 2 else 0
+	var messages: Dictionary = runtime.message_text_evidence.get("messages", {})
+	var timelines: Dictionary = coordinator.config.get("select_event_timelines", {})
+	var options: Array[Dictionary] = []
+	for k in range(count):
+		var position := 3 + 2 * k
+		if args.size() <= position + 1:
+			break
+		var message_id := str(args[position])
+		var code := str(args[position + 1])
+		options.append({"message_id": message_id, "text": str(messages.get(message_id, message_id)), "event_code": code, "compiled": timelines.has("event_%s" % code)})
+	coordinator.select_options = options
+	if coordinator.select_options.is_empty():
+		coordinator.story_records.append({"kind": "event_select_insert", "source_event_id": str(event.get("id", "")), "args": args.duplicate(), "status": "no_choices"})
+		return
+	coordinator.select_selected = 0
+	var token := str(event.get("actor_token", ""))
+	if token == "" and not args.is_empty():
+		token = str(args[0])
+	var speaker := str(runtime.message_text_evidence.get("speaker_names", {}).get(token, token))
+	runtime.opening_overlay.show_narration(str(event.get("id", "")), "%s：請選擇" % speaker if speaker != "" else "請選擇", speaker == "")
+	_select_root = Control.new()
+	_select_root.name = "StorySelectPrompt"
+	_select_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	runtime.get_node("UI").add_child(_select_root)
+	_select_buttons = []
+	var y := SELECT_CHOICE_ORIGIN.y
+	for index in range(coordinator.select_options.size()):
+		var button := UISkin.button(_select_root, str(coordinator.select_options[index]["text"]), Vector2(SELECT_CHOICE_ORIGIN.x, y), SELECT_CHOICE_SIZE)
+		button.name = "Choice%d" % index
+		button.pressed.connect(choose_select_option.bind(index))
+		_select_buttons.append(button)
+		y += SELECT_CHOICE_SIZE.y + SELECT_CHOICE_GAP
+	_refresh_select_buttons()
+	coordinator.story_records.append({"kind": "event_select_insert", "source_event_id": str(event.get("id", "")), "speaker": speaker, "options": coordinator.select_options.duplicate(true), "status": "prompted"})
+
+
+func _refresh_select_buttons() -> void:
+	for index in range(_select_buttons.size()):
+		_select_buttons[index].modulate = Color(1.0, 0.95, 0.7) if index == coordinator.select_selected else Color(0.85, 0.85, 0.85)
+
+
+func _handle_select_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		match event.keycode:
+			KEY_UP, KEY_W:
+				coordinator.select_selected = posmod(coordinator.select_selected - 1, coordinator.select_options.size())
+				_refresh_select_buttons()
+			KEY_DOWN, KEY_S:
+				coordinator.select_selected = posmod(coordinator.select_selected + 1, coordinator.select_options.size())
+				_refresh_select_buttons()
+			KEY_ENTER, KEY_SPACE, KEY_Z:
+				choose_select_option(coordinator.select_selected)
+	# Mouse clicks reach the buttons themselves (they are not input-handled here).
+
+
+## Resolves the open actSelectInsertEvent prompt: the chosen winfail event chain is
+## spliced in after the select token and the scene plays on from it.
+func choose_select_option(index: int) -> Dictionary:
+	if coordinator.select_options.is_empty() or index < 0 or index >= coordinator.select_options.size():
+		return coordinator.summary()
+	var choice: Dictionary = coordinator.select_options[index]
+	var timelines: Dictionary = coordinator.config.get("select_event_timelines", {})
+	var event_code := str(choice.get("event_code", ""))
+	var chain: Dictionary = timelines.get("event_%s" % event_code, {})
+	var inserted := 0
+	var state_inserted := false
+	if not coordinator.story_mode and event_code.is_valid_int():
+		runtime.apply_loop(WinfailScenarioRules.select_event_status(runtime.play_loop, int(event_code)), "select_event_status")
+		state_inserted = true
+	if not chain.is_empty():
+		inserted = runtime.scene_timeline.insert_after_current(chain.get("events", []))
+	coordinator.story_records.append({"kind": "event_select_choice", "choice": index, "message_id": str(choice.get("message_id", "")), "event_code": event_code, "inserted_events": inserted, "state_status_inserted": state_inserted, "status": "spliced" if inserted > 0 else "no_compiled_chain"})
+	var cleared: Array[Dictionary] = []
+	coordinator.select_options = cleared
+	coordinator.select_selected = 0
+	if _select_root != null:
+		_select_root.queue_free()
+		_select_root = null
+	_select_buttons = []
+	runtime.opening_overlay.clear_message()
+	coordinator.advance("select_choice")
+	return coordinator.summary()

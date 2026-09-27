@@ -1,0 +1,1566 @@
+{
+  "schema": "hsl_learning_tables.v1",
+  "evidence_tier": "static-derived",
+  "evidence": [
+    "docs/evidence_packets/static_reverse/original_growth_lifecycle.md",
+    "docs/evidence_packets/static_reverse/original_ohm_village.md",
+    "docs/evidence_packets/static_reverse/original_campaign_actors.md",
+    "docs/evidence_packets/static_reverse/original_town_job_up.md"
+  ],
+  "id_format": "\"<channel>:<element>:magicCodeNN\": channel magic (MAGIC.TXT, learned at `level`) or special (SPECIAL.TXT, learned when the class tier and the four base attributes are reached); element is the row type symbol (magicEARTH magicWATER magicAIR magicFIRE magicMIND magicOTHER magicOTHER2) and NN is the row code + 1. Display names resolve from RESOURCE.TXT when generated.",
+  "job_format": "tier: the class tier the job holds when learning specials (up-tier jobs reuse the base-job special rows at tier 2／3 and its magic levels; 0 with no special rows = the job learns no special); magic: [{id, level}] in learning order; special: [{id, tier, attributes{str dex mind con}}] in native table order — the first missing eligible row is committed per call.",
+  "jobs": {
+    "80": {
+      "tier": 1,
+      "magic": [],
+      "special": [
+        {
+          "id": "special:magicAIR:magicCode01",
+          "tier": 1,
+          "attributes": {
+            "str": 26,
+            "dex": 20,
+            "mind": 20,
+            "con": 24
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode01",
+          "tier": 2,
+          "attributes": {
+            "str": 40,
+            "dex": 32,
+            "mind": 26,
+            "con": 40
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode01",
+          "tier": 2,
+          "attributes": {
+            "str": 42,
+            "dex": 45,
+            "mind": 40,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode02",
+          "tier": 2,
+          "attributes": {
+            "str": 52,
+            "dex": 46,
+            "mind": 44,
+            "con": 60
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode04",
+          "tier": 3,
+          "attributes": {
+            "str": 58,
+            "dex": 50,
+            "mind": 50,
+            "con": 60
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode05",
+          "tier": 3,
+          "attributes": {
+            "str": 76,
+            "dex": 50,
+            "mind": 64,
+            "con": 70
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode03",
+          "tier": 3,
+          "attributes": {
+            "str": 100,
+            "dex": 60,
+            "mind": 72,
+            "con": 80
+          }
+        }
+      ]
+    },
+    "88": {
+      "tier": 1,
+      "magic": [],
+      "special": [
+        {
+          "id": "special:magicOTHER:magicCode11",
+          "tier": 1,
+          "attributes": {
+            "str": 20,
+            "dex": 20,
+            "mind": 12,
+            "con": 20
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode12",
+          "tier": 1,
+          "attributes": {
+            "str": 28,
+            "dex": 30,
+            "mind": 24,
+            "con": 32
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode13",
+          "tier": 2,
+          "attributes": {
+            "str": 50,
+            "dex": 55,
+            "mind": 28,
+            "con": 45
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode15",
+          "tier": 2,
+          "attributes": {
+            "str": 65,
+            "dex": 62,
+            "mind": 34,
+            "con": 65
+          }
+        }
+      ]
+    },
+    "94": {
+      "tier": 1,
+      "magic": [],
+      "special": [
+        {
+          "id": "special:magicFIRE:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 30,
+            "dex": 24,
+            "mind": 8,
+            "con": 28
+          }
+        },
+        {
+          "id": "special:magicEARTH:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 44,
+            "dex": 28,
+            "mind": 12,
+            "con": 38
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode20",
+          "tier": 2,
+          "attributes": {
+            "str": 57,
+            "dex": 34,
+            "mind": 18,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicEARTH:magicCode03",
+          "tier": 2,
+          "attributes": {
+            "str": 65,
+            "dex": 36,
+            "mind": 20,
+            "con": 67
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode21",
+          "tier": 2,
+          "attributes": {
+            "str": 80,
+            "dex": 40,
+            "mind": 24,
+            "con": 75
+          }
+        }
+      ]
+    },
+    "85": {
+      "tier": 1,
+      "magic": [
+        {
+          "id": "magic:magicWATER:magicCode06",
+          "level": 1
+        },
+        {
+          "id": "magic:magicWATER:magicCode01",
+          "level": 4
+        },
+        {
+          "id": "magic:magicWATER:magicCode05",
+          "level": 6
+        },
+        {
+          "id": "magic:magicEARTH:magicCode06",
+          "level": 9
+        },
+        {
+          "id": "magic:magicWATER:magicCode02",
+          "level": 11
+        },
+        {
+          "id": "magic:magicFIRE:magicCode05",
+          "level": 14
+        },
+        {
+          "id": "magic:magicMIND:magicCode02",
+          "level": 18
+        },
+        {
+          "id": "magic:magicWATER:magicCode07",
+          "level": 18
+        },
+        {
+          "id": "magic:magicMIND:magicCode03",
+          "level": 25
+        },
+        {
+          "id": "magic:magicMIND:magicCode06",
+          "level": 27
+        },
+        {
+          "id": "magic:magicOTHER:magicCode01",
+          "level": 30
+        },
+        {
+          "id": "magic:magicOTHER:magicCode02",
+          "level": 35
+        },
+        {
+          "id": "magic:magicMIND:magicCode07",
+          "level": 39
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicWATER:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 22,
+            "dex": 22,
+            "mind": 26,
+            "con": 16
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode07",
+          "tier": 2,
+          "attributes": {
+            "str": 34,
+            "dex": 32,
+            "mind": 36,
+            "con": 34
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode08",
+          "tier": 2,
+          "attributes": {
+            "str": 40,
+            "dex": 40,
+            "mind": 60,
+            "con": 44
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode03",
+          "tier": 2,
+          "attributes": {
+            "str": 42,
+            "dex": 45,
+            "mind": 72,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicFIRE:magicCode01",
+          "tier": 3,
+          "attributes": {
+            "str": 50,
+            "dex": 52,
+            "mind": 92,
+            "con": 62
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode04",
+          "tier": 3,
+          "attributes": {
+            "str": 55,
+            "dex": 58,
+            "mind": 100,
+            "con": 62
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode02",
+          "tier": 3,
+          "attributes": {
+            "str": 65,
+            "dex": 64,
+            "mind": 110,
+            "con": 70
+          }
+        }
+      ]
+    },
+    "90": {
+      "tier": 0,
+      "magic": [
+        {
+          "id": "magic:magicEARTH:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicFIRE:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicWATER:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicAIR:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicMIND:magicCode01",
+          "level": 7
+        },
+        {
+          "id": "magic:magicWATER:magicCode06",
+          "level": 8
+        },
+        {
+          "id": "magic:magicWATER:magicCode02",
+          "level": 10
+        },
+        {
+          "id": "magic:magicFIRE:magicCode02",
+          "level": 12
+        },
+        {
+          "id": "magic:magicAIR:magicCode02",
+          "level": 13
+        },
+        {
+          "id": "magic:magicEARTH:magicCode02",
+          "level": 14
+        },
+        {
+          "id": "magic:magicEARTH:magicCode05",
+          "level": 23
+        }
+      ],
+      "special": []
+    },
+    "92": {
+      "tier": 1,
+      "magic": [
+        {
+          "id": "magic:magicAIR:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicAIR:magicCode05",
+          "level": 8
+        },
+        {
+          "id": "magic:magicAIR:magicCode02",
+          "level": 12
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicAIR:magicCode05",
+          "tier": 1,
+          "attributes": {
+            "str": 29,
+            "dex": 28,
+            "mind": 22,
+            "con": 24
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode17",
+          "tier": 1,
+          "attributes": {
+            "str": 40,
+            "dex": 32,
+            "mind": 26,
+            "con": 44
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode18",
+          "tier": 2,
+          "attributes": {
+            "str": 48,
+            "dex": 36,
+            "mind": 32,
+            "con": 61
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode19",
+          "tier": 2,
+          "attributes": {
+            "str": 60,
+            "dex": 44,
+            "mind": 42,
+            "con": 74
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode07",
+          "tier": 2,
+          "attributes": {
+            "str": 80,
+            "dex": 48,
+            "mind": 46,
+            "con": 80
+          }
+        }
+      ]
+    },
+    "83": {
+      "tier": 1,
+      "magic": [],
+      "special": [
+        {
+          "id": "special:magicOTHER:magicCode09",
+          "tier": 1,
+          "attributes": {
+            "str": 28,
+            "dex": 24,
+            "mind": 12,
+            "con": 25
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 42,
+            "dex": 40,
+            "mind": 16,
+            "con": 36
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode04",
+          "tier": 2,
+          "attributes": {
+            "str": 52,
+            "dex": 48,
+            "mind": 24,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode03",
+          "tier": 2,
+          "attributes": {
+            "str": 65,
+            "dex": 52,
+            "mind": 29,
+            "con": 60
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode04",
+          "tier": 2,
+          "attributes": {
+            "str": 80,
+            "dex": 55,
+            "mind": 32,
+            "con": 70
+          }
+        }
+      ]
+    },
+    "93": {
+      "tier": 2,
+      "magic": [
+        {
+          "id": "magic:magicAIR:magicCode03",
+          "level": 26
+        },
+        {
+          "id": "magic:magicAIR:magicCode04",
+          "level": 40
+        },
+        {
+          "id": "magic:magicAIR:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicAIR:magicCode05",
+          "level": 8
+        },
+        {
+          "id": "magic:magicAIR:magicCode02",
+          "level": 12
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicAIR:magicCode05",
+          "tier": 1,
+          "attributes": {
+            "str": 29,
+            "dex": 28,
+            "mind": 22,
+            "con": 24
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode17",
+          "tier": 1,
+          "attributes": {
+            "str": 40,
+            "dex": 32,
+            "mind": 26,
+            "con": 44
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode18",
+          "tier": 2,
+          "attributes": {
+            "str": 48,
+            "dex": 36,
+            "mind": 32,
+            "con": 61
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode19",
+          "tier": 2,
+          "attributes": {
+            "str": 60,
+            "dex": 44,
+            "mind": 42,
+            "con": 74
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode07",
+          "tier": 2,
+          "attributes": {
+            "str": 80,
+            "dex": 48,
+            "mind": 46,
+            "con": 80
+          }
+        }
+      ]
+    },
+    "95": {
+      "tier": 2,
+      "magic": [],
+      "special": [
+        {
+          "id": "special:magicFIRE:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 30,
+            "dex": 24,
+            "mind": 8,
+            "con": 28
+          }
+        },
+        {
+          "id": "special:magicEARTH:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 44,
+            "dex": 28,
+            "mind": 12,
+            "con": 38
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode20",
+          "tier": 2,
+          "attributes": {
+            "str": 57,
+            "dex": 34,
+            "mind": 18,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicEARTH:magicCode03",
+          "tier": 2,
+          "attributes": {
+            "str": 65,
+            "dex": 36,
+            "mind": 20,
+            "con": 67
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode21",
+          "tier": 2,
+          "attributes": {
+            "str": 80,
+            "dex": 40,
+            "mind": 24,
+            "con": 75
+          }
+        }
+      ]
+    },
+    "96": {
+      "tier": 0,
+      "magic": [],
+      "special": []
+    },
+    "98": {
+      "tier": 1,
+      "magic": [
+        {
+          "id": "magic:magicEARTH:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicMIND:magicCode01",
+          "level": 5
+        },
+        {
+          "id": "magic:magicEARTH:magicCode02",
+          "level": 12
+        },
+        {
+          "id": "magic:magicAIR:magicCode05",
+          "level": 16
+        },
+        {
+          "id": "magic:magicMIND:magicCode04",
+          "level": 19
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicOTHER:magicCode24",
+          "tier": 1,
+          "attributes": {
+            "str": 30,
+            "dex": 30,
+            "mind": 34,
+            "con": 32
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode25",
+          "tier": 1,
+          "attributes": {
+            "str": 40,
+            "dex": 32,
+            "mind": 40,
+            "con": 38
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode06",
+          "tier": 2,
+          "attributes": {
+            "str": 65,
+            "dex": 36,
+            "mind": 50,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode26",
+          "tier": 2,
+          "attributes": {
+            "str": 75,
+            "dex": 40,
+            "mind": 60,
+            "con": 56
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode27",
+          "tier": 2,
+          "attributes": {
+            "str": 92,
+            "dex": 44,
+            "mind": 70,
+            "con": 68
+          }
+        }
+      ]
+    },
+    "81": {
+      "tier": 2,
+      "magic": [
+        {
+          "id": "magic:magicWATER:magicCode06",
+          "level": 24
+        },
+        {
+          "id": "magic:magicWATER:magicCode07",
+          "level": 31
+        },
+        {
+          "id": "magic:magicOTHER:magicCode01",
+          "level": 34
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicAIR:magicCode01",
+          "tier": 1,
+          "attributes": {
+            "str": 26,
+            "dex": 20,
+            "mind": 20,
+            "con": 24
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode01",
+          "tier": 2,
+          "attributes": {
+            "str": 40,
+            "dex": 32,
+            "mind": 26,
+            "con": 40
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode01",
+          "tier": 2,
+          "attributes": {
+            "str": 42,
+            "dex": 45,
+            "mind": 40,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode02",
+          "tier": 2,
+          "attributes": {
+            "str": 52,
+            "dex": 46,
+            "mind": 44,
+            "con": 60
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode04",
+          "tier": 3,
+          "attributes": {
+            "str": 58,
+            "dex": 50,
+            "mind": 50,
+            "con": 60
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode05",
+          "tier": 3,
+          "attributes": {
+            "str": 76,
+            "dex": 50,
+            "mind": 64,
+            "con": 70
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode03",
+          "tier": 3,
+          "attributes": {
+            "str": 100,
+            "dex": 60,
+            "mind": 72,
+            "con": 80
+          }
+        }
+      ]
+    },
+    "82": {
+      "tier": 3,
+      "magic": [
+        {
+          "id": "magic:magicWATER:magicCode08",
+          "level": 45
+        },
+        {
+          "id": "magic:magicWATER:magicCode06",
+          "level": 24
+        },
+        {
+          "id": "magic:magicWATER:magicCode07",
+          "level": 31
+        },
+        {
+          "id": "magic:magicOTHER:magicCode01",
+          "level": 34
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicAIR:magicCode01",
+          "tier": 1,
+          "attributes": {
+            "str": 26,
+            "dex": 20,
+            "mind": 20,
+            "con": 24
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode01",
+          "tier": 2,
+          "attributes": {
+            "str": 40,
+            "dex": 32,
+            "mind": 26,
+            "con": 40
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode01",
+          "tier": 2,
+          "attributes": {
+            "str": 42,
+            "dex": 45,
+            "mind": 40,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode02",
+          "tier": 2,
+          "attributes": {
+            "str": 52,
+            "dex": 46,
+            "mind": 44,
+            "con": 60
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode04",
+          "tier": 3,
+          "attributes": {
+            "str": 58,
+            "dex": 50,
+            "mind": 50,
+            "con": 60
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode05",
+          "tier": 3,
+          "attributes": {
+            "str": 76,
+            "dex": 50,
+            "mind": 64,
+            "con": 70
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode03",
+          "tier": 3,
+          "attributes": {
+            "str": 100,
+            "dex": 60,
+            "mind": 72,
+            "con": 80
+          }
+        }
+      ]
+    },
+    "84": {
+      "tier": 2,
+      "magic": [],
+      "special": [
+        {
+          "id": "special:magicOTHER:magicCode09",
+          "tier": 1,
+          "attributes": {
+            "str": 28,
+            "dex": 24,
+            "mind": 12,
+            "con": 25
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 42,
+            "dex": 40,
+            "mind": 16,
+            "con": 36
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode04",
+          "tier": 2,
+          "attributes": {
+            "str": 52,
+            "dex": 48,
+            "mind": 24,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode03",
+          "tier": 2,
+          "attributes": {
+            "str": 65,
+            "dex": 52,
+            "mind": 29,
+            "con": 60
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode04",
+          "tier": 2,
+          "attributes": {
+            "str": 80,
+            "dex": 55,
+            "mind": 32,
+            "con": 70
+          }
+        }
+      ]
+    },
+    "86": {
+      "tier": 2,
+      "magic": [
+        {
+          "id": "magic:magicFIRE:magicCode06",
+          "level": 26
+        },
+        {
+          "id": "magic:magicEARTH:magicCode07",
+          "level": 28
+        },
+        {
+          "id": "magic:magicEARTH:magicCode08",
+          "level": 30
+        },
+        {
+          "id": "magic:magicWATER:magicCode08",
+          "level": 32
+        },
+        {
+          "id": "magic:magicWATER:magicCode06",
+          "level": 1
+        },
+        {
+          "id": "magic:magicWATER:magicCode01",
+          "level": 4
+        },
+        {
+          "id": "magic:magicWATER:magicCode05",
+          "level": 6
+        },
+        {
+          "id": "magic:magicEARTH:magicCode06",
+          "level": 9
+        },
+        {
+          "id": "magic:magicWATER:magicCode02",
+          "level": 11
+        },
+        {
+          "id": "magic:magicFIRE:magicCode05",
+          "level": 14
+        },
+        {
+          "id": "magic:magicMIND:magicCode02",
+          "level": 18
+        },
+        {
+          "id": "magic:magicWATER:magicCode07",
+          "level": 18
+        },
+        {
+          "id": "magic:magicMIND:magicCode03",
+          "level": 25
+        },
+        {
+          "id": "magic:magicMIND:magicCode06",
+          "level": 27
+        },
+        {
+          "id": "magic:magicOTHER:magicCode01",
+          "level": 30
+        },
+        {
+          "id": "magic:magicOTHER:magicCode02",
+          "level": 35
+        },
+        {
+          "id": "magic:magicMIND:magicCode07",
+          "level": 39
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicWATER:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 22,
+            "dex": 22,
+            "mind": 26,
+            "con": 16
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode07",
+          "tier": 2,
+          "attributes": {
+            "str": 34,
+            "dex": 32,
+            "mind": 36,
+            "con": 34
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode08",
+          "tier": 2,
+          "attributes": {
+            "str": 40,
+            "dex": 40,
+            "mind": 60,
+            "con": 44
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode03",
+          "tier": 2,
+          "attributes": {
+            "str": 42,
+            "dex": 45,
+            "mind": 72,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicFIRE:magicCode01",
+          "tier": 3,
+          "attributes": {
+            "str": 50,
+            "dex": 52,
+            "mind": 92,
+            "con": 62
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode04",
+          "tier": 3,
+          "attributes": {
+            "str": 55,
+            "dex": 58,
+            "mind": 100,
+            "con": 62
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode02",
+          "tier": 3,
+          "attributes": {
+            "str": 65,
+            "dex": 64,
+            "mind": 110,
+            "con": 70
+          }
+        }
+      ]
+    },
+    "87": {
+      "tier": 3,
+      "magic": [
+        {
+          "id": "magic:magicOTHER:magicCode04",
+          "level": 48
+        },
+        {
+          "id": "magic:magicEARTH:magicCode09",
+          "level": 48
+        },
+        {
+          "id": "magic:magicOTHER:magicCode03",
+          "level": 56
+        },
+        {
+          "id": "magic:magicFIRE:magicCode06",
+          "level": 26
+        },
+        {
+          "id": "magic:magicEARTH:magicCode07",
+          "level": 28
+        },
+        {
+          "id": "magic:magicEARTH:magicCode08",
+          "level": 30
+        },
+        {
+          "id": "magic:magicWATER:magicCode08",
+          "level": 32
+        },
+        {
+          "id": "magic:magicWATER:magicCode06",
+          "level": 1
+        },
+        {
+          "id": "magic:magicWATER:magicCode01",
+          "level": 4
+        },
+        {
+          "id": "magic:magicWATER:magicCode05",
+          "level": 6
+        },
+        {
+          "id": "magic:magicEARTH:magicCode06",
+          "level": 9
+        },
+        {
+          "id": "magic:magicWATER:magicCode02",
+          "level": 11
+        },
+        {
+          "id": "magic:magicFIRE:magicCode05",
+          "level": 14
+        },
+        {
+          "id": "magic:magicMIND:magicCode02",
+          "level": 18
+        },
+        {
+          "id": "magic:magicWATER:magicCode07",
+          "level": 18
+        },
+        {
+          "id": "magic:magicMIND:magicCode03",
+          "level": 25
+        },
+        {
+          "id": "magic:magicMIND:magicCode06",
+          "level": 27
+        },
+        {
+          "id": "magic:magicOTHER:magicCode01",
+          "level": 30
+        },
+        {
+          "id": "magic:magicOTHER:magicCode02",
+          "level": 35
+        },
+        {
+          "id": "magic:magicMIND:magicCode07",
+          "level": 39
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicWATER:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 22,
+            "dex": 22,
+            "mind": 26,
+            "con": 16
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode07",
+          "tier": 2,
+          "attributes": {
+            "str": 34,
+            "dex": 32,
+            "mind": 36,
+            "con": 34
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode08",
+          "tier": 2,
+          "attributes": {
+            "str": 40,
+            "dex": 40,
+            "mind": 60,
+            "con": 44
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode03",
+          "tier": 2,
+          "attributes": {
+            "str": 42,
+            "dex": 45,
+            "mind": 72,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicFIRE:magicCode01",
+          "tier": 3,
+          "attributes": {
+            "str": 50,
+            "dex": 52,
+            "mind": 92,
+            "con": 62
+          }
+        },
+        {
+          "id": "special:magicWATER:magicCode04",
+          "tier": 3,
+          "attributes": {
+            "str": 55,
+            "dex": 58,
+            "mind": 100,
+            "con": 62
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode02",
+          "tier": 3,
+          "attributes": {
+            "str": 65,
+            "dex": 64,
+            "mind": 110,
+            "con": 70
+          }
+        }
+      ]
+    },
+    "89": {
+      "tier": 2,
+      "magic": [],
+      "special": [
+        {
+          "id": "special:magicOTHER:magicCode11",
+          "tier": 1,
+          "attributes": {
+            "str": 20,
+            "dex": 20,
+            "mind": 12,
+            "con": 20
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode12",
+          "tier": 1,
+          "attributes": {
+            "str": 28,
+            "dex": 30,
+            "mind": 24,
+            "con": 32
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode13",
+          "tier": 2,
+          "attributes": {
+            "str": 50,
+            "dex": 55,
+            "mind": 28,
+            "con": 45
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode15",
+          "tier": 2,
+          "attributes": {
+            "str": 65,
+            "dex": 62,
+            "mind": 34,
+            "con": 65
+          }
+        }
+      ]
+    },
+    "91": {
+      "tier": 0,
+      "magic": [
+        {
+          "id": "magic:magicFIRE:magicCode03",
+          "level": 25
+        },
+        {
+          "id": "magic:magicAIR:magicCode03",
+          "level": 25
+        },
+        {
+          "id": "magic:magicWATER:magicCode03",
+          "level": 27
+        },
+        {
+          "id": "magic:magicWATER:magicCode07",
+          "level": 27
+        },
+        {
+          "id": "magic:magicEARTH:magicCode03",
+          "level": 30
+        },
+        {
+          "id": "magic:magicFIRE:magicCode04",
+          "level": 39
+        },
+        {
+          "id": "magic:magicWATER:magicCode04",
+          "level": 40
+        },
+        {
+          "id": "magic:magicEARTH:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicFIRE:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicWATER:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicAIR:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicMIND:magicCode01",
+          "level": 7
+        },
+        {
+          "id": "magic:magicWATER:magicCode06",
+          "level": 8
+        },
+        {
+          "id": "magic:magicWATER:magicCode02",
+          "level": 10
+        },
+        {
+          "id": "magic:magicFIRE:magicCode02",
+          "level": 12
+        },
+        {
+          "id": "magic:magicAIR:magicCode02",
+          "level": 13
+        },
+        {
+          "id": "magic:magicEARTH:magicCode02",
+          "level": 14
+        },
+        {
+          "id": "magic:magicEARTH:magicCode05",
+          "level": 23
+        }
+      ],
+      "special": []
+    },
+    "97": {
+      "tier": 2,
+      "magic": [],
+      "special": [
+        {
+          "id": "special:magicOTHER:magicCode22",
+          "tier": 2,
+          "attributes": {
+            "str": 1,
+            "dex": 1,
+            "mind": 1,
+            "con": 1
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode23",
+          "tier": 2,
+          "attributes": {
+            "str": 80,
+            "dex": 40,
+            "mind": 28,
+            "con": 45
+          }
+        }
+      ]
+    },
+    "99": {
+      "tier": 2,
+      "magic": [
+        {
+          "id": "magic:magicEARTH:magicCode05",
+          "level": 26
+        },
+        {
+          "id": "magic:magicMIND:magicCode02",
+          "level": 27
+        },
+        {
+          "id": "magic:magicEARTH:magicCode03",
+          "level": 28
+        },
+        {
+          "id": "magic:magicMIND:magicCode03",
+          "level": 30
+        },
+        {
+          "id": "magic:magicEARTH:magicCode04",
+          "level": 37
+        },
+        {
+          "id": "magic:magicMIND:magicCode05",
+          "level": 42
+        },
+        {
+          "id": "magic:magicEARTH:magicCode01",
+          "level": 1
+        },
+        {
+          "id": "magic:magicMIND:magicCode01",
+          "level": 5
+        },
+        {
+          "id": "magic:magicEARTH:magicCode02",
+          "level": 12
+        },
+        {
+          "id": "magic:magicAIR:magicCode05",
+          "level": 16
+        },
+        {
+          "id": "magic:magicMIND:magicCode04",
+          "level": 19
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicOTHER:magicCode24",
+          "tier": 1,
+          "attributes": {
+            "str": 30,
+            "dex": 30,
+            "mind": 34,
+            "con": 32
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode25",
+          "tier": 1,
+          "attributes": {
+            "str": 40,
+            "dex": 32,
+            "mind": 40,
+            "con": 38
+          }
+        },
+        {
+          "id": "special:magicMIND:magicCode06",
+          "tier": 2,
+          "attributes": {
+            "str": 65,
+            "dex": 36,
+            "mind": 50,
+            "con": 50
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode26",
+          "tier": 2,
+          "attributes": {
+            "str": 75,
+            "dex": 40,
+            "mind": 60,
+            "con": 56
+          }
+        },
+        {
+          "id": "special:magicOTHER:magicCode27",
+          "tier": 2,
+          "attributes": {
+            "str": 92,
+            "dex": 44,
+            "mind": 70,
+            "con": 68
+          }
+        }
+      ]
+    },
+    "100": {
+      "tier": 1,
+      "magic": [
+        {
+          "id": "magic:magicAIR:magicCode01",
+          "level": 5
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicAIR:magicCode01",
+          "tier": 1,
+          "attributes": {
+            "str": 20,
+            "dex": 22,
+            "mind": 14,
+            "con": 18
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode02",
+          "tier": 1,
+          "attributes": {
+            "str": 30,
+            "dex": 30,
+            "mind": 20,
+            "con": 26
+          }
+        },
+        {
+          "id": "special:magicAIR:magicCode03",
+          "tier": 2,
+          "attributes": {
+            "str": 44,
+            "dex": 42,
+            "mind": 30,
+            "con": 40
+          }
+        }
+      ],
+      "evidence_tier": "authored"
+    },
+    "101": {
+      "tier": 1,
+      "magic": [
+        {
+          "id": "magic:magicFIRE:authoredDragonBreath",
+          "level": 3
+        }
+      ],
+      "special": [
+        {
+          "id": "special:magicFIRE:authoredDragonFlame",
+          "tier": 1,
+          "attributes": {
+            "str": 20,
+            "dex": 22,
+            "mind": 14,
+            "con": 18
+          }
+        }
+      ],
+      "evidence_tier": "authored"
+    }
+  }
+}

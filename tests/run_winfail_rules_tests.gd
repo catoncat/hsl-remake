@@ -1,0 +1,1125 @@
+extends "res://tests/support/TestSuite.gd"
+
+## Pure-dictionary coverage for WinfailScenarioRules, the data-driven winfail
+## interpreter: (1) the WINFAIL053 state sequence against golden values recorded
+## from the retired hand-written level-53 module, (2) the live level-52 scenario
+## through PlayLoop.create against the retired level-52 module's golden values,
+## (3) failure paths and edges
+## (deleted statuses, de-duplication, unknown tokens, empty/story-only seeds,
+## AND-chains, HP ratio, enemy-total wins, recorded-only actions).
+## No PlayLoop mutation, no adapter dispatch.
+
+const Winfail = preload("res://game/sim/WinfailScenarioRules.gd")
+const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
+const PlayLoop = preload("res://game/battle/scene/BattlePlayLoop.gd")
+const Adapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
+const BattleScenario = preload("res://game/battle/runtime/BattleScenario.gd")
+const ConditionalParty = preload("res://game/sim/ConditionalPartyRules.gd")
+const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const GlobalRandom = preload("res://game/sim/GlobalRandomStream.gd")
+
+
+func _init() -> void:
+	tag = "WINFAIL_RULES_TESTS"
+	report_checks = false
+
+
+func _unit(id: String, class_id: String, coord: Vector2i, hp: int = 10, role: String = "") -> Dictionary:
+	var unit := {"id": id, "class_id": class_id, "coord": coord, "hp": hp, "max_hp": 10, "defeated": hp <= 0}
+	if role != "":
+		unit["battle_actor_role"] = role
+	return unit
+
+
+func _kill(loop: Dictionary, unit_id: String) -> void:
+	for unit in loop["units"]:
+		if str(unit["id"]) == unit_id:
+			unit["hp"] = 0
+			unit["defeated"] = true
+
+
+func _projected(messages: Array) -> Array:
+	var out: Array = []
+	for message in messages:
+		out.append([str(message.get("speaker_id", "")), str(message.get("message_id", ""))])
+	return out
+
+
+func _command(name: String, args: Array = []) -> Dictionary:
+	var strings: Array = []
+	for arg in args:
+		strings.append(str(arg))
+	return {"primary": name, "chain": [{"name": name, "args": strings}]}
+
+
+func _section(name: String, code: int, actions: Array, message: String = "") -> Dictionary:
+	return {"index": 0, "name": name, "codes": [str(code)], "messages": [message] if message != "" else [], "actions": actions}
+
+
+func _seed(sections: Array, story_actions: Array, script_objects: Array = []) -> Dictionary:
+	return {
+		"schema": "hsl_battle_seed.v1",
+		"level": 999,
+		"evidence_tier": "test-fixture",
+		"script_objects": script_objects,
+		"scripts": {
+			"story": {"sections": [{"index": 0, "name": "story", "codes": [], "messages": [], "actions": story_actions}]},
+			"winfail": {"sections": sections},
+		},
+	}
+
+
+func run() -> void:
+	_third_battle_sequence()
+	_second_battle_sequence()
+	_encounter_fail_resolves_player_name_token()
+	_level37_token_set()
+	_level_three_mode_and_undead_transition()
+	_level_twelve_opcode_actions()
+	_lane_k_token_actions()
+	_script_dead_message_words()
+	_random_position_family()
+	_select_event_status_branches()
+	_exec_mode_and_system_arrival()
+	_failure_paths_and_edges()
+	_round_and_x_range_tokens()
+	_adapter_dispatch()
+
+
+func _select_event_status_branches() -> void:
+	## The formal battle choice inserts exactly the selected unconditional event
+	## status and marks its fired presentation as inlined for the open prompt.
+	var sections := [
+		_section("event", 2, [_command("actTRUE"), _command("actSelectInsertEvent", ["SID_PLAYER0", 1, 2, 1810, 3, 1811, 4])]),
+		_section("event", 3, [_command("actTRUE"), _command("actMessage", ["SID_PLAYER0", 1, 1812])]),
+		_section("event", 4, [_command("actTRUE"), _command("actMessage", ["SID_PLAYER0", 1, 1813])]),
+	]
+	for selected_code in [3, 4]:
+		var seed := _seed(sections, [_command("actInsertEventStatus", [2])])
+		var scenario := {"scenario_rules": {}, "opening": {"actor_bindings": {"SID_PLAYER0/1": {"unit_id": "p0", "actor_id": "001"}}}}
+		var battle := {"player_unit_id": "p0", "turn": 1, "units": [_unit("p0", "Player001", Vector2i(1, 1), 10, "player_controlled")]}
+		var loop: Dictionary = Winfail.initialize_script_state(battle, scenario, seed)
+		loop = Winfail.run_event_hooks(loop)
+		loop = Winfail.select_event_status(loop, selected_code)
+		_assert_eq(loop.get("event_statuses", []), [], "selected event %d is consumed after its actTRUE chain" % selected_code)
+		_assert_eq(loop.get("winfail_runtime", {}).get("select_requests", []).size(), 1, "selected event %d records one request" % selected_code)
+		var fired: Array = loop.get("winfail_runtime", {}).get("fired", [])
+		_assert_eq(fired.size(), 2, "selected event %d fires event 2 then selected branch" % selected_code)
+		_assert_eq(str(fired[1].get("key", "")), "event_%d" % selected_code, "selected event %d is the inserted branch" % selected_code)
+		_assert_true(bool(fired[1].get("presentation_inlined", false)), "selected event %d presentation is inlined" % selected_code)
+
+
+## ---------------------------------------------------------------------------
+## (1) level 53: one state sequence through WINFAIL053. The expected values are
+## the golden outputs recorded from the retired hand-written level module
+## (ThirdBattleScenarioRules, presentation-line 2026-09-18) at the moment the
+## interpreter replaced it; the board labels 695/696 and result ids never change
+## along the sequence, the deficits/statuses/messages do.
+
+const BOARD_WIN_53 := [{"actor_token": "SID_PLAYER1", "key": "win", "message_id": "695", "speaker_id": "1"}]
+const BOARD_FAIL_53 := [{"actor_token": "SID_PLAYER1", "key": "fail", "message_id": "696", "speaker_id": "1"}]
+
+
+func _expect_53(wf: Dictionary, label: String, deficits: Dictionary, victory: Dictionary, event_statuses: Array, win_statuses: Array, spawned: int, messages: Array = [], compare_board: bool = true) -> void:
+	_assert_eq(Winfail.reinforcement_deficits(wf), deficits, label + ": reinforcement_deficits")
+	_assert_eq(Winfail.victory_state(wf), victory, label + ": victory_state")
+	_assert_eq(wf.get("event_statuses", []), event_statuses, label + ": event_statuses")
+	_assert_eq(wf.get("win_statuses", []), win_statuses, label + ": win_statuses")
+	if compare_board:
+		var board: Dictionary = Winfail.objective_board(wf)
+		_assert_eq(board.get("win", []), BOARD_WIN_53, label + ": objective_board win")
+		_assert_eq(board.get("fail", []), BOARD_FAIL_53, label + ": objective_board fail")
+		_assert_eq(board.get("event", []), [], label + ": no event labels in winfail053")
+	_assert_eq(Winfail.story_dialogue_messages(wf), messages, label + ": story_dialogue_messages")
+	_assert_eq(Winfail.spawned_reinforcement_count(wf, "Enemy023"), spawned, label + ": spawned count")
+	_assert_eq(Winfail.result_message_id(wf, BattleOutcome.VICTORY_ESCAPE), "695", label + ": result_message_id victory_escape")
+	_assert_eq(Winfail.result_message_id(wf, BattleOutcome.DEFEAT_FALLEN), "696", label + ": result_message_id defeat_leonard")
+
+
+func _hooks_53(wf: Dictionary, turn: int) -> Dictionary:
+	wf["turn"] = turn
+	return Winfail.run_event_hooks(wf)
+
+
+func _third_battle_sequence() -> void:
+	var seed: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/chapter01/battle053_seed.json"))
+	var rules: Dictionary = Winfail.rules_from_seed(seed)
+	_assert_eq(rules.get("schema", ""), "hsl_winfail_script_rules.v1", "53 rules schema")
+	_assert_eq(int(rules.get("source_level", 0)), 53, "53 source level")
+	_assert_true(bool(rules.get("fully_supported", false)), "winfail053 uses only supported tokens: " + str(rules.get("unsupported_tokens", [])))
+	_assert_eq((rules["statuses"]["win"] as Array).size(), 1, "one win status")
+	_assert_eq((rules["statuses"]["fail"] as Array).size(), 1, "one fail status")
+	_assert_eq((rules["statuses"]["event"] as Array).size(), 3, "three event statuses")
+	_assert_eq(rules["initial_statuses"], {"win": [0], "fail": [0], "event": [0, 1, 2]}, "STORY053 arms win 0 / fail 0 / events 0-2")
+	_assert_eq(rules["initial_status_source"], "story_script", "initial statuses come from the story script")
+	_assert_eq(rules["dead_messages"], {"SID_PLAYER1": "694"}, "STORY053 dead message 694")
+	var win: Dictionary = rules["statuses"]["win"][0]
+	_assert_eq(win["result_message"], {"actor_token": "SID_PLAYER1", "message_id": "695"}, "win board label 695")
+	_assert_eq((win["conditions"] as Array).size(), 1, "win has one condition")
+	_assert_eq(win["conditions"][0]["name"], "actCheckPlayerArrivePos", "win condition is the arrival check")
+	_assert_eq((win["actions"] as Array).size(), 3, "win has three result actions")
+	var event2: Dictionary = rules["statuses"]["event"][2]
+	_assert_eq(event2["inserts"][0]["class_id"], "Enemy023", "insert class joined through script_objects obj_Data7")
+	_assert_eq(event2["inserts"][0]["walk_cell"], [1, 30], "event2 lands at (32,960) = cell (1,30)")
+	_assert_eq(rules["statuses"]["event"][0]["inserts"][0]["adjust_level"], [0, 0], "actSetPrevInsertObjectAdjustLevel is folded into the insert record")
+	_assert_eq(Winfail.insert_walk_cells(rules), [Vector2i(5, 18), Vector2i(1, 30)], "landing cells (160,576)->(5,18) and (32,960)->(1,30), de-duplicated")
+
+	var scenario := {"scenario_rules": {"reinforcement_class_id": "Enemy023"}, "opening": {"speaker_resource_ids": {"SID_PLAYER1": "1", "SID_ENEMY023": "376"}}}
+	var battle := {
+		"player_unit_id": "tina", "turn": 1, "units": [
+			_unit("tina", "Player029", Vector2i(20, 23)),
+			_unit("guard023_1", "Enemy023", Vector2i(29, 24)),
+			_unit("guard023_2", "Enemy023", Vector2i(27, 23)),
+			_unit("gate023_1", "Enemy023", Vector2i(30, 36)),
+		],
+	}
+	var wf: Dictionary = Winfail.initialize_script_state(battle, scenario, seed)
+	_assert_eq(wf.get("next_level_event", []), [1, 1], "next level event [1,1]")
+	_assert_eq(wf.get("objective_phase", ""), "escape", "escape objective from the start")
+	_assert_eq(wf.get("escape_zone_cells", []), [[30, 35], [31, 35], [30, 36], [31, 36]], "gate cells")
+	_assert_eq(wf.get("fail_statuses", []), [0], "fail statuses")
+	_assert_eq(wf["winfail_runtime"]["initial_class_unit_ids"], {"Enemy023": ["guard023_1", "guard023_2", "gate023_1"]}, "initial soldiers remembered per class")
+	_assert_eq(wf["winfail_runtime"]["token_resolution"].get("SID_PLAYER1", {}), {"source": "player_unit_id_default", "unit_ids": ["tina"]}, "SID_PLAYER1 falls back to the controlled unit and says so")
+	_assert_eq(wf["winfail_runtime"]["token_resolution"].get("SID_ENEMY023", {}).get("source", ""), "class", "SID_ENEMY023 resolves by class")
+	_expect_53(wf, "init", {}, {}, [0, 1, 2], [0], 0)
+
+	wf = _hooks_53(wf, 4)
+	_expect_53(wf, "round 4", {}, {}, [0, 1, 2], [0], 0)
+	wf = _hooks_53(wf, 5)
+	_assert_eq(wf["winfail_runtime"]["spawn_target"], {"Enemy023": 1}, "spawn target raised by the fired insert")
+	_assert_true((wf.get("event_log", []) as Array).has("event_0"), "event_0 logged")
+	_expect_53(wf, "round 5", {"Enemy023": 1}, {}, [1, 2], [0], 0)
+	wf = _hooks_53(wf, 5)
+	_expect_53(wf, "round 5 re-run does not double", {"Enemy023": 1}, {}, [1, 2], [0], 0)
+	wf["units"].append(_unit("Enemy023_reinforcement_4", "Enemy023", Vector2i(5, 18)))
+	_expect_53(wf, "recruit satisfies round 5", {}, {}, [1, 2], [0], 1)
+	wf = _hooks_53(wf, 7)
+	_expect_53(wf, "round 7", {"Enemy023": 1}, {}, [2], [0], 1)
+	wf["units"].append(_unit("Enemy023_reinforcement_5", "Enemy023", Vector2i(1, 30)))
+	_expect_53(wf, "second recruit", {}, {}, [2], [0], 2)
+	for id in ["guard023_1", "guard023_2", "gate023_1"]:
+		_kill(wf, id)
+	wf = _hooks_53(wf, 7)
+	_expect_53(wf, "two soldiers left: actCheckEnemyNumber 2 is a strict compare and stays quiet", {}, {}, [2], [0], 2)
+	_kill(wf, "Enemy023_reinforcement_5")
+	wf = _hooks_53(wf, 7)
+	_expect_53(wf, "count event fires (one soldier left)", {"Enemy023": 1}, {}, [2], [0], 2)
+	wf["units"].append(_unit("Enemy023_reinforcement_6", "Enemy023", Vector2i(1, 30)))
+	_expect_53(wf, "third recruit", {}, {}, [2], [0], 3)
+	_kill(wf, "Enemy023_reinforcement_4")
+	wf["event_statuses"] = []
+	wf = _hooks_53(wf, 7)
+	_expect_53(wf, "disarmed event2 stays silent", {}, {}, [], [0], 3)
+	wf["event_statuses"] = [2]
+	wf = _hooks_53(wf, 7)
+	_expect_53(wf, "re-armed event2 repeats", {"Enemy023": 1}, {}, [2], [0], 3)
+	wf["units"].append(_unit("Enemy023_reinforcement_7", "Enemy023", Vector2i(1, 30)))
+	_expect_53(wf, "fourth recruit", {}, {}, [2], [0], 4)
+
+	wf["units"][0]["coord"] = Vector2i(31, 36)
+	_expect_53(wf, "arrival: 緹娜 on a gate cell escapes", {}, BattleOutcome.VICTORY_ESCAPE, [2], [0], 4)
+	wf["win_statuses"] = []
+	_expect_53(wf, "arrival needs win status 0", {}, {}, [2], [], 4, [], false)
+	_assert_eq(Winfail.objective_board(wf)["win"], [], "a disarmed win status leaves the board (the retired level module kept the label; the interpreter lists armed statuses only)")
+	wf["win_statuses"] = [0]
+	wf["battle_outcome"] = BattleOutcome.VICTORY_ESCAPE
+	var win_message := [{"key": Winfail.TERMINAL_DIALOGUE_KEY, "speaker_id": "1", "message_id": "704", "actor_token": "SID_PLAYER1"}]
+	_expect_53(wf, "victory messages", {}, BattleOutcome.VICTORY_ESCAPE, [2], [0], 4, win_message)
+	var committed: Dictionary = Winfail.commit_outcome(wf)
+	_assert_eq(committed["winfail_runtime"]["resolved"], {"key": "win_0", "kind": "win", "code": 0, "outcome": BattleOutcome.VICTORY_ESCAPE}, "commit records the deciding status")
+	_assert_eq((committed["winfail_runtime"]["deleted_player_codes"] as Array).size(), 1, "actDeletePlayerCode recorded on commit")
+	_assert_eq(committed.get("next_level_event", []), [1, 1], "next level event from the fired win")
+	_assert_eq(Winfail.story_dialogue_messages(committed), win_message, "committed win message is not duplicated")
+	_assert_eq(Winfail.commit_outcome(committed)["winfail_runtime"]["fired"], committed["winfail_runtime"]["fired"], "commit is idempotent")
+	wf["units"][0]["coord"] = Vector2i(10, 10)
+	_kill(wf, "tina")
+	wf["battle_outcome"] = BattleOutcome.DEFEAT_FALLEN
+	# 694 is 蒂娜's death word (STORY053 actSetDeadMessage → unit dead_message): spoken at death by
+	# BattleAftermath, not repeated as a result-page line (the original has no such reader).
+	_expect_53(wf, "defeat: the controlled player falling is the shared defeat key", {}, BattleOutcome.DEFEAT_FALLEN, [2], [0], 4, [])
+	_assert_eq(Winfail.story_dialogue_messages({}), [], "no rules: no messages")
+	_assert_eq(Winfail.objective_board({}), {"win": [], "fail": [], "event": []}, "no rules: empty board")
+
+
+## ---------------------------------------------------------------------------
+## (2) level 52 through the live scenario (PlayLoop.create + adapter). Expected
+## values are the golden outputs of the retired SecondBattleScenarioRules where
+## the two agreed; the documented divergence (event1 fires once) is asserted as
+## the interpreter's reading.
+
+func _second_battle_sequence() -> void:
+	var scenario: Dictionary = BattleScenario.load_file("res://content/battles/battle_052.json")
+	var seed: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/chapter01/battle052_seed.json"))
+	_assert_eq(str(scenario.get("rule_adapter", "")), "winfail", "level 52 declares the interpreter")
+	var wf := PlayLoop.create([], "", scenario, 3)
+	_assert_eq(bool(wf.get("scenario_ok", false)), true, "second battle loop valid under the interpreter")
+	_assert_eq(str(wf.get("rule_adapter", "")), "winfail", "PlayLoop.create dispatches through the winfail adapter")
+	var rules: Dictionary = wf.get("winfail_script_rules", {})
+	_assert_eq(rules.get("unsupported_tokens", []), [], "winfail052 is fully supported (actSetUseShapeWait is a recorded presentation token)")
+	_assert_eq(rules.get("initial_statuses", {}), {"win": [0], "fail": [0], "event": [0, 1]}, "STORY052 arms win 0 / fail 0 / events 0-1")
+	_assert_eq(Winfail.insert_walk_cells(rules), [Vector2i(7, 38), Vector2i(12, 38), Vector2i(4, 30), Vector2i(14, 30)], "event1 landing cells (227,1228)/(403,1228)/(134,987)/(463,987) by integer division")
+	_assert_eq(wf.get("next_level_event", []), [58, 58], "next level event [58,58]")
+	_assert_eq(wf.get("objective_phase", ""), "defeat_boss", "actCheckPlayer on the boss is a defeat_boss objective")
+	_assert_eq(wf["winfail_runtime"]["token_resolution"].get("SID_ENEMY025", {}), {"source": "binding", "unit_ids": ["emperor025"]}, "opening actor_bindings resolve SID_ENEMY025")
+	_assert_eq(wf["winfail_runtime"]["token_resolution"].get("SID_PLAYER0", {}), {"source": "binding", "unit_ids": ["leonard"]}, "opening actor_bindings resolve SID_PLAYER0")
+	_assert_eq(wf["winfail_runtime"]["unresolved_tokens"], [], "every WINFAIL052 token resolves")
+	_assert_eq(Winfail.objective_board(wf)["win"], [{"key": "win", "speaker_id": "382", "message_id": "122", "actor_token": "SID_ENEMY025"}], "win board label: 法蘭克 + 122 (死亡)")
+	_assert_eq(Winfail.objective_board(wf)["fail"], [{"key": "fail", "speaker_id": "0", "message_id": "122", "actor_token": "SID_PLAYER0"}], "fail board label: 雷歐納德 + 122")
+	_assert_eq(Winfail.story_dialogue_messages(wf), [], "no dialogue before events or outcome")
+	_assert_eq(Winfail.victory_state(wf), {}, "fresh battle ongoing")
+	_assert_eq(Winfail.reinforcement_deficits(wf), {}, "fresh deficits")
+	_assert_eq(Winfail.rules_from_seed(seed).get("initial_statuses", {}), rules.get("initial_statuses", {}), "the loop carries the seed-derived rules")
+
+	var attack := {"attacker_id": "leonard", "defender_id": "emperor025"}
+	var wf_hit := wf.duplicate(true)
+	wf_hit["last_attack"] = attack
+	wf_hit = Winfail.run_event_hooks(wf_hit, true)
+	_assert_eq(wf_hit.get("event_log", []), ["event_0"], "Winfail logs event_0 (the retired module called it boss_engaged)")
+	_assert_eq(_projected(Winfail.story_dialogue_messages(wf_hit)), [["382", "392"], ["0", "393"]], "event0 lines 392/393 in order: the emperor, then Leonard")
+	_assert_eq(Winfail.story_dialogue_messages(wf_hit)[0]["key"], "event_0", "event dialogue keyed by status")
+	var wf_again := Winfail.run_event_hooks(wf_hit, true)
+	_assert_eq(_projected(Winfail.story_dialogue_messages(wf_again)), [["382", "392"], ["0", "393"]], "event0 fires once")
+	_assert_eq(wf_again.get("event_statuses", []), [1], "event0 consumed")
+	var round_only := wf.duplicate(true)
+	round_only["last_attack"] = attack
+	round_only = Winfail.run_event_hooks(round_only)
+	_assert_eq(round_only.get("event_statuses", []), [0, 1], "a stale last_attack does not fire the attacked event at a round transition")
+	var other := wf.duplicate(true)
+	other["last_attack"] = {"attacker_id": "ally023_1", "defender_id": "emperor025"}
+	other = Winfail.run_event_hooks(other, true)
+	_assert_eq(Winfail.story_dialogue_messages(other), [], "ally attacks do not trigger event0")
+
+	var wf_won := wf_hit.duplicate(true)
+	_kill(wf_won, "emperor025")
+	_assert_eq(Winfail.victory_state(wf_won), BattleOutcome.VICTORY_BOSS, "boss down wins: actCheckPlayer on an enemy token maps to victory_boss")
+	wf_won["battle_outcome"] = BattleOutcome.VICTORY_BOSS
+	_assert_eq(_projected(Winfail.story_dialogue_messages(wf_won)), [["382", "392"], ["0", "393"], ["0", "378"]], "victory appends 378 after the event lines")
+	_assert_eq(Winfail.result_message_id(wf_won, BattleOutcome.VICTORY_BOSS), "122", "win board label")
+	var wf_lost := wf.duplicate(true)
+	_kill(wf_lost, "leonard")
+	_kill(wf_lost, "emperor025")
+	_assert_eq(Winfail.victory_state(wf_lost), BattleOutcome.DEFEAT_FALLEN, "player defeat takes precedence over the boss")
+	wf_lost["battle_outcome"] = BattleOutcome.DEFEAT_FALLEN
+	# 394 (STORY052 actSetDeadMessage for 雷歐納德) lives on the unit as dead_message and is spoken
+	# once at death; the defeat result page adds no line of its own.
+	_assert_eq(_projected(Winfail.story_dialogue_messages(wf_lost)), [], "defeat appends no result-page line (394 is the death word, spoken at death)")
+	var unknown := wf.duplicate(true)
+	unknown["event_log"] = ["round_4_warning"]
+	_assert_eq(Winfail.story_dialogue_messages(unknown), [], "first-battle events do not leak into level 52")
+
+	var pressure := wf.duplicate(true)
+	var alive_021 := 0
+	for unit in pressure["units"]:
+		if str(unit.get("class_id", "")) == "Enemy021" and int(unit.get("hp", 0)) > 0:
+			alive_021 += 1
+	var killed := 0
+	for unit in pressure["units"]:
+		if str(unit.get("class_id", "")) == "Enemy021" and alive_021 - killed > 1:
+			_kill(pressure, str(unit["id"]))
+			killed += 1
+	pressure["turn"] = 2
+	pressure = Winfail.run_event_hooks(pressure)
+	_assert_eq(Winfail.reinforcement_deficits(pressure), {"Enemy021": 4}, "fewer than two 021 alive (strict compare): four inserts owed")
+	_assert_eq(pressure.get("event_statuses", []), [0], "event1 (no self re-arm) is consumed: one wave, unlike the retired module's continuous pressure")
+	_assert_eq((pressure["winfail_runtime"]["inserts"] as Array).size(), 4, "four insert records with walk cells")
+	_assert_eq(pressure["winfail_runtime"]["inserts"][2]["walk_cell"], [4, 30], "third insert walks to (134,987) = cell (4,30)")
+	for index in range(4):
+		pressure["units"].append(_unit("Enemy021_reinforcement_%d" % index, "Enemy021", Vector2i(7, 38)))
+	_assert_eq(Winfail.reinforcement_deficits(pressure), {}, "the wave is satisfied by four spawned 021 units")
+	for unit in pressure["units"]:
+		if str(unit.get("class_id", "")) == "Enemy021":
+			_kill(pressure, str(unit["id"]))
+	pressure = Winfail.run_event_hooks(pressure)
+	_assert_eq(Winfail.reinforcement_deficits(pressure), {}, "with event1 consumed, wiping the 021 class asks for nothing more")
+
+
+func _encounter_fail_resolves_player_name_token() -> void:
+	# Every WINFAIL5NN fail section is `actCheckPlayer 1 SID_雷歐納德` (EXTRAS.H slot 0).
+	# The encounter assembler binds the fielded EVEF 有才產生 slots to their party tokens
+	# the way trace_opening does for the main line, so the name token resolves to leonard
+	# and the encounter is lost when he falls (R1 autoplay dead_end party_wiped_no_defeat).
+	var scenario: Dictionary = BattleScenario.load_file("res://content/battles/battle_571.json")
+	var wf := PlayLoop.create([], "", scenario, 5)
+	_assert_eq(bool(wf.get("scenario_ok", false)), true, "encounter 571 loop valid under the interpreter")
+	_assert_eq(wf["winfail_runtime"]["token_resolution"].get("SID_雷歐納德", {}), {"source": "binding", "unit_ids": ["leonard"]}, "the EVEF slot-0 binding resolves SID_雷歐納德 to leonard")
+	_assert_eq(wf["winfail_runtime"]["unresolved_tokens"], [], "every WINFAIL571 token resolves")
+	_assert_eq(Winfail.objective_board(wf)["fail"], [{"key": "fail", "speaker_id": "0", "message_id": "122", "actor_token": "SID_雷歐納德"}], "fail board label: 雷歐納德 + 122")
+	_assert_eq(Winfail.victory_state(wf), {}, "fresh encounter ongoing")
+	var others_lost := wf.duplicate(true)
+	for unit in others_lost["units"]:
+		if str(unit.get("battle_actor_role", "")) == "player_controlled" and str(unit["id"]) != "leonard":
+			_kill(others_lost, str(unit["id"]))
+	_assert_eq(Winfail.victory_state(others_lost), {}, "the fail section names only 雷歐納德: the rest of the party falling does not end the encounter")
+	var lost := wf.duplicate(true)
+	_kill(lost, "leonard")
+	_assert_eq(Winfail.victory_state(lost), BattleOutcome.DEFEAT_FALLEN, "actCheckPlayer 1 SID_雷歐納德 holds once leonard falls")
+	for unit in wf["units"]:
+		if str(unit.get("battle_actor_role", "")) == "player_controlled":
+			var token_key := ""
+			for key in wf["winfail_runtime"]["actor_bindings"]:
+				if str(wf["winfail_runtime"]["actor_bindings"][key]) == str(unit["id"]):
+					token_key = str(key)
+			_assert_true(token_key.begins_with("SID_") and token_key.ends_with("/1") and not token_key.begins_with("SID_PLAYER"), "fielded slot %s is bound to its EXTRAS.H name token (%s)" % [str(unit["id"]), token_key])
+	_assert_eq(Winfail.commit_outcome(lost)["winfail_runtime"]["resolved"]["key"], "fail_0", "the script fail section is the recorded resolution when 雷歐納德 falls")
+	# The party carried without 雷歐納德 (levels 30-34): the bound slot is not fielded.
+	# A bound-but-unfielded member is not fallen (provisional remake reading), and the
+	# remake party-wipe rule decides once every fielded member is down and no script
+	# status holds.
+	var carry := {"schema": "hsl_campaign_carry.v1", "units": {"hu": {"actor_id": "003"}, "tina": {"actor_id": "002"}, "hanks": {"actor_id": "004"}, "shera": {"actor_id": "005"}}, "loop": {}}
+	var filtered: Dictionary = ConditionalParty.apply(scenario, carry)
+	_assert_eq(filtered["receipt"]["skipped"].has("leonard"), true, "the carry without 雷歐納德 skips his conditional install")
+	var absent := PlayLoop.create([], "", filtered["scenario"], 5)
+	_assert_eq(absent["winfail_runtime"]["token_resolution"].get("SID_雷歐納德", {}), {"source": "binding", "unit_ids": []}, "the slot-0 binding stays a binding with no fielded unit")
+	_assert_eq(Winfail.victory_state(absent), {}, "actCheckPlayer 1 SID_雷歐納德 does not hold for a member this battle never fielded")
+	var fielded: Array = []
+	for unit in absent["units"]:
+		if str(unit.get("battle_actor_role", "")) == "player_controlled":
+			fielded.append(str(unit["id"]))
+	_assert_eq(fielded.size(), 4, "four members fielded without 雷歐納德")
+	var wiped := absent.duplicate(true)
+	for id in fielded:
+		_kill(wiped, str(id))
+	_assert_eq(Winfail.party_wiped(wiped), true, "every fielded member defeated = party wiped")
+	_assert_eq(Winfail.victory_state(wiped), BattleOutcome.DEFEAT_FALLEN, "the remake party-wipe rule decides the defeat when no script status holds")
+	var committed := Winfail.commit_outcome(wiped)
+	_assert_eq(committed["winfail_runtime"]["resolved"], {"key": Winfail.PARTY_WIPE_KEY, "kind": "fail", "code": -1, "outcome": BattleOutcome.DEFEAT_FALLEN, "policy": Winfail.PARTY_WIPE_POLICY}, "the party wipe is recorded as its own resolution (no script fail chain)")
+	_assert_eq(committed["winfail_runtime"]["dialogue"], [], "no script fail message runs for the party wipe")
+	committed["battle_outcome"] = BattleOutcome.DEFEAT_FALLEN
+	_assert_eq(Winfail.story_dialogue_messages(committed), [], "the absent member's dead message is not spoken for the party wipe")
+	_assert_eq(Winfail.result_message_id(committed, BattleOutcome.DEFEAT_FALLEN), "", "no script board label for the party wipe (the presentation shows its own defeat label)")
+	_assert_eq(Winfail.victory_state(committed), BattleOutcome.DEFEAT_FALLEN, "the recorded party wipe keeps the defeat")
+	var three_down := absent.duplicate(true)
+	for id in fielded.slice(0, 3):
+		_kill(three_down, str(id))
+	_assert_eq(Winfail.victory_state(three_down), {}, "one fielded member standing keeps the battle going")
+	var departed := three_down.duplicate(true)
+	(departed["winfail_runtime"]["departed_unit_ids"] as Array).append(str(fielded[3]))
+	_assert_eq(Winfail.victory_state(departed), BattleOutcome.DEFEAT_FALLEN, "a script-departed member is not counted: the remaining fielded members are all down")
+	var all_departed := absent.duplicate(true)
+	for id in fielded:
+		(all_departed["winfail_runtime"]["departed_unit_ids"] as Array).append(str(id))
+	_assert_eq(Winfail.victory_state(all_departed), {}, "a party that departed by script is not a wiped party")
+	var cleared := wiped.duplicate(true)
+	for unit in cleared["units"]:
+		if str(unit.get("battle_actor_role", "")) == "enemy_ai":
+			_kill(cleared, str(unit["id"]))
+	_assert_eq(Winfail.victory_state(cleared), BattleOutcome.VICTORY_ENEMIES_CLEARED, "a script win status that holds outranks the party wipe")
+
+
+## ---------------------------------------------------------------------------
+## (3) failure paths and edges
+
+func _level37_token_set() -> void:
+	# 0x4348f0 resolves 008's job_up_code obj_Player8Up1 (816) through global.obs obj_Data7 to
+	# PLAYERS row 017 邪獸 — the same row the town chain names (static-derived, original_level37_tokens.md).
+	var target: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/actors/017.json"))["actor"]
+	var source: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/actors/008.json"))["actor"]
+	source["id"] = "gulu"
+	source["coord"] = Vector2i(2, 2)
+	var scenario := {"scenario_rules": {"job_up_targets": {"008": "017"}}, "job_up_templates": {"017": target}, "opening": {"actor_bindings": {"SID_GULU/1": {"unit_id": "gulu"}}}}
+	var attack_seed := _seed([_section("event", 0, [_command("actCheckSerialPlayerAttacked", ["SID_GULU", 1]), _command("actMessage", ["SID_GULU", 1, "371"] )])], [_command("actInsertEventStatus", [0])])
+	var attacked := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [source]}, scenario, attack_seed)
+	attacked["last_attack"] = {"attacker_id": "foe", "defender_id": "gulu"}
+	attacked = Winfail.run_event_hooks(attacked, true)
+	_assert_eq(attacked["winfail_runtime"]["fired"].size(), 1, "actCheckSerialPlayerAttacked matches the exact attacked serial")
+	var not_attacker_seed := _seed([_section("event", 0, [_command("actCheckNotPlayerAttacker", ["SID_GULU"]), _command("actMessage", ["SID_GULU", 1, "372"] )])], [_command("actInsertEventStatus", [0])])
+	var not_attacker := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [source]}, scenario, not_attacker_seed)
+	not_attacker["last_attack"] = {"attacker_id": "foe", "defender_id": "target"}
+	not_attacker = Winfail.run_event_hooks(not_attacker, true)
+	_assert_eq(not_attacker["winfail_runtime"]["fired"].size(), 1, "actCheckNotPlayerAttacker accepts another attacker")
+	not_attacker["event_statuses"] = [0]
+	not_attacker["last_attack"] = {"attacker_id": "gulu", "defender_id": "target"}
+	not_attacker = Winfail.run_event_hooks(not_attacker, true)
+	_assert_eq(not_attacker["winfail_runtime"]["fired"].size(), 1, "actCheckNotPlayerAttacker rejects the named player")
+	var idle := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [source]}, scenario, not_attacker_seed)
+	idle = Winfail.run_event_hooks(idle)
+	_assert_eq(idle["winfail_runtime"]["fired"].size(), 1, "actCheckNotPlayerAttacker holds at a completion without an attack (case 0x74: 0x4c1ce8 is 0)")
+	var any_seed := _seed([_section("event", 0, [_command("actCheckPlayerAttacked", ["-1", "SID_GULU"]), _command("actMessage", ["SID_GULU", 1, "374"] )])], [_command("actInsertEventStatus", [0])])
+	var any_attacker := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [source]}, scenario, any_seed)
+	any_attacker["last_attack"] = {"attacker_id": "foe", "defender_id": "gulu"}
+	_assert_eq(Winfail.run_event_hooks(any_attacker)["winfail_runtime"]["fired"].size(), 0, "actCheckPlayerAttacked needs the attack action's own completion scan")
+	any_attacker = Winfail.run_event_hooks(any_attacker, true)
+	_assert_eq(any_attacker["winfail_runtime"]["fired"].size(), 1, "actCheckPlayerAttacked -1 accepts any attacker (case 0x2a skips the 0x4c1ce8 check)")
+	var area := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [source]}, scenario, attack_seed)
+	area["last_attack"] = {"attacker_id": "foe", "defender_id": "other", "affected_targets": [{"defender_id": "other"}, {"defender_id": "gulu"}]}
+	area = Winfail.run_event_hooks(area, true)
+	_assert_eq(area["winfail_runtime"]["fired"].size(), 1, "the attacked list holds every target of an area skill, not only its first")
+	var false_seed := _seed([_section("event", 0, [_command("actFALSE"), _command("actMessage", ["SID_GULU", 1, "373"] )])], [_command("actInsertEventStatus", [0])])
+	var always_false := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [source]}, scenario, false_seed)
+	always_false = Winfail.run_event_hooks(always_false)
+	_assert_eq(always_false["winfail_runtime"]["fired"].size(), 0, "actFALSE never satisfies a status")
+	var shape_seed := _seed([_section("event", 0, [_command("actTRUE"), _command("actSetPlayerWalkShape", ["SID_GULU", 1])])], [_command("actInsertEventStatus", [0])])
+	var shaped := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [source]}, scenario, shape_seed)
+	shaped = Winfail.run_event_hooks(shaped)
+	_assert_eq(shaped["winfail_runtime"]["walk_shape_changes"][0]["unit_ids"], ["gulu"], "actSetPlayerWalkShape resolves the player serial")
+	# The job-up runs on a prepared level-37 unit (learning / permanent layers and the
+	# equipment catalog the shared refresh needs), with the tables where the assembler
+	# writes them: scenario_rules.job_up_targets / job_up_templates.
+	var job_seed := _seed([_section("event", 0, [_command("actTRUE"), _command("actPlayerJobUpProcess", ["SID_GULU", 0]), _command("actSetOverFlag", ["gameoverflagEnemyJobUp"])])], [_command("actInsertEventStatus", [0])])
+	var level37 := PlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_037.json"), 7)
+	var prepared: Dictionary = PlayLoop._unit(level37, "gulu").duplicate(true)
+	_assert_eq([str(prepared.get("actor_id", "")), bool(prepared.get("install_if_carried", false))], ["008", true], "battle_037 fields the conditional 咕嚕 slot (all slots without a hand-off)")
+	var assembled := {"scenario_rules": {"job_up_targets": {"008": "017"}, "job_up_templates": {"017": target}}, "opening": {"actor_bindings": {"SID_GULU/1": {"unit_id": "gulu"}}}}
+	prepared["hp"] = 3  # wounded before the exchange: 0x4348f0 / 0x407ec0 / 0x448840 write no vitals
+	var upgraded := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [prepared], "equipment_items": level37["equipment_items"]}, assembled, job_seed)
+	upgraded = Winfail.run_event_hooks(upgraded)
+	var actor: Dictionary = upgraded["units"][0]
+	_assert_eq(upgraded["winfail_runtime"]["unsupported_encountered"], [], "level 37 token set has no unsupported runtime actions")
+	_assert_eq([str(actor["actor_id"]), str(actor.get("job_up_target_actor_id", "")), int(actor.get("job_up_flags", 0))], ["008", "017", 0x80000000], "actPlayerJobUpProcess keeps actor 008 as the rules key, stands the member on 017 and records the native flag (same contract as the town job-up)")
+	_assert_eq(actor["job_up_history"], [{"from_actor_id": "008", "to_actor_id": "017", "flag": 0x80000000, "from_job_code": 96, "job_code": 97}], "the job-up history the campaign carry replays")
+	_assert_eq(int(actor["growth_profile"]["job_code"]), int(target["growth_profile"]["job_code"]), "job-up changes the job code to 97 jobEvilMonster")
+	_assert_eq(actor["combat_profile"]["str"], prepared["combat_profile"]["str"], "0x4348f0 leaves the member's attributes untouched")
+	_assert_eq(int(actor["level"]), int(prepared["level"]), "level is kept")
+	_assert_eq(int(actor["growth_profile"]["source"]["attack_power"]), int(prepared["growth_profile"]["source"]["attack_power"]) + int(target["growth_profile"]["source"]["attack_power"]), "additive PLAYERS layer: 017 attack_power is summed onto 008's")
+	_assert_eq([int(actor["weapon_code"]), actor["equipment"]], [53, [{"slot": "weapon", "item_code": 53, "name": "???"}]], "the declared 017 weapon 53 replaces the weapon slot in the six-slot list")
+	_assert_true(int(actor["max_hp"]) != int(prepared["max_hp"]) and int(actor["hp"]) == 3, "the shared refresh derives the 017 form (max %d→%d) while the member keeps its current HP 3 (0x4348f0 writes no vitals, 0x448840 only clamps downward)" % [int(prepared["max_hp"]), int(actor["max_hp"])])
+	_assert_eq(upgraded["winfail_runtime"]["job_up_changes"][0]["to_actor_id"], "017", "the receipt names the target row")
+	_assert_eq(upgraded["winfail_runtime"]["pending_world_flags"][0]["args"][0], "gameoverflagEnemyJobUp", "job-up event records the EnemyJobUp flag")
+	# A member already standing on 017 (job_up 0): 0x4348f0 returns before any exchange — a no-op, not a failure.
+	var moved := prepared.duplicate(true)
+	moved["job_up_target_actor_id"] = "017"
+	var settled := Winfail.initialize_script_state({"player_unit_id": "gulu", "turn": 1, "units": [moved], "equipment_items": level37["equipment_items"]}, assembled, job_seed)
+	settled = Winfail.run_event_hooks(settled)
+	_assert_eq([settled["winfail_runtime"]["unsupported_encountered"], settled["winfail_runtime"]["job_up_changes"][0]["policy"], str(settled["units"][0].get("job_up_target_actor_id", ""))], [[], "job_up_code_zero_noop", "017"], "a member whose row declares job_up 0 is left untouched with a no-op receipt (no stacking, no error)")
+
+
+func _level_three_mode_and_undead_transition() -> void:
+	var seed := _seed([
+		_section("win", 0, [_command("actTRUE"), _command("actSetPlayerMode", ["SID_漢克斯", "1", "pmPlayer", "1"]), _command("actSetPlayerUndead", ["SID_漢克斯", "1", "0"])]),
+	], [
+		_command("actInsertWinStatus", ["0"]),
+		_command("actSetPlayerMode", ["SID_漢克斯", "1", "pmEnemy", "1"]),
+		_command("actSetPlayerUndead", ["SID_漢克斯", "1", "1"]),
+	])
+	var scenario := {"opening": {"actor_bindings": {"SID_漢克斯/1": {"unit_id": "hanks"}}}}
+	var battle := {"player_unit_id": "leonard", "turn": 1, "units": [
+		_unit("leonard", "Player001", Vector2i(1, 1), 10, "player_controlled"),
+		_unit("hanks", "Enemy004", Vector2i(2, 1), 10, "enemy_ai"),
+	]}
+	var wf: Dictionary = Winfail.initialize_script_state(battle, scenario, seed)
+	_assert_eq(wf["units"][1].get("battle_actor_role", ""), "enemy_ai", "level 3 opening mode is enemy")
+	_assert_eq(bool(wf["units"][1].get("undead", false)), true, "level 3 opening undead marker is set")
+	wf["battle_outcome"] = BattleOutcome.VICTORY_SCRIPT
+	wf = Winfail.commit_outcome(wf)
+	_assert_eq(wf["units"][1].get("battle_actor_role", ""), "player_controlled", "WINFAIL003 victory mode joins player side")
+	_assert_eq(bool(wf["units"][1].get("player_commandable", false)), true, "mode transition makes hanks commandable")
+	_assert_eq(bool(wf["units"][1].get("undead", true)), false, "WINFAIL003 victory clears undead marker")
+	_assert_eq(wf["winfail_runtime"]["mode_changes"].back()["mode"], 0x10000, "pmPlayer symbolic mode resolves to native value")
+	_assert_eq(wf["winfail_runtime"]["undead"].back()["enabled"], false, "undead clear is recorded")
+
+
+func _level_twelve_opcode_actions() -> void:
+	var seed := _seed([
+		_section("event", 0, [
+			_command("actTRUE"),
+			_command("actInsertObject", ["obj_Story_Level12_Unknown", 0, 0]),
+			_command("actChangePrevInsertObjectID", [10000]),
+			_command("actSetPlayerFixPos", ["SID_ENEMY038", 1, 32, 64, 1]),
+			_command("actSetPlayerFly", ["SID_ENEMY038", 1, 1]),
+		]),
+		_section("event", 1, [
+			_command("actTRUE"),
+			_command("actSetPlayerFixPos", ["SID_ENEMY038", 2, -160, 1824, 1]),
+		]),
+	], [
+		_command("actInsertEventStatus", [0]),
+		_command("actInsertEventStatus", [1]),
+	])
+	var scenario := {"scenario_rules": {"cell_size": 32}, "opening": {"actor_bindings": {
+		"SID_ENEMY038/1": {"unit_id": "enemy038_1"},
+		"SID_ENEMY038/2": {"unit_id": "enemy038_2"},
+	}}}
+	var battle := {"map_size": Vector2i(45, 60), "turn": 1, "units": [
+		_unit("enemy038_1", "Enemy038", Vector2i(4, 4), 10, "enemy_ai"),
+		_unit("enemy038_2", "Enemy038", Vector2i(5, 5), 10, "enemy_ai"),
+	]}
+	var wf: Dictionary = Winfail.initialize_script_state(battle, scenario, seed)
+	_assert_true(bool(wf["winfail_script_rules"]["fully_supported"]), "level 12 opcodes are supported by the interpreter")
+	wf = Winfail.run_event_hooks(wf)
+	_assert_eq(wf.get("event_statuses", []), [1], "one scan starts only the first holding event (0x44ee20 returns after it)")
+	wf = Winfail.run_event_hooks(wf)
+	_assert_eq(wf["winfail_runtime"]["previous_insert_id_changes"], [{"key": "event_0", "object_id": 10000, "previous_object_id": null, "insert_index": 0}], "previous insert id is applied to the latest insert receipt")
+	_assert_eq(wf["winfail_runtime"]["fixed_position_changes"][0]["coord"], Vector2i(1, 2), "fixed position quantizes source pixels by 32px")
+	# 0x450840 case 0x54 writes the guard anchor (+0x46/+0x44) and, for a nonzero distance,
+	# the live ai_fixed (+0x1d0); the object itself stays where it stands.
+	_assert_eq(wf["units"][0]["ai_home_coord"], Vector2i(1, 2), "fixed position resolves code plus serial into that unit's guard anchor")
+	_assert_eq(wf["units"][0]["coord"], Vector2i(4, 4), "fixed position does not move the unit")
+	_assert_eq(wf["units"][0].get("ai_fixed_radius"), 1, "a nonzero distance is the unit's live guard radius")
+	_assert_true(bool(wf["units"][0]["traversal"]["flying"]), "fly opcode reuses traversal.flying")
+	_assert_eq(wf["winfail_runtime"]["fixed_position_changes"][1]["off_map"], true, "an anchor beyond the map edge is recorded as such in the receipt")
+	_assert_eq(wf["units"][1]["ai_home_coord"], Vector2i(-5, 57), "negative source pixels use floor quantization for the anchor (WINFAIL012 retreat point)")
+	_assert_eq(wf["units"][1]["coord"], Vector2i(5, 5), "an off-map anchor leaves the unit on the field")
+	_assert_eq(WinfailConditions.alive_units_for_token(wf, "SID_ENEMY038", 2), ["enemy038_2"], "a unit retreating toward an off-map anchor still counts until actWalkAndDelete removes it")
+	_assert_eq(wf["winfail_runtime"]["unsupported_encountered"], [], "level 12 opcode actions do not fall through to unsupported")
+
+
+func _lane_k_token_actions() -> void:
+	var scenario: Dictionary = BattleScenario.load_file("res://content/battles/battle_040.json")
+	var base: Dictionary = PlayLoop.create([], "", scenario, 3)
+	_assert_true(bool(base.get("scenario_ok", false)), "lane K fixture: source battle loop is valid")
+	var boss := PlayLoop._unit(base, "actor055_1")
+	_assert_eq(boss.get("inventory", [])[0], 252, "source actor 055 carries item 252")
+	boss["hp"] = 100
+	boss["status_counters"]["poison"] = 3
+	boss["status_flags"] = 1
+	var item_seed := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actUseItem", ["SID_ENEMY055", 1, 252])]),
+	], [_command("actInsertEventStatus", [0])])
+	var item_scenario := {"opening": {"actor_bindings": {"SID_ENEMY055/1": {"unit_id": "actor055_1"}}}}
+	var item_loop: Dictionary = Winfail.initialize_script_state(base, item_scenario, item_seed)
+	item_loop = Winfail.run_event_hooks(item_loop)
+	var item_actor := WinfailConditions.unit(item_loop, "actor055_1")
+	_assert_eq(item_loop["winfail_runtime"]["item_requests"][0]["status"], "applied", "actUseItem commits through ItemResolutionRules")
+	_assert_eq(item_actor.get("hp"), item_actor.get("max_hp"), "actUseItem restores HP through the existing consumable rule")
+	_assert_eq(item_actor["inventory"].has(252), false, "actUseItem consumes the source inventory item")
+	_assert_eq(item_actor["status_counters"]["poison"], 0, "actUseItem cures poison through the existing consumable rule")
+
+	var no_attack_seed := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actSetPlayerNoAttack", ["SID_PLAYER0", 1, 1])]),
+	], [_command("actInsertEventStatus", [0])])
+	var no_attack_scenario := {"opening": {"actor_bindings": {"SID_PLAYER0/1": {"unit_id": "leonard"}}}}
+	var no_attack_loop: Dictionary = Winfail.initialize_script_state(base, no_attack_scenario, no_attack_seed)
+	no_attack_loop = Winfail.run_event_hooks(no_attack_loop)
+	_assert_true(bool(WinfailConditions.unit(no_attack_loop, "leonard").get("no_attack", false)), "actSetPlayerNoAttack sets the actor marker")
+	_assert_eq(no_attack_loop["winfail_runtime"]["no_attack_changes"].size(), 1, "no-attack change is recorded")
+	no_attack_loop = PlayLoop._return_to_player(no_attack_loop, "leonard")
+	_assert_eq(PlayLoop.command_available(no_attack_loop, "attack"), false, "no_attack removes the player attack command")
+
+	var serial_seed := _seed([
+		_section("event", 0, [_command("actCheckNextSerialNumber", [3]), _command("actInsertEventStatus", [0]), _command("actInsertStoryObjectWaitPos", ["obj_Story_Level_PoisonGas", 9, 672, 128, 288, 288, 64, 384, 480, 544, 640, 576, 576, 800, 288, 800, 96, 896, 224, 1056]), _command("actExecWinFailProcess")]),
+	], [_command("actInsertEventStatus", [0])])
+	var serial_loop: Dictionary = Winfail.initialize_script_state(base, {"opening": {}}, serial_seed)
+	# 0x4525e0: a timer on the handoff counter 0x4c1ad4 — armed to counter + 3 at the first scan,
+	# holds at the fourth handoff; the chain's rescan (counter already bumped) re-arms it to 4 + 3.
+	var installs: Array = []
+	for _handoff in 8:
+		serial_loop = Winfail.run_event_hooks(serial_loop)
+		installs.append(serial_loop["winfail_runtime"]["story_object_wait_requests"].size())
+	_assert_eq(installs, [0, 0, 0, 1, 1, 1, 1, 2], "actCheckNextSerialNumber 3 fires every fourth handoff")
+	_assert_eq([serial_loop["winfail_runtime"]["handoff_counter"], serial_loop["winfail_runtime"]["serial_deadline"]], [8, 11], "each handoff bumps the counter once; the rescan re-arms the deadline")
+	_assert_eq(serial_loop.get("event_statuses", []), [0], "the self re-arming serial event stays armed")
+	# 0x451ecf: each installation draws one rand(count) on the global stream for its pair.
+	var requests: Array = serial_loop["winfail_runtime"]["story_object_wait_requests"]
+	for index in range(requests.size()):
+		var request: Dictionary = requests[index]
+		var replay := GlobalRandom.rand(request["rng_before"], 9)
+		_assert_eq([request["selected_index"], request["selected_position"], request["rng_after"]], [replay["value"], request["positions"][replay["value"]], replay["state"]], "story-object wait position %d is the global stream's rand(9) pick" % index)
+		if index > 0:
+			check(continues(requests[index - 1], request), "story-object wait positions draw back to back on the global stream")
+	_assert_eq(requests.back()["rng_after"], stream_of(serial_loop, "global"), "the last wait-position draw leaves the loop's global words")
+
+
+## actSetDeadMessage (0x452197) writes the addressed unit's live +0x14 word: the serial picks
+## among the token's living units, the installed 稱號 stays the speaker, the fail page's
+## dead_messages record is unchanged; with script inserts the same-chain insert is the target
+## (WINFAIL006 event 5: the reinforcement 隊長 speaks 969, not its object word 957).
+func _script_dead_message_words() -> void:
+	var seed := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actSetDeadMessage", ["SID_ENEMY024", 1, 969, 0]), _command("actSetDeadMessage", ["SID_ENEMY023", 2, 374, 375])]),
+	], [_command("actInsertEventStatus", [0])])
+	var scenario := {"opening": {"actor_bindings": {"SID_ENEMY024/1": {"unit_id": "captain_1"}, "SID_ENEMY024/2": {"unit_id": "captain_2"}, "SID_ENEMY023/1": {"unit_id": "soldier_1"}, "SID_ENEMY023/2": {"unit_id": "soldier_2"}}, "speaker_resource_ids": {"SID_ENEMY023": "376"}}}
+	var battle := {"turn": 1, "units": [
+		_unit("captain_1", "Enemy024", Vector2i(1, 1), 0, "enemy_ai"),
+		_unit("captain_2", "Enemy024", Vector2i(2, 1), 10, "enemy_ai"),
+		_unit("soldier_1", "Enemy023", Vector2i(3, 1), 10, "enemy_ai"),
+		_unit("soldier_2", "Enemy023", Vector2i(4, 1), 10, "enemy_ai"),
+	]}
+	battle["units"][1]["title"] = "兵隊長"
+	battle["units"][1]["dead_message"] = {"speaker": "兵隊長", "messages": [{"id": "957", "text": "啊"}]}
+	var wf: Dictionary = Winfail.run_event_hooks(Winfail.initialize_script_state(battle, scenario, seed))
+	_assert_eq(wf["units"][0].get("dead_message", {}), {}, "the fallen first 024 is not the serial-1 target (0x44fad0 counts living objects)")
+	_assert_eq(wf["units"][1]["dead_message"], {"speaker": "兵隊長", "messages": [{"id": "969"}]}, "the living 024 takes 969 (msg1 << 16, the zero half copies) under its installed 稱號")
+	_assert_eq(wf["units"][3]["dead_message"], {"speaker": "", "speaker_id": "376", "messages": [{"id": "374"}, {"id": "375"}]}, "serial 2 of 023 takes the packed pair first 374, second 375 and names its speaker by the token's resource id")
+	_assert_true(not wf["units"][2].has("dead_message"), "serial 1 of 023 is untouched")
+	_assert_eq(wf["winfail_runtime"]["dead_messages"], {"SID_ENEMY024": "969", "SID_ENEMY023": "374"}, "the fail page record keeps its token → msg1 shape")
+	var sixth := PlayLoop.initialize_roster_growth(PlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_006.json")))
+	_assert_true(bool(sixth.get("scenario_ok", false)), "battle_006 loop is valid")
+	_assert_eq(PlayLoop._unit(sixth, "guard024_1")["dead_message"]["messages"][0]["id"], "957", "the placed 隊長 keeps its object word 957 (WINFAIL006 never addresses it alive)")
+	PlayLoop._set_unit_defeated(sixth, "guard024_1", true)
+	# Event code 1 (section 5) is armed by the level's earlier chain; arm it directly and
+	# drop the phase-one win so the reinforcement event is what fires on the 隊長's fall.
+	sixth["event_statuses"] = [1]
+	sixth["win_statuses"] = []
+	var fired: Dictionary = PlayLoop._resolve_outcome(Winfail.run_event_hooks(sixth))
+	_assert_true(bool(fired.get("scenario_ok", false)), "WINFAIL006 event 5 installs its reinforcements: " + str(fired.get("scenario_error", "")))
+	var captains: Array = fired["units"].filter(func(row): return str(row["actor_id"]) == "024" and not bool(row.get("defeated", false)))
+	_assert_eq(captains.size(), 1, "one living 隊長 after the event")
+	if captains.size() == 1:
+		_assert_eq(captains[0]["dead_message"], {"speaker": "兵隊長", "messages": [{"id": "969"}]}, "the inserted 隊長 speaks 969 (actSetDeadMessage after its insert in the same chain), not its object word 957")
+		_assert_true(str(captains[0]["dead_message_source"]).begins_with("event_1 actSetDeadMessage SID_ENEMY024,1,969,0"), "the unit records the script writer")
+	_assert_eq(fired["winfail_runtime"]["dead_messages"].get("SID_ENEMY024", ""), "969", "the fail page record follows the same line")
+
+
+func _exec_mode_and_system_arrival() -> void:
+	var seed := _seed([
+		_section("event", 0, [
+			_command("actTRUE"),
+			_command("actRandomSetSysArrivePos", [2, 32, 64, 64, 96]),
+			_command("actSetPlayerExecMode", ["SID_HOU", 1, 1]),
+		]),
+		_section("event", 1, [
+			_command("actCheckPlayerArriveSysPos", ["SID_HOU", 1]),
+			_command("actMessage", ["SID_HOU", 1, "777"]),
+		]),
+	], [_command("actInsertEventStatus", [0]), _command("actInsertEventStatus", [1])])
+	var scenario := {"scenario_rules": {"cell_size": 32}, "opening": {"actor_bindings": {"SID_HOU/1": {"unit_id": "hou"}}, "speaker_resource_ids": {"SID_HOU": "7"}}}
+	var battle := {STREAM_KEYS["global"]: GlobalRandom.seeded(1), "turn": 1, "units": [
+		_unit("hou", "Player007", Vector2i(2, 3), 10, "enemy_ai"),
+	]}
+	var wf: Dictionary = Winfail.initialize_script_state(battle, scenario, seed)
+	wf = Winfail.run_event_hooks(wf)
+	_assert_eq(wf.get("event_statuses", []), [1], "the arrival check waits for the scan after the one that chose the point")
+	var chosen: Array = wf["winfail_runtime"]["system_arrival_position"]["position"]
+	wf["units"][0]["coord"] = Vector2i(int(chosen[0]) / 32, int(chosen[1]) / 32)
+	wf = Winfail.run_event_hooks(wf)
+	var arrival: Dictionary = wf["winfail_runtime"]["system_arrival_position"]
+	_assert_true((arrival["candidates"] as Array).has(arrival["position"]), "random system arrival selects a listed candidate")
+	var arrival_draw := GlobalRandom.rand(GlobalRandom.seeded(1), 2)
+	_assert_eq(arrival["position"], arrival["candidates"][arrival_draw["value"]], "random system arrival picks with one rand(2) on the loop's global stream (0x451787)")
+	_assert_eq([arrival["rng_before"], arrival["rng_after"]], [GlobalRandom.seeded(1), arrival_draw["state"]], "random system arrival records the global words before and after")
+	_assert_eq(wf["units"][0]["player_exec_mode"], 1, "exec mode writes the source mode")
+	_assert_eq(wf["units"][0]["player_exec_mode_native"], 5, "exec mode maps argument 1 to native state 5")
+	_assert_eq(wf["units"][0]["battle_actor_role"], "enemy_ai", "exec mode does not change faction role")
+	_assert_eq(wf["winfail_runtime"]["exec_mode_changes"].size(), 1, "exec mode records one receipt")
+	_assert_eq(_projected(Winfail.story_dialogue_messages(wf)), [["7", "777"]], "system arrival condition fires at the selected point")
+	wf["units"][0]["coord"] = Vector2i(0, 0)
+	_assert_true(not WinfailConditions.condition_holds(wf, "actCheckPlayerArriveSysPos", ["SID_HOU", "1"], "event"), "system arrival condition rejects another point")
+
+
+func _failure_paths_and_edges() -> void:
+	var scenario := {"scenario_rules": {}, "opening": {"speaker_resource_ids": {"SID_ENEMY023": "376", "SID_PLAYER0": "0"}}}
+	var battle := {
+		"player_unit_id": "hero", "turn": 1, "equipment_items": {"14": {}}, "units": [
+			_unit("hero", "Player001", Vector2i(1, 1), 10, "player_controlled"),
+			_unit("foe_1", "Enemy023", Vector2i(5, 5), 10, "enemy_ai"),
+			_unit("foe_2", "Enemy023", Vector2i(6, 5), 10, "enemy_ai"),
+			_unit("friend_1", "Enemy023", Vector2i(2, 2), 10, "friendly_ai"),
+		],
+	}
+	battle["units"][0]["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
+	var objects := [{"symbol": "obj_Story_Test_Enemy23", "object_code": 99, "object_data_fields": {"obj_Data6": "SID_ENEMY023", "obj_Data7": "23"}}]
+
+	# Empty or story-only seeds fail explicitly instead of running another rule set.
+	var empty: Dictionary = Winfail.initialize_script_state(battle, scenario, {})
+	_assert_eq(bool(empty.get("scenario_ok", true)), false, "empty seed: scenario_ok false")
+	_assert_eq(empty.get("scenario_error", ""), "missing_winfail_script", "empty seed: explicit error")
+	_assert_eq(empty.get("interaction", ""), "scenario_error", "empty seed: scenario_error interaction")
+	var story_only: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/chapter01/battle058_seed.json"))
+	_assert_eq(bool(Winfail.seed_has_winfail(story_only)), false, "level 58 has no winfail script")
+	_assert_eq(Winfail.initialize_script_state(battle, scenario, story_only).get("scenario_error", ""), "missing_winfail_script", "story-only seed: explicit error")
+	var no_sections := _seed([], [])
+	_assert_eq(Winfail.initialize_script_state(battle, scenario, no_sections).get("scenario_error", ""), "missing_winfail_script", "winfail without sections: explicit error")
+	_assert_eq(Winfail.run_event_hooks(battle), battle, "hooks on a loop without rules return it unchanged")
+	_assert_eq(Winfail.victory_state(battle), {}, "no rules: ongoing")
+	_assert_eq(Winfail.reinforcement_deficits(battle), {}, "no rules: no deficits")
+
+	# A serial binding (SID_ENEMY023/1 -> a speaker) must not shrink the class:
+	# actCheckEnemyNumber(SID_ENEMY023, 2) counts every living Enemy023 unit.
+	var seed53_bound: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/chapter01/battle053_seed.json"))
+	var bound_scenario := {"scenario_rules": {}, "opening": {"speaker_resource_ids": {"SID_PLAYER1": "1"}, "actor_bindings": {"SID_PLAYER1/1": {"unit_id": "tina"}, "SID_ENEMY023/1": {"unit_id": "g2"}}}}
+	var bound := Winfail.initialize_script_state({"player_unit_id": "tina", "turn": 1, "units": [_unit("tina", "Player002", Vector2i(20, 23)), _unit("g1", "Enemy023", Vector2i(29, 24)), _unit("g2", "Enemy023", Vector2i(27, 23)), _unit("g3", "Enemy023", Vector2i(30, 36))]}, bound_scenario, seed53_bound)
+	_assert_eq(bound["winfail_runtime"]["token_resolution"]["SID_ENEMY023"]["unit_ids"], ["g1", "g2", "g3"], "serial-less SID_ENEMY023 is the whole class even with a /1 binding")
+	_assert_eq(bound["winfail_runtime"]["token_resolution"]["SID_PLAYER1"], {"source": "binding", "unit_ids": ["tina"]}, "SID_PLAYER1 resolves through its binding")
+	_assert_eq(WinfailConditions.units_for_token(bound, "SID_ENEMY023", 1), ["g2"], "SID_ENEMY023,1 selects the bound instance")
+	bound = Winfail.run_event_hooks(bound)
+	_assert_eq(Winfail.reinforcement_deficits(bound), {}, "three guards alive: the count event (< 2) stays quiet despite the binding")
+	_kill(bound, "g1")
+	bound = Winfail.run_event_hooks(bound)
+	_assert_eq(Winfail.reinforcement_deficits(bound), {}, "two guards alive: 2 < 2 is false (0x450840 case 0x24 is a strict compare)")
+	_kill(bound, "g3")
+	bound = Winfail.run_event_hooks(bound)
+	_assert_eq(Winfail.reinforcement_deficits(bound), {"Enemy023": 1}, "one guard alive: the count event fires once")
+	# Static enemy objects (hull pieces) stay registered: 26 drawn pieces never satisfy < 26.
+	var hull_seed := _seed([
+		_section("fail", 0, [_command("actCheckEnemyNumber", ["SID_ENEMY101", 26])]),
+	], [_command("actInsertFailStatus", [0])])
+	var hull_loop: Dictionary = Winfail.initialize_script_state({"player_unit_id": "tina", "turn": 1, "units": [_unit("tina", "Player002", Vector2i(20, 23))], "last_attack": {}}, {"scenario_rules": {"static_enemy_counts": {"SID_ENEMY101": 26}}, "opening": {}}, hull_seed)
+	_assert_eq(Winfail.victory_state(hull_loop), {}, "26 static Enemy101 hull pieces keep the < 26 fail check quiet")
+	hull_loop["winfail_runtime"]["static_enemy_counts"] = {"SID_ENEMY101": 25}
+	_assert_eq(Winfail.victory_state(hull_loop), Winfail.DEFEAT_OUTCOME, "one hull piece fewer than the threshold fails the battle")
+
+	# Deleted statuses never fire; a fired insert stays owed even after disarming.
+	var seed53: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/chapter01/battle053_seed.json"))
+	var tina := {"player_unit_id": "tina", "turn": 1, "units": [_unit("tina", "Player029", Vector2i(20, 23)), _unit("g1", "Enemy023", Vector2i(29, 24)), _unit("g2", "Enemy023", Vector2i(27, 23)), _unit("g3", "Enemy023", Vector2i(30, 36))]}
+	var deleted: Dictionary = Winfail.initialize_script_state(tina, {"scenario_rules": {}, "opening": {"speaker_resource_ids": {"SID_PLAYER1": "1"}}}, seed53)
+	deleted["event_statuses"] = [1, 2]
+	deleted["turn"] = 5
+	deleted = Winfail.run_event_hooks(deleted)
+	_assert_eq(Winfail.reinforcement_deficits(deleted), {}, "deleted event0 does not fire at round 5")
+	_assert_true(not (deleted.get("event_log", []) as Array).has("event_0"), "deleted event0 not logged")
+	deleted["turn"] = 7
+	deleted = Winfail.run_event_hooks(deleted)
+	_assert_eq(Winfail.reinforcement_deficits(deleted), {"Enemy023": 1}, "event1 still fires at round 7")
+	deleted["event_statuses"] = []
+	deleted = Winfail.run_event_hooks(deleted)
+	_assert_eq(Winfail.reinforcement_deficits(deleted), {"Enemy023": 1}, "a committed insert stays owed after the event list is cleared (commit-on-fire)")
+	_assert_eq((deleted["winfail_runtime"]["fired"] as Array).size(), 1, "one status fired")
+
+	# actExecWinFailProcess chains a newly armed status in the same call; dialogue de-duplicates.
+	var chain := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actMessage", ["SID_ENEMY023", 1, "500"]), _command("actInsertEventStatus", [1]), _command("actExecWinFailProcess")]),
+		_section("event", 1, [_command("actTRUE"), _command("actMessage", ["SID_PLAYER0", 1, "501"]), _command("actDelay", [20])]),
+		_section("event", 2, [_command("actTRUE"), _command("actMessage", ["SID_PLAYER0", 1, "502"])]),
+		_section("fail", 0, [_command("actCheckPlayer", [1, "SID_PLAYER0"])], "SID_PLAYER0,122"),
+	], [_command("actInsertEventStatus", [0]), _command("actInsertFailStatus", [0])])
+	var chained: Dictionary = Winfail.initialize_script_state(battle, scenario, chain)
+	_assert_eq(chained.get("event_statuses", []), [0], "only event0 armed by the story")
+	_assert_eq(chained.get("win_statuses", []), [], "no win status armed")
+	chained = Winfail.run_event_hooks(chained)
+	_assert_eq(chained.get("event_statuses", []), [], "event0 and the chained event1 both consumed in one call")
+	_assert_eq(_projected(Winfail.story_dialogue_messages(chained)), [["376", "500"], ["0", "501"]], "messages in fire order; event2 never armed")
+	_assert_eq((chained["winfail_runtime"]["fired"] as Array).size(), 2, "two statuses fired")
+	_assert_eq(chained["winfail_runtime"]["presentation_requests"], [{"key": "event_1", "name": "actDelay", "args": ["20"]}], "actDelay is recorded only")
+	var twice: Dictionary = Winfail.run_event_hooks(chained)
+	_assert_eq(Winfail.story_dialogue_messages(twice), Winfail.story_dialogue_messages(chained), "re-running hooks does not repeat dialogue")
+	_assert_eq(Winfail.victory_state(chained), {}, "alive player: ongoing")
+	_kill(chained, "hero")
+	_assert_eq(Winfail.victory_state(chained), BattleOutcome.DEFEAT_FALLEN, "fail status decides the shared defeat key")
+	_assert_eq(Winfail.result_message_id(chained, BattleOutcome.DEFEAT_FALLEN), "122", "fail board label")
+
+	# Native get-item and position-object deletion remain explicit coordinator requests.
+	var item_position := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actGetItem", [14, 1]), _command("actDeletePosObject", [640, 488, 2, "defProcStandObject"]), _command("actMessage", ["SID_PLAYER0", 1, "599"])]),
+	], [_command("actInsertEventStatus", [0])])
+	var item_position_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, item_position)
+	item_position_loop = Winfail.run_event_hooks(item_position_loop)
+	_assert_eq(item_position_loop["winfail_runtime"]["item_requests"][0].get("item_code"), 14, "actGetItem records the item code")
+	_assert_eq(item_position_loop["winfail_runtime"]["item_requests"][0].get("count"), 1, "actGetItem records the count")
+	_assert_eq(item_position_loop["winfail_runtime"]["item_requests"][0].get("status"), "applied", "actGetItem applies to the party inventory")
+	_assert_eq(item_position_loop["units"][0].get("inventory", [])[0], 14, "actGetItem uses the controlled party inventory")
+	_assert_eq(item_position_loop["winfail_runtime"]["object_delete_requests"][0].get("x"), 640, "actDeletePosObject records world x")
+	_assert_eq(item_position_loop["winfail_runtime"]["object_delete_requests"][0].get("range"), 2, "actDeletePosObject records square range")
+	_assert_eq(item_position_loop["winfail_runtime"]["object_delete_requests"][0].get("proc_code"), "defProcStandObject", "actDeletePosObject records process code")
+	_assert_eq(item_position_loop["winfail_runtime"]["departed_unit_ids"], [], "position deletion does not guess a unit departure")
+	_assert_eq(_projected(Winfail.story_dialogue_messages(item_position_loop)), [["0", "599"]], "following action still runs")
+
+	# Unknown tokens are reported, never crash and never silently drop the rest of the chain.
+	var unknown := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actFooBar", [1, 2]), _command("actMessage", ["SID_PLAYER0", 1, "600"]), _command("actBMSetPointEvent", [3, 504, "bmpmVisit"]), _command("actAddTE", ["town_x", 169, 0])], "-1,361"),
+		_section("event", 1, [_command("actCheckSerialPlayerAttacked", ["SID_ENEMY067", 1]), _command("actMessage", ["SID_PLAYER0", 1, "601"])]),
+		_section("win", 0, [_command("actCheckEnemyTotalNumber", [0]), _command("actSetTownExecEvent", ["town_x", 9])], "-1,121"),
+	], [_command("actInsertEventStatus", [0]), _command("actInsertEventStatus", [1]), _command("actInsertWinStatus", [0])])
+	var unknown_rules: Dictionary = Winfail.rules_from_seed(unknown)
+	_assert_eq(unknown_rules["unsupported_tokens"], ["actFooBar"], "unsupported tokens listed")
+	_assert_eq(bool(unknown_rules["fully_supported"]), false, "not fully supported")
+	_assert_eq(unknown_rules["statuses"]["event"][1]["conditions"][0]["supported"], true, "serial attacked condition is supported")
+	var unknown_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, unknown)
+	_assert_eq(Winfail.objective_board(unknown_loop)["event"], [{"key": "event", "speaker_id": "", "message_id": "361", "actor_token": "-1"}], "an armed event label shows on the board")
+	unknown_loop = Winfail.run_event_hooks(unknown_loop)
+	_assert_eq(Winfail.objective_board(unknown_loop)["event"], [], "the consumed event label leaves the board")
+	_assert_eq(unknown_loop["winfail_runtime"]["unsupported_encountered"], [{"key": "event_0", "name": "actFooBar", "args": ["1", "2"]}], "unknown token recorded at fire time")
+	_assert_eq(_projected(Winfail.story_dialogue_messages(unknown_loop)), [["0", "600"]], "message after the unknown token still recorded")
+	_assert_eq((unknown_loop["winfail_runtime"]["pending_world_flags"] as Array).size(), 2, "town/big-map flags recorded, not executed")
+	_assert_eq(unknown_loop.get("event_statuses", []), [1], "a status headed by an unsupported condition never fires")
+	_assert_eq(Winfail.objective_board(unknown_loop)["win"], [{"key": "win", "speaker_id": "", "message_id": "121", "actor_token": "-1"}], "-1 board label keeps its message id without a speaker")
+	_assert_eq(Winfail.victory_state(unknown_loop), {}, "two enemies alive: no clear")
+	_kill(unknown_loop, "foe_1")
+	_kill(unknown_loop, "foe_2")
+	_assert_eq(Winfail.victory_state(unknown_loop), BattleOutcome.VICTORY_ENEMIES_CLEARED, "friendly Enemy023 does not count; enemy_ai clear wins")
+	var cleared: Dictionary = Winfail.commit_outcome(unknown_loop)
+	_assert_eq((cleared["winfail_runtime"]["pending_world_flags"] as Array).size(), 3, "win result actSetTownExecEvent recorded on commit")
+	_assert_eq(Winfail.result_message_id(cleared, BattleOutcome.VICTORY_ENEMIES_CLEARED), "121", "clear board label 121")
+
+	# AND-chain with actCheckEventNotExist; unresolved count tokens never satisfy <=.
+	var and_seed := _seed([
+		_section("event", 0, [_command("actCheckRoundNumber", [1]), _command("actCheckEventNotExist", [1, 1]), _command("actMessage", ["SID_PLAYER0", 1, "700"])]),
+		_section("event", 1, [_command("actCheckRoundNumber", [3])]),
+		_section("event", 2, [_command("actCheckEnemyNumber", ["SID_雷歐納德", 5]), _command("actMessage", ["SID_PLAYER0", 1, "701"])]),
+		_section("event", 3, [_command("actCheckEnemyNumber", ["SID_ENEMY099", 5]), _command("actMessage", ["SID_PLAYER0", 1, "702"])]),
+	], [_command("actInsertEventStatus", [0]), _command("actInsertEventStatus", [1]), _command("actInsertEventStatus", [2]), _command("actInsertEventStatus", [3])])
+	var and_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, and_seed)
+	_assert_eq((and_loop["winfail_runtime"]["unresolved_tokens"] as Array).size(), 1, "the EXTRAS.H name token is unresolved")
+	_assert_eq(and_loop["winfail_runtime"]["unresolved_tokens"][0]["token"], "SID_雷歐納德", "unresolved token named")
+	and_loop = Winfail.run_event_hooks(and_loop)
+	_assert_eq(and_loop.get("event_statuses", []), [0, 1, 2], "event0 waits while event1 exists; unresolved 雷歐納德 count never fires; absent SID_ENEMY099 (0 < 5) fires")
+	_assert_eq(_projected(Winfail.story_dialogue_messages(and_loop)), [["0", "702"]], "only the resolvable class count fired")
+	and_loop["turn"] = 3
+	and_loop = Winfail.run_event_hooks(and_loop)
+	_assert_eq(and_loop.get("event_statuses", []), [0, 2], "event1 consumed at round 3; event0 needs another pass")
+	and_loop = Winfail.run_event_hooks(and_loop)
+	_assert_eq(and_loop.get("event_statuses", []), [2], "event0 fires once event1 no longer exists")
+
+	# Mid-chain actCheckEventNotExist (0x450840 case 0x72 in the status-object tick 0x453b30):
+	# a listed event still armed ends the chain there; none armed lets it continue.
+	var gate_sections := [
+		_section("event", 0, [_command("actCheckRoundNumber", [1]), _command("actMessage", ["SID_PLAYER0", 1, "710"]), _command("actCheckEventNotExist", [2, 1, 2]), _command("actMessage", ["SID_PLAYER0", 1, "711"]), _command("actInsertWinStatus", [0])]),
+		_section("event", 1, [_command("actCheckRoundNumber", [3])]),
+		_section("win", 0, [_command("actTRUE")], "-1,121"),
+	]
+	var gate_rules: Dictionary = Winfail.rules_from_seed(_seed(gate_sections, [_command("actInsertEventStatus", [0])]))
+	_assert_true(bool(gate_rules["fully_supported"]) and bool(gate_rules["statuses"]["event"][0]["actions"][1].get("chain_gate", false)), "a mid-chain actCheckEventNotExist compiles as a supported chain gate")
+	var gated: Dictionary = Winfail.run_event_hooks(Winfail.initialize_script_state(battle, scenario, _seed(gate_sections, [_command("actInsertEventStatus", [0]), _command("actInsertEventStatus", [1])])))
+	_assert_eq(_projected(Winfail.story_dialogue_messages(gated)), [["0", "710"]], "the chain runs up to the gate and stops while a listed event is armed")
+	_assert_eq([gated.get("event_statuses", []), gated.get("win_statuses", []), int(gated["winfail_runtime"]["fired"][0].get("chain_stop_index", -1)), gated["winfail_runtime"]["unsupported_encountered"]], [[1], [], 2, []], "the gated status is consumed, win 0 stays unarmed, the stop index is recorded")
+	var open_gate: Dictionary = Winfail.run_event_hooks(Winfail.initialize_script_state(battle, scenario, _seed(gate_sections, [_command("actInsertEventStatus", [0])])))
+	_assert_eq(_projected(Winfail.story_dialogue_messages(open_gate)), [["0", "710"], ["0", "711"]], "with no listed event armed the chain continues past the gate")
+	_assert_eq([open_gate.get("win_statuses", []), open_gate["winfail_runtime"]["fired"][0].has("chain_stop_index")], [[0], false], "the passed gate arms win 0 and records no stop")
+
+	# HP ratio, actMessageIfExist branches, actDeleteObject departures, dedupe within one status.
+	var hp_seed := _seed([
+		_section("event", 0, [_command("actCheckPlayerHPLow", ["SID_ENEMY023", 1, 30]), _command("actMessageIfExist", ["SID_PLAYER0", 1, "800", "801", 1, "SID_ENEMY023"]), _command("actDeleteObject", ["SID_ENEMY023", 2]), _command("actSetPlayerUndead", ["SID_ENEMY023", 1, 0]), _command("actWaitPlayer", ["SID_PLAYER0", 1]), _command("actSetWaitRound", ["SID_ENEMY023", 1, 3])]),
+		_section("event", 1, [_command("actCheckEnemyTotalNumber", [1]), _command("actMessageIfExist", ["SID_PLAYER0", 1, "802", "803", 1, "SID_ENEMY099"]), _command("actMessage", ["SID_PLAYER0", 1, "803"])]),
+	], [_command("actInsertEventStatus", [0]), _command("actInsertEventStatus", [1])])
+	var hp_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, hp_seed)
+	hp_loop = Winfail.run_event_hooks(hp_loop)
+	_assert_eq(hp_loop.get("event_statuses", []), [0, 1], "full HP: nothing fires")
+	hp_loop["units"][1]["hp"] = 4
+	hp_loop = Winfail.run_event_hooks(hp_loop)
+	_assert_eq(hp_loop.get("event_statuses", []), [0, 1], "4/10 is above 30%")
+	hp_loop["units"][1]["hp"] = 3
+	hp_loop = Winfail.run_event_hooks(hp_loop)
+	_assert_eq(hp_loop.get("event_statuses", []), [1], "3/10 <= 30% fires event0 and that scan ends there")
+	hp_loop = Winfail.run_event_hooks(hp_loop)
+	_assert_eq(hp_loop.get("event_statuses", []), [], "the departed second soldier leaves one enemy so the next scan fires event1")
+	_assert_eq(_projected(Winfail.story_dialogue_messages(hp_loop)), [["0", "800"], ["0", "803"]], "true branch 800 (023 alive), false branch 803 (no 099), duplicate 803 collapsed")
+	_assert_eq(hp_loop["winfail_runtime"]["departed_unit_ids"], ["foe_2"], "actDeleteObject serial 2 departs the second living unit of the class")
+	_assert_eq((hp_loop["winfail_runtime"]["undead"] as Array).size(), 1, "actSetPlayerUndead recorded")
+	_assert_eq((hp_loop["winfail_runtime"]["wait_requests"] as Array).size(), 2, "actWaitPlayer and actSetWaitRound recorded")
+	_assert_eq(hp_loop["winfail_runtime"]["wait_requests"][1]["rounds"], 3, "wait rounds kept")
+
+	# Inserts: class join, wait round on the insert record, per-class accounting, self re-arm guard.
+	var insert_seed := _seed([
+		_section("event", 0, [_command("actCheckRoundNumber", [2]), _command("actInsertObject", ["obj_Story_Test_Enemy23", -32, 480]), _command("actSetPrevInsertObjectWaitRound", [2]), _command("actWalkPrevInsertObjectWait", [160, 576, 8]), _command("actInsertObject", ["obj_Unknown_Symbol", 0, 0]), _command("actWalkPrevInsertObject", [64, 64, 0]), _command("actInsertEventStatus", [0])]),
+	], [_command("actInsertEventStatus", [0])], objects)
+	var insert_rules: Dictionary = Winfail.rules_from_seed(insert_seed)
+	var insert_status: Dictionary = insert_rules["statuses"]["event"][0]
+	_assert_eq(insert_status["inserts"][0]["wait_round"], 2, "actSetPrevInsertObjectWaitRound folded into the insert")
+	_assert_eq(insert_status["inserts"][0]["class_id"], "Enemy023", "insert class from obj_Data7")
+	_assert_eq(insert_status["inserts"][1]["class_id"], "", "unknown symbol has no class")
+	_assert_eq(Winfail.insert_walk_cells(insert_rules), [Vector2i(5, 18), Vector2i(2, 2)], "two landing cells")
+	var insert_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, insert_seed)
+	insert_loop["turn"] = 2
+	insert_loop = Winfail.run_event_hooks(insert_loop)
+	_assert_eq(Winfail.reinforcement_deficits(insert_loop), {"Enemy023": 1}, "only the joined class is owed")
+	_assert_true((insert_loop["winfail_runtime"]["unresolved_tokens"] as Array).any(func(record): return str(record["token"]) == "obj_Unknown_Symbol"), "unknown insert symbol reported")
+	_assert_eq(insert_loop.get("event_statuses", []), [0], "self re-arming insert event re-armed")
+	insert_loop = Winfail.run_event_hooks(insert_loop)
+	_assert_eq(Winfail.reinforcement_deficits(insert_loop), {"Enemy023": 1}, "re-armed insert event waits for its recruit before asking again")
+	insert_loop["units"].append(_unit("Enemy023_reinforcement_9", "Enemy023", Vector2i(5, 18), 10, "enemy_ai"))
+	_assert_eq(Winfail.reinforcement_deficits(insert_loop), {}, "recruit settles the deficit")
+	insert_loop = Winfail.run_event_hooks(insert_loop)
+	_assert_eq(Winfail.reinforcement_deficits(insert_loop), {"Enemy023": 1}, "then it asks for the next one")
+
+	# actCheckPlayer with several tokens needs all of them down; actCheckEnemy shares the reading.
+	var multi := _seed([
+		_section("fail", 0, [_command("actCheckPlayer", [2, "SID_PLAYER0", "SID_ENEMY023"])], "-1,748"),
+		_section("win", 0, [_command("actCheckEnemy", [1, "SID_ENEMY023"]), _command("actMessage", ["SID_PLAYER0", 1, "900"]), _command("actSetNextPlayLevelEvent", [7, 7])], "-1,121"),
+		_section("win", 1, [_command("actCheckPlayerArrivePos", ["SID_PLAYER0", 1, 64, 64, 95, 95]), _command("actSetNextPlayLevelEvent", [8, 8])], "SID_PLAYER0,362"),
+	], [_command("actInsertFailStatus", [0]), _command("actInsertWinStatus", [0]), _command("actInsertWinStatus", [1])])
+	var multi_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, multi)
+	_assert_eq(multi_loop.get("next_level_event", []), [7, 7], "default next level from the first win status")
+	_assert_eq(multi_loop.get("next_level_event_status", "?"), "", "the win-section default names no issuing status")
+	_assert_eq(multi_loop.get("objective_phase", ""), "escape", "an armed arrival win makes the objective an escape")
+	_assert_eq(multi_loop.get("escape_zone", []), [Vector2i(2, 2)], "escape zone from the arrival rectangle")
+	_assert_eq((Winfail.objective_board(multi_loop)["win"] as Array).size(), 2, "both armed win labels listed")
+	_kill(multi_loop, "hero")
+	# hero is the only fielded player: the remake party-wipe rule (not fail 0) decides here.
+	_assert_eq(Winfail.commit_outcome(multi_loop)["winfail_runtime"]["resolved"]["key"], Winfail.PARTY_WIPE_KEY, "one of two listed units down: fail 0 does not hold (the party wipe is the recorded resolution)")
+	multi_loop["units"][0]["hp"] = 10
+	multi_loop["units"][0]["defeated"] = false
+	multi_loop["units"][0]["coord"] = Vector2i(2, 2)
+	_assert_eq(Winfail.victory_state(multi_loop), BattleOutcome.VICTORY_ESCAPE, "arrival wins")
+	var escaped: Dictionary = Winfail.commit_outcome(multi_loop)
+	_assert_eq(escaped.get("next_level_event", []), [8, 8], "the fired win overrides the default next level")
+	_assert_eq(escaped.get("next_level_event_status", ""), "win_1", "the fired status that wrote the token is recorded")
+	_assert_eq(Winfail.result_message_id(escaped, BattleOutcome.VICTORY_ESCAPE), "362", "arrival board label")
+	# A fired dialogue-only event leaves the default token and no issuing status:
+	# the runtime must not end the battle from its cutscene (WINFAIL010 event_6).
+	var chatter := _seed([
+		_section("win", 0, [_command("actCheckEnemy", [1, "SID_ENEMY023"]), _command("actSetNextPlayLevelEvent", [7, 7])], "-1,121"),
+		_section("event", 0, [_command("actCheckRoundNumber", [2]), _command("actMessage", ["SID_PLAYER0", 1, "901"])]),
+		_section("event", 1, [_command("actCheckRoundNumber", [3]), _command("actMessage", ["SID_PLAYER0", 1, "902"]), _command("actSetNextPlayLevelEvent", [41, 49])]),
+	], [_command("actInsertWinStatus", [0]), _command("actInsertEventStatus", [0]), _command("actInsertEventStatus", [1])])
+	var chatter_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, chatter)
+	chatter_loop["turn"] = 2
+	chatter_loop = Winfail.run_event_hooks(chatter_loop)
+	_assert_eq(chatter_loop.get("event_log", []), ["event_0"], "the round-2 dialogue event fires")
+	_assert_eq(chatter_loop.get("next_level_event", []), [7, 7], "a dialogue-only event keeps the win-section default")
+	_assert_eq(chatter_loop.get("next_level_event_status", "?"), "", "and names no issuing status")
+	chatter_loop["turn"] = 3
+	chatter_loop = Winfail.run_event_hooks(chatter_loop)
+	_assert_eq(chatter_loop.get("next_level_event", []), [41, 49], "an event carrying actSetNextPlayLevelEvent rewrites the token")
+	_assert_eq(chatter_loop.get("next_level_event_status", ""), "event_1", "and is recorded as the issuing status for the runtime's event-only handoff")
+	multi_loop["units"][0]["coord"] = Vector2i(1, 1)
+	_kill(multi_loop, "foe_1")
+	_kill(multi_loop, "foe_2")
+	_kill(multi_loop, "friend_1")
+	_assert_eq(Winfail.victory_state(multi_loop), BattleOutcome.VICTORY_BOSS, "all Enemy023 down satisfies actCheckEnemy")
+	multi_loop["battle_outcome"] = BattleOutcome.VICTORY_BOSS
+	_assert_eq(_projected(Winfail.story_dialogue_messages(multi_loop)), [["0", "900"]], "win message without commit")
+	_assert_eq(Winfail.result_message_id(multi_loop, BattleOutcome.VICTORY_BOSS), "121", "board label of the deciding win")
+
+	# hsl01.exe 0x450840 case 0x23/0x26 only counts ids 0x44fad0 still finds: a listed class
+	# with no unit at all is fallen (WINFAIL533 lists 024/027 its EVEF never places), while a
+	# token the remake cannot resolve never satisfies a check.
+	var absent := _seed([
+		_section("fail", 0, [_command("actCheckPlayer", [2, "SID_PLAYER0", "SID_不明"])], "-1,748"),
+		_section("win", 0, [_command("actCheckEnemy", [3, "SID_ENEMY024", "SID_ENEMY023", "SID_ENEMY027"]), _command("actSetNextPlayLevelEvent", [7, 7])], "-1,121"),
+	], [_command("actInsertFailStatus", [0]), _command("actInsertWinStatus", [0])])
+	var absent_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, absent)
+	_assert_eq(Winfail.victory_state(absent_loop), {}, "a living Enemy023 keeps the win open although 024/027 were never placed")
+	_assert_true((absent_loop["winfail_runtime"]["unresolved_tokens"] as Array).any(func(record): return str(record["token"]) == "SID_不明"), "the unresolvable check token is reported")
+	_kill(absent_loop, "hero")
+	_assert_eq(Winfail.commit_outcome(absent_loop)["winfail_runtime"]["resolved"]["key"], Winfail.PARTY_WIPE_KEY, "an unresolved token never counts as fallen: fail 0 still needs two (the party wipe is the recorded resolution)")
+	absent_loop["units"][0]["hp"] = 10
+	absent_loop["units"][0]["defeated"] = false
+	_kill(absent_loop, "foe_1")
+	_kill(absent_loop, "foe_2")
+	_kill(absent_loop, "friend_1")
+	_assert_eq(Winfail.victory_state(absent_loop), BattleOutcome.VICTORY_BOSS, "never-placed 024/027 count as fallen once every 023 is down")
+
+	# Player-side totals, any-player arrival, walk-and-delete departures, carry and presentation records.
+	var side_seed := _seed([
+		_section("fail", 0, [_command("actCheckPlayerTotalNumber", [0])], "-1,748"),
+		_section("win", 0, [_command("actCheckAnyPlayerArrivePos", [128, 128, 128, 128]), _command("actKeepPlayerST"), _command("actScrollBGToPos", [64, 64]), _command("actBMClearTrackFlag", [3, "bmpmHidden"])], "-1,121"),
+		_section("event", 0, [_command("actCheckRoundNumber", [2]), _command("actWalkAndDeleteWait", ["SID_ENEMY023", 1, 608, 1280, 8]), _command("actInsertObject", ["obj_Story_Test_Enemy23", 0, 0]), _command("actSetPrevInsertObjectFly", [1]), _command("actSetPrevInsertObjectST", [20]), _command("actSetPrevInsertObjectEquip", [5, 0]), _command("actWalkPrevInsertObject", [96, 96, 0])]),
+	], [_command("actInsertFailStatus", [0]), _command("actInsertWinStatus", [0]), _command("actInsertEventStatus", [0])], objects)
+	var side_rules: Dictionary = Winfail.rules_from_seed(side_seed)
+	_assert_true(bool(side_rules["fully_supported"]), "player-side checks, departures, carry, scroll and big-map flags are all supported tokens")
+	var side_insert: Dictionary = side_rules["statuses"]["event"][0]["inserts"][0]
+	_assert_eq([side_insert["fly"], side_insert["stamina"], side_insert["equip"], side_insert["walk_cell"]], [1, 20, [[5, 0]], [3, 3]], "insert modifiers folded into the record")
+	var side_loop: Dictionary = Winfail.initialize_script_state(battle, scenario, side_seed)
+	_assert_eq(side_loop.get("objective_phase", ""), "escape", "any-player arrival is an escape objective")
+	_assert_eq(side_loop.get("escape_zone_cells", []), [[4, 4]], "any-player arrival cell (4,4); friend_1 at (2,2) is not on it")
+	_assert_eq(Winfail.victory_state(side_loop), {}, "nobody arrived, two player-side units alive")
+	side_loop["turn"] = 2
+	side_loop = Winfail.run_event_hooks(side_loop)
+	_assert_eq(side_loop["winfail_runtime"]["departed_unit_ids"], ["foe_1"], "actWalkAndDeleteWait departs the first living 023")
+	_assert_eq(side_loop["winfail_runtime"]["presentation_requests"][0]["name"], "actWalkAndDeleteWait", "the walk-out is also a presentation request")
+	_assert_eq(Winfail.reinforcement_deficits(side_loop), {"Enemy023": 1}, "the flying recruit is owed")
+	side_loop["units"][3]["coord"] = Vector2i(4, 4)
+	_assert_eq(Winfail.victory_state(side_loop), BattleOutcome.VICTORY_ESCAPE, "a friendly unit on the cell satisfies actCheckAnyPlayerArrivePos")
+	var side_won: Dictionary = Winfail.commit_outcome(side_loop)
+	_assert_eq(side_won["winfail_runtime"]["carry_requests"], [{"key": "win_0", "kind": "keep_stamina"}], "actKeepPlayerST recorded as a carry request")
+	_assert_eq((side_won["winfail_runtime"]["pending_world_flags"] as Array).size(), 1, "actBMClearTrackFlag recorded as a world flag")
+	_assert_eq(side_won["winfail_runtime"]["presentation_requests"][1], {"key": "win_0", "name": "actScrollBGToPos", "args": ["64", "64"]}, "win scroll recorded for a coordinator")
+	side_loop["units"][3]["coord"] = Vector2i(9, 9)
+	_kill(side_loop, "hero")
+	_assert_eq(Winfail.commit_outcome(side_loop)["winfail_runtime"]["resolved"]["key"], Winfail.PARTY_WIPE_KEY, "one friendly still alive: player total 1 > 0 (actCheckPlayerTotalNumber does not hold; the wipe of the only controlled unit is the recorded resolution)")
+	_kill(side_loop, "friend_1")
+	_assert_eq(Winfail.victory_state(side_loop), BattleOutcome.DEFEAT_FALLEN, "no player-side unit alive: actCheckPlayerTotalNumber 0 fails the battle")
+
+	var frozen := multi_loop.duplicate(true)
+	frozen["battle_outcome"] = BattleOutcome.VICTORY_BOSS
+	_assert_eq(Winfail.run_event_hooks(frozen)["winfail_runtime"]["fired"], frozen["winfail_runtime"]["fired"], "hooks are inert once the outcome is frozen")
+
+
+func _round_and_x_range_tokens() -> void:
+	var round_seed := _seed([
+		_section("event", 0, [_command("actCheckRoundDisp", [5]), _command("actMessage", ["SID_PLAYER0", 1, 900])]),
+	], [_command("actInsertEventStatus", [0])])
+	var scenario := {"scenario_rules": {}, "opening": {"actor_bindings": {"SID_PLAYER0/1": {"unit_id": "p0", "actor_id": "001"}}}}
+	var round_loop: Dictionary = Winfail.initialize_script_state({"player_unit_id": "p0", "turn": 1, "units": [_unit("p0", "Player001", Vector2i(1, 1), 10, "player_controlled")]}, scenario, round_seed)
+	round_loop["turn"] = 4
+	round_loop = Winfail.run_event_hooks(round_loop)
+	_assert_eq(round_loop["winfail_runtime"]["fired"].size(), 0, "actCheckRoundDisp is false before round 5")
+	round_loop["turn"] = 5
+	round_loop = Winfail.run_event_hooks(round_loop)
+	_assert_eq(round_loop["winfail_runtime"]["fired"].size(), 1, "actCheckRoundDisp is true at round 5")
+
+	var detect_seed := _seed([
+		_section("event", 0, [_command("actDetectRoundDispDisp", [-2]), _command("actMessage", ["SID_PLAYER0", 1, 901])]),
+	], [_command("actInsertEventStatus", [0])])
+	var detect_loop: Dictionary = Winfail.initialize_script_state({"player_unit_id": "p0", "turn": 1, "units": [_unit("p0", "Player001", Vector2i(1, 1), 10, "player_controlled")]}, scenario, detect_seed)
+	detect_loop["winfail_runtime"]["round_display_baseline"] = 5
+	detect_loop["turn"] = 2
+	detect_loop = Winfail.run_event_hooks(detect_loop)
+	_assert_eq(detect_loop["winfail_runtime"]["fired"].size(), 0, "actDetectRoundDispDisp is false before baseline plus offset")
+	detect_loop["turn"] = 3
+	detect_loop = Winfail.run_event_hooks(detect_loop)
+	_assert_eq(detect_loop["winfail_runtime"]["fired"].size(), 1, "actDetectRoundDispDisp is true at baseline plus offset")
+
+	var x_seed := _seed([
+		_section("event", 0, [
+			_command("actTRUE"),
+			_command("actDeletePosPlayerXRange", [32, 128, 3, "defProcPlayer"]),
+			_command("actInsertStoryObjectXRange", ["obj_Story_Block", 480, 640, 3]),
+			_command("actInsertLevelUpStar", ["WAV\\EFF0010.WAV"]),
+			_command("actPlayMovie", [140]),
+		]),
+	], [_command("actInsertEventStatus", [0])])
+	var x_units := [
+		_unit("player_in", "Player001", Vector2i(1, 4), 10, "player_controlled"),
+		_unit("player_in_2", "Player002", Vector2i(3, 4), 10, "friendly_ai"),
+		_unit("enemy_in", "Enemy023", Vector2i(2, 4), 10, "enemy_ai"),
+		_unit("player_out", "Player003", Vector2i(2, 5), 10, "player_controlled"),
+	]
+	var x_loop: Dictionary = Winfail.initialize_script_state({"player_unit_id": "player_in", "turn": 1, "units": x_units}, scenario, x_seed)
+	x_loop = Winfail.run_event_hooks(x_loop)
+	var runtime: Dictionary = x_loop["winfail_runtime"]
+	_assert_true(bool(Winfail.rules_from_seed(x_seed)["fully_supported"]), "round display and X-range tokens are supported")
+	_assert_eq(runtime["player_x_range_delete_requests"][0]["unit_ids"], ["player_in", "player_in_2"], "X-range deletion selects only player-side units in the three-cell pixel span")
+	_assert_eq(runtime["departed_unit_ids"], ["player_in", "player_in_2"], "X-range deletion uses the existing departure ledger")
+	_assert_eq(runtime["story_object_x_range_requests"][0]["positions"].map(func(value): return value["cell"]), [Vector2i(15, 20), Vector2i(16, 20), Vector2i(17, 20)], "X-range insertion quantizes pixels and includes exactly x_number cells")
+	_assert_eq(runtime["level_up_star_requests"][0]["status"], "skipped_no_level_up_star_sprite", "level-up star has an explicit presentation skip")
+	_assert_eq(runtime["movie_requests"][0]["movie"], "end", "actPlayMovie 140 records the ending film request")
+
+
+## ---------------------------------------------------------------------------
+## (4) adapter dispatch: rule_adapter "winfail" routes every seam to the interpreter
+
+func _random_position_family() -> void:
+	var object_record := {"symbol": "obj_Story_Test_Enemy23", "object_data_fields": {"obj_Data6": "SID_ENEMY023", "obj_Data7": "23"}}
+	var random_seed := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actSetPlayerPosToRandom0", ["SID_ENEMY023", 1]), _command("actInsertObjectRandomPos", ["obj_Story_Test_Enemy23", 0, 0, 0]), _command("actInsertRandomObject", ["obj_Effect_Test", 0, 32, 32, 4, 4]), _command("actDeleteRandomPosObject", [0, 16, "defProcEnemy"])]),
+	], [_command("actInsertEventStatus", [0])], [object_record])
+	var tiles := {}
+	for y in range(6):
+		for x in range(6):
+			tiles[Vector2i(x, y)] = {"blocks_movement": false, "movement_flags": 0}
+	var battle := {STREAM_KEYS["global"]: GlobalRandom.seeded(1), "map_size": Vector2i(6, 6), "tiles": tiles, "turn": 1, "player_unit_id": "hero", "units": [_unit("hero", "Player001", Vector2i(1, 1), 10, "player_controlled"), _unit("foe", "Enemy023", Vector2i(2, 2), 10, "enemy_ai")]}
+	var first: Dictionary = Winfail.initialize_script_state(battle, {"rule_adapter": "winfail"}, random_seed)
+	var second: Dictionary = Winfail.initialize_script_state(battle, {"rule_adapter": "winfail"}, random_seed)
+	first = Winfail.run_event_hooks(first)
+	second = Winfail.run_event_hooks(second)
+	var first_runtime: Dictionary = first["winfail_runtime"]
+	var second_runtime: Dictionary = second["winfail_runtime"]
+	var effect: Dictionary = first_runtime["presentation_requests"].filter(func(item): return item.get("name") == "actInsertRandomObject")[0]
+	_assert_eq([effect["objects"].size(), effect["rng_after"]], [4, GlobalRandom.advance(GlobalRandom.seeded(1), 12)], "actInsertRandomObject draws width, height and delay on the global stream for each of its 4 objects (0x450f99)")
+	_assert_eq(first_runtime["inserts"][0]["position_xy"], second_runtime["inserts"][0]["position_xy"], "fixed seed produces the same random insertion pixel")
+	var coord: Vector2i = Vector2i(first_runtime["inserts"][0]["position_xy"][0] / 32, first_runtime["inserts"][0]["position_xy"][1] / 32)
+	_assert_true(coord.x >= 0 and coord.y >= 0 and coord.x < 6 and coord.y < 6, "random insertion stays inside the map")
+	_assert_true(not first["tiles"][coord].get("blocks_movement", false), "random insertion avoids blocked terrain")
+	_assert_eq(coord, Vector2i(2, 2), "actInsertObjectRandomPos inserts at slot 0 plus its displacement, drawing nothing (0x450f2c)")
+	_assert_eq(first_runtime["departed_unit_ids"], ["foe"], "random-position delete uses slot zero and records the existing object departure")
+	_assert_eq(first_runtime["presentation_requests"].filter(func(item): return item.get("name") == "actSetDoublePageMode").size(), 0, "random fixture has no double-page request")
+
+
+func _adapter_dispatch() -> void:
+	var seed: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/chapter01/battle053_seed.json"))
+	var scenario := {"rule_adapter": "winfail", "scenario_rules": {"reinforcement_class_id": "Enemy023"}, "opening": {"speaker_resource_ids": {"SID_PLAYER1": "1", "SID_ENEMY023": "376"}, "actor_bindings": {"SID_PLAYER1/1": {"unit_id": "tina"}}}}
+	var battle := {
+		"player_unit_id": "tina", "turn": 1, "units": [
+			_unit("tina", "Player002", Vector2i(20, 23)),
+			_unit("guard023_1", "Enemy023", Vector2i(29, 24)),
+			_unit("guard023_2", "Enemy023", Vector2i(27, 23)),
+			_unit("gate023_1", "Enemy023", Vector2i(30, 36)),
+		],
+	}
+	_assert_eq(Adapter.adapter_id(scenario), Adapter.WINFAIL, "adapter id from rule_adapter")
+	_assert_eq(Adapter.script_resource_key(scenario), "battle_seed", "the interpreter reads the battle seed")
+	_assert_true(Adapter.script_payload_valid(scenario, seed), "battle053 seed is a valid payload")
+	_assert_true(not Adapter.script_payload_valid(scenario, {"schema": "hsl_battle_seed.v1", "scripts": {}}), "a seed without a winfail script is rejected before initialization")
+	_assert_true(not Adapter.script_payload_valid(scenario, {"schema": "other"}), "foreign payload rejected")
+	_assert_eq(Adapter.runtime_rules(scenario), scenario["scenario_rules"], "runtime rules come from scenario_rules")
+	var dispatched: Dictionary = Adapter.initialize_script_state(battle.merged({"rule_adapter": "winfail"}), scenario, seed)
+	_assert_eq(dispatched.get("objective_phase", ""), "escape", "adapter initialize reaches WinfailScenarioRules")
+	_assert_eq(dispatched.get("event_statuses", []), [0, 1, 2], "adapter initialize arms the three events")
+	_assert_eq(dispatched.get("next_level_event", []), [1, 1], "adapter initialize arms the campaign hand-off")
+	dispatched["turn"] = 5
+	dispatched = Adapter.run_event_hooks(dispatched)
+	_assert_eq(Adapter.reinforcement_deficits(dispatched), {"Enemy023": 1}, "adapter round hook + deficit dispatch")
+	var attack_scan: Dictionary = Adapter.run_event_hooks(dispatched, true)
+	_assert_eq(Adapter.reinforcement_deficits(attack_scan), {"Enemy023": 1}, "an attack-context completion scan re-evaluates without doubling the owed insert")
+	_assert_eq(attack_scan.get("event_statuses", []), [1, 2], "an attack-context completion scan leaves the round events alone")
+	_assert_eq(Adapter.victory_state(dispatched), {}, "adapter victory dispatch")
+	(dispatched["units"][0] as Dictionary)["coord"] = Vector2i(30, 35)
+	_assert_eq(Adapter.victory_state(dispatched), BattleOutcome.VICTORY_ESCAPE, "adapter sees the gate cell arrival")
+	dispatched["battle_outcome"] = BattleOutcome.VICTORY_ESCAPE
+	_assert_eq(Adapter.story_dialogue_messages(dispatched), [{"key": Winfail.TERMINAL_DIALOGUE_KEY, "speaker_id": "1", "message_id": "704", "actor_token": "SID_PLAYER1"}], "adapter dialogue dispatch")
+	_assert_eq(Adapter.result_message_id(dispatched, BattleOutcome.VICTORY_ESCAPE), "695", "adapter result label dispatch")
+	_assert_eq(Adapter.objective_board(dispatched).get("win", []).size(), 1, "adapter board dispatch")
+	_assert_eq(Adapter.objective_board({"rule_adapter": "development_battle"}), {"win": [], "fail": [], "event": []}, "development battles keep an empty board")
+	_assert_eq(Adapter.result_message_id({"rule_adapter": "second_battle"}, BattleOutcome.VICTORY_BOSS), "", "second battle has no board result label yet")
+	var unsupported: Dictionary = Adapter.initialize_script_state(battle.merged({"rule_adapter": "third_battle"}), {"rule_adapter": "third_battle"}, seed)
+	_assert_eq(unsupported.get("scenario_error", ""), "unsupported_rule_adapter", "the retired third_battle adapter id fails explicitly")

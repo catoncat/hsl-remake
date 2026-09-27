@@ -1,0 +1,466 @@
+{
+  "schema": "hsl_mobile_motion_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "program": [
+    4,
+    0,
+    655360,
+    65536,
+    0,
+    1,
+    12,
+    4,
+    128,
+    655360,
+    32768,
+    0,
+    1,
+    35,
+    5,
+    0
+  ],
+  "motion": {
+    "states": [
+      {
+        "x": 10,
+        "y": 0,
+        "speed": 589824,
+        "flags": 8192
+      },
+      {
+        "x": 19,
+        "y": 0,
+        "speed": 524288,
+        "flags": 8192
+      },
+      {
+        "x": 27,
+        "y": 0,
+        "speed": 458752,
+        "flags": 8192
+      },
+      {
+        "x": 34,
+        "y": 0,
+        "speed": 393216,
+        "flags": 8192
+      },
+      {
+        "x": 40,
+        "y": 0,
+        "speed": 327680,
+        "flags": 8192
+      },
+      {
+        "x": 45,
+        "y": 0,
+        "speed": 262144,
+        "flags": 8192
+      },
+      {
+        "x": 49,
+        "y": 0,
+        "speed": 196608,
+        "flags": 8192
+      },
+      {
+        "x": 52,
+        "y": 0,
+        "speed": 131072,
+        "flags": 8192
+      },
+      {
+        "x": 54,
+        "y": 0,
+        "speed": 65536,
+        "flags": 8192
+      },
+      {
+        "x": 55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": 55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": 55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": 55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": 55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": 45,
+        "y": 0,
+        "speed": 622592,
+        "flags": 8192
+      },
+      {
+        "x": 35,
+        "y": 0,
+        "speed": 589824,
+        "flags": 8192
+      },
+      {
+        "x": 26,
+        "y": 0,
+        "speed": 557056,
+        "flags": 8192
+      },
+      {
+        "x": 17,
+        "y": 0,
+        "speed": 524288,
+        "flags": 8192
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "speed": 491520,
+        "flags": 8192
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "speed": 458752,
+        "flags": 8192
+      },
+      {
+        "x": -6,
+        "y": 0,
+        "speed": 425984,
+        "flags": 8192
+      },
+      {
+        "x": -13,
+        "y": 0,
+        "speed": 393216,
+        "flags": 8192
+      },
+      {
+        "x": -19,
+        "y": 0,
+        "speed": 360448,
+        "flags": 8192
+      },
+      {
+        "x": -25,
+        "y": 0,
+        "speed": 327680,
+        "flags": 8192
+      },
+      {
+        "x": -30,
+        "y": 0,
+        "speed": 294912,
+        "flags": 8192
+      },
+      {
+        "x": -35,
+        "y": 0,
+        "speed": 262144,
+        "flags": 8192
+      },
+      {
+        "x": -39,
+        "y": 0,
+        "speed": 229376,
+        "flags": 8192
+      },
+      {
+        "x": -43,
+        "y": 0,
+        "speed": 196608,
+        "flags": 8192
+      },
+      {
+        "x": -46,
+        "y": 0,
+        "speed": 163840,
+        "flags": 8192
+      },
+      {
+        "x": -49,
+        "y": 0,
+        "speed": 131072,
+        "flags": 8192
+      },
+      {
+        "x": -51,
+        "y": 0,
+        "speed": 98304,
+        "flags": 8192
+      },
+      {
+        "x": -53,
+        "y": 0,
+        "speed": 65536,
+        "flags": 8192
+      },
+      {
+        "x": -54,
+        "y": 0,
+        "speed": 32768,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 8192
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 0
+      },
+      {
+        "x": -55,
+        "y": 0,
+        "speed": 0,
+        "flags": 0
+      }
+    ],
+    "normal_return": false,
+    "dispatcher_stop": "0x4034c6",
+    "motion_stop": "0x4035eb",
+    "instructions": 6013
+  },
+  "xy": [
+    {
+      "input": {
+        "offset": [
+          50,
+          0
+        ],
+        "mirrored": false
+      },
+      "position": [
+        370,
+        320
+      ],
+      "normal_return": false,
+      "entry": "0x40218f",
+      "stop_address": "0x4034c6",
+      "instructions": 43,
+      "next_over_same_call": true
+    },
+    {
+      "input": {
+        "offset": [
+          50,
+          0
+        ],
+        "mirrored": true
+      },
+      "position": [
+        270,
+        320
+      ],
+      "normal_return": false,
+      "entry": "0x40218f",
+      "stop_address": "0x4034c6",
+      "instructions": 46,
+      "next_over_same_call": true
+    },
+    {
+      "input": {
+        "offset": [
+          0,
+          -140
+        ],
+        "mirrored": false
+      },
+      "position": [
+        320,
+        180
+      ],
+      "normal_return": false,
+      "entry": "0x40218f",
+      "stop_address": "0x4034c6",
+      "instructions": 43,
+      "next_over_same_call": true
+    },
+    {
+      "input": {
+        "offset": [
+          0,
+          -140
+        ],
+        "mirrored": true
+      },
+      "position": [
+        320,
+        180
+      ],
+      "normal_return": false,
+      "entry": "0x40218f",
+      "stop_address": "0x4034c6",
+      "instructions": 46,
+      "next_over_same_call": true
+    },
+    {
+      "input": {
+        "offset": [
+          -50,
+          17
+        ],
+        "mirrored": false
+      },
+      "position": [
+        270,
+        337
+      ],
+      "normal_return": false,
+      "entry": "0x40218f",
+      "stop_address": "0x4034c6",
+      "instructions": 43,
+      "next_over_same_call": true
+    },
+    {
+      "input": {
+        "offset": [
+          -50,
+          17
+        ],
+        "mirrored": true
+      },
+      "position": [
+        370,
+        337
+      ],
+      "normal_return": false,
+      "entry": "0x40218f",
+      "stop_address": "0x4034c6",
+      "instructions": 46,
+      "next_over_same_call": true
+    }
+  ],
+  "source_sha256": "e27783ef3148bad8523af95c7d111f1a3ed66c7c0844c7b7cfdabefb4ef9b4ea",
+  "limits": [
+    "XY suffix begins after optional afterimage construction, which is not stubbed or claimed executed. It applies relative coordinates and drains the next opcode in the same invocation.",
+    "Horizontal motion is an explicit authored-speed excerpt; full drawing/flash/mirroring dispatch remains separate. Signed half-speed rounds down per original fixed-point math.",
+    "Source006 consecutive zoom handler already has its own animal_program_execution proof; renderer wall-clock and framing remain remake choices."
+  ]
+}

@@ -1,0 +1,347 @@
+{
+  "schema": "godot_ordinary_special_default.v1",
+  "fixture": false,
+  "native_execution": false,
+  "scope": "Default first-battle values, normal clocks, actual controls and mouse restart; individual runs, not statistical balance.",
+  "routes": [
+    {
+      "policy": "hold",
+      "time_scale": 1.0,
+      "elapsed_seconds": 180.094,
+      "outcome": "victory_escape",
+      "turn": 7,
+      "restart": true,
+      "actions": [
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 2
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 3
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 4
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 5
+        },
+        {
+          "action": "move",
+          "cell": [
+            13,
+            14
+          ],
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 6
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 6
+        },
+        {
+          "action": "move",
+          "cell": [
+            14,
+            10
+          ],
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 7
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 7
+        }
+      ],
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "dialogue": [
+        "372",
+        "372",
+        "372",
+        "396",
+        "397",
+        "374",
+        "372",
+        "372",
+        "374",
+        "372",
+        "368",
+        "369",
+        "369",
+        "372",
+        "371"
+      ],
+      "visual_samples": {
+        "live-cue-cursor": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-range": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-target": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-hurt": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-windup": {
+          "sequence": 1,
+          "turn": 2
+        }
+      },
+      "captured_views": [
+        "status",
+        "map-range",
+        "map-cursor",
+        "map-target",
+        "attacker-shot",
+        "defender-shot"
+      ],
+      "player": {
+        "hp": 30,
+        "max_hp": 30.0,
+        "mp": 0.0,
+        "max_mp": 0.0,
+        "level": 1.0,
+        "exp": 0.0,
+        "pending_stat_points": 0,
+        "stamina": 0,
+        "kill_count": 0,
+        "kill_chain_word": 0,
+        "coord": "(14, 10)",
+        "combat_profile": {
+          "attack_back": 12.0,
+          "attack_damagex2": 14.0,
+          "avoid_hit_ratio": 0.0,
+          "con": 12.0,
+          "dex": 16.0,
+          "live_attack_damage": 54.0,
+          "live_defense": 43.0,
+          "live_hit_ratio": 98.0,
+          "live_magic_attack": 17.0,
+          "mind": 8.0,
+          "resist_by_type": {
+            "0": 16.0,
+            "1": 14.0,
+            "2": 13.0,
+            "3": 16.0,
+            "4": 12.0
+          },
+          "str": 16.0,
+          "weapon_damage_variance_hi": 0.0,
+          "weapon_damage_variance_lo": 0.0,
+          "weapon_magic_attack_type": -1.0
+        }
+      }
+    },
+    {
+      "policy": "advance",
+      "time_scale": 1.0,
+      "elapsed_seconds": 137.753,
+      "outcome": "defeat_leonard",
+      "turn": 5,
+      "restart": true,
+      "actions": [
+        {
+          "action": "move",
+          "cell": [
+            13,
+            14
+          ],
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "attack",
+          "exp": 35,
+          "hp": 20,
+          "level": 1.0,
+          "stamina": 11,
+          "target": "enemy021_4",
+          "turn": 2
+        },
+        {
+          "action": "move",
+          "cell": [
+            13,
+            11
+          ],
+          "exp": 35,
+          "hp": 20,
+          "level": 1.0,
+          "stamina": 11,
+          "turn": 3
+        },
+        {
+          "action": "attack",
+          "exp": 47,
+          "hp": 20,
+          "level": 1.0,
+          "stamina": 15,
+          "target": "enemy021_5",
+          "turn": 3
+        },
+        {
+          "action": "special",
+          "exp": 87,
+          "hp": 13,
+          "level": 1.0,
+          "stamina": 1,
+          "target": "Enemy021_reinforcement_13",
+          "turn": 4
+        }
+      ],
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "dialogue": [
+        "372",
+        "372",
+        "372",
+        "372",
+        "396",
+        "397",
+        "374",
+        "372",
+        "372",
+        "304"
+      ],
+      "visual_samples": {
+        "live-cue-cursor": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-range": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-target": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-hurt": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-windup": {
+          "sequence": 1,
+          "turn": 2
+        }
+      },
+      "captured_views": [
+        "status",
+        "map-range",
+        "map-cursor",
+        "map-target",
+        "attacker-shot",
+        "defender-shot",
+        "loot"
+      ],
+      "player": {
+        "hp": 0,
+        "max_hp": 30.0,
+        "mp": 0.0,
+        "max_mp": 0.0,
+        "level": 1.0,
+        "exp": 87,
+        "pending_stat_points": 0,
+        "stamina": 0,
+        "kill_count": 2,
+        "kill_chain_word": 0,
+        "coord": "(13, 11)",
+        "combat_profile": {
+          "attack_back": 12.0,
+          "attack_damagex2": 14.0,
+          "avoid_hit_ratio": 0.0,
+          "con": 12.0,
+          "dex": 16.0,
+          "live_attack_damage": 54.0,
+          "live_defense": 43.0,
+          "live_hit_ratio": 98.0,
+          "live_magic_attack": 17.0,
+          "mind": 8.0,
+          "resist_by_type": {
+            "0": 16.0,
+            "1": 14.0,
+            "2": 13.0,
+            "3": 16.0,
+            "4": 12.0
+          },
+          "str": 16.0,
+          "weapon_damage_variance_hi": 0.0,
+          "weapon_damage_variance_lo": 0.0,
+          "weapon_magic_attack_type": -1.0
+        }
+      }
+    }
+  ]
+}

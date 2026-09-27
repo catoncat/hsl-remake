@@ -1,0 +1,146 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 28,
+  "battle": {
+    "id": "battle_028_level28",
+    "title": "眾神的宮殿遺址 · 神殿守衛",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "眾神的宮殿遺址 · 戰鬥結束",
+      "fail_0": "眾神的宮殿遺址 · 雷歐納德 陣亡",
+      "fail_1": "眾神的宮殿遺址 · 雪拉 陣亡"
+    },
+    "expected": {
+      "units": 18,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY028 opens seven controlled party members and WINFAIL028 inserts nine Enemy050 units; nine source endpoints that do not align to the remake terrain are quantized or moved to nearest-free cells and remain provisional.",
+      "WINFAIL028 win_0 begins with actTRUE in the source section but is only inserted by event_2 after the round-4/event-display chain; the formal scenario deliberately has no initial_status_overrides so first control remains undecided.",
+      "actChangePrevInsertObjectID, actSetPrevInsertObjectWaitRound, round-display counters and fire-wall objects are retained as source-timed script requests; native object identity and display timing remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_028_palace_ruins_opening",
+    "title": "眾神的宮殿遺址（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "眾神的宮殿遺址",
+      "hint": "戰鬥部分（level 28）尚未重製　　空格／點擊：回到大地圖（眾神的宮殿遺址）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the seven controlled slots and the nine script-inserted Enemy050 have no battle scenario yet; the preview shows the EVEF placements, the white-light inserts and the camera scrolls only",
+      "actChangePrevInsertObjectID 5000-5003 and actSetPrevInsertObjectWaitRound 8 are recorded, not applied: the preview has no turn queue or object id table (the winfail fire-wall events key on those ids)"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "050"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)"
+  },
+  "sweep_fixture": {
+    "mode": "status",
+    "turn": 4,
+    "expect_no_outcome": true,
+    "expect_win_status": 0,
+    "note": "WINFAIL028 arms win_0 only after event_0 -> event_1 -> event_2 at the round-display transition; never add an initial win override."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 28 (眾神的宮殿遺址, point 28): the party enters the ruined palace from the south,",
+      "the camera scrolls up the hall and nine Enemy050 appear in white light at fixed points",
+      "(obj_Story_Level_WhiteLight + actInsertObject); four of them get ids 5000-5003 for the",
+      "winfail fire-wall events. 咕嚕 / 克羅蒂 are conditional installs.",
+      "STORY028 opens on actPlayLevelMusic: table 0x477b44 gives level 28 track 13",
+      "(as for levels 1 / 7)."
+    ],
+    "cast": [
+      "Level 28: the seven-slot party (咕嚕 / 克羅蒂 conditional; 克羅蒂 keeps a dead message) and",
+      "the Enemy050 that STORY028 inserts in white light."
+    ],
+    "speakers": [
+      "Level 28 (STORY028 / WINFAIL028): the seven-slot party (咕嚕 / 克羅蒂 are conditional installs but 克羅蒂 still has a dead message); Enemy050 appear in white light by script and do not speak."
+    ]
+  }
+}

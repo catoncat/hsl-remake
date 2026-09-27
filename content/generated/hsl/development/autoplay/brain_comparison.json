@@ -1,0 +1,1661 @@
+{
+  "schema": "hsl_autoplay_brain_comparison.v1",
+  "policies": {
+    "greedy": "greedy_public_commands_v1",
+    "scored": "candidate_plans_scored_v2_skills"
+  },
+  "selection": "first 20 main-line battles (key < 500) whose greedy outcome in results.json is fail, in campaign order",
+  "round_limit": 60,
+  "seed": 1,
+  "repeats": 3,
+  "modes": [
+    "greedy",
+    "scored"
+  ],
+  "levels": [
+    "2",
+    "3",
+    "5",
+    "6",
+    "7",
+    "10",
+    "12",
+    "13",
+    "15",
+    "17",
+    "18",
+    "19",
+    "21",
+    "22",
+    "24",
+    "26",
+    "28",
+    "29",
+    "30",
+    "31"
+  ],
+  "evidence_tier": "current-godot",
+  "knobs": {
+    "stat_scale": 1.0
+  },
+  "note": "Natural outcomes of the remake rules under the listed autoplay policies (tests/support/Autoplay.gd, tests/support/AutoplayBrain.gd) with the loop RNG seeded; wins are counted over repeats as a residual-variance check; not evidence about original balance.",
+  "seconds": 1843.3,
+  "summary": {
+    "greedy": {
+      "runs": 60,
+      "win": 0,
+      "fail": 60,
+      "dead_end": 0,
+      "seconds": 270.5
+    },
+    "scored": {
+      "runs": 60,
+      "win": 6,
+      "fail": 54,
+      "dead_end": 0,
+      "seconds": 1443.4
+    }
+  },
+  "battles": {
+    "2": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 2.9
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 3.7
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 2.6
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "win",
+            "battle_outcome": {
+              "result": "victory",
+              "reason": "enemies_cleared"
+            },
+            "rounds": 12,
+            "seconds": 9.6,
+            "plans": 28
+          },
+          {
+            "outcome": "win",
+            "battle_outcome": {
+              "result": "victory",
+              "reason": "enemies_cleared"
+            },
+            "rounds": 12,
+            "seconds": 9.7,
+            "plans": 28
+          },
+          {
+            "outcome": "win",
+            "battle_outcome": {
+              "result": "victory",
+              "reason": "enemies_cleared"
+            },
+            "rounds": 12,
+            "seconds": 9.7,
+            "plans": 28
+          }
+        ],
+        "win": 3,
+        "fail": 0,
+        "dead_end": 0,
+        "plan_kinds": {
+          "advance": 57,
+          "focus": 3,
+          "protect_hero": 3,
+          "special": 12,
+          "heal": 6,
+          "magic": 3
+        }
+      }
+    },
+    "3": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 11,
+            "seconds": 8.1
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 11,
+            "seconds": 7.5
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 11,
+            "seconds": 8.7
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "win",
+            "battle_outcome": {
+              "result": "victory",
+              "reason": "script"
+            },
+            "rounds": 15,
+            "seconds": 14.6,
+            "plans": 43
+          },
+          {
+            "outcome": "win",
+            "battle_outcome": {
+              "result": "victory",
+              "reason": "script"
+            },
+            "rounds": 15,
+            "seconds": 14.6,
+            "plans": 43
+          },
+          {
+            "outcome": "win",
+            "battle_outcome": {
+              "result": "victory",
+              "reason": "script"
+            },
+            "rounds": 15,
+            "seconds": 14.6,
+            "plans": 43
+          }
+        ],
+        "win": 3,
+        "fail": 0,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 15,
+          "heal": 12,
+          "advance": 57,
+          "focus": 6,
+          "special": 39
+        }
+      }
+    },
+    "5": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 1.9
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 2.0
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 2.3
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 18,
+            "seconds": 10.8,
+            "plans": 32
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 18,
+            "seconds": 11.8,
+            "plans": 32
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 18,
+            "seconds": 13.4,
+            "plans": 32
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 30,
+          "focus": 18,
+          "heal": 12,
+          "advance": 21,
+          "special": 15
+        }
+      }
+    },
+    "6": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 1,
+            "seconds": 0.6
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 1,
+            "seconds": 0.6
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 1,
+            "seconds": 0.6
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 1,
+            "seconds": 0.9,
+            "plans": 1
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 1,
+            "seconds": 0.9,
+            "plans": 1
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 1,
+            "seconds": 0.9,
+            "plans": 1
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 3
+        }
+      }
+    },
+    "7": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 3.8
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 4.8
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 3.6
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 8,
+            "seconds": 22.8,
+            "plans": 16
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 8,
+            "seconds": 23.5,
+            "plans": 16
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 8,
+            "seconds": 21.0,
+            "plans": 16
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 27,
+          "focus": 3,
+          "cure": 6,
+          "heal": 9,
+          "special": 3
+        }
+      }
+    },
+    "10": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 4.8
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 5.0
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 6.2
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 5.0,
+            "plans": 2
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 3.6,
+            "plans": 2
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 4.6,
+            "plans": 2
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 6
+        }
+      }
+    },
+    "12": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 22.9
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 20.6
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 14.8
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 5,
+            "seconds": 23.2,
+            "plans": 10
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 5,
+            "seconds": 26.5,
+            "plans": 10
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 5,
+            "seconds": 33.1,
+            "plans": 10
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "advance": 3,
+          "protect_hero": 21,
+          "heal": 3,
+          "special": 3
+        }
+      }
+    },
+    "13": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 9.2
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 9.7
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 9.1
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 108.1,
+            "plans": 10
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 114.2,
+            "plans": 10
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 110.2,
+            "plans": 10
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "escape": 12,
+          "protect_hero": 18
+        }
+      }
+    },
+    "15": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 3.6
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 4.3
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 4.6
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 29,
+            "seconds": 26.6,
+            "plans": 57
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 29,
+            "seconds": 24.3,
+            "plans": 57
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 29,
+            "seconds": 23.3,
+            "plans": 57
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "advance": 63,
+          "protect_hero": 30,
+          "magic": 12,
+          "special": 33,
+          "heal": 15,
+          "focus": 18
+        }
+      }
+    },
+    "17": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 3.3
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 3.3
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 3.4
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 7,
+            "seconds": 15.9,
+            "plans": 11
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 7,
+            "seconds": 15.9,
+            "plans": 11
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 7,
+            "seconds": 15.1,
+            "plans": 11
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 15,
+          "heal": 6,
+          "magic": 9,
+          "focus": 3
+        }
+      }
+    },
+    "18": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 2.9
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 3.3
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 3.3
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 10,
+            "seconds": 183.9,
+            "plans": 17
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 10,
+            "seconds": 131.5,
+            "plans": 17
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 10,
+            "seconds": 117.5,
+            "plans": 17
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 45,
+          "escape": 6
+        }
+      }
+    },
+    "19": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 1.6
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 1.3
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 1.3
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 12,
+            "seconds": 12.9,
+            "plans": 14
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 12,
+            "seconds": 12.9,
+            "plans": 14
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 12,
+            "seconds": 13.0,
+            "plans": 14
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "advance": 15,
+          "protect_hero": 12,
+          "heal": 3,
+          "special": 12
+        }
+      }
+    },
+    "21": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 2.2
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 2.1
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 2.0
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 12,
+            "seconds": 14.2,
+            "plans": 21
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 12,
+            "seconds": 13.7,
+            "plans": 21
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 12,
+            "seconds": 14.4,
+            "plans": 21
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "magic": 3,
+          "advance": 6,
+          "heal": 3,
+          "protect_hero": 30,
+          "focus": 3,
+          "special": 18
+        }
+      }
+    },
+    "22": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 8,
+            "seconds": 9.2
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 8,
+            "seconds": 9.4
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 8,
+            "seconds": 8.7
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 21,
+            "seconds": 20.4,
+            "plans": 42
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 21,
+            "seconds": 20.1,
+            "plans": 42
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 21,
+            "seconds": 20.6,
+            "plans": 42
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "advance": 33,
+          "protect_hero": 51,
+          "special": 30,
+          "magic": 9,
+          "heal": 3
+        }
+      }
+    },
+    "24": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 4.9
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 5.0
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 5.2
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 11.5,
+            "plans": 11
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 5.8,
+            "plans": 11
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 4.9,
+            "plans": 11
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "advance": 6,
+          "protect_hero": 12,
+          "heal": 3,
+          "special": 9,
+          "focus": 3
+        }
+      }
+    },
+    "26": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 2.4
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 2.2
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 2.2
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 5.9,
+            "plans": 17
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 5.8,
+            "plans": 17
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 5.8,
+            "plans": 17
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "magic": 6,
+          "advance": 15,
+          "protect_hero": 3,
+          "focus": 9,
+          "heal": 9,
+          "special": 9
+        }
+      }
+    },
+    "28": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 0.8
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 0.8
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 2,
+            "seconds": 0.7
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 1.7,
+            "plans": 7
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 1.7,
+            "plans": 7
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 1.7,
+            "plans": 7
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "advance": 3,
+          "protect_hero": 18
+        }
+      }
+    },
+    "29": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 2.3
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 2.1
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 4,
+            "seconds": 2.5
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 15,
+            "seconds": 14.1,
+            "plans": 25
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 15,
+            "seconds": 15.8,
+            "plans": 25
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 15,
+            "seconds": 15.3,
+            "plans": 25
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 30,
+          "magic": 3,
+          "focus": 12,
+          "heal": 9,
+          "special": 6,
+          "advance": 15
+        }
+      }
+    },
+    "30": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 5,
+            "seconds": 3.5
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 5,
+            "seconds": 2.5
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 5,
+            "seconds": 3.0
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 4.8,
+            "plans": 15
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 3.8,
+            "plans": 15
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 6,
+            "seconds": 4.8,
+            "plans": 15
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "advance": 27,
+          "protect_hero": 9,
+          "magic": 9
+        }
+      }
+    },
+    "31": {
+      "greedy": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 1.4
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 1.8
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 3,
+            "seconds": 1.1
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {}
+      },
+      "scored": {
+        "runs": [
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 17,
+            "seconds": 12.6,
+            "plans": 18
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 17,
+            "seconds": 11.6,
+            "plans": 18
+          },
+          {
+            "outcome": "fail",
+            "battle_outcome": {
+              "result": "defeat",
+              "reason": "fallen"
+            },
+            "rounds": 17,
+            "seconds": 12.1,
+            "plans": 18
+          }
+        ],
+        "win": 0,
+        "fail": 3,
+        "dead_end": 0,
+        "plan_kinds": {
+          "protect_hero": 48,
+          "advance": 6
+        }
+      }
+    }
+  }
+}

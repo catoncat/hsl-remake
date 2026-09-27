@@ -1,0 +1,136 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 17,
+  "battle": {
+    "id": "battle_017_level17",
+    "title": "艾瓦台地 · 嚎的歸隊",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "艾瓦台地 · 敵軍已清除",
+      "fail_0": "艾瓦台地 · 雷歐納德 陣亡",
+      "fail_1": "艾瓦台地 · 艾瓦遺民 陣亡",
+      "fail_2": "艾瓦台地 · 嚎 陣亡"
+    },
+    "expected": {
+      "units": 24,
+      "players": 5
+    },
+    "unresolved_semantics": [
+      "STORY017 opens with five registered party slots and nineteen source enemy/friendly objects; the winfail interpreter consumes the round-6 and round-8 insertions from the seed and the later obj_Story_Player7 installation of 嚎.",
+      "WINFAIL017 uses actSetPlayerExecMode for 嚎 before the level-17-to-67 hand-off. The remake records the source execution field and keeps it separate from actSetPlayerMode faction/commandability changes.",
+      "The win chain writes point 17 event 519 and encounter ratio 24 before next level [17,67]; these shared world writes and the source battle scheduler remain provisional outside the PlayLoop script receipts."
+    ]
+  },
+  "story_scene": {
+    "id": "story_017_eva_plateau_mine_opening",
+    "title": "艾瓦台地（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      }
+    },
+    "end_card": {
+      "title": "艾瓦台地",
+      "hint": "戰鬥部分（level 17）尚未重製　　空格／點擊：回到大地圖（艾瓦台地）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the five controlled slots, 克里夫 064 / the 062 workers (EVEF enemy-process objects drawn as story NPCs; their escort role and the fail conditions belong to winfail017) and the 035 / 036 / 037 / 038 creatures have no battle scenario yet (P-024)"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "007",
+      "035",
+      "036",
+      "037",
+      "038",
+      "062",
+      "064"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "007",
+      "062",
+      "064"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_ENEMY062": "306",
+    "SID_ENEMY064": "1270"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-017.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-017.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-017.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-017.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-017.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_ENEMY062": "PLAYERS.TXT character 62 name field = 306 (???); obj-017.obs names the object Enemy062(工人) but RESOURCE.TXT has no 工人 label, so the original unnamed label is kept",
+    "SID_ENEMY064": "PLAYERS.TXT character 64 name field = 1270 克里夫 (resource-derived name); obj names the object Enemy064(克里夫)"
+  },
+  "sweep_fixture": {
+    "mode": "rounds",
+    "rounds": [
+      6,
+      8
+    ],
+    "clear_phases": 6,
+    "note": "WINFAIL017 arms win_0 only after the round-6 insertion wave and the round-8 story actor event."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 17 (艾瓦台地, bigmap.dat point 17, the mine): 克里夫 064 and his 062 workers are chased by",
+      "the 035 / 036 / 037 / 038 mine creatures, the five-member party walks in from the east edge.",
+      "winfail017's win hands off to the camp talk level 67 (17,67). actPlayLevelMusic: table 0x477b44",
+      "gives level 17 track 12."
+    ],
+    "cast": [
+      "Level 17 (艾瓦台地): the five-member party, 克里夫 064 and the 062 workers, the 035 / 036 / 037 / 038 creatures."
+    ],
+    "speakers": [
+      "Level 17 (艾瓦台地, STORY017 / WINFAIL017, the mine): the five-member party rescues 克里夫 064 (PLAYERS name 1270)",
+      "and his 062 workers from the 035 / 036 / 037 / 038 creatures."
+    ]
+  }
+}

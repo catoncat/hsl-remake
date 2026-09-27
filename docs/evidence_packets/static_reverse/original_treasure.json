@@ -1,0 +1,1804 @@
+{
+  "schema": "hsl_treasure_native.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "sources": {
+    "process_member": "@:\\data\\PROCESS.DEF",
+    "process_sha256": "e0d295d2c1fd7c0781f1e9dd7d3b42127e192d479918b392e1d067aa9765c8fa",
+    "process_index": 41,
+    "levels": [
+      {
+        "level": 1,
+        "member": "@:\\data\\LEVEL001.BIN",
+        "sha256": "9c6635abb89905d4a65a22351a9cea22b42526b31af50799e03266b7f71358c3",
+        "obs_member": "@:\\data\\OBJ-001.OBS",
+        "obs_sha256": "b8bb1c86cba85f31dd476881f4e5b89d51669d0bf7fc68e4bbb2efe35d4c770f",
+        "chests": [
+          {
+            "record_index": 79,
+            "object_code": 798,
+            "pixel": [
+              640,
+              544
+            ],
+            "words": [
+              202,
+              241,
+              246,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "items": [
+              202,
+              241,
+              246
+            ],
+            "template": {
+              "obj_code": "798",
+              "obj_name": "寶藏",
+              "obj_ReadShape": "1",
+              "obj_Plane": "planeBG3",
+              "obj_Shape_Name": "SHAPE\\BOX0001.SHP",
+              "obj_Shape_Number": "1",
+              "obj_Process_Code": "defProcTreasureBox"
+            }
+          }
+        ]
+      },
+      {
+        "level": 2,
+        "member": "@:\\data\\LEVEL002.BIN",
+        "sha256": "0a2852bb44c3cf8a88e90b0c01bbf36b75e5908d49042d030f5d620ac9e28349",
+        "obs_member": "@:\\data\\OBJ-002.OBS",
+        "obs_sha256": "b5cb33ef5f7183652b4f81e7bceef646dc5b9a38bbf52bfc8d0a4089e5a6432c",
+        "chests": [
+          {
+            "record_index": 23,
+            "object_code": 798,
+            "pixel": [
+              160,
+              448
+            ],
+            "words": [
+              244,
+              244,
+              254,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "items": [
+              244,
+              244,
+              254
+            ],
+            "template": {
+              "obj_code": "798",
+              "obj_name": "寶藏",
+              "obj_ReadShape": "1",
+              "obj_Plane": "planeBG3",
+              "obj_Shape_Name": "SHAPE\\BOX0001.SHP",
+              "obj_Shape_Number": "1",
+              "obj_Process_Code": "defProcTreasureBox"
+            }
+          },
+          {
+            "record_index": 24,
+            "object_code": 798,
+            "pixel": [
+              480,
+              448
+            ],
+            "words": [
+              2,
+              241,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "items": [
+              2,
+              241
+            ],
+            "template": {
+              "obj_code": "798",
+              "obj_name": "寶藏",
+              "obj_ReadShape": "1",
+              "obj_Plane": "planeBG3",
+              "obj_Shape_Name": "SHAPE\\BOX0001.SHP",
+              "obj_Shape_Number": "1",
+              "obj_Process_Code": "defProcTreasureBox"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "copies": [
+    {
+      "words": [
+        202,
+        241,
+        246,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tail": 0,
+      "result": [
+        202,
+        241,
+        246,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 71,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        202,
+        241,
+        246,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tail": 777,
+      "result": [
+        202,
+        241,
+        246,
+        777,
+        777,
+        777,
+        777,
+        777
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 71,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        244,
+        244,
+        254,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tail": 0,
+      "result": [
+        244,
+        244,
+        254,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 71,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        244,
+        244,
+        254,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tail": 777,
+      "result": [
+        244,
+        244,
+        254,
+        777,
+        777,
+        777,
+        777,
+        777
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 71,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        2,
+        241,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tail": 0,
+      "result": [
+        2,
+        241,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 69,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        2,
+        241,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tail": 777,
+      "result": [
+        2,
+        241,
+        777,
+        777,
+        777,
+        777,
+        777,
+        777
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 69,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tail": 0,
+      "result": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 65,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tail": 777,
+      "result": [
+        777,
+        777,
+        777,
+        777,
+        777,
+        777,
+        777,
+        777
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 65,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        0,
+        241,
+        0,
+        244,
+        0,
+        2,
+        0,
+        246
+      ],
+      "tail": 0,
+      "result": [
+        241,
+        244,
+        2,
+        246,
+        0,
+        0,
+        0,
+        0
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 73,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        0,
+        241,
+        0,
+        244,
+        0,
+        2,
+        0,
+        246
+      ],
+      "tail": 777,
+      "result": [
+        241,
+        244,
+        2,
+        246,
+        777,
+        777,
+        777,
+        777
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 73,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241
+      ],
+      "tail": 0,
+      "result": [
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 81,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241
+      ],
+      "tail": 777,
+      "result": [
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 81,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        2,
+        202,
+        241,
+        244,
+        246,
+        248,
+        250,
+        254
+      ],
+      "tail": 0,
+      "result": [
+        2,
+        202,
+        241,
+        244,
+        246,
+        248,
+        250,
+        254
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 81,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    },
+    {
+      "words": [
+        2,
+        202,
+        241,
+        244,
+        246,
+        248,
+        250,
+        254
+      ],
+      "tail": 777,
+      "result": [
+        2,
+        202,
+        241,
+        244,
+        246,
+        248,
+        250,
+        254
+      ],
+      "proof": {
+        "entry": "0x42bd50",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 81,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "unrelated_unchanged": true
+    }
+  ],
+  "grants": [
+    {
+      "words": [
+        202,
+        241,
+        246,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "opened": false,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          202,
+          1
+        ],
+        [
+          246,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x45e3ed",
+        "normal_return": false,
+        "instructions": 234,
+        "rng_unchanged": true,
+        "item_calls": [
+          [
+            202,
+            1
+          ],
+          [
+            241,
+            1
+          ],
+          [
+            246,
+            1
+          ]
+        ]
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        202,
+        241,
+        246,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "opened": true,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        244,
+        244,
+        254,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "opened": false,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          244,
+          2
+        ],
+        [
+          254,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x45e3ed",
+        "normal_return": false,
+        "instructions": 252,
+        "rng_unchanged": true,
+        "item_calls": [
+          [
+            244,
+            1
+          ],
+          [
+            244,
+            1
+          ],
+          [
+            254,
+            1
+          ]
+        ]
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        244,
+        244,
+        254,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "opened": true,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        2,
+        241,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "opened": false,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          3
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x45e3ed",
+        "normal_return": false,
+        "instructions": 142,
+        "rng_unchanged": true,
+        "item_calls": [
+          [
+            2,
+            1
+          ],
+          [
+            241,
+            1
+          ]
+        ]
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        2,
+        241,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "opened": true,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "opened": false,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x45e3ed",
+        "normal_return": false,
+        "instructions": 61,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "opened": true,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        0,
+        241,
+        0,
+        244,
+        0,
+        2,
+        0,
+        246
+      ],
+      "opened": false,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          3
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          244,
+          1
+        ],
+        [
+          246,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x45e3ed",
+        "normal_return": false,
+        "instructions": 279,
+        "rng_unchanged": true,
+        "item_calls": [
+          [
+            241,
+            1
+          ],
+          [
+            244,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            246,
+            1
+          ]
+        ]
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        0,
+        241,
+        0,
+        244,
+        0,
+        2,
+        0,
+        246
+      ],
+      "opened": true,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241
+      ],
+      "opened": false,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          10
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x45e3ed",
+        "normal_return": false,
+        "instructions": 349,
+        "rng_unchanged": true,
+        "item_calls": [
+          [
+            241,
+            1
+          ],
+          [
+            241,
+            1
+          ],
+          [
+            241,
+            1
+          ],
+          [
+            241,
+            1
+          ],
+          [
+            241,
+            1
+          ],
+          [
+            241,
+            1
+          ],
+          [
+            241,
+            1
+          ],
+          [
+            241,
+            1
+          ]
+        ]
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241
+      ],
+      "opened": true,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        2,
+        202,
+        241,
+        244,
+        246,
+        248,
+        250,
+        254
+      ],
+      "opened": false,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          3
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          202,
+          1
+        ],
+        [
+          244,
+          1
+        ],
+        [
+          246,
+          1
+        ],
+        [
+          248,
+          1
+        ],
+        [
+          250,
+          1
+        ],
+        [
+          254,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x45e3ed",
+        "normal_return": false,
+        "instructions": 661,
+        "rng_unchanged": true,
+        "item_calls": [
+          [
+            2,
+            1
+          ],
+          [
+            202,
+            1
+          ],
+          [
+            241,
+            1
+          ],
+          [
+            244,
+            1
+          ],
+          [
+            246,
+            1
+          ],
+          [
+            248,
+            1
+          ],
+          [
+            250,
+            1
+          ],
+          [
+            254,
+            1
+          ]
+        ]
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    },
+    {
+      "words": [
+        2,
+        202,
+        241,
+        244,
+        246,
+        248,
+        250,
+        254
+      ],
+      "opened": true,
+      "capacity": 32,
+      "initial_queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "queue": [
+        [
+          241,
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "marked_opened": true,
+      "proof": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "repeated": {
+        "entry": "0x4156d0",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "actor_unchanged": true
+    }
+  ],
+  "initialization": [
+    {
+      "position": [
+        640,
+        544
+      ],
+      "visible": false,
+      "values": [
+        640,
+        544,
+        305463295,
+        1048581,
+        0,
+        0,
+        32,
+        32
+      ],
+      "proof": {
+        "entry": "0x415730",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 33,
+        "rng_unchanged": true,
+        "item_calls": []
+      }
+    },
+    {
+      "position": [
+        640,
+        544
+      ],
+      "visible": true,
+      "values": [
+        640,
+        544,
+        305397762,
+        1048581,
+        0,
+        0,
+        32,
+        32
+      ],
+      "proof": {
+        "entry": "0x415730",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 32,
+        "rng_unchanged": true,
+        "item_calls": []
+      }
+    },
+    {
+      "position": [
+        33,
+        47
+      ],
+      "visible": false,
+      "values": [
+        32,
+        32,
+        305463295,
+        1048581,
+        0,
+        0,
+        32,
+        32
+      ],
+      "proof": {
+        "entry": "0x415730",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 33,
+        "rng_unchanged": true,
+        "item_calls": []
+      }
+    },
+    {
+      "position": [
+        33,
+        47
+      ],
+      "visible": true,
+      "values": [
+        32,
+        32,
+        305397762,
+        1048581,
+        0,
+        0,
+        32,
+        32
+      ],
+      "proof": {
+        "entry": "0x415730",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 32,
+        "rng_unchanged": true,
+        "item_calls": []
+      }
+    },
+    {
+      "position": [
+        -1,
+        -33
+      ],
+      "visible": false,
+      "values": [
+        4294967264,
+        4294967232,
+        305463295,
+        1048581,
+        0,
+        0,
+        32,
+        32
+      ],
+      "proof": {
+        "entry": "0x415730",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 33,
+        "rng_unchanged": true,
+        "item_calls": []
+      }
+    },
+    {
+      "position": [
+        -1,
+        -33
+      ],
+      "visible": true,
+      "values": [
+        4294967264,
+        4294967232,
+        305397762,
+        1048581,
+        0,
+        0,
+        32,
+        32
+      ],
+      "proof": {
+        "entry": "0x415730",
+        "stop": "0x10000000",
+        "normal_return": true,
+        "instructions": 32,
+        "rng_unchanged": true,
+        "item_calls": []
+      }
+    }
+  ],
+  "contacts": [
+    {
+      "input": {
+        "tile_flag": 0,
+        "process": 41,
+        "hidden": false,
+        "x": 0
+      },
+      "proof": {
+        "entry": "0x4454f7",
+        "stop": "0x44556f",
+        "normal_return": false,
+        "instructions": 2,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "chest_unchanged": true
+    },
+    {
+      "input": {
+        "tile_flag": 524288,
+        "process": 41,
+        "hidden": false,
+        "x": 0
+      },
+      "proof": {
+        "entry": "0x4454f7",
+        "stop": "0x4156d0",
+        "normal_return": false,
+        "instructions": 62,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "chest_unchanged": true
+    },
+    {
+      "input": {
+        "tile_flag": 524288,
+        "process": 41,
+        "hidden": true,
+        "x": 0
+      },
+      "proof": {
+        "entry": "0x4454f7",
+        "stop": "0x4477b0",
+        "normal_return": false,
+        "instructions": 63,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "chest_unchanged": true
+    },
+    {
+      "input": {
+        "tile_flag": 524288,
+        "process": 40,
+        "hidden": false,
+        "x": 0
+      },
+      "proof": {
+        "entry": "0x4454f7",
+        "stop": "0x411b90",
+        "normal_return": false,
+        "instructions": 84,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "chest_unchanged": true
+    },
+    {
+      "input": {
+        "tile_flag": 524288,
+        "process": 41,
+        "hidden": false,
+        "x": 40
+      },
+      "proof": {
+        "entry": "0x4454f7",
+        "stop": "0x411b90",
+        "normal_return": false,
+        "instructions": 44,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "chest_unchanged": true
+    },
+    {
+      "input": {
+        "tile_flag": 524288,
+        "process": 41,
+        "hidden": false,
+        "x": 8
+      },
+      "proof": {
+        "entry": "0x4454f7",
+        "stop": "0x4156d0",
+        "normal_return": false,
+        "instructions": 62,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "chest_unchanged": true
+    },
+    {
+      "input": {
+        "tile_flag": 524288,
+        "process": 41,
+        "hidden": false,
+        "x": 9
+      },
+      "proof": {
+        "entry": "0x4454f7",
+        "stop": "0x411b90",
+        "normal_return": false,
+        "instructions": 44,
+        "rng_unchanged": true,
+        "item_calls": []
+      },
+      "chest_unchanged": true
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x477cd0",
+      "bytes": "30574100",
+      "meaning": "PROCESS.DEF slot41 points at defProcTreasureBox."
+    },
+    {
+      "address": "0x42dae7",
+      "bytes": "6850bd42006a00e824e3030083c408",
+      "meaning": "Level creation passes42bd50 as the EVEF per-instance callback."
+    },
+    {
+      "address": "0x46be68",
+      "bytes": "0bc0741853515256578b5d0c0bdb74075650ffd383c4085f5e5a595b81c6d00000004b75a45f5e5b",
+      "meaning": "The EVEF iterator passes the created object and current208-byte record to its callback."
+    },
+    {
+      "address": "0x42bd50",
+      "bytes": "83ec08568b7424108b4e6483f903743683f905743183f9290f85330300008b4424148d9690000000be080000008d48108b0185c07405890283c20483c1044e75ef5e83c408c3",
+      "meaning": "Chest branch compacts eight nonzero EVEF words from+10 into object+90; tail is not cleared here."
+    },
+    {
+      "address": "0x415730",
+      "bytes": "568b74240c83fefe5775108b44240c50e86b88010083c4045f5ec383fefd0f848c000000f7c60000002074558b44240c8b888000000081e1ffffffdf81c900001000f7c600000100898880000000750666c74030ffff8b70048b5008b9e0ffffff5f23f123d133c989700489486889486cb9200000008950088948708948745ec38b7c",
+      "meaning": "Chest initialization aligns its origin and initializes a32px contact rectangle; shape visibility follows the message bit."
+    },
+    {
+      "address": "0x4156d0",
+      "bytes": "538b5c2408f7838000000000000008754156578db390000000bf080000008b0685c0740b6a0150e8d49b030083c40883c6044f75e98b93800000005381ca00000008899380000000e8d08c040083c4045f5e5bc3",
+      "meaning": "Collection skips opened bit08000000, queues eight nonzero contents then marks and requests disposal."
+    },
+    {
+      "address": "0x44f290",
+      "bytes": "8b152c1d4c0033c0565785d27e1d8b0d281d4c008b74240c8b790485ff74043931740b4083c1083bc27ced83c8ff5f5ec3",
+      "meaning": "Pending item lookup ignores zero-count rows."
+    },
+    {
+      "address": "0x44f2d0",
+      "bytes": "538b5c240885db560f84cb00000053e8acffffff83c40483f8ff0f85ab000000a1281d4c0085c075346a28e8708800008b15301d4c0083c40483c205a3281d4c0085c08915301d4c00751268fc924700e879bf0000a1281d4c0083c4048b0d2c1d4c008b35301d4c00413bce7e3683c605578d14f5000000005250e8708800008bf883c40885ff750d68e0924700e83bbf000083c4048bc78935301d4c00a3281d4c005f8b0d2c1d4c008b542410c1e1035e891c01a1281d4c005b89540104a12c1d4c0040a32c1d4c00c38b0d281d4c008b5424100154c1045e5bc3",
+      "meaning": "Item queue appends new codes or adds quantities; the tested queue has explicit spare capacity."
+    },
+    {
+      "address": "0x4454a5",
+      "bytes": "8b56088b460452899e8c00000066ff868c00000050e881c7fcff8bd883c408f7c300002000742b56e8fe15000083c40485c0751e56e8b116000083c40485c0751156e8441dfcff6a0357e84c3cfcff83c40cf7c300000800747056e8937a020083c40485c07455bb2900000050e8437b02008bf883c40485ff743466395f64752e66837f30ff751e6a0068050a0000e87722000050e85144010083c40850e8386cfeff83c40857e87f01fdff83c40456e8a27a020083c40485c075b0680000080056e824c6fcff83c408",
+      "meaning": "Player completion queries its tile then contact objects, selecting process41 before collection; not provisional move input."
+    },
+    {
+      "address": "0x46cf98",
+      "bytes": "c80000005356578b35e8094c008b0de4094c008b7d080bc974348b47688b5f708b4f6c8b5774034704035f04034f080357083b46047f103b1e7c0c8b7e083b4f047f043b177d098b76100bf675e433f68bc60bf674038b76108935ec094c005f5e5bc9c3c80000005356578b35ec094c008b7d080bf674348b47688b5f708b4f6c8b5774034704035f04034f080357083b46047f103b1e7c0c8b7e083b4f047f043b177d098b76100bf675e433f68bc60bf674038b76108935ec094c005f5e5bc9c3c80000008b45088b50088b4208c9c3",
+      "meaning": "Contact enumeration and object getter used by the tested player suffix."
+    }
+  ],
+  "anchors_sha256": "2c2f37da51627bf69ec280d48e07daa5f7b52acf76dc96dbd214ec9797a24e25",
+  "limits": [
+    "Real source EVEF content with synthetic allocated object/queue memory. No whole level or object allocator execution.",
+    "Active collection stops before native disposal; repeated opened-guard calls return fully. Pending items are not yet actor inventory.",
+    "Contact suffix stops before collection, discovery sound, or map-flag clearing. The tested16px rectangle is synthetic, not a complete actor shape contract.",
+    "Player action-tail entry and source collection have zero RNG in the tested boundaries; global scheduler, AI looting and exact timing remain separate."
+  ]
+}

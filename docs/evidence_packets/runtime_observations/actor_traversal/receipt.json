@@ -1,0 +1,1834 @@
+{
+  "schema": "hsl_actor_traversal_render.v1",
+  "fixture": true,
+  "native_execution": false,
+  "real_control_events": true,
+  "time_scale": 1,
+  "screen": 1,
+  "window_position": "(3260, 622)",
+  "window_size": "(640, 480)",
+  "overrides": "Source WRD height packets and source art retained, no artificial terrain walls. Encounter positions, speeds, HP/maxHP and commandable successor are supplied. Players receive WIND/HEAL only in named spell cases; flying supplies the independently proven source trait to test Leonard, not a new default ability or flying sprite set. AI uses real026, source spells/probabilities set100 for selected category, healthy same-side blocker and commandable sentinel. Final-clear/defeat set1HP and hit_bonus1000; final clear starts99EXP. Victory/escape start after the scripted report. No RNG replacement, assigned damage/outcome or accelerated clock; controls own all changes after setup.",
+  "attempts": [
+    {
+      "file": "player-first-three.json",
+      "process_exit": 1,
+      "retained_routes": [
+        "ally_attack",
+        "ally_cast",
+        "ally_support"
+      ],
+      "scope": "Later restore fixture began with a far enemy on a source cliff; preceding three routes passed all their assertions."
+    },
+    {
+      "file": "restore-fly-receipt.json",
+      "process_exit": 0,
+      "retained_routes": [
+        "restore",
+        "flying"
+      ],
+      "scope": "Corrected source-ground setup; real save/load, cancel, re-move and Wait."
+    },
+    {
+      "file": "ai-receipt.json",
+      "process_exit": 0,
+      "retained_routes": [
+        "ai_cutoff",
+        "ai_cast",
+        "ai_support",
+        "ai_no_mp",
+        "ai_silence"
+      ],
+      "scope": "Actual Wait, one AI action and one commandable successor."
+    },
+    {
+      "file": "outcomes-first.json",
+      "process_exit": 1,
+      "retained_routes": [
+        "victory"
+      ],
+      "scope": "Victory completed; later defeat exposed the terminal AI-playback flag regression and is superseded by the final run."
+    },
+    {
+      "file": "outcomes-final.json",
+      "process_exit": 0,
+      "retained_routes": [
+        "defeat",
+        "escape"
+      ],
+      "scope": "Final terminal playback fix, save/restore and real retry."
+    }
+  ],
+  "routes": [
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "experience": [
+        {
+          "base": 20,
+          "exp_after": 20,
+          "exp_before": 0,
+          "gained": 20,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "mode": "ally_attack",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience": true,
+        "impact": true,
+        "last_path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "movement": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 8)",
+        "hp": 100,
+        "id": "leonard",
+        "inventory": [
+          193,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 100,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {
+        "actual_damage": 24,
+        "attacker_id": "leonard",
+        "counter": {},
+        "damage": 24,
+        "defender_hp_after": 376,
+        "defender_hp_before": 400,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 20,
+          "exp_after": 20,
+          "exp_before": 0,
+          "gained": 20,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "native_contribution": 24,
+        "sequence": 1
+      },
+      "route": {
+        "coord": "(10, 8)",
+        "cost": 2,
+        "cost_evidence": "static-derived",
+        "cost_source": "0x40ed50/0x40eb80",
+        "evidence_tier": "provisional",
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "path_costs": [
+          0,
+          1,
+          2
+        ],
+        "path_stops": [
+          true,
+          false,
+          true
+        ],
+        "schema": "hsl_movement_target_cost.v1"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "experience": [
+        {
+          "base": 26,
+          "exp_after": 26,
+          "exp_before": 0,
+          "gained": 26,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "mode": "ally_cast",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience": true,
+        "impact": true,
+        "last_path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "movement": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 8)",
+        "hp": 100,
+        "id": "leonard",
+        "inventory": [
+          193,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 92,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {
+        "actual_damage": 28,
+        "attacker_id": "leonard",
+        "cast_center": "(11, 8)",
+        "damage": 28,
+        "defender_hp_after": 372,
+        "defender_hp_before": 400,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 26,
+          "exp_after": 26,
+          "exp_before": 0,
+          "gained": 26,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "magic_key": "wind",
+        "native_contribution": 28,
+        "resource_payment": {
+          "after": 92,
+          "amount": 8,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 8,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicAIR:magicCode01",
+        "status_effects": []
+      },
+      "route": {
+        "coord": "(10, 8)",
+        "cost": 2,
+        "cost_evidence": "static-derived",
+        "cost_source": "0x40ed50/0x40eb80",
+        "evidence_tier": "provisional",
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "path_costs": [
+          0,
+          1,
+          2
+        ],
+        "path_stops": [
+          true,
+          false,
+          true
+        ],
+        "schema": "hsl_movement_target_cost.v1"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0002.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0001.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "experience": [
+        {
+          "base": 15,
+          "exp_after": 15,
+          "exp_before": 0,
+          "gained": 15,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "mode": "ally_support",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "experience": true,
+        "impact": true,
+        "last_path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "movement": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 8)",
+        "hp": 100,
+        "id": "leonard",
+        "inventory": [
+          193,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 94,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {
+        "actual_damage": 0,
+        "attacker_id": "leonard",
+        "cast_center": "(11, 8)",
+        "damage": 0,
+        "defender_hp_after": 42,
+        "defender_hp_before": 4,
+        "defender_id": "enemy023_1",
+        "experience": {
+          "base": 15,
+          "exp_after": 15,
+          "exp_before": 0,
+          "gained": 15,
+          "level_after": 1,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "healing": 38,
+        "magic_key": "heal",
+        "native_contribution": 19,
+        "resource_payment": {
+          "after": 94,
+          "amount": 6,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 6,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode06",
+        "support_effects": []
+      },
+      "route": {
+        "coord": "(10, 8)",
+        "cost": 2,
+        "cost_evidence": "static-derived",
+        "cost_source": "0x40ed50/0x40eb80",
+        "evidence_tier": "provisional",
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "path_costs": [
+          0,
+          1,
+          2
+        ],
+        "path_stops": [
+          true,
+          false,
+          true
+        ],
+        "schema": "hsl_movement_target_cost.v1"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/chapter01/support_magic/mheal006.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [],
+      "experience": [],
+      "mode": "restore",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "last_path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "movement": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 8)",
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          181,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 30,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {},
+      "route": {
+        "coord": "(10, 8)",
+        "cost": 2,
+        "cost_evidence": "static-derived",
+        "cost_source": "0x40ed50/0x40eb80",
+        "evidence_tier": "provisional",
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "path_costs": [
+          0,
+          1,
+          2
+        ],
+        "path_stops": [
+          true,
+          false,
+          true
+        ],
+        "schema": "hsl_movement_target_cost.v1"
+      },
+      "sounds": [
+        "res://content/generated/hsl/remake_music/abandoned_guard.ogg",
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [],
+      "experience": [],
+      "mode": "flying",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "last_path": [
+          "(7, 9)",
+          "(7, 8)",
+          "(7, 7)",
+          "(7, 6)",
+          "(6, 6)"
+        ],
+        "movement": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(6, 6)",
+        "hp": 100,
+        "id": "leonard",
+        "inventory": [
+          193,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 100,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {},
+      "route": {
+        "coord": "(6, 6)",
+        "cost": 4,
+        "cost_evidence": "static-derived",
+        "cost_source": "0x40ed50/0x40eb80",
+        "evidence_tier": "provisional",
+        "path": [
+          "(7, 9)",
+          "(7, 8)",
+          "(7, 7)",
+          "(7, 6)",
+          "(6, 6)"
+        ],
+        "path_costs": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "path_stops": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "schema": "hsl_movement_target_cost.v1"
+      },
+      "sounds": [
+        "res://content/generated/hsl/remake_music/abandoned_guard.ogg",
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ],
+      "traits": {
+        "flying": true,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [],
+      "experience": [],
+      "mode": "ai_cutoff",
+      "next_actor": "enemy023_1",
+      "observed": {},
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(8, 8)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {
+        "actor_id": "enemy026_1",
+        "kind": "wait"
+      },
+      "route": {},
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ]
+      ],
+      "experience": [],
+      "mode": "ai_cast",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "ai_move": true,
+        "impact": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(10, 10)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 92,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {
+        "actor_id": "enemy026_1",
+        "actual_damage": 28,
+        "attacker_id": "enemy026_1",
+        "cast_center": "(12, 9)",
+        "damage": 28,
+        "defender_hp_after": 372,
+        "defender_hp_before": 400,
+        "defender_id": "leonard",
+        "kind": "move_then_attack",
+        "magic_key": "wind",
+        "native_contribution": 28,
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(9, 9)",
+          "(10, 9)",
+          "(10, 10)"
+        ],
+        "resource_payment": {
+          "after": 92,
+          "amount": 8,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 8,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicAIR:magicCode01",
+        "status_effects": [],
+        "target_id": "leonard",
+        "to": "(10, 10)"
+      },
+      "route": {},
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0002.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0001.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "enemy026_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ]
+      ],
+      "experience": [],
+      "mode": "ai_support",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "ai_move": true,
+        "impact": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(10, 10)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 94,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {
+        "actor_id": "enemy026_1",
+        "actual_damage": 0,
+        "attacker_id": "enemy026_1",
+        "cast_center": "(12, 9)",
+        "damage": 0,
+        "defender_hp_after": 41,
+        "defender_hp_before": 4,
+        "defender_id": "enemy023_1",
+        "healing": 37,
+        "kind": "move_then_attack",
+        "magic_key": "heal",
+        "native_contribution": 18,
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(9, 9)",
+          "(10, 9)",
+          "(10, 10)"
+        ],
+        "resource_payment": {
+          "after": 94,
+          "amount": 6,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 6,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode06",
+        "support_effects": [],
+        "target_id": "enemy023_1",
+        "to": "(10, 10)"
+      },
+      "route": {},
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/chapter01/support_magic/mheal006.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "enemy026_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ]
+      ],
+      "experience": [],
+      "mode": "ai_no_mp",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "ai_move": true,
+        "impact": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(11, 9)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "receipt": {
+        "actor_id": "enemy026_1",
+        "actual_damage": 6,
+        "attacker_id": "enemy026_1",
+        "counter": {},
+        "damage": 6,
+        "defender_hp_after": 394,
+        "defender_hp_before": 400,
+        "defender_id": "leonard",
+        "kind": "move_then_attack",
+        "native_contribution": 6,
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(9, 9)",
+          "(10, 9)",
+          "(11, 9)"
+        ],
+        "sequence": 1,
+        "target_id": "leonard",
+        "to": "(11, 9)"
+      },
+      "route": {},
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack05.wav",
+        "res://content/imported/hsl/shared/interface_audio/hit_staff.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "enemy026_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy026_1",
+          false
+        ]
+      ],
+      "experience": [],
+      "mode": "ai_silence",
+      "next_actor": "enemy023_1",
+      "observed": {
+        "ai_move": true,
+        "impact": true
+      },
+      "outcome": "",
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(11, 9)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 100,
+        "status_counters": {
+          "no_magic": 1,
+          "poison": 0.0
+        },
+        "status_flags": 2
+      },
+      "receipt": {
+        "actor_id": "enemy026_1",
+        "actual_damage": 4,
+        "attacker_id": "enemy026_1",
+        "counter": {},
+        "damage": 4,
+        "defender_hp_after": 396,
+        "defender_hp_before": 400,
+        "defender_id": "leonard",
+        "kind": "move_then_attack",
+        "native_contribution": 4,
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(9, 9)",
+          "(10, 9)",
+          "(11, 9)"
+        ],
+        "sequence": 1,
+        "target_id": "leonard",
+        "to": "(11, 9)"
+      },
+      "route": {},
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack05.wav",
+        "res://content/imported/hsl/shared/interface_audio/hit_staff.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "leonard",
+          false
+        ],
+        [
+          "impact",
+          "leonard",
+          false
+        ]
+      ],
+      "experience": [
+        {
+          "base": 22,
+          "exp_after": 21,
+          "exp_before": 99,
+          "gained": 22,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        }
+      ],
+      "mode": "victory",
+      "next_actor": "",
+      "observed": {
+        "dialogue": true,
+        "experience": true,
+        "gold": true,
+        "impact": true,
+        "last_path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "movement": true
+      },
+      "outcome": "victory_optional_clear",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(10, 8)",
+        "hp": 31,
+        "id": "leonard",
+        "inventory": [
+          193,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 31,
+        "max_mp": 0,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "receipt": {
+        "actual_damage": 1,
+        "attacker_id": "leonard",
+        "counter": {},
+        "damage": 22,
+        "defender_hp_after": 0,
+        "defender_hp_before": 1,
+        "defender_id": "enemy021_1",
+        "experience": {
+          "base": 22,
+          "exp_after": 21,
+          "exp_before": 99,
+          "gained": 22,
+          "level_after": 2,
+          "level_before": 1,
+          "multiplier": 1
+        },
+        "kill_chain": 1,
+        "native_contribution": 1,
+        "sequence": 1
+      },
+      "restarted": true,
+      "route": {
+        "coord": "(10, 8)",
+        "cost": 2,
+        "cost_evidence": "static-derived",
+        "cost_source": "0x40ed50/0x40eb80",
+        "evidence_tier": "provisional",
+        "path": [
+          "(8, 8)",
+          "(9, 8)",
+          "(10, 8)"
+        ],
+        "path_costs": [
+          0,
+          1,
+          2
+        ],
+        "path_stops": [
+          true,
+          false,
+          true
+        ],
+        "schema": "hsl_movement_target_cost.v1"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/shared/interface_audio/level_up.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [
+        [
+          "release",
+          "enemy021_1",
+          false
+        ],
+        [
+          "impact",
+          "enemy021_1",
+          false
+        ]
+      ],
+      "experience": [],
+      "mode": "defeat",
+      "next_actor": "",
+      "observed": {
+        "ai_move": true,
+        "dialogue": true,
+        "impact": true
+      },
+      "outcome": "defeat_leonard",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 0,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 100,
+        "status_counters": {
+          "no_magic": 0,
+          "poison": 0
+        },
+        "status_flags": 0
+      },
+      "receipt": {
+        "actor_id": "enemy021_1",
+        "actual_damage": 1,
+        "attacker_id": "enemy021_1",
+        "counter": {},
+        "damage": 233,
+        "defender_hp_after": 0,
+        "defender_hp_before": 1,
+        "defender_id": "leonard",
+        "kill_chain": 1,
+        "kind": "move_then_attack",
+        "native_contribution": 1,
+        "path": [
+          "(11, 8)",
+          "(10, 8)",
+          "(9, 8)"
+        ],
+        "sequence": 1,
+        "target_id": "leonard",
+        "to": "(9, 8)"
+      },
+      "restarted": true,
+      "route": {},
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    },
+    {
+      "cues": [],
+      "experience": [],
+      "mode": "escape",
+      "next_actor": "",
+      "observed": {
+        "dialogue": true,
+        "last_path": [
+          "(11, 9)",
+          "(11, 10)",
+          "(12, 10)",
+          "(13, 10)",
+          "(14, 10)"
+        ],
+        "movement": true
+      },
+      "outcome": "victory_escape",
+      "owner_after": {
+        "actor_id": "001",
+        "coord": "(14, 10)",
+        "hp": 100,
+        "id": "leonard",
+        "inventory": [
+          193,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 100,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "receipt": {},
+      "restarted": true,
+      "route": {
+        "coord": "(14, 10)",
+        "cost": 4,
+        "cost_evidence": "static-derived",
+        "cost_source": "0x40ed50/0x40eb80",
+        "evidence_tier": "provisional",
+        "path": [
+          "(11, 9)",
+          "(11, 10)",
+          "(12, 10)",
+          "(13, 10)",
+          "(14, 10)"
+        ],
+        "path_costs": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "path_stops": [
+          true,
+          false,
+          true,
+          true,
+          true
+        ],
+        "schema": "hsl_movement_target_cost.v1"
+      },
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ],
+      "traits": {
+        "flying": false,
+        "no_block": false,
+        "size_type": 0.0
+      },
+      "validation": "All assertions for this named route passed; process scope is recorded separately."
+    }
+  ],
+  "images_sha256": {
+    "ally_attack-transit.png": "c17fc9653a80cf5bba2908a70a44f891756df8bd12e715b01fb72d0f4e2feb51",
+    "ally_attack-path.png": "fa7ebf09a557c7b494901a5ee57f5fa39d9ed3bbdbf104d2ab7079a73b776f2a",
+    "ally_cast-impact.png": "f4e5a1222caa822e1b5ae354693099cdf58600c3dd15daf26ca730b65c44851c",
+    "ally_support-impact.png": "5811e0a192cd9be9ec4ee6f35c37d8bc9fdc7b5c51238011621d2c3a04e7eb04",
+    "flying-path.png": "955efab482acccbb77306319d5f181514ea23b4612d88aa5520835d091d857a4",
+    "ai_cast-ai-move.png": "45d290cc29d05d661ebbc3c61c4b189113aacbe7aed37ab99115dc52f338e430",
+    "ai_support-impact.png": "04c97ccb920f40bdb26c7db66ce4dcb0af9e420ab253a697816b8b1cd0986ee0",
+    "victory-experience.png": "75f782e243520ff2684ab6e645d44012f31c94c66533676d4ad39ecbcc0ed8bf",
+    "defeat-result.png": "aea3a3915c2057f88f2708ef1d9404ea1663bf7492810a29c3203edf148fa615",
+    "escape-result.png": "9a695f0d63b964fb8f345b7fc07f86c4d1274c6a22955007373fb21b5ffbed30",
+    "default-hold-result.png": "86b678dea8b03f1666c610c0723bbf16901f859fa7c5b7f2a8c3efa7e4c42e5e",
+    "default-advance-result.png": "94bc73f0d69bf6ba4014cf559d3a2b8ec7b74008a1dbe6886596ff534dd138df"
+  },
+  "validation_scope": "Thirteen named normal-clock routes across sequential rendered processes. Two earlier processes failed after retained successful routes; final failed cases were corrected and rechecked. The result-page fix does not change previously accepted path/attack/support transactions.",
+  "default_playthroughs": [
+    {
+      "actions": [
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 2
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 3
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 4
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 5
+        },
+        {
+          "action": "move",
+          "cell": [
+            15,
+            13
+          ],
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 6
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 6
+        },
+        {
+          "action": "move",
+          "cell": [
+            14,
+            10
+          ],
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 7
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 7
+        }
+      ],
+      "captured_views": [
+        "status",
+        "map-range",
+        "map-cursor",
+        "map-target",
+        "attacker-shot",
+        "defender-shot"
+      ],
+      "dialogue": [
+        "374",
+        "372",
+        "372",
+        "396",
+        "397",
+        "374",
+        "372",
+        "372",
+        "372",
+        "368",
+        "369",
+        "369",
+        "374",
+        "371"
+      ],
+      "elapsed_seconds": 206.061,
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "outcome": "victory_escape",
+      "player": {
+        "action_ready": true,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(15, 17)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "base_move_point": 5.0,
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12.0,
+          "attack_damagex2": 14.0,
+          "avoid_hit_ratio": 0.0,
+          "con": 12.0,
+          "dex": 16.0,
+          "live_attack_damage": 54.0,
+          "live_defense": 43.0,
+          "live_hit_ratio": 98.0,
+          "live_magic_attack": 17.0,
+          "mind": 8.0,
+          "resist_by_type": {
+            "0": 16.0,
+            "1": 14.0,
+            "2": 13.0,
+            "3": 16.0,
+            "4": 12.0
+          },
+          "str": 16.0,
+          "weapon_damage_variance_hi": 0.0,
+          "weapon_damage_variance_lo": 0.0,
+          "weapon_magic_attack_type": -1.0
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native 0x448840 unadjusted template attack/defense/hit; PLAYERS str/dex/resists, absent resists modeled as zero. NPC level adjustment unresolved",
+        "coord": "(14, 10)",
+        "defeated": false,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          }
+        ],
+        "exp": 0.0,
+        "grid_coord": "(14, 10)",
+        "growth_profile": {
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_growth_refresh.json",
+          "job_code": 80.0,
+          "model": "native_swordman_v1",
+          "source": {
+            "actor_id": "001",
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "job": "jobSwordMan",
+            "job_code": 80.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          241,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 0,
+        "kill_exp": 30.0,
+        "level": 1.0,
+        "live_speed": 14.0,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 30.0,
+        "max_mp": 0.0,
+        "move_point": 5,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+        "mp": 0.0,
+        "no_attack": false,
+        "pending_stat_points": 0,
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived",
+        "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+        "position_source": {
+          "evef_record_index": 20.0,
+          "object_code": 6.0,
+          "placement_world": [
+            480.0,
+            640.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0,
+        "traversal": {
+          "flying": false,
+          "no_block": false,
+          "size_type": 0.0
+        },
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      },
+      "policy": "hold",
+      "restart": true,
+      "time_scale": 1.0,
+      "turn": 7,
+      "visual_samples": {
+        "live-cue-cursor": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-range": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-target": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-hurt": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-magic-wind": {
+          "sequence": 24,
+          "turn": 7
+        },
+        "live-windup": {
+          "sequence": 1,
+          "turn": 2
+        }
+      }
+    },
+    {
+      "actions": [
+        {
+          "action": "move",
+          "cell": [
+            15,
+            12
+          ],
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "move",
+          "cell": [
+            13,
+            11
+          ],
+          "exp": 0.0,
+          "hp": 23,
+          "level": 1.0,
+          "stamina": 6,
+          "turn": 2
+        },
+        {
+          "action": "attack",
+          "exp": 10,
+          "hp": 23,
+          "level": 1.0,
+          "stamina": 10,
+          "target": "enemy021_3",
+          "turn": 2
+        }
+      ],
+      "captured_views": [
+        "status",
+        "map-range",
+        "map-cursor",
+        "map-target",
+        "attacker-shot",
+        "defender-shot"
+      ],
+      "dialogue": [
+        "372",
+        "304"
+      ],
+      "elapsed_seconds": 78.799,
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "outcome": "defeat_leonard",
+      "player": {
+        "action_ready": false,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(15, 17)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "base_move_point": 5.0,
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12.0,
+          "attack_damagex2": 14.0,
+          "avoid_hit_ratio": 0.0,
+          "con": 12.0,
+          "dex": 16.0,
+          "live_attack_damage": 54.0,
+          "live_defense": 43.0,
+          "live_hit_ratio": 98.0,
+          "live_magic_attack": 17.0,
+          "mind": 8.0,
+          "resist_by_type": {
+            "0": 16.0,
+            "1": 14.0,
+            "2": 13.0,
+            "3": 16.0,
+            "4": 12.0
+          },
+          "str": 16.0,
+          "weapon_damage_variance_hi": 0.0,
+          "weapon_damage_variance_lo": 0.0,
+          "weapon_magic_attack_type": -1.0
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native 0x448840 unadjusted template attack/defense/hit; PLAYERS str/dex/resists, absent resists modeled as zero. NPC level adjustment unresolved",
+        "coord": "(13, 11)",
+        "defeated": true,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          }
+        ],
+        "exp": 10,
+        "grid_coord": "(13, 11)",
+        "growth_profile": {
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_growth_refresh.json",
+          "job_code": 80.0,
+          "model": "native_swordman_v1",
+          "source": {
+            "actor_id": "001",
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "job": "jobSwordMan",
+            "job_code": 80.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 0,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 0,
+        "kill_exp": 30.0,
+        "level": 1.0,
+        "live_speed": 14.0,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 30.0,
+        "max_mp": 0.0,
+        "move_point": 5,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS base + equipped ITEM.add_move, clamped 0..12 by native stat refresh",
+        "mp": 0.0,
+        "no_attack": false,
+        "pending_stat_points": 0,
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived",
+        "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+        "position_source": {
+          "evef_record_index": 20.0,
+          "object_code": 6.0,
+          "placement_world": [
+            480.0,
+            640.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 0,
+        "status_counters": {
+          "no_magic": 0,
+          "poison": 0
+        },
+        "status_flags": 0,
+        "traversal": {
+          "flying": false,
+          "no_block": false,
+          "size_type": 0.0
+        },
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      },
+      "policy": "advance",
+      "restart": true,
+      "time_scale": 1.0,
+      "turn": 3,
+      "visual_samples": {
+        "live-cue-cursor": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-range": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-target": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-hurt": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-magic-wind": {
+          "sequence": 7,
+          "turn": 2
+        },
+        "live-windup": {
+          "sequence": 1,
+          "turn": 2
+        }
+      }
+    }
+  ]
+}

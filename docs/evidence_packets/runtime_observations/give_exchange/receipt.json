@@ -1,0 +1,69 @@
+{
+  "failures": [],
+  "fixture": true,
+  "input_delivery": "Viewport.push_input motion/press/release; no desktop input or direct button signals",
+  "observations": {
+    "cancelled_move": {
+      "inventory": [
+        241,
+        246,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "queue_unchanged": true,
+      "restored": true
+    },
+    "continuous": {
+      "action_used": true,
+      "receiver": [
+        246,
+        241,
+        241,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sender": [
+        246,
+        281,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "full_exchange": {
+      "action_used": true,
+      "receiver": [
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241
+      ],
+      "sender": [
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        241,
+        246
+      ]
+    }
+  },
+  "window_position": "(1700, 350)",
+  "window_size": "(640, 480)"
+}

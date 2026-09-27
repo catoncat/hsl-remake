@@ -1,0 +1,52 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 500,
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "023",
+      "024",
+      "027",
+      "030",
+      "031",
+      "032",
+      "033",
+      "034",
+      "035",
+      "036",
+      "037",
+      "038",
+      "039",
+      "041",
+      "043",
+      "044",
+      "045",
+      "048",
+      "049",
+      "051",
+      "065"
+    ],
+    "speakers": [
+      "001"
+    ]
+  },
+  "comments": {
+    "cast": [
+      "Encounter pool (random encounters 501-578, tools/hsl_battle_seed.py ENCOUNTER_RANGE): one",
+      "shared folder battle500/ holds the whole registered party (every 5NN EVEF installs slots",
+      "001-009 as 有才產生) and every monster code the 78 encounter EVEFs place; each encounter",
+      "scenario references these manifests instead of decoding its own copies. Only 雷歐納德",
+      "speaks (dead message 741 / fail line 122).",
+      "Every monster code the 78 encounter EVEFs place (tools/hsltools/levels/battle.py cast_gaps):",
+      "the Wosfita soldier 023, the dark knights 032 / 065, the undead 033, the wing guard 045 and 051."
+    ]
+  }
+}

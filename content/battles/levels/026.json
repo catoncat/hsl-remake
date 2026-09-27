@@ -1,0 +1,150 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 26,
+  "battle": {
+    "id": "battle_026_level26",
+    "title": "亞雷比斯 · 海上的亡靈",
+    "initial_focus_unit_id": "rett",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "亞雷比斯 · 敵軍已清除"
+    },
+    "expected": {
+      "units": 47,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY026 opens with the eight installed party slots plus 咕嚕 008 (EVEF 有才產生, fielded only when the campaign carry holds the member) against the resource-derived Enemy038 and Enemy039 field; the Enemy101 hull pieces are static objects.",
+      "WINFAIL026 inserts seven Enemy035 arrivals at round 14 and resolves win_0 on enemy-total zero; the source condition/action order is preserved while reinforcement pacing is a remake reading.",
+      "The source vessel collision/native movement rules remain provisional; the conditional 咕嚕 install follows original_player_install.md (carry stands in for the registered-and-enabled slot table)."
+    ]
+  },
+  "story_scene": {
+    "id": "story_026_sunset_bay_opening",
+    "title": "日沒灣（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "日沒灣",
+      "hint": "戰鬥部分（level 26）尚未重製　　空格／點擊：回到大地圖（日沒灣）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the eight controlled slots and the 038 / 039 / Enemy101 船殼 enemies have no battle scenario yet (multi-slot party, large 039 footprint); the preview shows their EVEF placements and STORY026 displacement walks only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "035",
+      "038",
+      "039",
+      "101"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Chapter-2 battles 26 / 28-34 (their own shape21 / shape31 maps) are remade as opening",
+      "previews like levels 2 / 5 / 12: EVEF cast, STORY walks and dialogue up to first",
+      "control, then the not-remade card back to the big map (bigmap.dat point N = level N).",
+      "Music: the original table 0x477b44 (signed shorts, static-derived byte read) gives",
+      "each level's actPlayLevelMusic track.",
+      "Level 26 (日沒灣, bigmap.dat point 26): the eight-slot party on the ship deck, 雷特 and",
+      "雪拉 banter, the 海輝魔 039 and 甲殼蜂 038 close in by displacement walks; the 26 Enemy101",
+      "船殼 pieces (SHAPE11\\18_DOOR01) are static objects, 咕嚕 is a conditional install.",
+      "actPlayMusic,8 opens on track 8; the closing actPlayLevelMusic",
+      "resolves level 26 to track 12 (0x477b44)."
+    ],
+    "cast": [
+      "Level 26 (亞雷比斯 approach): the eight-slot party (咕嚕 is a conditional install and",
+      "silent), 海輝魔 039 and 甲殼蜂 038; the 26 Enemy101 船殼 pieces are registered actors (not",
+      "drawn, no_showshape). WINFAIL026 inserts seven Enemy035 arrivals; they do not speak but still",
+      "need walk/audio assets when the event is materialized."
+    ],
+    "speakers": [
+      "Level 26 (亞雷比斯 approach, STORY026 / WINFAIL026): the eight-slot party on deck (咕嚕 is a conditional install), 雷特 and 雪拉 banter; 038 / 039 are silent, the 船殼 hull pieces are static objects."
+    ]
+  }
+}

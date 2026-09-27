@@ -1,0 +1,589 @@
+{
+  "schema": "hsl_item_cure_route.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "cases": [
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0,
+        "self_target": false
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 96,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0,
+        "self_target": true
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 96,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2,
+        "self_target": false
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 96,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2,
+        "self_target": true
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 96,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7,
+        "self_target": false
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 96,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7,
+        "self_target": true
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 96,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55,
+        "self_target": false
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 96,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55,
+        "self_target": true
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 96,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0,
+        "self_target": false
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 147,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0,
+        "self_target": true
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 147,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2,
+        "self_target": false
+      },
+      "native": {
+        "branch": "ally_search",
+        "packed_coordinate": null
+      },
+      "instructions": 61,
+      "normal_return": false,
+      "stop_address": "0x4408ac",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2,
+        "self_target": true
+      },
+      "native": {
+        "branch": "self_destination",
+        "packed_coordinate": 458760
+      },
+      "instructions": 67,
+      "normal_return": false,
+      "stop_address": "0x4408b8",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7,
+        "self_target": false
+      },
+      "native": {
+        "branch": "ally_search",
+        "packed_coordinate": null
+      },
+      "instructions": 63,
+      "normal_return": false,
+      "stop_address": "0x4408ac",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7,
+        "self_target": true
+      },
+      "native": {
+        "branch": "self_destination",
+        "packed_coordinate": 458760
+      },
+      "instructions": 69,
+      "normal_return": false,
+      "stop_address": "0x4408b8",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55,
+        "self_target": false
+      },
+      "native": {
+        "branch": "ally_search",
+        "packed_coordinate": null
+      },
+      "instructions": 63,
+      "normal_return": false,
+      "stop_address": "0x4408ac",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          247,
+          248,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55,
+        "self_target": true
+      },
+      "native": {
+        "branch": "self_destination",
+        "packed_coordinate": 458760
+      },
+      "instructions": 69,
+      "normal_return": false,
+      "stop_address": "0x4408b8",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0,
+        "self_target": false
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 147,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 0,
+        "self_target": true
+      },
+      "native": {
+        "branch": "unavailable",
+        "packed_coordinate": null
+      },
+      "instructions": 147,
+      "normal_return": false,
+      "stop_address": "0x4408e2",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2,
+        "self_target": false
+      },
+      "native": {
+        "branch": "ally_search",
+        "packed_coordinate": null
+      },
+      "instructions": 87,
+      "normal_return": false,
+      "stop_address": "0x4408ac",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2,
+        "self_target": true
+      },
+      "native": {
+        "branch": "self_destination",
+        "packed_coordinate": 458760
+      },
+      "instructions": 93,
+      "normal_return": false,
+      "stop_address": "0x4408b8",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7,
+        "self_target": false
+      },
+      "native": {
+        "branch": "ally_search",
+        "packed_coordinate": null
+      },
+      "instructions": 59,
+      "normal_return": false,
+      "stop_address": "0x4408ac",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 7,
+        "self_target": true
+      },
+      "native": {
+        "branch": "self_destination",
+        "packed_coordinate": 458760
+      },
+      "instructions": 65,
+      "normal_return": false,
+      "stop_address": "0x4408b8",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55,
+        "self_target": false
+      },
+      "native": {
+        "branch": "ally_search",
+        "packed_coordinate": null
+      },
+      "instructions": 59,
+      "normal_return": false,
+      "stop_address": "0x4408ac",
+      "actors_unchanged": true
+    },
+    {
+      "input": {
+        "inventory": [
+          246,
+          247,
+          248,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 55,
+        "self_target": true
+      },
+      "native": {
+        "branch": "self_destination",
+        "packed_coordinate": 458760
+      },
+      "instructions": 65,
+      "normal_return": false,
+      "stop_address": "0x4408b8",
+      "actors_unchanged": true
+    }
+  ],
+  "bytes": "a1ec1c4c0050e82eb9fcff5055e8a7b9fcff83c40c85c07452a1ec1c4c003bc575138b45048b4d08c1e01081e1ffff000003c1eb0c6a015055e87bccfcff83c40c85c08944241074220fbf5424120fbfc08915702c4c00a3742c4c00c7858c00000000001000e9d8170000392dec1c4c00",
+  "bytes_sha256": "9321851267792f56308ec3863a03c9e6094cbf6a712dec8e957cc8aafa522497",
+  "limits": [
+    "Category selection priority and actual path search are separate; this prefix only validates self-versus-ally cure setup before moving or consuming inventory."
+  ]
+}

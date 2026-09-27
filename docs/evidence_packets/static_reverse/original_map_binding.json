@@ -1,0 +1,4821 @@
+{
+  "schema": "hsl_native_map_binding.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "sources": {
+    "process_member": "@:\\data\\PROCESS.DEF",
+    "process_sha256": "e0d295d2c1fd7c0781f1e9dd7d3b42127e192d479918b392e1d067aa9765c8fa",
+    "process_index": 1,
+    "bindings": [
+      {
+        "level": 1,
+        "obs_member": "@:\\data\\OBJ-001.OBS",
+        "obs_sha256": "b8bb1c86cba85f31dd476881f4e5b89d51669d0bf7fc68e4bbb2efe35d4c770f",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL01.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level01.SHP",
+        "shape_sha256": "f51938f249d25de59780697b5b36bef6b99bb7cc35e7d0a130265ff37676f390",
+        "shape_size": [
+          1280,
+          1120
+        ]
+      },
+      {
+        "level": 2,
+        "obs_member": "@:\\data\\obj-002.obs",
+        "obs_sha256": "b5cb33ef5f7183652b4f81e7bceef646dc5b9a38bbf52bfc8d0a4089e5a6432c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL02.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level02.shp",
+        "shape_sha256": "d31715fdeedb44b2ecc552d0ff420f3ca44b5e2262b87fcdec1fe79d19cf0ae8",
+        "shape_size": [
+          768,
+          640
+        ]
+      },
+      {
+        "level": 3,
+        "obs_member": "@:\\data\\obj-003.obs",
+        "obs_sha256": "b3a673f998c5bf9661e0b511eb6da2baf7d3760e1c535227252195d73e81f7dd",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL03.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level03.shp",
+        "shape_sha256": "1a0e422da4dc4072eea88382296645b7ab82cae3ba5a02fba37183a25670d9fb",
+        "shape_size": [
+          1152,
+          672
+        ]
+      },
+      {
+        "level": 5,
+        "obs_member": "@:\\data\\obj-005.obs",
+        "obs_sha256": "1aa0d51628d6d668ea855cf326c2c568093a1854a285f9e9655901e47c80a6d0",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL05.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\Level05.SHP",
+        "shape_sha256": "f195f4bb27f08134c45444170e124986fdc7e8e185cccde8153ee5d757d604c8",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 6,
+        "obs_member": "@:\\data\\obj-006.obs",
+        "obs_sha256": "53177023ee5bacc10f7a7e6142a401d2bf10ac14b557cd550f5ad075332c8953",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL06.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level06.shp",
+        "shape_sha256": "59f805a20da106b307fd61bbe5a77d9efa33f9e8e5cc80d913f09af022bab4bb",
+        "shape_size": [
+          1120,
+          896
+        ]
+      },
+      {
+        "level": 7,
+        "obs_member": "@:\\data\\obj-007.obs",
+        "obs_sha256": "ccb2bb5aaccf2b01f558d780e7bcd01dc3e07ca0ec30ee466fd8e7cb561aca39",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL07.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level07.shp",
+        "shape_sha256": "69fb24c3bfa7600462b548f2a293b3fae2eef5998361f93a1af77f078affd265",
+        "shape_size": [
+          960,
+          832
+        ]
+      },
+      {
+        "level": 8,
+        "obs_member": "@:\\data\\obj-008.obs",
+        "obs_sha256": "84967b8caa84b0f191bf513d535512aecc08e21f5f059ecdccb4bbb8db1eb91e",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL08.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level08.shp",
+        "shape_sha256": "8da6af75bd6e7cfba93c0dd29df5e62583f1105dff8c5501c75a2c85feb1eb7b",
+        "shape_size": [
+          1504,
+          800
+        ]
+      },
+      {
+        "level": 9,
+        "obs_member": "@:\\data\\obj-009.obs",
+        "obs_sha256": "a748fe97585ee3bbffe4df3310f913998d7fa6cae1193fa9b3b736b8054e3512",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL09.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level09.shp",
+        "shape_sha256": "e3f2a99eba84c8ab27f40e561f0c515efd2fbe4547a96e0d11ed825a0e334964",
+        "shape_size": [
+          1600,
+          1184
+        ]
+      },
+      {
+        "level": 10,
+        "obs_member": "@:\\data\\obj-010.obs",
+        "obs_sha256": "c7a1510b1710f6951e9da98e4e6243c6369f9c0692a48208327e14bda8709925",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL10.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level10.shp",
+        "shape_sha256": "a997e89ac87f01716d584f7c9353b417c1f76c4db9b17fe9cb3474833d470132",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 12,
+        "obs_member": "@:\\data\\obj-012.obs",
+        "obs_sha256": "5aa09ad73581c837209ab891beb6ec4fe3fa079f65cc70aa267c5b1c4b113df6",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL12.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level12.SHP",
+        "shape_sha256": "bfe51b55fada266e611192910afd75ba0840b7b62f810a1156a3cf72eb6835b7",
+        "shape_size": [
+          1440,
+          1920
+        ]
+      },
+      {
+        "level": 13,
+        "obs_member": "@:\\data\\obj-013.obs",
+        "obs_sha256": "8c12a0b4ea4f4bccd0c775ef09fdfa82f3bcd4fff5c1aeab22664faf57e44522",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL13.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level13.SHP",
+        "shape_sha256": "c670dfc19bf32681407ee99f1f336fbf251224080d157c7352f118ad5364addf",
+        "shape_size": [
+          960,
+          1280
+        ]
+      },
+      {
+        "level": 15,
+        "obs_member": "@:\\data\\obj-015.obs",
+        "obs_sha256": "391ec663f3fb2d1abafee723d484da7bfd5d07e641305534982bde5c62601a81",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL15.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level15.SHP",
+        "shape_sha256": "c307d512978f1bd21a66b5e6ebf164dc7e3918b07f750669423c682dedba0282",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 17,
+        "obs_member": "@:\\data\\OBJ-017.OBS",
+        "obs_sha256": "d481f8468f36cd53312f8a684e34ffd3c420051f141054f946589094c1b1eec9",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL17.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level17.SHP",
+        "shape_sha256": "f3229f2f56486726b488108bb9fea9998f1694ed03f40dcfbfc0d1325dc94108",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 18,
+        "obs_member": "@:\\data\\obj-018.obs",
+        "obs_sha256": "09ff1188e2042e7c27e6db14d84f714c2e1a41e83408dd257f115cb56bf04ef9",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL18.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level18.SHP",
+        "shape_sha256": "7719bb6164d17f964a122a4cd6cd54b94665a360e1bf623026e9661f747d5014",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 19,
+        "obs_member": "@:\\data\\obj-019.obs",
+        "obs_sha256": "717cbc7def7d96c2a4e23a97a955e96dc9c8683d88173fb8e060cbffdb69b8f4",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL19.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level19.SHP",
+        "shape_sha256": "e81e3b46de617060f124b2e25c391039e08863a1cd50447b784590ab8368925b",
+        "shape_size": [
+          1600,
+          1184
+        ]
+      },
+      {
+        "level": 21,
+        "obs_member": "@:\\data\\obj-021.obs",
+        "obs_sha256": "14918dea4b19128182ea3c1ebc3af9cf80968900e31c00fdf4f6e8793ad9d6a4",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL21.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level21.SHP",
+        "shape_sha256": "066ac1643063008ca0c8edc312e438e4fb8e75083cc3cfc2e5906cd51c2e45f2",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 22,
+        "obs_member": "@:\\data\\obj-022.obs",
+        "obs_sha256": "2f04651950200488567dde61bd6f2a39446a372eb8a95aa28f0ffccd71af5207",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL22.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level22.SHP",
+        "shape_sha256": "43d9373e6abbea05a54c7e0804c1b69195f93b7c690d6b2dcf5ab10abfe75587",
+        "shape_size": [
+          1280,
+          1280
+        ]
+      },
+      {
+        "level": 24,
+        "obs_member": "@:\\data\\obj-024.obs",
+        "obs_sha256": "d12fe3e5592bac539355482c2b44d320a15a1ac651578c924fef33a090ffb28b",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL24.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level24.SHP",
+        "shape_sha256": "7afecac35a106316eae7eb0cd76d99e3715ebc7691ab8df544154c218061a5a9",
+        "shape_size": [
+          640,
+          960
+        ]
+      },
+      {
+        "level": 26,
+        "obs_member": "@:\\data\\obj-026.obs",
+        "obs_sha256": "6cdc9bbca19809182f355b5395740f74e3aaac38093b95ba6ad56d87229ec8fd",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL26.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level26.SHP",
+        "shape_sha256": "3d6de6acfd8b8801f92a25cf52af69c4bafc66df156a71ac2741497c6a685ee3",
+        "shape_size": [
+          1600,
+          992
+        ]
+      },
+      {
+        "level": 28,
+        "obs_member": "@:\\data\\obj-028.obs",
+        "obs_sha256": "259332c2a8e58640eeb7880dad535e9d5c50c5e23db7baefbbd6719a9a8d1c3c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL28.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level28.SHP",
+        "shape_sha256": "5c1921868638f16a41ed3dd546cee00d2b99795841b94a662c6959095644f0db",
+        "shape_size": [
+          960,
+          1920
+        ]
+      },
+      {
+        "level": 29,
+        "obs_member": "@:\\data\\obj-029.obs",
+        "obs_sha256": "474e5aaf6f5f65f618979f2fdf0b7ae1df327010049c3425b06ee1d25db01e6c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL29.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level29.SHP",
+        "shape_sha256": "0d06aa511b28d9d096a547d24520da3f713885f0ad84469d8e18fdbfa90b2d39",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 30,
+        "obs_member": "@:\\data\\obj-030.obs",
+        "obs_sha256": "6b02f884337f19a965e9b301afbd0a71117892c4d91e6a692cb8e18e48a5ef74",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL30.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level30.SHP",
+        "shape_sha256": "3c37e1f0f0d088e6656bae944e5384c8d540d214d3a6906d3a3b4de240363d16",
+        "shape_size": [
+          1280,
+          544
+        ]
+      },
+      {
+        "level": 31,
+        "obs_member": "@:\\data\\obj-031.obs",
+        "obs_sha256": "d7523b4314d5dc04f3c5fc93e5aed42d18c4a4ccc935ccfa182fc7565efb351c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL31.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level31.SHP",
+        "shape_sha256": "1f0669a5a1ffd0136d8c67333a4f6f45298541c34c0e965b297cb9d5d09ca187",
+        "shape_size": [
+          704,
+          1600
+        ]
+      },
+      {
+        "level": 32,
+        "obs_member": "@:\\data\\obj-032.obs",
+        "obs_sha256": "822e5db14ccb6c0d6c466e69b63796e647c541a845b9bae89fad74867c00c623",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL33.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level33.SHP",
+        "shape_sha256": "ae7ef4c20541848f181dffb4562b41b72e72765df1f97abe2b7263375c40e8fa",
+        "shape_size": [
+          704,
+          1184
+        ]
+      },
+      {
+        "level": 33,
+        "obs_member": "@:\\data\\obj-033.obs",
+        "obs_sha256": "e7bcf840f9e3c29848c44e0ae8e9b2dbcadc6d6435b33b9733cba8f20b9efb0c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL32.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level32.SHP",
+        "shape_sha256": "6f8f58a942c635fba0ee227645db6dc04a49ad44994336264640f6329f7d8a9f",
+        "shape_size": [
+          960,
+          960
+        ]
+      },
+      {
+        "level": 34,
+        "obs_member": "@:\\data\\obj-034.obs",
+        "obs_sha256": "044658c6facdafb74910bfeec793ff39cecd37badb5e0d70eea0d1d955b32767",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL34.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level34.SHP",
+        "shape_sha256": "b51962d8dd461a605c65e96e2d36adb90185393c70d50dd01445654b155592cd",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 36,
+        "obs_member": "@:\\data\\obj-036.obs",
+        "obs_sha256": "c44c386746a6c84353d296cf338f2ba13cf9b86c0f91c977a9bcca157506a2ac",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL36.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level36.SHP",
+        "shape_sha256": "0422715e201eb41a840f6c95d5b50b0b34267ba2f329a9625e291e0e8e83c265",
+        "shape_size": [
+          1184,
+          1920
+        ]
+      },
+      {
+        "level": 37,
+        "obs_member": "@:\\data\\obj-037.obs",
+        "obs_sha256": "4e51222730b7ec3927b70b0401e7d403101d2e2692eb0eb3e516804f9d7a8c3b",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL37.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level37.SHP",
+        "shape_sha256": "95031216003859262bd8277c4f480fbbf2bfd234c8ba5e422c81245a0aa1a22c",
+        "shape_size": [
+          960,
+          1184
+        ]
+      },
+      {
+        "level": 38,
+        "obs_member": "@:\\data\\obj-038.obs",
+        "obs_sha256": "88e52c03da725935c6eb70932257d341a36311639ab6931ef071b07c741bc392",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL38.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level38.SHP",
+        "shape_sha256": "a35937a6ab67ee9d65c0a8a990ad8455f6d62fd12ee70b4096b9e47e18b4cdcc",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 39,
+        "obs_member": "@:\\data\\obj-039.obs",
+        "obs_sha256": "086a394fb6c55689950dd81e5a69178b73ff92bc82852ce00b6153e5a3a2189b",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeBG1",
+          "obj_Shape_Name": "SHAPE31\\LEVEL39.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level39.SHP",
+        "shape_sha256": "9b7d243918e242373b24e09772df22536217b447bd879bdf69b6502d52c70de5",
+        "shape_size": [
+          960,
+          1184
+        ]
+      },
+      {
+        "level": 40,
+        "obs_member": "@:\\data\\OBJ-040.OBS",
+        "obs_sha256": "67f22ee85a8c62767e5c218cef18223031e8de8a0f751bf4d30939fedfe0d02a",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL40.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level40.SHP",
+        "shape_sha256": "90f49ade454fcc94b70f7627890f27ac8b87370e5154c7ad07f4b310387b426d",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 41,
+        "obs_member": "@:\\data\\OBJ-041.OBS",
+        "obs_sha256": "b56eed8b7f6282537d6e6f6380da9e78aa6272360b332cc53e64476d8314aa0f",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL41.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level41.SHP",
+        "shape_sha256": "c40d20a2355453012ff7b1c7551137d8f2e63d6ba09ab11b9b6644b695c8ff7e",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 43,
+        "obs_member": "@:\\data\\obj-043.obs",
+        "obs_sha256": "4913451be6cc0e1da948ed131abdccd800635ae6020415c7b2c10dd72b53da93",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL43.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level43.SHP",
+        "shape_sha256": "679d952211243c02dd857f540609fc96548a7c16ab1d38cba488c6e854a31be3",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 44,
+        "obs_member": "@:\\data\\obj-044.obs",
+        "obs_sha256": "5fe31d87d7d3a279562dac054dd70571b77099faf5419dce3d03fc4c382a4b13",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL44.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level44.SHP",
+        "shape_sha256": "da6678904135893322e13b2ebbbd58a2de82fe5bb1dc1196d9a64054de350d7f",
+        "shape_size": [
+          1920,
+          1184
+        ]
+      },
+      {
+        "level": 45,
+        "obs_member": "@:\\data\\obj-045.obs",
+        "obs_sha256": "fde04a508b4e914f485f983c59f80c6005bf52081a1adec7ecbc9fc85a20a796",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL45.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level45.SHP",
+        "shape_sha256": "057061f1f832465aeff0af8fdcdf1a1ab9599df0446c6c1b25e0077adaa71535",
+        "shape_size": [
+          1920,
+          1184
+        ]
+      },
+      {
+        "level": 49,
+        "obs_member": "@:\\data\\obj-049.OBS",
+        "obs_sha256": "e18221a22f8478d1ceeedd17be0c1c7f3154f8cefd50bf210a5591b7e31c5d12",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE\\ICONRECT.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG"
+        },
+        "shape_member": "@:\\shape\\ICONRECT.SHP",
+        "shape_sha256": "cc13c29dd8d8d117626cdc71a5cfbd876ec89057918918a22bbc109107810b64",
+        "shape_size": [
+          32,
+          32
+        ]
+      },
+      {
+        "level": 51,
+        "obs_member": "@:\\data\\obj-051.obs",
+        "obs_sha256": "f6621854fdf4a50677877744da09015f429d2d1a627d7c8490e2bd420d5428a8",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL51.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level51.shp",
+        "shape_sha256": "a3890c3f75641cb3ecf7b5af7003520b0665920f2383b5646003a50c37bbfb6d",
+        "shape_size": [
+          768,
+          768
+        ]
+      },
+      {
+        "level": 52,
+        "obs_member": "@:\\data\\obj-052.obs",
+        "obs_sha256": "91b1f239bf2a25e378c46671ce3c927e50ef53812d6a984239b792deb054735e",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL52.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level52.shp",
+        "shape_sha256": "9731eb6024d3aeb31ec712be57c2fbc57b974493a80643debdbe63179a5065a6",
+        "shape_size": [
+          640,
+          1280
+        ]
+      },
+      {
+        "level": 53,
+        "obs_member": "@:\\data\\obj-053.obs",
+        "obs_sha256": "2dd19202e9579c681945ba5ae8dd75ec57e56b0cc7f0d45502b29ae04ad4e83e",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL53.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level53.shp",
+        "shape_sha256": "bcdb1cf4e584f18f43c7f77c4d7bacd6d496393803c23326a097695938a5e95b",
+        "shape_size": [
+          1024,
+          1376
+        ]
+      },
+      {
+        "level": 54,
+        "obs_member": "@:\\data\\obj-054.obs",
+        "obs_sha256": "5bed623eef7c6b50b403d077e036bb3a0575949af1010d09f8e22d5a2ae23489",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL54.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level54.shp",
+        "shape_sha256": "84cd95881150270f8d23d0ad4b9da0bd4b853d28fdb1a74c6d58532f224eb11e",
+        "shape_size": [
+          832,
+          1056
+        ]
+      },
+      {
+        "level": 55,
+        "obs_member": "@:\\data\\obj-055.obs",
+        "obs_sha256": "2090621d102d810cf6cab52cf65c14ab93c67009730858701f6bdfadec52a242",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 56,
+        "obs_member": "@:\\data\\obj-056.obs",
+        "obs_sha256": "b336ceee1f672f53d0c78a59f1faf63f8fe1626077ea797177d1753e2689a079",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL56.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level56.SHP",
+        "shape_sha256": "e1ae4d91a0793eaea6e67822f947a95b8d72c0d6f10c01a3caed5c7726fce144",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 57,
+        "obs_member": "@:\\data\\obj-057.obs",
+        "obs_sha256": "11a83e13ba553bb12c332da3bffdb7574cd15f8b795139f29a71b1eb243dbdc5",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL57.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level57.SHP",
+        "shape_sha256": "7f7f9a14076f46883ccb820a5719fc723949c8c735dd9fd13722ee18b696f5a3",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 58,
+        "obs_member": "@:\\data\\obj-058.obs",
+        "obs_sha256": "d8616ad1ef0e108f3a66da7bceae5f0f4f1d59b8960bca62390801aa6f860e82",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 59,
+        "obs_member": "@:\\data\\obj-059.obs",
+        "obs_sha256": "fe8ec6e25485f23c5473a120c52a2b47f9c5e77d1b8ca86c3f3fedefa846341e",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL59.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level59.SHP",
+        "shape_sha256": "2c1e9143947e3aeb5313360ab16977d5e7ff7afc4c5179544b39f23fa9bb98db",
+        "shape_size": [
+          1632,
+          1280
+        ]
+      },
+      {
+        "level": 60,
+        "obs_member": "@:\\data\\obj-060.obs",
+        "obs_sha256": "e3b08b144649c666232ffdb12ca438ad3ebe4cee6e5af0fd0b8c86dec5019659",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 61,
+        "obs_member": "@:\\data\\obj-061.obs",
+        "obs_sha256": "2090621d102d810cf6cab52cf65c14ab93c67009730858701f6bdfadec52a242",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 62,
+        "obs_member": "@:\\data\\obj-062.obs",
+        "obs_sha256": "2090621d102d810cf6cab52cf65c14ab93c67009730858701f6bdfadec52a242",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 63,
+        "obs_member": "@:\\data\\obj-063.obs",
+        "obs_sha256": "e09e2fd30d54b1e7650b28c5bf73789d9fd4cb839bb6be38fe785765b544896e",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 64,
+        "obs_member": "@:\\data\\obj-064.obs",
+        "obs_sha256": "2090621d102d810cf6cab52cf65c14ab93c67009730858701f6bdfadec52a242",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 65,
+        "obs_member": "@:\\data\\obj-065.obs",
+        "obs_sha256": "70a78874acd274e90adb7ef4751673d85ea0833f735af8e51091e9882e3c26c5",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL65.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level65.SHP",
+        "shape_sha256": "fd45765838db2dffff3b0503091ab5f4ad61871faa41acbb9d834fb0c72af3ee",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 66,
+        "obs_member": "@:\\data\\obj-066.obs",
+        "obs_sha256": "2090621d102d810cf6cab52cf65c14ab93c67009730858701f6bdfadec52a242",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 67,
+        "obs_member": "@:\\data\\obj-067.obs",
+        "obs_sha256": "af1039d68aa4174ce9351057eeb409e6a94a601da6715f1e160089d6d12baabb",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 68,
+        "obs_member": "@:\\data\\obj-068.obs",
+        "obs_sha256": "77ef00fbdb53e52c10d2f28f3f477eab7652832d1c746d86ff72831130dab378",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 69,
+        "obs_member": "@:\\data\\obj-069.obs",
+        "obs_sha256": "77ef00fbdb53e52c10d2f28f3f477eab7652832d1c746d86ff72831130dab378",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 70,
+        "obs_member": "@:\\data\\obj-070.obs",
+        "obs_sha256": "b21f51f0e5ca667eff6a460892a9bce64a6abebd5ee04d31f3ff5d880e551a8c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE41\\LEVEL55.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level55.SHP",
+        "shape_sha256": "b43242b94d9cca9ed6c5306a8d84caafcbb4b05d621878a7824e624baf7ac5e6",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 71,
+        "obs_member": "@:\\data\\obj-071.obs",
+        "obs_sha256": "74990c79e0f4792a76ea3be2df4061d5a155f3d6873b134deeddf3e87447fac0",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 72,
+        "obs_member": "@:\\data\\obj-072.obs",
+        "obs_sha256": "c22fc290d5011c887389bf9e3ebccbfe933adaaae6a93410d43a3987718f4aaf",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL72.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level72.SHP",
+        "shape_sha256": "2397f9017db206d5df96bdff747d1b0aa092f213d3523a7ab26e790fb5c02ae0",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 73,
+        "obs_member": "@:\\data\\obj-073.obs",
+        "obs_sha256": "c69e396c867468277973a6cbefaa566ab4e4a23b9ddacbb3ba5c7f6902f847e8",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL41.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level41.SHP",
+        "shape_sha256": "c40d20a2355453012ff7b1c7551137d8f2e63d6ba09ab11b9b6644b695c8ff7e",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 74,
+        "obs_member": "@:\\data\\OBJ-074.OBS",
+        "obs_sha256": "38fa352df161193286fe9bf9339725b2baf5a4e398c4133d4be2bc7c81cca178",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL74.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\Level74.SHP",
+        "shape_sha256": "271cd1108d1ee8f67fe1511b30e648799d90bb82375ca9817cab209d138873cf",
+        "shape_size": [
+          640,
+          480
+        ]
+      },
+      {
+        "level": 75,
+        "obs_member": "@:\\data\\obj-075.obs",
+        "obs_sha256": "09252d0efd202f9614d78cc0adbda9b5b53389bb13c32143058e73d96c288a8e",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL57.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level57.SHP",
+        "shape_sha256": "7f7f9a14076f46883ccb820a5719fc723949c8c735dd9fd13722ee18b696f5a3",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 76,
+        "obs_member": "@:\\data\\obj-076.obs",
+        "obs_sha256": "ae0ef3bae9864c103c7511cfd1f5c16a177d4c5a6b810d2fd478688de1d7a352",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 77,
+        "obs_member": "@:\\data\\obj-077.obs",
+        "obs_sha256": "7a94610ec1f40b0a6803fa6b093bddee23dd5b721b9e2441ae078704b83345d3",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 78,
+        "obs_member": "@:\\data\\obj-078.obs",
+        "obs_sha256": "f4f3985aaf800dac0cfbee1d8de617febea2fa59ce80e4485d6ede81accfee27",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 79,
+        "obs_member": "@:\\data\\obj-079.obs",
+        "obs_sha256": "c7ade95d178e9aede257626b518538b47067c831b0c5f89e63fd54830500c976",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 80,
+        "obs_member": "@:\\data\\obj-080.obs",
+        "obs_sha256": "5583f6a3e15f8f3fa653b09c3e843169dc0ba6b45c2643bb9e0a80d8ae6f1819",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL80.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level80.SHP",
+        "shape_sha256": "a7044f7e691bb26f12f5b5186398d23145faf44b5283e228282f1aea887fb03a",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 81,
+        "obs_member": "@:\\data\\obj-081.obs",
+        "obs_sha256": "c46e85db0ece15d51d02092113ec551c9a0cdfb80bc890e68cb091965900909d",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 82,
+        "obs_member": "@:\\data\\obj-082.obs",
+        "obs_sha256": "7a94610ec1f40b0a6803fa6b093bddee23dd5b721b9e2441ae078704b83345d3",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL58.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level58.SHP",
+        "shape_sha256": "aeed5f9548beb95e9a7747f02c0175e585d957c0a7299168f5009a70df9c0028",
+        "shape_size": [
+          960,
+          720
+        ]
+      },
+      {
+        "level": 97,
+        "obs_member": "@:\\data\\obj-097.obs",
+        "obs_sha256": "8b612a5ed4ab8c0b2d7a609b95433c146beeb438596a36e25491831bc5484a9e",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL80.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level80.SHP",
+        "shape_sha256": "a7044f7e691bb26f12f5b5186398d23145faf44b5283e228282f1aea887fb03a",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 98,
+        "obs_member": "@:\\data\\obj-098.obs",
+        "obs_sha256": "a1cb239088ceb6ea4924fcc66cb9d77d8fc1c8c9d3ece7b5ed5441a2b04df1ca",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL10.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level10.shp",
+        "shape_sha256": "a997e89ac87f01716d584f7c9353b417c1f76c4db9b17fe9cb3474833d470132",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 99,
+        "obs_member": "@:\\data\\obj-099.obs",
+        "obs_sha256": "c620062f59373f126706cb161c577f88ccad6adcc7c849c7ddcffb112f04658b",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL36.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level36.SHP",
+        "shape_sha256": "0422715e201eb41a840f6c95d5b50b0b34267ba2f329a9625e291e0e8e83c265",
+        "shape_size": [
+          1184,
+          1920
+        ]
+      },
+      {
+        "level": 501,
+        "obs_member": "@:\\data\\obj-501.obs",
+        "obs_sha256": "8462363bc3ff32bf294da6d13c0e00c8714f7d6aa20b77d39586b8478c299330",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL02.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level02.shp",
+        "shape_sha256": "d31715fdeedb44b2ecc552d0ff420f3ca44b5e2262b87fcdec1fe79d19cf0ae8",
+        "shape_size": [
+          768,
+          640
+        ]
+      },
+      {
+        "level": 502,
+        "obs_member": "@:\\data\\obj-502.obs",
+        "obs_sha256": "8462363bc3ff32bf294da6d13c0e00c8714f7d6aa20b77d39586b8478c299330",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL02.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level02.shp",
+        "shape_sha256": "d31715fdeedb44b2ecc552d0ff420f3ca44b5e2262b87fcdec1fe79d19cf0ae8",
+        "shape_size": [
+          768,
+          640
+        ]
+      },
+      {
+        "level": 503,
+        "obs_member": "@:\\data\\obj-503.obs",
+        "obs_sha256": "8462363bc3ff32bf294da6d13c0e00c8714f7d6aa20b77d39586b8478c299330",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL02.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level02.shp",
+        "shape_sha256": "d31715fdeedb44b2ecc552d0ff420f3ca44b5e2262b87fcdec1fe79d19cf0ae8",
+        "shape_size": [
+          768,
+          640
+        ]
+      },
+      {
+        "level": 504,
+        "obs_member": "@:\\data\\obj-504.obs",
+        "obs_sha256": "e069b0094dcb0c7353d7fb93a991043f852520a97a36a80b22aca6183556bc07",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL03.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level03.shp",
+        "shape_sha256": "1a0e422da4dc4072eea88382296645b7ab82cae3ba5a02fba37183a25670d9fb",
+        "shape_size": [
+          1152,
+          672
+        ]
+      },
+      {
+        "level": 505,
+        "obs_member": "@:\\data\\obj-505.obs",
+        "obs_sha256": "e069b0094dcb0c7353d7fb93a991043f852520a97a36a80b22aca6183556bc07",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL03.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level03.shp",
+        "shape_sha256": "1a0e422da4dc4072eea88382296645b7ab82cae3ba5a02fba37183a25670d9fb",
+        "shape_size": [
+          1152,
+          672
+        ]
+      },
+      {
+        "level": 506,
+        "obs_member": "@:\\data\\obj-506.obs",
+        "obs_sha256": "e069b0094dcb0c7353d7fb93a991043f852520a97a36a80b22aca6183556bc07",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL03.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level03.shp",
+        "shape_sha256": "1a0e422da4dc4072eea88382296645b7ab82cae3ba5a02fba37183a25670d9fb",
+        "shape_size": [
+          1152,
+          672
+        ]
+      },
+      {
+        "level": 507,
+        "obs_member": "@:\\data\\obj-507.obs",
+        "obs_sha256": "af93b13b4dd7a94747ae9d61f38660bf487a43aeb97a260fd7643002bff8c012",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL05.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\Level05.SHP",
+        "shape_sha256": "f195f4bb27f08134c45444170e124986fdc7e8e185cccde8153ee5d757d604c8",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 508,
+        "obs_member": "@:\\data\\obj-508.obs",
+        "obs_sha256": "af93b13b4dd7a94747ae9d61f38660bf487a43aeb97a260fd7643002bff8c012",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL05.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\Level05.SHP",
+        "shape_sha256": "f195f4bb27f08134c45444170e124986fdc7e8e185cccde8153ee5d757d604c8",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 509,
+        "obs_member": "@:\\data\\obj-509.obs",
+        "obs_sha256": "af93b13b4dd7a94747ae9d61f38660bf487a43aeb97a260fd7643002bff8c012",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL05.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\Level05.SHP",
+        "shape_sha256": "f195f4bb27f08134c45444170e124986fdc7e8e185cccde8153ee5d757d604c8",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 510,
+        "obs_member": "@:\\data\\obj-510.obs",
+        "obs_sha256": "c077b3c5459472ba933ff92996e7cf8116783b6101ed17d314444234c52a9c3b",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL07.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level07.shp",
+        "shape_sha256": "69fb24c3bfa7600462b548f2a293b3fae2eef5998361f93a1af77f078affd265",
+        "shape_size": [
+          960,
+          832
+        ]
+      },
+      {
+        "level": 511,
+        "obs_member": "@:\\data\\obj-511.obs",
+        "obs_sha256": "c077b3c5459472ba933ff92996e7cf8116783b6101ed17d314444234c52a9c3b",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL07.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level07.shp",
+        "shape_sha256": "69fb24c3bfa7600462b548f2a293b3fae2eef5998361f93a1af77f078affd265",
+        "shape_size": [
+          960,
+          832
+        ]
+      },
+      {
+        "level": 512,
+        "obs_member": "@:\\data\\obj-512.obs",
+        "obs_sha256": "c077b3c5459472ba933ff92996e7cf8116783b6101ed17d314444234c52a9c3b",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL07.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level07.shp",
+        "shape_sha256": "69fb24c3bfa7600462b548f2a293b3fae2eef5998361f93a1af77f078affd265",
+        "shape_size": [
+          960,
+          832
+        ]
+      },
+      {
+        "level": 513,
+        "obs_member": "@:\\data\\obj-513.obs",
+        "obs_sha256": "c99ad4ba7ad5aaa3ea56c85da7bd47da52196203896ed39836591c71d8949c77",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL10.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level10.shp",
+        "shape_sha256": "a997e89ac87f01716d584f7c9353b417c1f76c4db9b17fe9cb3474833d470132",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 514,
+        "obs_member": "@:\\data\\obj-514.obs",
+        "obs_sha256": "c99ad4ba7ad5aaa3ea56c85da7bd47da52196203896ed39836591c71d8949c77",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL10.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level10.shp",
+        "shape_sha256": "a997e89ac87f01716d584f7c9353b417c1f76c4db9b17fe9cb3474833d470132",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 515,
+        "obs_member": "@:\\data\\obj-515.obs",
+        "obs_sha256": "c99ad4ba7ad5aaa3ea56c85da7bd47da52196203896ed39836591c71d8949c77",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL10.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level10.shp",
+        "shape_sha256": "a997e89ac87f01716d584f7c9353b417c1f76c4db9b17fe9cb3474833d470132",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 516,
+        "obs_member": "@:\\data\\obj-516.obs",
+        "obs_sha256": "41e89d0e810a0f97bcdb244b62eacb82bba4c4fcc647251e0eb016c29b5d8d27",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL08.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level08.shp",
+        "shape_sha256": "8da6af75bd6e7cfba93c0dd29df5e62583f1105dff8c5501c75a2c85feb1eb7b",
+        "shape_size": [
+          1504,
+          800
+        ]
+      },
+      {
+        "level": 517,
+        "obs_member": "@:\\data\\obj-517.obs",
+        "obs_sha256": "41e89d0e810a0f97bcdb244b62eacb82bba4c4fcc647251e0eb016c29b5d8d27",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL08.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level08.shp",
+        "shape_sha256": "8da6af75bd6e7cfba93c0dd29df5e62583f1105dff8c5501c75a2c85feb1eb7b",
+        "shape_size": [
+          1504,
+          800
+        ]
+      },
+      {
+        "level": 518,
+        "obs_member": "@:\\data\\obj-518.obs",
+        "obs_sha256": "41e89d0e810a0f97bcdb244b62eacb82bba4c4fcc647251e0eb016c29b5d8d27",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL08.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level08.shp",
+        "shape_sha256": "8da6af75bd6e7cfba93c0dd29df5e62583f1105dff8c5501c75a2c85feb1eb7b",
+        "shape_size": [
+          1504,
+          800
+        ]
+      },
+      {
+        "level": 519,
+        "obs_member": "@:\\data\\obj-519.obs",
+        "obs_sha256": "4afe7164f5bc6823698049ea258bdba410867e9dda7f93df6dd6ca5733cfee6d",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL17.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level17.SHP",
+        "shape_sha256": "f3229f2f56486726b488108bb9fea9998f1694ed03f40dcfbfc0d1325dc94108",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 520,
+        "obs_member": "@:\\data\\obj-520.obs",
+        "obs_sha256": "4afe7164f5bc6823698049ea258bdba410867e9dda7f93df6dd6ca5733cfee6d",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL17.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level17.SHP",
+        "shape_sha256": "f3229f2f56486726b488108bb9fea9998f1694ed03f40dcfbfc0d1325dc94108",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 521,
+        "obs_member": "@:\\data\\obj-521.obs",
+        "obs_sha256": "4afe7164f5bc6823698049ea258bdba410867e9dda7f93df6dd6ca5733cfee6d",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL17.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level17.SHP",
+        "shape_sha256": "f3229f2f56486726b488108bb9fea9998f1694ed03f40dcfbfc0d1325dc94108",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 522,
+        "obs_member": "@:\\data\\obj-522.obs",
+        "obs_sha256": "024091c04ba72d436285febb9ba8cb5e7a4b0921617d7295f85a5fa3413a970d",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL18.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level18.SHP",
+        "shape_sha256": "7719bb6164d17f964a122a4cd6cd54b94665a360e1bf623026e9661f747d5014",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 523,
+        "obs_member": "@:\\data\\obj-523.obs",
+        "obs_sha256": "024091c04ba72d436285febb9ba8cb5e7a4b0921617d7295f85a5fa3413a970d",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL18.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level18.SHP",
+        "shape_sha256": "7719bb6164d17f964a122a4cd6cd54b94665a360e1bf623026e9661f747d5014",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 524,
+        "obs_member": "@:\\data\\obj-524.obs",
+        "obs_sha256": "024091c04ba72d436285febb9ba8cb5e7a4b0921617d7295f85a5fa3413a970d",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL18.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level18.SHP",
+        "shape_sha256": "7719bb6164d17f964a122a4cd6cd54b94665a360e1bf623026e9661f747d5014",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 525,
+        "obs_member": "@:\\data\\obj-525.obs",
+        "obs_sha256": "a188c1137f5ab53dd58e1f15b234cd46f53585cb275b25a7229370a1220be7a2",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL19.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level19.SHP",
+        "shape_sha256": "e81e3b46de617060f124b2e25c391039e08863a1cd50447b784590ab8368925b",
+        "shape_size": [
+          1600,
+          1184
+        ]
+      },
+      {
+        "level": 526,
+        "obs_member": "@:\\data\\obj-526.obs",
+        "obs_sha256": "a188c1137f5ab53dd58e1f15b234cd46f53585cb275b25a7229370a1220be7a2",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL19.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level19.SHP",
+        "shape_sha256": "e81e3b46de617060f124b2e25c391039e08863a1cd50447b784590ab8368925b",
+        "shape_size": [
+          1600,
+          1184
+        ]
+      },
+      {
+        "level": 527,
+        "obs_member": "@:\\data\\obj-527.obs",
+        "obs_sha256": "a188c1137f5ab53dd58e1f15b234cd46f53585cb275b25a7229370a1220be7a2",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL19.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level19.SHP",
+        "shape_sha256": "e81e3b46de617060f124b2e25c391039e08863a1cd50447b784590ab8368925b",
+        "shape_size": [
+          1600,
+          1184
+        ]
+      },
+      {
+        "level": 528,
+        "obs_member": "@:\\data\\obj-528.obs",
+        "obs_sha256": "4aa2f37f4acf8608e881e5be899c6a2ea5f56985b06565ad9a430801b8dbfe11",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL21.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level21.SHP",
+        "shape_sha256": "066ac1643063008ca0c8edc312e438e4fb8e75083cc3cfc2e5906cd51c2e45f2",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 529,
+        "obs_member": "@:\\data\\obj-529.obs",
+        "obs_sha256": "4aa2f37f4acf8608e881e5be899c6a2ea5f56985b06565ad9a430801b8dbfe11",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL21.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level21.SHP",
+        "shape_sha256": "066ac1643063008ca0c8edc312e438e4fb8e75083cc3cfc2e5906cd51c2e45f2",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 530,
+        "obs_member": "@:\\data\\obj-530.obs",
+        "obs_sha256": "4aa2f37f4acf8608e881e5be899c6a2ea5f56985b06565ad9a430801b8dbfe11",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL21.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level21.SHP",
+        "shape_sha256": "066ac1643063008ca0c8edc312e438e4fb8e75083cc3cfc2e5906cd51c2e45f2",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 531,
+        "obs_member": "@:\\data\\obj-531.obs",
+        "obs_sha256": "e1f08e59b50cca08449c1a20f393cb88658c9338a0245ce5ed523046ec5c2925",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL24.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level24.SHP",
+        "shape_sha256": "7afecac35a106316eae7eb0cd76d99e3715ebc7691ab8df544154c218061a5a9",
+        "shape_size": [
+          640,
+          960
+        ]
+      },
+      {
+        "level": 532,
+        "obs_member": "@:\\data\\obj-532.obs",
+        "obs_sha256": "e1f08e59b50cca08449c1a20f393cb88658c9338a0245ce5ed523046ec5c2925",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL24.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level24.SHP",
+        "shape_sha256": "7afecac35a106316eae7eb0cd76d99e3715ebc7691ab8df544154c218061a5a9",
+        "shape_size": [
+          640,
+          960
+        ]
+      },
+      {
+        "level": 533,
+        "obs_member": "@:\\data\\obj-533.obs",
+        "obs_sha256": "e1f08e59b50cca08449c1a20f393cb88658c9338a0245ce5ed523046ec5c2925",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL24.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level24.SHP",
+        "shape_sha256": "7afecac35a106316eae7eb0cd76d99e3715ebc7691ab8df544154c218061a5a9",
+        "shape_size": [
+          640,
+          960
+        ]
+      },
+      {
+        "level": 534,
+        "obs_member": "@:\\data\\obj-534.obs",
+        "obs_sha256": "474e5aaf6f5f65f618979f2fdf0b7ae1df327010049c3425b06ee1d25db01e6c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL29.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level29.SHP",
+        "shape_sha256": "0d06aa511b28d9d096a547d24520da3f713885f0ad84469d8e18fdbfa90b2d39",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 535,
+        "obs_member": "@:\\data\\obj-535.obs",
+        "obs_sha256": "474e5aaf6f5f65f618979f2fdf0b7ae1df327010049c3425b06ee1d25db01e6c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL29.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level29.SHP",
+        "shape_sha256": "0d06aa511b28d9d096a547d24520da3f713885f0ad84469d8e18fdbfa90b2d39",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 536,
+        "obs_member": "@:\\data\\obj-536.obs",
+        "obs_sha256": "474e5aaf6f5f65f618979f2fdf0b7ae1df327010049c3425b06ee1d25db01e6c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL29.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level29.SHP",
+        "shape_sha256": "0d06aa511b28d9d096a547d24520da3f713885f0ad84469d8e18fdbfa90b2d39",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 537,
+        "obs_member": "@:\\data\\obj-537.obs",
+        "obs_sha256": "4f9235792e767df652a87df926497d016b9016126076ec95f1c315ed4a974e87",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL12.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level12.SHP",
+        "shape_sha256": "bfe51b55fada266e611192910afd75ba0840b7b62f810a1156a3cf72eb6835b7",
+        "shape_size": [
+          1440,
+          1920
+        ]
+      },
+      {
+        "level": 538,
+        "obs_member": "@:\\data\\obj-538.obs",
+        "obs_sha256": "4f9235792e767df652a87df926497d016b9016126076ec95f1c315ed4a974e87",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL12.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level12.SHP",
+        "shape_sha256": "bfe51b55fada266e611192910afd75ba0840b7b62f810a1156a3cf72eb6835b7",
+        "shape_size": [
+          1440,
+          1920
+        ]
+      },
+      {
+        "level": 539,
+        "obs_member": "@:\\data\\obj-539.obs",
+        "obs_sha256": "4f9235792e767df652a87df926497d016b9016126076ec95f1c315ed4a974e87",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL12.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level12.SHP",
+        "shape_sha256": "bfe51b55fada266e611192910afd75ba0840b7b62f810a1156a3cf72eb6835b7",
+        "shape_size": [
+          1440,
+          1920
+        ]
+      },
+      {
+        "level": 540,
+        "obs_member": "@:\\data\\obj-540.obs",
+        "obs_sha256": "391ec663f3fb2d1abafee723d484da7bfd5d07e641305534982bde5c62601a81",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL15.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level15.SHP",
+        "shape_sha256": "c307d512978f1bd21a66b5e6ebf164dc7e3918b07f750669423c682dedba0282",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 541,
+        "obs_member": "@:\\data\\obj-541.obs",
+        "obs_sha256": "391ec663f3fb2d1abafee723d484da7bfd5d07e641305534982bde5c62601a81",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL15.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level15.SHP",
+        "shape_sha256": "c307d512978f1bd21a66b5e6ebf164dc7e3918b07f750669423c682dedba0282",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 542,
+        "obs_member": "@:\\data\\obj-542.obs",
+        "obs_sha256": "391ec663f3fb2d1abafee723d484da7bfd5d07e641305534982bde5c62601a81",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL15.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level15.SHP",
+        "shape_sha256": "c307d512978f1bd21a66b5e6ebf164dc7e3918b07f750669423c682dedba0282",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 543,
+        "obs_member": "@:\\data\\obj-543.obs",
+        "obs_sha256": "6b02f884337f19a965e9b301afbd0a71117892c4d91e6a692cb8e18e48a5ef74",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL30.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level30.SHP",
+        "shape_sha256": "3c37e1f0f0d088e6656bae944e5384c8d540d214d3a6906d3a3b4de240363d16",
+        "shape_size": [
+          1280,
+          544
+        ]
+      },
+      {
+        "level": 544,
+        "obs_member": "@:\\data\\obj-544.obs",
+        "obs_sha256": "6b02f884337f19a965e9b301afbd0a71117892c4d91e6a692cb8e18e48a5ef74",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL30.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level30.SHP",
+        "shape_sha256": "3c37e1f0f0d088e6656bae944e5384c8d540d214d3a6906d3a3b4de240363d16",
+        "shape_size": [
+          1280,
+          544
+        ]
+      },
+      {
+        "level": 545,
+        "obs_member": "@:\\data\\obj-545.obs",
+        "obs_sha256": "6b02f884337f19a965e9b301afbd0a71117892c4d91e6a692cb8e18e48a5ef74",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL30.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level30.SHP",
+        "shape_sha256": "3c37e1f0f0d088e6656bae944e5384c8d540d214d3a6906d3a3b4de240363d16",
+        "shape_size": [
+          1280,
+          544
+        ]
+      },
+      {
+        "level": 546,
+        "obs_member": "@:\\data\\obj-546.obs",
+        "obs_sha256": "d7523b4314d5dc04f3c5fc93e5aed42d18c4a4ccc935ccfa182fc7565efb351c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL31.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level31.SHP",
+        "shape_sha256": "1f0669a5a1ffd0136d8c67333a4f6f45298541c34c0e965b297cb9d5d09ca187",
+        "shape_size": [
+          704,
+          1600
+        ]
+      },
+      {
+        "level": 547,
+        "obs_member": "@:\\data\\obj-547.obs",
+        "obs_sha256": "d7523b4314d5dc04f3c5fc93e5aed42d18c4a4ccc935ccfa182fc7565efb351c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL31.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level31.SHP",
+        "shape_sha256": "1f0669a5a1ffd0136d8c67333a4f6f45298541c34c0e965b297cb9d5d09ca187",
+        "shape_size": [
+          704,
+          1600
+        ]
+      },
+      {
+        "level": 548,
+        "obs_member": "@:\\data\\obj-548.obs",
+        "obs_sha256": "d7523b4314d5dc04f3c5fc93e5aed42d18c4a4ccc935ccfa182fc7565efb351c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL31.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level31.SHP",
+        "shape_sha256": "1f0669a5a1ffd0136d8c67333a4f6f45298541c34c0e965b297cb9d5d09ca187",
+        "shape_size": [
+          704,
+          1600
+        ]
+      },
+      {
+        "level": 549,
+        "obs_member": "@:\\data\\obj-549.obs",
+        "obs_sha256": "e7bcf840f9e3c29848c44e0ae8e9b2dbcadc6d6435b33b9733cba8f20b9efb0c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL32.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level32.SHP",
+        "shape_sha256": "6f8f58a942c635fba0ee227645db6dc04a49ad44994336264640f6329f7d8a9f",
+        "shape_size": [
+          960,
+          960
+        ]
+      },
+      {
+        "level": 550,
+        "obs_member": "@:\\data\\obj-550.obs",
+        "obs_sha256": "e7bcf840f9e3c29848c44e0ae8e9b2dbcadc6d6435b33b9733cba8f20b9efb0c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL32.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level32.SHP",
+        "shape_sha256": "6f8f58a942c635fba0ee227645db6dc04a49ad44994336264640f6329f7d8a9f",
+        "shape_size": [
+          960,
+          960
+        ]
+      },
+      {
+        "level": 551,
+        "obs_member": "@:\\data\\obj-551.obs",
+        "obs_sha256": "e7bcf840f9e3c29848c44e0ae8e9b2dbcadc6d6435b33b9733cba8f20b9efb0c",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL32.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level32.SHP",
+        "shape_sha256": "6f8f58a942c635fba0ee227645db6dc04a49ad44994336264640f6329f7d8a9f",
+        "shape_size": [
+          960,
+          960
+        ]
+      },
+      {
+        "level": 552,
+        "obs_member": "@:\\data\\obj-552.obs",
+        "obs_sha256": "cd602725e484bbb211d07855974d573f746d00f79fd5a744f7f4f74dcc42b9c1",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL33.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level33.SHP",
+        "shape_sha256": "ae7ef4c20541848f181dffb4562b41b72e72765df1f97abe2b7263375c40e8fa",
+        "shape_size": [
+          704,
+          1184
+        ]
+      },
+      {
+        "level": 553,
+        "obs_member": "@:\\data\\obj-553.obs",
+        "obs_sha256": "cd602725e484bbb211d07855974d573f746d00f79fd5a744f7f4f74dcc42b9c1",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL33.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level33.SHP",
+        "shape_sha256": "ae7ef4c20541848f181dffb4562b41b72e72765df1f97abe2b7263375c40e8fa",
+        "shape_size": [
+          704,
+          1184
+        ]
+      },
+      {
+        "level": 554,
+        "obs_member": "@:\\data\\obj-554.obs",
+        "obs_sha256": "cd602725e484bbb211d07855974d573f746d00f79fd5a744f7f4f74dcc42b9c1",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL33.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level33.SHP",
+        "shape_sha256": "ae7ef4c20541848f181dffb4562b41b72e72765df1f97abe2b7263375c40e8fa",
+        "shape_size": [
+          704,
+          1184
+        ]
+      },
+      {
+        "level": 555,
+        "obs_member": "@:\\data\\obj-555.obs",
+        "obs_sha256": "bacba068c07722918fb8b3a9103725a18d5b12c55b5c15d21158f86098912bf8",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL34.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level34.SHP",
+        "shape_sha256": "b51962d8dd461a605c65e96e2d36adb90185393c70d50dd01445654b155592cd",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 556,
+        "obs_member": "@:\\data\\obj-556.obs",
+        "obs_sha256": "bacba068c07722918fb8b3a9103725a18d5b12c55b5c15d21158f86098912bf8",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL34.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level34.SHP",
+        "shape_sha256": "b51962d8dd461a605c65e96e2d36adb90185393c70d50dd01445654b155592cd",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 557,
+        "obs_member": "@:\\data\\obj-557.obs",
+        "obs_sha256": "bacba068c07722918fb8b3a9103725a18d5b12c55b5c15d21158f86098912bf8",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL34.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level34.SHP",
+        "shape_sha256": "b51962d8dd461a605c65e96e2d36adb90185393c70d50dd01445654b155592cd",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 558,
+        "obs_member": "@:\\data\\obj-558.obs",
+        "obs_sha256": "c44c386746a6c84353d296cf338f2ba13cf9b86c0f91c977a9bcca157506a2ac",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL36.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level36.SHP",
+        "shape_sha256": "0422715e201eb41a840f6c95d5b50b0b34267ba2f329a9625e291e0e8e83c265",
+        "shape_size": [
+          1184,
+          1920
+        ]
+      },
+      {
+        "level": 559,
+        "obs_member": "@:\\data\\obj-559.obs",
+        "obs_sha256": "c44c386746a6c84353d296cf338f2ba13cf9b86c0f91c977a9bcca157506a2ac",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL36.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level36.SHP",
+        "shape_sha256": "0422715e201eb41a840f6c95d5b50b0b34267ba2f329a9625e291e0e8e83c265",
+        "shape_size": [
+          1184,
+          1920
+        ]
+      },
+      {
+        "level": 560,
+        "obs_member": "@:\\data\\obj-560.obs",
+        "obs_sha256": "c44c386746a6c84353d296cf338f2ba13cf9b86c0f91c977a9bcca157506a2ac",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL36.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level36.SHP",
+        "shape_sha256": "0422715e201eb41a840f6c95d5b50b0b34267ba2f329a9625e291e0e8e83c265",
+        "shape_size": [
+          1184,
+          1920
+        ]
+      },
+      {
+        "level": 561,
+        "obs_member": "@:\\data\\obj-561.obs",
+        "obs_sha256": "9c30c55487f4508da923a8260b4755ffb40fdc08a8e29159846933ff0014e9b2",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeBG1",
+          "obj_Shape_Name": "SHAPE31\\LEVEL39.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level39.SHP",
+        "shape_sha256": "9b7d243918e242373b24e09772df22536217b447bd879bdf69b6502d52c70de5",
+        "shape_size": [
+          960,
+          1184
+        ]
+      },
+      {
+        "level": 562,
+        "obs_member": "@:\\data\\obj-562.obs",
+        "obs_sha256": "9c30c55487f4508da923a8260b4755ffb40fdc08a8e29159846933ff0014e9b2",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeBG1",
+          "obj_Shape_Name": "SHAPE31\\LEVEL39.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level39.SHP",
+        "shape_sha256": "9b7d243918e242373b24e09772df22536217b447bd879bdf69b6502d52c70de5",
+        "shape_size": [
+          960,
+          1184
+        ]
+      },
+      {
+        "level": 563,
+        "obs_member": "@:\\data\\obj-563.obs",
+        "obs_sha256": "9c30c55487f4508da923a8260b4755ffb40fdc08a8e29159846933ff0014e9b2",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeBG1",
+          "obj_Shape_Name": "SHAPE31\\LEVEL39.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level39.SHP",
+        "shape_sha256": "9b7d243918e242373b24e09772df22536217b447bd879bdf69b6502d52c70de5",
+        "shape_size": [
+          960,
+          1184
+        ]
+      },
+      {
+        "level": 564,
+        "obs_member": "@:\\data\\obj-564.obs",
+        "obs_sha256": "67f22ee85a8c62767e5c218cef18223031e8de8a0f751bf4d30939fedfe0d02a",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL40.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level40.SHP",
+        "shape_sha256": "90f49ade454fcc94b70f7627890f27ac8b87370e5154c7ad07f4b310387b426d",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 565,
+        "obs_member": "@:\\data\\obj-565.obs",
+        "obs_sha256": "67f22ee85a8c62767e5c218cef18223031e8de8a0f751bf4d30939fedfe0d02a",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL40.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level40.SHP",
+        "shape_sha256": "90f49ade454fcc94b70f7627890f27ac8b87370e5154c7ad07f4b310387b426d",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 566,
+        "obs_member": "@:\\data\\obj-566.obs",
+        "obs_sha256": "67f22ee85a8c62767e5c218cef18223031e8de8a0f751bf4d30939fedfe0d02a",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL40.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\level40.SHP",
+        "shape_sha256": "90f49ade454fcc94b70f7627890f27ac8b87370e5154c7ad07f4b310387b426d",
+        "shape_size": [
+          1280,
+          704
+        ]
+      },
+      {
+        "level": 567,
+        "obs_member": "@:\\data\\obj-567.obs",
+        "obs_sha256": "b56eed8b7f6282537d6e6f6380da9e78aa6272360b332cc53e64476d8314aa0f",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL41.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level41.SHP",
+        "shape_sha256": "c40d20a2355453012ff7b1c7551137d8f2e63d6ba09ab11b9b6644b695c8ff7e",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 568,
+        "obs_member": "@:\\data\\obj-568.obs",
+        "obs_sha256": "b56eed8b7f6282537d6e6f6380da9e78aa6272360b332cc53e64476d8314aa0f",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL41.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level41.SHP",
+        "shape_sha256": "c40d20a2355453012ff7b1c7551137d8f2e63d6ba09ab11b9b6644b695c8ff7e",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 569,
+        "obs_member": "@:\\data\\obj-569.obs",
+        "obs_sha256": "b56eed8b7f6282537d6e6f6380da9e78aa6272360b332cc53e64476d8314aa0f",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL41.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level41.SHP",
+        "shape_sha256": "c40d20a2355453012ff7b1c7551137d8f2e63d6ba09ab11b9b6644b695c8ff7e",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 570,
+        "obs_member": "@:\\data\\obj-570.obs",
+        "obs_sha256": "56786470954e7033c9283f45596abfb4e61a8d75b2839774bee2d8435f2933df",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL22.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level22.SHP",
+        "shape_sha256": "43d9373e6abbea05a54c7e0804c1b69195f93b7c690d6b2dcf5ab10abfe75587",
+        "shape_size": [
+          1280,
+          1280
+        ]
+      },
+      {
+        "level": 571,
+        "obs_member": "@:\\data\\obj-571.obs",
+        "obs_sha256": "56786470954e7033c9283f45596abfb4e61a8d75b2839774bee2d8435f2933df",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL22.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level22.SHP",
+        "shape_sha256": "43d9373e6abbea05a54c7e0804c1b69195f93b7c690d6b2dcf5ab10abfe75587",
+        "shape_size": [
+          1280,
+          1280
+        ]
+      },
+      {
+        "level": 572,
+        "obs_member": "@:\\data\\obj-572.obs",
+        "obs_sha256": "56786470954e7033c9283f45596abfb4e61a8d75b2839774bee2d8435f2933df",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL22.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level22.SHP",
+        "shape_sha256": "43d9373e6abbea05a54c7e0804c1b69195f93b7c690d6b2dcf5ab10abfe75587",
+        "shape_size": [
+          1280,
+          1280
+        ]
+      },
+      {
+        "level": 573,
+        "obs_member": "@:\\data\\obj-573.obs",
+        "obs_sha256": "5fe31d87d7d3a279562dac054dd70571b77099faf5419dce3d03fc4c382a4b13",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL44.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level44.SHP",
+        "shape_sha256": "da6678904135893322e13b2ebbbd58a2de82fe5bb1dc1196d9a64054de350d7f",
+        "shape_size": [
+          1920,
+          1184
+        ]
+      },
+      {
+        "level": 574,
+        "obs_member": "@:\\data\\obj-574.obs",
+        "obs_sha256": "5fe31d87d7d3a279562dac054dd70571b77099faf5419dce3d03fc4c382a4b13",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL44.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level44.SHP",
+        "shape_sha256": "da6678904135893322e13b2ebbbd58a2de82fe5bb1dc1196d9a64054de350d7f",
+        "shape_size": [
+          1920,
+          1184
+        ]
+      },
+      {
+        "level": 575,
+        "obs_member": "@:\\data\\obj-575.obs",
+        "obs_sha256": "5fe31d87d7d3a279562dac054dd70571b77099faf5419dce3d03fc4c382a4b13",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE41\\LEVEL44.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape41\\level44.SHP",
+        "shape_sha256": "da6678904135893322e13b2ebbbd58a2de82fe5bb1dc1196d9a64054de350d7f",
+        "shape_size": [
+          1920,
+          1184
+        ]
+      },
+      {
+        "level": 576,
+        "obs_member": "@:\\data\\obj-576.obs",
+        "obs_sha256": "88e52c03da725935c6eb70932257d341a36311639ab6931ef071b07c741bc392",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL38.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level38.SHP",
+        "shape_sha256": "a35937a6ab67ee9d65c0a8a990ad8455f6d62fd12ee70b4096b9e47e18b4cdcc",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 577,
+        "obs_member": "@:\\data\\obj-577.obs",
+        "obs_sha256": "88e52c03da725935c6eb70932257d341a36311639ab6931ef071b07c741bc392",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL38.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level38.SHP",
+        "shape_sha256": "a35937a6ab67ee9d65c0a8a990ad8455f6d62fd12ee70b4096b9e47e18b4cdcc",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 578,
+        "obs_member": "@:\\data\\obj-578.obs",
+        "obs_sha256": "88e52c03da725935c6eb70932257d341a36311639ab6931ef071b07c741bc392",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE31\\LEVEL38.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape31\\Level38.SHP",
+        "shape_sha256": "a35937a6ab67ee9d65c0a8a990ad8455f6d62fd12ee70b4096b9e47e18b4cdcc",
+        "shape_size": [
+          960,
+          704
+        ]
+      },
+      {
+        "level": 900,
+        "obs_member": "@:\\data\\obj-900.obs",
+        "obs_sha256": "e102cf11a8532f48620b3d37c0ea852965df0203e79b68d4aad6d3a911d686fb",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL09.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level09.shp",
+        "shape_sha256": "e3f2a99eba84c8ab27f40e561f0c515efd2fbe4547a96e0d11ed825a0e334964",
+        "shape_size": [
+          1600,
+          1184
+        ]
+      },
+      {
+        "level": 901,
+        "obs_member": "@:\\data\\obj-901.obs",
+        "obs_sha256": "6e926f0c051a9632c8ecc38daf9a1d326adc10b3b9246cdce44a18abe7216946",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE01\\LEVEL08.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape01\\level08.shp",
+        "shape_sha256": "8da6af75bd6e7cfba93c0dd29df5e62583f1105dff8c5501c75a2c85feb1eb7b",
+        "shape_size": [
+          1504,
+          800
+        ]
+      },
+      {
+        "level": 902,
+        "obs_member": "@:\\data\\obj-902.obs",
+        "obs_sha256": "d481f8468f36cd53312f8a684e34ffd3c420051f141054f946589094c1b1eec9",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL17.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level17.SHP",
+        "shape_sha256": "f3229f2f56486726b488108bb9fea9998f1694ed03f40dcfbfc0d1325dc94108",
+        "shape_size": [
+          1280,
+          960
+        ]
+      },
+      {
+        "level": 903,
+        "obs_member": "@:\\data\\obj-903.obs",
+        "obs_sha256": "e1f08e59b50cca08449c1a20f393cb88658c9338a0245ce5ed523046ec5c2925",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE21\\LEVEL24.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape21\\Level24.SHP",
+        "shape_sha256": "7afecac35a106316eae7eb0cd76d99e3715ebc7691ab8df544154c218061a5a9",
+        "shape_size": [
+          640,
+          960
+        ]
+      },
+      {
+        "level": 904,
+        "obs_member": "@:\\data\\obj-904.obs",
+        "obs_sha256": "717cbc7def7d96c2a4e23a97a955e96dc9c8683d88173fb8e060cbffdb69b8f4",
+        "object": {
+          "obj_code": "0",
+          "obj_name": "地圖管理員",
+          "obj_Mode": "0",
+          "obj_X": "0",
+          "obj_Y": "0",
+          "obj_Plane": "planeMenu3",
+          "obj_Shape_Name": "SHAPE11\\LEVEL19.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcIconBG",
+          "obj_Data9": "1"
+        },
+        "shape_member": "@:\\shape11\\level19.SHP",
+        "shape_sha256": "e81e3b46de617060f124b2e25c391039e08863a1cd50447b784590ab8368925b",
+        "shape_size": [
+          1600,
+          1184
+        ]
+      }
+    ],
+    "without_map_manager": [
+      {
+        "level": 0,
+        "member": "@:\\data\\OBJ-000.OBS",
+        "sha256": "a4fce6f9c5a9cae41bf386b7b52f0729e02b1b8979dff43a2e8d098d8720b173",
+        "reason": "No defProcIconBG record in this OBS; no fallback map is inferred."
+      },
+      {
+        "level": 998,
+        "member": "@:\\data\\obj-998.obs",
+        "sha256": "d07142485d2d6b8f98fe623dbeb6b7b32bbbb0de341ddc71f529be7e6669c75e",
+        "reason": "No defProcIconBG record in this OBS; no fallback map is inferred."
+      },
+      {
+        "level": 999,
+        "member": "@:\\data\\obj-999.obs",
+        "sha256": "cd09c73a2d787d2c8a80ecd1645bd94c579b5d343f226feb925bbb2149ee72a4",
+        "reason": "No defProcIconBG record in this OBS; no fallback map is inferred."
+      }
+    ]
+  },
+  "prefixes": [
+    {
+      "input": {
+        "level": 32,
+        "source_field": "SHAPE31\\LEVEL33.SHP",
+        "parsed_value": "SHAPE31\\LEVEL33.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 569,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 2
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 131074,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 32,
+        "source_field": "SHAPE31\\LEVEL33.SHP",
+        "parsed_value": "shape31\\level33.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 839,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 2
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 131074,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 32,
+        "source_field": "SHAPE31\\LEVEL33.SHP",
+        "parsed_value": "SHAPE31\\LEVEL33.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 29760,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 33,
+        "source_field": "SHAPE31\\LEVEL32.SHP",
+        "parsed_value": "SHAPE31\\LEVEL32.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 750,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 1
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 65537,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 33,
+        "source_field": "SHAPE31\\LEVEL32.SHP",
+        "parsed_value": "shape31\\level32.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 1170,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 1
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 65537,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 33,
+        "source_field": "SHAPE31\\LEVEL32.SHP",
+        "parsed_value": "SHAPE31\\LEVEL32.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 29757,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 55,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "SHAPE41\\LEVEL55.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 460,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 3
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 196611,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 55,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "shape41\\level55.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 655,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 3
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 196611,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 55,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "SHAPE41\\LEVEL55.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 29760,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 56,
+        "source_field": "SHAPE41\\LEVEL56.SHP",
+        "parsed_value": "SHAPE41\\LEVEL56.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 644,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 262148,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 56,
+        "source_field": "SHAPE41\\LEVEL56.SHP",
+        "parsed_value": "shape41\\level56.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 989,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 262148,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 56,
+        "source_field": "SHAPE41\\LEVEL56.SHP",
+        "parsed_value": "SHAPE41\\LEVEL56.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 36890,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 58,
+        "source_field": "SHAPE41\\LEVEL58.SHP",
+        "parsed_value": "SHAPE41\\LEVEL58.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 828,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 5
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 327685,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 58,
+        "source_field": "SHAPE41\\LEVEL58.SHP",
+        "parsed_value": "shape41\\level58.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 1323,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 5
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 327685,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 58,
+        "source_field": "SHAPE41\\LEVEL58.SHP",
+        "parsed_value": "SHAPE41\\LEVEL58.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 738,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 60,
+        "source_field": "SHAPE41\\LEVEL58.SHP",
+        "parsed_value": "SHAPE41\\LEVEL58.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 828,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 5
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 327685,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 60,
+        "source_field": "SHAPE41\\LEVEL58.SHP",
+        "parsed_value": "shape41\\level58.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 1323,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 5
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 327685,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 60,
+        "source_field": "SHAPE41\\LEVEL58.SHP",
+        "parsed_value": "SHAPE41\\LEVEL58.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 738,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 61,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "SHAPE41\\LEVEL55.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 460,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 3
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 196611,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 61,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "shape41\\level55.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 655,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 3
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 196611,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 61,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "SHAPE41\\LEVEL55.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 29760,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 66,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "SHAPE41\\LEVEL55.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 460,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 3
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 196611,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 66,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "shape41\\level55.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 655,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 3
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 196611,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 66,
+        "source_field": "SHAPE41\\LEVEL55.SHP",
+        "parsed_value": "SHAPE41\\LEVEL55.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 29760,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 901,
+        "source_field": "SHAPE01\\LEVEL08.SHP",
+        "parsed_value": "SHAPE01\\LEVEL08.SHP",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 788,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 0
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 0,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 901,
+        "source_field": "SHAPE01\\LEVEL08.SHP",
+        "parsed_value": "shape01\\level08.shp",
+        "registry": [
+          "SHAPE01\\LEVEL08.SHP",
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": false,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e193",
+        "normal_return": false,
+        "instructions": 1208,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 0
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 0,
+      "source_and_registry_unchanged": true
+    },
+    {
+      "input": {
+        "level": 901,
+        "source_field": "SHAPE01\\LEVEL08.SHP",
+        "parsed_value": "SHAPE01\\LEVEL08.SHP",
+        "registry": [
+          "SHAPE31\\LEVEL32.SHP",
+          "SHAPE31\\LEVEL33.SHP",
+          "SHAPE41\\LEVEL55.SHP",
+          "SHAPE41\\LEVEL56.SHP",
+          "SHAPE41\\LEVEL58.SHP"
+        ],
+        "missing": true,
+        "lookup_symbol_fallback_disabled": true
+      },
+      "proof": {
+        "entry": "0x45e145",
+        "stop_address": "0x45e172",
+        "normal_return": false,
+        "instructions": 586,
+        "callees": [
+          "0x46dd50",
+          "0x45fc01"
+        ],
+        "rng_unchanged": true,
+        "eax": 4294967295
+      },
+      "packed_shape_before": 878064726,
+      "packed_shape_after": 878064726,
+      "source_and_registry_unchanged": true
+    }
+  ],
+  "callbacks": [
+    {
+      "input": {
+        "phase": "initialize",
+        "data9": 0,
+        "shape_index": 0
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 21,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "070000000000000000000000030000000000000000000000000000000000000000000000000000000900000000000000ffff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "initialize",
+        "data9": 0,
+        "shape_index": 1
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 21,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "070000000000000000000000030000000000000000000000000000000000000000000000000000000900000000000000ffff010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "initialize",
+        "data9": 0,
+        "shape_index": 17
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 21,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "070000000000000000000000030000000000000000000000000000000000000000000000000000000900000000000000ffff110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "initialize",
+        "data9": 1,
+        "shape_index": 0
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 20,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0700000000000000000000000300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050010000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "initialize",
+        "data9": 1,
+        "shape_index": 1
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 20,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0700000000000000000000000300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050010000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "initialize",
+        "data9": 1,
+        "shape_index": 17
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 20,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0700000000000000000000000300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050010000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ordinary",
+        "data9": 0,
+        "shape_index": 0
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x4303eb",
+        "normal_return": false,
+        "instructions": 11,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ordinary",
+        "data9": 0,
+        "shape_index": 1
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x4303eb",
+        "normal_return": false,
+        "instructions": 11,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ordinary",
+        "data9": 0,
+        "shape_index": 17
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x4303eb",
+        "normal_return": false,
+        "instructions": 11,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ordinary",
+        "data9": 1,
+        "shape_index": 0
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 16,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0d00000000020000800100006300000000000000000000000000000000000000000000000000000011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ordinary",
+        "data9": 1,
+        "shape_index": 1
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 16,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0d00000000020000800100006300000000000000000000000000000000000000000000000000000011000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ordinary",
+        "data9": 1,
+        "shape_index": 17
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 16,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0d00000000020000800100006300000000000000000000000000000000000000000000000000000011000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ignored_message",
+        "data9": 0,
+        "shape_index": 0
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 4294967293
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ignored_message",
+        "data9": 0,
+        "shape_index": 1
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 4294967293
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ignored_message",
+        "data9": 0,
+        "shape_index": 17
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 4294967293
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ignored_message",
+        "data9": 1,
+        "shape_index": 0
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 4294967293
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ignored_message",
+        "data9": 1,
+        "shape_index": 1
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 4294967293
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000000100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    },
+    {
+      "input": {
+        "phase": "ignored_message",
+        "data9": 1,
+        "shape_index": 17
+      },
+      "proof": {
+        "entry": "0x430370",
+        "stop_address": "0x10000000",
+        "normal_return": true,
+        "instructions": 6,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 4294967293
+      },
+      "object_before_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "object_after_hex": "0700000000020000800100006300000000000000000000000000000000000000000000000000000009000000000000001100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000050000200000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+      "only_expected_fields_changed": true
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x477c30",
+      "bytes": "70034300",
+      "meaning": "PROCESS.DEF index1 resolves defProcIconBG to430370."
+    },
+    {
+      "address": "0x45de9d",
+      "bytes": "8b1dd4194a0083c364ff751053ff75f86a016810354a00e838fdffff83c4148b1dd4194a0083c364ff751053ff75f86a016810354a00e819fdffff83c414",
+      "meaning": "OBS obj_Process_Code populates object+64 before callback lookup/installation."
+    },
+    {
+      "address": "0x45e0f7",
+      "bytes": "c4148b1dd4194a0081c3ac000000ff751053ff75f86a0168e2354a00e8d9faffff",
+      "meaning": "OBS obj_Data9 numeric reader destination is object+ac."
+    },
+    {
+      "address": "0x45e145",
+      "bytes": "bb981e4c00c6030053ff75f86a0168f0344a00e8f3fb000083c41068981e4c00e8971a000083c40483f8ff750f68981e4c006a01e882ff000083c4088945f48b1dd4194a0083c330890366894302",
+      "meaning": "OBS obj_Shape_Name field is read and searched by name; packed shape index writes before asset IO."
+    },
+    {
+      "address": "0x430370",
+      "bytes": "8b44240883f8fe750e8b44240450e82ddcffff83c404c383f8fd747aa9000000208b44240474388b88800000008b90ac00000081e1ffffffdfc7400c0300000081c90000100089888000000033c93bd1894804894808753e66c74030ffffc38b88ac00000085c974128b15c01c4c0089108b0dc41c4c00894828c38b15c41c4c00a1c01c4c0052506a036a0f6a14e86cbb030083c414c3",
+      "meaning": "Map object callback initialization and Data9-dependent ordinary update."
+    },
+    {
+      "address": "0x46dd50",
+      "bytes": "a1b4244c008b4c240c53568b74010b8b0dc8254c003bf1570f8d800000008b7c24108b5c241485f6747485ff741e8b14068b0db0244c0003d15752e83051000083c40885c0a1b4244c0075054b85db7e148b74060c8b0dc8254c003bf17cc733c05f5e5bc38b5406048b0db0244c008b5c241c03d185db741f8bfa83c9ff33c0f2aef7d12bf98bc18bf78bfbc1e902f3a58bc883e103f3a48bc25f5e5bc35f5e33c05bc3",
+      "meaning": "String field lookup over the parsed source-node list."
+    },
+    {
+      "address": "0x45fc01",
+      "bytes": "c808000053515256578b3538bb4b000bf6746f909090908975fcc745f800000000d1eebfc80000008b1d3cbb4b004f7c518b14b353565752ff7508e87f32010083c4085f5e5b0bc07e1d8975f88bc68b75fc2bf0d1ee75014603f0a138bb4b00483bf0771deb197d138975fc8bc62b45f8d1e87501402bf07c08eb048bc6eb1debaca130b94b00833d2cb94b0000750dff75086a01e865e4000083c4085f5e5a595bc9c3",
+      "meaning": "Case-insensitive sorted shape-name search with200-iteration bound and optional symbol fallback."
+    }
+  ],
+  "anchors_sha256": "f708f878c1f69bfe8ab8d660fe69a4b624c0545e1318204f02f42eb1aebf1721",
+  "limits": [
+    "OBS source names are real; source node/string arenas and the preloaded sorted shape registry are explicit synthetic inputs.",
+    "Shape registry flag4bb92c=1 disables the lookup helper internal symbol fallback in these fixtures. Missing-name prefixes do not establish the full native fallback policy.",
+    "OBS loader45dc5c is executed only from45e145 to45e193, before asset loading; on missing names stop45e172 before symbol fallback. Not a full parser/PAK loader return.",
+    "Map callback430370 returns for Data9=1 initialization/ordinary/ignored messages. Data9=0 ordinary stops before drawing; no renderer or free callback is executed.",
+    "The source fields select an exact map name, not a level-number filename or preceding map. This does not establish original wall-clock timing or global map renderer parity.",
+    "154 of157 named OBJ-NNN.OBS files have one map manager; OBJ000/998/999 have none and remain explicitly unbound."
+  ]
+}

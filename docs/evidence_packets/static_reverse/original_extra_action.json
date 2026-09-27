@@ -1,0 +1,449 @@
+{
+  "schema": "hsl_extra_action_native.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "source_sha256": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "queries": [
+    {
+      "effects": 0,
+      "native": 0,
+      "normal_return": true,
+      "instructions": 19
+    },
+    {
+      "effects": 8,
+      "native": 1,
+      "normal_return": true,
+      "instructions": 20
+    },
+    {
+      "effects": 32768,
+      "native": 0,
+      "normal_return": true,
+      "instructions": 19
+    },
+    {
+      "effects": 32776,
+      "native": 1,
+      "normal_return": true,
+      "instructions": 20
+    },
+    {
+      "effects": 65535,
+      "native": 1,
+      "normal_return": true,
+      "instructions": 20
+    }
+  ],
+  "prefixes": [
+    {
+      "input": {
+        "role": "player",
+        "effects": 0,
+        "latch": 0
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 65539,
+        "equipment_queries": 1
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 30
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 0,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 65539,
+        "equipment_queries": 0
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 10
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 8,
+        "latch": 0
+      },
+      "native": {
+        "again": true,
+        "latch": 1,
+        "phase": 0,
+        "equipment_queries": 1
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 31
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 8,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 65539,
+        "equipment_queries": 0
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 10
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 32768,
+        "latch": 0
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 65539,
+        "equipment_queries": 1
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 30
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 32768,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 65539,
+        "equipment_queries": 0
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 10
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 32776,
+        "latch": 0
+      },
+      "native": {
+        "again": true,
+        "latch": 1,
+        "phase": 0,
+        "equipment_queries": 1
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 31
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 32776,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 65539,
+        "equipment_queries": 0
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 10
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 65535,
+        "latch": 0
+      },
+      "native": {
+        "again": true,
+        "latch": 1,
+        "phase": 0,
+        "equipment_queries": 1
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 31
+    },
+    {
+      "input": {
+        "role": "player",
+        "effects": 65535,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 65539,
+        "equipment_queries": 0
+      },
+      "entry": "0x443a86",
+      "stop_address": "0x4447a7",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 10
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 0,
+        "latch": 0
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 6553601,
+        "equipment_queries": 1
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 28
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 0,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 6553601,
+        "equipment_queries": 0
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 8
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 8,
+        "latch": 0
+      },
+      "native": {
+        "again": true,
+        "latch": 1,
+        "phase": 0,
+        "equipment_queries": 1
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 30
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 8,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 6553601,
+        "equipment_queries": 0
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 8
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 32768,
+        "latch": 0
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 6553601,
+        "equipment_queries": 1
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 28
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 32768,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 6553601,
+        "equipment_queries": 0
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 8
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 32776,
+        "latch": 0
+      },
+      "native": {
+        "again": true,
+        "latch": 1,
+        "phase": 0,
+        "equipment_queries": 1
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 30
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 32776,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 6553601,
+        "equipment_queries": 0
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 8
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 65535,
+        "latch": 0
+      },
+      "native": {
+        "again": true,
+        "latch": 1,
+        "phase": 0,
+        "equipment_queries": 1
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 30
+    },
+    {
+      "input": {
+        "role": "ai",
+        "effects": 65535,
+        "latch": 1
+      },
+      "native": {
+        "again": false,
+        "latch": 0,
+        "phase": 6553601,
+        "equipment_queries": 0
+      },
+      "entry": "0x441f08",
+      "stop_address": "0x441f41",
+      "normal_return": false,
+      "actor_and_queue_unchanged": true,
+      "instructions": 8
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x447e1f",
+      "bytes": "565368148a4700e8a5e8ffff83c40c3bc589442414740a8b4424100c0889442410",
+      "meaning": "ITEM action_twice is effect flag8, independent of double_attack."
+    },
+    {
+      "address": "0x40e2b0",
+      "bytes": "8b4424046a0850e884ffffff83c408c3",
+      "meaning": "Pure action_twice getter asks current actor equipment mask8."
+    },
+    {
+      "address": "0x443a86",
+      "bytes": "89968c000000a1f01c4c003bc2751c56e815a8fcff83c40485c07420c705f01c4c0001000000e9f60c0000a1f01c4c0048a3f01c4c000f85e50c0000c7868c00000003000100e9d60c0000",
+      "meaning": "Player completion repeats immediately once or enters the status tail; a latched repeat does not query equipment again."
+    },
+    {
+      "address": "0x441f08",
+      "bytes": "a1f01c4c0085c0751955e899c3fcff83c40485c07419c705f01c4c0001000000eb17a1f01c4c0048a3f01c4c00750ac7858c0000000100640081a580000000fffffeff",
+      "meaning": "AI completion uses the same once-only gate before its status and queue tail."
+    },
+    {
+      "address": "0x443ad1",
+      "bytes": "3957307450406689868c0000008b8fd800000033c0668b47322bc883f9017d098d4408ffb9010000003bc2898fd800000074156689869600000066c786940000002800e98e0c00006683868c00000002e9810c000083",
+      "meaning": "Player poison HP application is downstream of the final-action gate."
+    },
+    {
+      "address": "0x443c09",
+      "bytes": "8b87a800000085c3751956898fa8000000e8f17cfcff83c404e8e938fcffe97b0b000025ffff0000568987a8000000e8d37cfcff83c404e8cb38fcff",
+      "meaning": "Final player kill-chain cleanup and status tick precede queue advancement."
+    },
+    {
+      "address": "0x442080",
+      "bytes": "8b74242c33c9898d8c0000008b86a8000000a9000001007508898ea8000000eb0b25ffff00008986a800000055e85e98fcff83c404e85654fcff",
+      "meaning": "Final AI kill-chain cleanup and status tick precede queue advancement."
+    },
+    {
+      "address": "0x443a0d",
+      "bytes": "a1a01b4c0085c00f848d0d00006a0056e80e85ffff83c40885c00f847a0d0000e8bec5feff33ff5756893de81c4c00e8efafffff66c7868c0000006200a1001b4c0083c40825fffffffd893d74294c00a3001b4c00e9400d0000",
+      "meaning": "Fresh player menu setup does not reset the extra-action latch."
+    }
+  ],
+  "limits": [
+    "Getter returns normally; completion prefixes stop before shared dispatcher tails, not whole turns.",
+    "Original effect flag is read on first completion; second completion consumes the latch regardless of equipment.",
+    "The downstream HP/status/queue blocks are byte anchors and reuse separately verified status/queue helpers.",
+    "Synthetic live actor and latch; no graphics, whole input dispatcher or complete battle initialization executed."
+  ]
+}

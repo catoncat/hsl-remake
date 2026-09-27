@@ -1,0 +1,23 @@
+{
+  "schema": "hsl_town_job_up_writes.v1",
+  "evidence_tier": "static-derived",
+  "claim": "The town rewrite the original applies after a teCheckJobUp2 success (hsl01.exe 0x434680, called from 0x454e20 case 0x20): once every listed member is in the party and has taken its last title (job-up code 0), the writes below run through the same te tree / exec-event helpers the te tokens use (0x4548b0 delete node, 0x454740 exec event, 0x4547a0 add root node, 0x454870 add children). TownEventRules replays the list in order through its shared token handlers and records a job_up_town_writes effect.",
+  "confirmed_by": "docs/evidence_packets/static_reverse/original_town_job_up.md (0x434680 reading); docs/evidence_packets/static_reverse/original_save_format.md — the native 回憶錄 HSL_second_tier_native.SAV holds town 14 byte-equal to these writes (runtime-measured, ORIGINAL_SAVE_NATIVE_SECOND_TIER_PASS)",
+  "editing": "A sequel that wants another town to change after a job-up edits this file: members are SID_* player tokens of towndef.json symbols, town is a town_* symbol, every write is a te token with the argument order of TOWNDEF.H (town id first for teAddTE / teDeleteTE / teSetTownExecEvent). python3 tools/hsl.py check town_job_up_writes validates the references; tests/run_town_event_rules_tests.gd asserts the resulting town 14 state.",
+  "second_tier": {
+    "condition": "every member listed is in party.member_records and JobUpRules.town_target_actor_id(record) == \"\" (its job-up chain has ended)",
+    "members": ["SID_雷歐納德", "SID_緹娜"],
+    "town": "town_兩棲族部落",
+    "writes": [
+      {"token": "teDeleteTE", "args": ["town_兩棲族部落", "142", "0"]},
+      {"token": "teDeleteTE", "args": ["town_兩棲族部落", "143", "0"]},
+      {"token": "teDeleteTE", "args": ["town_兩棲族部落", "144", "0"]},
+      {"token": "teDeleteTE", "args": ["town_兩棲族部落", "145", "0"]},
+      {"token": "teSetTownExecEvent", "args": ["town_兩棲族部落", "153"]},
+      {"token": "teAddTE", "args": ["town_兩棲族部落", "154", "0"]},
+      {"token": "teAddTE", "args": ["town_兩棲族部落", "155", "0"]},
+      {"token": "teAddTE", "args": ["town_兩棲族部落", "156", "0"]},
+      {"token": "teAddTE", "args": ["town_兩棲族部落", "145", "3", "147", "150", "151"]}
+    ]
+  }
+}

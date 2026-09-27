@@ -1,0 +1,889 @@
+{
+  "schema": "hsl_native_extra_attack.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "source": {
+    "hashes": {
+      "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+      "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0"
+    },
+    "items": [
+      12,
+      55,
+      69
+    ],
+    "actors": [
+      "019",
+      "057"
+    ]
+  },
+  "cases": [
+    {
+      "input": {
+        "kind": "query",
+        "effects": 0
+      },
+      "native": {
+        "extra": 0
+      },
+      "entry": "0x4092a0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 10,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "query",
+        "effects": 8
+      },
+      "native": {
+        "extra": 0
+      },
+      "entry": "0x4092a0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 10,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "query",
+        "effects": 512
+      },
+      "native": {
+        "extra": 0
+      },
+      "entry": "0x4092a0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 10,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "query",
+        "effects": 32768
+      },
+      "native": {
+        "extra": 1
+      },
+      "entry": "0x4092a0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 11,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "query",
+        "effects": 32776
+      },
+      "native": {
+        "extra": 1
+      },
+      "entry": "0x4092a0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 11,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "query",
+        "effects": 65536
+      },
+      "native": {
+        "extra": 0
+      },
+      "entry": "0x4092a0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 10,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "query",
+        "effects": 98304
+      },
+      "native": {
+        "extra": 1
+      },
+      "entry": "0x4092a0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 11,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 0,
+        "capability": 0
+      },
+      "native": {
+        "effects": 0
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 2,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 0,
+        "capability": 2
+      },
+      "native": {
+        "effects": 0
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 2,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 0,
+        "capability": 512
+      },
+      "native": {
+        "effects": 32768
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 5,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 0,
+        "capability": 576
+      },
+      "native": {
+        "effects": 32768
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 5,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 8,
+        "capability": 0
+      },
+      "native": {
+        "effects": 8
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 2,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 8,
+        "capability": 2
+      },
+      "native": {
+        "effects": 8
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 2,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 8,
+        "capability": 512
+      },
+      "native": {
+        "effects": 32776
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 5,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 8,
+        "capability": 576
+      },
+      "native": {
+        "effects": 32776
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 5,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 32768,
+        "capability": 0
+      },
+      "native": {
+        "effects": 32768
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 2,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 32768,
+        "capability": 2
+      },
+      "native": {
+        "effects": 32768
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 2,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 32768,
+        "capability": 512
+      },
+      "native": {
+        "effects": 32768
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 5,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "innate",
+        "effects": 32768,
+        "capability": 576
+      },
+      "native": {
+        "effects": 32768
+      },
+      "entry": "0x448747",
+      "stop_address": "0x44875b",
+      "normal_return": false,
+      "instructions": 5,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "init",
+        "effects": 0,
+        "counter_mode": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 0,
+        "next": "counter_qualification"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442641",
+      "normal_return": false,
+      "instructions": 81,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "init",
+        "effects": 0,
+        "counter_mode": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 0,
+        "next": "counter_series"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x4426f2",
+      "normal_return": false,
+      "instructions": 81,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "init",
+        "effects": 8,
+        "counter_mode": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 0,
+        "next": "counter_qualification"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442641",
+      "normal_return": false,
+      "instructions": 81,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "init",
+        "effects": 8,
+        "counter_mode": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 0,
+        "next": "counter_series"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x4426f2",
+      "normal_return": false,
+      "instructions": 81,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "init",
+        "effects": 32768,
+        "counter_mode": false
+      },
+      "native": {
+        "remaining": 1,
+        "pending_counter": false,
+        "phase": 0,
+        "next": "counter_qualification"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442641",
+      "normal_return": false,
+      "instructions": 83,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "init",
+        "effects": 32768,
+        "counter_mode": true
+      },
+      "native": {
+        "remaining": 1,
+        "pending_counter": false,
+        "phase": 0,
+        "next": "counter_series"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x4426f2",
+      "normal_return": false,
+      "instructions": 83,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "init",
+        "effects": 32776,
+        "counter_mode": false
+      },
+      "native": {
+        "remaining": 1,
+        "pending_counter": false,
+        "phase": 0,
+        "next": "counter_qualification"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442641",
+      "normal_return": false,
+      "instructions": 83,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "init",
+        "effects": 32776,
+        "counter_mode": true
+      },
+      "native": {
+        "remaining": 1,
+        "pending_counter": false,
+        "phase": 0,
+        "next": "counter_series"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x4426f2",
+      "normal_return": false,
+      "instructions": 83,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 0,
+        "target_hp": 0,
+        "contribution": 0,
+        "pending_counter": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "complete"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 65,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 0,
+        "target_hp": 0,
+        "contribution": 0,
+        "pending_counter": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "complete"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 65,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 0,
+        "target_hp": 0,
+        "contribution": 20,
+        "pending_counter": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "final_status_and_stamina"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442487",
+      "normal_return": false,
+      "instructions": 345,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 0,
+        "target_hp": 0,
+        "contribution": 20,
+        "pending_counter": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "final_status_and_stamina"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442487",
+      "normal_return": false,
+      "instructions": 345,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 0,
+        "target_hp": 20,
+        "contribution": 0,
+        "pending_counter": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "complete"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 64,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 0,
+        "target_hp": 20,
+        "contribution": 0,
+        "pending_counter": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "counter_handoff"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 66,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 0,
+        "target_hp": 20,
+        "contribution": 20,
+        "pending_counter": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "final_status_and_stamina"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442487",
+      "normal_return": false,
+      "instructions": 340,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 0,
+        "target_hp": 20,
+        "contribution": 20,
+        "pending_counter": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": true,
+        "phase": 4,
+        "next": "final_status_and_stamina"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442487",
+      "normal_return": false,
+      "instructions": 340,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 1,
+        "target_hp": 0,
+        "contribution": 0,
+        "pending_counter": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "complete"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 65,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 1,
+        "target_hp": 0,
+        "contribution": 0,
+        "pending_counter": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "complete"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x10000000",
+      "normal_return": true,
+      "instructions": 65,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 1,
+        "target_hp": 0,
+        "contribution": 20,
+        "pending_counter": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "final_status_and_stamina"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442487",
+      "normal_return": false,
+      "instructions": 345,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 1,
+        "target_hp": 0,
+        "contribution": 20,
+        "pending_counter": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 4,
+        "next": "final_status_and_stamina"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x442487",
+      "normal_return": false,
+      "instructions": 345,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 1,
+        "target_hp": 20,
+        "contribution": 0,
+        "pending_counter": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 1,
+        "next": "additional_animation"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "normal_return": false,
+      "instructions": 60,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 1,
+        "target_hp": 20,
+        "contribution": 0,
+        "pending_counter": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": true,
+        "phase": 1,
+        "next": "additional_animation"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "normal_return": false,
+      "instructions": 60,
+      "draws": []
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 1,
+        "target_hp": 20,
+        "contribution": 20,
+        "pending_counter": false
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": false,
+        "phase": 1,
+        "next": "additional_animation"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "normal_return": false,
+      "instructions": 345,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "input": {
+        "kind": "settle",
+        "remaining": 1,
+        "target_hp": 20,
+        "contribution": 20,
+        "pending_counter": true
+      },
+      "native": {
+        "remaining": 0,
+        "pending_counter": true,
+        "phase": 1,
+        "next": "additional_animation"
+      },
+      "entry": "0x4423c0",
+      "stop_address": "0x4424e4",
+      "normal_return": false,
+      "instructions": 345,
+      "draws": [
+        {
+          "bound": 10,
+          "value": 7
+        },
+        {
+          "bound": 5,
+          "value": 0
+        }
+      ]
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x447fea",
+      "bytes": "56536858894700e8dae6ffff83c40c3bc589442414740b8b44241080cc8089442410",
+      "meaning": "Item double_attack produces effect flag0x8000."
+    },
+    {
+      "address": "0x447e1f",
+      "bytes": "565368148a4700e8a5e8ffff83c40c3bc589442414740a8b4424100c0889442410",
+      "meaning": "Separate action_twice produces flag8; not another strike."
+    },
+    {
+      "address": "0x44c46b",
+      "bytes": "3bc57416a1fc1a4c008b8c30a000000080cd02898c30a0000000",
+      "meaning": "Source actor double_attack produces capability0x200."
+    },
+    {
+      "address": "0x448747",
+      "bytes": "f6c502740f8b908c01000080ce8089908c010000",
+      "meaning": "During equipment application capability0x200 maps to effect0x8000."
+    },
+    {
+      "address": "0x442616",
+      "bytes": "892d482c4c00893d20434c00e8796cfcff83c40485c07406ff05482c4c008b7c242083e7010f85b1000000",
+      "meaning": "Initialize one extra strike before checking counter mode."
+    },
+    {
+      "address": "0x442465",
+      "bytes": "39ac8ad80000007f50a120434c00892d482c4c0025fffffeffa320434c00",
+      "meaning": "Dead target cancels remaining strikes and queued counter."
+    },
+    {
+      "address": "0x4424be",
+      "bytes": "a1482c4c003bc574bc6681052c434c00fdff8bc868a0424c00495568a0424c00890d482c4c00",
+      "meaning": "Live target with an extra strike restarts animation before final status/ST calls."
+    },
+    {
+      "address": "0x442483",
+      "bytes": "3bf574175357e85271fcffa1e02a4c00505357e8f5c0fcff83c414a1",
+      "meaning": "Only final nonzero-contribution strike reaches status and stamina callbacks."
+    },
+    {
+      "address": "0x4424a3",
+      "bytes": "a900000100744f25fffffeff5f5ea320434c005db8020000005bc3",
+      "meaning": "Counter handoff is returned only after the series finishes."
+    }
+  ],
+  "limits": [
+    "Flag query and no-effect final branches return normally; other branches stop before callbacks.",
+    "Synthetic completed strike states isolate extra scheduling and final ST/counter boundaries; this is not a whole native rendered exchange.",
+    "Numeric damage/hit/crit/EXP are separately verified helpers. Whole action_twice and other attack-status passives are not enabled."
+  ]
+}

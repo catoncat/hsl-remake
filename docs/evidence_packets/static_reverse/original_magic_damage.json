@@ -1,0 +1,3988 @@
+{
+  "schema": "hsl_native_magic_damage.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "source_magic_sha256": "19a1183783eca7ce3f0e6248dd8ca573cde16bf33177ee1a3c79ec8be006bd34",
+  "rolls": [
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 6,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 1,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 19,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 3,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 117,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 433
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 23,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 445
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 132,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 434
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 26,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 446
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 3,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 438
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 450
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 6,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 1,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 18,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 3,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 115,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 433
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 23,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 445
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 129,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 434
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 25,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 446
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 3,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 438
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 450
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 7,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 1,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 22,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 4,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 123,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 433
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 24,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 445
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 138,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 434
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 27,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 446
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 3,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 438
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 450
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 6
+      },
+      "normal_return": true,
+      "instructions": 152
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": true,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 448
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 95,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 450
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 50,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 6
+      },
+      "normal_return": true,
+      "instructions": 152
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 7,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 1,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 22,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 4,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 123,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 433
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 24,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 445
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 138,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 434
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 27,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 446
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 3,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 438
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 450
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 7,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 1,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 21,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 4,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 121,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 433
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 24,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 445
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 136,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 434
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 27,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 446
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 3,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 438
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          7,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 8,
+          "value": 7
+        },
+        {
+          "bound": 8,
+          "value": 5
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 450
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 9,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 1,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 25,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 431
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 3,
+        "mind": 35,
+        "magic_attack": 50,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 5,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 443
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 129,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 433
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 80,
+        "mind": 36,
+        "magic_attack": 100,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 25,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 445
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 145,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 434
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 100,
+        "mind": 50,
+        "magic_attack": 110,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 29,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 446
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 3,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 438
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 450
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 6
+      },
+      "normal_return": true,
+      "instructions": 152
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": true,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 448
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 7,
+        "magic_hit_bonus": 95,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        },
+        {
+          "bound": 8,
+          "value": 0
+        },
+        {
+          "bound": 8,
+          "value": 6
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 0
+      },
+      "normal_return": true,
+      "instructions": 450
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 50,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "native": {
+        "value": 0,
+        "hit_bonus_after": 6
+      },
+      "normal_return": true,
+      "instructions": 152
+    }
+  ],
+  "applications": [
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0,
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0,
+        "hp": 5
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 5,
+        "contribution": 5,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0,
+        "hp": 100
+      },
+      "native": {
+        "hp": 94,
+        "actual_damage": 6,
+        "contribution": 6,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80,
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80,
+        "hp": 5
+      },
+      "native": {
+        "hp": 4,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80,
+        "hp": 100
+      },
+      "native": {
+        "hp": 99,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0,
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 518,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0,
+        "hp": 5
+      },
+      "native": {
+        "hp": 2,
+        "actual_damage": 3,
+        "contribution": 3,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 515,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0,
+        "hp": 100
+      },
+      "native": {
+        "hp": 97,
+        "actual_damage": 3,
+        "contribution": 3,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 515,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80,
+        "hp": 1
+      },
+      "native": {
+        "hp": 1,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 6
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80,
+        "hp": 5
+      },
+      "native": {
+        "hp": 5,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 6
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    },
+    {
+      "input": {
+        "spell": "wind",
+        "proc": 0,
+        "channel": 0,
+        "low": 12,
+        "high": 26,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 2,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80,
+        "hp": 100
+      },
+      "native": {
+        "hp": 100,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 6
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0,
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0,
+        "hp": 5
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 5,
+        "contribution": 5,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 511,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 0,
+        "hp": 100
+      },
+      "native": {
+        "hp": 93,
+        "actual_damage": 7,
+        "contribution": 7,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 508,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80,
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80,
+        "hp": 5
+      },
+      "native": {
+        "hp": 4,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 15,
+        "magic_attack": 24,
+        "resistance": 80,
+        "hp": 100
+      },
+      "native": {
+        "hp": 99,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 520,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0,
+        "hp": 1
+      },
+      "native": {
+        "hp": 0,
+        "actual_damage": 1,
+        "contribution": 1,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 518,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0,
+        "hp": 5
+      },
+      "native": {
+        "hp": 2,
+        "actual_damage": 3,
+        "contribution": 3,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 515,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 96,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          1,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 0,
+        "hp": 100
+      },
+      "native": {
+        "hp": 97,
+        "actual_damage": 3,
+        "contribution": 3,
+        "hit_bonus_local": 0
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 58
+        },
+        {
+          "bound": 8,
+          "value": 2
+        },
+        {
+          "bound": 8,
+          "value": 2
+        }
+      ],
+      "instructions": 515,
+      "normal_return": false,
+      "stop_address": "0x40ab87"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80,
+        "hp": 1
+      },
+      "native": {
+        "hp": 1,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 6
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80,
+        "hp": 5
+      },
+      "native": {
+        "hp": 5,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 6
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    },
+    {
+      "input": {
+        "spell": "fire",
+        "proc": 0,
+        "channel": 0,
+        "low": 18,
+        "high": 32,
+        "hit_ratio": 0,
+        "status_hit_ratio": 0,
+        "hit_bonus": 0,
+        "magic_hit_bonus": 0,
+        "no_attack": false,
+        "element": 3,
+        "seed": [
+          19,
+          2271560481
+        ],
+        "level": 1,
+        "mind": 1,
+        "magic_attack": 0,
+        "resistance": 80,
+        "hp": 100
+      },
+      "native": {
+        "hp": 100,
+        "actual_damage": 0,
+        "contribution": 0,
+        "hit_bonus_local": 6
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 63
+        }
+      ],
+      "instructions": 220,
+      "normal_return": false,
+      "stop_address": "0x40abb0"
+    }
+  ],
+  "limits": [
+    "Numeric helper returns normally; HP application stops before display callback and XP conversion.",
+    "Wind and fire source definitions are single-target; area tests of the shared resolver are explicit synthetic geometry.",
+    "Source actor initialization, native global RNG identity and display timing are separate."
+  ]
+}

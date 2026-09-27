@@ -1,0 +1,76 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 61,
+  "story_scene": {
+    "id": "story_061_camp_hanks_report",
+    "title": "營地・漢克斯的報告",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      }
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the EVEF 夜晚聲 (mapobjPlayBGSound, WAV\\NIGHT001.WAV) is exported as a background_sound placement and its WAV into sounds/; no runtime consumer plays EVEF-placed ambience yet"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-061.obs 雷歐納德 obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-061.obs 緹娜 obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-061.obs 琥 obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-061.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*, placed off the west edge at x = -64) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 61 (winfail003 -> 61,61): the camp after 盜賊洞窟. No shape of its own — the",
+      "seed aliases the dusk camp level55.SHP (same 20x15 WRD, same 火01 / 夜晚聲 EVEF",
+      "objects; provisional). 漢克斯 walks in from the west edge and reports to 緹娜; the",
+      "script reveals track 3 / point 2, arms 歐姆村 event 10 and returns to the big map."
+    ],
+    "cast": [
+      "Level 61 (camp after 盜賊洞窟, story-only): the four-member party; 漢克斯 walks in."
+    ],
+    "speakers": [
+      "Level 61 (camp after 盜賊洞窟, story-only STORY061, winfail003 -> 61,61): 漢克斯 (slot 3)",
+      "reports to 緹娜; 雷歐納德 and 琥 comment."
+    ]
+  }
+}

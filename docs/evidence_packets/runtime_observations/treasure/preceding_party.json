@@ -1,0 +1,137 @@
+{
+  "carry": {
+    "claim_limit": "Remake campaign policy; original inter-level persistence is not proven.",
+    "evidence_tier": "provisional",
+    "from_outcome": "victory_boss",
+    "from_scenario_id": "res://content/battles/ohm_village_battle.json",
+    "initialization_rng": 1910697697,
+    "loop": {
+      "gold": 690
+    },
+    "restore_vitals": true,
+    "schema": "hsl_campaign_carry.v1",
+    "units": {
+      "hu": {
+        "actor_id": "003",
+        "attributes": {
+          "con": 20,
+          "dex": 16,
+          "mind": 7,
+          "str": 24
+        },
+        "equipment": [
+          {
+            "item_code": 61.0,
+            "name": "長弓",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 123.0,
+            "name": "皮鎧",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          }
+        ],
+        "exp": 32,
+        "inventory": [
+          241,
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_count": 0,
+        "learned_skills": [],
+        "level": 4,
+        "pending_stat_points": 0,
+        "permanent_gains": {
+          "attack_power": 0,
+          "defense": 0,
+          "magic_attack_power": 0,
+          "resist_0": 0,
+          "resist_1": 0,
+          "resist_2": 0,
+          "resist_3": 0,
+          "resist_4": 0,
+          "speed": 0
+        },
+        "weapon_code": 61.0
+      },
+      "leonard": {
+        "actor_id": "001",
+        "attributes": {
+          "con": 13,
+          "dex": 17,
+          "mind": 9,
+          "str": 18
+        },
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          }
+        ],
+        "exp": 87,
+        "inventory": [
+          241,
+          241,
+          246,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_count": 3,
+        "learned_skills": [],
+        "level": 2,
+        "pending_stat_points": 0,
+        "permanent_gains": {
+          "attack_power": 0,
+          "defense": 0,
+          "magic_attack_power": 0,
+          "resist_0": 0,
+          "resist_1": 0,
+          "resist_2": 0,
+          "resist_3": 0,
+          "resist_4": 0,
+          "speed": 0
+        },
+        "weapon_code": 2.0
+      }
+    }
+  },
+  "setup": "Exact previous unmodified Ohm natural victory; all units match its original rendered receipt. No level, stats, inventory, gold or RNG edited.",
+  "source_capture": "ignored/ohm-village/natural-receipt.json",
+  "source_capture_sha256": "768829ba8fecc3d9578ffabf3537543158383a54b70fdacdd23e4ebb908b0094",
+  "source_save": "res://ignored/ohm-village-review/natural.save",
+  "source_save_sha256": "d871defee91c4f5b76c37b32a6c48080f543150dcb4478a86d9b41aef3b0a63d"
+}

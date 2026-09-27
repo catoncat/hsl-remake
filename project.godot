@@ -1,0 +1,40 @@
+config_version=5
+
+[application]
+
+config/name="HSL Remake"
+run/main_scene="res://game/title/TitleScreen.tscn"
+config/features=PackedStringArray("4.7")
+config/icon="res://game/assets/icon.svg"
+
+[autoload]
+
+SimplifiedDisplay="*res://game/text/SimplifiedDisplay.gd"
+DebugPause="*res://game/debug/DebugPause.gd"
+GameCursor="*res://game/cursor/GameCursor.gd"
+RemakeOptionsHotkey="*res://game/settings/RemakeOptionsHotkey.gd"
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=480
+window/size/window_width_override=1280
+window/size/window_height_override=960
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+
+[gui]
+
+theme/custom_font="res://game/assets/ui_font.tres"
+
+[importer_defaults]
+
+oggvorbisstr={
+"loop": true,
+"loop_offset": 0.0
+}
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

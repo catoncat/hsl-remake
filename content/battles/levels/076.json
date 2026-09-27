@@ -1,0 +1,152 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 76,
+  "battle": {
+    "id": "battle_076_level76",
+    "title": "最終的序曲 · 妖精王",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "script",
+    "result_labels": {
+      "win_0": "最終的序曲 · 妖精王戰勝",
+      "fail_0": "最終的序曲 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 22,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "The final-chapter map is inherited from level 58 through the seed alias; no map texture is copied.",
+      "The source transition scheduler and exact final-battle reward timing remain provisional; the compiled status order is retained.",
+      "Actor058 source weapon 57 retains its resource-derived range0Cell weapon; the live contract exposes no hostile ordinary target for that range while preserving the equipped item."
+    ]
+  },
+  "story_scene": {
+    "id": "story_076_elf_king_final_opening",
+    "title": "最終的序曲・妖精王（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "最終的序曲",
+      "hint": "戰鬥部分（level 76）尚未重製　　空格／點擊：回到大地圖（克萊恩城）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the nine-slot party (咕嚕 is a conditional install) and the enemy roster have no battle scenario yet (chapter-3 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "actSetPlayerUndead SID_ENEMY058 is recorded, not applied; the winfail076 attacked-pair exchanges (events 0-5 / 10-11 -> 7 / 8 / 9 / 12), the round-12 summoning of obj_Story_Level_Enemy50 and actKeepPlayerST belong to the not-yet-remade battle",
+      "which of the finals 76 / 77 / 78 follows STORY057 is chosen by actSetNextPlayLevelGetOverEvent 0 from the over-score / over-flag state (EndingDispatchRules, static-derived from 0x42c520): 76 is the id-1 / default finale"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "049",
+      "050",
+      "058",
+      "065"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "005",
+      "009",
+      "058"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY058": "657"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-076.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-076.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-076.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-076.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-076.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-076.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-076.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-076.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-076.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY058": "PLAYERS.TXT character 58 name field = 657 克里歐司 (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 76 (one of the three finals STORY057's actSetNextPlayLevelGetOverEvent 0 selects; WORD076",
+      "最終的序曲 / FINAL PRELUDE): the throne hall (LEVEL58.SHP) — the elf king 克里歐司 058 on the dais",
+      "with 065 / 049 dark knights; the party walks up, 雷歐納德 and 克羅蒂 confront him. winfail076 event 6",
+      "(round 12) summons four 050 earth spirits by 白光; win -> 81,81."
+    ],
+    "cast": [
+      "Level 76 (final: the elf king 058): 065 / 049 dark knights in the EVEF; winfail076 event 6",
+      "inserts four 050 earth spirits (obj_Story_Level_Enemy50) at round 12."
+    ],
+    "speakers": [
+      "Level 76 (the elf king 058 in the throne hall — one of the three finals 76 / 77 / 78 that STORY057's actSetNextPlayLevelGetOverEvent 0 selects from the over-score state; winfail076 -> 81,81)."
+    ]
+  }
+}

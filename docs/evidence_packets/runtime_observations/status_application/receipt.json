@@ -1,0 +1,28 @@
+{
+  "fixture": true,
+  "native_execution": false,
+  "real_control_events": true,
+  "input_delivery": "Viewport.push_input; no desktop input or direct signals",
+  "fixture_overrides": "025 commandable with 100MP; Acid Mist status chance 100; 026 HP1000 and one silence action; isolated queue and positions; counterattacks disabled",
+  "window_position": [1760, 400],
+  "window_size": [640, 480],
+  "next_actor": "enemy023_1",
+  "cast": {
+    "skill_id": "magic:magicAIR:magicCode05",
+    "mp_before": 100,
+    "mp_after": 90,
+    "targets": [
+      {"id": "enemy021_1", "poison_power": 24, "poison_actions": 2},
+      {"id": "enemy026_1", "poison_power": 24, "poison_actions": 2}
+    ]
+  },
+  "mage_before_ai": {
+    "hp": 1000, "mp": 30, "status_flags": 3,
+    "status_counters": {"poison": 1572866, "no_magic": 1}
+  },
+  "mage_after_ai": {
+    "hp": 976, "mp": 30, "status_flags": 1,
+    "status_counters": {"poison": 1572865, "no_magic": 0}
+  },
+  "failures": []
+}

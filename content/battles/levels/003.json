@@ -1,0 +1,120 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 3,
+  "battle": {
+    "id": "battle_003_level3",
+    "title": "盜賊洞窟 · 影牙隊長",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "defeat_hanks",
+    "role_overrides": {
+      "hanks": "enemy_ai"
+    },
+    "initial_unit_state": {
+      "hanks": {
+        "undead": true
+      }
+    },
+    "result_labels": {
+      "win_0": "盜賊洞窟 · 漢克斯加入隊伍"
+    },
+    "expected": {
+      "units": 17,
+      "players": 3
+    },
+    "unresolved_semantics": [
+      "STORY003 sets 漢克斯 to pmEnemy and undead before the battle; WINFAIL003 sets pmPlayer and clears undead in its win chain. The role transition is applied by the sole PlayLoop; 0x450710 does not re-run the stat refresh 0x448840, so 漢克斯 keeps the max HP of his pmPlayer birth (birth_player_mode); the global marker is not reproduced.",
+      "static-derived undead is a PLAYER_TABLE bit queried by 0x446bb0. The inspected caller only skips item/equipment handling; HP-zero immunity and damage immunity are negative-evidence and remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_003_raider_cave_opening",
+    "title": "盜賊洞窟（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      }
+    },
+    "end_card": {
+      "title": "盜賊洞窟",
+      "hint": "戰鬥部分（level 3）尚未重製　　空格／點擊：回到大地圖（盜賊洞窟）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the four controlled slots (雷歐納德, 緹娜, 琥 jobBowMan 83, 漢克斯 004) and the raiders 028 / 036 have no battle scenario yet (P-024, multi-slot party); the preview shows their EVEF placements and STORY003 walks only",
+      "actSetPlayerMode SID_漢克斯 pmEnemy and actSetPlayerUndead are recorded, not applied: the preview draws 漢克斯 as the EVEF player install he is, his hostile / undead battle state belongs to the not-yet-remade battle"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "028",
+      "036"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "028"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_ENEMY028": "632"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-003.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_ENEMY028": "PLAYERS.TXT character 28 name field is 306 (???), job jobThief; 632 盜賊 is the same remake speaker label as levels 1 and 2, provisional",
+    "defNoOne": "narration token without a speaker; presented without name or portrait"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 3 (盜賊洞窟, bigmap.dat point 3): the raiders' cave. STORY003 first turns",
+      "漢克斯 (slot 3, EVEF install inside the cave) hostile and undead, then the",
+      "three mercenaries walk in from the west edge (EVEF x = -64/-96/-128) and two",
+      "raiders come to meet them; remade as a preview up to first control.",
+      "actPlayLevelMusic: table 0x477b44 gives level 3 track 14 (static-derived byte",
+      "read).",
+      "Back to the big map standing at 盜賊洞窟 (point 3); winfail003's win actions",
+      "(point / encounter writes, next level) are not applied."
+    ],
+    "cast": [
+      "Level 3 (盜賊洞窟): the four controlled slots 0–3 (漢克斯 004 joins here), the",
+      "nine EVEF raiders 028 and four winged raiders 036."
+    ],
+    "speakers": [
+      "Level 3 (盜賊洞窟, STORY003 / WINFAIL003): the four EXTRAS.H slots 0–3 (SID_漢克斯 = 3",
+      "joins here; STORY003 first sets him pmEnemy) and the raiders."
+    ]
+  }
+}

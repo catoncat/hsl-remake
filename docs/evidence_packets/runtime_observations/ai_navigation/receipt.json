@@ -1,0 +1,4629 @@
+{
+  "schema": "godot_ai_navigation_review.v1",
+  "fixture": true,
+  "native_execution": false,
+  "real_control_events": true,
+  "routes": [
+    {
+      "actions": [
+        {
+          "actor_id": "enemy021_1",
+          "cost": 1,
+          "goal": "(10, 9)",
+          "kind": "move",
+          "path": [
+            "(7, 10)",
+            "(7, 9)"
+          ],
+          "purpose": "pursuit",
+          "route_cost": 7,
+          "to": "(7, 9)",
+          "toward": "leonard",
+          "wait_reason": "no_accepted_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "native_index": 2,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        },
+        {
+          "actor_id": "enemy021_1",
+          "cost": 2,
+          "goal": "(10, 9)",
+          "kind": "move",
+          "path": [
+            "(7, 9)",
+            "(7, 8)",
+            "(8, 8)"
+          ],
+          "purpose": "pursuit",
+          "route_cost": 5,
+          "to": "(8, 8)",
+          "toward": "leonard",
+          "wait_reason": "no_accepted_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "lock_check": {
+              "draws": [
+                {
+                  "bound": 99,
+                  "value": 49
+                }
+              ],
+              "roll": 50,
+              "threshold": 100
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "leonard",
+              "reason": "retained_target",
+              "retained": true,
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        },
+        {
+          "actor_id": "enemy021_1",
+          "cost": 2,
+          "goal": "(10, 9)",
+          "kind": "move",
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(9, 9)"
+          ],
+          "purpose": "pursuit",
+          "route_cost": 3,
+          "to": "(9, 9)",
+          "toward": "leonard",
+          "wait_reason": "no_accepted_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "lock_check": {
+              "draws": [
+                {
+                  "bound": 99,
+                  "value": 37
+                }
+              ],
+              "roll": 38,
+              "threshold": 100
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "leonard",
+              "reason": "retained_target",
+              "retained": true,
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        },
+        {
+          "actor_id": "enemy021_1",
+          "actual_damage": 11,
+          "attacker_id": "enemy021_1",
+          "counter": {},
+          "defender_hp_after": 389,
+          "defender_hp_before": 400,
+          "defender_id": "leonard",
+          "kind": "move_then_attack",
+          "path": [
+            "(9, 9)",
+            "(10, 9)"
+          ],
+          "sequence": 1,
+          "target_id": "leonard",
+          "to": "(10, 9)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "lock_check": {
+              "draws": [],
+              "roll": 33,
+              "threshold": 100
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "leonard",
+              "reason": "retained_target",
+              "retained": true,
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 1,
+        "release": 1
+      },
+      "mode": "detour",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "impact": true,
+        "path": true,
+        "target": true
+      },
+      "owner_after": {
+        "actor_id": "021",
+        "coord": "(10, 9)",
+        "hp": 400,
+        "id": "enemy021_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 3,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy021_1",
+          "cost": 2,
+          "goal": "(13, 9)",
+          "kind": "move",
+          "path": [
+            "(7, 9)",
+            "(7, 8)",
+            "(8, 8)"
+          ],
+          "purpose": "pursuit",
+          "route_cost": 8,
+          "to": "(8, 8)",
+          "toward": "enemy023_1",
+          "wait_reason": "no_accepted_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 2,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "native_index": 3,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 0,
+        "release": 0
+      },
+      "mode": "unreachable",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "path": true
+      },
+      "owner_after": {
+        "actor_id": "021",
+        "coord": "(8, 8)",
+        "hp": 400,
+        "id": "enemy021_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 0,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy021_1",
+          "actual_damage": 1,
+          "attacker_id": "enemy021_1",
+          "counter": {},
+          "defender_hp_after": 0,
+          "defender_hp_before": 1,
+          "defender_id": "enemy023_1",
+          "kind": "attack",
+          "path": [],
+          "sequence": 1,
+          "target_id": "enemy023_1",
+          "to": "(8, 8)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "lock_check": {
+              "draws": [],
+              "roll": 53,
+              "threshold": 100
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 2,
+              "previous_target_id": "enemy023_1",
+              "reason": "retained_target",
+              "retained": true,
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        },
+        {
+          "actor_id": "enemy021_1",
+          "cost": 2,
+          "goal": "(12, 9)",
+          "kind": "move",
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(9, 9)"
+          ],
+          "purpose": "pursuit",
+          "route_cost": 5,
+          "to": "(9, 9)",
+          "toward": "leonard",
+          "wait_reason": "no_accepted_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "native_index": 2,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 1,
+        "release": 1
+      },
+      "mode": "target_death",
+      "next_actor": "leonard",
+      "observations": {
+        "impact": true,
+        "path": true,
+        "target": true
+      },
+      "owner_after": {
+        "actor_id": "021",
+        "coord": "(9, 9)",
+        "hp": 400,
+        "id": "enemy021_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 1,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack01.WAV",
+        "res://content/imported/hsl/shared/interface_audio/hit_sword.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/dead0003.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy021_1",
+          "kind": "wait",
+          "wait_reason": "wait_round",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": false,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": -1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": []
+            },
+            "target_selection": {
+              "draws": [],
+              "index": -1,
+              "previous_target_id": "",
+              "reason": "wait_round",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": -1,
+                "native_index": 0,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": true,
+              "wait_remaining": 2
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 0,
+        "release": 0
+      },
+      "mode": "wait",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "wait": true
+      },
+      "owner_after": {
+        "actor_id": "021",
+        "coord": "(7, 10)",
+        "hp": 400,
+        "id": "enemy021_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 0,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 14.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 16.0,
+                  "live_attack_damage": 54.0,
+                  "live_defense": 43.0,
+                  "live_hit_ratio": 98.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 8.0,
+                  "resist_by_type": {
+                    "0": 16.0,
+                    "1": 14.0,
+                    "2": 13.0,
+                    "3": 16.0,
+                    "4": 12.0
+                  },
+                  "str": 16.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 0.0,
+                "mp": 0.0,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "leonard",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 30,
+                "draws": [
+                  {
+                    "bound": 15,
+                    "value": 1
+                  },
+                  {
+                    "bound": 4,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 16,
+                "source": "0x40a5d0",
+                "subtotal": 16,
+                "target_level": 1
+              },
+              "formula_source": "native_magic_roll_and_status_applicator",
+              "hit": true,
+              "magic_key": "poison",
+              "magic_name": "酸蝕幻霧",
+              "native_contribution": 30,
+              "native_damage_roll": {},
+              "resource_payment": {
+                "after": 90,
+                "amount": 10,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 10,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode05",
+              "status_effects": [
+                {
+                  "added_turns": 3,
+                  "after_word": 1179651,
+                  "applied": true,
+                  "before_word": 0,
+                  "changed": true,
+                  "sampled_power": 18,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "enemy023_1",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 30,
+                "draws": [
+                  {
+                    "bound": 15,
+                    "value": 9
+                  },
+                  {
+                    "bound": 7,
+                    "value": 6
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 20,
+                "source": "0x40a5d0",
+                "subtotal": 26,
+                "target_level": 1
+              },
+              "formula_source": "native_magic_roll_and_status_applicator",
+              "hit": true,
+              "magic_key": "poison",
+              "magic_name": "酸蝕幻霧",
+              "native_contribution": 30,
+              "native_damage_roll": {},
+              "resource_payment": {
+                "after": 90,
+                "amount": 10,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 10,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode05",
+              "status_effects": [
+                {
+                  "added_turns": 3,
+                  "after_word": 1376259,
+                  "applied": true,
+                  "before_word": 0,
+                  "changed": true,
+                  "sampled_power": 21,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "navigation_target_2",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 30,
+                "draws": [
+                  {
+                    "bound": 15,
+                    "value": 10
+                  },
+                  {
+                    "bound": 8,
+                    "value": 1
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 26,
+                "source": "0x40a5d0",
+                "subtotal": 27,
+                "target_level": 1
+              },
+              "formula_source": "native_magic_roll_and_status_applicator",
+              "hit": true,
+              "magic_key": "poison",
+              "magic_name": "酸蝕幻霧",
+              "native_contribution": 30,
+              "native_damage_roll": {},
+              "resource_payment": {
+                "after": 90,
+                "amount": 10,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 10,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode05",
+              "status_effects": [
+                {
+                  "added_turns": 3,
+                  "after_word": 1310723,
+                  "applied": true,
+                  "before_word": 0,
+                  "changed": true,
+                  "sampled_power": 20,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "navigation_target_3",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 20,
+                "draws": [
+                  {
+                    "bound": 10,
+                    "value": 1
+                  },
+                  {
+                    "bound": 3,
+                    "value": 2
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 9,
+                "source": "0x40a5d0",
+                "subtotal": 11,
+                "target_level": 1
+              },
+              "formula_source": "native_magic_roll_and_status_applicator",
+              "hit": true,
+              "magic_key": "poison",
+              "magic_name": "酸蝕幻霧",
+              "native_contribution": 20,
+              "native_damage_roll": {},
+              "resource_payment": {
+                "after": 90,
+                "amount": 10,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 10,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode05",
+              "status_effects": [
+                {
+                  "added_turns": 2,
+                  "after_word": 1376258,
+                  "applied": true,
+                  "before_word": 0,
+                  "changed": true,
+                  "sampled_power": 21,
+                  "status": "poison"
+                }
+              ]
+            }
+          ],
+          "attacker_id": "enemy026_1",
+          "cast_center": "(10, 9)",
+          "defender_hp_after": 400,
+          "defender_hp_before": 400,
+          "defender_id": "leonard",
+          "kind": "attack",
+          "magic_key": "poison",
+          "path": [],
+          "resource_payment": {
+            "after": 90,
+            "amount": 10,
+            "before": 100,
+            "native_affordable": true,
+            "native_required": 10,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicAIR:magicCode05",
+          "target_id": "leonard",
+          "to": "(7, 9)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "native_index": 2,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 1,
+        "release": 1
+      },
+      "mode": "empty_center",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "impact": true,
+        "target": true
+      },
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(7, 9)",
+        "hp": 400,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": 100,
+        "mp": 90,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 0,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack05.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 14.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 16.0,
+                  "live_attack_damage": 54.0,
+                  "live_defense": 43.0,
+                  "live_hit_ratio": 98.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 8.0,
+                  "resist_by_type": {
+                    "0": 16.0,
+                    "1": 14.0,
+                    "2": 13.0,
+                    "3": 16.0,
+                    "4": 12.0
+                  },
+                  "str": 16.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 0.0,
+                "mp": 0.0,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 458754
+                },
+                "status_flags": 1
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "leonard",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 36,
+                "draws": [
+                  {
+                    "bound": 18,
+                    "value": 1
+                  },
+                  {
+                    "bound": 5,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 18,
+                "source": "0x40a5d0",
+                "subtotal": 18,
+                "target_level": 1
+              },
+              "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+              "healing": 0,
+              "hit": true,
+              "magic_key": "cure_poison",
+              "magic_name": "驅毒",
+              "native_contribution": 36,
+              "resource_payment": {
+                "after": 96,
+                "amount": 4,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 4,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode05",
+              "support_effects": [
+                {
+                  "after_word": 0,
+                  "before_word": 458754,
+                  "removed": true,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 458754
+                },
+                "status_flags": 1
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "enemy023_1",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 36,
+                "draws": [
+                  {
+                    "bound": 18,
+                    "value": 12
+                  },
+                  {
+                    "bound": 9,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 32,
+                "source": "0x40a5d0",
+                "subtotal": 32,
+                "target_level": 1
+              },
+              "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+              "healing": 0,
+              "hit": true,
+              "magic_key": "cure_poison",
+              "magic_name": "驅毒",
+              "native_contribution": 36,
+              "resource_payment": {
+                "after": 96,
+                "amount": 4,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 4,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode05",
+              "support_effects": [
+                {
+                  "after_word": 0,
+                  "before_word": 458754,
+                  "removed": true,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 458754
+                },
+                "status_flags": 1
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "navigation_target_2",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 36,
+                "draws": [
+                  {
+                    "bound": 18,
+                    "value": 10
+                  },
+                  {
+                    "bound": 9,
+                    "value": 8
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 22,
+                "source": "0x40a5d0",
+                "subtotal": 30,
+                "target_level": 1
+              },
+              "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+              "healing": 0,
+              "hit": true,
+              "magic_key": "cure_poison",
+              "magic_name": "驅毒",
+              "native_contribution": 36,
+              "resource_payment": {
+                "after": 96,
+                "amount": 4,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 4,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode05",
+              "support_effects": [
+                {
+                  "after_word": 0,
+                  "before_word": 458754,
+                  "removed": true,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 458754
+                },
+                "status_flags": 1
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "navigation_target_3",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 36,
+                "draws": [
+                  {
+                    "bound": 18,
+                    "value": 11
+                  },
+                  {
+                    "bound": 9,
+                    "value": 2
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 29,
+                "source": "0x40a5d0",
+                "subtotal": 31,
+                "target_level": 1
+              },
+              "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+              "healing": 0,
+              "hit": true,
+              "magic_key": "cure_poison",
+              "magic_name": "驅毒",
+              "native_contribution": 36,
+              "resource_payment": {
+                "after": 96,
+                "amount": 4,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 4,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode05",
+              "support_effects": [
+                {
+                  "after_word": 0,
+                  "before_word": 458754,
+                  "removed": true,
+                  "status": "poison"
+                }
+              ]
+            }
+          ],
+          "attacker_id": "enemy026_1",
+          "cast_center": "(10, 9)",
+          "defender_hp_after": 400,
+          "defender_hp_before": 400,
+          "defender_id": "leonard",
+          "kind": "attack",
+          "magic_key": "cure_poison",
+          "path": [],
+          "resource_payment": {
+            "after": 96,
+            "amount": 4,
+            "before": 100,
+            "native_affordable": true,
+            "native_required": 4,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicWATER:magicCode05",
+          "target_id": "leonard",
+          "to": "(7, 9)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": false,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": -1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": []
+            },
+            "target_selection": {
+              "draws": [],
+              "index": -1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": -1,
+                "native_index": 0,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 1,
+        "release": 1
+      },
+      "mode": "cure_center",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "impact": true,
+        "target": true
+      },
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(7, 9)",
+        "hp": 400,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": 100,
+        "mp": 96,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 0,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/chapter01/support_magic/shoot005.wav",
+        "res://content/imported/hsl/chapter01/support_magic/mheal003.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy026_1",
+          "cost": 1,
+          "goal": "(10, 9)",
+          "kind": "move",
+          "path": [
+            "(7, 10)",
+            "(7, 9)"
+          ],
+          "purpose": "pursuit",
+          "route_cost": 7,
+          "to": "(7, 9)",
+          "toward": "leonard",
+          "wait_reason": "no_accepted_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "native_index": 2,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 0,
+        "release": 0
+      },
+      "mode": "empty_mp",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "path": true
+      },
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(7, 9)",
+        "hp": 400,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": 30,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 0,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy026_1",
+          "cost": 1,
+          "goal": "(10, 9)",
+          "kind": "move",
+          "path": [
+            "(7, 10)",
+            "(7, 9)"
+          ],
+          "purpose": "pursuit",
+          "route_cost": 7,
+          "to": "(7, 9)",
+          "toward": "leonard",
+          "wait_reason": "no_accepted_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "native_index": 2,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 0,
+        "release": 0
+      },
+      "mode": "silenced",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "path": true
+      },
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(7, 9)",
+        "hp": 400,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": 30,
+        "mp": 30,
+        "status_counters": {
+          "no_magic": 1,
+          "poison": 0.0
+        },
+        "status_flags": 2
+      },
+      "round": 0,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy021_1",
+          "kind": "wait",
+          "wait_reason": "no_valid_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": false,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": -1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": []
+            },
+            "target_selection": {
+              "draws": [],
+              "index": -1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": -1,
+                "native_index": 0,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 0,
+        "release": 0
+      },
+      "mode": "no_action",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "wait": true
+      },
+      "owner_after": {
+        "actor_id": "021",
+        "coord": "(7, 10)",
+        "hp": 400,
+        "id": "enemy021_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 0,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 14.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 16.0,
+                  "live_attack_damage": 54.0,
+                  "live_defense": 43.0,
+                  "live_hit_ratio": 98.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 8.0,
+                  "resist_by_type": {
+                    "0": 16.0,
+                    "1": 14.0,
+                    "2": 13.0,
+                    "3": 16.0,
+                    "4": 12.0
+                  },
+                  "str": 16.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 0.0,
+                "mp": 0.0,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "leonard",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 30,
+                "draws": [
+                  {
+                    "bound": 15,
+                    "value": 4
+                  },
+                  {
+                    "bound": 6,
+                    "value": 3
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 17,
+                "source": "0x40a5d0",
+                "subtotal": 20,
+                "target_level": 1
+              },
+              "formula_source": "native_magic_roll_and_status_applicator",
+              "hit": true,
+              "magic_key": "poison",
+              "magic_name": "酸蝕幻霧",
+              "native_contribution": 30,
+              "native_damage_roll": {},
+              "resource_payment": {
+                "after": 90,
+                "amount": 10,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 10,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode05",
+              "status_effects": [
+                {
+                  "added_turns": 3,
+                  "after_word": 983043,
+                  "applied": true,
+                  "before_word": 0,
+                  "changed": true,
+                  "sampled_power": 15,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "enemy023_1",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "contribution": 0,
+                "draws": [],
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 0
+              },
+              "formula_source": "native_magic_roll_and_status_applicator",
+              "hit": false,
+              "magic_key": "poison",
+              "magic_name": "酸蝕幻霧",
+              "native_contribution": 0,
+              "native_damage_roll": {},
+              "resource_payment": {
+                "after": 90,
+                "amount": 10,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 10,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode05",
+              "status_effects": [
+                {
+                  "applied": false,
+                  "reason": "miss",
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "navigation_target_2",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 20,
+                "draws": [
+                  {
+                    "bound": 10,
+                    "value": 4
+                  },
+                  {
+                    "bound": 4,
+                    "value": 2
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 13,
+                "source": "0x40a5d0",
+                "subtotal": 15,
+                "target_level": 1
+              },
+              "formula_source": "native_magic_roll_and_status_applicator",
+              "hit": true,
+              "magic_key": "poison",
+              "magic_name": "酸蝕幻霧",
+              "native_contribution": 20,
+              "native_damage_roll": {},
+              "resource_payment": {
+                "after": 90,
+                "amount": 10,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 10,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode05",
+              "status_effects": [
+                {
+                  "added_turns": 2,
+                  "after_word": 1245186,
+                  "applied": true,
+                  "before_word": 0,
+                  "changed": true,
+                  "sampled_power": 19,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 400,
+              "defender_hp_before": 400,
+              "defender_id": "navigation_target_3",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 20,
+                "draws": [
+                  {
+                    "bound": 10,
+                    "value": 8
+                  },
+                  {
+                    "bound": 6,
+                    "value": 1
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 19,
+                "source": "0x40a5d0",
+                "subtotal": 20,
+                "target_level": 1
+              },
+              "formula_source": "native_magic_roll_and_status_applicator",
+              "hit": true,
+              "magic_key": "poison",
+              "magic_name": "酸蝕幻霧",
+              "native_contribution": 20,
+              "native_damage_roll": {},
+              "resource_payment": {
+                "after": 90,
+                "amount": 10,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 10,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode05",
+              "status_effects": [
+                {
+                  "added_turns": 2,
+                  "after_word": 1310722,
+                  "applied": true,
+                  "before_word": 0,
+                  "changed": true,
+                  "sampled_power": 20,
+                  "status": "poison"
+                }
+              ]
+            }
+          ],
+          "attacker_id": "enemy026_1",
+          "cast_center": "(10, 9)",
+          "defender_hp_after": 400,
+          "defender_hp_before": 400,
+          "defender_id": "leonard",
+          "magic_key": "poison",
+          "resource_payment": {
+            "after": 90,
+            "amount": 10,
+            "before": 100,
+            "native_affordable": true,
+            "native_required": 10,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicAIR:magicCode05",
+          "navigation": {}
+        }
+      ],
+      "cues": {
+        "impact": 1,
+        "release": 1
+      },
+      "mode": "player_center",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "impact": true,
+        "target": true
+      },
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(7, 9)",
+        "hp": 400,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": 100,
+        "mp": 90,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 0,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/Attack05.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy026_1",
+          "cost": 4,
+          "goal": "(9, 8)",
+          "kind": "move",
+          "path": [
+            "(7, 10)",
+            "(7, 9)",
+            "(7, 8)",
+            "(8, 8)"
+          ],
+          "purpose": "pursuit",
+          "route_cost": 5,
+          "to": "(8, 8)",
+          "toward": "leonard",
+          "wait_reason": "no_accepted_action",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "native_index": 2,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        },
+        {
+          "actor_id": "enemy026_1",
+          "actual_damage": 13,
+          "affected_targets": [
+            {
+              "actual_damage": 13,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 15.0,
+                  "dex": 12.0,
+                  "live_attack_damage": 21.0,
+                  "live_defense": 22.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 63.0,
+                  "mind": 15.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 10.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 30,
+                "mp": 30,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0
+              },
+              "attacker_id": "enemy026_1",
+              "damage": 13,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 14.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 16.0,
+                  "live_attack_damage": 54.0,
+                  "live_defense": 43.0,
+                  "live_hit_ratio": 98.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 8.0,
+                  "resist_by_type": {
+                    "0": 16.0,
+                    "1": 14.0,
+                    "2": 13.0,
+                    "3": 16.0,
+                    "4": 12.0
+                  },
+                  "str": 16.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 400,
+                "level": 1.0,
+                "max_hp": 400,
+                "max_mp": 0.0,
+                "mp": 0.0,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0
+              },
+              "defender_hp_after": 387,
+              "defender_hp_before": 400,
+              "defender_id": "leonard",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 13,
+                "draws": [
+                  {
+                    "bound": 6,
+                    "value": 4
+                  },
+                  {
+                    "bound": 3,
+                    "value": 0
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 11,
+                "source": "0x40a5d0",
+                "subtotal": 11,
+                "target_level": 1
+              },
+              "formula_source": "0x40a7b0_proc0_and_0x40ab55_hp_cap",
+              "hit": true,
+              "magic_key": "wind",
+              "magic_name": "風刃",
+              "native_contribution": 13,
+              "native_damage_roll": {
+                "hit_bonus_after": 0,
+                "hit_check_passed": true,
+                "hit_rate": 96,
+                "hit_roll": 11,
+                "sampled": 17,
+                "value": 13
+              },
+              "resource_payment": {
+                "after": 22,
+                "amount": 8,
+                "before": 30,
+                "native_affordable": true,
+                "native_required": 8,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicAIR:magicCode01",
+              "status_effects": []
+            }
+          ],
+          "attacker_id": "enemy026_1",
+          "cast_center": "(11, 9)",
+          "defender_hp_after": 387,
+          "defender_hp_before": 400,
+          "defender_id": "leonard",
+          "kind": "move_then_attack",
+          "magic_key": "wind",
+          "path": [
+            "(8, 8)",
+            "(8, 7)",
+            "(9, 7)",
+            "(10, 7)"
+          ],
+          "resource_payment": {
+            "after": 22,
+            "amount": 8,
+            "before": 30,
+            "native_affordable": true,
+            "native_required": 8,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicAIR:magicCode01",
+          "target_id": "leonard",
+          "to": "(10, 7)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "lock_check": {
+              "draws": [],
+              "roll": 36,
+              "threshold": 100
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "leonard",
+              "reason": "retained_target",
+              "retained": true,
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 1,
+        "release": 0
+      },
+      "mode": "moving_cast",
+      "next_actor": "enemy023_1",
+      "observations": {
+        "cast_lead": true,
+        "impact": true,
+        "path": true,
+        "target": true
+      },
+      "owner_after": {
+        "actor_id": "026",
+        "coord": "(10, 7)",
+        "hp": 400,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 400,
+        "max_mp": 30,
+        "mp": 22,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "round": 1,
+      "sounds": [
+        "res://content/imported/hsl/shared/interface_audio/confirm.wav",
+        "res://content/imported/hsl/chapter01/audio_normalized/walk0011.wav",
+        "res://content/imported/hsl/shared/interface_audio/cast_magic.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0002.wav",
+        "res://content/imported/hsl/shared/mage_magic/wind0001.wav"
+      ]
+    },
+    {
+      "actions": [
+        {
+          "actor_id": "enemy021_1",
+          "actual_damage": 1,
+          "attacker_id": "enemy021_1",
+          "counter": {},
+          "defender_hp_after": 0,
+          "defender_hp_before": 1,
+          "defender_id": "leonard",
+          "kind": "attack",
+          "path": [],
+          "sequence": 1,
+          "target_id": "leonard",
+          "to": "(8, 8)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "navigation-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 1,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 1,
+                "native_index": 2,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        }
+      ],
+      "cues": {
+        "impact": 1,
+        "release": 1
+      },
+      "mode": "defeat",
+      "observations": {
+        "closing": true,
+        "impact": true
+      },
+      "outcome": "defeat_leonard",
+      "restart": true
+    }
+  ],
+  "support_revalidation": {
+    "failures": [],
+    "fixture": true,
+    "input": "Inherited Viewport mouse/key/scroll events; normal Runtime movement, skill and aftermath clocks",
+    "native_execution": false,
+    "normal_clock": 1.0,
+    "overrides": "Four source-rendered participants plus a controllable initial sentinel; explicit source water grants on 001, synthetic supported growth/100MP, fixed coordinates/speeds and matching three-cell move_point/move_range, low-HP patients and no reinforcements. Actual scene WRD retained. Aid/use ratios100 for reproducible visible success; cure includes two poisoned friends and preserves recipient silence. Next-patient puts the first friend beyond movement+heal reach. Enemy route changes adapted side. Item routes author exactly one medicine241. No combat RNG replacement, result assignment, time acceleration, or default first-battle grants/stock changes.",
+    "real_control_events": true,
+    "routes": [
+      {
+        "action": {
+          "actor_id": "leonard",
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 14.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 16.0,
+                  "live_attack_damage": 54.0,
+                  "live_defense": 43.0,
+                  "live_hit_ratio": 98.0,
+                  "live_magic_attack": 100,
+                  "mind": 20,
+                  "resist_by_type": {
+                    "0": 16.0,
+                    "1": 14.0,
+                    "2": 13.0,
+                    "3": 16.0,
+                    "4": 12.0
+                  },
+                  "str": 16.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 99,
+                "hp": 30.0,
+                "level": 1.0,
+                "max_hp": 30.0,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "leonard",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 100,
+                  "mind": 20,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 99,
+                "hp": 4,
+                "level": 1.0,
+                "max_hp": 100,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 44,
+              "defender_hp_before": 4,
+              "defender_id": "enemy023_1",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 20,
+                "draws": [
+                  {
+                    "bound": 10,
+                    "value": 2
+                  },
+                  {
+                    "bound": 3,
+                    "value": 1
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 11,
+                "source": "0x40a5d0",
+                "subtotal": 12,
+                "target_level": 1
+              },
+              "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+              "healing": 40,
+              "hit": true,
+              "magic_key": "heal",
+              "magic_name": "治癒之水",
+              "native_contribution": 20,
+              "resource_payment": {
+                "after": 94,
+                "amount": 6,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 6,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode06",
+              "support_effects": []
+            }
+          ],
+          "attacker_id": "leonard",
+          "cast_center": "(14, 8)",
+          "defender_hp_after": 44,
+          "defender_hp_before": 4,
+          "defender_id": "enemy023_1",
+          "experience": {
+            "base": 11,
+            "exp_after": 10,
+            "exp_before": 99,
+            "gained": 11,
+            "level_after": 2,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "kind": "move_then_attack",
+          "magic_key": "heal",
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(10, 8)",
+            "(11, 8)"
+          ],
+          "resource_payment": {
+            "after": 94,
+            "amount": 6,
+            "before": 100,
+            "native_affordable": true,
+            "native_required": 6,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicWATER:magicCode06",
+          "target_id": "enemy023_1",
+          "to": "(11, 8)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "review-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 2,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "native_index": 3,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        },
+        "cues": {
+          "impact": 2,
+          "release": 2
+        },
+        "experience_events": [
+          {
+            "base": 11,
+            "exp_after": 10,
+            "exp_before": 99,
+            "gained": 11,
+            "level_after": 2,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          {
+            "base": 14,
+            "exp_after": 13,
+            "exp_before": 99,
+            "gained": 14,
+            "level_after": 2,
+            "level_before": 1,
+            "multiplier": 1
+          }
+        ],
+        "growth": {
+          "exp": 10,
+          "level": 2.0,
+          "pending_points": 5
+        },
+        "mode": "heal_move",
+        "next_actor": "enemy021_2",
+        "observations": {
+          "casting": true,
+          "experience": true,
+          "impact": true,
+          "moving": true
+        },
+        "owner": {
+          "actor_id": "001",
+          "coord": "(11, 8)",
+          "hp": 30,
+          "id": "leonard",
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "max_hp": 31,
+          "max_mp": 118,
+          "mp": 94,
+          "status_counters": {
+            "no_magic": 0.0,
+            "poison": 0.0
+          },
+          "status_flags": 0
+        },
+        "second_receipt": {
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 100,
+                  "mind": 20,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 99,
+                "hp": 44,
+                "level": 1.0,
+                "max_hp": 100,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "enemy023_1",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 15.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 30.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 18.0,
+                  "mind": 10.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 4,
+                "level": 1.0,
+                "max_hp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "defender_hp_after": 39,
+              "defender_hp_before": 4,
+              "defender_id": "enemy021_2",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 17,
+                "draws": [
+                  {
+                    "bound": 8,
+                    "value": 6
+                  },
+                  {
+                    "bound": 4,
+                    "value": 1
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 14,
+                "source": "0x40a5d0",
+                "subtotal": 15,
+                "target_level": 1
+              },
+              "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+              "healing": 35,
+              "hit": true,
+              "magic_key": "heal",
+              "magic_name": "治癒之水",
+              "native_contribution": 17,
+              "resource_payment": {
+                "after": 94,
+                "amount": 6,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 6,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode06",
+              "support_effects": []
+            }
+          ],
+          "attacker_id": "enemy023_1",
+          "cast_center": "(14, 9)",
+          "defender_hp_after": 39,
+          "defender_hp_before": 4,
+          "defender_id": "enemy021_2",
+          "experience": {
+            "base": 14,
+            "exp_after": 13,
+            "exp_before": 99,
+            "gained": 14,
+            "level_after": 2,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "magic_key": "heal",
+          "resource_payment": {
+            "after": 94,
+            "amount": 6,
+            "before": 100,
+            "native_affordable": true,
+            "native_required": 6,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 2,
+          "skill_id": "magic:magicWATER:magicCode06",
+          "navigation": {}
+        },
+        "sounds": {
+          "res://content/imported/hsl/shared/interface_audio/cast_magic.wav": true,
+          "res://content/imported/hsl/chapter01/support_magic/mheal006.wav": true
+        },
+        "turn_index": 3
+      },
+      {
+        "action": {
+          "actor_id": "leonard",
+          "actual_damage": 0,
+          "affected_targets": [
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 14.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 16.0,
+                  "live_attack_damage": 54.0,
+                  "live_defense": 43.0,
+                  "live_hit_ratio": 98.0,
+                  "live_magic_attack": 100,
+                  "mind": 20,
+                  "resist_by_type": {
+                    "0": 16.0,
+                    "1": 14.0,
+                    "2": 13.0,
+                    "3": 16.0,
+                    "4": 12.0
+                  },
+                  "str": 16.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 99,
+                "hp": 30.0,
+                "level": 1.0,
+                "max_hp": 30.0,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "leonard",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 14.0,
+                  "dex": 14.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 36.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 17.0,
+                  "mind": 9.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 4,
+                "level": 1.0,
+                "max_hp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 2,
+                  "poison": 655362
+                },
+                "status_flags": 3
+              },
+              "defender_hp_after": 4,
+              "defender_hp_before": 4,
+              "defender_id": "enemy023_1",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 36,
+                "draws": [
+                  {
+                    "bound": 18,
+                    "value": 5
+                  },
+                  {
+                    "bound": 6,
+                    "value": 3
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 20,
+                "source": "0x40a5d0",
+                "subtotal": 23,
+                "target_level": 1
+              },
+              "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+              "healing": 0,
+              "hit": true,
+              "magic_key": "cure_poison",
+              "magic_name": "驅毒",
+              "native_contribution": 36,
+              "resource_payment": {
+                "after": 96,
+                "amount": 4,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 4,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode05",
+              "support_effects": [
+                {
+                  "after_word": 0,
+                  "before_word": 655362,
+                  "removed": true,
+                  "status": "poison"
+                }
+              ]
+            },
+            {
+              "actual_damage": 0,
+              "attacker_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 14.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 16.0,
+                  "live_attack_damage": 54.0,
+                  "live_defense": 43.0,
+                  "live_hit_ratio": 98.0,
+                  "live_magic_attack": 100,
+                  "mind": 20,
+                  "resist_by_type": {
+                    "0": 16.0,
+                    "1": 14.0,
+                    "2": 13.0,
+                    "3": 16.0,
+                    "4": 12.0
+                  },
+                  "str": 16.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 99,
+                "hp": 30.0,
+                "level": 1.0,
+                "max_hp": 30.0,
+                "max_mp": 100,
+                "mp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 0.0
+                },
+                "status_flags": 0.0
+              },
+              "attacker_id": "leonard",
+              "damage": 0,
+              "defender_before": {
+                "combat_profile": {
+                  "attack_back": 0,
+                  "attack_damagex2": 8.0,
+                  "avoid_hit_ratio": 0.0,
+                  "con": 12.0,
+                  "dex": 15.0,
+                  "live_attack_damage": 45.0,
+                  "live_defense": 30.0,
+                  "live_hit_ratio": 96.0,
+                  "live_magic_attack": 18.0,
+                  "mind": 10.0,
+                  "resist_by_type": {
+                    "0": 0.0,
+                    "1": 0.0,
+                    "2": 0.0,
+                    "3": 0.0,
+                    "4": 0.0
+                  },
+                  "str": 15.0,
+                  "weapon_damage_variance_hi": 0.0,
+                  "weapon_damage_variance_lo": 0.0,
+                  "weapon_magic_attack_type": -1.0
+                },
+                "exp": 0.0,
+                "hp": 4,
+                "level": 1.0,
+                "max_hp": 100,
+                "stamina": 0,
+                "status_counters": {
+                  "no_magic": 0.0,
+                  "poison": 655362
+                },
+                "status_flags": 1
+              },
+              "defender_hp_after": 4,
+              "defender_hp_before": 4,
+              "defender_id": "enemy021_2",
+              "evidence_tier": "static-derived",
+              "experience_basis": {
+                "attacker_level": 1,
+                "contribution": 36,
+                "draws": [
+                  {
+                    "bound": 18,
+                    "value": 14
+                  },
+                  {
+                    "bound": 10,
+                    "value": 1
+                  }
+                ],
+                "kill_chain_before": 0,
+                "kill_exp": 0,
+                "kill_multiplier": 100,
+                "kill_word_after": 0,
+                "killed": false,
+                "kills_added": 0,
+                "points": 34,
+                "source": "0x40a5d0",
+                "subtotal": 35,
+                "target_level": 1
+              },
+              "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+              "healing": 0,
+              "hit": true,
+              "magic_key": "cure_poison",
+              "magic_name": "驅毒",
+              "native_contribution": 36,
+              "resource_payment": {
+                "after": 96,
+                "amount": 4,
+                "before": 100,
+                "native_affordable": true,
+                "native_required": 4,
+                "ok": true,
+                "resource": "mp"
+              },
+              "skill_id": "magic:magicWATER:magicCode05",
+              "support_effects": [
+                {
+                  "after_word": 0,
+                  "before_word": 655362,
+                  "removed": true,
+                  "status": "poison"
+                }
+              ]
+            }
+          ],
+          "attacker_id": "leonard",
+          "cast_center": "(14, 8)",
+          "defender_hp_after": 4,
+          "defender_hp_before": 4,
+          "defender_id": "enemy023_1",
+          "experience": {
+            "base": 54,
+            "exp_after": 53,
+            "exp_before": 99,
+            "gained": 54,
+            "level_after": 2,
+            "level_before": 1,
+            "multiplier": 1
+          },
+          "kind": "move_then_attack",
+          "magic_key": "cure_poison",
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(10, 8)",
+            "(11, 8)"
+          ],
+          "resource_payment": {
+            "after": 96,
+            "amount": 4,
+            "before": 100,
+            "native_affordable": true,
+            "native_required": 4,
+            "ok": true,
+            "resource": "mp"
+          },
+          "sequence": 1,
+          "skill_id": "magic:magicWATER:magicCode05",
+          "target_id": "enemy023_1",
+          "to": "(11, 8)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "review-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 2,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "native_index": 3,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        },
+        "cues": {
+          "impact": 1,
+          "release": 1
+        },
+        "experience_events": [
+          {
+            "base": 54,
+            "exp_after": 53,
+            "exp_before": 99,
+            "gained": 54,
+            "level_after": 2,
+            "level_before": 1,
+            "multiplier": 1
+          }
+        ],
+        "growth": {
+          "exp": 53,
+          "level": 2.0,
+          "pending_points": 5
+        },
+        "mode": "cure_move",
+        "next_actor": "enemy023_1",
+        "observations": {
+          "casting": true,
+          "experience": true,
+          "impact": true,
+          "moving": true
+        },
+        "owner": {
+          "actor_id": "001",
+          "coord": "(11, 8)",
+          "hp": 30,
+          "id": "leonard",
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "max_hp": 31,
+          "max_mp": 118,
+          "mp": 96,
+          "status_counters": {
+            "no_magic": 0.0,
+            "poison": 0.0
+          },
+          "status_flags": 0
+        },
+        "second_receipt": {},
+        "sounds": {
+          "res://content/imported/hsl/shared/interface_audio/cast_magic.wav": true,
+          "res://content/imported/hsl/chapter01/support_magic/mheal003.wav": true,
+          "res://content/imported/hsl/chapter01/support_magic/shoot005.wav": true
+        },
+        "turn_index": 2
+      },
+      {
+        "action": {
+          "actor_id": "leonard",
+          "kind": "move_then_item",
+          "path": [
+            "(8, 8)",
+            "(9, 8)",
+            "(10, 8)",
+            "(11, 8)"
+          ],
+          "target_id": "enemy023_1",
+          "to": "(11, 8)",
+          "navigation": {
+            "call_target": {
+              "adoption": {
+                "broadcast": true,
+                "consumed": false,
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "source": "0x43f6c2..0x43f74e",
+                "used": false
+              },
+              "eligibility_policy": "current living enemy, source SID exclusion; stable unit IDs, not reusable native object slots",
+              "pending_target_id": "",
+              "recipient_ids": [
+                "enemy023_1",
+                "review-initial"
+              ]
+            },
+            "target_selection": {
+              "draws": [],
+              "index": 2,
+              "previous_target_id": "",
+              "reason": "new_target",
+              "retained": false,
+              "selection": {
+                "draws": [],
+                "evidence_tier": "static-derived",
+                "index": 2,
+                "native_index": 3,
+                "ok": true,
+                "source": "0x40bb80"
+              },
+              "source": "original_ai_navigation",
+              "wait": false,
+              "wait_remaining": 0
+            }
+          }
+        },
+        "cues": {
+          "impact": 0,
+          "release": 0
+        },
+        "experience_events": [],
+        "growth": {
+          "exp": 99,
+          "level": 1.0,
+          "pending_points": 0
+        },
+        "mode": "item_move",
+        "next_actor": "enemy023_1",
+        "observations": {
+          "item": true,
+          "moving": true
+        },
+        "owner": {
+          "actor_id": "001",
+          "coord": "(11, 8)",
+          "hp": 30,
+          "id": "leonard",
+          "inventory": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "max_hp": 30.0,
+          "max_mp": 100,
+          "mp": 100,
+          "status_counters": {
+            "no_magic": 0.0,
+            "poison": 0.0
+          },
+          "status_flags": 0
+        },
+        "second_receipt": {},
+        "sounds": {
+          "res://content/imported/hsl/shared/interface_audio/use_item.wav": true
+        },
+        "turn_index": 2
+      }
+    ],
+    "screen": 1,
+    "window_position": "(3260, 622)",
+    "window_size": "(640, 480)"
+  },
+  "processes": [
+    {
+      "overrides": "Source scene WRD and art retained. Synthetic positions/400HP/speeds, two-cell movement (four in moving_cast) and commandable successors. Initial sentinel shares AI side. Source lock100 and aid/use preferences100 only in named cases; no combat RNG override. Area poison/cure explicitly granted to test caster; four recipients on walkable cells around empty (10,9). Detour uses actual blocked (8,9),(8,10),(9,10); unreachable target is in the other real WRD component. Target-death and defeat author a 1HP victim and caster hit_bonus_accum1000; target-death also supplies the existing target lock. Outcomes use the native strike. No artificial wall, result assignment or clock acceleration.",
+      "screen": 1,
+      "window_position": "(3260, 622)",
+      "window_size": "(640, 480)",
+      "time_scale": 1.0
+    },
+    {
+      "overrides": "Source scene WRD and art retained. Synthetic positions/400HP/speeds, two-cell movement (four in moving_cast) and commandable successors. Initial sentinel shares AI side. Source lock100 and aid/use preferences100 only in named cases; no combat RNG override. Area poison/cure explicitly granted to test caster; four recipients on walkable cells around empty (10,9). Detour uses actual blocked (8,9),(8,10),(9,10); unreachable target is in the other real WRD component. Target-death and defeat author a 1HP victim and caster hit_bonus_accum1000; target-death also supplies the existing target lock. Outcomes use the native strike. No artificial wall, result assignment or clock acceleration.",
+      "screen": 1,
+      "window_position": "(3260, 622)",
+      "window_size": "(640, 480)",
+      "time_scale": 1.0
+    }
+  ],
+  "attempts": [
+    {
+      "retained_routes": [
+        "detour",
+        "unreachable",
+        "target_death",
+        "wait",
+        "empty_center",
+        "cure_center",
+        "empty_mp",
+        "silenced",
+        "no_action",
+        "player_center"
+      ],
+      "process_exit": 1,
+      "later_failure": "The eleventh route expected a cast after four points, but occupied-neighbor cost required a later action. Earlier ten routes completed with no named-route failures."
+    },
+    {
+      "retained_routes": [
+        "moving_cast",
+        "defeat"
+      ],
+      "process_exit": 0,
+      "marker": "AI_NAVIGATION_RENDER_PASS"
+    },
+    {
+      "retained_routes": [
+        "heal_move",
+        "cure_move",
+        "item_move"
+      ],
+      "process_exit": 0,
+      "marker": "ALLY_SUPPORT_RENDER_PASS"
+    }
+  ],
+  "defaults": [
+    {
+      "actions": [
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 2
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 3
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 4
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 5
+        },
+        {
+          "action": "wait",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 6
+        },
+        {
+          "action": "move",
+          "cell": [
+            15,
+            12
+          ],
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 7
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 7
+        },
+        {
+          "action": "move",
+          "cell": [
+            14,
+            10
+          ],
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 8
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 8
+        }
+      ],
+      "captured_views": [
+        "status",
+        "map-range",
+        "map-cursor",
+        "map-target",
+        "attacker-shot",
+        "defender-shot"
+      ],
+      "dialogue": [
+        "372",
+        "372",
+        "374",
+        "396",
+        "397",
+        "372",
+        "372",
+        "368",
+        "369",
+        "369",
+        "374",
+        "374",
+        "372",
+        "372",
+        "371"
+      ],
+      "elapsed_seconds": 193.329,
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "outcome": "victory_escape",
+      "player": {
+        "action_ready": true,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(15, 17)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12.0,
+          "attack_damagex2": 14.0,
+          "avoid_hit_ratio": 0.0,
+          "con": 12.0,
+          "dex": 16.0,
+          "live_attack_damage": 54.0,
+          "live_defense": 43.0,
+          "live_hit_ratio": 98.0,
+          "live_magic_attack": 17.0,
+          "mind": 8.0,
+          "resist_by_type": {
+            "0": 16.0,
+            "1": 14.0,
+            "2": 13.0,
+            "3": 16.0,
+            "4": 12.0
+          },
+          "str": 16.0,
+          "weapon_damage_variance_hi": 0.0,
+          "weapon_damage_variance_lo": 0.0,
+          "weapon_magic_attack_type": -1.0
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native 0x448840 unadjusted template attack/defense/hit; PLAYERS str/dex/resists, absent resists modeled as zero. NPC level adjustment unresolved",
+        "coord": "(14, 10)",
+        "defeated": false,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          }
+        ],
+        "exp": 0.0,
+        "grid_coord": "(14, 10)",
+        "growth_profile": {
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_growth_refresh.json",
+          "job_code": 80.0,
+          "model": "native_swordman_v1",
+          "source": {
+            "actor_id": "001",
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "job": "jobSwordMan",
+            "job_code": 80.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 30,
+        "id": "leonard",
+        "inventory": [
+          241,
+          241,
+          241,
+          246,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 0,
+        "kill_exp": 30.0,
+        "level": 1.0,
+        "live_speed": 14.0,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 30.0,
+        "max_mp": 0.0,
+        "move_point": 5.0,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS.TXT move_point=5",
+        "mp": 0.0,
+        "no_attack": false,
+        "pending_stat_points": 0,
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived",
+        "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+        "position_source": {
+          "evef_record_index": 20.0,
+          "object_code": 6.0,
+          "placement_world": [
+            480.0,
+            640.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0,
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      },
+      "policy": "hold",
+      "restart": true,
+      "time_scale": 1.0,
+      "turn": 8,
+      "visual_samples": {
+        "live-cue-cursor": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-range": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-target": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-hurt": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-magic-fire": {
+          "sequence": 11,
+          "turn": 4
+        },
+        "live-magic-wind": {
+          "sequence": 3,
+          "turn": 2
+        },
+        "live-windup": {
+          "sequence": 1,
+          "turn": 2
+        }
+      }
+    },
+    {
+      "actions": [
+        {
+          "action": "move",
+          "cell": [
+            15,
+            13
+          ],
+          "exp": 0.0,
+          "hp": 30.0,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "commit_move",
+          "exp": 0.0,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 0,
+          "turn": 1
+        },
+        {
+          "action": "attack",
+          "exp": 37,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 5,
+          "target": "enemy021_4",
+          "turn": 2
+        },
+        {
+          "action": "move",
+          "cell": [
+            13,
+            10
+          ],
+          "exp": 37,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 5,
+          "turn": 3
+        },
+        {
+          "action": "commit_move",
+          "exp": 37,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 5,
+          "turn": 3
+        },
+        {
+          "action": "attack",
+          "exp": 78,
+          "hp": 30,
+          "level": 1.0,
+          "stamina": 10,
+          "target": "Enemy021_reinforcement_12",
+          "turn": 4
+        },
+        {
+          "action": "attack",
+          "exp": 20,
+          "hp": 5,
+          "level": 2.0,
+          "stamina": 21,
+          "target": "enemy021_5",
+          "turn": 5
+        },
+        {
+          "action": "allocate_growth",
+          "exp": 20,
+          "hp": 5,
+          "level": 2.0,
+          "points": 5,
+          "stamina": 21,
+          "turn": 5
+        }
+      ],
+      "captured_views": [
+        "status",
+        "map-range",
+        "map-cursor",
+        "map-target",
+        "attacker-shot",
+        "defender-shot",
+        "loot"
+      ],
+      "dialogue": [
+        "372",
+        "372",
+        "396",
+        "397",
+        "372",
+        "372",
+        "372",
+        "372",
+        "304"
+      ],
+      "elapsed_seconds": 162.508,
+      "opening": [
+        "363",
+        "364",
+        "365",
+        "366",
+        "367",
+        "364",
+        "1101"
+      ],
+      "outcome": "defeat_leonard",
+      "player": {
+        "action_ready": false,
+        "actor_id": "001",
+        "ai_call_target_id": "",
+        "ai_home_coord": "(15, 17)",
+        "ai_target_id": "",
+        "ai_wait_remaining": 0,
+        "attack_range_evidence": {
+          "actor_template_join": "provisional current roster actor_id to character code; original roster join remains unconfirmed",
+          "evidence_tier": "resource-derived",
+          "source": "PLAYERS.TXT weapon_equip -> ITEM.TXT attack_range -> RANGE.TXT"
+        },
+        "battle_actor_role": "player_controlled",
+        "combat_profile": {
+          "attack_back": 12,
+          "attack_damagex2": 14,
+          "avoid_hit_ratio": 0,
+          "con": 13,
+          "dex": 17,
+          "live_attack_damage": 57,
+          "live_defense": 43,
+          "live_hit_ratio": 98,
+          "live_magic_attack": 18,
+          "mind": 9,
+          "resist_by_type": {
+            "0": 16,
+            "1": 14,
+            "2": 13,
+            "3": 17,
+            "4": 12
+          },
+          "str": 18,
+          "weapon_damage_variance_hi": 0,
+          "weapon_damage_variance_lo": 0,
+          "weapon_magic_attack_type": -1
+        },
+        "combat_stats_evidence_tier": "provisional",
+        "combat_stats_source": "Native 0x448840 unadjusted template attack/defense/hit; PLAYERS str/dex/resists, absent resists modeled as zero. NPC level adjustment unresolved",
+        "coord": "(13, 10)",
+        "defeated": true,
+        "equipment": [
+          {
+            "item_code": 2.0,
+            "name": "闊刃劍",
+            "slot": "weapon"
+          },
+          {
+            "item_code": 153.0,
+            "name": "鐵護輪",
+            "slot": "head"
+          },
+          {
+            "item_code": 125.0,
+            "name": "騎士鎧甲",
+            "slot": "armor"
+          },
+          {
+            "item_code": 181.0,
+            "name": "皮靴",
+            "slot": "foot"
+          }
+        ],
+        "exp": 20,
+        "grid_coord": "(13, 10)",
+        "growth_profile": {
+          "caps": {
+            "con": 94.0,
+            "dex": 88.0,
+            "mind": 80.0,
+            "str": 90.0
+          },
+          "evidence": "docs/evidence_packets/static_reverse/original_growth_refresh.json",
+          "job_code": 80.0,
+          "model": "native_swordman_v1",
+          "source": {
+            "actor_id": "001",
+            "attack_back": 0.0,
+            "attack_damagex2": 14.0,
+            "attack_power": 0.0,
+            "avoid_hit_ratio": 0.0,
+            "base_resist_by_type": {
+              "0": 10.0,
+              "1": 10.0,
+              "2": 10.0,
+              "3": 10.0,
+              "4": 10.0
+            },
+            "defense": 6.0,
+            "has_magic": false,
+            "hit_point": 6.0,
+            "job": "jobSwordMan",
+            "job_code": 80.0,
+            "magic_attack_power": 0.0,
+            "magic_point": 0.0,
+            "speed": 0.0
+          }
+        },
+        "hit_bonus_accum": 0,
+        "hp": 0,
+        "id": "leonard",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "kill_chain_word": 0,
+        "kill_count": 3,
+        "kill_exp": 30.0,
+        "kills": 3,
+        "level": 2.0,
+        "live_speed": 15,
+        "live_speed_evidence_tier": "provisional",
+        "live_speed_source": "Native job/dex, base speed and equipment formula on unadjusted PLAYERS templates; NPC level adjustment remains unresolved",
+        "max_hp": 33,
+        "max_mp": 0,
+        "move_point": 5.0,
+        "move_point_evidence_tier": "static-derived",
+        "move_point_source": "PLAYERS.TXT move_point=5",
+        "mp": 0,
+        "no_attack": false,
+        "pending_stat_points": 0,
+        "player_commandable": true,
+        "position_evidence_tier": "static-derived",
+        "position_note": "PlayerInstall centered placement plus STORY051 (0,-96); opening starts before that displacement",
+        "position_source": {
+          "evef_record_index": 20.0,
+          "object_code": 6.0,
+          "placement_world": [
+            480.0,
+            640.0
+          ]
+        },
+        "speed": 14,
+        "stamina": 0,
+        "status_counters": {
+          "no_magic": 0,
+          "poison": 0
+        },
+        "status_flags": 0,
+        "vitals_evidence_tier": "provisional",
+        "vitals_source": "Native 0x448840 probe on unadjusted PLAYERS template; adopted remake baseline, not original battle-level NPC initialization",
+        "weapon_code": 2.0
+      },
+      "policy": "advance",
+      "restart": true,
+      "time_scale": 1.0,
+      "turn": 5,
+      "visual_samples": {
+        "live-cue-cursor": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-range": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-cue-target": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-hurt": {
+          "sequence": 1,
+          "turn": 2
+        },
+        "live-magic-fire": {
+          "sequence": 7,
+          "turn": 3
+        },
+        "live-windup": {
+          "sequence": 1,
+          "turn": 2
+        }
+      }
+    }
+  ],
+  "images_sha256": {
+    "detour-path.png": "77b4f1aa472203dea3f75897197b6676567a8a316c82630ba692213a54f72512",
+    "unreachable-path.png": "34f2dc319b5ae1a61542d964bb0f80efab7988fc577fe0c5ff2a2b14f4f3d6ff",
+    "target_death-path.png": "fe9d797d3403d11bd84e972d3eadc2079169a231f735c8324186ae30b8fa7d9b",
+    "wait-wait.png": "5c3c85aacad7f54b1df210aed45878285927b84b67bf9d0ae9079f45409d8742",
+    "empty_center-impact.png": "65b617501f14a40b073c54c59a0782e6fb931c601c8dc3257f83bbe82a31e4d4",
+    "cure_center-impact.png": "2f320f779dcd7e5991dd0ba41598fb5aed64ee731edc40a1f3d0945fbb6bcf49",
+    "player_center-preview.png": "eb50d71f29a5fe0d159f047300816e085fd8020f4903620f645f476326b0bb15",
+    "moving_cast-cast-lead.png": "80ab8fab725c36c81fecc8f26df41e23c772616ceecb4672827c06a37e826b65",
+    "defeat-result.png": "6ac98b930be401db19cab6feb122b0aae6945f11cc3f60d35a8918a9b9a1e2db",
+    "default-escape.png": "3603dcc6051bdc4decb3130f16655750920c94aafae132fe562f6883cb106765",
+    "default-defeat.png": "82d2e3db80849b99cf55b98e1b5df2c9a50871d473367f0527af748a229a8fea"
+  },
+  "failures": [],
+  "limits": [
+    "Twelve named navigation routes completed across sequential processes. The first process later failed an obsolete eleventh-route expectation; it is not reported as a whole-process PASS.",
+    "Three moving aid routes were revalidated against the new shared clearance cost.",
+    "Default hold escaped in round8; default advance ended in defeat in round5. Both restarted through real controls.",
+    "Images show Godot outcomes; full original map flags, tie ordering and clocks remain separate."
+  ]
+}

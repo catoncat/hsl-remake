@@ -1,0 +1,1806 @@
+{
+  "schema": "hsl_player_install_native.v1",
+  "native_execution": true,
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "evidence_tier": "static-derived",
+  "sources": [
+    {
+      "level": 2,
+      "member": "@:\\data\\obj-002.obs",
+      "sha256": "b5cb33ef5f7183652b4f81e7bceef646dc5b9a38bbf52bfc8d0a4089e5a6432c",
+      "objects": [
+        {
+          "obj_code": "6",
+          "obj_name": "雷歐納德",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\001-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "0"
+        },
+        {
+          "obj_code": "7",
+          "obj_name": "緹娜",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\002-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "1"
+        },
+        {
+          "obj_code": "8",
+          "obj_name": "琥",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\003-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "2"
+        },
+        {
+          "obj_code": "9",
+          "obj_name": "漢克斯",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\004-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "3"
+        },
+        {
+          "obj_code": "10",
+          "obj_name": "雪拉",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\005-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "4"
+        },
+        {
+          "obj_code": "11",
+          "obj_name": "雷特",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\006-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "5"
+        },
+        {
+          "obj_code": "12",
+          "obj_name": "嚎",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\007-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "6"
+        },
+        {
+          "obj_code": "13",
+          "obj_name": "咕嚕",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\008-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "7"
+        },
+        {
+          "obj_code": "14",
+          "obj_name": "克羅蒂",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\009-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "8"
+        }
+      ]
+    },
+    {
+      "level": 12,
+      "member": "@:\\data\\obj-012.obs",
+      "sha256": "5aa09ad73581c837209ab891beb6ec4fe3fa079f65cc70aa267c5b1c4b113df6",
+      "objects": [
+        {
+          "obj_code": "6",
+          "obj_name": "雷歐納德",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\001-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "0"
+        },
+        {
+          "obj_code": "7",
+          "obj_name": "緹娜",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\002-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "1"
+        },
+        {
+          "obj_code": "8",
+          "obj_name": "琥",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\003-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "2"
+        },
+        {
+          "obj_code": "9",
+          "obj_name": "漢克斯",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\004-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "3"
+        },
+        {
+          "obj_code": "10",
+          "obj_name": "雪拉",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\005-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "4"
+        },
+        {
+          "obj_code": "11",
+          "obj_name": "雷特",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\006-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "5"
+        },
+        {
+          "obj_code": "12",
+          "obj_name": "嚎",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\007-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "6"
+        },
+        {
+          "obj_code": "13",
+          "obj_name": "咕嚕",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\008-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "7"
+        },
+        {
+          "obj_code": "14",
+          "obj_name": "克羅蒂",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\009-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data9": "8"
+        },
+        {
+          "obj_code": "180",
+          "obj_name": "雷歐納德(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\001-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "0"
+        },
+        {
+          "obj_code": "181",
+          "obj_name": "緹娜(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\002-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "1"
+        },
+        {
+          "obj_code": "182",
+          "obj_name": "琥(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\003-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "2"
+        },
+        {
+          "obj_code": "183",
+          "obj_name": "漢克斯(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\004-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "3"
+        },
+        {
+          "obj_code": "184",
+          "obj_name": "雪拉(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\005-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "4"
+        },
+        {
+          "obj_code": "185",
+          "obj_name": "雷特(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\006-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "5"
+        },
+        {
+          "obj_code": "186",
+          "obj_name": "嚎(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\007-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "6"
+        },
+        {
+          "obj_code": "187",
+          "obj_name": "咕嚕(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\008-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "7"
+        },
+        {
+          "obj_code": "188",
+          "obj_name": "克羅蒂(有才產生)",
+          "obj_ReadShape": "1",
+          "obj_Plane": "planeIcon",
+          "obj_Shape_Name": "SHAPE\\009-00001.SHP",
+          "obj_Shape_Number": "1",
+          "obj_Process_Code": "defProcPlayerInstall",
+          "obj_Data8": "1",
+          "obj_Data9": "8"
+        }
+      ]
+    }
+  ],
+  "dispatch": [
+    {
+      "input": {
+        "slot": 0,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 800,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          800
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 55,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42c700",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 0,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 21,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 800,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 800,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          800
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 800,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 800,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          800
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 2147484448,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 800,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          800
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 47,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 2147484448,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 2147484448,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 801,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          801
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 55,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42c700",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 0,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 21,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 801,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 801,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          801
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 801,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 801,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          801
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 2147484449,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 801,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          801
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 47,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 2147484449,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 2147484449,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 807,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          807
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 55,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42c700",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 0,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 21,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 807,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 807,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          807
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 807,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 807,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          807
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 2147484455,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 807,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          807
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 47,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 2147484455,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 2147484455,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 808,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          808
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 55,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42c700",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 0,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 21,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 808,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 808,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          808
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 808,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 808,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          808
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 2147484456,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 808,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          808
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 47,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 2147484456,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 2147484456,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 819,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          819
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 55,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42c700",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 0,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 21,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 819,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 819,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          819
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 819,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 819,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          819
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 2147484467,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 819,
+        "constructs": true,
+        "constructor_args": [
+          33,
+          -1,
+          819
+        ],
+        "stop_address": "0x407ec0"
+      },
+      "instructions": 47,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0",
+        "0x42cb30",
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 2147484467,
+        "conditional": 1,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 2147484467,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x45e3ed"
+      },
+      "instructions": 22,
+      "normal_return": false,
+      "calls": [
+        "0x42caa0"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    }
+  ],
+  "enable": [
+    {
+      "input": {
+        "slot": 0,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 800,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 16,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30",
+        "0x42c700"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 800,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 800,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 2147484448,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 800,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 801,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 16,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30",
+        "0x42c700"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 801,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 801,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 1,
+        "before": 2147484449,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 801,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 807,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 16,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30",
+        "0x42c700"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 807,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 807,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 7,
+        "before": 2147484455,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 807,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 808,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 16,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30",
+        "0x42c700"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 808,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 808,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 8,
+        "before": 2147484456,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 808,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 819,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 16,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30",
+        "0x42c700"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 819,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 819,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 19,
+        "before": 2147484467,
+        "conditional": 0,
+        "position": [
+          33,
+          -1
+        ],
+        "phase": 0
+      },
+      "entry": "0x42cb30",
+      "native": {
+        "after": 819,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x10000000"
+      },
+      "instructions": 7,
+      "normal_return": true,
+      "calls": [
+        "0x42cb30"
+      ],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    }
+  ],
+  "initialization": [
+    {
+      "input": {
+        "slot": 0,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          0,
+          672
+        ],
+        "phase": 536870912
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x43bf30",
+        "position": [
+          16,
+          688
+        ],
+        "object_mode": 55,
+        "shape_word": 305463295
+      },
+      "instructions": 20,
+      "normal_return": false,
+      "calls": [],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          640,
+          544
+        ],
+        "phase": 536870912
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x43bf30",
+        "position": [
+          656,
+          560
+        ],
+        "object_mode": 55,
+        "shape_word": 305463295
+      },
+      "instructions": 20,
+      "normal_return": false,
+      "calls": [],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          -1,
+          -33
+        ],
+        "phase": 536870912
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x43bf30",
+        "position": [
+          -16,
+          -48
+        ],
+        "object_mode": 55,
+        "shape_word": 305463295
+      },
+      "instructions": 20,
+      "normal_return": false,
+      "calls": [],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    },
+    {
+      "input": {
+        "slot": 0,
+        "before": 0,
+        "conditional": 0,
+        "position": [
+          33,
+          47
+        ],
+        "phase": 536870912
+      },
+      "entry": "0x4080b0",
+      "native": {
+        "after": 0,
+        "constructs": false,
+        "constructor_args": [],
+        "stop_address": "0x43bf30",
+        "position": [
+          48,
+          48
+        ],
+        "object_mode": 55,
+        "shape_word": 305463295
+      },
+      "instructions": 20,
+      "normal_return": false,
+      "calls": [],
+      "rng_unchanged": true,
+      "other_slots_unchanged": true
+    }
+  ],
+  "defaults": [
+    {
+      "junk": 0,
+      "clear_prefix": {
+        "entry": "0x45dd2d",
+        "stop_address": "0x45dd3d",
+        "normal_return": false,
+        "instructions": 78,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "missing_fields_prefix": {
+        "entry": "0x45e0d7",
+        "stop_address": "0x45e11b",
+        "normal_return": false,
+        "instructions": 180,
+        "callees": [
+          "0x46dd50",
+          "0x46dd50",
+          "0x46dd50",
+          "0x46dd50"
+        ],
+        "rng_unchanged": true,
+        "eax": 0
+      },
+      "data8": 0,
+      "data9": 0,
+      "boundary": "Two separate native loader segments: clear record, then read absent numeric fields on an empty parsed section; intervening fields and full OBS parsing are not executed."
+    },
+    {
+      "junk": 165,
+      "clear_prefix": {
+        "entry": "0x45dd2d",
+        "stop_address": "0x45dd3d",
+        "normal_return": false,
+        "instructions": 78,
+        "callees": [],
+        "rng_unchanged": true,
+        "eax": 268460032
+      },
+      "missing_fields_prefix": {
+        "entry": "0x45e0d7",
+        "stop_address": "0x45e11b",
+        "normal_return": false,
+        "instructions": 180,
+        "callees": [
+          "0x46dd50",
+          "0x46dd50",
+          "0x46dd50",
+          "0x46dd50"
+        ],
+        "rng_unchanged": true,
+        "eax": 0
+      },
+      "data8": 0,
+      "data9": 0,
+      "boundary": "Two separate native loader segments: clear record, then read absent numeric fields on an empty parsed section; intervening fields and full OBS parsing are not executed."
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x4080b0",
+      "bytes": "8b442408568b742408a90000002074398b86800000008b4e0825ffffffdf83e1e08986800000008b460424e083c11083c0106a015666c74630ffff894604894e08e83a3e030083c4088b96ac00000052e89b49020083c40485c0741c8b4e04508b46085051e8a6fdffff83c40c56e8ca62050083c4045ec38b86a800000085c075308b96ac00000052e8f24902008b86ac00000050e85649020083c40885c074118b4e088b5604505152e861fdffff83c40c56e88562050083c4045ec3",
+      "meaning": "PlayerInstall reads Data9 slot, conditionally enables it when Data8 is zero, then requests actor construction."
+    },
+    {
+      "address": "0x42caa0",
+      "bytes": "8b4424048b048560434c00a900000080740233c0c3",
+      "meaning": "The registered slot getter suppresses bit80000000 entries."
+    },
+    {
+      "address": "0x42cb30",
+      "bytes": "8b4c24048b048d60434c0085c075118d81200300005051e8b4fbffff83c408c325ffff000089048d60434c00c3",
+      "meaning": "Enable initializes an empty slot as800+slot or preserves its low16bit object code."
+    },
+    {
+      "address": "0x42c700",
+      "bytes": "8b44240483f8147d0b8b4c2408890c8560434c00c3",
+      "meaning": "Store one zero-based registered player slot."
+    },
+    {
+      "address": "0x45dd2d",
+      "bytes": "68b00000006a0053e8d610010083c40c",
+      "meaning": "Before loading object fields, the actual OBS loader clears its176-byte record."
+    },
+    {
+      "address": "0x45e0d7",
+      "bytes": "8b1dd4194a0081c3a8000000ff751053ff75f86a0168d8354a00e8fbfaffff83c4148b1dd4194a0081c3ac000000ff751053ff75f86a0168e2354a00e8d9faffff83c414",
+      "meaning": "OBS Data8 and Data9 numeric fields feed object+a8 and+ac."
+    }
+  ],
+  "anchors_sha256": "ed42ab72d0dc88bc5fd1afe4df27cecaa0ed2d77efab58def79994439ec3dc1b",
+  "limits": [
+    "The slot helper returns normally; callback paths stop before constructor407ec0, object disposal45e3ed or visual init43bf30. No callee is stubbed.",
+    "Synthetic slot values and phase0 isolate the original conditional/unconditional dispatch; no full object installation or scheduler equivalence.",
+    "Data8=0 enables a missing/disabled slot; Data8!=0 requires an already-enabled slot. This does not imply an arbitrary absent party member should be granted.",
+    "Job refresh, player-index template copy, growth, resources and source learning have separate existing proof. Remake atomic event order and persistence remain explicit policies."
+  ]
+}

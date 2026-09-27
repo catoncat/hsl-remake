@@ -1,0 +1,58 @@
+{
+  "$comment": "jevgrep lint 规则：改文档后自检证据用语。命中只是提示，按 hint 复核；不进 verify.sh（需网络与 key）。用法见 docs/external/typesafe/README.md。",
+  "rules": {
+    "parity_without_tier": {
+      "question": "这段是否声称重制版与原版等价、一致、相同或已还原原版行为，却没有写明证据等级（resource-derived / static-derived / runtime-measured / user-confirmed / provisional / negative-evidence）或指向证据包？",
+      "min": 0.8,
+      "files": [
+        "docs/**/*.md",
+        "docs/*.md",
+        "AGENTS.md",
+        "PARALLEL_WORK.md",
+        "CONTEXT.md"
+      ],
+      "hint": "补证据等级并链接证据包，或改写为 provisional 并写明替换证据"
+    },
+    "tests_imply_parity": {
+      "question": "这段是否用测试通过、门禁绿或回归通过来暗示或推断与原版等价？（测试绿只证明当前合同）",
+      "min": 0.8,
+      "files": [
+        "docs/**/*.md",
+        "docs/*.md",
+        "PARALLEL_WORK.md"
+      ],
+      "hint": "把测试结论限定为当前合同成立，原版等价另给证据"
+    },
+    "filename_as_semantics": {
+      "question": "这段是否仅凭文件名、截图名或编号（形如 xxx_0123.png、export-07、批次 B3）就断言游戏规则或角色能力，而没有描述实际观察到的内容、来源帧号或验证方式？",
+      "min": 0.5,
+      "files": [
+        "docs/**/*.md",
+        "docs/*.md"
+      ],
+      "hint": "（弱规则，0.5 即提示）用来源帧号/地址/字段与验证方式表述，不用名字代替语义"
+    },
+    "provisional_without_replacement": {
+      "question": "这段是否把结论标为 provisional 或待定，却没有写明用什么证据可以替换它、以及它不支持哪些结论？",
+      "min": 0.8,
+      "files": [
+        "docs/**/*.md",
+        "docs/*.md"
+      ],
+      "hint": "provisional 必须写替换证据和不支持的结论"
+    },
+    "daily_log_in_entry_doc": {
+      "question": "这段是否是带日期或批次编号的进展日报、接力留言或历史流水（而不是当前能力、边界或 Next steps 的描述）？",
+      "min": 0.85,
+      "files": [
+        "docs/PROJECT.md",
+        "docs/ARCHITECTURE.md",
+        "docs/architecture/*.md",
+        "AGENTS.md",
+        "docs/KNOWLEDGE_INDEX.md",
+        "docs/MECHANICS_EVIDENCE_MATRIX.md"
+      ],
+      "hint": "入口文档只存现行合同；历史流水去协作留言或证据包"
+    }
+  }
+}

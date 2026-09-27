@@ -1,0 +1,1328 @@
+{
+  "schema": "hsl_native_scroll_request.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "entry": "0x43e4a0",
+  "callee": "0x42dc50",
+  "instruction_budget": 512,
+  "cases": [
+    {
+      "viewport_pointer": [
+        9,
+        9
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -32
+      ],
+      "delta": [
+        -12,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        9
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -32
+      ],
+      "delta": [
+        -12,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        10
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -20
+      ],
+      "delta": [
+        -12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        10
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -20
+      ],
+      "delta": [
+        -12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        470
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -20
+      ],
+      "delta": [
+        -12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        470
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -20
+      ],
+      "delta": [
+        -12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        471
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -8
+      ],
+      "delta": [
+        -12,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        471
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -8
+      ],
+      "delta": [
+        -12,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        10,
+        9
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -32
+      ],
+      "delta": [
+        0,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        10,
+        9
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -32
+      ],
+      "delta": [
+        0,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        10,
+        10
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        10,
+        10
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        10,
+        470
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        10,
+        470
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        10,
+        471
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -8
+      ],
+      "delta": [
+        0,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        10,
+        471
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -8
+      ],
+      "delta": [
+        0,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        630,
+        9
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -32
+      ],
+      "delta": [
+        0,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        630,
+        9
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -32
+      ],
+      "delta": [
+        0,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        630,
+        10
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        630,
+        10
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        630,
+        470
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        630,
+        470
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        630,
+        471
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -8
+      ],
+      "delta": [
+        0,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        630,
+        471
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -8
+      ],
+      "delta": [
+        0,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        9
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -32
+      ],
+      "delta": [
+        12,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        9
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -32
+      ],
+      "delta": [
+        12,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        10
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -20
+      ],
+      "delta": [
+        12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        10
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -20
+      ],
+      "delta": [
+        12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        470
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -20
+      ],
+      "delta": [
+        12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        470
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -20
+      ],
+      "delta": [
+        12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        471
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -8
+      ],
+      "delta": [
+        12,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        471
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -8
+      ],
+      "delta": [
+        12,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 0,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 1,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -20
+      ],
+      "delta": [
+        -12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 1,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        88,
+        -20
+      ],
+      "delta": [
+        -12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 2,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -20
+      ],
+      "delta": [
+        12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 2,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        112,
+        -20
+      ],
+      "delta": [
+        12,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 4,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -32
+      ],
+      "delta": [
+        0,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 4,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -32
+      ],
+      "delta": [
+        0,
+        -12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 8,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -8
+      ],
+      "delta": [
+        0,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 8,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -8
+      ],
+      "delta": [
+        0,
+        12
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 15,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 15,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -20
+      ],
+      "delta": [
+        0,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 513,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        76,
+        -20
+      ],
+      "delta": [
+        -24,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 513,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        76,
+        -20
+      ],
+      "delta": [
+        -24,
+        0
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 1028,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -44
+      ],
+      "delta": [
+        0,
+        -24
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        320,
+        240
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 1028,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        100,
+        -44
+      ],
+      "delta": [
+        0,
+        -24
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        471
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 512,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        76,
+        4
+      ],
+      "delta": [
+        -24,
+        24
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        9,
+        471
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 512,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        76,
+        4
+      ],
+      "delta": [
+        -24,
+        24
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        9
+      ],
+      "camera_origin": [
+        0,
+        0
+      ],
+      "input_flags": 1024,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        124,
+        -44
+      ],
+      "delta": [
+        24,
+        -24
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    },
+    {
+      "viewport_pointer": [
+        631,
+        9
+      ],
+      "camera_origin": [
+        96,
+        256
+      ],
+      "input_flags": 1024,
+      "request_before": [
+        100,
+        -20
+      ],
+      "request_after": [
+        124,
+        -44
+      ],
+      "delta": [
+        24,
+        -24
+      ],
+      "returned": true,
+      "camera_origin_unchanged": true
+    }
+  ],
+  "instruction_anchors": [
+    {
+      "address": "0x43e4a0",
+      "bytes": "83ec0ca190634c00c744240001000000f6c4067408c744240002000000538b1d20094c00558b2d1c094c00568b358c1a4c00578b3d901a4c002bf52bfb8bd88be88bc883e30183e50283e10483e008894c24148944241885db750583fe0a7d0c6a006af4e847f7feff83c40885ed750881fe760200007e0c6a006a0ce82ff7feff83c4088b44241485c0750583ff0a7d0c6af46a00e816f7feff83c4088b44241885c0750881ffd60100007e0c6a0c6a00e8faf6feff83c4088b442410488944241075935f5e5d5b83c40cc3"
+    },
+    {
+      "address": "0x42dc50",
+      "bytes": "8b4424048b0d981b4c0003c8a19c1b4c00890d981b4c008b4c240803c1a39c1b4c00c3"
+    }
+  ],
+  "limits": [
+    "Both request functions return normally; synthetic cursor, origin, flags and accumulated requests.",
+    "Strict x<10 / x>630 / y<10 / y>470 for the inspected 640x480 path.",
+    "Each triggered axis requests 12; mask 0x600 doubles the loop, physical key meaning not established here.",
+    "Does not consume pending scroll into camera position or prove map-edge clamp/modal gating/tick rate.",
+    "Does not prove every original game screen can be completed with the mouse alone.",
+    "Does not change the remake's keyboard-only camera pan input."
+  ]
+}

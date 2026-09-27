@@ -1,0 +1,2 @@
+# Python tooling dependency used by image/contact-sheet checks.
+Pillow>=10,<13

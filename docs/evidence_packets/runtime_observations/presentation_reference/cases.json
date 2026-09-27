@@ -1,0 +1,345 @@
+{
+  "schema": "hsl_presentation_reference.v1",
+  "scope": "Shared first-battle UI/presentation; not all chapters or all numeric combinations. Missing evidence is explicit.",
+  "cases": [
+    {
+      "id": "menu_hover",
+      "title": "行动菜单 · 悬停及移出",
+      "required_events": [
+        "idle",
+        "hover",
+        "leave"
+      ],
+      "sound_required": false,
+      "verdict": "differences",
+      "review_notes": "源对象 Data3 决定循环/往返；7 次更新换帧与展开插值已对照原函数输出。录像补齐静止/悬停/移出。每秒更新频率仍是独立校准值，不宣称全时钟等价。",
+      "original": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/menu_hover-original.mp4",
+        "sha256": "e80c6bf4b8201ebc038a55e0007a63dc935d06b4a8233cc11f1ac990722d9585",
+        "duration": 10.0,
+        "audio_has_signal": false,
+        "audio_peak_db": -91.0,
+        "events": {
+          "idle": 0,
+          "hover": 2,
+          "leave": 7.5
+        },
+        "precondition": "Original 1.06 first battle, unchanged live menu. Idle/hover/leave visually reviewed at one-second sample intervals (+/-0.5s); frame-loop update counts are separately checked against native helpers.",
+        "provenance": {
+          "path": "ignored/presentation-reference/resumed/original-hover-complete.mp4",
+          "sha256": "16ec0a52be87c538906a6ffddc1cf01a030f289030f5755c312acd7c6d48a2dc",
+          "trim_start": 4,
+          "trim_seconds": 10,
+          "transform": "window chrome removed, 640x480, 60fps; no time stretch"
+        }
+      },
+      "remake": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/remake-menu.mp4",
+        "sha256": "d07ab11ed464a00eabd8141840166f55b529216b13a28597a72ebd01a869a114",
+        "duration": 8.883333,
+        "audio_has_signal": false,
+        "audio_peak_db": -91.0,
+        "events": {
+          "after_both": 6.01666666666667,
+          "after_move": 4.0,
+          "hover": 0.983333333333333,
+          "idle": 0.0,
+          "leave": 3.0
+        },
+        "precondition": "Controlled current Godot Movie Maker fixture; real Control input events for items/growth, 60fps simulation time; not a natural playthrough or measured runtime performance."
+      }
+    },
+    {
+      "id": "menu_after_move",
+      "title": "行动菜单 · 移动后重排",
+      "required_events": [
+        "after_move"
+      ],
+      "sound_required": false,
+      "verdict": "differences",
+      "review_notes": "原版五项重排；现已使用 EXE 整数位置表、66/72 横纵半径、-28 中心偏移和原函数展开步进，不再用浮点正圆手调。边缘最大悬停/文字收纳属于重制可用性处理。",
+      "original": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/original-five-menu.mp4",
+        "sha256": "bb761e167dff90408040697dead100fc8110ca5be97e113ebb982c5ed86d5b91",
+        "duration": 4.0,
+        "events": {
+          "after_move": 0
+        },
+        "precondition": "Original 1.06: move committed, five-command menu. This excerpt is the settled layout, not the entire transition.",
+        "audio_has_signal": true,
+        "audio_peak_db": -9.2,
+        "provenance": {
+          "path": "ignored/presentation-reference/original-after-move-20260911-214648/recording.mp4",
+          "sha256": "58c418f8d53785514e7603d3db698f4aaeb0d0703e988b4c93c99f24a86d4ed2",
+          "trim_start": 8,
+          "trim_seconds": 4,
+          "transform": "game-only crop, 640x480, 60fps; no time stretch"
+        }
+      },
+      "remake": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/remake-menu.mp4",
+        "sha256": "d07ab11ed464a00eabd8141840166f55b529216b13a28597a72ebd01a869a114",
+        "duration": 8.883333,
+        "audio_has_signal": false,
+        "audio_peak_db": -91.0,
+        "events": {
+          "after_both": 6.01666666666667,
+          "after_move": 4.0,
+          "hover": 0.983333333333333,
+          "idle": 0.0,
+          "leave": 3.0
+        },
+        "precondition": "Controlled current Godot Movie Maker fixture; real Control input events for items/growth, 60fps simulation time; not a natural playthrough or measured runtime performance."
+      }
+    },
+    {
+      "id": "menu_after_both",
+      "title": "行动菜单 · 移动及攻击耗尽后交接",
+      "required_events": [
+        "after_both"
+      ],
+      "sound_required": false,
+      "verdict": "differences",
+      "review_notes": "新原版样本是非致死攻击，受击者余 2/22 HP 后接续 NPC。重制版由真实 action flags 在完整演出/成长选择之后交接；不再人为构造两按钮界面。两项几何仍单独由原表数学及 helper 测试覆盖，不把它当作此玩家状态。",
+      "remake": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/remake-menu.mp4",
+        "sha256": "d07ab11ed464a00eabd8141840166f55b529216b13a28597a72ebd01a869a114",
+        "duration": 8.883333,
+        "audio_has_signal": false,
+        "audio_peak_db": -91.0,
+        "events": {
+          "after_both": 6.01666666666667,
+          "after_move": 4.0,
+          "hover": 0.983333333333333,
+          "idle": 0.0,
+          "leave": 3.0
+        },
+        "precondition": "Controlled current Godot Movie Maker fixture; real Control input events for items/growth, 60fps simulation time; not a natural playthrough or measured runtime performance."
+      },
+      "original": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/menu_after_both-original.mp4",
+        "sha256": "f97ce2189106c4691ab8942b60fc0fe8daafb947c60c7851f652fb2ba2c04b45",
+        "duration": 10.015792,
+        "audio_has_signal": true,
+        "audio_peak_db": -0.5,
+        "events": {
+          "after_both": 7.8
+        },
+        "precondition": "Original 1.06: Leonard has moved, then attacks a soldier nonlethally (22 -> 2 HP); after the victim shot the next actor takes over without an extra Wait confirmation. No claim about every status/equipment variant.",
+        "provenance": {
+          "path": "ignored/presentation-reference/finish/original-after-both.mp4",
+          "sha256": "74284d51717b5a34b74ac82e907c467e3ee8ac861a1dd38cc5c634f4a37214b7",
+          "trim_start": 0,
+          "trim_seconds": 10,
+          "transform": "window chrome removed, 640x480, 60fps; no time stretch"
+        }
+      }
+    },
+    {
+      "id": "ordinary_hit",
+      "title": "普通攻击 · 完整出招及受击",
+      "required_events": [
+        "begin",
+        "release",
+        "target",
+        "impact",
+        "return"
+      ],
+      "sound_required": true,
+      "verdict": "differences",
+      "review_notes": "双方使用 023→021 普通非致死攻击。阶段现已齐全，数值/等级不同，转场、伤害数字和具体时序仍有差异；没有标记为原版等价。",
+      "original": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/original-hit.mp4",
+        "sha256": "c668a88d2b8933566ef2e3b69373d5ba7429df1b4393a3fabfd4e25488a52b89",
+        "duration": 6.2,
+        "events": {
+          "begin": 0.75,
+          "release": 2.0,
+          "target": 3.25,
+          "impact": 3.75,
+          "return": 5.75
+        },
+        "precondition": "Original 1.06 level51: actor023 attacks actor021, nonlethal; visual event annotations +/-0.125s from 4fps review.",
+        "audio_has_signal": true,
+        "audio_peak_db": -0.0,
+        "provenance": {
+          "path": "ignored/presentation-reference/original-npc-exchange-20260911-213955/recording.mp4",
+          "sha256": "49249fee7a8d54680d204d2582d541d4e27d7cbd6429a2b60f832cc945581040",
+          "trim_start": 13.5,
+          "trim_seconds": 6.2,
+          "transform": "game-only crop, 640x480, 60fps; no time stretch"
+        }
+      },
+      "remake": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/remake-attack.mp4",
+        "sha256": "bd2b2a5ed5b8da0e50fd37687aaf1396d8e02c5a6e6896633d062e24b83a5561",
+        "duration": 6.716667,
+        "audio_has_signal": true,
+        "audio_peak_db": -0.0,
+        "events": {
+          "begin": 0.0,
+          "impact": 2.95,
+          "recovery": 4.48333333333333,
+          "release": 1.36666666666667,
+          "return": 4.88333333333333,
+          "target": 2.66666666666667
+        },
+        "precondition": "Controlled current Godot Movie Maker fixture; real Control input events for items/growth, 60fps simulation time; not a natural playthrough or measured runtime performance."
+      }
+    },
+    {
+      "id": "magic_cast",
+      "title": "魔法 · 施法者与目标分离",
+      "required_events": [
+        "begin",
+        "target_effect",
+        "impact",
+        "return"
+      ],
+      "sound_required": true,
+      "verdict": "unreviewed",
+      "review_notes": "Local target effect does not imply omitted casting. Source Cast_Star and cast sound are available; native full sequence must be recorded.",
+      "remake": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/remake-magic.mp4",
+        "sha256": "f29fa66e1a073eb512337a1c0d55935ead0c8a2180ee2f99c5e951cfacfbcf8e",
+        "duration": 5.8,
+        "audio_has_signal": true,
+        "audio_peak_db": -7.0,
+        "events": {
+          "begin": 0.0,
+          "impact": 2.43333333333333,
+          "return": 3.96666666666667,
+          "target_effect": 1.11666666666667
+        },
+        "precondition": "Controlled current Godot Movie Maker fixture; real Control input events for items/growth, 60fps simulation time; not a natural playthrough or measured runtime performance."
+      }
+    },
+    {
+      "id": "item_panel",
+      "title": "道具界面 · 选择与返回",
+      "required_events": [
+        "open",
+        "select",
+        "return"
+      ],
+      "sound_required": false,
+      "verdict": "differences",
+      "review_notes": "已恢复四命令子菜单→原版式列表→地图对象选择→逐级取消。使用/给予/丢弃通过 PlayLoop 提交并阻止重复/取消后的回调；装备页当前只读既有装备，没有声称完整换装。原版返回录像仍缺，但当前真实输入/规则回归已覆盖此路径。",
+      "remake": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/remake-items.mp4",
+        "sha256": "d0649f06b26b48211b405b440c293f42e3013c7f7a5aee1acefbf305b85b476c",
+        "duration": 7.016667,
+        "audio_has_signal": false,
+        "audio_peak_db": -91.0,
+        "events": {
+          "cancel": 4.13333333333333,
+          "open": 1.03333333333333,
+          "return": 5.18333333333333,
+          "select": 3.1,
+          "submenu": 0.0
+        },
+        "precondition": "Controlled current Godot Movie Maker fixture; real Control input events for items/growth, 60fps simulation time; not a natural playthrough or measured runtime performance."
+      },
+      "original": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/item_panel-original.mp4",
+        "sha256": "5f6891f8ed06d78e59c050b274ebb9ac2bb385c20785d4273f7cd145838712a7",
+        "duration": 6.010188,
+        "audio_has_signal": true,
+        "audio_peak_db": -5.1,
+        "events": {
+          "open": 0,
+          "select": 3.5
+        },
+        "precondition": "Original 1.06 inventory is already open; selecting a potion returns to the map for recipient selection. This excerpt does NOT contain cancellation back to the menu.",
+        "provenance": {
+          "path": "ignored/presentation-reference/resumed/original-item-select.mp4",
+          "sha256": "03c405ea19208ea105d1d350040b5b74875dbd1da8c5faeea26ce50b2b001dca",
+          "trim_start": 0,
+          "trim_seconds": 6,
+          "transform": "window chrome removed, 640x480, 60fps; no time stretch"
+        }
+      }
+    },
+    {
+      "id": "status_panel",
+      "title": "状态界面 · 打开与返回",
+      "required_events": [
+        "open",
+        "return"
+      ],
+      "sound_required": false,
+      "verdict": "differences",
+      "review_notes": "顶端身份/三条原版槽条，左侧九属性、右侧装备和说明已接通。魔击力显示采用已有原函数属性探针，不再错用命中率。字体、金币系统与全装备交互不宣称等价。",
+      "remake": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/remake-status.mp4",
+        "sha256": "9d6076f535a18acbc0c1de0e95444ed130b9ae196e621567352dc2ede375e479",
+        "duration": 3.866667,
+        "audio_has_signal": false,
+        "audio_peak_db": -91.0,
+        "events": {
+          "open": 0.0,
+          "return": 2.03333333333333
+        },
+        "precondition": "Controlled current Godot Movie Maker fixture; real Control input events for items/growth, 60fps simulation time; not a natural playthrough or measured runtime performance."
+      },
+      "original": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/status_panel-original.mp4",
+        "sha256": "83a9a45817532fb87562762451cc532d7a3d488c5cb2fdeb420fed8942114f98",
+        "duration": 6.019083,
+        "audio_has_signal": false,
+        "audio_peak_db": -91.0,
+        "events": {
+          "open": 0,
+          "return": 4
+        },
+        "precondition": "Original 1.06 live player status already open at the beginning; closes back to battle. Opening transition itself is not in this excerpt; annotations +/-0.5s.",
+        "provenance": {
+          "path": "ignored/presentation-reference/resumed/original-status-valid.mp4",
+          "sha256": "7138a686406a0e01ef1524300f0854aaa85ea53e55eb4cb09038d8d4ec622374",
+          "trim_start": 0,
+          "trim_seconds": 6,
+          "transform": "window chrome removed, 640x480, 60fps; no time stretch"
+        }
+      }
+    },
+    {
+      "id": "level_up",
+      "title": "升级 · 分配与确认",
+      "required_events": [
+        "open",
+        "preview",
+        "confirm"
+      ],
+      "sound_required": true,
+      "verdict": "unreviewed",
+      "review_notes": "本轮更新面板并通过真实输入预览/确认；沿用已明确的三项重制成长规则，不冒充原版四维成长。原版侧仍未建立完整等价证据。",
+      "remake": {
+        "path": "docs/evidence_packets/runtime_observations/presentation_reference/media/remake-growth.mp4",
+        "sha256": "ea714c21bfd17bb836453ce52bb71ab22abfa9ce1c47426fcbd062eb729e49a7",
+        "duration": 5.033333,
+        "audio_has_signal": true,
+        "audio_peak_db": -9.8,
+        "events": {
+          "confirm": 3.2,
+          "open": 0.0,
+          "preview": 1.13333333333333,
+          "return": 3.2
+        },
+        "precondition": "Controlled current Godot Movie Maker fixture; real Control input events for items/growth, 60fps simulation time; not a natural playthrough or measured runtime performance."
+      }
+    },
+    {
+      "id": "loot_panel",
+      "title": "战利品 · 取得与离开",
+      "required_events": [
+        "open",
+        "return"
+      ],
+      "sound_required": false,
+      "verdict": "unreviewed",
+      "review_notes": "Newly observed original path after lethal strike; currently not implemented in remake. Must not disappear from the inventory of states."
+    }
+  ],
+  "validation_boundary": "Resource/source/native-helper contracts are now the primary development path. Video coverage remains a separate, honest visual record: missing clips do not prohibit proven source-level work, and source passes do not automatically mark a whole visual case matched. Native magic clock/full growth/loot equivalence remain unclaimed.",
+  "original_executable_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7"
+}

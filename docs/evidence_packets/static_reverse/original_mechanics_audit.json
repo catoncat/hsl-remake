@@ -1,0 +1,123 @@
+{
+  "schema": "hsl_original_mechanics_audit_snapshot.v1",
+  "checked_at_utc": "2026-09-11T17:42:50.260992+00:00",
+  "base_commit": "6e6501fa0363475ab5d92faa089dbf0adc7d196a",
+  "scope": "Read-only inspection of listed files, including live uncommitted presentation changes; not a whole-repository or gameplay parity certification.",
+  "files": [
+    {
+      "path": "game/sim/ProgressionRules.gd",
+      "sha256": "7190d3e69807fab5b61c86860e8ae4e8ba540da162399053d83477b1fbac2161",
+      "reviewed_symbols": [
+        "POINTS_PER_LEVEL",
+        "GROWTH_CHOICES",
+        "resolve_experience",
+        "apply_allocation",
+        "exp_to_next"
+      ]
+    },
+    {
+      "path": "game/battle/scene/BattlePlayLoop.gd",
+      "sha256": "5753d5e3f6d5d8dfbe3e00a8b4b35014b51cd1dd71dba7f05842a49cbdcc77bf",
+      "reviewed_symbols": [
+        "begin_battle",
+        "_finish_ai_or_continue",
+        "_menu_for_unit",
+        "_ai_take_turn",
+        "_try_mage_turn",
+        "use_item",
+        "transfer_inventory_item",
+        "recovery_target_ids"
+      ]
+    },
+    {
+      "path": "game/battle/scene/BattleSceneRuntime.gd",
+      "sha256": "afb9945cb9c0b13c0237003635c5fdcabcbe28ab3844077a5e42ce00bf022104",
+      "reviewed_symbols": [
+        "_process",
+        "_input",
+        "handle_pointer_motion"
+      ]
+    },
+    {
+      "path": "game/battle/runtime/BattleCameraController.gd",
+      "sha256": "2814f62ecc774814b06715d3c4765bbdc812e37558bf989fb6e23b9b36f6dbf8",
+      "reviewed_symbols": [
+        "pan",
+        "clamped_position"
+      ]
+    },
+    {
+      "path": "game/battle/scene/BattleItemPanel.gd",
+      "sha256": "66924364d1b6e9931d7b67a2e5f35681a40cc22beadeb7f2b1430a5eaf037ce0",
+      "reviewed_symbols": [
+        "_show_list",
+        "_select_item"
+      ]
+    },
+    {
+      "path": "game/battle/runtime/BattleScenario.gd",
+      "sha256": "bc0879e7a7341eaf2013f2f91c8971a79017f50bac3fddb18ecab027b6eb392b",
+      "reviewed_symbols": [
+        "units",
+        "command_flags"
+      ]
+    },
+    {
+      "path": "tools/hsl_consumables.py",
+      "sha256": "978f5be9d1a8e56a36b6b126568504b159787b669ca8dd4d539d922f32e4e663",
+      "reviewed_symbols": [
+        "build"
+      ]
+    },
+    {
+      "path": "tools/hsl_progression_data.py",
+      "sha256": "a1542ee8532472c2cb577f0e47194f829ba187a0cd1c48d8e156f4508abefc6d",
+      "reviewed_symbols": [
+        "check_exe"
+      ]
+    },
+    {
+      "path": "content/imported/hsl/global/tables/PLAYERS.TXT",
+      "sha256": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+      "reviewed_symbols": [
+        "item1",
+        "item8",
+        "find_type",
+        "ai_help_otherhp"
+      ]
+    },
+    {
+      "path": "content/generated/hsl/static/hsl01/core_logic.json",
+      "sha256": "8b6600ea0347dce6d109f595e18f16a96182530af43600baec37a24c4c69613a",
+      "reviewed_symbols": [
+        "ai_decision_layers",
+        "bcmd_icon_codes"
+      ]
+    },
+    {
+      "path": "docs/evidence_packets/static_reverse/first_battle_level_selection.md",
+      "sha256": "50bdbe541fa05e2434522820f625b2f005f28211345d7a52722f889ae08a6eba",
+      "reviewed_symbols": []
+    },
+    {
+      "path": "docs/evidence_packets/static_reverse/initial_battle_initiative.md",
+      "sha256": "b5a7f4052b4b413889337124d375be20d37793b27f41df0336ebbbff4eccaa72",
+      "reviewed_symbols": []
+    },
+    {
+      "path": "docs/evidence_packets/static_reverse/original_mechanics_audit_growth.json",
+      "sha256": "081278ef3e923031e9c9f35628e19e896c17ae1f604a2ce6027687c0994c65bb",
+      "reviewed_symbols": []
+    },
+    {
+      "path": "docs/evidence_packets/static_reverse/original_mechanics_audit_scroll.json",
+      "sha256": "490e41cf97d259a006ef55dd7463a039c9708838b1fc57196ce44826fce5ad87",
+      "reviewed_symbols": []
+    }
+  ],
+  "limits": [
+    "Snapshot hashes locate reviewed versions; concurrent edits may legitimately make them stale.",
+    "Native evidence lives in the linked hash-checked probe packets; current-game source hashes are not original-game evidence.",
+    "No claim that all original mechanics have been restored or connected to the live game."
+  ]
+}

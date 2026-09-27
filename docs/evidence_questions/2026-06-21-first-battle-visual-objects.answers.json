@@ -1,0 +1,40 @@
+{
+  "package_id": "2026-06-21-first-battle-visual-objects",
+  "answered_at": "2026-06-21T05:12:52.758Z",
+  "answers": [
+    {
+      "question_id": "tree07_role",
+      "type": "single_choice",
+      "selected": [
+        "blocking_terrain"
+      ],
+      "note": ""
+    },
+    {
+      "question_id": "fire01_role",
+      "type": "single_choice",
+      "selected": [
+        "animated_foreground"
+      ],
+      "note": ""
+    },
+    {
+      "question_id": "bridge_bar_role",
+      "type": "single_choice",
+      "selected": [
+        "required_visual_overlay"
+      ],
+      "note": ""
+    },
+    {
+      "question_id": "actor_sprite_identity_first_battle",
+      "type": "multi_choice",
+      "selected": [
+        "001_leonard_player_commanded",
+        "023_024_ai_allies",
+        "021_026_enemies"
+      ],
+      "note": ""
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 64,
+  "story_scene": {
+    "id": "story_064_camp_shera_joins",
+    "title": "營地・雪拉入隊",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      }
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "the EVEF 夜晚聲 (mapobjPlayBGSound, WAV\\NIGHT001.WAV) is exported as a background_sound placement and its WAV into sounds/; no runtime consumer plays EVEF-placed ambience yet"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "005"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-064.obs 雷歐納德 obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-064.obs 緹娜 obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-064.obs 琥 obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-064.obs 漢克斯 obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived); does not speak in STORY064",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-064.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 64 (winfail007 -> 7,64): the camp after 寧靜之森 (dusk camp alias, provisional):",
+      "雪拉 asks to travel with the party and is accepted; dialogue only, then back to",
+      "the big map at point 7."
+    ],
+    "cast": [
+      "Level 64 (camp after 寧靜之森, story-only): the five-member party; 漢克斯 is silent."
+    ],
+    "speakers": [
+      "Level 64 (camp after 寧靜之森, story-only STORY064, winfail007 -> 7,64): 雪拉 (slot 4)",
+      "asks to travel with the party; 漢克斯 is placed but silent."
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+; 第 200 關「龍脊隘口」勝負與事件腳本 —— 為重製版創作的內容（authored）。
+; 文法與原作 winfail 腳本相同：每個 [win]／[fail]／[event] 段落先寫 code，
+; message = 說話者,訊息編號（-1 = 無說話者的目標板文字），接著先是條件（actCheck…），
+; 條件全部成立後依序執行結果動作。解釋器：game/sim/WinfailScenarioRules.gd。
+#include ACTION.H
+#include TYPE.H
+
+[win]
+code = 0
+message = -1,1101
+action = actCheckEnemyTotalNumber,0
+action = actMessage,SID_雷歐納德,1,1102
+action = actSetNextPlayLevelEvent,200,998
+
+[fail]
+code = 0
+message = SID_雷歐納德,1103
+action = actCheckPlayer,1,SID_雷歐納德
+
+[event]
+code = 0
+message = -1,1104
+action = actCheckRoundNumber,3
+action = actMessage,SID_ENEMY036,1,1105
+action = actInsertObject,obj_Level200_Wolf,608,256
+action = actWalkPrevInsertObject,512,288,4

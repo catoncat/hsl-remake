@@ -1,0 +1,662 @@
+{
+  "schema": "hsl_native_level_selection.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "players_sha256": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+  "entry": "0x40e870",
+  "samples": [
+    {
+      "actor": "021",
+      "party_level": 1,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [
+        2,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "021",
+      "party_level": 1,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [
+        2,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 2,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "021",
+      "party_level": 1,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "021",
+      "party_level": 1,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "021",
+      "party_level": 2,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [
+        2,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 2,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "021",
+      "party_level": 2,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [
+        2,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 3,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "021",
+      "party_level": 2,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "021",
+      "party_level": 2,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "021",
+      "party_level": 5,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [
+        2,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 5,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "021",
+      "party_level": 5,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [
+        2,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 6,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "021",
+      "party_level": 5,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "021",
+      "party_level": 5,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 0,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "023",
+      "party_level": 1,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "023",
+      "party_level": 1,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 3,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "023",
+      "party_level": 1,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "023",
+      "party_level": 1,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "023",
+      "party_level": 2,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "023",
+      "party_level": 2,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 4,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "023",
+      "party_level": 2,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "023",
+      "party_level": 2,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "023",
+      "party_level": 5,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [
+        4,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 3,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "023",
+      "party_level": 5,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [
+        4,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 7,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "023",
+      "party_level": 5,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "023",
+      "party_level": 5,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 18,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "024",
+      "party_level": 1,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "024",
+      "party_level": 1,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 3,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "024",
+      "party_level": 1,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "024",
+      "party_level": 1,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "024",
+      "party_level": 2,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "024",
+      "party_level": 2,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 4,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "024",
+      "party_level": 2,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "024",
+      "party_level": 2,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "024",
+      "party_level": 5,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [
+        4,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 3,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "024",
+      "party_level": 5,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [
+        4,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 7,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "024",
+      "party_level": 5,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "024",
+      "party_level": 5,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 24,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "026",
+      "party_level": 1,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "026",
+      "party_level": 1,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        1
+      ],
+      "base_level": 1,
+      "selected_level": 3,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "026",
+      "party_level": 1,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "026",
+      "party_level": 1,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "026",
+      "party_level": 2,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "026",
+      "party_level": 2,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [
+        3,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 4,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "026",
+      "party_level": 2,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "026",
+      "party_level": 2,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "026",
+      "party_level": 5,
+      "object_class": 2,
+      "rng_endpoint": "zero",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [
+        4,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 3,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "026",
+      "party_level": 5,
+      "object_class": 2,
+      "rng_endpoint": "maximum",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [
+        4,
+        2
+      ],
+      "base_level": 1,
+      "selected_level": 7,
+      "stop": "0x40e94a"
+    },
+    {
+      "actor": "026",
+      "party_level": 5,
+      "object_class": 3,
+      "rng_endpoint": "zero",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    },
+    {
+      "actor": "026",
+      "party_level": 5,
+      "object_class": 3,
+      "rng_endpoint": "maximum",
+      "range": 22,
+      "dispersion": 2,
+      "rng_bounds": [],
+      "base_level": 1,
+      "selected_level": 1,
+      "stop": "0x40eb18"
+    }
+  ],
+  "limits": [
+    "Synthetic object classes and a single registered player; not original scenario initialization.",
+    "Controlled RNG endpoints, not a measured distribution or original RNG sequence.",
+    "Stops before growth/stat refresh; no resulting HP, attack or defense claims."
+  ]
+}

@@ -1,0 +1,683 @@
+{
+  "schema": "hsl_campaign.v1",
+  "title": "第一章",
+  "evidence_tier": "provisional",
+  "start_level": "51",
+  "start_movie": "start",
+  "battles": {
+    "1": {
+      "scenario": "res://content/battles/ohm_village_battle.json",
+      "title": "歐姆村"
+    },
+    "2": {
+      "scenario": "res://content/battles/gol_road_battle.json",
+      "title": "戈爾山道"
+    },
+    "3": {
+      "scenario": "res://content/battles/battle_003.json",
+      "title": "盜賊洞窟"
+    },
+    "5": {
+      "scenario": "res://content/battles/battle_005.json",
+      "title": "呼嘯平原"
+    },
+    "6": {
+      "scenario": "res://content/battles/battle_006.json",
+      "title": "席達鎮"
+    },
+    "7": {
+      "scenario": "res://content/battles/battle_007.json",
+      "title": "寧靜之森"
+    },
+    "8": {
+      "scenario": "res://content/battles/story_008.json",
+      "title": "菲納斯河畔",
+      "kind": "story"
+    },
+    "9": {
+      "scenario": "res://content/battles/story_009.json",
+      "title": "廢都　曼多利亞",
+      "kind": "story"
+    },
+    "10": {
+      "scenario": "res://content/battles/battle_010.json",
+      "title": "帕尼西亞城　廢墟"
+    },
+    "12": {
+      "scenario": "res://content/battles/battle_012.json",
+      "title": "巴瀚納海峽"
+    },
+    "13": {
+      "scenario": "res://content/battles/battle_013.json",
+      "title": "龍之息（火山）"
+    },
+    "15": {
+      "scenario": "res://content/battles/battle_015.json",
+      "title": "深淵之沼 · 沼澤魔物"
+    },
+    "17": {
+      "scenario": "res://content/battles/battle_017.json",
+      "title": "艾瓦台地"
+    },
+    "18": {
+      "scenario": "res://content/battles/battle_018.json",
+      "title": "那可那魯邊境 · 邊境之門"
+    },
+    "19": {
+      "scenario": "res://content/battles/battle_019.json",
+      "title": "利魯瑪山地"
+    },
+    "21": {
+      "scenario": "res://content/battles/battle_021.json",
+      "title": "回音之谷"
+    },
+    "22": {
+      "scenario": "res://content/battles/battle_022.json",
+      "title": "尼布魯瀑布"
+    },
+    "24": {
+      "scenario": "res://content/battles/battle_024.json",
+      "title": "哈莫特沙漠"
+    },
+    "26": {
+      "scenario": "res://content/battles/battle_026.json",
+      "title": "亞雷比斯"
+    },
+    "28": {
+      "scenario": "res://content/battles/battle_028.json",
+      "title": "眾神的宮殿遺址"
+    },
+    "29": {
+      "scenario": "res://content/battles/battle_029.json",
+      "title": "約瑟河"
+    },
+    "30": {
+      "scenario": "res://content/battles/battle_030.json",
+      "title": "絕望之谷"
+    },
+    "31": {
+      "scenario": "res://content/battles/battle_031.json",
+      "title": "漆黑之森"
+    },
+    "32": {
+      "scenario": "res://content/battles/battle_032.json",
+      "title": "拉格納沼地"
+    },
+    "33": {
+      "scenario": "res://content/battles/battle_033.json",
+      "title": "黃昏之丘　陰"
+    },
+    "34": {
+      "scenario": "res://content/battles/battle_034.json",
+      "title": "沙羅尼亞近郊"
+    },
+    "36": {
+      "scenario": "res://content/battles/battle_036.json",
+      "title": "薩魯司海岸"
+    },
+    "37": {
+      "scenario": "res://content/battles/battle_037.json",
+      "title": "古代神殿遺跡 · 守護者之戰"
+    },
+    "38": {
+      "scenario": "res://content/battles/battle_038.json",
+      "title": "幽闇墳場"
+    },
+    "39": {
+      "scenario": "res://content/battles/battle_039.json",
+      "title": "黃昏之丘　陽"
+    },
+    "40": {
+      "scenario": "res://content/battles/battle_040.json",
+      "title": "聖靈之森"
+    },
+    "41": {
+      "scenario": "res://content/battles/battle_041.json",
+      "title": "悲嘆之湖"
+    },
+    "43": {
+      "scenario": "res://content/battles/battle_043.json",
+      "title": "大地的裂縫"
+    },
+    "44": {
+      "scenario": "res://content/battles/battle_044.json",
+      "title": "亞修頓大橋"
+    },
+    "45": {
+      "scenario": "res://content/battles/battle_045.json",
+      "title": "克萊恩城"
+    },
+    "55": {
+      "scenario": "res://content/battles/story_055.json",
+      "title": "營地・黃昏",
+      "kind": "story"
+    },
+    "56": {
+      "scenario": "res://content/battles/story_056.json",
+      "title": "營地・清晨",
+      "kind": "story"
+    },
+    "61": {
+      "scenario": "res://content/battles/story_061.json",
+      "title": "營地・漢克斯的報告",
+      "kind": "story"
+    },
+    "62": {
+      "scenario": "res://content/battles/story_062.json",
+      "title": "營地・漢克斯的警告",
+      "kind": "story"
+    },
+    "63": {
+      "scenario": "res://content/battles/story_063.json",
+      "title": "王座廳・密報",
+      "kind": "story"
+    },
+    "64": {
+      "scenario": "res://content/battles/story_064.json",
+      "title": "營地・雪拉入隊",
+      "kind": "story"
+    },
+    "66": {
+      "scenario": "res://content/battles/story_066.json",
+      "title": "營地・廢都之後",
+      "kind": "story"
+    },
+    "67": {
+      "scenario": "res://content/battles/story_067.json",
+      "title": "營地・通行證",
+      "kind": "story"
+    },
+    "68": {
+      "scenario": "res://content/battles/story_068.json",
+      "title": "營地・嚎的問題",
+      "kind": "story"
+    },
+    "69": {
+      "scenario": "res://content/battles/story_069.json",
+      "title": "營地・大陸的真相",
+      "kind": "story"
+    },
+    "70": {
+      "scenario": "res://content/battles/story_070.json",
+      "title": "營地・克萊恩城之前",
+      "kind": "story"
+    },
+    "71": {
+      "scenario": "res://content/battles/story_071.json",
+      "title": "王座廳・克羅蒂的疑問",
+      "kind": "story"
+    },
+    "72": {
+      "scenario": "res://content/battles/story_072.json",
+      "title": "沙羅尼亞・海濱步道",
+      "kind": "story"
+    },
+    "74": {
+      "scenario": "res://content/battles/story_074.json",
+      "title": "斐達克旅館・出發前夜",
+      "kind": "story"
+    },
+    "57": {
+      "scenario": "res://content/battles/story_057.json",
+      "title": "自覺與宿命・塔克斯之死",
+      "kind": "story"
+    },
+    "59": {
+      "scenario": "res://content/battles/battle_059.json",
+      "title": "劫數・地劫神"
+    },
+    "73": {
+      "scenario": "res://content/battles/battle_073.json",
+      "title": "悲嘆之湖・兄弟的抉擇"
+    },
+    "75": {
+      "scenario": "res://content/battles/battle_075.json",
+      "title": "自覺與宿命・塔克斯"
+    },
+    "76": {
+      "scenario": "res://content/battles/battle_076.json",
+      "title": "最終的序曲・妖精王"
+    },
+    "77": {
+      "scenario": "res://content/battles/battle_077.json",
+      "title": "破滅的命運・毀滅天使"
+    },
+    "78": {
+      "scenario": "res://content/battles/battle_078.json",
+      "title": "接觸・妖精王"
+    },
+    "79": {
+      "scenario": "res://content/battles/battle_079.json",
+      "title": "終焉・咕嚕最終型態"
+    },
+    "80": {
+      "scenario": "res://content/battles/battle_080.json",
+      "title": "禁忌之魂・墳場地下"
+    },
+    "81": {
+      "scenario": "res://content/battles/story_081.json",
+      "title": "妖精王的告白",
+      "kind": "story"
+    },
+    "82": {
+      "scenario": "res://content/battles/story_082.json",
+      "title": "破滅的命運・終幕",
+      "kind": "story"
+    },
+    "900": {
+      "scenario": "res://content/battles/battle_900.json",
+      "title": "曼多力亞 · 對峙"
+    },
+    "901": {
+      "scenario": "res://content/battles/battle_901.json",
+      "title": "菲納斯河畔　伏擊"
+    },
+    "902": {
+      "scenario": "res://content/battles/battle_902.json",
+      "title": "艾瓦台地　尋"
+    },
+    "903": {
+      "scenario": "res://content/battles/battle_903.json",
+      "title": "哈莫特沙漠　魔騎士團"
+    },
+    "904": {
+      "scenario": "res://content/battles/battle_904.json",
+      "title": "利魯瑪山地　再訪"
+    },
+    "998": {
+      "scenario": "res://game/title/GameClearScreen.tscn",
+      "title": "幻世錄　完",
+      "kind": "game_clear"
+    },
+    "65": {
+      "scenario": "res://content/battles/story_065.json",
+      "title": "廢都　曼多利亞　村民",
+      "kind": "story"
+    },
+    "51": {
+      "scenario": "res://content/battles/battle_051.json",
+      "title": "棄卒"
+    },
+    "52": {
+      "scenario": "res://content/battles/battle_052.json",
+      "title": "惡夢的終曲"
+    },
+    "53": {
+      "scenario": "res://content/battles/battle_053.json",
+      "title": "逃出克萊恩城",
+      "party": "separate"
+    },
+    "58": {
+      "scenario": "res://content/battles/story_058.json",
+      "title": "沃斯菲塔王座廳",
+      "kind": "story"
+    },
+    "60": {
+      "scenario": "res://content/battles/story_060.json",
+      "title": "王座廳・俘虜",
+      "kind": "story"
+    },
+    "501": {
+      "scenario": "res://content/battles/battle_501.json",
+      "title": "戈爾山道　遭遇戰"
+    },
+    "502": {
+      "scenario": "res://content/battles/battle_502.json",
+      "title": "戈爾山道　遭遇戰"
+    },
+    "503": {
+      "scenario": "res://content/battles/battle_503.json",
+      "title": "戈爾山道　遭遇戰"
+    },
+    "504": {
+      "scenario": "res://content/battles/battle_504.json",
+      "title": "盜賊洞窟　遭遇戰"
+    },
+    "505": {
+      "scenario": "res://content/battles/battle_505.json",
+      "title": "盜賊洞窟　遭遇戰"
+    },
+    "506": {
+      "scenario": "res://content/battles/battle_506.json",
+      "title": "盜賊洞窟　遭遇戰"
+    },
+    "507": {
+      "scenario": "res://content/battles/battle_507.json",
+      "title": "呼嘯平原　遭遇戰"
+    },
+    "508": {
+      "scenario": "res://content/battles/battle_508.json",
+      "title": "呼嘯平原　遭遇戰"
+    },
+    "509": {
+      "scenario": "res://content/battles/battle_509.json",
+      "title": "呼嘯平原　遭遇戰"
+    },
+    "510": {
+      "scenario": "res://content/battles/battle_510.json",
+      "title": "寧靜之森　遭遇戰"
+    },
+    "511": {
+      "scenario": "res://content/battles/battle_511.json",
+      "title": "寧靜之森　遭遇戰"
+    },
+    "512": {
+      "scenario": "res://content/battles/battle_512.json",
+      "title": "寧靜之森　遭遇戰"
+    },
+    "513": {
+      "scenario": "res://content/battles/battle_513.json",
+      "title": "帕尼西雅城  廢墟　遭遇戰"
+    },
+    "514": {
+      "scenario": "res://content/battles/battle_514.json",
+      "title": "帕尼西雅城  廢墟　遭遇戰"
+    },
+    "515": {
+      "scenario": "res://content/battles/battle_515.json",
+      "title": "帕尼西雅城  廢墟　遭遇戰"
+    },
+    "516": {
+      "scenario": "res://content/battles/battle_516.json",
+      "title": "菲納斯河畔　遭遇戰"
+    },
+    "517": {
+      "scenario": "res://content/battles/battle_517.json",
+      "title": "菲納斯河畔　遭遇戰"
+    },
+    "518": {
+      "scenario": "res://content/battles/battle_518.json",
+      "title": "菲納斯河畔　遭遇戰"
+    },
+    "519": {
+      "scenario": "res://content/battles/battle_519.json",
+      "title": "艾瓦台地　遭遇戰"
+    },
+    "520": {
+      "scenario": "res://content/battles/battle_520.json",
+      "title": "艾瓦台地　遭遇戰"
+    },
+    "521": {
+      "scenario": "res://content/battles/battle_521.json",
+      "title": "艾瓦台地　遭遇戰"
+    },
+    "522": {
+      "scenario": "res://content/battles/battle_522.json",
+      "title": "那可那魯邊境　遭遇戰"
+    },
+    "523": {
+      "scenario": "res://content/battles/battle_523.json",
+      "title": "那可那魯邊境　遭遇戰"
+    },
+    "524": {
+      "scenario": "res://content/battles/battle_524.json",
+      "title": "那可那魯邊境　遭遇戰"
+    },
+    "525": {
+      "scenario": "res://content/battles/battle_525.json",
+      "title": "利魯瑪山地　遭遇戰"
+    },
+    "526": {
+      "scenario": "res://content/battles/battle_526.json",
+      "title": "利魯瑪山地　遭遇戰"
+    },
+    "527": {
+      "scenario": "res://content/battles/battle_527.json",
+      "title": "利魯瑪山地　遭遇戰"
+    },
+    "528": {
+      "scenario": "res://content/battles/battle_528.json",
+      "title": "回音之谷　遭遇戰"
+    },
+    "529": {
+      "scenario": "res://content/battles/battle_529.json",
+      "title": "回音之谷　遭遇戰"
+    },
+    "530": {
+      "scenario": "res://content/battles/battle_530.json",
+      "title": "回音之谷　遭遇戰"
+    },
+    "531": {
+      "scenario": "res://content/battles/battle_531.json",
+      "title": "哈莫特沙漠　遭遇戰"
+    },
+    "532": {
+      "scenario": "res://content/battles/battle_532.json",
+      "title": "哈莫特沙漠　遭遇戰"
+    },
+    "533": {
+      "scenario": "res://content/battles/battle_533.json",
+      "title": "哈莫特沙漠　遭遇戰"
+    },
+    "534": {
+      "scenario": "res://content/battles/battle_534.json",
+      "title": "約瑟河　遭遇戰"
+    },
+    "535": {
+      "scenario": "res://content/battles/battle_535.json",
+      "title": "約瑟河　遭遇戰"
+    },
+    "536": {
+      "scenario": "res://content/battles/battle_536.json",
+      "title": "約瑟河　遭遇戰"
+    },
+    "537": {
+      "scenario": "res://content/battles/battle_537.json",
+      "title": "巴瀚納海峽　遭遇戰"
+    },
+    "538": {
+      "scenario": "res://content/battles/battle_538.json",
+      "title": "巴瀚納海峽　遭遇戰"
+    },
+    "539": {
+      "scenario": "res://content/battles/battle_539.json",
+      "title": "巴瀚納海峽　遭遇戰"
+    },
+    "540": {
+      "scenario": "res://content/battles/battle_540.json",
+      "title": "深淵之沼　遭遇戰"
+    },
+    "541": {
+      "scenario": "res://content/battles/battle_541.json",
+      "title": "深淵之沼　遭遇戰"
+    },
+    "542": {
+      "scenario": "res://content/battles/battle_542.json",
+      "title": "深淵之沼　遭遇戰"
+    },
+    "543": {
+      "scenario": "res://content/battles/battle_543.json",
+      "title": "絕望之谷　遭遇戰"
+    },
+    "544": {
+      "scenario": "res://content/battles/battle_544.json",
+      "title": "絕望之谷　遭遇戰"
+    },
+    "545": {
+      "scenario": "res://content/battles/battle_545.json",
+      "title": "絕望之谷　遭遇戰"
+    },
+    "546": {
+      "scenario": "res://content/battles/battle_546.json",
+      "title": "漆黑之森　遭遇戰"
+    },
+    "547": {
+      "scenario": "res://content/battles/battle_547.json",
+      "title": "漆黑之森　遭遇戰"
+    },
+    "548": {
+      "scenario": "res://content/battles/battle_548.json",
+      "title": "漆黑之森　遭遇戰"
+    },
+    "549": {
+      "scenario": "res://content/battles/battle_549.json",
+      "title": "黃昏之丘  陰　遭遇戰"
+    },
+    "550": {
+      "scenario": "res://content/battles/battle_550.json",
+      "title": "黃昏之丘  陰　遭遇戰"
+    },
+    "551": {
+      "scenario": "res://content/battles/battle_551.json",
+      "title": "黃昏之丘  陰　遭遇戰"
+    },
+    "552": {
+      "scenario": "res://content/battles/battle_552.json",
+      "title": "拉格納沼地　遭遇戰"
+    },
+    "553": {
+      "scenario": "res://content/battles/battle_553.json",
+      "title": "拉格納沼地　遭遇戰"
+    },
+    "554": {
+      "scenario": "res://content/battles/battle_554.json",
+      "title": "拉格納沼地　遭遇戰"
+    },
+    "555": {
+      "scenario": "res://content/battles/battle_555.json",
+      "title": "沙羅尼亞近郊　遭遇戰"
+    },
+    "556": {
+      "scenario": "res://content/battles/battle_556.json",
+      "title": "沙羅尼亞近郊　遭遇戰"
+    },
+    "557": {
+      "scenario": "res://content/battles/battle_557.json",
+      "title": "沙羅尼亞近郊　遭遇戰"
+    },
+    "558": {
+      "scenario": "res://content/battles/battle_558.json",
+      "title": "薩魯司海岸　遭遇戰"
+    },
+    "559": {
+      "scenario": "res://content/battles/battle_559.json",
+      "title": "薩魯司海岸　遭遇戰"
+    },
+    "560": {
+      "scenario": "res://content/battles/battle_560.json",
+      "title": "薩魯司海岸　遭遇戰"
+    },
+    "561": {
+      "scenario": "res://content/battles/battle_561.json",
+      "title": "黃昏之丘  陽　遭遇戰"
+    },
+    "562": {
+      "scenario": "res://content/battles/battle_562.json",
+      "title": "黃昏之丘  陽　遭遇戰"
+    },
+    "563": {
+      "scenario": "res://content/battles/battle_563.json",
+      "title": "黃昏之丘  陽　遭遇戰"
+    },
+    "564": {
+      "scenario": "res://content/battles/battle_564.json",
+      "title": "聖靈之森　遭遇戰"
+    },
+    "565": {
+      "scenario": "res://content/battles/battle_565.json",
+      "title": "聖靈之森　遭遇戰"
+    },
+    "566": {
+      "scenario": "res://content/battles/battle_566.json",
+      "title": "聖靈之森　遭遇戰"
+    },
+    "567": {
+      "scenario": "res://content/battles/battle_567.json",
+      "title": "悲嘆之湖　遭遇戰"
+    },
+    "568": {
+      "scenario": "res://content/battles/battle_568.json",
+      "title": "悲嘆之湖　遭遇戰"
+    },
+    "569": {
+      "scenario": "res://content/battles/battle_569.json",
+      "title": "悲嘆之湖　遭遇戰"
+    },
+    "570": {
+      "scenario": "res://content/battles/battle_570.json",
+      "title": "尼布魯瀑布　遭遇戰"
+    },
+    "571": {
+      "scenario": "res://content/battles/battle_571.json",
+      "title": "尼布魯瀑布　遭遇戰"
+    },
+    "572": {
+      "scenario": "res://content/battles/battle_572.json",
+      "title": "尼布魯瀑布　遭遇戰"
+    },
+    "573": {
+      "scenario": "res://content/battles/battle_573.json",
+      "title": "亞修頓大橋　遭遇戰"
+    },
+    "574": {
+      "scenario": "res://content/battles/battle_574.json",
+      "title": "亞修頓大橋　遭遇戰"
+    },
+    "575": {
+      "scenario": "res://content/battles/battle_575.json",
+      "title": "亞修頓大橋　遭遇戰"
+    },
+    "576": {
+      "scenario": "res://content/battles/battle_576.json",
+      "title": "幽闇墳場　遭遇戰"
+    },
+    "577": {
+      "scenario": "res://content/battles/battle_577.json",
+      "title": "幽闇墳場　遭遇戰"
+    },
+    "578": {
+      "scenario": "res://content/battles/battle_578.json",
+      "title": "幽闇墳場　遭遇戰"
+    },
+    "200": {
+      "scenario": "res://content/battles/battle_200.json",
+      "title": "龍脊隘口"
+    }
+  },
+  "world_map": {
+    "scenario": "res://content/world/world_map_scene.json",
+    "title": "大地圖",
+    "kind": "world_map",
+    "point_level_range": [
+      1,
+      45
+    ],
+    "note": "Big-map scene entered after level 1 (歐姆村, bigmap.dat point 1); battles and story scenes pass the world state through with their scripts' town / big-map writes applied. point_level_range: main-range levels 1–45 sit at the bigmap.dat point of the same id (tools/hsl_big_map_flow.py: every N,gameBigMapLevel return and N,5xx,bmpmVisit post-clear write uses the level's own id), so a level in this range whose script sets no next level returns to the map at its own point (WINFAIL001/WINFAIL005 end without one), and actSetNextPlayLevelEvent(N, gameBigMapLevel) returns to point N. Provisional: the level-1 battle is not remade, so its preview card exits here without applying winfail001's outcome."
+  },
+  "carry_policy": {
+    "roles": [
+      "player_controlled"
+    ],
+    "unit_keys": [
+      "level",
+      "exp",
+      "pending_stat_points",
+      "equipment",
+      "weapon_code",
+      "inventory",
+      "kill_count",
+      "permanent_gains",
+      "learned_skills",
+      "job_up_flags",
+      "job_up_target_actor_id",
+      "job_up_history"
+    ],
+    "attribute_keys": [
+      "str",
+      "dex",
+      "mind",
+      "con"
+    ],
+    "loop_keys": [
+      "gold"
+    ],
+    "restore_vitals": true,
+    "note": "Remake campaign policy: the controlled party keeps level, experience, allocated attributes, unspent points, equipment, inventory and gold between battles; HP/MP restore to the refreshed maxima; a carried member enters at 0 ST (original 0x407632) unless the finished level ran actKeepPlayerST (keep_stamina: each record keeps its stamina), while a first-registered member takes its PLAYERS template stamina. Original inter-level persistence is not proven. Entries marked party: separate (level 53, 緹娜) neither receive nor overwrite the carried party; the carry passes through to the next scenario."
+  },
+  "unresolved_semantics": [
+    "Level53 [1,1] enters the playable Ohm Village battle with source003 BowMan and friendly061/062 villagers. The separate-party carry passes through; the registered party and creation cursor continue without importing Tina. Native full dispatcher order and inter-level persistence remain separate from this remake campaign contract.",
+    "original save/continue flow between levels is not restored",
+    "levels 55/56 (after 2), 61 (after 3), 62/63 (after 6) and 64 (after 7) are the post-battle camp / throne-hall story segments the winfail win sections chain into (actSetNextPlayLevelEvent 2,55 → 2,56 → big map; 61,61; 6,62 → 6,63; 7,64); while those battles are unremade they are reached through the opening preview's 略過戰鬥（視為勝利） row (opening.skip_battle), which applies the win section's town / big-map writes but none of the battle's rewards, experience or party changes; 61/62/64 play on level 55's camp map and 63 on level 58's hall by map alias (provisional)",
+    "level 901 is the 菲納斯河畔 ambush that winfail010's victory arms at big-map point 8 (actBMSetPointEvent 8,901,bmpmGeneral); it plays on level 8's map (obj-901.obs 地圖管理員 names SHAPE01\\LEVEL08.SHP, level901.wrd byte-identical to level008.wrd) and its winfail901 victory rewrites 席達鎮's tavern (events 26/27, exec 25) — the chain that later reveals 薛維斯港 — so its preview's 略過戰鬥（視為勝利） row carries those town writes"
+  ]
+}

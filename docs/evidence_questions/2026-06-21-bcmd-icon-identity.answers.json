@@ -1,0 +1,19 @@
+{
+  "package_id": "2026-06-21-bcmd-icon-identity",
+  "answered_at": "2026-06-21T05:31:14.570Z",
+  "answers": [
+    {
+      "question_id": "bcmd_icon_label_corrections",
+      "type": "free_text",
+      "selected": [],
+      "note": "5 好像是治疗动作（不记得是什么） 6 是交换  7 是装备 9 是魔法   14/15 不知道是什么 "
+    }
+  ],
+  "context_notes": [
+    {
+      "source": "user terminal follow-up before answer submission",
+      "tier": "user-hypothesis",
+      "note": "BCMD10/11/12 是一样的，应该是特殊技。文件 hash 也确认三者相同。"
+    }
+  ]
+}

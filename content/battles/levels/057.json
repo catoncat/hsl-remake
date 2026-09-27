@@ -1,0 +1,164 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 57,
+  "story_scene": {
+    "id": "story_057_takusu_farewell",
+    "title": "自覺與宿命・塔克斯之死",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "自覺與宿命",
+      "hint": "終戰路線由 actSetNextPlayLevelGetOverEvent 依戰績（over score／flag）選擇　　空格／點擊：續播結局，或回到大地圖（克萊恩城）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "end_routes": [
+      {
+        "next_level_event": [
+          76,
+          76
+        ],
+        "title": "最終的序曲・妖精王",
+        "over_score_id": 1,
+        "over_flag_condition": "(over_flag & 3) == 0"
+      },
+      {
+        "next_level_event": [
+          77,
+          77
+        ],
+        "title": "破滅的命運・席德爾",
+        "over_score_id": 2,
+        "over_flag_condition": "over_flag & gameoverflagFreeEnemy"
+      },
+      {
+        "next_level_event": [
+          78,
+          78
+        ],
+        "title": "接觸・妖精王",
+        "over_score_id": 3,
+        "over_flag_condition": "over_flag & gameoverflagEnemyJobUp"
+      }
+    ],
+    "end_routes_evidence": {
+      "evidence_tier": "static-derived",
+      "source": "hsl01.exe story interpreter 0x450840 case 0x81 (0x452a1a) -> 0x42c520; scores 0x4c1bdc/0x4c1be0/0x4c1be4, flag 0x4c1bd8",
+      "packet": "docs/evidence_packets/static_reverse/original_ending_dispatch.md"
+    },
+    "notes": [
+      "actEnterStorageWindow opens the hosted between-battle 整理裝備 screen over the carried party and holds the scene until it closes (provisional: the original window's contents are not measured; a carry without a party is only recorded); actKeepPlayerST (recorded as player_stamina_keep) keeps the ST the party entered with into the next level entry (CampaignProgress.start_story_handoff → CampaignCarryRules.pass_level_entry)",
+      "actSetNextPlayLevelGetOverEvent 0 picks the finale from the over-score / over-flag state (actAddOverScore gameoverID1-3 in winfail017 / 021 / 900 / 902 and TOWNDEF 37 / 38 / 185, actSetOverFlag gameoverflagEnemyJobUp in winfail037 event 48 and gameoverflagFreeEnemy in winfail073 選擇二): the dispatch is static-derived (EndingDispatchRules from 0x42c520) and the card shows the finale it picks (opening.end_routes row) beside the plain return to the big map (克萊恩城); the scores a skipped battle would have written arrive only through skip_battle.world_actions of the first win section, and the debug-key override (0x4c1ae8) is not modelled"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "054"
+    ],
+    "speakers": [
+      "009",
+      "054"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY054": "650"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-057.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-057.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-057.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-057.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-057.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-057.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-057.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-057.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-057.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY054": "PLAYERS.TXT character 54 name field = 650 塔克斯 (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 57 (story-only, winfail075 -> 57,57; its own 960x704 shape41\\level57.SHP hall): the dying",
+      "塔克斯 054 apologises to 克羅蒂 and envies 雷歐納德's freedom, then vanishes (actDeleteObject); the",
+      "script opens the storage window, keeps the party's ST and hands over with",
+      "actSetNextPlayLevelGetOverEvent 0 — the finals 76 / 77 / 78 chosen by the over-score dispatch",
+      "(docs/evidence_packets/static_reverse/original_ending_dispatch.md): the card shows the finale",
+      "EndingDispatchRules picks from the campaign's over_score / over_flag, beside the plain return.",
+      "The three finals the handler can return (0x42c520: gameoverID1 -> 76 妖精王 with no",
+      "over flag, gameoverID2 -> 77 席德爾 with gameoverflagFreeEnemy, gameoverID3 -> 78 接觸",
+      "with gameoverflagEnemyJobUp; default 76). The pair is (level, level) because the",
+      "script passes level 0. The runtime picks the row from the world state."
+    ],
+    "cast": [
+      "Level 57 (story-only, winfail075 -> 57,57): 塔克斯 054 dies before the party in the level-57",
+      "hall; 咕嚕 008 is a conditional install (cast like level 12). 塔克斯 and 克羅蒂 speak."
+    ],
+    "speakers": [
+      "Level 57 (story-only, winfail075 -> 57,57): 塔克斯 054 dies in the level-57 hall; 克羅蒂 answers. 咕嚕 is a conditional install."
+    ]
+  }
+}

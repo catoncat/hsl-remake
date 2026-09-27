@@ -1,0 +1,38 @@
+{
+  "failures": [],
+  "records": [
+    {
+      "capture": "01-closing-line",
+      "interaction": "action_menu",
+      "outcome": "victory_escape"
+    },
+    {
+      "capture": "02-result-next-battle",
+      "interaction": "action_menu",
+      "outcome": "victory_escape"
+    },
+    {
+      "capture": "03-next-battle-opening",
+      "interaction": "opening_timeline",
+      "outcome": ""
+    },
+    {
+      "carry_receipt": {
+        "applied_unit_ids": [
+          "leonard"
+        ],
+        "errors": [],
+        "from_scenario_id": "battle_001_cannon_fodder",
+        "loop_keys": [
+          "gold"
+        ],
+        "schema": "hsl_campaign_carry.v1",
+        "skipped_unit_ids": []
+      },
+      "case": "campaign_handoff",
+      "fixture": "victory_escape outcome, level 2 / 150 gold set on the dev first-control seam",
+      "save_path": "user://battle_002_level52.save"
+    }
+  ],
+  "schema": "hsl_campaign_handoff_review.v1"
+}

@@ -1,0 +1,28 @@
+# HSL Original: action menu -> move select -> action menu
+# Coordinates are window-relative, based on the 640x480 game viewport.
+#
+# Precondition:
+# - The game is at the first battle player-turn action menu.
+# - The action menu is expected to be visible during player command choice.
+#
+# Input contract:
+# - Use `menuclick`/`menurclick` for battle command menus.
+# - Do not use rawclick/rawrclick for battle command confirmation; raw input can
+#   move/hover the cursor over icons without being consumed as a button press.
+# - Command confirmation is two-step reliable: first raw `click` to place/hover
+#   selection on the command icon, then `menuclick` the same icon.
+# - Keyboard confirmation is not used for battle commands.
+
+screenshot before_action_menu
+
+# The move command icon center observed in the current p2 capture.
+click 367 175
+wait 1
+menuclick 367 175
+wait 1
+screenshot after_move_command
+
+# Right click returns from move target selection to the action menu.
+menurclick 320 240
+wait 1
+screenshot after_cancel_back

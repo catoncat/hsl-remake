@@ -1,0 +1,936 @@
+{
+  "failures": [],
+  "level": 73,
+  "records": [
+    {
+      "camera": "(528.0, 624.0)",
+      "capture": "00-framed",
+      "motion": false
+    },
+    {
+      "result": {
+        "next": {
+          "carry": {
+            "claim_limit": "Remake campaign policy; original inter-level persistence is not proven.",
+            "evidence_tier": "provisional",
+            "from_outcome": "victory_script",
+            "from_scenario_id": "battle_073_level73",
+            "initialization_rng": 7610133,
+            "loop": {
+              "gold": 0
+            },
+            "restore_vitals": true,
+            "schema": "hsl_campaign_carry.v1",
+            "units": {
+              "claudie": {
+                "actor_id": "009",
+                "attributes": {
+                  "con": 47,
+                  "dex": 35,
+                  "mind": 40,
+                  "str": 45
+                },
+                "equipment": [
+                  {
+                    "item_code": 7.0,
+                    "name": "死靈血刃",
+                    "slot": "weapon"
+                  },
+                  {
+                    "item_code": 161.0,
+                    "name": "精靈頭環",
+                    "slot": "head"
+                  },
+                  {
+                    "item_code": 132.0,
+                    "name": "獄炎之鎧",
+                    "slot": "armor"
+                  },
+                  {
+                    "item_code": 191.0,
+                    "name": "魔將之靴",
+                    "slot": "foot"
+                  },
+                  {
+                    "item_code": 208.0,
+                    "name": "妖精戒指",
+                    "slot": "accessory1"
+                  },
+                  {
+                    "item_code": 217.0,
+                    "name": "銀製髮飾",
+                    "slot": "accessory2"
+                  }
+                ],
+                "exp": 0.0,
+                "inventory": [
+                  241,
+                  241,
+                  247,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "kill_count": 0,
+                "learned_skills": [],
+                "level": 24,
+                "pending_stat_points": 0,
+                "permanent_gains": {
+                  "attack_power": 0,
+                  "defense": 0,
+                  "magic_attack_power": 0,
+                  "resist_0": 0,
+                  "resist_1": 0,
+                  "resist_2": 0,
+                  "resist_3": 0,
+                  "resist_4": 0,
+                  "speed": 0
+                },
+                "weapon_code": 7.0
+              },
+              "hanks": {
+                "actor_id": "004",
+                "attributes": {
+                  "con": 24,
+                  "dex": 24,
+                  "mind": 12,
+                  "str": 22
+                },
+                "equipment": [
+                  {
+                    "item_code": 102.0,
+                    "name": "白金匕首",
+                    "slot": "weapon"
+                  },
+                  {
+                    "item_code": 151.0,
+                    "name": "頭巾",
+                    "slot": "head"
+                  },
+                  {
+                    "item_code": 123.0,
+                    "name": "皮鎧",
+                    "slot": "armor"
+                  },
+                  {
+                    "item_code": 181.0,
+                    "name": "皮靴",
+                    "slot": "foot"
+                  },
+                  {
+                    "item_code": 201.0,
+                    "name": "護身符",
+                    "slot": "accessory1"
+                  }
+                ],
+                "exp": 0.0,
+                "inventory": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "kill_count": 0,
+                "learned_skills": [],
+                "level": 7,
+                "pending_stat_points": 0,
+                "permanent_gains": {
+                  "attack_power": 0,
+                  "defense": 0,
+                  "magic_attack_power": 0,
+                  "resist_0": 0,
+                  "resist_1": 0,
+                  "resist_2": 0,
+                  "resist_3": 0,
+                  "resist_4": 0,
+                  "speed": 0
+                },
+                "weapon_code": 102.0
+              },
+              "howl": {
+                "actor_id": "007",
+                "attributes": {
+                  "con": 40,
+                  "dex": 14,
+                  "mind": 10,
+                  "str": 38
+                },
+                "equipment": [
+                  {
+                    "item_code": 23.0,
+                    "name": "水晶之斧",
+                    "slot": "weapon"
+                  },
+                  {
+                    "item_code": 155.0,
+                    "name": "水晶頭盔",
+                    "slot": "head"
+                  },
+                  {
+                    "item_code": 126.0,
+                    "name": "水晶胸鎧",
+                    "slot": "armor"
+                  },
+                  {
+                    "item_code": 184.0,
+                    "name": "水晶之靴",
+                    "slot": "foot"
+                  }
+                ],
+                "exp": 40.0,
+                "inventory": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "kill_count": 0,
+                "learned_skills": [],
+                "level": 11,
+                "pending_stat_points": 0,
+                "permanent_gains": {
+                  "attack_power": 0,
+                  "defense": 0,
+                  "magic_attack_power": 0,
+                  "resist_0": 0,
+                  "resist_1": 0,
+                  "resist_2": 0,
+                  "resist_3": 0,
+                  "resist_4": 0,
+                  "speed": 0
+                },
+                "weapon_code": 23.0
+              },
+              "hu": {
+                "actor_id": "003",
+                "attributes": {
+                  "con": 20,
+                  "dex": 16,
+                  "mind": 7,
+                  "str": 24
+                },
+                "equipment": [
+                  {
+                    "item_code": 61.0,
+                    "name": "長弓",
+                    "slot": "weapon"
+                  },
+                  {
+                    "item_code": 153.0,
+                    "name": "鐵護輪",
+                    "slot": "head"
+                  },
+                  {
+                    "item_code": 123.0,
+                    "name": "皮鎧",
+                    "slot": "armor"
+                  },
+                  {
+                    "item_code": 181.0,
+                    "name": "皮靴",
+                    "slot": "foot"
+                  }
+                ],
+                "exp": 0.0,
+                "inventory": [
+                  241,
+                  241,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "kill_count": 0,
+                "learned_skills": [],
+                "level": 4,
+                "pending_stat_points": 0,
+                "permanent_gains": {
+                  "attack_power": 0,
+                  "defense": 0,
+                  "magic_attack_power": 0,
+                  "resist_0": 0,
+                  "resist_1": 0,
+                  "resist_2": 0,
+                  "resist_3": 0,
+                  "resist_4": 0,
+                  "speed": 0
+                },
+                "weapon_code": 61.0
+              },
+              "leonard": {
+                "actor_id": "001",
+                "attributes": {
+                  "con": 12,
+                  "dex": 16,
+                  "mind": 8,
+                  "str": 16
+                },
+                "equipment": [
+                  {
+                    "item_code": 2.0,
+                    "name": "闊刃劍",
+                    "slot": "weapon"
+                  },
+                  {
+                    "item_code": 153.0,
+                    "name": "鐵護輪",
+                    "slot": "head"
+                  },
+                  {
+                    "item_code": 125.0,
+                    "name": "騎士鎧甲",
+                    "slot": "armor"
+                  },
+                  {
+                    "item_code": 181.0,
+                    "name": "皮靴",
+                    "slot": "foot"
+                  }
+                ],
+                "exp": 0.0,
+                "inventory": [
+                  241,
+                  241,
+                  241,
+                  246,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "kill_count": 0,
+                "learned_skills": [],
+                "level": 1,
+                "pending_stat_points": 0,
+                "permanent_gains": {
+                  "attack_power": 0,
+                  "defense": 0,
+                  "magic_attack_power": 0,
+                  "resist_0": 0,
+                  "resist_1": 0,
+                  "resist_2": 0,
+                  "resist_3": 0,
+                  "resist_4": 0,
+                  "speed": 0
+                },
+                "weapon_code": 2.0
+              },
+              "rett": {
+                "actor_id": "006",
+                "attributes": {
+                  "con": 34,
+                  "dex": 21,
+                  "mind": 17,
+                  "str": 35
+                },
+                "equipment": [
+                  {
+                    "item_code": 43.0,
+                    "name": "水晶之槍",
+                    "slot": "weapon"
+                  },
+                  {
+                    "item_code": 155.0,
+                    "name": "水晶頭盔",
+                    "slot": "head"
+                  },
+                  {
+                    "item_code": 126.0,
+                    "name": "水晶胸鎧",
+                    "slot": "armor"
+                  },
+                  {
+                    "item_code": 184.0,
+                    "name": "水晶之靴",
+                    "slot": "foot"
+                  },
+                  {
+                    "item_code": 206.0,
+                    "name": "風舞戒指",
+                    "slot": "accessory1"
+                  }
+                ],
+                "exp": 0.0,
+                "inventory": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "kill_count": 0,
+                "learned_skills": [],
+                "level": 12,
+                "pending_stat_points": 0,
+                "permanent_gains": {
+                  "attack_power": 0,
+                  "defense": 0,
+                  "magic_attack_power": 0,
+                  "resist_0": 0,
+                  "resist_1": 0,
+                  "resist_2": 0,
+                  "resist_3": 0,
+                  "resist_4": 0,
+                  "speed": 0
+                },
+                "weapon_code": 43.0
+              },
+              "shera": {
+                "actor_id": "005",
+                "attributes": {
+                  "con": 22,
+                  "dex": 20,
+                  "mind": 25,
+                  "str": 10
+                },
+                "equipment": [
+                  {
+                    "item_code": 82.0,
+                    "name": "錫杖",
+                    "slot": "weapon"
+                  },
+                  {
+                    "item_code": 156.0,
+                    "name": "魔法帽子",
+                    "slot": "head"
+                  },
+                  {
+                    "item_code": 127.0,
+                    "name": "魔道之袍",
+                    "slot": "armor"
+                  },
+                  {
+                    "item_code": 185.0,
+                    "name": "術者之鞋",
+                    "slot": "foot"
+                  },
+                  {
+                    "item_code": 202.0,
+                    "name": "玻璃戒指",
+                    "slot": "accessory1"
+                  }
+                ],
+                "exp": 0.0,
+                "inventory": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "kill_count": 0,
+                "learned_skills": [],
+                "level": 6,
+                "pending_stat_points": 0,
+                "permanent_gains": {
+                  "attack_power": 0,
+                  "defense": 0,
+                  "magic_attack_power": 0,
+                  "resist_0": 0,
+                  "resist_1": 0,
+                  "resist_2": 0,
+                  "resist_3": 0,
+                  "resist_4": 0,
+                  "speed": 0
+                },
+                "weapon_code": 82.0
+              },
+              "tina": {
+                "actor_id": "002",
+                "attributes": {
+                  "con": 15,
+                  "dex": 11,
+                  "mind": 15,
+                  "str": 16
+                },
+                "equipment": [
+                  {
+                    "item_code": 82.0,
+                    "name": "錫杖",
+                    "slot": "weapon"
+                  },
+                  {
+                    "item_code": 152.0,
+                    "name": "皮帽",
+                    "slot": "head"
+                  },
+                  {
+                    "item_code": 122.0,
+                    "name": "袍",
+                    "slot": "armor"
+                  },
+                  {
+                    "item_code": 181.0,
+                    "name": "皮靴",
+                    "slot": "foot"
+                  },
+                  {
+                    "item_code": 201.0,
+                    "name": "護身符",
+                    "slot": "accessory1"
+                  }
+                ],
+                "exp": 0.0,
+                "inventory": [
+                  241,
+                  244,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "kill_count": 0,
+                "learned_skills": [],
+                "level": 2,
+                "pending_stat_points": 0,
+                "permanent_gains": {
+                  "attack_power": 0,
+                  "defense": 0,
+                  "magic_attack_power": 0,
+                  "resist_0": 0,
+                  "resist_1": 0,
+                  "resist_2": 0,
+                  "resist_3": 0,
+                  "resist_4": 0,
+                  "speed": 0
+                },
+                "weapon_code": 82.0
+              }
+            }
+          },
+          "from_scenario_id": "battle_073_level73",
+          "scenario_path": "res://content/world/world_map_scene.json",
+          "schema": "hsl_campaign_progress.v1",
+          "world": {
+            "current_point": 41,
+            "encounter_ratios": {},
+            "over_flag": 0,
+            "over_score": {},
+            "point_events": {},
+            "point_flags": {
+              "1": [
+                "bmpmTown"
+              ],
+              "10": [
+                "bmpmBattle"
+              ],
+              "11": [
+                "bmpmTown",
+                "bmpmHidden"
+              ],
+              "12": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "13": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "14": [
+                "bmpmTown",
+                "bmpmHidden"
+              ],
+              "15": [
+                "bmpmBattle",
+                "bmpmHidden"
+              ],
+              "16": [
+                "bmpmTown",
+                "bmpmHidden"
+              ],
+              "17": [
+                "bmpmGeneral"
+              ],
+              "18": [
+                "bmpmGeneral"
+              ],
+              "19": [
+                "bmpmBattle"
+              ],
+              "2": [
+                "bmpmGeneral"
+              ],
+              "20": [
+                "bmpmTown"
+              ],
+              "21": [
+                "bmpmGeneral"
+              ],
+              "22": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "23": [
+                "bmpmTown"
+              ],
+              "24": [
+                "bmpmGeneral"
+              ],
+              "25": [
+                "bmpmTown",
+                "bmpmHidden"
+              ],
+              "26": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "27": [
+                "bmpmTown",
+                "bmpmHidden"
+              ],
+              "28": [
+                "bmpmBattle",
+                "bmpmHidden"
+              ],
+              "29": [
+                "bmpmBattle"
+              ],
+              "3": [
+                "bmpmGeneral"
+              ],
+              "30": [
+                "bmpmGeneral"
+              ],
+              "31": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "32": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "33": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "34": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "35": [
+                "bmpmTown"
+              ],
+              "36": [
+                "bmpmGeneral"
+              ],
+              "37": [
+                "bmpmGeneral"
+              ],
+              "38": [
+                "bmpmBattle",
+                "bmpmHidden"
+              ],
+              "39": [
+                "bmpmGeneral"
+              ],
+              "4": [
+                "bmpmTown"
+              ],
+              "40": [
+                "bmpmGeneral"
+              ],
+              "41": [
+                "bmpmBattle",
+                "bmpmVisit"
+              ],
+              "42": [
+                "bmpmTown"
+              ],
+              "43": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "44": [
+                "bmpmGeneral",
+                "bmpmHidden"
+              ],
+              "45": [
+                "bmpmTown"
+              ],
+              "5": [
+                "bmpmBattle"
+              ],
+              "6": [
+                "bmpmTown"
+              ],
+              "7": [
+                "bmpmGeneral"
+              ],
+              "8": [
+                "bmpmGeneral"
+              ],
+              "9": [
+                "bmpmTown"
+              ]
+            },
+            "point_modes": {
+              "1": 2,
+              "41": 2
+            },
+            "schema": "hsl_world_state.v1",
+            "secret_man_index": 0,
+            "show_track_points": [],
+            "towns": {
+              "1": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": [
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              },
+              "11": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": []
+                }
+              },
+              "14": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": []
+                }
+              },
+              "16": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": []
+                }
+              },
+              "23": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": []
+                }
+              },
+              "25": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": []
+                }
+              },
+              "27": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": []
+                }
+              },
+              "35": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": []
+                }
+              },
+              "4": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": [
+                    4,
+                    5,
+                    6,
+                    7
+                  ],
+                  "7": [
+                    8,
+                    12,
+                    13,
+                    14
+                  ]
+                }
+              },
+              "42": {
+                "exec_event": 168,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": [
+                    169,
+                    170,
+                    171,
+                    172,
+                    178
+                  ],
+                  "172": [
+                    173,
+                    174,
+                    176,
+                    177
+                  ]
+                }
+              },
+              "6": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": [
+                    16,
+                    17,
+                    18,
+                    20
+                  ],
+                  "20": [
+                    21,
+                    22,
+                    23
+                  ]
+                }
+              },
+              "9": {
+                "exec_event": 0,
+                "exit_exec_event": 0,
+                "secret_appear_ratio": 0,
+                "secret_man": null,
+                "tree": {
+                  "0": []
+                }
+              }
+            },
+            "track_flags": {
+              "1": [],
+              "10": [
+                "bmpmHidden"
+              ],
+              "11": [
+                "bmpmHidden"
+              ],
+              "12": [
+                "bmpmHidden"
+              ],
+              "13": [
+                "bmpmHidden"
+              ],
+              "14": [
+                "bmpmHidden"
+              ],
+              "15": [],
+              "16": [],
+              "17": [],
+              "18": [],
+              "19": [],
+              "2": [],
+              "20": [
+                "bmpmHidden"
+              ],
+              "21": [],
+              "22": [],
+              "23": [
+                "bmpmHidden"
+              ],
+              "24": [
+                "bmpmHidden"
+              ],
+              "25": [
+                "bmpmHidden"
+              ],
+              "26": [
+                "bmpmHidden"
+              ],
+              "27": [],
+              "28": [],
+              "29": [
+                "bmpmHidden"
+              ],
+              "3": [],
+              "30": [
+                "bmpmHidden"
+              ],
+              "31": [
+                "bmpmHidden"
+              ],
+              "32": [
+                "bmpmHidden"
+              ],
+              "33": [
+                "bmpmHidden"
+              ],
+              "34": [
+                "bmpmHidden"
+              ],
+              "35": [],
+              "36": [],
+              "37": [
+                "bmpmHidden"
+              ],
+              "38": [],
+              "39": [],
+              "4": [],
+              "40": [],
+              "41": [],
+              "42": [
+                "bmpmHidden"
+              ],
+              "43": [
+                "bmpmHidden"
+              ],
+              "44": [],
+              "5": [],
+              "6": [],
+              "7": [],
+              "8": [],
+              "9": []
+            },
+            "track_modes": {},
+            "visited_points": [
+              1,
+              41
+            ]
+          }
+        },
+        "outcome": "event_handoff"
+      }
+    }
+  ],
+  "schema": "hsl_battle_review.v1"
+}

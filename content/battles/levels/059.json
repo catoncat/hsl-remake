@@ -1,0 +1,164 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 59,
+  "battle": {
+    "id": "battle_059_level59",
+    "title": "劫數 · 地劫神",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "defeat_boss",
+    "result_labels": {
+      "win_0": "劫數 · 地劫神擊破",
+      "fail_0": "劫數 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 10,
+      "players": 9
+    },
+    "footprint_radius_overrides": {
+      "060": 1
+    },
+    "unresolved_semantics": [
+      "STORY059 replaces the static Enemy060 statue bridge with the source defProcEnemy insertion as PlayLoop unit actor060_1; its standing-only SHAPE\\60-10001 frame is resource-derived and its source move_point is 0.",
+      "WINFAIL059 win_0 checks Enemy060 HP through actCheckPlayerHPLow SID_ENEMY060,1,1,0 before the source dark-screen / movie / game-clear hand-off; the remake keeps this status order and uses the shared battle result path.",
+      "The source actDeletePosObject removes the pre-battle statue presentation after the white-light exchange; the formal unit is the sole combat target, while native object lifetime and movie pacing remain provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_059_doom_god_opening",
+    "title": "劫數・地劫神（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "standing_actor_inserts": {
+      "obj_Story_Level_Enemy60": {
+        "token": "SID_ENEMY060",
+        "unit_id": "actor060_1",
+        "actor_id": "060"
+      }
+    },
+    "end_card": {
+      "title": "劫數",
+      "hint": "戰鬥部分（level 59）尚未重製　　空格／點擊：回到大地圖（克萊恩城）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party (咕嚕 is a conditional install) remains outside this preview opening; formal battle_059 fields the eight carried party members and the standing Enemy060 PlayLoop unit",
+      "obj_Story_Level_Enemy60 (地劫神 060, defProcEnemy) uses the standing-only SHAPE\\60-10001 source frame with no SHAPEDEF walk group; the formal battle binds its insert to PlayLoop unit actor060_1, which stays stationary because the source move_point is 0; 060 speaks through winfail059 (2347 / 2348 / 2349)",
+      "the four actShapeMessage -1,306,<id> lines (2339 / 2341 / 2343 / 2345) have no face shape (-1) and the ??? name 306: the coordinator shows them as faceless dialogue",
+      "actDeletePosObject 1296,528,8,defProcStandObject removes the pre-battle statue presentation after the 白光2; the formal actor is a PlayLoop unit, while the source delete radius and native object lifetime remain provisional; actSetPlayerUndead SID_ENEMY060 is recorded, not applied",
+      "actSetNextPlayLevelEvent 90,998 (winfail059 win, after actDarkScreen and actPlayMovie 140): level998 is the PAK's game-clear credits screen (obj-998.h obj_gameclear*), remade as game/title/GameClearScreen (registered in campaign.json); the film is movie.pak end.ani (content/imported/hsl/movie, actPlayMovie 140 -> end is a provisional reading), played by the skip row before it hands over to that sequence"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "060"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "006",
+      "007",
+      "009",
+      "060"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY060": "655"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-059.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-059.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-059.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-059.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-059.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-059.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-059.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-059.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-059.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY060": "PLAYERS.TXT character 60 name field = 655 地劫神 (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 59 (STORY081 -> 59,59; WORD059 劫數 / DOOM; its own 1632x1280 shape41\\level59.SHP): the sealed",
+      "chamber under the castle — the 不動的魔神 statue (SHAPE\\60-10001) on the dais; the party walks in,",
+      "雷歐納德 strikes it (EFF0013, 白光) and is thrown back, four nameless voices (actShapeMessage -1,306)",
+      "speak, a 白光2 burst replaces the statue with obj_Story_Level_Enemy60 (地劫神 060, the same static shape)",
+      "and a 弱點 weak point. winfail059 win (actDarkScreen, actPlayMovie 140) -> 90,998 game clear."
+    ],
+    "cast": [
+      "Level 59 (地劫神, STORY081 -> 59,59): the party in the sealed chamber; the 魔神 060 is",
+      "inserted by script with the standing-only SHAPE\\60-10001 source frame (no walk group) and",
+      "is a formal PlayLoop enemy, so its standing frame and portrait are part of the battle cast."
+    ],
+    "speakers": [
+      "Level 59 (地劫神 battle, STORY081 -> 59,59): the party in the sealed chamber; the 魔神 060 speaks in the winfail rounds and win section (actShapeMessage -1,306 voices are the nameless 魔神 lines)."
+    ]
+  }
+}

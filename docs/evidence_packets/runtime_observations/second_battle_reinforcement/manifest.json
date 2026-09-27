@@ -1,0 +1,51 @@
+{
+  "failures": [],
+  "records": [
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "00-inserted-at-edges",
+      "motion": true
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "01-walking-in",
+      "motion": true
+    },
+    {
+      "camera": "(320.0, 1040.0)",
+      "capture": "02-arrived",
+      "motion": false
+    },
+    {
+      "case": "second_battle_reinforcement_entrance",
+      "entrances": [
+        {
+          "cell": "(7, 38)",
+          "insert_pixel": "(227, 1356)",
+          "target_world": "(240.0, 1232.0)",
+          "unit_id": "Enemy021_script_0_0"
+        },
+        {
+          "cell": "(12, 38)",
+          "insert_pixel": "(403, 1356)",
+          "target_world": "(400.0, 1232.0)",
+          "unit_id": "Enemy021_script_0_2"
+        },
+        {
+          "cell": "(4, 30)",
+          "insert_pixel": "(-58, 987)",
+          "target_world": "(144.0, 976.0)",
+          "unit_id": "Enemy021_script_0_4"
+        },
+        {
+          "cell": "(14, 30)",
+          "insert_pixel": "(655, 987)",
+          "target_world": "(464.0, 976.0)",
+          "unit_id": "Enemy021_script_0_6"
+        }
+      ],
+      "trigger": "winfail052 event_1 via run_event_hooks + _resolve_outcome"
+    }
+  ],
+  "schema": "hsl_second_battle_reinforcement_review.v1"
+}

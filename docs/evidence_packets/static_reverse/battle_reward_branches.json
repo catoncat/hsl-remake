@@ -1,0 +1,73 @@
+{
+  "schema": "hsl_reward_branches.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "anchors": [
+    {
+      "address": "0x407c76",
+      "bytes": "bf18000000",
+      "claim": "carry starts with threshold 24"
+    },
+    {
+      "address": "0x407c7f",
+      "bytes": "83f8ff740e",
+      "claim": "minus-one skips the random draw"
+    },
+    {
+      "address": "0x407c84",
+      "bytes": "6a65e8f50f0500",
+      "claim": "carry random bound is 101"
+    },
+    {
+      "address": "0x407c8e",
+      "bytes": "3bc77e15",
+      "claim": "accept carry when sample <= threshold"
+    },
+    {
+      "address": "0x407c95",
+      "bytes": "83ff0a7c0383ef06",
+      "claim": "subtract six while threshold >= ten"
+    },
+    {
+      "address": "0x407cab",
+      "bytes": "e880f10200",
+      "claim": "accepted carry goes through inventory insert"
+    },
+    {
+      "address": "0x44f586",
+      "bytes": "e82576ffff",
+      "claim": "drop exclusion predicate is checked first"
+    },
+    {
+      "address": "0x44f5a8",
+      "bytes": "bb08000000",
+      "claim": "scan eight inventory slots"
+    },
+    {
+      "address": "0x44f5b0",
+      "bytes": "8db838010000",
+      "claim": "drop stock is the current actor inventory at +0x138"
+    },
+    {
+      "address": "0x44f5c5",
+      "bytes": "85c07517",
+      "claim": "important items bypass random drop comparison"
+    },
+    {
+      "address": "0x44f5cf",
+      "bytes": "6a648be8e8a8960000",
+      "claim": "ordinary drop uses random bound 100"
+    },
+    {
+      "address": "0x44f5db",
+      "bytes": "403bc57d0b",
+      "claim": "skip when sample + 1 >= get_ratio"
+    },
+    {
+      "address": "0x44f5e0",
+      "bytes": "6a0156e8e8fcffff",
+      "claim": "append one instance of the accepted code"
+    }
+  ],
+  "limits": "Byte anchors, not full-function execution or a native probability distribution. Live draws carry and drops on the global stream (not saved; runtime-measured in battle_reward_inputs.md) and uses controlled-hostile kill eligibility, explicit claims, deferred loot and manual saves. Full original EXP/eligibility, pickup handler and tracked PLAYERS archive mismatch remain unresolved."
+}

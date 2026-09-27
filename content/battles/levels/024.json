@@ -1,0 +1,157 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 24,
+  "battle": {
+    "id": "battle_024_level24",
+    "title": "哈莫特沙漠 · 魔騎士團",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "哈莫特沙漠 · 魔騎士團已擊退",
+      "fail_0": "哈莫特沙漠 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 39,
+      "players": 8
+    },
+    "unresolved_semantics": [
+      "STORY024 opens with seven installed party members against the resource-derived 024/027/030/031/044 field; 咕嚕 008 is an EVEF 有才產生 slot fielded only when the campaign carry holds the member.",
+      "WINFAIL024 stages the 049/053/054 arrivals and uses the 053/054 dialogue chain; the shared Winfail interpreter preserves source action order while native scheduler timing and collision remain provisional.",
+      "The level-24 desert map is resource-derived from the source map binding. Scripted placements on blocked or occupied remake cells use nearest-free placement and retain a provisional note."
+    ]
+  },
+  "story_scene": {
+    "id": "story_024_hamot_desert_opening",
+    "title": "哈莫特沙漠（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "哈莫特沙漠",
+      "hint": "戰鬥部分（level 24）尚未重製　　空格／點擊：回到大地圖（哈莫特沙漠）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the eight controlled slots and the 31 EVEF enemies (captain 024 with 027 / 030 / 031 / 044) have no battle scenario yet (P-024, multi-slot party); the preview shows the EVEF placements and STORY024 walks only",
+      "STORY024 addresses the conditional install(s) 咕嚕 (actWalkDisp SID_咕嚕); with no bound unit their walks are skipped and their lines show with the speaker label only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "024",
+      "027",
+      "030",
+      "031",
+      "044",
+      "049",
+      "053",
+      "054"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "024",
+      "053",
+      "054"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_ENEMY024": "377"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-024.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-024.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-024.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-024.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-024.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-024.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-024.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-024.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); conditional install, left out of the preview",
+    "SID_ENEMY024": "same remake label as levels 51 / 6 (377 重裝兵); PLAYERS.TXT character 24 name field is 306 (???), provisional"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 24 (哈莫特沙漠, bigmap.dat point 24): the eight-slot party (咕嚕 有才產生) walks down from the",
+      "north edge of the 640x960 desert map, the Wosfita captain 024 with 027 / 030 / 031 / 044 troops",
+      "denounces 雷歐納德. actPlayLevelMusic: table 0x477b44 gives level 24 track 19 (as for the",
+      "first battle, level 51).",
+      "level 24. STORY903 is level 24's opening with 雷特's retort added (1628-1632, WORD024 title);",
+      "winfail903 is level 24's body with the 魔騎士團 arrival lines rewritten (1648-1653: 塔克斯 and",
+      "克羅蒂 have not met 雷歐納德 yet) and its events at rounds 10 / 15; win -> 24,gameBigMapLevel",
+      "with point 24 -> 531 / ratio 16.",
+      "STORY903 opens on actPlayLevelMusic; the original resolver 0x42c1c0 returns -1 for any",
+      "level >= 100 (static-derived, original_world_town.md), so the table names no track for",
+      "903 and actPlayLevelMusic changes nothing (original_music.md).",
+      "Back to the big map standing at 哈莫特沙漠 (point 24); the skip_battle row offers",
+      "winfail903's win section (point 24 -> 531 / ratio 16, actSetNextPlayLevelEvent 24,gameBigMapLevel)."
+    ],
+    "cast": [
+      "Level 24 (哈莫特沙漠): the eight-slot party (咕嚕 conditional) against the Wosfita captain 024 with 027 / 030 /",
+      "031 / 044 troops; formal winfail also inserts 049 riders, 克羅蒂 053 and 塔克斯 054."
+    ],
+    "speakers": [
+      "Level 24 (哈莫特沙漠, STORY024 / WINFAIL024): the eight-slot party (咕嚕 有才產生) walks down from the",
+      "north edge; the Wosfita captain 024 denounces 雷歐納德 as a traitor."
+    ]
+  }
+}

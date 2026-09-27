@@ -1,0 +1,233 @@
+{
+  "package_id": "2026-06-21-first-battle-visual-objects",
+  "title": "第一战视觉对象与角色身份复核",
+  "project": "hsl-fork",
+  "created_at": "2026-06-21T00:00:00+08:00",
+  "purpose": "把第一战已提取的底图、stand objects 和角色 sprite 放到同一组问题里，请用户只纠偏 Agent 容易误判的视觉/身份边界。",
+  "evidence_checked": [
+    "content/imported/hsl/chapter01/map_objects.json",
+    "content/imported/hsl/chapter01/shape_preview_index.json",
+    "content/imported/hsl/shared/shape_previews/battle_ui/LEVEL51.SHP.png",
+    "content/imported/hsl/shared/shape_previews/map_object/tree07.SHP.png",
+    "content/imported/hsl/shared/shape_previews/map_object/FIRE01-01.SHP.png",
+    "content/imported/hsl/shared/shape_previews/map_object/bar004a.SHP.png",
+    "content/imported/hsl/shared/shape_previews/map_object/bar004b.SHP.png",
+    "content/imported/hsl/shared/shape_previews/actor_sprite/001-00001.SHP.png",
+    "content/imported/hsl/shared/shape_previews/actor_sprite/021-00001.SHP.png",
+    "content/imported/hsl/shared/shape_previews/actor_sprite/023-00001.SHP.png",
+    "content/imported/hsl/shared/shape_previews/actor_sprite/024-00001.SHP.png",
+    "content/imported/hsl/shared/shape_previews/actor_sprite/026-00001.SHP.png"
+  ],
+  "questions": [
+    {
+      "id": "tree07_role",
+      "type": "single_choice",
+      "prompt": "tree07.SHP 在第一战里应该优先当成哪类对象？",
+      "why_it_matters": "当前 Godot 版本地图少了树这类前景物件；这个选择决定 tree07 先进视觉前景层、移动阻挡层，还是只做背景装饰。",
+      "evidence": [
+        {
+          "label": "底图 LEVEL51",
+          "source": "content/imported/hsl/shared/shape_previews/battle_ui/LEVEL51.SHP.png",
+          "tier": "static-derived"
+        },
+        {
+          "label": "map_objects: 6 instances, role=map_object, process=defProcStandObject",
+          "source": "content/imported/hsl/chapter01/map_objects.json",
+          "tier": "static-derived"
+        }
+      ],
+      "media": [
+        {
+          "label": "完整底图 LEVEL51",
+          "path": "content/imported/hsl/shared/shape_previews/battle_ui/LEVEL51.SHP.png"
+        },
+        {
+          "label": "tree07.SHP preview",
+          "path": "content/imported/hsl/shared/shape_previews/map_object/tree07.SHP.png"
+        }
+      ],
+      "choices": [
+        {
+          "id": "foreground_visual",
+          "label": "前景视觉物件",
+          "description": "应叠在底图上，可能遮住角色，但先不证明阻挡移动。"
+        },
+        {
+          "id": "blocking_terrain",
+          "label": "视觉 + 阻挡",
+          "description": "既应绘制，也很可能影响移动/寻路。"
+        },
+        {
+          "id": "background_only",
+          "label": "背景装饰",
+          "description": "应该融进视觉，不单独参与对象/阻挡逻辑。"
+        },
+        {
+          "id": "needs_more_evidence",
+          "label": "需要继续查",
+          "description": "只看这些图和记忆不足以判断。"
+        }
+      ],
+      "allow_note": true
+    },
+    {
+      "id": "fire01_role",
+      "type": "single_choice",
+      "prompt": "FIRE01-01.SHP 在第一战里更像哪类对象？",
+      "why_it_matters": "火焰可能是静态/动画前景，也可能承担场景气氛或阻挡。这个选择决定它先进入哪一层数据。",
+      "evidence": [
+        {
+          "label": "map_objects: 2 instances, role=map_object, process=defProcStandObject",
+          "source": "content/imported/hsl/chapter01/map_objects.json",
+          "tier": "static-derived"
+        }
+      ],
+      "media": [
+        {
+          "label": "完整底图 LEVEL51",
+          "path": "content/imported/hsl/shared/shape_previews/battle_ui/LEVEL51.SHP.png"
+        },
+        {
+          "label": "FIRE01-01.SHP preview",
+          "path": "content/imported/hsl/shared/shape_previews/map_object/FIRE01-01.SHP.png"
+        }
+      ],
+      "choices": [
+        {
+          "id": "animated_foreground",
+          "label": "动画前景物件",
+          "description": "应作为独立动画/前景对象叠加到底图上。"
+        },
+        {
+          "id": "static_decoration",
+          "label": "静态装饰",
+          "description": "优先按静态视觉对象处理，动画语义以后再查。"
+        },
+        {
+          "id": "blocking_or_hazard",
+          "label": "阻挡/危险物",
+          "description": "可能还影响站位、移动或交互。"
+        },
+        {
+          "id": "needs_more_evidence",
+          "label": "需要继续查",
+          "description": "当前证据不足。"
+        }
+      ],
+      "allow_note": true
+    },
+    {
+      "id": "bridge_bar_role",
+      "type": "single_choice",
+      "prompt": "bar004a/bar004b 这两个桥/木板对象应该怎么处理？",
+      "why_it_matters": "底图里已有桥和道路，但资源里又有两个 stand objects；如果它们是桥面/遮挡补片，Godot 必须叠加，否则地图会少层或错层。",
+      "evidence": [
+        {
+          "label": "map_objects: bar004a and bar004b, role=map_object, process=defProcStandObject",
+          "source": "content/imported/hsl/chapter01/map_objects.json",
+          "tier": "static-derived"
+        }
+      ],
+      "media": [
+        {
+          "label": "完整底图 LEVEL51",
+          "path": "content/imported/hsl/shared/shape_previews/battle_ui/LEVEL51.SHP.png"
+        },
+        {
+          "label": "bar004a.SHP preview",
+          "path": "content/imported/hsl/shared/shape_previews/map_object/bar004a.SHP.png"
+        },
+        {
+          "label": "bar004b.SHP preview",
+          "path": "content/imported/hsl/shared/shape_previews/map_object/bar004b.SHP.png"
+        }
+      ],
+      "choices": [
+        {
+          "id": "required_visual_overlay",
+          "label": "必须叠加",
+          "description": "它们是原版画面缺失层，不加会明显不对。"
+        },
+        {
+          "id": "maybe_overlay_not_sure",
+          "label": "可能叠加",
+          "description": "看起来像桥/木板补片，但还需要坐标或截图确认。"
+        },
+        {
+          "id": "logic_only_or_unused_visual",
+          "label": "不急着画",
+          "description": "可能不是玩家第一眼会在意的视觉层，先等解析坐标/层级。"
+        },
+        {
+          "id": "needs_more_evidence",
+          "label": "需要继续查",
+          "description": "当前证据不足。"
+        }
+      ],
+      "allow_note": true
+    },
+    {
+      "id": "actor_sprite_identity_first_battle",
+      "type": "multi_choice",
+      "prompt": "这些第一战角色 sprite 身份/阵营复核哪些是对的？",
+      "why_it_matters": "资源里很多对象名是 SID_ENEMY* 或 defProcEnemy，之前已经确认不能直接当阵营。这里把用户口述纠偏固化成可追踪证据，避免 Godot 继续把下方友军当敌人。",
+      "evidence": [
+        {
+          "label": "map_objects: actor sprite candidates 001/021/023/024/026",
+          "source": "content/imported/hsl/chapter01/map_objects.json",
+          "tier": "static-derived"
+        },
+        {
+          "label": "prior discussion: Leonard is player-commanded; lower ordinary soldiers/heavy armor are AI-controlled allies; upper soldiers/mages are enemies",
+          "source": "current conversation user-confirmed notes",
+          "tier": "user-confirmed"
+        }
+      ],
+      "media": [
+        {
+          "label": "001-00001 Leonard",
+          "path": "content/imported/hsl/shared/shape_previews/actor_sprite/001-00001.SHP.png"
+        },
+        {
+          "label": "021-00001 candidate",
+          "path": "content/imported/hsl/shared/shape_previews/actor_sprite/021-00001.SHP.png"
+        },
+        {
+          "label": "023-00001 candidate",
+          "path": "content/imported/hsl/shared/shape_previews/actor_sprite/023-00001.SHP.png"
+        },
+        {
+          "label": "024-00001 candidate",
+          "path": "content/imported/hsl/shared/shape_previews/actor_sprite/024-00001.SHP.png"
+        },
+        {
+          "label": "026-00001 candidate",
+          "path": "content/imported/hsl/shared/shape_previews/actor_sprite/026-00001.SHP.png"
+        }
+      ],
+      "choices": [
+        {
+          "id": "001_leonard_player_commanded",
+          "label": "001 是雷欧纳德",
+          "description": "第一战玩家可指挥单位。"
+        },
+        {
+          "id": "023_024_ai_allies",
+          "label": "023/024 是 AI 友军",
+          "description": "第一战下方普通战士/重甲兵，非玩家指挥。"
+        },
+        {
+          "id": "021_026_enemies",
+          "label": "021/026 是敌方",
+          "description": "第一战上方普通战士/法师。"
+        },
+        {
+          "id": "sprite_identity_needs_more_evidence",
+          "label": "仍需继续查",
+          "description": "sprite 图或记忆不足以最终绑定。"
+        }
+      ],
+      "allow_note": true
+    }
+  ]
+}

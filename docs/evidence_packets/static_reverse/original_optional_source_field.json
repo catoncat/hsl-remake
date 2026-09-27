@@ -1,0 +1,61 @@
+{
+  "schema": "hsl_optional_source_field.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "native_execution": true,
+  "evidence_tier": "static-derived",
+  "cases": [
+    {
+      "before": 0,
+      "after": 0,
+      "result": 0,
+      "instructions": 34,
+      "normal_return": true
+    },
+    {
+      "before": 77,
+      "after": 77,
+      "result": 0,
+      "instructions": 34,
+      "normal_return": true
+    }
+  ],
+  "bindings": [
+    {
+      "input": {
+        "slot": 3,
+        "object_code": 803,
+        "previous_template": 29
+      },
+      "object_code": 803,
+      "template_index": 4,
+      "copy_return": 4,
+      "template_sha256": "d95cd1960648a0df1c36715761f6ec9db87c41713aadcf703a2c639ecd358e48",
+      "live_sha256": "d95cd1960648a0df1c36715761f6ec9db87c41713aadcf703a2c639ecd358e48",
+      "normal_returns": 4,
+      "prefix_entry": "0x407eff",
+      "prefix_stop": "0x407f14",
+      "instructions": 221
+    },
+    {
+      "input": {
+        "slot": 5,
+        "object_code": 805,
+        "previous_template": 29
+      },
+      "object_code": 805,
+      "template_index": 6,
+      "copy_return": 6,
+      "template_sha256": "07ee75b13b2a5d9b53b2e3d767f4e37d7c5549e2af4adf5ccb36c0a8661f7bf9",
+      "live_sha256": "07ee75b13b2a5d9b53b2e3d767f4e37d7c5549e2af4adf5ccb36c0a8661f7bf9",
+      "normal_returns": 4,
+      "prefix_entry": "0x407eff",
+      "prefix_stop": "0x407f14",
+      "instructions": 245
+    }
+  ],
+  "limits": [
+    "Empty attribute chain executes46de70 and46dd50 normally; output remains the caller default. Whole PLAYERS parsing is not executed.",
+    "Role loader44b980 explicitly initializes the status output to zero before optional lookup; new source006/036 omit that field.",
+    "Player slots3/5 execute source binding and complete template copy into records4/6; each case has four normal helper returns and a bounded407eff prefix."
+  ]
+}

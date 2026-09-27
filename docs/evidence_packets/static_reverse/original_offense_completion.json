@@ -1,0 +1,136 @@
+{
+  "schema": "hsl_offense_completion_static.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "source_member": "@:\\data\\obj-051.obs",
+  "source_sha256": "f6621854fdf4a50677877744da09015f429d2d1a627d7c8490e2bd420d5428a8",
+  "native_execution": false,
+  "state_destinations": {
+    "4": "0x4454a5",
+    "82": "0x4445c1",
+    "83": "0x4447a7",
+    "84": "0x444757",
+    "85": "0x4445f3",
+    "86": "0x4447a7",
+    "87": "0x444f3e",
+    "88": "0x4447d8",
+    "89": "0x44483c",
+    "153": "0x445290",
+    "154": "0x4447a7",
+    "155": "0x4452c9",
+    "156": "0x4447a7",
+    "157": "0x445305",
+    "158": "0x445328",
+    "159": "0x4447a7",
+    "160": "0x445424",
+    "161": "0x445458"
+  },
+  "original_byte_validation_performed": true,
+  "instruction_anchors": [
+    {
+      "address": "0x44249e",
+      "bytes": "a120434c00a900000100744f",
+      "meaning": "Resolution phase4 checks only the pending-counter flag before returning completion1 or counter2; zero EXP does not reopen movement."
+    },
+    {
+      "address": "0x4424b7",
+      "bytes": "b8020000005bc3",
+      "meaning": "Pending counter returns2 to the caller."
+    },
+    {
+      "address": "0x4424f9",
+      "bytes": "5f5e5db8010000005bc3",
+      "meaning": "Normal completed resolution returns1, including the zero-EXP/miss route."
+    },
+    {
+      "address": "0x4445cf",
+      "bytes": "e8ecddffff83c410480f84cd000000480f85c2010000",
+      "meaning": "Caller82 distinguishes complete1, counter2 and still-running0."
+    },
+    {
+      "address": "0x4446ca",
+      "bytes": "85ed0f8f47f4ffff",
+      "meaning": "Surviving target after completion1 jumps to the common low-state plus2 helper, reaching84."
+    },
+    {
+      "address": "0x443b19",
+      "bytes": "6683868c00000002e9810c0000",
+      "meaning": "Increment only the low state by2; do not reset movement phase or reopen a menu."
+    },
+    {
+      "address": "0x44460a",
+      "bytes": "85c00f849501000066c7868c0000005700",
+      "meaning": "Completed counter advances to87; zero still waits."
+    },
+    {
+      "address": "0x444f3e",
+      "bytes": "e86dd4ffff66ff868c000000e958f8ffff",
+      "meaning": "State87 resets the resolution helper and advances to88."
+    },
+    {
+      "address": "0x444770",
+      "bytes": "0f842f0d0000",
+      "meaning": "Ordinary attack completion84 branches directly to common finish4454a5 when no further reward work remains."
+    },
+    {
+      "address": "0x444798",
+      "bytes": "0f84070d0000",
+      "meaning": "No remaining growth/loot work also reaches the same finish."
+    },
+    {
+      "address": "0x44481e",
+      "bytes": "a178294c0085c00f847a0c0000",
+      "meaning": "After owner growth processing, absent counter growth reaches common finish, without consulting prior movement."
+    },
+    {
+      "address": "0x444855",
+      "bytes": "0f854a0c0000",
+      "meaning": "Completed counter growth reaches common finish."
+    },
+    {
+      "address": "0x4452bd",
+      "bytes": "66ff868c000000e9def4ffff",
+      "meaning": "Special wind-up increments153 to wait154."
+    },
+    {
+      "address": "0x4452f9",
+      "bytes": "66ff868c000000e9a2f4ffff",
+      "meaning": "Special presentation increments155 to wait156."
+    },
+    {
+      "address": "0x445305",
+      "bytes": "6a00e8c4b1fcff83c404a3ec1c4c0085c00f8489010000",
+      "meaning": "Special157 enumerates targets; no target work remains -> common finish4454a5."
+    },
+    {
+      "address": "0x445424",
+      "bytes": "6a01e8a5b0fcff83c404a3ec1c4c0085c00f8439e7ffff",
+      "meaning": "Special160 advances target iteration; no next target increments low state to161."
+    },
+    {
+      "address": "0x44548b",
+      "bytes": "a1842c4c0085c00f8506f3ffffe833a0000085c00f85f9f2ffff",
+      "meaning": "Special161 returns to reward work if needed; otherwise falls through to4454a5. No branch on movement phase."
+    }
+  ],
+  "completed_action": {
+    "ordinary_attack": true,
+    "ordinary_miss": true,
+    "special": true,
+    "requires_prior_movement": false,
+    "wait_for_presentation_and_rewards": true
+  },
+  "paths": {
+    "ordinary_without_counter": "82 ->84 -> common finish, with optional growth path87/88/89",
+    "ordinary_with_counter": "82 ->85 ->87 ->88[/89] -> common finish",
+    "special": "153/154 ->155/156 ->157 ->158/159/160 target loop ->161 -> common finish",
+    "finish": "0x4454a5, shared with Wait Data8=4 and successful Use"
+  },
+  "limits": [
+    "No offense function was executed. After the earlier interrupted attempt, this slice checked all listed bytes, dispatch targets and the original PAK directly.",
+    "Native asynchronous presentation/death/growth callbacks and every skill type are not emulated by this packet.",
+    "Current offensive formulas, counter/double-hit PRNG order, target filters and exact animation timing remain separate gaps.",
+    "Death or victory may divert to terminal handling; product must not advance after a terminal outcome.",
+    "Selection cancellation, invalid target or insufficient stamina does not reach these completion routes and must not be treated as a completed offense."
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "hsl_original_control_proof.v1",
+  "evidence_tier": "runtime-measured",
+  "date": "2026-09-09",
+  "environment": {
+    "wine": "11.0",
+    "game_title_version": "1.06",
+    "renderer": "cnc-ddraw gdi",
+    "game_surface_size": [
+      640,
+      480
+    ],
+    "observed_macos_window_size": [
+      577,
+      462
+    ]
+  },
+  "prototype_reviewed_cycles": 3,
+  "promoted_tool_reviewed_cycles": 1,
+  "supports": "Bounded single-click movement selection and single-right-click cancellation only.",
+  "frames": [
+    {
+      "id": "move-selected",
+      "image": "move-selected.png",
+      "sha256": "c6c8ec468c6737f3485c1bff4188171e8c4bd82fd7e0628ec5b1c1b5c674f5e2",
+      "action": [
+        "click",
+        "367",
+        "175",
+        "160"
+      ],
+      "timestamp": 1788918758.1623209,
+      "input_receipt": {
+        "status": "input_injected_not_behavior_verified",
+        "pid": 232,
+        "hwnd": "00030052",
+        "foreground": true,
+        "client": [
+          640,
+          480
+        ],
+        "origin": [
+          733,
+          104
+        ],
+        "window": [
+          729,
+          74,
+          1377,
+          588
+        ],
+        "cursor": [
+          1100,
+          279
+        ]
+      },
+      "capture_receipt": {
+        "status": "input_injected_not_behavior_verified",
+        "pid": 232,
+        "hwnd": "00030052",
+        "foreground": true,
+        "client": [
+          640,
+          480
+        ],
+        "origin": [
+          733,
+          104
+        ],
+        "window": [
+          729,
+          74,
+          1377,
+          588
+        ],
+        "cursor": [
+          1100,
+          279
+        ]
+      },
+      "machine_behavior_verified": false,
+      "visual_review": {
+        "confirmed": true,
+        "observation": "Blue movement selection grid is visible; action menu is absent."
+      }
+    },
+    {
+      "id": "cancel-returned",
+      "image": "cancel-returned.png",
+      "sha256": "05f5dbc53933fdc27e8e729c852f3d00aca0e2b18efce7566657961143c406f0",
+      "action": [
+        "rclick",
+        "320",
+        "240",
+        "160"
+      ],
+      "timestamp": 1788918784.394154,
+      "input_receipt": {
+        "status": "input_injected_not_behavior_verified",
+        "pid": 232,
+        "hwnd": "00030052",
+        "foreground": true,
+        "client": [
+          640,
+          480
+        ],
+        "origin": [
+          733,
+          104
+        ],
+        "window": [
+          729,
+          74,
+          1377,
+          588
+        ],
+        "cursor": [
+          1053,
+          344
+        ]
+      },
+      "capture_receipt": {
+        "status": "input_injected_not_behavior_verified",
+        "pid": 232,
+        "hwnd": "00030052",
+        "foreground": true,
+        "client": [
+          640,
+          480
+        ],
+        "origin": [
+          733,
+          104
+        ],
+        "window": [
+          729,
+          74,
+          1377,
+          588
+        ],
+        "cursor": [
+          1053,
+          344
+        ]
+      },
+      "machine_behavior_verified": false,
+      "visual_review": {
+        "confirmed": true,
+        "observation": "Six-icon action menu is visible again; movement grid is absent."
+      }
+    }
+  ]
+}

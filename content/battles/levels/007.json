@@ -1,0 +1,130 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 7,
+  "battle": {
+    "id": "battle_007_level7",
+    "title": "寧靜之森 · 妖精的加入",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "寧靜之森 · 敵軍已清除"
+    },
+    "expected": {
+      "units": 25,
+      "players": 4
+    },
+    "unresolved_semantics": [
+      "WINFAIL007 installs 雪拉 005 through obj_Story_Player5 at (1024,288) during event section 5; this is a registered player insertion and does not require the incomplete 005 AI strategy fields.",
+      "WINFAIL007 event section 4 inserts six 023 soldiers and two 024 captains at round 5; their live insertion, level adjustment and walk timing are interpreted from the seed by WinfailScenarioRules.",
+      "STORY007 actor036_3 ends at the unaligned pixel endpoint (160,120); the assembly quantizes it to the nearest 32px cell and marks that placement provisional until the original standing rule is located."
+    ]
+  },
+  "story_scene": {
+    "id": "story_007_silent_forest_opening",
+    "title": "寧靜之森（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      }
+    },
+    "end_card": {
+      "title": "寧靜之森",
+      "hint": "戰鬥部分（level 7）尚未重製　　空格／點擊：回到大地圖（寧靜之森）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the four controlled slots and the 036 / 037 / 038 enemies have no battle scenario yet (P-024 job models, multi-slot party); the preview shows the EVEF placements and STORY007 walks only"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "023",
+      "024",
+      "036",
+      "037",
+      "038"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "023",
+      "024"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)"
+  },
+  "sweep_fixture": {
+    "mode": "play_to_round",
+    "rounds": [
+      5,
+      6
+    ],
+    "expect_units": [
+      {
+        "id": "shera",
+        "actor_id": "005",
+        "role": "player_controlled"
+      }
+    ],
+    "note": "WINFAIL007 round-5 reinforcements and the round-6 obj_Story_Player5 install must be committed before the roster is cleared."
+  },
+  "comments": {
+    "battle": [
+      "WINFAIL007's initial win clears the forest; round 5 inserts reinforcements and",
+      "round 6 installs 雪拉 as a registered player before the battle can continue."
+    ],
+    "story_scene": [
+      "Level 7 (寧靜之森, bigmap.dat point 7, a General point): the four-member party",
+      "crosses the silent forest and 036 / 037 / 038 pour in from every edge. Its",
+      "battle is gated on the same job models as levels 1-3 and 5 (P-024).",
+      "actPlayLevelMusic: table 0x477b44 gives level 7 track 13 (as for level 1)."
+    ],
+    "cast": [
+      "Level 7 (寧靜之森): the four-member party against 036 / 037 / 038 from every edge.",
+      "Formal battle: WINFAIL007 inserts six soldiers 023 and two captains 024 at round 5 and",
+      "installs 雪拉 005 (obj_Story_Player5) at round 6; all three speak in the win / event dialogue."
+    ],
+    "speakers": [
+      "Level 7 (寧靜之森, STORY007 opening): the four-member party speaks; 036 / 037 / 038 are silent."
+    ]
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 22,
+  "battle": {
+    "id": "battle_022_level22",
+    "title": "尼布魯瀑布 · 敵軍已清除",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "尼布魯瀑布 · 敵軍已清除",
+      "fail_0": "尼布魯瀑布 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 17,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY022 opens with the seven carried party members against four Enemy041 and four Enemy043; the 咕嚕／克羅蒂 slots are EVEF 有才產生 installs fielded only when the campaign carry holds them.",
+      "WINFAIL022 inserts the Enemy051 encounter object and later Enemy041／Enemy043 reinforcements from event status timing; the source action order is interpreted by the shared Winfail coordinator, while insertion collision and round pacing remain provisional.",
+      "The source win writes point 22 event 570 and encounter ratio 20 before returning to the world map; battle rewards and experience are not inferred from those hand-off writes."
+    ]
+  },
+  "story_scene": {
+    "id": "story_022_nibulu_falls_opening",
+    "title": "尼布魯瀑布（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "尼布魯瀑布",
+      "hint": "戰鬥部分（level 22）尚未重製　　空格／點擊：回到大地圖（尼布魯瀑布）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine controlled slots and the 041 / 043 patrols have no battle scenario yet (P-024, multi-slot party); the preview shows the EVEF placements and STORY022 walks only",
+      "STORY022 addresses the conditional install(s) 咕嚕 / 克羅蒂 (actWalkDisp SID_咕嚕 / SID_克羅蒂); with no bound unit their walks are skipped and their lines show with the speaker label only",
+      "actSetBGToPos is read as the view top-left in map pixels; the cmb瀑布 combined-object children (level022.H) keep provisional offsets and 背景01 (mapobjMoveBG) is drawn under the map, following the camera by obj_Score/640, obj_HitPoint/480 (180/240; docs/evidence_packets/static_reverse/original_map_object_drift.md)",
+      "the EVEF 瀑布聲 (mapobjPlayBGSound, WAV\\WATERFALL001.WAV) is exported as a background_sound placement and its WAV into sounds/; BattleSceneRuntime loops it at a remake level without positional attenuation"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "041",
+      "043",
+      "051"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "041",
+      "043"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY041": "306"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-022.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-022.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-022.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-022.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-022.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-022.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-022.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-022.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); conditional install, left out of the preview",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-022.obs 克羅蒂(有才產生) (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived); conditional install, left out of the preview",
+    "SID_ENEMY041": "PLAYERS.TXT character 41 name field = 306 (???); kept as the original unnamed label (那可那魯 soldier, no name reveal)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 22 (尼布魯瀑布, bigmap.dat point 22): the nine-slot party walks in from the west edge",
+      "(EVEF x = -64..-160; 咕嚕 / 克羅蒂 有才產生), 緹娜 and 雷特 admire the fall (cmb瀑布 combined",
+      "object, 背景01 mapobjMoveBG backdrop, 瀑布聲 WATERFALL001 ambience), the 041 / 043 patrols",
+      "recognise 雷特. actPlayMusic 8 opens on track 8; actPlayLevelMusic",
+      "resolves level 22 to track 17 (0x477b44)."
+    ],
+    "cast": [
+      "Level 22 (尼布魯瀑布): the nine-slot party (咕嚕 / 克羅蒂 conditional) against the 041 / 043 patrols."
+    ],
+    "speakers": [
+      "Level 22 (尼布魯瀑布, STORY022 / WINFAIL022): the nine-slot party walks in from the west edge (咕嚕 /",
+      "克羅蒂 有才產生); 緹娜 and 雷特 admire the fall, the 041 patrol recognises 雷特."
+    ]
+  }
+}

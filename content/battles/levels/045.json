@@ -1,0 +1,152 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 45,
+  "battle": {
+    "id": "battle_045_level45",
+    "title": "克萊恩城 · 城門攻防",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "克萊恩城 · 敵軍已清除",
+      "fail_0": "克萊恩城 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 44,
+      "players": 9
+    },
+    "unresolved_semantics": [
+      "STORY045 opens with the eight carried party members and the resource-derived castle field; the converted battle starts from those STORY endpoints.",
+      "WINFAIL045 has one win branch and one fail branch. The shared interpreter preserves source status/action order, while native scheduler timing, castle collision and scripted presentation remain provisional.",
+      "Blocked or occupied scripted endpoints use the shared nearest-free remake policy and are recorded as provisional placement decisions; this does not claim original standing equivalence."
+    ]
+  },
+  "story_scene": {
+    "id": "story_045_klein_castle_opening",
+    "title": "克萊恩城（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "克萊恩城",
+      "hint": "戰鬥部分（level 45）尚未重製　　空格／點擊：回到大地圖（克萊恩城）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the nine-slot party (咕嚕 is a conditional install) and the enemy roster have no battle scenario yet (chapter-2 job models, multi-slot party); the preview shows the EVEF placements and the STORY walks only",
+      "actInsertShowPosObject (928,640)-(960,672) mark the winfail045 arrival cells for the not-yet-remade battle; the preview only records them"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "021",
+      "022",
+      "032",
+      "044",
+      "045",
+      "049",
+      "065"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "009",
+      "022"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_克羅蒂": "8"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-045.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-045.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-045.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-045.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-045.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-045.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-045.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-045.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)"
+  },
+  "sweep_fixture": {
+    "mode": "clear",
+    "advance_turn": 5,
+    "note": "Inherited from the generic fixture: event 3 is armed with no win status at first control, so the round-5 phase runs before the clear."
+  },
+  "comments": {
+    "story_scene": [
+      "Level 45 (克萊恩城, point 45, the chapter's last assault): a slow scroll from the castle to",
+      "the gate held by 032 / 044 / 045 / 049 / 065, 雷歐納德's one line, thirteen event statuses",
+      "and four escape markers at the gate (winfail045 chains to level 75).",
+      "actPlayLevelMusic: table 0x477b44 gives level 45 track 13 (shared with levels 1 / 7 / 36)."
+    ],
+    "cast": [
+      "Level 45 (克萊恩城): 032 / 044 / 045 / 049 / 065 hold the castle gate."
+    ],
+    "speakers": [
+      "Level 45 (克萊恩城): a single line from 雷歐納德 at the castle gate."
+    ]
+  }
+}

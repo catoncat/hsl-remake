@@ -1,0 +1,146 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 29,
+  "battle": {
+    "id": "battle_029_level29",
+    "title": "約瑟河 · 沙羅尼亞的追兵",
+    "initial_focus_unit_id": "leonard",
+    "initial_objective_phase": "clear",
+    "result_labels": {
+      "win_0": "約瑟河 · 敵軍已清除",
+      "fail_0": "約瑟河 · 雷歐納德 陣亡"
+    },
+    "expected": {
+      "units": 26,
+      "players": 8
+    },
+    "unresolved_semantics": [
+      "STORY029 opens with seven registered party slots (001-007) against the resource-derived 023/024/027/030/031/044 field; 咕嚕 008 is an EVEF 有才產生 install fielded only when the campaign carry holds the member, and his scripted walk applies like the rest of the cast.",
+      "WINFAIL029 win_0 is an enemy-total clear. Its static-derived world writes set point 29 to encounter 534 at ratio 100 and next level event [29,70]; the shared skip_battle / winfail hand-off applies those writes without inventing another route.",
+      "WINFAIL029 event_0/event_1 checks the source 1000/1001 enemy codes and re-runs the shared winfail interpreter; their exact native trigger timing remains provisional."
+    ]
+  },
+  "story_scene": {
+    "id": "story_029_josef_river_opening",
+    "title": "約瑟河（開場預覽）",
+    "player_token": null,
+    "battle_opening_preview": true,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      }
+    },
+    "end_card": {
+      "title": "約瑟河",
+      "hint": "戰鬥部分（level 29）尚未重製　　空格／點擊：回到大地圖（約瑟河）"
+    },
+    "end_exit": {
+      "kind": "world_map"
+    },
+    "notes": [
+      "the seven controlled slots and the 023 / 024 / 027 / 030 / 031 / 044 garrison have no battle scenario yet; the preview shows the EVEF placements and STORY029 walks only",
+      "actSetPlayerName SID_ENEMY023 1 / 2 -> 梅爾 1659 / 凱文 1662 and actChangePlayerID -> 1000 / 1001 are recorded, not applied: the dialogue view keeps the token label 376 一般兵 for both soldiers"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "023",
+      "024",
+      "027",
+      "030",
+      "031",
+      "044"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "023",
+      "024"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_ENEMY023": "376",
+    "SID_ENEMY024": "377"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_ENEMY023": "PLAYERS.TXT character 23 name field is 306 (???); 376 一般兵 is the same remake label as level 51, provisional",
+    "SID_ENEMY024": "PLAYERS.TXT character 24 name field is 306 (???); 377 重裝兵 is the same remake label as level 51, provisional",
+    "actSetPlayerName": "STORY029 actSetPlayerName,SID_ENEMY023,1,1659,376 and ,2,1662,376 rename the two speaking soldiers 梅爾 / 凱文 (job label 376) after their lines start; the token-level label stays 376 一般兵 and the renamed instances are a runtime reading not yet consumed"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 29 (約瑟河, point 29, winfail029 -> 29,70): the party walks in from the north edge,",
+      "the Wosfita captain 024 challenges 雷歐納德, two soldiers 023 (renamed 梅爾 / 凱文 by",
+      "actSetPlayerName) step forward and change sides in dialogue; their ids become 1000 / 1001",
+      "for the winfail events. 咕嚕 is a conditional install.",
+      "actPlayLevelMusic first: table 0x477b44 gives level 29 track 16, the track the same",
+      "table gives level 52."
+    ],
+    "cast": [
+      "Level 29: the seven-slot party against the Wosfita garrison 023 / 024 / 027 / 030 / 031 / 044;",
+      "the captain 024 and two soldiers 023 speak."
+    ],
+    "speakers": [
+      "Level 29 (STORY029 / WINFAIL029 -> 29,70): the party walks in from the north edge, the Wosfita captain 024 and two soldiers 023 speak (the script renames 023 #1 / #2 to 梅爾 1659 / 凱文 1662 through actSetPlayerName)."
+    ]
+  }
+}

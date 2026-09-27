@@ -1,0 +1,184 @@
+{
+  "schema": "hsl_native_stat_probe.v1",
+  "evidence_tier": "static-derived",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "entry": "0x448840",
+  "inputs_sha256": {
+    "PLAYERS.TXT": "30cba7cf0f4b22915ba9c773dd3bfcf2c2a0303be9b90788b9e20233489ae8d0",
+    "ITEM.TXT": "5904904ae3497d354c86b9bdf7d4f678e52a1d217d88cd7ecfc03b0d08bb75dc",
+    "TYPE.H": "fb43bed67029dad4a4c58324d79fc5f320234e0fe58fadba3c9da3b63684929c"
+  },
+  "actors": {
+    "001": {
+      "base": {
+        "str": "16",
+        "dex": "16",
+        "mind": "8",
+        "con": "12",
+        "level": "1",
+        "hit_point": "6",
+        "magic_point": "0",
+        "job": "jobSwordMan",
+        "mode": "pmPlayer"
+      },
+      "unequipped": {
+        "max_hp": 30,
+        "max_mp": 0,
+        "attack": 31,
+        "defense": 19,
+        "speed": 14,
+        "hit_rate": 0,
+        "magic_attack": 17,
+        "exp_threshold": 100
+      },
+      "equipped": {
+        "max_hp": 30,
+        "max_mp": 0,
+        "attack": 54,
+        "defense": 43,
+        "speed": 14,
+        "hit_rate": 98,
+        "magic_attack": 17,
+        "exp_threshold": 100
+      }
+    },
+    "021": {
+      "base": {
+        "str": "15",
+        "dex": "15",
+        "mind": "10",
+        "con": "12",
+        "level": "1",
+        "hit_point": "0",
+        "magic_point": "0",
+        "job": "jobSwordMan",
+        "mode": "pmEnemy"
+      },
+      "unequipped": {
+        "max_hp": 22,
+        "max_mp": 0,
+        "attack": 30,
+        "defense": 14,
+        "speed": 13,
+        "hit_rate": 0,
+        "magic_attack": 18,
+        "exp_threshold": 100
+      },
+      "equipped": {
+        "max_hp": 22,
+        "max_mp": 0,
+        "attack": 45,
+        "defense": 30,
+        "speed": 15,
+        "hit_rate": 96,
+        "magic_attack": 18,
+        "exp_threshold": 100
+      }
+    },
+    "023": {
+      "base": {
+        "str": "15",
+        "dex": "14",
+        "mind": "9",
+        "con": "14",
+        "level": "1",
+        "hit_point": "2",
+        "magic_point": "0",
+        "job": "jobSwordMan",
+        "mode": "pmPlayer"
+      },
+      "unequipped": {
+        "max_hp": 29,
+        "max_mp": 0,
+        "attack": 30,
+        "defense": 20,
+        "speed": 12,
+        "hit_rate": 0,
+        "magic_attack": 17,
+        "exp_threshold": 100
+      },
+      "equipped": {
+        "max_hp": 29,
+        "max_mp": 0,
+        "attack": 45,
+        "defense": 36,
+        "speed": 14,
+        "hit_rate": 96,
+        "magic_attack": 17,
+        "exp_threshold": 100
+      }
+    },
+    "024": {
+      "base": {
+        "str": "15",
+        "dex": "12",
+        "mind": "10",
+        "con": "15",
+        "level": "1",
+        "hit_point": "10",
+        "magic_point": "0",
+        "job": "jobBeastWarrior",
+        "mode": "pmPlayer"
+      },
+      "unequipped": {
+        "max_hp": 43,
+        "max_mp": 0,
+        "attack": 34,
+        "defense": 32,
+        "speed": 7,
+        "hit_rate": 0,
+        "magic_attack": 4,
+        "exp_threshold": 100
+      },
+      "equipped": {
+        "max_hp": 43,
+        "max_mp": 0,
+        "attack": 52,
+        "defense": 61,
+        "speed": 12,
+        "hit_rate": 90,
+        "magic_attack": 4,
+        "exp_threshold": 100
+      }
+    },
+    "026": {
+      "base": {
+        "str": "10",
+        "dex": "12",
+        "mind": "15",
+        "con": "15",
+        "level": "1",
+        "hit_point": "9",
+        "magic_point": "5",
+        "job": "jobMagician",
+        "mode": "pmEnemy"
+      },
+      "unequipped": {
+        "max_hp": 33,
+        "max_mp": 30,
+        "attack": 11,
+        "defense": 10,
+        "speed": 11,
+        "hit_rate": 0,
+        "magic_attack": 63,
+        "exp_threshold": 100
+      },
+      "equipped": {
+        "max_hp": 33,
+        "max_mp": 30,
+        "attack": 21,
+        "defense": 22,
+        "speed": 11,
+        "hit_rate": 96,
+        "magic_attack": 63,
+        "exp_threshold": 100
+      }
+    }
+  },
+  "limits": [
+    "Synthetic table initialization; no native parser or NPC level adjustment.",
+    "Spell presence is a synthetic boolean sentinel, not recovered native spell IDs.",
+    "No status effects, buffs or inventory passives. Equipment fields populated from the first-battle templates only.",
+    "Emulated stat refresh is not a complete original-game runtime measurement."
+  ]
+}

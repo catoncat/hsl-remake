@@ -1,0 +1,955 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hsl_unit.v1",
+  "title": "HSL battle unit",
+  "description": "One unit of playable_units / script_actor_templates[*].actor / content/generated/hsl/actors/*.json actor, plus the optional keys the runtime adds after loading. Derived by tools/hsltools/schema/unit.py from 2822 tracked units; validated by hsltools/schema/validate.py and game/sim/UnitSchema.gd.",
+  "type": "object",
+  "required": [
+    "action_ready",
+    "actor_id",
+    "base_move_point",
+    "battle_actor_role",
+    "combat_profile",
+    "coord",
+    "equipment",
+    "growth_profile",
+    "hp",
+    "id",
+    "live_speed",
+    "max_hp",
+    "max_mp",
+    "move_point",
+    "mp",
+    "no_attack",
+    "player_commandable",
+    "status_counters",
+    "status_flags",
+    "weapon_code"
+  ],
+  "properties": {
+    "action_ready": {
+      "type": "boolean"
+    },
+    "actor_id": {
+      "type": "string"
+    },
+    "ai_call_target_id": {
+      "type": "string"
+    },
+    "ai_fixed_point_pending": {
+      "type": "boolean"
+    },
+    "ai_fixed_radius": {
+      "type": "integer"
+    },
+    "ai_home_coord": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "ai_target_id": {
+      "type": "string"
+    },
+    "ai_wait_remaining": {
+      "type": "integer"
+    },
+    "attack_range_evidence": {
+      "type": "object",
+      "required": [
+        "evidence_tier",
+        "source"
+      ],
+      "properties": {
+        "actor_template_join": {
+          "type": "string"
+        },
+        "evidence_tier": {
+          "type": "string",
+          "enum": [
+            "resource-derived",
+            "static-derived",
+            "runtime-measured",
+            "user-confirmed",
+            "user-hypothesis",
+            "provisional",
+            "negative-evidence",
+            "authored"
+          ]
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "base_move_point": {
+      "type": "integer"
+    },
+    "battle_actor_role": {
+      "type": "string",
+      "enum": [
+        "enemy_ai",
+        "friendly_ai",
+        "player_controlled"
+      ]
+    },
+    "battle_actor_role_evidence_tier": {
+      "type": "string",
+      "enum": [
+        "resource-derived",
+        "static-derived",
+        "runtime-measured",
+        "user-confirmed",
+        "user-hypothesis",
+        "provisional",
+        "negative-evidence",
+        "authored"
+      ]
+    },
+    "birth_player_mode": {
+      "type": "integer"
+    },
+    "class_id": {
+      "type": "string"
+    },
+    "combat_profile": {
+      "type": "object",
+      "required": [
+        "attack_back",
+        "attack_damagex2",
+        "avoid_hit_ratio",
+        "base_steal_ratio",
+        "con",
+        "dex",
+        "live_attack_damage",
+        "live_defense",
+        "live_hit_ratio",
+        "live_magic_attack",
+        "mind",
+        "resist_by_type",
+        "steal_ratio",
+        "str",
+        "weapon_damage_variance_hi",
+        "weapon_damage_variance_lo",
+        "weapon_magic_attack_type"
+      ],
+      "properties": {
+        "attack_back": {
+          "type": "integer"
+        },
+        "attack_damagex2": {
+          "type": "integer"
+        },
+        "avoid_hit_ratio": {
+          "type": "integer"
+        },
+        "base_steal_ratio": {
+          "type": "integer"
+        },
+        "con": {
+          "type": "integer"
+        },
+        "dex": {
+          "type": "integer"
+        },
+        "live_attack_damage": {
+          "type": "integer"
+        },
+        "live_defense": {
+          "type": "integer"
+        },
+        "live_hit_ratio": {
+          "type": "integer"
+        },
+        "live_magic_attack": {
+          "type": "integer"
+        },
+        "mind": {
+          "type": "integer"
+        },
+        "resist_by_type": {
+          "type": "object",
+          "required": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "properties": {
+            "0": {
+              "type": "integer"
+            },
+            "1": {
+              "type": "integer"
+            },
+            "2": {
+              "type": "integer"
+            },
+            "3": {
+              "type": "integer"
+            },
+            "4": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        "steal_ratio": {
+          "type": "integer"
+        },
+        "str": {
+          "type": "integer"
+        },
+        "weapon_damage_variance_hi": {
+          "type": "integer"
+        },
+        "weapon_damage_variance_lo": {
+          "type": "integer"
+        },
+        "weapon_magic_attack_type": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "combat_stats_evidence_tier": {
+      "type": "string",
+      "enum": [
+        "resource-derived",
+        "static-derived",
+        "runtime-measured",
+        "user-confirmed",
+        "user-hypothesis",
+        "provisional",
+        "negative-evidence",
+        "authored"
+      ]
+    },
+    "combat_stats_source": {
+      "type": "string"
+    },
+    "coord": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "dead_message": {
+      "type": "object",
+      "required": [
+        "messages",
+        "speaker"
+      ],
+      "properties": {
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "text"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "speaker": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dead_message_source": {
+      "type": "string"
+    },
+    "defeated": {
+      "type": "boolean"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "draw_mode": {
+      "type": "string"
+    },
+    "entry_growth": {
+      "type": "object"
+    },
+    "entry_readjust": {
+      "type": "object"
+    },
+    "equipment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "item_code",
+          "name",
+          "slot"
+        ],
+        "properties": {
+          "item_code": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slot": {
+            "type": "string",
+            "enum": [
+              "accessory1",
+              "accessory2",
+              "armor",
+              "foot",
+              "head",
+              "weapon"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "evef_instance": {
+      "type": "object",
+      "required": [
+        "record_index"
+      ],
+      "properties": {
+        "evidence_tier": {
+          "type": "string",
+          "enum": [
+            "resource-derived",
+            "static-derived",
+            "runtime-measured",
+            "user-confirmed",
+            "user-hypothesis",
+            "provisional",
+            "negative-evidence",
+            "authored"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "overrides": {
+          "type": "object",
+          "required": [],
+          "properties": {
+            "ai_fixed": {
+              "type": "integer"
+            },
+            "find_flag": {
+              "type": "integer"
+            },
+            "find_range": {
+              "type": "integer"
+            },
+            "find_type": {
+              "type": "integer"
+            },
+            "fixed_point": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "gold": {
+              "type": "integer"
+            },
+            "level_adjust_disp_range": {
+              "type": "integer"
+            },
+            "level_adjust_range": {
+              "type": "integer"
+            },
+            "stamina": {
+              "type": "integer"
+            },
+            "wait_round": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        "record_index": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "exp": {
+      "type": "integer"
+    },
+    "grid_coord": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "growth_profile": {
+      "type": "object",
+      "required": [
+        "allocation",
+        "caps",
+        "job_code",
+        "model",
+        "source"
+      ],
+      "properties": {
+        "allocation": {
+          "type": "string",
+          "enum": [
+            "automatic",
+            "fixed_template",
+            "manual"
+          ]
+        },
+        "caps": {
+          "type": "object",
+          "required": [
+            "con",
+            "dex",
+            "mind",
+            "str"
+          ],
+          "properties": {
+            "con": {
+              "type": "integer"
+            },
+            "dex": {
+              "type": "integer"
+            },
+            "mind": {
+              "type": "integer"
+            },
+            "str": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "job_code": {
+          "type": "integer"
+        },
+        "model": {
+          "type": "string",
+          "enum": [
+            "native_job_stats_v1"
+          ]
+        },
+        "source": {
+          "type": "object",
+          "required": [
+            "attack_back",
+            "attack_damagex2",
+            "attack_power",
+            "avoid_hit_ratio",
+            "base_resist_by_type",
+            "defense",
+            "has_magic",
+            "hit_point",
+            "magic_attack_power",
+            "magic_point",
+            "mode",
+            "speed"
+          ],
+          "properties": {
+            "attack_back": {
+              "type": "integer"
+            },
+            "attack_damagex2": {
+              "type": "integer"
+            },
+            "attack_power": {
+              "type": "integer"
+            },
+            "avoid_hit_ratio": {
+              "type": "integer"
+            },
+            "base_resist_by_type": {
+              "type": "object",
+              "required": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+              ],
+              "properties": {
+                "0": {
+                  "type": "integer"
+                },
+                "1": {
+                  "type": "integer"
+                },
+                "2": {
+                  "type": "integer"
+                },
+                "3": {
+                  "type": "integer"
+                },
+                "4": {
+                  "type": "integer"
+                }
+              },
+              "additionalProperties": false
+            },
+            "defense": {
+              "type": "integer"
+            },
+            "has_magic": {
+              "type": "boolean"
+            },
+            "hit_point": {
+              "type": "integer"
+            },
+            "magic_attack_power": {
+              "type": "integer"
+            },
+            "magic_point": {
+              "type": "integer"
+            },
+            "mode": {
+              "type": "integer"
+            },
+            "speed": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "hit_bonus_accum": {
+      "type": "integer"
+    },
+    "hp": {
+      "type": "integer"
+    },
+    "id": {
+      "type": "string"
+    },
+    "install_if_carried": {
+      "type": "boolean"
+    },
+    "install_source": {
+      "type": "string"
+    },
+    "inventory": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "job_up_flags": {
+      "type": "integer"
+    },
+    "job_up_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "job_up_policy": {
+      "type": "string"
+    },
+    "job_up_target_actor_id": {
+      "type": "string"
+    },
+    "kill_chain_word": {
+      "type": "integer"
+    },
+    "kill_count": {
+      "type": "integer"
+    },
+    "kill_exp": {
+      "type": "integer"
+    },
+    "learned_skills": {
+      "type": "array"
+    },
+    "level": {
+      "type": "integer"
+    },
+    "live_speed": {
+      "type": "integer"
+    },
+    "live_speed_evidence_tier": {
+      "type": "string",
+      "enum": [
+        "resource-derived",
+        "static-derived",
+        "runtime-measured",
+        "user-confirmed",
+        "user-hypothesis",
+        "provisional",
+        "negative-evidence",
+        "authored"
+      ]
+    },
+    "live_speed_source": {
+      "type": "string"
+    },
+    "max_hp": {
+      "type": "integer"
+    },
+    "max_mp": {
+      "type": "integer"
+    },
+    "move_point": {
+      "type": "integer"
+    },
+    "move_point_evidence_tier": {
+      "type": "string",
+      "enum": [
+        "resource-derived",
+        "static-derived",
+        "runtime-measured",
+        "user-confirmed",
+        "user-hypothesis",
+        "provisional",
+        "negative-evidence",
+        "authored"
+      ]
+    },
+    "move_point_source": {
+      "type": "string"
+    },
+    "mp": {
+      "type": "integer"
+    },
+    "name_source": {
+      "type": "string"
+    },
+    "no_attack": {
+      "type": "boolean"
+    },
+    "no_showshape": {
+      "type": "boolean"
+    },
+    "object_hit_point": {
+      "type": "integer"
+    },
+    "opening_birth": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "adjust_all_level": {
+          "type": "boolean"
+        },
+        "evidence_tier": {
+          "type": "string",
+          "enum": [
+            "resource-derived",
+            "static-derived",
+            "runtime-measured",
+            "user-confirmed",
+            "user-hypothesis",
+            "provisional",
+            "negative-evidence",
+            "authored"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "story_insert": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pending_stat_points": {
+      "type": "integer"
+    },
+    "permanent_gains": {
+      "type": "object"
+    },
+    "player_commandable": {
+      "type": "boolean"
+    },
+    "player_exec_mode": {
+      "type": "integer"
+    },
+    "player_exec_mode_native": {
+      "type": "integer"
+    },
+    "player_mode": {
+      "type": "integer"
+    },
+    "player_mode_source": {
+      "type": "string"
+    },
+    "position_evidence_tier": {
+      "type": "string",
+      "enum": [
+        "resource-derived",
+        "static-derived",
+        "runtime-measured",
+        "user-confirmed",
+        "user-hypothesis",
+        "provisional",
+        "negative-evidence",
+        "authored"
+      ]
+    },
+    "position_note": {
+      "type": "string"
+    },
+    "position_source": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "evef_record_index": {
+          "type": "integer"
+        },
+        "install_on_blocked_cell": {
+          "type": "boolean"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "object_code": {
+          "type": "integer"
+        },
+        "object_name": {
+          "type": "string"
+        },
+        "opening_insert": {
+          "type": "object",
+          "required": [
+            "insert_xy",
+            "kind",
+            "symbol"
+          ],
+          "properties": {
+            "insert_xy": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "kind": {
+              "type": "string"
+            },
+            "symbol": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "opening_wait_round": {
+          "type": "integer"
+        },
+        "placement_world": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "story_endpoint": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "story_endpoint_on_blocked_cell": {
+          "type": "boolean"
+        },
+        "story_movements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "action",
+              "after",
+              "args",
+              "before"
+            ],
+            "properties": {
+              "action": {
+                "type": "string"
+              },
+              "after": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "before": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "unaligned_story_endpoint": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "additionalProperties": false
+    },
+    "script_creation": {
+      "type": "object"
+    },
+    "script_insert": {
+      "type": "object",
+      "required": [
+        "adjust_level"
+      ],
+      "properties": {
+        "adjust_level": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "evidence_tier": {
+          "type": "string",
+          "enum": [
+            "resource-derived",
+            "static-derived",
+            "runtime-measured",
+            "user-confirmed",
+            "user-hypothesis",
+            "provisional",
+            "negative-evidence",
+            "authored"
+          ]
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "shared_record": {
+      "type": "string"
+    },
+    "side_swapped": {
+      "type": "boolean"
+    },
+    "source_object_kind": {
+      "type": "integer"
+    },
+    "speed": {
+      "type": "integer"
+    },
+    "stamina": {
+      "type": "integer"
+    },
+    "status_counters": {
+      "type": "object",
+      "required": [
+        "no_magic",
+        "paralysis",
+        "poison"
+      ],
+      "properties": {
+        "attack_up": {
+          "type": "integer"
+        },
+        "defense_up": {
+          "type": "integer"
+        },
+        "no_magic": {
+          "type": "integer"
+        },
+        "paralysis": {
+          "type": "integer"
+        },
+        "poison": {
+          "type": "integer"
+        },
+        "resist_up": {
+          "type": "integer"
+        },
+        "weaken": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "status_flags": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "traversal": {
+      "type": "object"
+    },
+    "undead": {
+      "type": "boolean"
+    },
+    "vitals_evidence_tier": {
+      "type": "string",
+      "enum": [
+        "resource-derived",
+        "static-derived",
+        "runtime-measured",
+        "user-confirmed",
+        "user-hypothesis",
+        "provisional",
+        "negative-evidence",
+        "authored"
+      ]
+    },
+    "vitals_source": {
+      "type": "string"
+    },
+    "weapon_code": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false
+}

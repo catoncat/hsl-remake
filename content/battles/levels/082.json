@@ -1,0 +1,126 @@
+{
+  "schema": "hsl_level_profile.v1",
+  "level": 82,
+  "story_scene": {
+    "id": "story_082_destroyer_farewell",
+    "title": "破滅的命運・終幕",
+    "player_token": null,
+    "player_installs": {
+      "雷歐納德": {
+        "token": "SID_雷歐納德",
+        "unit_id": "leonard",
+        "actor_id": "001"
+      },
+      "緹娜": {
+        "token": "SID_緹娜",
+        "unit_id": "tina",
+        "actor_id": "002"
+      },
+      "琥": {
+        "token": "SID_琥",
+        "unit_id": "hu",
+        "actor_id": "003"
+      },
+      "漢克斯": {
+        "token": "SID_漢克斯",
+        "unit_id": "hanks",
+        "actor_id": "004"
+      },
+      "雪拉": {
+        "token": "SID_雪拉",
+        "unit_id": "shera",
+        "actor_id": "005"
+      },
+      "雷特": {
+        "token": "SID_雷特",
+        "unit_id": "rett",
+        "actor_id": "006"
+      },
+      "嚎": {
+        "token": "SID_嚎",
+        "unit_id": "howl",
+        "actor_id": "007"
+      },
+      "咕嚕": {
+        "token": "SID_咕嚕",
+        "unit_id": "gulu",
+        "actor_id": "008"
+      },
+      "克羅蒂": {
+        "token": "SID_克羅蒂",
+        "unit_id": "claudie",
+        "actor_id": "009"
+      }
+    },
+    "end_card": {
+      "title": "幻世錄　完",
+      "hint": "結局畫面（level 998 GameClear）未註冊　　空格／點擊：回到第一戰"
+    },
+    "map_alias_note": "no_shape",
+    "notes": [
+      "actSetNextPlayLevelEvent 90,998 is the game-clear marker: level998 in the PAK carries no STORY script but obj-998.h / obj-998.obs define obj_gameclearBOSS / Player1-9 / ShowWordTeam / ShowOverString1-2 (defProcClearBOSS OVERBG01, defProcClearShowPlayer TITLE011, defProcClearShowWorkTeam WORKTEAM / OVER001 / OVER002 — the ending credits; resource-derived); the same token ends winfail059 and winfail079; the first argument 90 names no level or TYPE.H symbol (unresolved); campaign.json registers 998 as the GameClear sequence (game/title/GameClearScreen: OverBG01/02, Over001/002, workteam), so the scene hands over to it — the end_card is only the fallback when that registration is absent"
+    ]
+  },
+  "cast": {
+    "actors": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "059"
+    ],
+    "speakers": [
+      "001",
+      "002",
+      "003",
+      "005",
+      "006",
+      "007",
+      "059"
+    ]
+  },
+  "speakers": {
+    "SID_雷歐納德": "0",
+    "SID_緹娜": "1",
+    "SID_琥": "2",
+    "SID_漢克斯": "3",
+    "SID_雪拉": "4",
+    "SID_雷特": "5",
+    "SID_嚎": "6",
+    "SID_咕嚕": "7",
+    "SID_克羅蒂": "8",
+    "SID_ENEMY059": "652"
+  },
+  "speaker_policy": {
+    "SID_雷歐納德": "EXTRAS.H #define SID_雷歐納德 0 = controlled slot 0; obj-082.obs 雷歐納德 (defProcPlayerInstall, SHAPE\\001-*) obj_Data9 = 0; PLAYERS.TXT character 1 name_0 -> resource.h 0 = 雷歐納德 (resource-derived)",
+    "SID_緹娜": "EXTRAS.H #define SID_緹娜 1 = controlled slot 1; obj-082.obs 緹娜 (defProcPlayerInstall, SHAPE\\002-*) obj_Data9 = 1; PLAYERS.TXT character 2 name_1 -> resource.h 1 = 緹娜 (resource-derived)",
+    "SID_琥": "EXTRAS.H #define SID_琥 2 = controlled slot 2; obj-082.obs 琥 (defProcPlayerInstall, SHAPE\\003-*) obj_Data9 = 2; PLAYERS.TXT character 3 name_2 -> resource.h 2 = 琥 (resource-derived)",
+    "SID_漢克斯": "EXTRAS.H #define SID_漢克斯 3 = controlled slot 3; obj-082.obs 漢克斯 (defProcPlayerInstall, SHAPE\\004-*) obj_Data9 = 3; PLAYERS.TXT character 4 name_3 -> resource.h 3 = 漢克斯 (resource-derived)",
+    "SID_雪拉": "EXTRAS.H #define SID_雪拉 4 = controlled slot 4; obj-082.obs 雪拉 (defProcPlayerInstall, SHAPE\\005-*) obj_Data9 = 4; PLAYERS.TXT character 5 name_4 -> resource.h 4 = 雪拉 (resource-derived)",
+    "SID_雷特": "EXTRAS.H #define SID_雷特 5 = controlled slot 5; obj-082.obs 雷特 (defProcPlayerInstall, SHAPE\\006-*) obj_Data9 = 5; PLAYERS.TXT character 6 name_5 -> resource.h 5 = 雷特 (resource-derived)",
+    "SID_嚎": "EXTRAS.H #define SID_嚎 6 = controlled slot 6; obj-082.obs 嚎 (defProcPlayerInstall, SHAPE\\007-*) obj_Data9 = 6; PLAYERS.TXT character 7 name_6 -> resource.h 6 = 嚎 (resource-derived)",
+    "SID_咕嚕": "EXTRAS.H #define SID_咕嚕 7 = controlled slot 7; obj-082.obs 咕嚕(有才產生) (defProcPlayerInstall, SHAPE\\008-*) obj_Data9 = 7; PLAYERS.TXT character 8 name_7 -> resource.h 7 = 咕嚕 (resource-derived); the install is conditional (有才產生), left out by the scene; the label is kept for the message evidence",
+    "SID_克羅蒂": "EXTRAS.H #define SID_克羅蒂 8 = controlled slot 8; obj-082.obs 克羅蒂 (defProcPlayerInstall, SHAPE\\009-*) obj_Data9 = 8; PLAYERS.TXT character 9 name_8 -> resource.h 8 = 克羅蒂 (resource-derived)",
+    "SID_ENEMY059": "PLAYERS.TXT character 59 name field = 652 席德爾 (the same name resource as character 56; the win board calls the form 毀滅天使 席德爾, message 2532) (resource-derived name)"
+  },
+  "comments": {
+    "story_scene": [
+      "Level 82 (story-only, winfail077 -> 82,82; the LEVEL58 throne hall): 毀滅天使 059 dies cursing his",
+      "fate, 雷特 and 雪拉 step forward, the party speaks of changing destiny and 雷歐納德 closes with 法魯西翁",
+      "the 亂 has only begun; actSetNextPlayLevelEvent 90,998 — the game-clear screen, which",
+      "campaign.json registers as game/title/GameClearScreen (kind game_clear). The end_card",
+      "below is the fallback when that registration is absent (its confirm restarts the campaign)."
+    ],
+    "cast": [
+      "Level 82 (story-only): 毀滅天使 059 dies; the party's farewell before the game-clear screen."
+    ],
+    "speakers": [
+      "Level 82 (story-only, winfail077 -> 82,82): 毀滅天使 059 dies; the party's farewell; -> 90,998 game clear."
+    ]
+  }
+}

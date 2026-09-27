@@ -1,0 +1,442 @@
+{
+  "schema": "hsl_first_battle_visual_evidence_index.v1",
+  "checked_date": "2026-09-01",
+  "purpose": "Self-contained curated index for first-battle original-runtime visual evidence used by camera, projection, hit-test, movement-overlay, menu-placement, opening, and cancel/return work.",
+  "default_evidence_tier": "runtime-measured",
+  "capture_notes": [
+    "All evidence files referenced by this manifest are curated under docs/evidence_packets/runtime_observations/first_battle_visuals/.",
+    "Opening frames were preserved from the original lossless PNG when available or recovered from the original 2 fps window-only recording at the indexed frame number.",
+    "First-control and Move-route images were recovered losslessly from the existing Godot texture import cache after their ignored source PNGs had been deleted.",
+    "PNG dimensions include host window chrome; game content is observed as a 2x capture of the original 640x480 logical client area.",
+    "Filename route labels are hints only. The visual_state and status fields below come from direct image inspection."
+  ],
+  "required_gate_topics": [
+    "camera_crop",
+    "grid_to_world_projection",
+    "actor_foot_anchor",
+    "movement_range_overlay",
+    "hit_test",
+    "foreground_z_order",
+    "menu_anchor",
+    "cancel_return"
+  ],
+  "opening_choreography_evidence_ids": [
+    "opening_transition_rain_frame",
+    "opening_transition_castle_wall_frame",
+    "opening_lower_formation_before_dialogue",
+    "opening_dialogue_leonard",
+    "opening_dialogue_map_only_gap",
+    "opening_dialogue_soldier"
+  ],
+  "formation_candidate_evidence_ids": [
+    "opening_lower_formation_before_dialogue",
+    "opening_dialogue_map_only_gap",
+    "p1_route_upper_formation_11",
+    "p1_route_upper_formation_12"
+  ],
+  "first_control_confirmed_evidence_ids": [
+    "first_control_action_menu",
+    "first_control_action_menu_hover_move",
+    "p1_route_action_menu_13",
+    "move_overlay_primary",
+    "move_select_rclick_return_retry",
+    "move_space_confirm_menu"
+  ],
+  "known_missing_evidence": [
+    "first_control_idle_no_menu: no confirmed local original-runtime frame has been promoted yet that proves first-control standing formation with no dialogue, no action menu, and no Move overlay",
+    "opening_camera_curve: promoted opening-recording frames are discrete anchors, not a measured curve or scroll speed",
+    "opening_enemy_friendly_entry_paths: promoted frames show visible positions, not complete per-actor path/timing semantics"
+  ],
+  "evidence": [
+    {
+      "id": "opening_transition_rain_frame",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_transition_rain_frame.png",
+      "status": "confirmed",
+      "visual_state": "opening rain/background transition before battlefield map",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "opening transition visual anchor",
+        "original-runtime recording alignment point"
+      ],
+      "not_for": [
+        "battlefield formation",
+        "camera pan curve",
+        "first-control handoff",
+        "movement range grid"
+      ],
+      "observations": [
+        "This promoted recording frame is a transition/background anchor, not a battlefield formation frame."
+      ],
+      "original_source_path": "asset-dumps/w47-original-window-recording/session-001-main-menu-to-first-battle/frames/frame_000222.png",
+      "curation_provenance": "recovered_from_original_window_recording_frame_222"
+    },
+    {
+      "id": "opening_transition_castle_wall_frame",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_transition_castle_wall_frame.png",
+      "status": "confirmed",
+      "visual_state": "opening castle-wall transition graphic, not battlefield camera",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "opening transition sequence anchor",
+        "negative guard against mistaking transition frames for map camera frames"
+      ],
+      "not_for": [
+        "gate bridge battlefield view",
+        "unit formation",
+        "first-control handoff",
+        "movement range grid"
+      ],
+      "observations": [
+        "Manual inspection shows a black-background castle-wall transition graphic. Do not cite it as the bridge/gate battlefield view."
+      ],
+      "original_source_path": "asset-dumps/w47-original-window-recording/session-001-main-menu-to-first-battle/frames/frame_000260.png",
+      "curation_provenance": "copied_from_surviving_lossless_original_capture"
+    },
+    {
+      "id": "opening_lower_formation_before_dialogue",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_lower_formation_before_dialogue.png",
+      "status": "confirmed",
+      "visual_state": "battle map lower formation before dialogue UI appears",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "player-entry lower formation visual anchor",
+        "pre-dialogue map camera crop",
+        "Leonard and friendly actor visible positions before dialogue"
+      ],
+      "not_for": [
+        "confirmed first-control idle with no UI",
+        "action menu placement",
+        "Move overlay",
+        "complete actor entry paths"
+      ],
+      "observations": [
+        "Leonard and lower friendly units are visible without a dialogue box or action menu. This is still a pre/dialogue-sequence frame, not by itself first-control ready proof."
+      ],
+      "original_source_path": "asset-dumps/w47-original-window-recording/session-001-main-menu-to-first-battle/frames/frame_000283.png",
+      "curation_provenance": "recovered_from_original_window_recording_frame_283"
+    },
+    {
+      "id": "opening_dialogue_leonard",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_dialogue_leonard.png",
+      "status": "confirmed",
+      "visual_state": "Leonard dialogue UI over lower formation",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "dialogue UI placement",
+        "Leonard portrait/message box visual anchor",
+        "dialogue-stage lower formation context"
+      ],
+      "not_for": [
+        "first-control idle",
+        "action menu placement",
+        "Move overlay",
+        "message text source decoding"
+      ],
+      "observations": [
+        "This frame constrains dialogue presentation and map context, but text decoding remains a separate unresolved message-resource task."
+      ],
+      "original_source_path": "asset-dumps/w47-original-window-recording/session-001-main-menu-to-first-battle/frames/frame_000287.png",
+      "curation_provenance": "recovered_from_original_window_recording_frame_287"
+    },
+    {
+      "id": "opening_dialogue_map_only_gap",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_dialogue_map_only_gap.png",
+      "status": "candidate",
+      "visual_state": "map-only gap during dialogue sequence; no dialogue box, action menu, or Move overlay visible",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "candidate lower formation cross-check",
+        "dialogue transition visual gap",
+        "camera crop near first-control context"
+      ],
+      "not_for": [
+        "confirmed first-control idle with no UI",
+        "proof that player control has started",
+        "action menu placement",
+        "Move overlay"
+      ],
+      "observations": [
+        "This is a useful map-only formation candidate, but the route does not prove it is the first player-control frame."
+      ],
+      "original_source_path": "asset-dumps/w47-original-window-recording/session-001-main-menu-to-first-battle/frames/frame_000443.png",
+      "curation_provenance": "recovered_from_original_window_recording_frame_443"
+    },
+    {
+      "id": "opening_dialogue_soldier",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/opening_dialogue_soldier.png",
+      "status": "confirmed",
+      "visual_state": "soldier dialogue UI over lower formation",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "dialogue UI placement",
+        "soldier portrait/message box visual anchor",
+        "dialogue-stage actor focus cross-check"
+      ],
+      "not_for": [
+        "first-control idle",
+        "action menu placement",
+        "Move overlay",
+        "message text source decoding"
+      ],
+      "observations": [
+        "This frame confirms a soldier dialogue presentation after the map-only gap; it is still not player-control proof."
+      ],
+      "original_source_path": "asset-dumps/w47-original-window-recording/session-001-main-menu-to-first-battle/frames/frame_000444.png",
+      "curation_provenance": "recovered_from_original_window_recording_frame_444"
+    },
+    {
+      "id": "p1_route_upper_formation_11",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/p1_route_upper_formation_11.png",
+      "status": "confirmed",
+      "visual_state": "upper gate/bridge formation route frame with multiple units visible",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "upper enemy/friendly formation candidate",
+        "gate bridge camera crop",
+        "foreground bridge and tree overlap context"
+      ],
+      "not_for": [
+        "first-control idle",
+        "action menu placement",
+        "Move overlay",
+        "complete actor entry path timing"
+      ],
+      "observations": [
+        "This route frame shows the upper gate/bridge formation context. It is a promoted visual anchor, not proof of final player-control state."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/p1-route-confirm-11.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "p1_route_upper_formation_12",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/p1_route_upper_formation_12.png",
+      "status": "confirmed",
+      "visual_state": "upper gate/bridge formation route frame with unit positions advanced from p1_route_upper_formation_11",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "upper enemy/friendly formation candidate",
+        "gate bridge camera crop",
+        "opening route unit-position cross-check"
+      ],
+      "not_for": [
+        "first-control idle",
+        "action menu placement",
+        "Move overlay",
+        "complete actor entry path timing"
+      ],
+      "observations": [
+        "This route frame is a second promoted upper-formation anchor. It should be used with p1_route_upper_formation_11, not as a complete choreography proof."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/p1-route-confirm-12.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "p1_route_action_menu_13",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/p1_route_action_menu_13.png",
+      "status": "confirmed",
+      "visual_state": "first-control action menu route frame",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "first-control action menu cross-check",
+        "menu placement around Leonard",
+        "first-control camera crop after route confirmation"
+      ],
+      "not_for": [
+        "first-control idle with no UI",
+        "Move overlay",
+        "complete actor entry paths"
+      ],
+      "observations": [
+        "Manual inspection shows an action menu already open. Do not cite this as pure no-menu first-control formation."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/p1-route-confirm-13.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "first_control_action_menu",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/first_control_action_menu.png",
+      "status": "confirmed",
+      "visual_state": "first-control action menu open",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "first-control viewport reference",
+        "action menu placement around Leonard",
+        "actor/menu relative positions",
+        "foreground overlap context"
+      ],
+      "not_for": [
+        "movement range grid",
+        "move cancel behavior",
+        "exact command handler identity"
+      ],
+      "observations": [
+        "Action menu is open around Leonard in the same map/camera view as the Move overlay baseline.",
+        "The image constrains menu anchoring and first-control camera context, not command handler semantics."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/controller-after-click-move-command.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "first_control_action_menu_hover_move",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/first_control_action_menu_hover_move.png",
+      "status": "confirmed",
+      "visual_state": "first-control action menu open with move command focus/cursor nearby",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "move command menu target context",
+        "menu placement cross-check"
+      ],
+      "not_for": [
+        "movement range grid",
+        "cancel return behavior"
+      ],
+      "observations": [
+        "This remains an action-menu frame; it is not the blue movement-grid frame."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/controller-after-click-move-command-365-200.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "move_overlay_primary",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/move_overlay_primary.png",
+      "status": "confirmed",
+      "visual_state": "Move command selected; blue movement range overlay visible",
+      "evidence_tier": "runtime-measured",
+      "blocking_for": [
+        "camera_crop",
+        "grid_to_world_projection",
+        "actor_foot_anchor",
+        "movement_range_overlay",
+        "hit_test",
+        "foreground_z_order"
+      ],
+      "use_for": [
+        "primary original-runtime Move overlay baseline",
+        "blue grid pitch and alignment preflight",
+        "Leonard foot/grid relation",
+        "movement range shape and blocker omissions",
+        "foreground/actor/overlay layering review",
+        "camera viewport reference for movement interaction"
+      ],
+      "not_for": [
+        "full movement cost formula",
+        "path tie-break",
+        "edge-scroll behavior",
+        "complete terrain semantics",
+        "cancel return behavior"
+      ],
+      "observations": [
+        "Blue movement cells are axis-aligned square cells over the battlefield view.",
+        "Manual inspection suggests the cell pitch is about 64 capture pixels, i.e. about 32 logical game pixels at the current 2x capture scale; this must be checked by a dedicated pixel/contact-sheet checker before becoming a constant.",
+        "The Move overlay, Leonard position, visible actors, foreground trees, and camera crop must be treated as one spatial contract, not independent UI decoration."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/controller-after-menuclick-move-command-367-175.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "move_select_esc_capture",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/move_select_esc_capture.png",
+      "status": "confirmed_negative_for_cancel_return",
+      "visual_state": "Move range overlay still visible after captured Esc route step",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "negative evidence that route filename alone cannot prove cancel return",
+        "Move overlay cross-check"
+      ],
+      "not_for": [
+        "cancel returns to action menu",
+        "post-cancel menu placement"
+      ],
+      "observations": [
+        "Direct inspection shows the blue movement overlay is still visible. Do not cite this as cancel-return proof."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/controller-after-move-select-esc-cancel.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "move_select_rclick_capture",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/move_select_rclick_capture.png",
+      "status": "confirmed_negative_for_cancel_return",
+      "visual_state": "Move range overlay still visible after captured right-click route step",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "negative evidence that route filename alone cannot prove cancel return",
+        "Move overlay cross-check"
+      ],
+      "not_for": [
+        "cancel returns to action menu",
+        "post-cancel menu placement"
+      ],
+      "observations": [
+        "Direct inspection shows the blue movement overlay is still visible. Do not cite this as cancel-return proof."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/controller-after-move-select-rclick-cancel.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "move_select_rclick_return_retry",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/move_select_rclick_return_retry.png",
+      "status": "confirmed",
+      "visual_state": "action menu visible after right-click return/retry route",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "candidate cancel/retry return-to-menu visual state",
+        "post-return action menu placement"
+      ],
+      "not_for": [
+        "exact cancel input timing",
+        "movement rollback semantics by itself"
+      ],
+      "observations": [
+        "This frame can support that the route reached an action-menu state again; it does not alone prove the exact cancel transition timing."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/controller-after-move-select-rclick-return-retry.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    },
+    {
+      "id": "move_space_confirm_menu",
+      "file": "docs/evidence_packets/runtime_observations/first_battle_visuals/move_space_confirm_menu.png",
+      "status": "confirmed",
+      "visual_state": "action menu visible after move-space-confirm route",
+      "evidence_tier": "runtime-measured",
+      "use_for": [
+        "post-move menu visual state",
+        "menu placement after movement route"
+      ],
+      "not_for": [
+        "movement animation timing",
+        "path sequence",
+        "turn commit semantics by itself"
+      ],
+      "observations": [
+        "The frame shows an action menu again after the movement route. It does not prove the original movement path or timing."
+      ],
+      "original_source_path": "ignored/runtime-probes/latest/controller-after-move-space-confirm.png",
+      "curation_provenance": "recovered_losslessly_from_existing_godot_import_cache"
+    }
+  ],
+  "forbidden_or_downgraded_sources": [
+    {
+      "path": "game/battle/ChapterOneBattle.gd",
+      "reason": "Deleted historical Godot implementation; history can explain prototype wiring only, not original-runtime visual truth."
+    },
+    {
+      "path": "removed superseded candidate-render comparisons",
+      "reason": "Removed from the active repository because curated local original-runtime evidence supersedes them. Recoverable from the pre-cleanup Git bundle if historical archaeology is ever required."
+    },
+    {
+      "path": "asset-dumps/ and ignored/ directory-level references",
+      "reason": "Raw historical directories are not evidence entries. Use a specific curated evidence id and file from this manifest."
+    }
+  ],
+  "gate_rules": [
+    "Any task touching camera crop, grid-to-world projection, actor foot anchors, movement overlay drawing, hit-test, movement range generation, foreground z-order, or movement/cancel menu placement must cite at least one confirmed evidence entry from this manifest.",
+    "For Move overlay implementation or review, move_overlay_primary is mandatory until superseded by a newer confirmed original-runtime Move overlay entry.",
+    "For opening choreography, dialogue UI, or formation work, cite specific promoted opening-recording or p1-route evidence ids from this manifest; do not cite raw recording, route, or legacy capture directories wholesale.",
+    "There is currently no confirmed first_control_idle_no_menu evidence id. Do not claim a pure no-menu first-control standing formation until a specific original-runtime frame is promoted.",
+    "A filename or route step is not evidence by itself. If visual_state is not confirmed, inspect the image or create a contact sheet/checker before using it.",
+    "Negative-for-cancel entries may be used to avoid bad claims, but not as proof of cancel-return behavior.",
+    "Superseded Godot captures, uncurated visual-alignment packages, raw screenshots, and external videos cannot be the sole source for original visual truth.",
+    "The current implementation may still carry provisional formulas and incomplete scroll behavior, but it may not proceed with movement/hit-test/camera code that contradicts the confirmed Move overlay spatial contract."
+  ]
+}

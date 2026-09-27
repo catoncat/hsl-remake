@@ -1,0 +1,989 @@
+{
+  "fixture": true,
+  "fixture_overrides": "Three original-rendered actors, fixed positions and speeds, 100maxHP/MP, explicit support ownership on 001/026, source WRD restored; AI rates/use_ratio=100 for visible success, no reinforcements. HP4 for AI recovery, HP20 for player healing. Cure has packed poison and ally silence. Default first-battle grants are unchanged.",
+  "input_delivery": "Viewport.push_input; no desktop events, direct signals, combat RNG override, or post-input result mutation",
+  "native_execution": false,
+  "normal_clock": true,
+  "real_control_events": true,
+  "window_size": "(640, 480)",
+  "schema": "godot_support_magic_review.v1",
+  "routes": [
+    {
+      "caster_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 63,
+        "id": "leonard",
+        "inventory": [
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 94,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "index": 1,
+      "mode": "heal_self",
+      "next_actor": "enemy023_1",
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 63,
+            "defender_hp_before": 20,
+            "defender_id": "leonard",
+            "evidence_tier": "static-derived",
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 43,
+            "hit": true,
+            "magic_key": "heal",
+            "magic_name": "治癒之水",
+            "native_contribution": 21,
+            "resource_payment": {
+              "after": 94,
+              "amount": 6,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 6,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode06",
+            "support_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 0,
+        "defender_hp_after": 63,
+        "defender_hp_before": 20,
+        "defender_id": "leonard",
+        "healing": 43,
+        "magic_key": "heal",
+        "magic_name": "治癒之水",
+        "native_contribution": 21,
+        "resource_payment": {
+          "after": 94,
+          "amount": 6,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 6,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode06",
+        "support_effects": []
+      },
+      "target_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 63,
+        "id": "leonard",
+        "inventory": [
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 94,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "validation": "Completed real input route; all assertions for this named route passed."
+    },
+    {
+      "caster_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 20,
+        "id": "leonard",
+        "inventory": [
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 94,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "index": 1,
+      "mode": "heal_ally",
+      "next_actor": "enemy023_1",
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 56,
+            "defender_hp_before": 20,
+            "defender_id": "enemy023_1",
+            "evidence_tier": "static-derived",
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 36,
+            "hit": true,
+            "magic_key": "heal",
+            "magic_name": "治癒之水",
+            "native_contribution": 18,
+            "resource_payment": {
+              "after": 94,
+              "amount": 6,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 6,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode06",
+            "support_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 0,
+        "defender_hp_after": 56,
+        "defender_hp_before": 20,
+        "defender_id": "enemy023_1",
+        "healing": 36,
+        "magic_key": "heal",
+        "magic_name": "治癒之水",
+        "native_contribution": 18,
+        "resource_payment": {
+          "after": 94,
+          "amount": 6,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 6,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode06",
+        "support_effects": []
+      },
+      "target_after": {
+        "actor_id": "023",
+        "coord": "(9, 8)",
+        "hp": 56,
+        "id": "enemy023_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "validation": "Completed real input route; all assertions for this named route passed."
+    },
+    {
+      "caster_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 20,
+        "id": "leonard",
+        "inventory": [
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 84,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "index": 1,
+      "mode": "greater_heal",
+      "next_actor": "enemy023_1",
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 89,
+            "defender_hp_before": 20,
+            "defender_id": "enemy023_1",
+            "evidence_tier": "static-derived",
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 69,
+            "hit": true,
+            "magic_key": "greater_heal",
+            "magic_name": "生命之水",
+            "native_contribution": 34,
+            "resource_payment": {
+              "after": 84,
+              "amount": 16,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 16,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode07",
+            "support_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 0,
+        "defender_hp_after": 89,
+        "defender_hp_before": 20,
+        "defender_id": "enemy023_1",
+        "healing": 69,
+        "magic_key": "greater_heal",
+        "magic_name": "生命之水",
+        "native_contribution": 34,
+        "resource_payment": {
+          "after": 84,
+          "amount": 16,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 16,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode07",
+        "support_effects": []
+      },
+      "target_after": {
+        "actor_id": "023",
+        "coord": "(9, 8)",
+        "hp": 89,
+        "id": "enemy023_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "validation": "Completed real input route; all assertions for this named route passed."
+    },
+    {
+      "caster_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 20,
+        "id": "leonard",
+        "inventory": [
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 72,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "index": 1,
+      "mode": "life_heal",
+      "next_actor": "enemy023_1",
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 100,
+            "defender_hp_before": 20,
+            "defender_id": "enemy023_1",
+            "evidence_tier": "static-derived",
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 80,
+            "hit": true,
+            "magic_key": "life_heal",
+            "magic_name": "女神之淚",
+            "native_contribution": 40,
+            "resource_payment": {
+              "after": 72,
+              "amount": 28,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 28,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode08",
+            "support_effects": []
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 0,
+        "defender_hp_after": 100,
+        "defender_hp_before": 20,
+        "defender_id": "enemy023_1",
+        "healing": 80,
+        "magic_key": "life_heal",
+        "magic_name": "女神之淚",
+        "native_contribution": 40,
+        "resource_payment": {
+          "after": 72,
+          "amount": 28,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 28,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode08",
+        "support_effects": []
+      },
+      "target_after": {
+        "actor_id": "023",
+        "coord": "(9, 8)",
+        "hp": 100,
+        "id": "enemy023_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0.0
+      },
+      "validation": "Completed real input route; all assertions for this named route passed."
+    },
+    {
+      "caster_after": {
+        "actor_id": "001",
+        "coord": "(8, 8)",
+        "hp": 20,
+        "id": "leonard",
+        "inventory": [
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 96,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0
+        },
+        "status_flags": 0
+      },
+      "index": 1,
+      "mode": "cure_area",
+      "next_actor": "enemy023_1",
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 20,
+            "defender_hp_before": 20,
+            "defender_id": "leonard",
+            "evidence_tier": "static-derived",
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 0,
+            "hit": true,
+            "magic_key": "cure_poison",
+            "magic_name": "驅毒",
+            "native_contribution": 36,
+            "resource_payment": {
+              "after": 96,
+              "amount": 4,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 4,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode05",
+            "support_effects": [
+              {
+                "after_word": 0,
+                "before_word": 655362,
+                "removed": true,
+                "status": "poison"
+              }
+            ]
+          },
+          {
+            "actual_damage": 0,
+            "attacker_id": "leonard",
+            "damage": 0,
+            "defender_hp_after": 20,
+            "defender_hp_before": 20,
+            "defender_id": "enemy023_1",
+            "evidence_tier": "static-derived",
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 0,
+            "hit": true,
+            "magic_key": "cure_poison",
+            "magic_name": "驅毒",
+            "native_contribution": 36,
+            "resource_payment": {
+              "after": 96,
+              "amount": 4,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 4,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode05",
+            "support_effects": [
+              {
+                "after_word": 0,
+                "before_word": 655362,
+                "removed": true,
+                "status": "poison"
+              }
+            ]
+          }
+        ],
+        "attacker_id": "leonard",
+        "damage": 0,
+        "defender_hp_after": 20,
+        "defender_hp_before": 20,
+        "defender_id": "enemy023_1",
+        "healing": 0,
+        "magic_key": "cure_poison",
+        "magic_name": "驅毒",
+        "native_contribution": 36,
+        "resource_payment": {
+          "after": 96,
+          "amount": 4,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 4,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode05",
+        "support_effects": [
+          {
+            "after_word": 0,
+            "before_word": 655362,
+            "removed": true,
+            "status": "poison"
+          }
+        ]
+      },
+      "target_after": {
+        "actor_id": "023",
+        "coord": "(9, 8)",
+        "hp": 20,
+        "id": "enemy023_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": null,
+        "mp": null,
+        "status_counters": {
+          "no_magic": 2,
+          "poison": 0
+        },
+        "status_flags": 2
+      },
+      "validation": "Completed real input route; all assertions for this named route passed."
+    },
+    {
+      "caster_after": {
+        "actor_id": "026",
+        "coord": "(8, 8)",
+        "hp": 44,
+        "id": "enemy026_1",
+        "inventory": [
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 94,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "index": 2,
+      "mode": "ai_heal",
+      "next_actor": "enemy023_1",
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "enemy026_1",
+            "damage": 0,
+            "defender_hp_after": 44,
+            "defender_hp_before": 4,
+            "defender_id": "enemy026_1",
+            "evidence_tier": "static-derived",
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 40,
+            "hit": true,
+            "magic_key": "heal",
+            "magic_name": "治癒之水",
+            "native_contribution": 20,
+            "resource_payment": {
+              "after": 94,
+              "amount": 6,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 6,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode06",
+            "support_effects": []
+          }
+        ],
+        "attacker_id": "enemy026_1",
+        "damage": 0,
+        "defender_hp_after": 44,
+        "defender_hp_before": 4,
+        "defender_id": "enemy026_1",
+        "healing": 40,
+        "kind": "attack",
+        "magic_key": "heal",
+        "magic_name": "治癒之水",
+        "native_contribution": 20,
+        "resource_payment": {
+          "after": 94,
+          "amount": 6,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 6,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode06",
+        "support_effects": []
+      },
+      "validation": "Completed real input route; all assertions for this named route passed."
+    },
+    {
+      "caster_after": {
+        "actor_id": "026",
+        "coord": "(8, 8)",
+        "hp": 100,
+        "id": "enemy026_1",
+        "inventory": [
+          241,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 96,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0
+        },
+        "status_flags": 0
+      },
+      "index": 2,
+      "mode": "ai_cure",
+      "next_actor": "enemy023_1",
+      "receipt": {
+        "actual_damage": 0,
+        "affected_targets": [
+          {
+            "actual_damage": 0,
+            "attacker_id": "enemy026_1",
+            "damage": 0,
+            "defender_hp_after": 100,
+            "defender_hp_before": 100,
+            "defender_id": "enemy026_1",
+            "evidence_tier": "static-derived",
+            "formula_source": "native_heal_proc1_and_cure_poison_prefix",
+            "healing": 0,
+            "hit": true,
+            "magic_key": "cure_poison",
+            "magic_name": "驅毒",
+            "native_contribution": 36,
+            "resource_payment": {
+              "after": 96,
+              "amount": 4,
+              "before": 100,
+              "native_affordable": true,
+              "native_required": 4,
+              "ok": true,
+              "resource": "mp"
+            },
+            "skill_id": "magic:magicWATER:magicCode05",
+            "support_effects": [
+              {
+                "after_word": 0,
+                "before_word": 655362,
+                "removed": true,
+                "status": "poison"
+              }
+            ]
+          }
+        ],
+        "attacker_id": "enemy026_1",
+        "damage": 0,
+        "defender_hp_after": 100,
+        "defender_hp_before": 100,
+        "defender_id": "enemy026_1",
+        "healing": 0,
+        "kind": "attack",
+        "magic_key": "cure_poison",
+        "magic_name": "驅毒",
+        "native_contribution": 36,
+        "resource_payment": {
+          "after": 96,
+          "amount": 4,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 4,
+          "ok": true,
+          "resource": "mp"
+        },
+        "sequence": 1,
+        "skill_id": "magic:magicWATER:magicCode05",
+        "support_effects": [
+          {
+            "after_word": 0,
+            "before_word": 655362,
+            "removed": true,
+            "status": "poison"
+          }
+        ]
+      },
+      "validation": "Completed real input route; all assertions for this named route passed."
+    },
+    {
+      "caster_after": {
+        "actor_id": "026",
+        "coord": "(8, 8)",
+        "hp": 44,
+        "id": "enemy026_1",
+        "inventory": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_hp": 100,
+        "max_mp": 100,
+        "mp": 0,
+        "status_counters": {
+          "no_magic": 0.0,
+          "poison": 0.0
+        },
+        "status_flags": 0
+      },
+      "index": 2,
+      "mode": "ai_empty_mp",
+      "next_actor": "enemy023_1",
+      "receipt": {
+        "kind": "use_item"
+      },
+      "validation": "Completed real input route; all assertions for this named route passed."
+    }
+  ],
+  "validation_scope": "Eight named routes verified across sequential rendered processes. Text layering revalidated with cure_area and original poison. All three healing effects additionally revalidated through final source-particle fade after their completion intervals were corrected.",
+  "presentation_tails": {
+    "greater_heal": {
+      "cleared_before_controls": true,
+      "maximum_alpha": 0.386731117963791,
+      "remaining_seconds": 0.0928154666666674
+    },
+    "heal_self": {
+      "cleared_before_controls": true,
+      "maximum_alpha": 0.373365014791489,
+      "remaining_seconds": 0.0996075999999941
+    },
+    "life_heal": {
+      "cleared_before_controls": true,
+      "maximum_alpha": 0.346572369337082,
+      "remaining_seconds": 0.0931773696969178
+    }
+  },
+  "attempts": [
+    {
+      "routes_retained": [
+        "heal_self",
+        "heal_ally",
+        "greater_heal"
+      ],
+      "process_exit": 1,
+      "later_failure": "life_heal fixture attempted to click an off-screen scroll-list button. These earlier three routes completed without diagnostics; later failure preserved here, not claimed as a process PASS."
+    },
+    {
+      "routes_retained": [
+        "life_heal",
+        "cure_area",
+        "ai_heal",
+        "ai_cure",
+        "ai_empty_mp"
+      ],
+      "process_exit": 0,
+      "marker": "SUPPORT_MAGIC_RENDER_REVIEW_PASS"
+    },
+    {
+      "routes_retained": [
+        "cure_area"
+      ],
+      "process_exit": 0,
+      "marker": "SUPPORT_MAGIC_RENDER_REVIEW_PASS",
+      "scope": "Final overlay layering"
+    },
+    {
+      "routes_retained": [
+        "original_ai_poison"
+      ],
+      "process_exit": 0,
+      "marker": "AI_SKILL_RENDER_REVIEW_PASS",
+      "scope": "Final overlay layering with three hostile targets"
+    },
+    {
+      "routes_retained": [
+        "heal_self",
+        "greater_heal",
+        "life_heal"
+      ],
+      "process_exit": 0,
+      "marker": "SUPPORT_MAGIC_RENDER_REVIEW_PASS",
+      "scope": "Three corrected healing tails; source sprites fully faded before controls"
+    }
+  ],
+  "images_sha256": {
+    "heal_self-list.png": "e641d4b4120fad8f8ab2b2d552fa81d00f78af3336516331fa99b78573c4b8f8",
+    "heal_self-status.png": "1f53ee3189b390eaa6d8d6647df78bcf1cbe3b8745797f8e297b6abb728177f3",
+    "greater_heal-impact.png": "5ee8bb994c2631a143cef5bcd3d2a595d8dc382026a8bf56e2cec344f91b5556",
+    "life_heal-impact.png": "34799f93093d99fe5c1175cfd30285882d0f672381be72b3dd70760946008210",
+    "cure_area-impact.png": "6d2bb30e34c4c5b6bf2a2fcbe92fab421ee4d690d680ca94a80893569a738bb5",
+    "cure_area-status.png": "fd289949b759dabce08a1705b703c5af7e21e7f89e4323824b91b92af57d7d30",
+    "ai_heal-impact.png": "cf3526f01be2126e6fb8d7f4929bceee60652c37640b2cb8f09c7205697ea1e3",
+    "life_heal-tail.png": "da7cb9fe1e6bd0624db0f7b230222f0bd0bc36b365ed38661e1414054c868fd8",
+    "life_heal-end.png": "eb9e7138b4af33b99582157127e658d02d63661972df01261ee5bc87fb7b222c",
+    "poison-feedback-final.png": "301728a56e84fceceffa026cdd3b31d4b759822eeb1cda69966c5c95b90f6706"
+  },
+  "poison_regression": {
+    "fixture": true,
+    "overrides": "Synthetic positions, HP400, speed queue and commandable successor; real scene WRD blocking; magic tendency100; selected spell use_ratio100 and other spell0. Poison uses source actor025 on an isolated test roster. No RNG replacement, damage/result assignment or time acceleration.",
+    "affected_targets": [
+      {
+        "actual_damage": 0,
+        "attacker_id": "enemy026_1",
+        "damage": 0,
+        "defender_hp_after": 400,
+        "defender_hp_before": 400,
+        "defender_id": "leonard",
+        "evidence_tier": "static-derived",
+        "formula_source": "native_magic_roll_and_status_applicator",
+        "hit": true,
+        "magic_key": "poison",
+        "magic_name": "酸蝕幻霧",
+        "resource_payment": {
+          "after": 90,
+          "amount": 10,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 10,
+          "ok": true,
+          "resource": "mp"
+        },
+        "skill_id": "magic:magicAIR:magicCode05",
+        "status_effects": [
+          {
+            "added_turns": 3,
+            "after_word": 1048579,
+            "applied": true,
+            "before_word": 0,
+            "changed": true,
+            "sampled_power": 16,
+            "status": "poison"
+          }
+        ]
+      },
+      {
+        "actual_damage": 0,
+        "attacker_id": "enemy026_1",
+        "damage": 0,
+        "defender_hp_after": 400,
+        "defender_hp_before": 400,
+        "defender_id": "area-center",
+        "evidence_tier": "static-derived",
+        "formula_source": "native_magic_roll_and_status_applicator",
+        "hit": true,
+        "magic_key": "poison",
+        "magic_name": "酸蝕幻霧",
+        "resource_payment": {
+          "after": 90,
+          "amount": 10,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 10,
+          "ok": true,
+          "resource": "mp"
+        },
+        "skill_id": "magic:magicAIR:magicCode05",
+        "status_effects": [
+          {
+            "added_turns": 3,
+            "after_word": 983043,
+            "applied": true,
+            "before_word": 0,
+            "changed": true,
+            "sampled_power": 15,
+            "status": "poison"
+          }
+        ]
+      },
+      {
+        "actual_damage": 0,
+        "attacker_id": "enemy026_1",
+        "damage": 0,
+        "defender_hp_after": 400,
+        "defender_hp_before": 400,
+        "defender_id": "area-outer",
+        "evidence_tier": "static-derived",
+        "formula_source": "native_magic_roll_and_status_applicator",
+        "hit": true,
+        "magic_key": "poison",
+        "magic_name": "酸蝕幻霧",
+        "resource_payment": {
+          "after": 90,
+          "amount": 10,
+          "before": 100,
+          "native_affordable": true,
+          "native_required": 10,
+          "ok": true,
+          "resource": "mp"
+        },
+        "skill_id": "magic:magicAIR:magicCode05",
+        "status_effects": [
+          {
+            "added_turns": 3,
+            "after_word": 1179651,
+            "applied": true,
+            "before_word": 0,
+            "changed": true,
+            "sampled_power": 18,
+            "status": "poison"
+          }
+        ]
+      }
+    ],
+    "failures": []
+  }
+}

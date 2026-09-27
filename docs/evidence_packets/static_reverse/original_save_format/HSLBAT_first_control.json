@@ -1,0 +1,150 @@
+{
+  "schema": "hsl_original_save_sample.v1",
+  "evidence_tier": "resource-derived",
+  "file": "HSLBAT_first_control.SAV",
+  "bytes": 6178,
+  "sha256": "975465029161f3f473d7cce2736b5dbb616099d688f27d12711ebc5377fe0a83",
+  "origin": "HSLBAT.SAV written by the original (v1.06, Wine) from the battle scroll 儲存戰場記錄 at 雷歐納德's first action menu of level 51 (2026-09-21)",
+  "header": {
+    "version": 100,
+    "camera_x": 128,
+    "camera_y": 288,
+    "current_point": 1,
+    "next_level": 51,
+    "walk_from_point": -1,
+    "level_files": 51,
+    "current_level": 51,
+    "round_counter": 1,
+    "show_track_point": 0,
+    "walk_to_point": 0,
+    "gold": 1000,
+    "level_flag": 1,
+    "leonard_level": 1,
+    "play_seconds": 165,
+    "rng_hi": 212957692,
+    "rng_lo": 4082009603,
+    "secret_man_index": 0,
+    "secret_man_word": 0,
+    "secret_man_event": 0,
+    "serial_state": 5,
+    "over_flag": 0,
+    "over_score_1": 0,
+    "over_score_2": 0,
+    "over_score_3": 0,
+    "sys_arrive_y": 0,
+    "sys_arrive_x": 0,
+    "reserved_60": 0,
+    "reserved_64": 0
+  },
+  "registered_slots": {
+    "0": 800
+  },
+  "mode_bytes_set": [
+    0,
+    23,
+    24
+  ],
+  "live_records_nonzero": [
+    1,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "lists": [
+    {
+      "capacity": 5,
+      "count": 0
+    },
+    {
+      "capacity": 5,
+      "count": 0
+    }
+  ],
+  "encounter_ratios_all": [
+    10
+  ],
+  "towns_nonempty": {
+    "1": {
+      "0": [
+        1,
+        2,
+        3
+      ]
+    },
+    "4": {
+      "0": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "7": [
+        8,
+        12,
+        13,
+        14
+      ]
+    },
+    "6": {
+      "0": [
+        16,
+        17,
+        18,
+        20
+      ],
+      "20": [
+        21,
+        22,
+        23
+      ]
+    }
+  },
+  "points_hidden_by_new_game": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    22,
+    25,
+    26,
+    27,
+    28,
+    31,
+    32,
+    33,
+    34,
+    38,
+    43
+  ],
+  "tracks_hidden": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    20,
+    23,
+    24,
+    25,
+    26,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    37,
+    43
+  ],
+  "battle_tail_bytes": 2455
+}

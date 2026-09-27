@@ -1,0 +1,6374 @@
+{
+  "schema": "hsl_native_physical_combat.v1",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "evidence_tier": "static-derived",
+  "native_execution": true,
+  "cases": [
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 437
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 437
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 437
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 437
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 436
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 436
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 514
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 514
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 33
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 8
+        },
+        {
+          "bound": 15,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 515
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 40,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 32
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 12
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 515
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 437
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 437
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 437
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 437
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 436
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 436
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 514
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 514
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 33
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 8
+        },
+        {
+          "bound": 15,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 515
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 30,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 32
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 12
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 515
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 10
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 10
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 444
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 10
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 444
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 13
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 522
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 15
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 522
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 35
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 15,
+          "value": 8
+        },
+        {
+          "bound": 15,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 523
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 31,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 36
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 12
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 523
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 7
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 7
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 7
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 444
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 444
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 12
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 522
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 13
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 522
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 34
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 8
+        },
+        {
+          "bound": 15,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 523
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 32,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 34
+      },
+      "draws": [
+        {
+          "bound": 6,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 12
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 523
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 5
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 5
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 5
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 444
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 444
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 5
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 522
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 13
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 522
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 38
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 5
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 15,
+          "value": 8
+        },
+        {
+          "bound": 15,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 523
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 33,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 34
+      },
+      "draws": [
+        {
+          "bound": 7,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 12
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 523
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 14
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8
+        },
+        {
+          "bound": 4,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 14
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8
+        },
+        {
+          "bound": 4,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 445
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 14
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8
+        },
+        {
+          "bound": 4,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 444
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 444
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 19
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8
+        },
+        {
+          "bound": 4,
+          "value": 2
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 522
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 522
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 41
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 8
+        },
+        {
+          "bound": 4,
+          "value": 2
+        },
+        {
+          "bound": 15,
+          "value": 8
+        },
+        {
+          "bound": 15,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 523
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 36,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 37
+      },
+      "draws": [
+        {
+          "bound": 10,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 12
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 523
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 17
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 441
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 12
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 441
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 17
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 441
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 12
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 441
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 17
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 440
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 12
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 440
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 22
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 518
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 17
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 518
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 44
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 15,
+          "value": 8
+        },
+        {
+          "bound": 15,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 519
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 37,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 38
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 12
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 519
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 4
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 441
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 441
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 4
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 441
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 441
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 4
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 440
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 440
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 4
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 518
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 518
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 38
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 4
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 15,
+          "value": 8
+        },
+        {
+          "bound": 15,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 519
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 39,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 37
+      },
+      "draws": [
+        {
+          "bound": 13,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 12
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 519
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 5
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 416
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 4
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 416
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 5
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 416
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 4
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 416
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 10
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 325
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 9
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 1
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 325
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 15
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 403
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 14
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 1
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 403
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 37
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 15,
+          "value": 11
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 404
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 45
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 1
+        },
+        {
+          "bound": 15,
+          "value": 6
+        },
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 404
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 9,
+          "value": 5
+        },
+        {
+          "bound": 9,
+          "value": 5
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 416
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 20
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 9,
+          "value": 0
+        },
+        {
+          "bound": 9,
+          "value": 3
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 416
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 24
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 2
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 415
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 30
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 3,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 415
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 30
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 325
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 36
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 325
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 35
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 403
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 41
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 403
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 57
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 9
+        },
+        {
+          "bound": 15,
+          "value": 11
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 404
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 69,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 72
+      },
+      "draws": [
+        {
+          "bound": 11,
+          "value": 3
+        },
+        {
+          "bound": 15,
+          "value": 6
+        },
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 404
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 64
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 18
+        },
+        {
+          "bound": 10,
+          "value": 6
+        },
+        {
+          "bound": 10,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 415
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 120,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 63
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 13
+        },
+        {
+          "bound": 10,
+          "value": 6
+        },
+        {
+          "bound": 10,
+          "value": 2
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 415
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 76
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 18
+        },
+        {
+          "bound": 3,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 2
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 415
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 53,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 81
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 13
+        },
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 3,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 415
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 82
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 18
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 325
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 40,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 87
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 13
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 325
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 87
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 18
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 403
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 51,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 92
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 13
+        },
+        {
+          "bound": 2,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 403
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 1
+      },
+      "native": {
+        "damage": 109
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 18
+        },
+        {
+          "bound": 15,
+          "value": 11
+        },
+        {
+          "bound": 15,
+          "value": 8
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 404
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 130,
+        "defense": 30,
+        "strength": 140,
+        "target_strength": 40,
+        "element": -1,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 19
+      },
+      "native": {
+        "damage": 123
+      },
+      "draws": [
+        {
+          "bound": 30,
+          "value": 13
+        },
+        {
+          "bound": 15,
+          "value": 6
+        },
+        {
+          "bound": 15,
+          "value": 12
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 404
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 0,
+        "low": 5,
+        "high": 10,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 586
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 0,
+        "low": 5,
+        "high": 10,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 598
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 0,
+        "low": 5,
+        "high": 10,
+        "resistance": 100,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 599
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 1,
+        "low": 5,
+        "high": 10,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 586
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 1,
+        "low": 5,
+        "high": 10,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 598
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 1,
+        "low": 5,
+        "high": 10,
+        "resistance": 100,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 599
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 5,
+        "high": 10,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 586
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 5,
+        "high": 10,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 598
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 5,
+        "high": 10,
+        "resistance": 100,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 599
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 3,
+        "low": 5,
+        "high": 10,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 586
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 3,
+        "low": 5,
+        "high": 10,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 598
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 3,
+        "low": 5,
+        "high": 10,
+        "resistance": 100,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 599
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 4,
+        "low": 5,
+        "high": 10,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 585
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 4,
+        "low": 5,
+        "high": 10,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 597
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 4,
+        "low": 5,
+        "high": 10,
+        "resistance": 100,
+        "seed": 7
+      },
+      "native": {
+        "damage": 11
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 598
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 5,
+        "low": 5,
+        "high": 10,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 580
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 5,
+        "low": 5,
+        "high": 10,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 580
+    },
+    {
+      "input": {
+        "kind": "damage",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 5,
+        "low": 5,
+        "high": 10,
+        "resistance": 100,
+        "seed": 7
+      },
+      "native": {
+        "damage": 16
+      },
+      "draws": [
+        {
+          "bound": 3,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 2,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409be0",
+      "stop_address": "0x10000000",
+      "instructions": 580
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 0,
+        "high": 0,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 4
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 185
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 0,
+        "high": 0,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 0
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 197
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 0,
+        "high": 1,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 4
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 224
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 0,
+        "high": 1,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 0
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 236
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 1,
+        "high": 1,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 4
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 184
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 1,
+        "high": 1,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 0
+      },
+      "draws": [
+        {
+          "bound": 0,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 196
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 1,
+        "high": 2,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 4
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 223
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 1,
+        "high": 2,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 0
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 0,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 235
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 2,
+        "high": 3,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 5
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 262
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 2,
+        "high": 3,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 1
+      },
+      "draws": [
+        {
+          "bound": 1,
+          "value": 0
+        },
+        {
+          "bound": 1,
+          "value": 0
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 274
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 5,
+        "high": 10,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 8
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 255
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 5,
+        "high": 10,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 1
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 2
+        },
+        {
+          "bound": 3,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 267
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 10,
+        "high": 5,
+        "resistance": 0,
+        "seed": 7
+      },
+      "native": {
+        "damage": 13
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 2
+        },
+        {
+          "bound": 6,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 255
+    },
+    {
+      "input": {
+        "kind": "weapon",
+        "attack": 40,
+        "defense": 30,
+        "strength": 20,
+        "target_strength": 20,
+        "element": 2,
+        "low": 10,
+        "high": 5,
+        "resistance": 80,
+        "seed": 7
+      },
+      "native": {
+        "damage": 2
+      },
+      "draws": [
+        {
+          "bound": 5,
+          "value": 2
+        },
+        {
+          "bound": 6,
+          "value": 1
+        }
+      ],
+      "normal_return": true,
+      "entry": "0x409af0",
+      "stop_address": "0x10000000",
+      "instructions": 267
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 1,
+        "hit_roll": 0,
+        "hit_rate": 96,
+        "critical_rate": 0,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": false,
+        "damage": 1,
+        "queued_damage": 1
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff6",
+      "instructions": 120
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 5,
+        "hit_roll": 0,
+        "hit_rate": 96,
+        "critical_rate": 0,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": false,
+        "damage": 5,
+        "queued_damage": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff6",
+      "instructions": 120
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 22,
+        "hit_roll": 0,
+        "hit_rate": 96,
+        "critical_rate": 0,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": false,
+        "damage": 22,
+        "queued_damage": 22
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff6",
+      "instructions": 120
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 32760,
+        "hit_roll": 0,
+        "hit_rate": 96,
+        "critical_rate": 0,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": false,
+        "damage": 32760,
+        "queued_damage": 32760
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff6",
+      "instructions": 120
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 1,
+        "hit_roll": 95,
+        "hit_rate": 96,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": true,
+        "damage": 15,
+        "queued_damage": 1
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 4,
+          "value": 2
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff1",
+      "instructions": 604
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 5,
+        "hit_roll": 95,
+        "hit_rate": 96,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": true,
+        "damage": 12,
+        "queued_damage": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 4,
+          "value": 1
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff1",
+      "instructions": 374
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 22,
+        "hit_roll": 95,
+        "hit_rate": 96,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": true,
+        "damage": 43,
+        "queued_damage": 22
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 11,
+          "value": 9
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff1",
+      "instructions": 259
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 32760,
+        "hit_roll": 95,
+        "hit_rate": 96,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": true,
+        "damage": 32767,
+        "queued_damage": 32760
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 16380,
+          "value": 1075
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff1",
+      "instructions": 261
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 1,
+        "hit_roll": 96,
+        "hit_rate": 96,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": false,
+        "critical": false,
+        "damage": 1,
+        "queued_damage": 1
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x4041ea",
+      "instructions": 5
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 5,
+        "hit_roll": 96,
+        "hit_rate": 96,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": false,
+        "critical": false,
+        "damage": 5,
+        "queued_damage": 5
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x4041ea",
+      "instructions": 5
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 22,
+        "hit_roll": 96,
+        "hit_rate": 96,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": false,
+        "critical": false,
+        "damage": 22,
+        "queued_damage": 22
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x4041ea",
+      "instructions": 5
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 32760,
+        "hit_roll": 96,
+        "hit_rate": 96,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": false,
+        "critical": false,
+        "damage": 32760,
+        "queued_damage": 32760
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x4041ea",
+      "instructions": 5
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 1,
+        "hit_roll": 99,
+        "hit_rate": 100,
+        "critical_rate": 8,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": false,
+        "damage": 1,
+        "queued_damage": 1
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff6",
+      "instructions": 120
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 5,
+        "hit_roll": 99,
+        "hit_rate": 100,
+        "critical_rate": 8,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": false,
+        "damage": 5,
+        "queued_damage": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff6",
+      "instructions": 120
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 22,
+        "hit_roll": 99,
+        "hit_rate": 100,
+        "critical_rate": 8,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": false,
+        "damage": 22,
+        "queued_damage": 22
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff6",
+      "instructions": 120
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 32760,
+        "hit_roll": 99,
+        "hit_rate": 100,
+        "critical_rate": 8,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": false,
+        "damage": 32760,
+        "queued_damage": 32760
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff6",
+      "instructions": 120
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 1,
+        "hit_roll": 0,
+        "hit_rate": 0,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": false,
+        "critical": false,
+        "damage": 1,
+        "queued_damage": 1
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x4041ea",
+      "instructions": 5
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 5,
+        "hit_roll": 0,
+        "hit_rate": 0,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": false,
+        "critical": false,
+        "damage": 5,
+        "queued_damage": 5
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x4041ea",
+      "instructions": 5
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 22,
+        "hit_roll": 0,
+        "hit_rate": 0,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": false,
+        "critical": false,
+        "damage": 22,
+        "queued_damage": 22
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x4041ea",
+      "instructions": 5
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 32760,
+        "hit_roll": 0,
+        "hit_rate": 0,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": false,
+        "critical": false,
+        "damage": 32760,
+        "queued_damage": 32760
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x4041ea",
+      "instructions": 5
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 1,
+        "hit_roll": 0,
+        "hit_rate": 100,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": true,
+        "damage": 15,
+        "queued_damage": 1
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 5,
+          "value": 1
+        },
+        {
+          "bound": 4,
+          "value": 2
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff1",
+      "instructions": 604
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 5,
+        "hit_roll": 0,
+        "hit_rate": 100,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": true,
+        "damage": 12,
+        "queued_damage": 5
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 5,
+          "value": 0
+        },
+        {
+          "bound": 4,
+          "value": 1
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff1",
+      "instructions": 374
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 22,
+        "hit_roll": 0,
+        "hit_rate": 100,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": true,
+        "damage": 43,
+        "queued_damage": 22
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 11,
+          "value": 9
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff1",
+      "instructions": 259
+    },
+    {
+      "input": {
+        "kind": "impact",
+        "damage": 32760,
+        "hit_roll": 0,
+        "hit_rate": 100,
+        "critical_rate": 100,
+        "seed": 7
+      },
+      "native": {
+        "hit": true,
+        "critical": true,
+        "damage": 32767,
+        "queued_damage": 32760
+      },
+      "draws": [
+        {
+          "bound": 100,
+          "value": 77
+        },
+        {
+          "bound": 16380,
+          "value": 1075
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x403f39",
+      "stop_address": "0x403ff1",
+      "instructions": 261
+    },
+    {
+      "input": {
+        "kind": "fallback",
+        "seed": 1
+      },
+      "native": {
+        "damage": 6
+      },
+      "draws": [
+        {
+          "bound": -1,
+          "value": 4168504374
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x409d06",
+      "stop_address": "0x409d49",
+      "instructions": 99
+    },
+    {
+      "input": {
+        "kind": "fallback",
+        "seed": 7
+      },
+      "native": {
+        "damage": 5
+      },
+      "draws": [
+        {
+          "bound": -1,
+          "value": 1126139765
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x409d06",
+      "stop_address": "0x409d49",
+      "instructions": 99
+    },
+    {
+      "input": {
+        "kind": "fallback",
+        "seed": 19
+      },
+      "native": {
+        "damage": 4
+      },
+      "draws": [
+        {
+          "bound": -1,
+          "value": 528967019
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x409d06",
+      "stop_address": "0x409d49",
+      "instructions": 115
+    },
+    {
+      "input": {
+        "kind": "fallback",
+        "seed": 101
+      },
+      "native": {
+        "damage": 3
+      },
+      "draws": [
+        {
+          "bound": -1,
+          "value": 838367008
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x409d06",
+      "stop_address": "0x409d49",
+      "instructions": 106
+    },
+    {
+      "input": {
+        "kind": "fallback",
+        "seed": 117
+      },
+      "native": {
+        "damage": 3
+      },
+      "draws": [
+        {
+          "bound": -1,
+          "value": 838367040
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x409d06",
+      "stop_address": "0x409d49",
+      "instructions": 106
+    },
+    {
+      "input": {
+        "kind": "fallback",
+        "seed": 212
+      },
+      "native": {
+        "damage": 10
+      },
+      "draws": [
+        {
+          "bound": -1,
+          "value": 3353467642
+        }
+      ],
+      "normal_return": false,
+      "entry": "0x409d06",
+      "stop_address": "0x409d49",
+      "instructions": 99
+    },
+    {
+      "input": {
+        "kind": "chances",
+        "avoid": 0,
+        "counter": 0,
+        "critical": 0
+      },
+      "native": {
+        "avoid": 0,
+        "counter": 12,
+        "critical": 8
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x4489bd",
+      "stop_address": "0x448a1e",
+      "instructions": 18
+    },
+    {
+      "input": {
+        "kind": "chances",
+        "avoid": 3,
+        "counter": 12,
+        "critical": 14
+      },
+      "native": {
+        "avoid": 3,
+        "counter": 12,
+        "critical": 14
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x4489bd",
+      "stop_address": "0x448a1e",
+      "instructions": 16
+    },
+    {
+      "input": {
+        "kind": "chances",
+        "avoid": 12,
+        "counter": 30,
+        "critical": 80
+      },
+      "native": {
+        "avoid": 12,
+        "counter": 30,
+        "critical": 80
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x4489bd",
+      "stop_address": "0x448a1e",
+      "instructions": 16
+    },
+    {
+      "input": {
+        "kind": "chances",
+        "avoid": 0,
+        "counter": 1,
+        "critical": 1
+      },
+      "native": {
+        "avoid": 0,
+        "counter": 1,
+        "critical": 1
+      },
+      "draws": [],
+      "normal_return": false,
+      "entry": "0x4489bd",
+      "stop_address": "0x448a1e",
+      "instructions": 16
+    },
+    {
+      "input": {
+        "kind": "hit",
+        "hit_rate": 96,
+        "dex": 16,
+        "target_dex": 15,
+        "avoid": 0
+      },
+      "native": {
+        "hit_rate": 96
+      },
+      "draws": [],
+      "normal_return": true,
+      "entry": "0x409a60",
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "hit",
+        "hit_rate": 96,
+        "dex": 1,
+        "target_dex": 200,
+        "avoid": 0
+      },
+      "native": {
+        "hit_rate": 66
+      },
+      "draws": [],
+      "normal_return": true,
+      "entry": "0x409a60",
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "hit",
+        "hit_rate": 20,
+        "dex": 100,
+        "target_dex": 1,
+        "avoid": 80
+      },
+      "native": {
+        "hit_rate": 10
+      },
+      "draws": [],
+      "normal_return": true,
+      "entry": "0x409a60",
+      "stop_address": "0x10000000",
+      "instructions": 37
+    },
+    {
+      "input": {
+        "kind": "hit",
+        "hit_rate": 10,
+        "dex": 1,
+        "target_dex": 100,
+        "avoid": 70
+      },
+      "native": {
+        "hit_rate": 10
+      },
+      "draws": [],
+      "normal_return": true,
+      "entry": "0x409a60",
+      "stop_address": "0x10000000",
+      "instructions": 36
+    },
+    {
+      "input": {
+        "kind": "hit",
+        "hit_rate": 110,
+        "dex": 16,
+        "target_dex": 16,
+        "avoid": 0
+      },
+      "native": {
+        "hit_rate": 100
+      },
+      "draws": [],
+      "normal_return": true,
+      "entry": "0x409a60",
+      "stop_address": "0x10000000",
+      "instructions": 38
+    },
+    {
+      "input": {
+        "kind": "hit",
+        "hit_rate": 96,
+        "dex": 16,
+        "target_dex": 15,
+        "avoid": 99
+      },
+      "native": {
+        "hit_rate": 10
+      },
+      "draws": [],
+      "normal_return": true,
+      "entry": "0x409a60",
+      "stop_address": "0x10000000",
+      "instructions": 36
+    }
+  ],
+  "anchors": [
+    {
+      "address": "0x409be0",
+      "bytes": "8b4424048b0dc81b",
+      "meaning": "Actual physical damage entry; 0x409bca is padding after the preceding helper, not an entry."
+    },
+    {
+      "address": "0x409d49",
+      "bytes": "83bdc4000000ff74108b4c24145155e893fdffff83c40803f08b",
+      "meaning": "Weapon element at actor+c4: -1 disables the bonus helper."
+    },
+    {
+      "address": "0x448634",
+      "bytes": "8b918c00000083faff8990c400000074438b91900000008990c80000008b91940000008990cc000000",
+      "meaning": "Weapon element/low/high copy from item+8c/90/94 to actor+c4/c8/cc."
+    },
+    {
+      "address": "0x4486e8",
+      "bytes": "668b51446601909a010000668b51486601909e010000668b514c660190a2010000",
+      "meaning": "Equipment modifies working avoidance/counter/critical 16-bit rates."
+    },
+    {
+      "address": "0x4425a3",
+      "bytes": "33c068a0424c00668b82a201000050518b0de02a4c00515557e8ef48fcff",
+      "meaning": "Impact object is constructed with effective critical rate, combined hit chance and queued damage."
+    },
+    {
+      "address": "0x44248e",
+      "bytes": "a1e02a4c00505357e8f5c0fcff83c414",
+      "meaning": "Ordinary stamina uses the queued pre-impact damage at 0x4c2ae0, not the later critical value."
+    },
+    {
+      "address": "0x403f39",
+      "bytes": "a118144c0033c9668b8fa60000003bc10f8d9b0200006a64e82a88020033d283c404668b574e403bc20f8f8e00000033c0668b",
+      "meaning": "Ordinary impact checks the saved hit roll before drawing its critical chance."
+    },
+    {
+      "address": "0x401ac0",
+      "bytes": "6a0068020300006a006a00e837c8050083c410c3",
+      "meaning": "Critical callback submits engine event0x302; it is not evidence of a named WAV asset."
+    },
+    {
+      "address": "0x44bfe5",
+      "bytes": "68ec8f4700896c243ce87d1e02008b0dfc1a4c008b44243c8d54243c52576a01898431a0010000",
+      "meaning": "Source attack_damagex2 is loaded with cleared default and stored at base+1a0."
+    }
+  ],
+  "limits": [
+    "Hit, ordinary-damage and weapon-bonus helpers return normally. Critical impact, fallback and refresh are bounded slices before callbacks.",
+    "Synthetic positive-domain actor/weapon profiles; no full native initialization, presentation, counters or whole exchange execution.",
+    "RNG bounds/order checked, including rand0 and raw fallback; Godot is not asserted to use identical global PRNG state."
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "schema": "hsl_world_map_scene.v1",
+  "id": "world_map_valueseon",
+  "title": "大地圖",
+  "level_kind": "world_map",
+  "rule_adapter": "world_map",
+  "status": "provisional",
+  "evidence_tier": "resource-derived",
+  "claim": "Big-map scene over the decoded BigMap.SHP with bigmap.dat points, TRACK.TXT polylines and m_pnt/m_trk sprites; travel, hit areas, marker kinds and the party marker are remake readings; the music follows the original (06 on the map, 05 in an opened town, original_music.md §3.2).",
+  "player_unit_id": "leonard",
+  "start_point": 1,
+  "resources": {
+    "map_texture": "res://content/imported/hsl/global/world_map/previews/bigmap.png",
+    "world_map": "res://content/imported/hsl/global/world_map/world_map.json",
+    "towndef": "res://content/imported/hsl/global/world_map/towndef.json",
+    "town_initial_trees": "res://content/world/town_initial_trees.json",
+    "town_messages": "res://content/imported/hsl/global/world_map/town_messages.json",
+    "town_portraits": "res://content/imported/hsl/global/world_map/town_portraits.json",
+    "town_shop_items": "res://content/imported/hsl/global/world_map/town_shop_items.json",
+    "point_marker_textures": {
+      "1": "res://content/imported/hsl/global/world_map/previews/m_pnt001.png",
+      "2": "res://content/imported/hsl/global/world_map/previews/m_pnt002.png",
+      "3": "res://content/imported/hsl/global/world_map/previews/m_pnt003.png"
+    },
+    "track_sprite_dir": "res://content/imported/hsl/global/world_map/previews",
+    "town_background_dir": "res://content/imported/hsl/global/world_map/previews",
+    "actor_walk_manifest": "res://content/imported/hsl/chapter01/battle001/actor_walk_frames/actor_walk_manifest.json",
+    "actor_audio": "res://content/imported/hsl/chapter01/battle001/actor_audio.json",
+    "interface_audio": "res://content/imported/hsl/shared/interface_audio/manifest.json",
+    "map_music": "res://content/imported/hsl/music/06.ogg",
+    "town_music": "res://content/imported/hsl/music/05.ogg",
+    "status_bar_texture": "res://content/imported/hsl/global/world_map/previews/status_bar.png"
+  },
+  "view": {
+    "logical_viewport": [
+      640,
+      480
+    ],
+    "grid_projection": {
+      "origin": [
+        0,
+        0
+      ],
+      "cell_size": [
+        32,
+        32
+      ],
+      "evidence_id": "world_map_pixel_space",
+      "evidence_tier": "provisional",
+      "provisional": true
+    }
+  },
+  "travel": {
+    "pixels_per_second": 125,
+    "point_hit_half_extent": 16,
+    "marker_actor_id": "001",
+    "marker_scale": 1.0,
+    "provisional": true,
+    "note": "pixels_per_second: the original sets the walker's 16.16 speed to 0x20000 (2 px per logic tick, 0x4277ed) and the tick is 16 ms (docs/evidence_packets/runtime_observations/original_tick_rate/README.md), so 125 px/s is the design speed; point_hit_half_extent: the original point initialiser writes a [-16,-16,16,16] hit box (0x427f0d, static-derived); track reveal: the original grows a square clip round the track's anchor (its from point) 1 px per logic tick for max(anchor-to-edge) ticks (0x4280d0) — WorldMapRuntime runs it on OriginalTick; endpoints appear at once when it ends (point phase-1 settles to 2 immediately, 0x427f0d)"
+  },
+  "unresolved_semantics": [
+    "the travel animation is unproven beyond the 16.16 speed value 2 per 16 ms tick (0x4277ed → 125 px/s); the point hit box ±16 is static-derived",
+    "M_PNT001..003 are the three frames of one point shape selected by type (POINT.H Battle 0 / General 1 / Town 2, static-derived 0x427f0d); the remake loads them as three textures",
+    "the party marker reuses Leonard's battle walk frames (actor 001) at half scale; the original big-map party sprite is not located",
+    "the big-map music is located (static-derived, docs/evidence_packets/static_reverse/original_music.md §3.2): level 49 plays its table track 06 at init (0x427532, resources.map_music), a town that loads plays 05 (0x4564e1, resources.town_music) and back on the map 06 starts again from the beginning (0x427d31); a town that did not open (result 2) leaves the track alone, which the remake reads as its picture-card towns",
+    "point / track field0 is the show phase (0 not shown / 1 revealing / 2 stable, static-derived) and a new game hides 17 points and 18 tracks by code; what starts a track's revealing phase is not located — the remake reveals the non-hidden tracks at the point the party stands on (provisional)",
+    "arrival follows the original handler's branches (0x427ab3: event 0 nothing; General unvisited → event, visited → encounter ratio then event + 0..2; Battle → event, + 0..2 once visited; Town only as the chosen destination); the encounter sample is read as 1..100 ≤ ratio and the level request's Visit write is assumed (both provisional)",
+    "m_trk sprites carry a baked red→white gradient; the original reveals a track by expanding a clip rectangle (mode 1, 0x4280d0) and its callbacks hold no colour interpolation — the remake runs the same square clip per tick",
+    "the town screen follows the original composition (runtime-measured, docs/evidence_packets/runtime_observations/original_world_town/README.md: undimmed big map, TownBG at (158,148), WINDOW70 menu board at (60,60) with white entry rows, NPC lines on a top board and party lines on the bottom board — the top/bottom split generalised from 7 lines is provisional); the town name, gold/party strip and 離開城鎮 are remake extras placed outside it, and the shop panel is a remake composition (no original shop capture); message pacing (if_wait is 0 on every TOWNDEF message; the remake waits for a confirm each time) and teDelay units are unproven",
+    "shop transactions are remake policy: goods cost their ITEM.TXT price and go to one chosen member's first empty slot, selling returns half the listed price rounded down, important items cannot be sold; the original buy/sell handler is not located",
+    "each town's initial root menu comes from town_initial_trees.json, whose roots/children match the original initialiser's executed result (static-derived, 0x454a20)"
+  ],
+  "new_game": {
+    "evidence_tier": "static-derived",
+    "source": "docs/evidence_packets/static_reverse/original_world_town.md — new game (0x42c86e..0x42ca2a) sets point 1 to mode 2 after loading bigmap.dat and ORs bmpmHidden on these points and tracks",
+    "hidden_points": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      22,
+      25,
+      26,
+      27,
+      28,
+      31,
+      32,
+      33,
+      34,
+      38,
+      43
+    ],
+    "hidden_tracks": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      20,
+      23,
+      24,
+      25,
+      26,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      37,
+      43
+    ]
+  },
+  "status_bar": {
+    "position": [
+      0,
+      412
+    ],
+    "completion_label": "完成度：",
+    "evidence_tier": "static-derived",
+    "note": "obj12 defProcBigMapStatusBar draws STATUS_BAR.SHP at camera + (0, 412) with RESOURCE 360 「完成度：」 plus the completion percent (shown non-hidden points over named points − 1, 0x427200) and the cumulative play time as h:mm:ss (0x42d090); the timer's tick source was not executed. The drawing is runtime-measured on the original big-map frame (docs/evidence_packets/runtime_observations/original_world_town/01-bigmap-status-bar.png): the shape is subtracted from the map beneath it (frame 04 fits dst - 1.04 x src, RMS 3.3) and the texts are colour-code @5 yellow / @1 white rows with their shadows at x 6 / 114 / right edge 634 on the y 427-444 glyph row"
+  },
+  "provisional_unlocks": [
+    {
+      "id": "amphibian_second_stage",
+      "evidence_tier": "provisional",
+      "when": {
+        "point_visited": 13
+      },
+      "town_actions": [
+        {
+          "name": "actDeleteTE",
+          "args": [
+            "town_兩棲族部落",
+            "145",
+            "2",
+            "148",
+            "149"
+          ]
+        },
+        {
+          "name": "actAddTE",
+          "args": [
+            "town_兩棲族部落",
+            "145",
+            "2",
+            "150",
+            "151"
+          ]
+        }
+      ],
+      "claim": "兩棲族部落 集會場 (145) second-stage talks 150 兩棲族老人二 / 151 人類學者二 (whose teSetNextPlayLevelEvent 13,13 is the only route into level 13 龍之息) appear once the party has stood at big-map point 13 龍之息 (火山); the first-stage 148 / 149 leave the menu.",
+      "basis": "No TOWNDEF te*TE, STORY or winfail act*TE token adds 150 / 151 (exhaustive corpus search, P-051); 145 carries a commented-out teAppearSecretMan variant and 151 a commented-out teBMSetPointEvent 13,13 route, and 150's line 1768 (the dragon has been enraged) follows a visit to the volcano in the dialogue. Visiting point 13 (Town-typed with event 0 after WINFAIL012, no town data) is the remake's chosen trigger. Negative evidence (2026-09-19 re-check): WINFAIL013's win section writes the exact inverse of 151's commented-out lines (point 13 -> event 0 / clear Battle / set Town), 151's own tail deletes itself from 145 and re-adds 147 / 148, and TOWNDEF 153 事件後第一次進入兩棲族部落 has no writer either — the shipped data carries the second stage's exit but no entry, so the trigger cannot be recovered from scripts alone.",
+      "replacement_evidence": "the original town menu builder / teCreateSubEventMenu handler or whichever engine path inserts 150 / 151 (source-research request P-051); when located, replace this entry with the real rule and delete it.",
+      "not_supported": [
+        "that the original uses the same trigger",
+        "that 148 / 149 disappear in the original",
+        "any effect outside town 14's 145 sub-menu"
+      ]
+    }
+  ]
+}

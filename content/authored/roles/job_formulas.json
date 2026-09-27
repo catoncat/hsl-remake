@@ -1,0 +1,2844 @@
+{
+  "schema": "hsl_job_formulas.v1",
+  "evidence_tier": "static-derived",
+  "evidence": [
+    "docs/evidence_packets/static_reverse/original_job_stats.md",
+    "docs/evidence_packets/static_reverse/original_job_stats_91_99.md",
+    "docs/evidence_packets/static_reverse/original_mobile_jobs.md",
+    "docs/evidence_packets/static_reverse/original_campaign_actors.md",
+    "docs/evidence_packets/static_reverse/original_town_job_up.md",
+    "docs/evidence_packets/static_reverse/original_auto_growth.md"
+  ],
+  "term_format": "A stat is the integer sum of its terms. A term [mul, var, div] is mul*var/div, [mul, var, div, pre] is mul*(var/pre)/div (every division is integer division, evaluated left to right as written), a bare integer is a constant. Variables: str dex mind con level hp_level (hp_level is level when the source mode has bit 0x10000, else 0).",
+  "stat_format": {
+    "magic_attack": "sum(terms); then min(cap) when cap is set; then (value-soft_knee)/2+soft_knee when soft_knee is set and value > soft_knee; then + bonus",
+    "resist": "five rows in element order earth water air fire mind; each is min(cap, p*mind/100 + con/div) for a row [p, div]",
+    "caps": "four base-attribute caps in str dex mind con order (native cap table 0x4786bc)",
+    "allocation_quota": "automatic five-point allocation quota per str dex mind con (native quota dispatch 0x43a128)"
+  },
+  "variables": [
+    "str",
+    "dex",
+    "mind",
+    "con",
+    "level",
+    "hp_level"
+  ],
+  "jobs": {
+    "80": {
+      "caps": {
+        "str": 90,
+        "dex": 88,
+        "mind": 80,
+        "con": 94
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          180,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          8
+        ]
+      ],
+      "max_mp": [
+        [
+          80,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          6
+        ]
+      ],
+      "attack": [
+        [
+          116,
+          "str",
+          100,
+          2
+        ],
+        [
+          36,
+          "dex",
+          100
+        ],
+        16
+      ],
+      "defense": [
+        [
+          20,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          5
+        ],
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "con",
+          3
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            10,
+            "mind",
+            100
+          ],
+          [
+            1,
+            "level",
+            1
+          ],
+          16
+        ],
+        "cap": 76,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          90,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 40,
+        "rows": [
+          [
+            40,
+            4
+          ],
+          [
+            26,
+            5
+          ],
+          [
+            20,
+            5
+          ],
+          [
+            46,
+            4
+          ],
+          [
+            10,
+            6
+          ]
+        ]
+      }
+    },
+    "81": {
+      "caps": {
+        "str": 130,
+        "dex": 112,
+        "mind": 100,
+        "con": 110
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          180,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          8
+        ]
+      ],
+      "max_mp": [
+        [
+          80,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          6
+        ]
+      ],
+      "attack": [
+        [
+          116,
+          "str",
+          100,
+          2
+        ],
+        [
+          36,
+          "dex",
+          100
+        ],
+        16
+      ],
+      "defense": [
+        [
+          20,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          5
+        ],
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "con",
+          3
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            10,
+            "mind",
+            100
+          ],
+          [
+            1,
+            "level",
+            1
+          ],
+          16
+        ],
+        "cap": 76,
+        "bonus": 30
+      },
+      "speed": [
+        [
+          90,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 45,
+        "rows": [
+          [
+            56,
+            3
+          ],
+          [
+            32,
+            4
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            64,
+            3
+          ],
+          [
+            20,
+            5
+          ]
+        ]
+      }
+    },
+    "82": {
+      "caps": {
+        "str": 570,
+        "dex": 690,
+        "mind": 490,
+        "con": 750
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          180,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          8
+        ]
+      ],
+      "max_mp": [
+        [
+          80,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          6
+        ]
+      ],
+      "attack": [
+        [
+          116,
+          "str",
+          100,
+          2
+        ],
+        [
+          36,
+          "dex",
+          100
+        ],
+        16
+      ],
+      "defense": [
+        [
+          20,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          5
+        ],
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "con",
+          3
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            10,
+            "mind",
+            100
+          ],
+          [
+            1,
+            "level",
+            1
+          ],
+          16
+        ],
+        "cap": 76,
+        "bonus": 32
+      },
+      "speed": [
+        [
+          90,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 50,
+        "rows": [
+          [
+            62,
+            3
+          ],
+          [
+            38,
+            3
+          ],
+          [
+            30,
+            3
+          ],
+          [
+            66,
+            3
+          ],
+          [
+            26,
+            4
+          ]
+        ]
+      }
+    },
+    "83": {
+      "caps": {
+        "str": 96,
+        "dex": 98,
+        "mind": 70,
+        "con": 88
+      },
+      "allocation_quota": [
+        1,
+        2,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          165,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          7
+        ]
+      ],
+      "max_mp": [
+        [
+          40,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          8
+        ]
+      ],
+      "attack": [
+        [
+          70,
+          "str",
+          100,
+          2
+        ],
+        [
+          40,
+          "dex",
+          100
+        ],
+        16
+      ],
+      "defense": [
+        [
+          28,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          4
+        ],
+        [
+          1,
+          "dex",
+          5
+        ],
+        [
+          1,
+          "con",
+          3
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            5,
+            "mind",
+            100
+          ],
+          [
+            1,
+            "level",
+            1
+          ],
+          8
+        ],
+        "cap": 50,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          94,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 36,
+        "rows": [
+          [
+            20,
+            5
+          ],
+          [
+            16,
+            4
+          ],
+          [
+            46,
+            4
+          ],
+          [
+            32,
+            4
+          ],
+          [
+            30,
+            5
+          ]
+        ]
+      }
+    },
+    "84": {
+      "caps": {
+        "str": 610,
+        "dex": 750,
+        "mind": 370,
+        "con": 550
+      },
+      "allocation_quota": [
+        1,
+        2,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          165,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          7
+        ]
+      ],
+      "max_mp": [
+        [
+          40,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          8
+        ]
+      ],
+      "attack": [
+        [
+          70,
+          "str",
+          100,
+          2
+        ],
+        [
+          40,
+          "dex",
+          100
+        ],
+        16
+      ],
+      "defense": [
+        [
+          28,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          4
+        ],
+        [
+          1,
+          "dex",
+          5
+        ],
+        [
+          1,
+          "con",
+          3
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            5,
+            "mind",
+            100
+          ],
+          [
+            1,
+            "level",
+            1
+          ],
+          8
+        ],
+        "cap": 50,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          94,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 46,
+        "rows": [
+          [
+            34,
+            4
+          ],
+          [
+            30,
+            4
+          ],
+          [
+            56,
+            3
+          ],
+          [
+            46,
+            4
+          ],
+          [
+            40,
+            4
+          ]
+        ]
+      }
+    },
+    "85": {
+      "caps": {
+        "str": 88,
+        "dex": 88,
+        "mind": 88,
+        "con": 88
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          6
+        ],
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          160,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          110,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "attack": [
+        [
+          28,
+          "dex",
+          100
+        ],
+        [
+          98,
+          "str",
+          100,
+          2
+        ],
+        6
+      ],
+      "defense": [
+        [
+          1,
+          "con",
+          3
+        ],
+        [
+          1,
+          "mind",
+          7
+        ],
+        [
+          22,
+          "str",
+          100
+        ],
+        [
+          1,
+          "dex",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            30,
+            "mind",
+            100
+          ],
+          [
+            2,
+            "level",
+            1
+          ]
+        ],
+        "soft_knee": 44,
+        "bonus": 45
+      },
+      "speed": [
+        [
+          94,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 50,
+        "rows": [
+          [
+            40,
+            3
+          ],
+          [
+            46,
+            2
+          ],
+          [
+            24,
+            3
+          ],
+          [
+            38,
+            4
+          ],
+          [
+            32,
+            3
+          ]
+        ]
+      }
+    },
+    "86": {
+      "caps": {
+        "str": 96,
+        "dex": 102,
+        "mind": 142,
+        "con": 112
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          6
+        ],
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          160,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          110,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "attack": [
+        [
+          28,
+          "dex",
+          100
+        ],
+        [
+          98,
+          "str",
+          100,
+          2
+        ],
+        6
+      ],
+      "defense": [
+        [
+          1,
+          "con",
+          3
+        ],
+        [
+          1,
+          "mind",
+          7
+        ],
+        [
+          22,
+          "str",
+          100
+        ],
+        [
+          1,
+          "dex",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            30,
+            "mind",
+            100
+          ],
+          [
+            2,
+            "level",
+            1
+          ]
+        ],
+        "soft_knee": 44,
+        "bonus": 60
+      },
+      "speed": [
+        [
+          94,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 56,
+        "rows": [
+          [
+            52,
+            3
+          ],
+          [
+            58,
+            2
+          ],
+          [
+            36,
+            3
+          ],
+          [
+            46,
+            3
+          ],
+          [
+            44,
+            3
+          ]
+        ]
+      }
+    },
+    "87": {
+      "caps": {
+        "str": 450,
+        "dex": 570,
+        "mind": 950,
+        "con": 550
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          6
+        ],
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          160,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          110,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "attack": [
+        [
+          28,
+          "dex",
+          100
+        ],
+        [
+          98,
+          "str",
+          100,
+          2
+        ],
+        6
+      ],
+      "defense": [
+        [
+          1,
+          "con",
+          3
+        ],
+        [
+          1,
+          "mind",
+          7
+        ],
+        [
+          22,
+          "str",
+          100
+        ],
+        [
+          1,
+          "dex",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            30,
+            "mind",
+            100
+          ],
+          [
+            2,
+            "level",
+            1
+          ]
+        ],
+        "soft_knee": 44,
+        "bonus": 60
+      },
+      "speed": [
+        [
+          94,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 70,
+        "rows": [
+          [
+            70,
+            3
+          ],
+          [
+            72,
+            2
+          ],
+          [
+            50,
+            3
+          ],
+          [
+            58,
+            3
+          ],
+          [
+            62,
+            3
+          ]
+        ]
+      }
+    },
+    "88": {
+      "caps": {
+        "str": 92,
+        "dex": 96,
+        "mind": 74,
+        "con": 90
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          120,
+          "hp_level",
+          100
+        ],
+        [
+          170,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          8
+        ]
+      ],
+      "max_mp": [
+        [
+          1,
+          "con",
+          12
+        ],
+        [
+          32,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          36,
+          "dex",
+          100
+        ],
+        [
+          70,
+          "str",
+          100
+        ],
+        12
+      ],
+      "defense": [
+        [
+          1,
+          "dex",
+          5
+        ],
+        [
+          1,
+          "mind",
+          3
+        ],
+        [
+          20,
+          "str",
+          100
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            5,
+            "mind",
+            100
+          ],
+          8,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 60,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          96,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 36,
+        "rows": [
+          [
+            16,
+            4
+          ],
+          [
+            38,
+            3
+          ],
+          [
+            20,
+            4
+          ],
+          [
+            20,
+            5
+          ],
+          [
+            10,
+            4
+          ]
+        ]
+      }
+    },
+    "89": {
+      "caps": {
+        "str": 570,
+        "dex": 730,
+        "mind": 330,
+        "con": 690
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          120,
+          "hp_level",
+          100
+        ],
+        [
+          170,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          8
+        ]
+      ],
+      "max_mp": [
+        [
+          1,
+          "con",
+          12
+        ],
+        [
+          32,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          36,
+          "dex",
+          100
+        ],
+        [
+          70,
+          "str",
+          100
+        ],
+        12
+      ],
+      "defense": [
+        [
+          1,
+          "dex",
+          5
+        ],
+        [
+          1,
+          "mind",
+          3
+        ],
+        [
+          20,
+          "str",
+          100
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            5,
+            "mind",
+            100
+          ],
+          8,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 60,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          96,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 44,
+        "rows": [
+          [
+            26,
+            3
+          ],
+          [
+            56,
+            3
+          ],
+          [
+            32,
+            3
+          ],
+          [
+            38,
+            4
+          ],
+          [
+            14,
+            3
+          ]
+        ]
+      }
+    },
+    "90": {
+      "caps": {
+        "str": 84,
+        "dex": 78,
+        "mind": 100,
+        "con": 90
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          5
+        ],
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          150,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          120,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          2
+        ]
+      ],
+      "attack": [
+        [
+          20,
+          "dex",
+          100
+        ],
+        [
+          96,
+          "str",
+          100,
+          3
+        ],
+        6
+      ],
+      "defense": [
+        [
+          36,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          8
+        ],
+        [
+          1,
+          "dex",
+          4
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            40,
+            "mind",
+            100
+          ],
+          [
+            2,
+            "level",
+            1
+          ]
+        ],
+        "soft_knee": 50,
+        "bonus": 55
+      },
+      "speed": [
+        [
+          94,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 45,
+        "rows": [
+          [
+            42,
+            4
+          ],
+          [
+            48,
+            4
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            40,
+            4
+          ],
+          [
+            28,
+            4
+          ]
+        ]
+      }
+    },
+    "91": {
+      "caps": {
+        "str": 430,
+        "dex": 610,
+        "mind": 1250,
+        "con": 500
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          5
+        ],
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          150,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          120,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          2
+        ]
+      ],
+      "attack": [
+        [
+          20,
+          "dex",
+          100
+        ],
+        [
+          96,
+          "str",
+          100,
+          3
+        ],
+        6
+      ],
+      "defense": [
+        [
+          36,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          8
+        ],
+        [
+          1,
+          "dex",
+          4
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            40,
+            "mind",
+            100
+          ],
+          [
+            2,
+            "level",
+            1
+          ]
+        ],
+        "soft_knee": 50,
+        "bonus": 70
+      },
+      "speed": [
+        [
+          94,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 64,
+        "rows": [
+          [
+            50,
+            3
+          ],
+          [
+            56,
+            4
+          ],
+          [
+            34,
+            3
+          ],
+          [
+            50,
+            4
+          ],
+          [
+            42,
+            3
+          ]
+        ]
+      }
+    },
+    "92": {
+      "caps": {
+        "str": 92,
+        "dex": 84,
+        "mind": 78,
+        "con": 98
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          120,
+          "hp_level",
+          100
+        ],
+        [
+          190,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          8
+        ]
+      ],
+      "max_mp": [
+        [
+          24,
+          "con",
+          100
+        ],
+        [
+          80,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          40,
+          "dex",
+          100
+        ],
+        [
+          105,
+          "str",
+          100,
+          2
+        ],
+        14
+      ],
+      "defense": [
+        [
+          1,
+          "con",
+          3
+        ],
+        [
+          16,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          4
+        ],
+        [
+          1,
+          "dex",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            25,
+            "mind",
+            100
+          ],
+          27,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 70,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          80,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 40,
+        "rows": [
+          [
+            10,
+            4
+          ],
+          [
+            16,
+            4
+          ],
+          [
+            40,
+            3
+          ],
+          [
+            14,
+            4
+          ],
+          [
+            30,
+            5
+          ]
+        ]
+      }
+    },
+    "93": {
+      "caps": {
+        "str": 550,
+        "dex": 770,
+        "mind": 390,
+        "con": 730
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          120,
+          "hp_level",
+          100
+        ],
+        [
+          190,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          8
+        ]
+      ],
+      "max_mp": [
+        [
+          24,
+          "con",
+          100
+        ],
+        [
+          80,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          40,
+          "dex",
+          100
+        ],
+        [
+          105,
+          "str",
+          100,
+          2
+        ],
+        14
+      ],
+      "defense": [
+        [
+          1,
+          "con",
+          3
+        ],
+        [
+          16,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          4
+        ],
+        [
+          1,
+          "dex",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            25,
+            "mind",
+            100
+          ],
+          27,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 70,
+        "bonus": 20
+      },
+      "speed": [
+        [
+          80,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 50,
+        "rows": [
+          [
+            20,
+            3
+          ],
+          [
+            34,
+            4
+          ],
+          [
+            57,
+            3
+          ],
+          [
+            26,
+            3
+          ],
+          [
+            48,
+            4
+          ]
+        ]
+      }
+    },
+    "94": {
+      "caps": {
+        "str": 107,
+        "dex": 80,
+        "mind": 66,
+        "con": 99
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          6
+        ],
+        [
+          150,
+          "hp_level",
+          100
+        ],
+        [
+          200,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          1,
+          "con",
+          14
+        ],
+        [
+          20,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          45,
+          "dex",
+          100
+        ],
+        [
+          120,
+          "str",
+          100,
+          2
+        ],
+        12
+      ],
+      "defense": [
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "mind",
+          3
+        ],
+        [
+          32,
+          "str",
+          100
+        ],
+        [
+          1,
+          "con",
+          2
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            2,
+            "mind",
+            100
+          ],
+          3,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 30,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          60,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 34,
+        "rows": [
+          [
+            36,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            42,
+            4
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            10,
+            6
+          ]
+        ]
+      }
+    },
+    "95": {
+      "caps": {
+        "str": 750,
+        "dex": 500,
+        "mind": 350,
+        "con": 850
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          6
+        ],
+        [
+          150,
+          "hp_level",
+          100
+        ],
+        [
+          200,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          1,
+          "con",
+          14
+        ],
+        [
+          20,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          45,
+          "dex",
+          100
+        ],
+        [
+          120,
+          "str",
+          100,
+          2
+        ],
+        12
+      ],
+      "defense": [
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "mind",
+          3
+        ],
+        [
+          32,
+          "str",
+          100
+        ],
+        [
+          1,
+          "con",
+          2
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            2,
+            "mind",
+            100
+          ],
+          3,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 30,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          60,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 45,
+        "rows": [
+          [
+            48,
+            2
+          ],
+          [
+            16,
+            3
+          ],
+          [
+            55,
+            3
+          ],
+          [
+            40,
+            4
+          ],
+          [
+            20,
+            5
+          ]
+        ]
+      }
+    },
+    "96": {
+      "caps": {
+        "str": 80,
+        "dex": 84,
+        "mind": 80,
+        "con": 106
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          4
+        ],
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          90,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          1,
+          "con",
+          20
+        ],
+        [
+          38,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          28,
+          "dex",
+          100
+        ],
+        [
+          90,
+          "str",
+          100,
+          2
+        ],
+        24
+      ],
+      "defense": [
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "mind",
+          3
+        ],
+        [
+          40,
+          "str",
+          100
+        ],
+        [
+          1,
+          "con",
+          2
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            5,
+            "mind",
+            100
+          ],
+          12,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 60,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          92,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 30,
+        "rows": [
+          [
+            18,
+            4
+          ],
+          [
+            11,
+            5
+          ],
+          [
+            15,
+            3
+          ],
+          [
+            16,
+            4
+          ],
+          [
+            13,
+            6
+          ]
+        ]
+      }
+    },
+    "97": {
+      "caps": {
+        "str": 950,
+        "dex": 850,
+        "mind": 650,
+        "con": 1050
+      },
+      "allocation_quota": [
+        1,
+        1,
+        1,
+        2
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          3
+        ],
+        [
+          170,
+          "hp_level",
+          100
+        ],
+        [
+          240,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          1,
+          "con",
+          3
+        ],
+        [
+          110,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          40,
+          "dex",
+          100
+        ],
+        [
+          110,
+          "str",
+          100,
+          2
+        ],
+        12
+      ],
+      "defense": [
+        [
+          1,
+          "con",
+          3
+        ],
+        [
+          1,
+          "dex",
+          5
+        ],
+        [
+          28,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            12,
+            "mind",
+            100
+          ],
+          19,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 75,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          80,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 66,
+        "rows": [
+          [
+            55,
+            4
+          ],
+          [
+            58,
+            3
+          ],
+          [
+            52,
+            3
+          ],
+          [
+            56,
+            3
+          ],
+          [
+            50,
+            5
+          ]
+        ]
+      }
+    },
+    "98": {
+      "caps": {
+        "str": 90,
+        "dex": 82,
+        "mind": 90,
+        "con": 90
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          8
+        ],
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          110,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          36,
+          "con",
+          100
+        ],
+        [
+          90,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          42,
+          "dex",
+          100
+        ],
+        [
+          99,
+          "str",
+          100,
+          2
+        ],
+        9
+      ],
+      "defense": [
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "mind",
+          5
+        ],
+        [
+          22,
+          "str",
+          100
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            28,
+            "mind",
+            100
+          ],
+          26,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 86,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          88,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 42,
+        "rows": [
+          [
+            10,
+            4
+          ],
+          [
+            40,
+            3
+          ],
+          [
+            20,
+            4
+          ],
+          [
+            24,
+            4
+          ],
+          [
+            38,
+            3
+          ]
+        ]
+      }
+    },
+    "99": {
+      "caps": {
+        "str": 560,
+        "dex": 710,
+        "mind": 530,
+        "con": 690
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "str",
+          8
+        ],
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          110,
+          "con",
+          100
+        ]
+      ],
+      "max_mp": [
+        [
+          36,
+          "con",
+          100
+        ],
+        [
+          90,
+          "mind",
+          100
+        ]
+      ],
+      "attack": [
+        [
+          42,
+          "dex",
+          100
+        ],
+        [
+          99,
+          "str",
+          100,
+          2
+        ],
+        9
+      ],
+      "defense": [
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "mind",
+          5
+        ],
+        [
+          22,
+          "str",
+          100
+        ],
+        [
+          1,
+          "con",
+          4
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            28,
+            "mind",
+            100
+          ],
+          26,
+          [
+            1,
+            "level",
+            1
+          ]
+        ],
+        "cap": 86,
+        "bonus": 26
+      },
+      "speed": [
+        [
+          88,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 56,
+        "rows": [
+          [
+            30,
+            4
+          ],
+          [
+            60,
+            3
+          ],
+          [
+            40,
+            4
+          ],
+          [
+            46,
+            3
+          ],
+          [
+            72,
+            2
+          ]
+        ]
+      }
+    },
+    "100": {
+      "caps": {
+        "str": 92,
+        "dex": 90,
+        "mind": 84,
+        "con": 90
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          170,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          8
+        ]
+      ],
+      "max_mp": [
+        [
+          90,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          6
+        ]
+      ],
+      "attack": [
+        [
+          110,
+          "str",
+          100,
+          2
+        ],
+        [
+          40,
+          "dex",
+          100
+        ],
+        16
+      ],
+      "defense": [
+        [
+          18,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          5
+        ],
+        [
+          1,
+          "dex",
+          3
+        ],
+        [
+          1,
+          "con",
+          3
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            14,
+            "mind",
+            100
+          ],
+          [
+            1,
+            "level",
+            1
+          ],
+          16
+        ],
+        "cap": 80,
+        "bonus": 0
+      },
+      "speed": [
+        [
+          95,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 40,
+        "rows": [
+          [
+            30,
+            5
+          ],
+          [
+            26,
+            5
+          ],
+          [
+            46,
+            4
+          ],
+          [
+            30,
+            5
+          ],
+          [
+            16,
+            6
+          ]
+        ]
+      },
+      "evidence_tier": "authored",
+      "note": "jobDarkAngel 100 (TYPE.H) — the authored sequel job 龍騎士: formulas written for the remake, no original counterpart (the original declares the code but no stat rows)."
+    },
+    "101": {
+      "symbol": "jobDragonLord",
+      "name_text": "龍騎士",
+      "caps": {
+        "str": 96,
+        "dex": 86,
+        "mind": 88,
+        "con": 94
+      },
+      "allocation_quota": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "max_hp": [
+        [
+          1,
+          "hp_level",
+          1
+        ],
+        [
+          180,
+          "con",
+          100
+        ],
+        [
+          1,
+          "str",
+          6
+        ]
+      ],
+      "max_mp": [
+        [
+          100,
+          "mind",
+          100
+        ],
+        [
+          1,
+          "con",
+          5
+        ]
+      ],
+      "attack": [
+        [
+          120,
+          "str",
+          100,
+          2
+        ],
+        [
+          30,
+          "dex",
+          100
+        ],
+        18
+      ],
+      "defense": [
+        [
+          20,
+          "str",
+          100
+        ],
+        [
+          1,
+          "mind",
+          5
+        ],
+        [
+          1,
+          "dex",
+          4
+        ],
+        [
+          1,
+          "con",
+          3
+        ]
+      ],
+      "magic_attack": {
+        "terms": [
+          [
+            18,
+            "mind",
+            100
+          ],
+          [
+            1,
+            "level",
+            1
+          ],
+          16
+        ],
+        "cap": 84,
+        "bonus": 2
+      },
+      "speed": [
+        [
+          90,
+          "dex",
+          100
+        ]
+      ],
+      "resist": {
+        "cap": 44,
+        "rows": [
+          [
+            30,
+            5
+          ],
+          [
+            26,
+            5
+          ],
+          [
+            30,
+            5
+          ],
+          [
+            50,
+            4
+          ],
+          [
+            18,
+            6
+          ]
+        ]
+      },
+      "evidence_tier": "authored",
+      "note": "The authored sequel job 龍騎將 (code 101): TYPE.H has no `#define` for it; the row declares its own symbol jobDragonLord, which an authored character's `job =` names. Formulas written for the remake, no original counterpart."
+    }
+  }
+}
