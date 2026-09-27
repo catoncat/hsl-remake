@@ -679,6 +679,7 @@ func _camera_follows_last_walk() -> void:
 func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, source_event_id: String, source_token: String, speed_arg: float = 0.0, keep_pose_frame_ticks: int = 0) -> void:
 	var speed: float = coordinator.walk_pixels_per_tick(int(speed_arg))
 	var terrain := _walk_terrain()
+	target = _fixed_destination(unit_id, target, terrain["cell_size"])
 	var route: Dictionary = ScriptWalkPath.route(terrain["tiles"], terrain["map_size"], start, target, terrain["cell_size"], _unit_flies(unit_id))
 	var points: Array = route["points"]
 	var seconds: float = ScriptWalkPath.length(start, points) / (coordinator.walk_pixels_per_second * speed / coordinator.DEFAULT_WALK_SPEED)
@@ -715,6 +716,22 @@ func _walk_terrain() -> Dictionary:
 		var loaded: Dictionary = WrdTerrainTiles.load_tiles(path) if path != "" else {}
 		_story_terrain = {"tiles": loaded.get("tiles", {}) if bool(loaded.get("ok", false)) else {}, "map_size": loaded.get("map_size", Vector2i.ZERO)}
 	return {"tiles": _story_terrain["tiles"], "map_size": _story_terrain["map_size"], "cell_size": cell_size}
+
+
+## The walk-destination write (0x44fcf0／0x44fd90 → 0x44fbd0) moves a ground walker's 0xff
+## endpoint to its landing before the walker 0x453b90 routes there; the scenario records
+## that landing (position_source.story_endpoint_landing_from → coord), so the walk to that
+## endpoint heads for the landing cell and stops where PlayLoop has the unit.
+func _fixed_destination(unit_id: String, target: Vector2, cell_size: Vector2) -> Vector2:
+	for unit in runtime.play_loop.get("units", []):
+		if typeof(unit) != TYPE_DICTIONARY or str(unit.get("id", "")) != unit_id:
+			continue
+		var from: Variant = (unit.get("position_source", {}) as Dictionary).get("story_endpoint_landing_from")
+		if from is Array and from.size() == 2 and ScriptWalkPath.cell_of(target, cell_size) == Vector2i(int(from[0]), int(from[1])):
+			var coord: Variant = unit.get("coord")
+			if coord is Vector2i:
+				return ScriptWalkPath.cell_centre(coord, cell_size)
+	return target
 
 
 func _unit_flies(unit_id: String) -> bool:

@@ -19,7 +19,7 @@ extends RefCounted
 ## blocked neighbours is dropped when rand(100) < 80) resolve to keep-first and accept.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
-##   rules: provisional (0x413740 random branches fixed keep-first／accept; breadth-first past a stall)
+##   rules: provisional (0x413740 random branches fixed keep-first／accept)
 const HARD_BLOCK := 0x4000
 const MAX_HEIGHT_STEP := 2
 const OUTSIDE_SOURCE := 0x80
@@ -80,15 +80,6 @@ static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target:
 		if seen.has(current):
 			break
 		seen[current] = true
-	if current != target_cell:
-		# The chain stalls on a local nearest cell although the target is reachable (玩家第 19
-		# 場's 雷特 walk stops at (35,25) under 0x4111d0 alone; the original opening snapshot
-		# has him on (32,23)): the walk goes on breadth-first to the target. The original
-		# mechanism past the stall is not read (provisional).
-		var rest := _breadth_first(tiles, map_size, current, target_cell, flying)
-		if not rest.is_empty():
-			cells.append_array(rest)
-			current = target_cell
 	var reached := current == target_cell
 	var points: Array = []
 	for index in range(1, cells.size()):
@@ -96,34 +87,6 @@ static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target:
 	if reached and not points.is_empty():
 		points[points.size() - 1] = target
 	return {"status": "grid_path" if reached else "nearest_reachable", "cells": cells, "points": points}
-
-
-## Breadth-first cells (without `from`) to `to` under the flood's terrain rules, up／down／
-## left／right, inside the map plus one outside ring beyond both endpoints; empty when
-## unreachable.
-static func _breadth_first(tiles: Dictionary, map_size: Vector2i, from: Vector2i, to: Vector2i, flying: bool) -> Array:
-	var low := Vector2i(mini(0, mini(from.x, to.x)) - 1, mini(0, mini(from.y, to.y)) - 1)
-	var high := Vector2i(maxi(map_size.x - 1, maxi(from.x, to.x)) + 1, maxi(map_size.y - 1, maxi(from.y, to.y)) + 1)
-	var previous := {from: from}
-	var queue: Array[Vector2i] = [from]
-	var head := 0
-	while head < queue.size():
-		var cell: Vector2i = queue[head]
-		head += 1
-		if cell == to:
-			var path: Array = []
-			while cell != from:
-				path.push_front(cell)
-				cell = previous[cell]
-			return path
-		for direction in [1, 2, 3, 4]:
-			var next: Vector2i = cell + STEP[direction]
-			if next.x < low.x or next.y < low.y or next.x > high.x or next.y > high.y or previous.has(next):
-				continue
-			if can_step(tiles, map_size, cell, next, flying):
-				previous[next] = cell
-				queue.append(next)
-	return []
 
 
 ## One 0x411080 call from `origin`: the cells walked (without `origin`), empty when the

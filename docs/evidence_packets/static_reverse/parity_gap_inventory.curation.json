@@ -914,12 +914,12 @@
     },
     {
       "id": "script-walk-path",
-      "difference": "寻路链已照原版；0x413740 两处随机分支取定值，链停在可达目标前的局部最近格时续以广度优先，走完后的停点规则未读",
-      "original": "0x4111d0→0x411080 洪泛 18/16/14/12、缓冲 (2r+1)²、行主序最近格、0x410a50 严格下降深搜；unicorn 60 条逐格一致",
+      "difference": "寻路链与走完后的位置提交已照原版（开局剧情走位）；0x413740 两处随机分支取定值",
+      "original": "0x4111d0→0x411080 洪泛 18/16/14/12、行主序最近格、0x410a50 严格下降深搜；0x453b90 走完在所站格 0x411a30 登记（0x4541a1），目的格写入时已经 0x44fbd0；飞行 mode 6 走到 0xff 终点",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_walk_path.md"
       ],
-      "remake": "ScriptWalkPath 移植原链逐格求路；随机分支取先到先留／接受；局部停滞时广度优先续到目标",
+      "remake": "ScriptWalkPath 移植原链逐格求路，随机分支取先到先留／接受；演出朝记录的 0x44fbd0 落点寻路，PlayLoop 与演出停点一致",
       "remake_code": [
         "game/battle/runtime/opening/ScriptWalkPath.gd",
         "game/battle/runtime/opening/OpeningStoryObjects.gd"
@@ -966,16 +966,16 @@
     },
     {
       "id": "level-specific-placement",
-      "difference": "两名地面走位单位终点四邻全是 0xff：沙羅尼亞近郊（LEVEL034）037_2、禁忌之魂・墳場地下（LEVEL080）嚎 重制留在终点，原版站到行走起点一侧最近的可达格",
-      "original": "0x44fbd0 在这两格无候选（原指令实跑），原版停点来自行走寻路本身，未读",
+      "difference": "已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剩开局快照报告待重生成",
+      "original": "0x44fbd0 在这两格无候选；0x453b90 走完在链停格 0x411a30 登记（0x4541a1），原指令实跑登记格即快照格",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_entry.md"
       ],
-      "remake": "生成器 script_landing 无候选时留在终点",
+      "remake": "生成器 script_landing 无候选时 script_walk_stop 跑同一条链，记 story_walk_stop_from",
       "remake_code": [
         "tools/hsltools/levels/battle.py"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "some_levels",
       "effort": "S",
       "category": "剧情走位"
@@ -2671,7 +2671,7 @@
     "scope:docs/evidence_packets/static_reverse/original_script_camera_scroll.md|provisional|16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定）": {
       "item": "timing-estimates"
     },
-    "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、链停滞时的广度优先续走、按键快进（remake-invented）": {
+    "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、按键快进（remake-invented）": {
       "item": [
         "script-walk-path",
         "script-fast-forward"

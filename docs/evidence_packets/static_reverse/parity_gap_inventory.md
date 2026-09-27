@@ -14,8 +14,8 @@
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 20 |
-| 读了一部分 | 50 |
+| 已读完只差照做 | 21 |
+| 读了一部分 | 49 |
 | 未读 | 6 |
 | 原版无对应代码 | 17 |
 
@@ -59,19 +59,19 @@
 | 5 | 原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标点道具当帧出现、确认后多留一 tick 已照原版（ITEMFX2） （`cursor-hide-item-icon`） | 已读完只差照做 | 部分关卡 | S | 光标与字体 | — |
 | 6 | 剧情压黑每级按黑层 alpha n／16 画，与原版每分量 ⌊c·(16−n)／16⌋ 同一线性比例，只差原版 5／6 位分量截断的末位；节拍照原版（每 3 tick 一级、16 级、不等待） （`dark-screen-fade`） | 已读完只差照做 | 部分关卡 | S | 标题与过场 | — |
 | 7 | 打人閃電（LEVEL010）落雷的规则与演出已照原版（镜头滚到雷点、AIR14 两帧之一 2 倍加色画 11 帧再淡出 15 帧、FireBomb 162／165 在雷点、第 27 tick 受击者浮红色伤害数字并左右抖 60 tick、停 80／20 tick 后剧本往下走）；闪电画在 FireBomb 之上是按平面号推定 （`drop-lightning-presentation`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
-| 8 | 地图物件闪烁已照原版逐 tick 步进与加色＋层级画法，只剩层级表逐项值与通道舍入未逐像素对照 （`map-object-flash`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
-| 9 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
-| 10 | 没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势；002 s_shape 绝技条带未导入 （`cast-strip-missing`） | 已读完只差照做 | 部分关卡 | M | 特写与施法演出 | — |
-| 11 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
-| 12 | 战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN：拿起、点槽装上旧装备进手、空手卸下进手、丟棄钮只清非重要持物、右键先放回再关窗）；剩重制读法：持物是草稿，提交前背包不删格；满包时不能把卸下的装备拿在手上（规则拒绝）；满包持物点格的互换顺序未做；持物移上装备板时左窗改显属性未做；窗内「返回」钮与「道具 n／8」为共用排布 （`battle-equip-drop-hand`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
-| 13 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。剩：对白名字后冒号仍全角（原版半角）；FONT.15 行高按 16（字格 15＋1）；四个函数（0x4264a0／0x42b2b0／0x423c90／0x42d3f0）与资料页 0x4384d5／0x438a92 两行未对上界面；法术受者条旁文字位置为重制画法 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
-| 14 | 地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 15 | 法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出 （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
-| 16 | 原版预设已照原版：移动选格只画范围与选格角括号；OPT-GUIDE=提示 时显示路径线、「移動 3 / 5」费用栏、「可通過，不能停留」「飛行」「無法到達」提示与 AI 走位路径线（重制改良） （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 17 | 各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签与装备说明框的效果解释行两条路径都有 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 18 | 原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良） （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 19 | 原版预设已照原版：AI 待机／守候／麻痺不显示提示、不停顿；OPT-GUIDE=提示 时显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」并停 0.55 s（重制改良） （`wait-cue`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 20 | 绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭）；剩随机用 4 个种子变体代替共享流、出屏按首个插入点判定、角度环／龙卷列等模式插入仍是重制几何 （`special-object-motion`） | 读了一部分 | 每场都看得到 | M | 特写与施法演出 | — |
+| 8 | 已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剩开局快照报告待重生成 （`level-specific-placement`） | 已读完只差照做 | 部分关卡 | S | 剧情走位 | — |
+| 9 | 地图物件闪烁已照原版逐 tick 步进与加色＋层级画法，只剩层级表逐项值与通道舍入未逐像素对照 （`map-object-flash`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
+| 10 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
+| 11 | 没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势；002 s_shape 绝技条带未导入 （`cast-strip-missing`） | 已读完只差照做 | 部分关卡 | M | 特写与施法演出 | — |
+| 12 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
+| 13 | 战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN：拿起、点槽装上旧装备进手、空手卸下进手、丟棄钮只清非重要持物、右键先放回再关窗）；剩重制读法：持物是草稿，提交前背包不删格；满包时不能把卸下的装备拿在手上（规则拒绝）；满包持物点格的互换顺序未做；持物移上装备板时左窗改显属性未做；窗内「返回」钮与「道具 n／8」为共用排布 （`battle-equip-drop-hand`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
+| 14 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。剩：对白名字后冒号仍全角（原版半角）；FONT.15 行高按 16（字格 15＋1）；四个函数（0x4264a0／0x42b2b0／0x423c90／0x42d3f0）与资料页 0x4384d5／0x438a92 两行未对上界面；法术受者条旁文字位置为重制画法 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
+| 15 | 地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 16 | 法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出 （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
+| 17 | 原版预设已照原版：移动选格只画范围与选格角括号；OPT-GUIDE=提示 时显示路径线、「移動 3 / 5」费用栏、「可通過，不能停留」「飛行」「無法到達」提示与 AI 走位路径线（重制改良） （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 18 | 各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签与装备说明框的效果解释行两条路径都有 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 19 | 原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良） （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 20 | 原版预设已照原版：AI 待机／守候／麻痺不显示提示、不停顿；OPT-GUIDE=提示 时显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」并停 0.55 s（重制改良） （`wait-cue`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
 
 ## 全量（按类）
 
@@ -179,10 +179,10 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `level-specific-placement` | 两名地面走位单位终点四邻全是 0xff：沙羅尼亞近郊（LEVEL034）037_2、禁忌之魂・墳場地下（LEVEL080）嚎 重制留在终点，原版站到行走起点一侧最近的可达格 | 0x44fbd0 在这两格无候选（原指令实跑），原版停点来自行走寻路本身，未读<br>[original_script_entry.md](../../../docs/evidence_packets/static_reverse/original_script_entry.md) | 生成器 script_landing 无候选时留在终点<br>[battle.py](../../../tools/hsltools/levels/battle.py) | 读了一部分 | 部分关卡 | S | provenance 2、sentence 2 |
+| `level-specific-placement` | 已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剩开局快照报告待重生成 | 0x44fbd0 在这两格无候选；0x453b90 走完在链停格 0x411a30 登记（0x4541a1），原指令实跑登记格即快照格<br>[original_script_entry.md](../../../docs/evidence_packets/static_reverse/original_script_entry.md) | 生成器 script_landing 无候选时 script_walk_stop 跑同一条链，记 story_walk_stop_from<br>[battle.py](../../../tools/hsltools/levels/battle.py) | 已读完只差照做 | 部分关卡 | S | provenance 2、sentence 2 |
 | `script-walk-speed` | actMoveDispWait 已照原版走同一寻路、保形无声、按速度换帧；无脚本形态时到位即停帧、0x1800 走完后的去向未读；剧情走步声按相对帧 0／3；插播恢复语义暂定 | 0x4501f0 目标格心、+0x80 \|= 0x1800、状态 0x32；寻路链 0x4111d0 不读 +0x80（同 actWalk 路线）；0x1000 跳过换向形态 0x446c40 与走步声 0x409610；两位同置每 tick 调 0x45e5a6，延迟按速度 6／4／2／1<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | _move_disp 目标格心化后走 ScriptWalkPath.route；move_along keep_pose_frame_ticks 保形、无声、每 7／5／2／3 tick 一帧<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_move_disp` | 读了一部分 | 部分关卡 | S | provenance 2 |
 | `script-entry-paths` | 落点只在事件末对最终格检查一次（原版每个安装／行走 token 当时检查）；替代抽数排在出生抽数之后 | 安装无入场态，直接出现在 0x44fbd0 修过的格；替代＝洪泛 12＋行主序曼哈顿最近＋等距硬币；离场末格 engMIX 16 级逐 tick 淡出后注销<br>[original_script_entry.md](../../../docs/evidence_packets/static_reverse/original_script_entry.md)、[original_script_departure.md](../../../docs/evidence_packets/static_reverse/original_script_departure.md) | BattleScriptActorPresentation／ScriptActorCreationRules／BattleDepartureView<br>[BattleScriptActorPresentation.gd](../../../game/battle/scene/BattleScriptActorPresentation.gd)、[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd)、[BattleDepartureView.gd](../../../game/battle/scene/BattleDepartureView.gd) | 读了一部分 | 部分关卡 | M | provenance 3、sentence 1、scope 3、matrix 4 |
-| `script-walk-path` | 寻路链已照原版；0x413740 两处随机分支取定值，链停在可达目标前的局部最近格时续以广度优先，走完后的停点规则未读 | 0x4111d0→0x411080 洪泛 18/16/14/12、缓冲 (2r+1)²、行主序最近格、0x410a50 严格下降深搜；unicorn 60 条逐格一致<br>[original_script_walk_path.md](../../../docs/evidence_packets/static_reverse/original_script_walk_path.md) | ScriptWalkPath 移植原链逐格求路；随机分支取先到先留／接受；局部停滞时广度优先续到目标<br>[ScriptWalkPath.gd](../../../game/battle/runtime/opening/ScriptWalkPath.gd)、[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) | 读了一部分 | 部分关卡 | M | provenance 3、sentence 1、scope 2、matrix 2 |
+| `script-walk-path` | 寻路链与走完后的位置提交已照原版（开局剧情走位）；0x413740 两处随机分支取定值 | 0x4111d0→0x411080 洪泛 18/16/14/12、行主序最近格、0x410a50 严格下降深搜；0x453b90 走完在所站格 0x411a30 登记（0x4541a1），目的格写入时已经 0x44fbd0；飞行 mode 6 走到 0xff 终点<br>[original_script_walk_path.md](../../../docs/evidence_packets/static_reverse/original_script_walk_path.md) | ScriptWalkPath 移植原链逐格求路，随机分支取先到先留／接受；演出朝记录的 0x44fbd0 落点寻路，PlayLoop 与演出停点一致<br>[ScriptWalkPath.gd](../../../game/battle/runtime/opening/ScriptWalkPath.gd)、[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) | 读了一部分 | 部分关卡 | M | provenance 3、sentence 1、scope 2、matrix 2 |
 
 ### 标题与过场（4）
 

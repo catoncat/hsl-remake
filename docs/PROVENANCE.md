@@ -431,7 +431,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | — | follow walk reading |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md) | random-position slots in table order instead of the native shuffle |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | layout | — | walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over the following actDelay |
-| [ScriptWalkPath](../game/battle/runtime/opening/ScriptWalkPath.gd) | rules | — | 0x413740 random branches fixed keep-first／accept; breadth-first past a stall |
+| [ScriptWalkPath](../game/battle/runtime/opening/ScriptWalkPath.gd) | rules | — | 0x413740 random branches fixed keep-first／accept |
 | [AnimalCastLead](../game/battle/scene/AnimalCastLead.gd) | layout | — | units in the shadow's bucket 0x17 stay under it; planeEffect2 < 0x32 by PROCESS.DEF order |
 | [AnimalCastLead](../game/battle/scene/AnimalCastLead.gd) | timing | — | ±1 call where the afterimage order differs |
 | [BattleAftermath](../game/battle/scene/BattleAftermath.gd) | timing | — | one $ float per action with its recipient — the original keeps a second total 0x4c2978 for the counter |

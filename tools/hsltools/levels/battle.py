@@ -455,6 +455,154 @@ SCRIPT_LANDING_NOTE = ('STORY walk endpoint is a 0xff cell for a ground walker; 
                        'cell its mode-1 flood reaches (docs/evidence_packets/static_reverse/original_script_entry.md).')
 
 
+STORY_WALK_STOP_NOTE = ('STORY walk endpoint is a 0xff cell no ground route reaches; the original walker 0x453b90 registers the cell its '
+                        'route chain stops on (0x4541a1, docs/evidence_packets/static_reverse/original_script_walk_path.md).')
+
+WALK_RADII = (18, 16, 14, 12)
+WALK_STEP = {1: (0, -1), 2: (0, 1), 3: (-1, 0), 4: (1, 0)}
+
+
+def script_walk_stop(grid: list, start: tuple[int, int], dest: tuple[int, int], flying: bool) -> tuple[int, int]:
+    """The cell the original walker 0x453b90 stops on (ScriptWalkPath.route's chain): each
+    0x411080 call floods 18／16／14／12 from the walker (0x40f350 → 0x40ed50, script mode
+    without the map-bound test), moves the destination to the flooded cell nearest by
+    Manhattan distance in row-major order (0x413740), descends strictly (0x410a50／0x410730)
+    and is called again from the segment's end until the destination is reached or no
+    segment comes back; the walker registers the cell it stands on (0x411a30 at 0x4541a1)."""
+    height, width = len(grid), len(grid[0])
+
+    def inside(c):
+        return 0 <= c[0] < width and 0 <= c[1] < height
+
+    def level(c):
+        tile = grid[c[1]][c[0]]
+        return 255 if tile['b'] else int(tile['h'])
+
+    def flood(origin, radius):
+        size = 2 * radius + 1
+        values = [0] * (size * size)
+        values[radius * size + radius] = radius + 1
+
+        def step(cell, budget, direction, previous):
+            while True:
+                bx, by = cell[0] - origin[0] + radius, cell[1] - origin[1] + radius
+                if not (0 <= bx < size and 0 <= by < size):
+                    return
+                index = by * size + bx
+                ins = inside(cell)
+                if ins and int(grid[cell[1]][cell[0]]['t']) & 0x4000:
+                    return
+                h = level(cell) if ins else previous
+                extra = 0
+                if not flying:
+                    gap = h - previous
+                    extra = gap if gap >= 0 else (-gap if -gap >= 3 else 0)
+                    if previous == 0x80:
+                        extra = 0x10 if h == 0xff else 0
+                    if extra > 2:
+                        return
+                if budget <= values[index]:
+                    return
+                values[index] = budget
+                budget -= 1 + extra
+                if budget < 1:
+                    return
+                if direction in (0, 1):
+                    step((cell[0], cell[1] + (-1 if direction == 0 else 1)), budget, direction, h)
+                    step((cell[0] - 1, cell[1]), budget, 2, h)
+                    cell, direction = (cell[0] + 1, cell[1]), 3
+                elif direction == 2:
+                    step((cell[0], cell[1] - 1), budget, 0, h)
+                    step((cell[0], cell[1] + 1), budget, 1, h)
+                    cell = (cell[0] - 1, cell[1])
+                else:
+                    step((cell[0], cell[1] - 1), budget, 0, h)
+                    step((cell[0], cell[1] + 1), budget, 1, h)
+                    cell = (cell[0] + 1, cell[1])
+                previous = h
+
+        source = level(origin) if inside(origin) else 0x80
+        for direction, (dx, dy) in enumerate(((0, -1), (0, 1), (-1, 0), (1, 0))):
+            step((origin[0] + dx, origin[1] + dy), radius, direction, source)
+        return origin, radius, size, values
+
+    def value(fl, cell):
+        origin, radius, size, values = fl
+        bx, by = cell[0] - origin[0] + radius, cell[1] - origin[1] + radius
+        return values[by * size + bx] if 0 <= bx < size and 0 <= by < size else -1
+
+    def nearest(fl, target):
+        origin, radius, size, values = fl
+        best, found = 600000, None
+        for by in range(size):
+            for bx in range(size):
+                if values[by * size + bx]:
+                    cell = (origin[0] - radius + bx, origin[1] - radius + by)
+                    d = abs(cell[0] - target[0]) + abs(cell[1] - target[1])
+                    if d < best:
+                        best, found = d, cell
+        return found
+
+    def descend(fl, target):
+        origin = fl[0]
+        floor = value(fl, target)
+        if floor <= 0 or target == origin:
+            return []
+        dx, dy = target[0] - origin[0], target[1] - origin[1]
+        if dx < 1:
+            order = ((3, 1, 4, 2) if dy < dx else (1, 3, 2, 4)) if dy < 1 else ((3, 2, 4, 1) if dy < dx else (2, 3, 1, 4))
+        else:
+            order = ((4, 1, 3, 2) if dy < dx else (1, 4, 2, 3)) if dy < 1 else ((4, 2, 3, 1) if dy < dx else (2, 4, 1, 3))
+        horizontal = (4, 3) if origin[0] < target[0] else (3, 4)
+        vertical = (2, 1) if origin[1] < target[1] else (1, 2)
+        failed = set()
+
+        def go(cell, direction, depth, previous):
+            if depth > 99:
+                return []
+            v = value(fl, cell)
+            if v < floor or v >= previous:
+                return []
+            if cell == target:
+                return [cell]
+            if (cell, direction) in failed:
+                return []
+            for turn in (direction,) + (horizontal if direction <= 2 else vertical):
+                path = go((cell[0] + WALK_STEP[turn][0], cell[1] + WALK_STEP[turn][1]), turn, depth + 1, v)
+                if path:
+                    return [cell] + path
+            failed.add((cell, direction))
+            return []
+
+        start_value = value(fl, origin)
+        for direction in order:
+            path = go((origin[0] + WALK_STEP[direction][0], origin[1] + WALK_STEP[direction][1]), direction, 1, start_value)
+            if path:
+                return path
+        return []
+
+    current, seen = start, {start}
+    for _ in range(64):
+        if current == dest:
+            break
+        goal, fl = dest, None
+        for radius in WALK_RADII:
+            fl = flood(current, radius)
+            found = nearest(fl, goal)
+            if radius == WALK_RADII[-1] or found is not None:
+                goal = found
+        if goal is None:
+            break
+        segment = descend(fl, goal)
+        if not segment:
+            break
+        current = segment[-1]
+        if current in seen:
+            break
+        seen.add(current)
+    return current
+
+
 def script_landing(grid: list, cell: tuple[int, int], taken: set) -> tuple[int, int] | None:
     """0x44fbd0 for a ground walker whose STORY endpoint is a 0xff／hard-block cell: the cell's
     word is cleared to its low 12 bits for the flood (0x411940: height 0, no flags), a mode-1
@@ -1099,8 +1247,18 @@ def build(level: int) -> dict:
                 actor['position_source']['install_on_blocked_cell'] = True
                 actor['position_note'] = INSTALL_ON_BLOCKED_NOTE
             else:
-                actor['position_source']['story_endpoint_on_blocked_cell'] = True
-                actor['position_note'] = STORY_ENDPOINT_ON_BLOCKED_NOTE
+                moves = actor['position_source'].get('story_movements') or []
+                start = tuple(v // CELL for v in moves[-1]['before']) if moves else cell
+                stop = script_walk_stop(grid, start, cell, flying) if moves and not footprint_radius else cell
+                if stop != cell and stop not in taken:
+                    actor['coord'] = [stop[0], stop[1]]
+                    footprint = _footprint_cells(stop, footprint_radius)
+                    actor['position_evidence_tier'] = 'static-derived'
+                    actor['position_source']['story_walk_stop_from'] = [cell[0], cell[1]]
+                    actor['position_note'] = STORY_WALK_STOP_NOTE
+                else:
+                    actor['position_source']['story_endpoint_on_blocked_cell'] = True
+                    actor['position_note'] = STORY_ENDPOINT_ON_BLOCKED_NOTE
         elif outside or on_blocked or any(point in taken for point in footprint):
             moved = nearest_free(grid, cell, taken, footprint_radius)
             actor['coord'] = [moved[0], moved[1]]

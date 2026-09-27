@@ -1,12 +1,14 @@
 # 剧情走位：逐格路径、Wait 与并行
 
-> evidence: static-derived; provisional: 0x413740 随机分支取定值、链停滞时的广度优先续走、按键快进（remake-invented） · status: live · functions: 0x40eb40, 0x40ed50, 0x40f200, 0x40f350, 0x40f440, 0x40f560, 0x410730, 0x410a50, 0x411080, 0x4111d0, 0x413740, 0x413900, 0x450840, 0x453b90 · tools: run_story_object_terrain_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 原指令实跑五关开局的走位登记格; provisional: 0x413740 随机分支取定值、按键快进（remake-invented） · status: live · functions: 0x407940, 0x40eb40, 0x40ed50, 0x40f200, 0x40f350, 0x40f440, 0x40f560, 0x410730, 0x410a50, 0x411080, 0x4111d0, 0x411a30, 0x411b90, 0x413740, 0x413900, 0x446ad0, 0x44fbd0, 0x44fcf0, 0x44fd90, 0x450840, 0x453b90 · tools: hsltools/levels/battle.py, run_story_object_terrain_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：剧情走位 token 经 `0x4111d0 → 0x411080` 依次洪泛半径 18、16、14、12（`0x40f350`，脚本模式不查地图边界，只受 (2r+1)² 缓冲限制）；前三级只把目的格挪到洪泛内曼哈顿最近格（`0x413740` 行主序），末级由 `0x410a50`／`0x410730` 严格下降深搜取路；走完未到目的格再调，`0x410a50` 无路可走即停。非 Wait 变体写完目的格即放行 VM，只有 Wait 变体走完才放行（static-derived，反汇编与反编译读法；60 条走位原指令执行逐格对照）。
 - 重制：`game/battle/runtime/opening/ScriptWalkPath.gd` 移植整条链；`BattleOpeningCoordinator` 默认不阻塞，只有 Wait 变体经 `_block_on(unit_id)` 等自己的走位者（static-derived）。
-- 差异：`0x413740` 的两处随机分支取定值；链停在可达目标前的局部最近格时重制续以广度优先走到目标；按键快进是 remake-invented（provisional，差异清单 `script-walk-path`／`script-fast-forward`）。
+- 原版走完的位置提交：目的格在写入时已经 `0x44fbd0` 修过；`0x453b90` 走完（到目的格或再调 `0x4111d0` 返回 0）就在所站格 `0x411a30` 登记，不再替代。飞行（`0x446ad0`）走 mode 6，0xff 不挡，走到终点；地面走位者终点 0xff 且四邻无落点时停在链停格（static-derived；原指令实跑 runtime-measured）。
+- 重制：生成器 `script_walk_stop` 让这类地面走位者开局落链停格，演出对记录了 `0x44fbd0` 落点的终点朝落点寻路，PlayLoop 格与演出停点一致（static-derived）。
+- 差异：`0x413740` 的两处随机分支取定值；按键快进是 remake-invented（provisional，差异清单 `script-walk-path`／`script-fast-forward`）。
 
 ## 证据
 
@@ -38,7 +40,27 @@
 SCRIPT_WALK_ROUTES scenarios=199 walks=1817 routed=1375 straight_crossed=167 nearest_reachable=17 unresolved_start=442
 ```
 
-对旧 BFS：1375 条可定位走位中约 370 条格序列改变，终点不变的约 360 条（同距改道、经图外一行或按上坡代价绕行），终点改变的有玩家第 38 场 actor034_2、玩家第 39 场雷特与 STORY009 actor061_1（都是目标围死、按行主序最近格停）。
+对旧 BFS：1375 条可定位走位中约 370 条格序列改变，终点不变的约 360 条（同距改道、经图外一行或按上坡代价绕行），终点改变的有幽闇墳場（LEVEL038）actor034_2 与 STORY009 actor061_1（都是目标围死、按行主序最近格停）。
+
+### 走完后的位置提交
+
+**static-derived**（`hsl01.exe` 反编译与反汇编）
+
+| 地址 | 读法 |
+| --- | --- |
+| `0x44fcf0`／`0x44fd90`（`0x44fd43`／`0x44fdf5`） | 目的地取格心后先 `0x44fbd0(obj, &x, &y)`，修好的格才写 +0x4a／+0x48；走位过程只读这两个字 |
+| `0x453b90` sub 0 | `0x407940`（同格另有登记对象）为 0 时 `0x411b90` 撤掉起点格的登记，再调 `0x4111d0` |
+| `0x453b90` sub 3／6，`0x4540f0..0x4541bf` | 方向码 0：所站格 = 目的格，或 `0x4111d0` 返回 0 → `+4 += +0xa8`、`+8 += +0xac` 临时合成所站像素，`0x407940` 为 0 时 `0x411a30(obj, 0x40ba20(obj))` 在该格登记（`0x4541a1`），sub 加一进 4；否则复制新路径续走 |
+| `0x453b90` sub 4／5／7 | 只改动作帧（`0x446c40`、`0x45e642`、`0x45e660`）与放行 Wait；无第二次落点替代 |
+| `0x411080` 模式 | `0x446ad0` 读 live 记录 +0xa0 bit 0（`0x44c294` 由 PLAYERS `move_fly` 置位）：飞行 mode 6 只看格字 0x4000，地面 mode 1 受高差规则 |
+
+规则：提交格 = 链在修过的目的格上停下的格。两类情形的区分就是模式：
+- 飞行走位者（雷特 006 `move_fly = 1`，mode 6）穿过 0xff 走到终点：利魯瑪山地（LEVEL019）(52,22)→(40,22)→(32,23)；回音之谷（LEVEL021）(42,14)→(30,14)→(19,15)→(19,16)；古代神殿遺跡（LEVEL037）、幽闇墳場（LEVEL038）、黃昏之丘　陽（LEVEL039）、大地的裂縫（LEVEL043）的走位者也是雷特。
+- 地面走位者终点 0xff：`0x44fbd0` 有落点就改目的格（幽闇墳場（LEVEL038）034_2 (14,11)→(13,11)、沙羅尼亞近郊（LEVEL034）037_3 (38,20)→(37,20)），链走到落点；四邻全 0xff 无落点就保留终点，链停在最近可达格（禁忌之魂・墳場地下（LEVEL080）嚎 (5,22) 停 (5,19)、037_2 (36,17) 停 (34,17)）。
+
+**runtime-measured**（unicorn 原指令跑 `round_sort_machine` 开局，g0；钩 `0x44fbd0` 前后、`0x4111d0` 的两个调用点、`0x40f350` 模式、`0x4541a1` 登记，停在首个 `0x407340`）：五关的登记格与快照格一致——LEVEL019 雷特 (32,23)、LEVEL021 雷特 (19,16) 模式 6、LEVEL034 037_2 (34,17)／037_3 (37,20)、LEVEL038 034_2 (13,11)、LEVEL080 嚎 (5,19)。
+
+SCRIPTWALKPATH 记的「雷特停旁格」与「LEVEL019 续走」来自普查按 `actors/006.json`（不带 traversal）把雷特当地面单位；按 PlayLoop 的 traversal（`skills/initial_book.json`）重跑后雷特五条都到终点，续走删去。
 
 ## 重制接线
 
@@ -46,6 +68,7 @@ SCRIPT_WALK_ROUTES scenarios=199 walks=1817 routed=1375 straight_crossed=167 nea
 - `ScriptWalkPath.route`：战斗读 PlayLoop tiles，剧情场景读关卡 WRD；`_flood`／`_flood_step` 对应 `0x40f200`／`0x40ed50`，`_nearest` 对应 `0x413740`，`_descend`／`_descend_step` 对应 `0x410a50`／`0x410730`（失败按格与方向记忆，结果不变），`_segment` 对应一次 `0x411080`；不读单位占用（剧情走位是已提交结果的表现）。
 - `BattleScriptActorPresentation` 取 `actWalk*` 第 5 参／`actWalkPrevInsertObject*` 第 3 参为速度。
 - 按键快进（remake-invented）：见差异清单 `script-fast-forward`。
+- 位置提交：`tools/hsltools/levels/battle.py` `script_walk_stop` 是同一条链的 Python 移植，只用于终点 0xff 且 `0x44fbd0` 无落点的走位者（记 `position_source.story_walk_stop_from`）；`OpeningStoryObjects._fixed_destination` 读 `story_endpoint_landing_from` 把该终点换成落点再寻路。
 
 ## 复现
 
@@ -54,6 +77,6 @@ SCRIPT_WALK_ROUTES scenarios=199 walks=1817 routed=1375 straight_crossed=167 nea
 ## 边界
 
 - `0x413740` 的随机分支：同距候选重制保留先到的一格，三邻被挡的候选重制接受；原版分别以 `0x458c10 & 1`、`rand(100) < 80` 决定。
-- 链停在局部最近格而目标可达时（玩家第 19 场雷特，原链停 (35,25)），原版开局快照雷特在终点 (32,23)；重制续以广度优先走到目标。停点之后的原版机制未读（候选：`0x453b90` sub 3／6 与 sub 4 之后的位置提交）。
-- 走完后的停点：原版开局快照里玩家第 21、37、38、39、43 场的走位者站在目标格上（多为 0xff），原链与重制都停在旁格；嚎与 037_2／037_3 则停在旁格。区分条件未读，PlayLoop 仍取目标格。
+- 普查只列目标不可达的走位；它不套 `0x44fbd0`，034_2 与 037_3 仍按原终点列出。
+- 战中 winfail 走位的落格仍由 `ScriptActorCreationRules._place_touched` 取 `0x44fbd0` 落点，没有接链停格（本节只核开局剧情走位）。
 - 大体型演员（记录 +0x2c，`0x411990` 标周围 8 格与 `0x40ecc0` 分支）与单位占用未移植。

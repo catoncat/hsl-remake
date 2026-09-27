@@ -353,14 +353,11 @@ func _straight_line_crosses(terrain: Dictionary, start: Vector2, target: Vector2
 func _flies(actor_id: String) -> bool:
 	if actor_id == "":
 		return false
-	if not _flying_by_actor.has(actor_id):
-		var path := "res://content/generated/hsl/actors/%s.json" % actor_id
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else null
-		var traversal: Dictionary = {}
-		if parsed is Dictionary:
-			for part in ["actor", "source"]:
-				if parsed.get(part) is Dictionary and parsed[part].get("traversal") is Dictionary:
-					traversal = parsed[part]["traversal"]
-					break
-		_flying_by_actor[actor_id] = bool(traversal.get("flying", false))
-	return _flying_by_actor[actor_id]
+	# The traversal PlayLoop installs (ActorTraversalRules.source reads the skill book's
+	# actors; the per-actor template files carry no traversal for players such as 雷特 006).
+	if _flying_by_actor.is_empty():
+		var book: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/skills/initial_book.json"))
+		var actors: Dictionary = book.get("actors", {}) if book is Dictionary else {}
+		for code in actors:
+			_flying_by_actor[str(code)] = bool((actors[code] as Dictionary).get("traversal", {}).get("flying", false))
+	return bool(_flying_by_actor.get(actor_id, false))

@@ -833,6 +833,14 @@
             "additionalProperties": false
           }
         },
+        "story_walk_stop_from": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
         "unaligned_story_endpoint": {
           "type": "array",
           "items": {

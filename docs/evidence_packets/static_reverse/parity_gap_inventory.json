@@ -14,8 +14,8 @@
     },
     "layout_timing_modules": 53,
     "items_by_original_status": {
-      "read_complete": 20,
-      "read_partial": 50,
+      "read_complete": 21,
+      "read_partial": 49,
       "unread": 6,
       "no_original_code": 17
     },
@@ -56,6 +56,7 @@
     "cursor-hide-item-icon",
     "dark-screen-fade",
     "drop-lightning-presentation",
+    "level-specific-placement",
     "map-object-flash",
     "npc-level-policy",
     "cast-strip-missing",
@@ -67,8 +68,7 @@
     "move-path-overlay",
     "panel-captions",
     "status-page-extras",
-    "wait-cue",
-    "special-object-motion"
+    "wait-cue"
   ],
   "items": [
     {
@@ -223,6 +223,28 @@
       "category": "地图与物件",
       "sources": [
         "provenance:game/battle/scene/BattleDropLightningPresentation.gd|layout|provisional|"
+      ]
+    },
+    {
+      "id": "level-specific-placement",
+      "difference": "已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剩开局快照报告待重生成",
+      "original": "0x44fbd0 在这两格无候选；0x453b90 走完在链停格 0x411a30 登记（0x4541a1），原指令实跑登记格即快照格",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_script_entry.md"
+      ],
+      "remake": "生成器 script_landing 无候选时 script_walk_stop 跑同一条链，记 story_walk_stop_from",
+      "remake_code": [
+        "tools/hsltools/levels/battle.py"
+      ],
+      "original_status": "read_complete",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "剧情走位",
+      "sources": [
+        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
+        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md",
+        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#366880ce24",
+        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#c405918b68"
       ]
     },
     {
@@ -772,28 +794,6 @@
       ]
     },
     {
-      "id": "level-specific-placement",
-      "difference": "两名地面走位单位终点四邻全是 0xff：沙羅尼亞近郊（LEVEL034）037_2、禁忌之魂・墳場地下（LEVEL080）嚎 重制留在终点，原版站到行走起点一侧最近的可达格",
-      "original": "0x44fbd0 在这两格无候选（原指令实跑），原版停点来自行走寻路本身，未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_script_entry.md"
-      ],
-      "remake": "生成器 script_landing 无候选时留在终点",
-      "remake_code": [
-        "tools/hsltools/levels/battle.py"
-      ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "剧情走位",
-      "sources": [
-        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
-        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md",
-        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#366880ce24",
-        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#c405918b68"
-      ]
-    },
-    {
       "id": "poison-gas-presentation",
       "difference": "噴人沼氣（拉格納沼地 LEVEL032 的 WINFAIL event 9）喷毒的规则与演出已照原版（镜头滚到喷点、中心 ±38 px 3 团 SMOKE001 烟上飘、淡入 16 tick 再每 3–7 tick 淡一级、中毒者左右抖 60 tick、停 90／40 tick 后剧本往下走）；烟的 4 次随机抽取（保持、偏移、速度）由 PoisonGasRules 在同一次结算里抽全局流写进回执（原版在下一 tick 抽，其间可能插进别的对象的抽取），加法层级按 Godot 加色合成×透明度画",
       "original": "过程 0x43c7c0 各状态、0x407230 抖动（行动者过程 0x43f288）、烟对象 defProcFireSmoke 0x43c260（运动、层级、寿命、4 次全局流抽取）已读",
@@ -831,7 +831,7 @@
       "category": "重制新增（原版没有）",
       "sources": [
         "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|rules|remake-invented|",
-        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、链停滞时的广度优先续走、按键快进（remake-invented）"
+        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、按键快进（remake-invented）"
       ]
     },
     {
@@ -1121,12 +1121,12 @@
     },
     {
       "id": "script-walk-path",
-      "difference": "寻路链已照原版；0x413740 两处随机分支取定值，链停在可达目标前的局部最近格时续以广度优先，走完后的停点规则未读",
-      "original": "0x4111d0→0x411080 洪泛 18/16/14/12、缓冲 (2r+1)²、行主序最近格、0x410a50 严格下降深搜；unicorn 60 条逐格一致",
+      "difference": "寻路链与走完后的位置提交已照原版（开局剧情走位）；0x413740 两处随机分支取定值",
+      "original": "0x4111d0→0x411080 洪泛 18/16/14/12、行主序最近格、0x410a50 严格下降深搜；0x453b90 走完在所站格 0x411a30 登记（0x4541a1），目的格写入时已经 0x44fbd0；飞行 mode 6 走到 0xff 终点",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_walk_path.md"
       ],
-      "remake": "ScriptWalkPath 移植原链逐格求路；随机分支取先到先留／接受；局部停滞时广度优先续到目标",
+      "remake": "ScriptWalkPath 移植原链逐格求路，随机分支取先到先留／接受；演出朝记录的 0x44fbd0 落点寻路，PlayLoop 与演出停点一致",
       "remake_code": [
         "game/battle/runtime/opening/ScriptWalkPath.gd",
         "game/battle/runtime/opening/OpeningStoryObjects.gd"
@@ -1142,7 +1142,7 @@
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|",
         "provenance:game/battle/runtime/opening/ScriptWalkPath.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|走位速度、延时、镜头、地图别名的引擎 loader",
-        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、链停滞时的广度优先续走、按键快进（remake-invented）",
+        "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、按键快进（remake-invented）",
         "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#b3aa4efbaf"
       ]
     },
