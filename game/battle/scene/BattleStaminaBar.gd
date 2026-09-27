@@ -41,8 +41,11 @@ const SHARED_STEP_TICKS := 5
 const OWN_STEP_TICKS := 1
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
-## True for the strips 0x43b4e0 builds in mode 2／3 (flag 0x10000); status windows set false.
-var shared_pulse := true
+## True only for the strips 0x43b4e0 builds in mode 2／3 (flag 0x10000, set at 0x43b70a..0x43b7d2):
+## the close-up strip (BattleCombatCutin) and the hover／target strip (BattlePresentation). The
+## status page (mode 0／1), bag windows (4／5／7), skill pages (8／9), 升級 (10), 獲得物品 (0xb)
+## and the town windows (0x428570 builds ST 719 without it) keep their own counter.
+var shared_pulse := false
 var _own_origin_msec := 0
 var _drawn_level := -1
 

@@ -149,7 +149,7 @@ func handle_pointer_left_pressed(logical_position: Vector2) -> void:
 			var known := BattlePlayLoop.unit_known(runtime.play_loop, runtime.hovered_unit_id)
 			if not preload("res://game/battle/scene/BattleStatusPanel.gd").opens_for(known):
 				return
-			runtime.status_panel.show_unit(BattlePlayLoop.unit(runtime.play_loop, runtime.hovered_unit_id), known, false)
+			runtime.status_panel.show_unit(BattlePlayLoop.unit(runtime.play_loop, runtime.hovered_unit_id), known, false, runtime.play_loop)
 			runtime.menus.set_action_menu_visible(false)
 		else:
 			runtime.select_actor(runtime.hovered_unit_id)

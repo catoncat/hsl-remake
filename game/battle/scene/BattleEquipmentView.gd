@@ -17,6 +17,10 @@ var labels: Dictionary = {}
 var icons: Dictionary = {}
 var slot_items: Dictionary = {}
 var description: Label
+## WINDOW50 and its text: shown only while the pointer is on a slot holding an item (the
+## WINDOW30 process 0x430710 writes the text and 0x436d70 draws the box on hover; frame_006
+## hovering 鐵護輪 covers the page buttons, the box is absent otherwise).
+var detail_box: Control
 var source_unit: Dictionary = {}
 const SLOTS := ["weapon", "head", "armor", "foot", "accessory1", "accessory2"]
 const BOARD_AT := Vector2(252, 174)
@@ -39,18 +43,25 @@ const SLOT_SIZE := Vector2(176, 44)
 ## vertical scroll bar) so its wrap is known before layout and never moves when a long
 ## description brings the bar in — BattleUISkin.set_wrapped_text keeps every name on one line.
 const DETAIL_AT := Vector2(262, 359)
+## 0x436d70 draws WINDOW50 at (252,349) on the status page (Wine template match, menus_ui §5).
+const DETAIL_BOARD_AT := Vector2(252, 349)
 const DETAIL_SIZE := Vector2(355, 70)
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	BattleUISkin.board(self, "WINDOW30", BOARD_AT)
-	BattleUISkin.board(self, "WINDOW50", Vector2(252, 350))
+	detail_box = Control.new()
+	detail_box.name = "Description"
+	detail_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	detail_box.hide()
+	add_child(detail_box)
+	BattleUISkin.board(detail_box, "WINDOW50", DETAIL_BOARD_AT)
 	var scroll := ScrollContainer.new()
 	scroll.position = DETAIL_AT
 	scroll.size = DETAIL_SIZE
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	add_child(scroll)
+	detail_box.add_child(scroll)
 	description = BattleUISkin.label(scroll, Vector2.ZERO, 15)
 	description.custom_minimum_size.x = DETAIL_SIZE.x - scroll.get_v_scroll_bar().get_combined_minimum_size().x
 	description.size = Vector2(description.custom_minimum_size.x, 0)
@@ -70,6 +81,7 @@ func _ready() -> void:
 		add_child(area)
 		slot_controls[slot] = area
 		area.mouse_entered.connect(_select.bind(slot))
+		area.mouse_exited.connect(_deselect.bind(slot))
 		area.gui_input.connect(func(event):
 			if interactive and slot_items.has(slot) and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 				slot_requested.emit(slot)
@@ -109,16 +121,25 @@ func show_unit(unit: Dictionary) -> void:
 		slot_items[slot] = details
 		labels[slot].text = str(details["name"])
 		_show_icon(slot, str(details["icon"]))
-	_select("weapon")
+	_deselect("")
 
 
+## Hovering a slot that holds an item greens its name and brings up WINDOW50 with its text.
 func _select(slot: String) -> void:
 	for key in labels:
-		labels[key].modulate = Color(0.4, 1, 0.3) if key == slot else Color.WHITE
+		labels[key].modulate = Color(0.4, 1, 0.3) if key == slot and slot_items.has(slot) else Color.WHITE
 	if not slot_items.has(slot):
-		description.text = ""
+		_deselect(slot)
 		return
 	show_description(slot_items[slot])
+	detail_box.show()
+
+
+func _deselect(_slot: String) -> void:
+	for key in labels:
+		labels[key].modulate = Color.WHITE
+	description.text = ""
+	detail_box.hide()
 
 
 ## The description text for `item` (an item without stat values leaves no trailing blank line).

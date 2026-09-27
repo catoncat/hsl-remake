@@ -45,7 +45,7 @@
 | `0x436ab2..0x436ae8` | 段数 1／2／3 以 `0x460799(0x20000000, x+1, y+1, ebx+2／+3／+1, 混合级 +0x28)` 叠画 |
 | `0x436a96..0x436aaf`、`0x436afe..0x436b32` | 对象 +0x80 & 0x10000 置位时 +0x28 = \|`0x4c1ce0`\| + 12；全局字 `[0x4782a4]` 每画一次减一，为 0 时从 `[0x4782a6]`＝4 重装并令 `0x4c1ce0` 加一（到 5 回 −4）：每 5 tick 一步、45 tick 一周 |
 | `0x436b57..0x436bab` | 该位未置时用对象自己的 +0xa0／+0xa2／+0x98；Bar_ST 模板 +0xa2 = 0，每 tick 一步、9 tick 一周 |
-| `0x43b4e0` case 2／3 | 只有切入身份栏（`0x403512`／`0x404bf3` 的 `push 2`）与悬停／选目标身份栏（`0x43e5bf` 等 `push 3`）给 Bar_ST 置 0x10000 |
+| `0x43b4e0` case 2／3 | 只有切入身份栏（`0x403512`／`0x404bf3` 的 `push 2`）与悬停／选目标身份栏（`0x43e5bf` 等 `push 3`）给 Bar_ST 置 0x10000 ——全函数的 `or …, 0x10000` 只在 `0x43b70a`／`0x43b752`／`0x43b791`／`0x43b7d2`（case 2／3 段）；城镇整理／商店窗 `0x42ac21`／`0x42ad6a` 经 `0x428570` 建 719 ST，不置该位 |
 | `0x461479` | 旗标 0x20000000 的 +0x28 大于 16 进错误分支：混合级以 16 为满 |
 | `0x436a56..0x436a86`＋`0x4612ba` | 红色 clip 右／下界不含端点，实际少画最右 1 px |
 
@@ -73,7 +73,7 @@ Wine 原版第 51 关首次行动菜单存档 [HSLBAT_first_control.SAV](origina
 - 玩家交锋在反击与命中 RNG 前、AI 在选目标前检查气力／装备数据；缺失、负值、非整数、>60 或缺修饰元数据零变更拒绝。上限只在规则常量中，场景旧 `stamina_cap`／`normal_hit_gain` 已删。
 - 开场：`ActorInitializationRules`、`CampaignCarryRules` 按首次登记／清零／keep 初始化；NPC `rand(11)` 排在五项源能力抽取之后，与 [original_auto_growth.md](original_auto_growth.md) 的回执逐次一致。
 - `hsltools/data/equipment.py` 生成 `stamina_effect_flags`（只开放 `st_x2`、`no_addst`）；换装预览显示「氣力累積 正常→加倍／停止」（provisional 文案）。
-- `BattleStaminaBar`：`shared_pulse` 默认真（悬停／切入栏），`BattleStatusPanel` 置假；叠画 modulate α＝级数/16（原逐像素混合公式未逐字读，provisional）；红色宽＝`fill_width() − 1`。特写按当前 strike 的气力收据投影前后值，不提前显示未来反击增长。
+- `BattleStaminaBar`：`shared_pulse` 默认假（自身计数，每 tick 一步），只有切入栏 `BattleCombatCutin`（mode 2）与悬停／选目标栏 `BattlePresentation`（mode 3）置真；状态页、背包、技能页、升级、获得物品、城镇窗都走自身计数；叠画 modulate α＝级数/16（原逐像素混合公式未逐字读，provisional）；红色宽＝`fill_width() − 1`。特写按当前 strike 的气力收据投影前后值，不提前显示未来反击增长。
 
 ## 复现
 

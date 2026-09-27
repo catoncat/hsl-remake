@@ -163,6 +163,8 @@ func _ready() -> void:
 	target_vitals.position = Vector2(0, 322)
 	target_vitals.hide()
 	ui.add_child(target_vitals)
+	# 0x43b4e0 mode 3 (hover／target strip, 0x43e5bf push 3) sets the ST object's 0x10000.
+	target_vitals.st_bar.shared_pulse = true
 	selection_cursor = preload("res://game/battle/scene/BattleSelectionCursor.gd").new()
 	ui.add_child(selection_cursor)
 	dialogue_view = preload("res://game/battle/scene/BattleDialogue.gd").new()

@@ -203,13 +203,13 @@
     },
     {
       "id": "status-left-column",
-      "difference": "状态页原版底部是一排页按钮（狀態／道具／魔法／特殊技，行动环 狀態 页另有上一位／下一位），说明框只在悬停装备／道具时盖在按钮排上；重制没有页按钮，说明框常驻",
+      "difference": "状态页原版底部是一排页按钮（狀態／道具／魔法／特殊技，行动环 狀態 页另有上一位／下一位），说明框只在悬停装备／道具时盖在按钮排上；重制已照做，剩魔法／特殊技页超过九行时的滚动条",
       "original": "0x43ac10 根对象 +0x94=4：开页总是属性页（WINDOW21），只有页按钮 0x43a640 改页；钮停靠 y 387（0x43b0a0..0x43b230），frame_028 红框行 366–406 吻合；录屏 77.5／84.0 s 的道具列表是物品／交换窗（0x4000 下 WINDOW30 过程改页），不是状态页",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_growth_window.md"
       ],
-      "remake": "左栏 WINDOW21 九项属性＝原版默认页；钱框按 mode 0／1 照做（点单位开的页不画）；页按钮排与悬停才出的说明框未做",
+      "remake": "左栏 WINDOW21 九项属性＝原版默认页；钱框按 mode 0／1 照做；页按钮排按 0x43b0a0..0x43b230 的钮心 x 与 y 387 照做，道具／魔法／特殊技页只读、悬停出说明；装备与行的说明框只在悬停时出现；技能页不画滚动条（最多九行）",
       "remake_code": [
         "game/battle/scene/BattleStatusPanel.gd:show_unit",
         "game/battle/scene/BattleEquipmentView.gd"
@@ -218,7 +218,7 @@
       "visibility": "every_battle",
       "effort": "M",
       "category": "面板与界面",
-      "decision": "STATUSPAGE（2026-09-27）：证据冲突已解——左栏默认就是属性页；剩页按钮排与说明框时机",
+      "decision": "STATUSPAGE（2026-09-27）：证据冲突已解——左栏默认就是属性页；UI7（2026-09-27）照做页按钮排与悬停说明框；剩技能页滚动条",
       "sources": [
         "provenance:game/battle/scene/BattleStatusPanel.gd|layout|remake-invented|docs/OPTIONS.md",
         "video:11"

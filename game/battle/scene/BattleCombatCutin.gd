@@ -141,6 +141,8 @@ func _ready() -> void:
 	vitals = preload("res://game/battle/scene/BattleVitals.gd").new()
 	vitals.position = Vector2(0, 322)
 	panel.add_child(vitals)
+	# 0x43b4e0 mode 2 (0x403512／0x404bf3 push 2) sets the ST object's 0x10000: shared pulse.
+	vitals.st_bar.shared_pulse = true
 	result = Label.new()
 	result.position = Vector2(32, 264)
 	result.size = Vector2(576, 44)

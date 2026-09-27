@@ -65,6 +65,7 @@ func build_panels() -> void:
 	ui.add_child(runtime.growth_panel)
 	runtime.growth_panel.allocation_requested.connect(allocate_growth)
 	runtime.status_panel.growth_requested.connect(open_growth)
+	runtime.status_panel.member_step_requested.connect(step_status_member)
 	# Input priority of the modals (BattleSceneInput hands the event to the first visible one).
 	runtime.modal_panels.assign([runtime.magic_panel, runtime.growth_panel, runtime.item_panel, runtime.status_panel])
 	# One open／close motion for every battle panel (BattlePanelMotion; the loot window attaches
@@ -131,7 +132,7 @@ func choose_command(command_id: String) -> void:
 			set_action_menu_visible(false)
 		return
 	if command_id == "status":
-		runtime.status_panel.show_unit(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), BattlePlayLoop.unit_known(runtime.play_loop, runtime.selected_unit_id))
+		runtime.status_panel.show_unit(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), BattlePlayLoop.unit_known(runtime.play_loop, runtime.selected_unit_id), true, runtime.play_loop)
 		set_action_menu_visible(false)
 		return
 	if command_id == "wait":
@@ -412,3 +413,17 @@ func _on_party_equipment_closed(next_carry: Dictionary, changes: int) -> void:
 	if runtime.campaign_progress != null:
 		var world: Dictionary = runtime.world_map_runtime.state if runtime.world_map_runtime != null and runtime.world_map_runtime.active else (runtime.campaign_handoff.get("world", {}) if typeof(runtime.campaign_handoff.get("world")) == TYPE_DICTIONARY else {})
 		runtime.campaign_progress.update_world_state(world, next_carry)
+
+
+## Status page 上一位／下一位 (mode 0): the previous／next living unit the player commands, in
+## roster order, wrapping (0x43aa56 re-targets the page; the roster walk order is provisional).
+func step_status_member(step: int) -> void:
+	var ids: Array = []
+	for member in runtime.play_loop[LoopKeys.UNITS]:
+		if bool(member.get("player_commandable", false)) and int(member.get("hp", 0)) > 0 and not bool(member.get("defeated", false)) and not bool(member.get("departed", false)):
+			ids.append(str(member["id"]))
+	if ids.is_empty():
+		return
+	var at := ids.find(str(runtime.status_panel.inspected_unit_id))
+	var next_id: String = ids[posmod(at + step, ids.size())] if at >= 0 else ids[0]
+	runtime.status_panel.show_unit(BattlePlayLoop.unit(runtime.play_loop, next_id), BattlePlayLoop.unit_known(runtime.play_loop, next_id), true, runtime.play_loop)
