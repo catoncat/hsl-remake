@@ -85,13 +85,13 @@ case "${cmd}" in
     esac
     if [ "${mode}" = auto ]; then
       # Docs-only since a gated ancestor → only the doc checks, seconds (2026-09-26: a two-line doc fix reran the
-      # 7-minute gate). An ancestor counts when its log passed or reached repository hygiene (every heavy stage
-      # passed; hygiene is exactly what this mode reruns). Changed files must all be *.md.
+      # 7-minute gate). An ancestor counts only when its log ends in a PASS line (hygiene now runs first in
+      # verify.sh, so "reached hygiene" no longer means the heavy stages passed). Changed files must all be *.md.
       base=""
       for c in $(git rev-list --max-count=20 HEAD~1 2>/dev/null); do
         cl="/tmp/gate-$(git rev-parse --short "${c}").log"
         [ -f "${cl}" ] || continue
-        if tail -1 "${cl}" | grep -Eq "VERIFY_PASS|LANE_AFFECTED_PASS|LANE_DOCS_PASS" || grep -q '^== repository hygiene ==' "${cl}"; then base="${c}"; break; fi
+        if tail -1 "${cl}" | grep -Eq "VERIFY_PASS|LANE_AFFECTED_PASS|LANE_DOCS_PASS"; then base="${c}"; break; fi
       done
       if [ -n "${base}" ] && [ -z "$(git diff --name-only "${base}" HEAD -- | grep -v '\.md$' || true)" ]; then
         b="$(git rev-parse --short "${base}")"
