@@ -1,12 +1,13 @@
 # 成长：原作升級窗（手动加点）的时机、布局与输入
 
-> evidence: static-derived; resource-derived: 窗体资源与文字表; negative-evidence: 参考录像无升級窗原帧; runtime-measured: 原版录屏 340–351 s（§8） · status: live · functions: 0x434bf0, 0x434d10, 0x437c30, 0x437ec0, 0x438160, 0x43a140, 0x43ac10, 0x43b4e0, 0x442720 · tools: run_battle_scene_runtime_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: 窗体资源与文字表; negative-evidence: 参考录像无升級窗原帧; runtime-measured: 原版录屏 340–351 s（§8）、Wine 实机 玩家第 2 场 惡夢的終曲（LEVEL052）（§9） · status: live · functions: 0x434bf0, 0x434d10, 0x437c30, 0x437ec0, 0x438160, 0x43a140, 0x43ac10, 0x43b4e0, 0x442720 · tools: run_battle_scene_runtime_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版在 EXP、金钱、LEVEL UP 浮字之后、行动交接与胜负扫描之前，为玩家对象打开状态窗 mode 10（全程序唯一调用点 `0x442a52`）；一次跨多级＝每级一个窗、每窗 5 点（受容量限制）；点数全部分完才出现 OK，右键／Esc 不能关闭；不可按的 ＋／－／OK 不画（static-derived；runtime-measured 录屏对照）。
 - 重制 `game/battle/scene/BattleGrowthPanel.gd` 按同一坐标、按钮可见性与逐级开窗实现，`BattleSceneMenus.offer_pending_growth` 在安静时刻开窗，点数在 EXP 结算时由 `ProgressionRules` 一次预占、OK 时 `allocate_growth` 提交（static-derived）。
-- 已知差异：重制属性为草稿预览、OK 一次提交（原版原地修改）；字体为系统字而非 FONT.24 位图；`0x442720` 是否等窗关闭才返回未追，胜利一击先开窗的先后是静态读法（provisional）。参考录像无升級窗帧（negative-evidence）。
+- 实机（§9）：窗在击杀者本次行动的余波里弹——阵亡台词关掉之后、EXP／金钱／LEVEL UP 浮字之后；窗开着时阶段字停在 7、回合计数不动，游戏停等；按 OK 后阶段 8 复查，随后才交接给下一方。重制 `offer_pending_growth` 的先后与停等与此一致。
+- 已知差异：重制属性为草稿预览、OK 一次提交（原版原地修改）；字体为系统字而非 FONT.24 位图；胜利一击先开窗的先后仍是静态读法（provisional）。参考录像无升級窗帧（negative-evidence）。
 
 ## 证据
 
@@ -102,6 +103,26 @@ mode 10：`0x43b4e0` case 10，`0x43bbca`–`0x43bd94`。对象由 `0x45e307(x,y
 
 即 `0x10000000` 的画法是不画而非调暗；两列按钮各自按可按性出现。
 
+### 9. Wine 实机时刻表
+
+**runtime-measured**（2026-09-28，Wine 原版 v1.06，读 HSLBAT.SAV 进 玩家第 2 场 · 惡夢的終曲（LEVEL052）第 1 回合；雷歐納德 Lv2、經驗 75/150）。第 1 回合雷歐納德击杀一名帝国兵升到 131/150；第 2 回合攻击相邻 7/27 血的帝国兵将其击杀，升 Lv3。阶段字 `0x4c432c`、回合计数 `0x4c1bbc`、剩余点数 `0x4c1ccc` 由 `hsl_win32_memread.exe --repeat --interval-ms 50` 采样（时刻为采样起点起算的 `GetTickCount` 毫秒），画面为 cnc-ddraw 截图（帧文件在 `ignored/original-control/<标签>-*/game.png`，不提交）。
+
+| 时刻 | 读数 | 画面（帧标签） |
+| --- | --- | --- |
+| 击杀后 | 阶段 4 | 敌方头像框「拉爾斯帝國萬歲！！」阵亡台词，停等点击（`seq4_1`–`seq4_8`，37 s 不变） |
+| 点击台词 → +3.52 s | 阶段 0 → 1 | 台词关闭，EXP 浮字 |
+| +4.14 s | 阶段 3 | 金钱浮字 |
+| +4.73 s | 阶段 6 | LEVEL UP 浮字（`dlg2`） |
+| +4.80 s | 阶段 7 | 开窗（`0x442a22` 的减一） |
+| +5.34 s | `0x4c1ccc` = 5 | 升級窗：等級 3、經驗 6/200、殘餘點數 5，只有 ＋（`seq5_1`–`seq5_5`） |
+| +5.34 s 起至采样末 +22.18 s，另约 30 s 后再截 | 阶段 7、回合 2、点数不变 | 窗保持，地图上无单位行动（`wait30`） |
+| 点 5 次 ＋ | 殘餘點數 0 | ＋ 全隐藏，行 力量 出现 －，OK 出现（`afterplus`） |
+| 点 OK → 第二段采样 +3.17 s | 阶段 8 | 窗滑出 |
+| +5.37 s | 回合 2 → 3 | 雷歐納德行动结束，交接给下一方（`seq6_1` 友方单位移动范围） |
+| +6.22 s | 阶段 0 → 1 → 3 → 4 | 下一方出手击杀 1 血帝国兵，新一轮余波（`seq6_2`–`seq6_5`） |
+
+读法：升級窗属于击杀者本次行动的余波，排在阵亡台词与 EXP／金钱／LEVEL UP 浮字之后；窗开着时 `0x442720` 停在阶段 7 不前进，行动不结束、回合不交接；关窗后阶段 8 再查（本次只升一级，不再开窗），然后才结束行动。本次无掉落，獲得物品窗与升級窗的先后未实测（静态读法为阶段 4 在前）。
+
 ## 重制接线
 
 | 原 | 重制 | 备注 |
@@ -131,7 +152,7 @@ provenance 头写法：`layout: static-derived docs/evidence_packets/static_reve
 
 ## 边界
 
-- `0x442720` 是否等窗关闭才返回未追；若不等，胜负扫描可能在窗开着时发生（provisional）。替换证据：原版一名成员差 1 级时在敌方回合反击打死最后一个敌人，看升級窗与胜利剧情的先后。
+- 停等已实机核实（§9），但只测了一场一次：玩家第 2 场 · 惡夢的終曲（LEVEL052）、己方回合主动攻击、单级、无掉落。胜利一击、敌方回合反击升级、一次跨多级、同时有掉落的先后未实测；替换证据：原版一名成员差 1 级时打死最后一个敌人，看升級窗与胜利剧情的先后。
 - 失败的那一击同时升级时原版是否开窗未测；重制不开。
 - `0x4071e0` 角色演出内容未读。
 - `0x4c6390 & 0x200000` 的物理键为推断，重制未映射。

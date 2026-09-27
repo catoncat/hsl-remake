@@ -14,8 +14,8 @@
     },
     "layout_timing_modules": 58,
     "items_by_original_status": {
-      "read_complete": 12,
-      "read_partial": 60,
+      "read_complete": 13,
+      "read_partial": 59,
       "unread": 8,
       "no_original_code": 17
     },
@@ -50,6 +50,7 @@
   },
   "top": [
     "dialogue-timing",
+    "growth-window-timing",
     "special-skill-page",
     "status-left-column",
     "cursor-hide-item-icon",
@@ -60,7 +61,6 @@
     "bitmap-font",
     "cast-lead-compositing",
     "effect-origin",
-    "growth-window-timing",
     "magic-impact-bar",
     "move-path-overlay",
     "panel-captions",
@@ -90,6 +90,28 @@
       "sources": [
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|timing|remake-invented|"
+      ]
+    },
+    {
+      "id": "growth-window-timing",
+      "difference": "已实机核实一致：升级加点窗在阵亡台词与 EXP／金钱／LEVEL UP 浮字之后弹，停等关窗后才交接；胜利一击、反击升级、跨多级与掉落并发的先后仍是静态读法",
+      "original": "Wine 实机 玩家第 2 场 · 惡夢的終曲（LEVEL052）一次单级升级：窗开着时阶段字停在 7、回合不交接，OK 后阶段 8 再交接（runtime-measured，只测一场）",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_growth_window.md"
+      ],
+      "remake": "BattleSceneMenus 按成员弹窗；自动对局跳过缝、旧存档或 OPT-GROWTH=合成一窗，可暫緩 时暂缓留下的点数随 carry，读档后／下一场首个安静时刻再弹",
+      "remake_code": [
+        "game/battle/scene/BattleSceneMenus.gd:offer_pending_growth"
+      ],
+      "original_status": "read_complete",
+      "visibility": "every_battle",
+      "effort": "S",
+      "category": "面板与界面",
+      "sources": [
+        "provenance:game/battle/scene/BattleSceneMenus.gd|timing|provisional|",
+        "provenance:game/battle/scene/BattleSceneMenus.gd|timing|remake-invented|",
+        "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#5a394b291f",
+        "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#90132e5c4e"
       ]
     },
     {
@@ -332,28 +354,6 @@
       "category": "特写与施法演出",
       "sources": [
         "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读）"
-      ]
-    },
-    {
-      "id": "growth-window-timing",
-      "difference": "升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员",
-      "original": "原升级窗时机 static-derived；录像无升級窗原帧（negative-evidence），原版是否等窗关闭未实机核实",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_growth_window.md"
-      ],
-      "remake": "BattleSceneMenus 按成员弹窗；自动对局跳过缝、旧存档或 OPT-GROWTH=合成一窗，可暫緩 时暂缓留下的点数随 carry，读档后／下一场首个安静时刻再弹",
-      "remake_code": [
-        "game/battle/scene/BattleSceneMenus.gd:offer_pending_growth"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "面板与界面",
-      "sources": [
-        "provenance:game/battle/scene/BattleSceneMenus.gd|timing|provisional|",
-        "provenance:game/battle/scene/BattleSceneMenus.gd|timing|remake-invented|",
-        "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#5a394b291f",
-        "sentence:docs/evidence_packets/static_reverse/original_growth_window.md#90132e5c4e"
       ]
     },
     {
