@@ -10,7 +10,7 @@
 
 ## 总数
 
-共 **96** 条差异（其中 0 条本轮有 lane 进行中），来自 529 个来源条目：provenance 214、sentence 144、scope 73、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 58 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
+共 **96** 条差异（其中 0 条本轮有 lane 进行中），来自 528 个来源条目：provenance 214、sentence 143、scope 73、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 58 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
@@ -181,7 +181,7 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `script-walk-speed` | 剧情 actMoveDispWait 按直线滑动（原版进同一走路状态 0x32，+0x80 置 0x1800 后的寻路与帧处理未读）；剧情走步声按相对帧 0／3；插播恢复语义暂定。走速已照 0x4543d8 表 | opcode 55 → VM 状态 0x37（0x452eac）→ 0x4501f0：目标格心、速度写 +0x98、状态 0x32、+0x80 \|= 0x1800；0x1800 位对 0x4111d0 路线与 0x45e5a6 帧推进的影响未读<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | OpeningStoryObjects._move_disp 走速按 walk_pixels_per_tick，路径为起点到终点直线<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_move_disp` | 读了一部分 | 部分关卡 | S | provenance 2、sentence 1 |
+| `script-walk-speed` | actMoveDispWait 已照原版走同一寻路、保形无声、按速度换帧；无脚本形态时到位即停帧、0x1800 走完后的去向未读；剧情走步声按相对帧 0／3；插播恢复语义暂定 | 0x4501f0 目标格心、+0x80 \|= 0x1800、状态 0x32；寻路链 0x4111d0 不读 +0x80（同 actWalk 路线）；0x1000 跳过换向形态 0x446c40 与走步声 0x409610；两位同置每 tick 调 0x45e5a6，延迟按速度 6／4／2／1<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | _move_disp 目标格心化后走 ScriptWalkPath.route；move_along keep_pose_frame_ticks 保形、无声、每 7／5／2／3 tick 一帧<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_move_disp` | 读了一部分 | 部分关卡 | S | provenance 2 |
 | `level-specific-placement` | 个别关卡的单位／物件与原版不同：80 关 怨念體 暂放 (25,9)、18 关城门未建成单位、随机位置的洗牌随机源、部分走位终点挪格 | 原格压墙、城门对象缺 PLAYERS 预置读法等<br>[original_story_object_terrain.md](../../../docs/evidence_packets/static_reverse/original_story_object_terrain.md)、[original_random_position.md](../../../docs/evidence_packets/static_reverse/original_random_position.md) | 生成器的落点读法<br>[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd) | 读了一部分 | 部分关卡 | M | provenance 2、scope 1 |
 | `script-entry-paths` | 脚本安装的援军直接出现在落格（原版入场路径没复原），堵格时改落最近空格；离场演员停在最后一格 | 原完整 constructor／入场 frame sequence 未恢复；落点替代结构 0x44fbd0 已读、度量 provisional<br>[original_script_departure.md](../../../docs/evidence_packets/static_reverse/original_script_departure.md)、[original_fixpos_fly_prev_insert.md](../../../docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md) | BattleScriptActorPresentation／ScriptActorCreationRules<br>[BattleScriptActorPresentation.gd](../../../game/battle/scene/BattleScriptActorPresentation.gd)、[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd) | 读了一部分 | 部分关卡 | M | provenance 4、scope 2、matrix 4 |
 | `script-walk-path` | 剧情走位的同距平局次序、围死时的最近格度量、起点推算、地图外能走多远是重制读法 | 原寻路 0x4111d0 读法；洪泛缓冲尺寸未读<br>[original_script_walk_path.md](../../../docs/evidence_packets/static_reverse/original_script_walk_path.md) | ScriptWalkPath 广度优先上下左右次序<br>[ScriptWalkPath.gd](../../../game/battle/runtime/opening/ScriptWalkPath.gd)、[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) | 读了一部分 | 部分关卡 | M | provenance 3、sentence 2、scope 2、matrix 2 |

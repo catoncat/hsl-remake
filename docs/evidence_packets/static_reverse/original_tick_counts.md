@@ -1,6 +1,6 @@
 # 以 tick 计的原版时长：数字寿命、章节标题、边缘滚动、脚本行走速度
 
-> evidence: static-derived: object-process and STORY VM state machines read from hsl01.exe; runtime-measured: 2026-09-24 recording of the 棄卒 title card (§2); provisional: rows marked 未读 · status: live · functions: 0x401060, 0x401c20, 0x4038a0, 0x406d20, 0x406eb0, 0x408580, 0x42c3f0, 0x42d280, 0x42dc50, 0x42dc80, 0x43e270, 0x43e2a0, 0x43e2d0, 0x43e4a0, 0x43e570, 0x4423c0, 0x44fcf0, 0x4501f0, 0x45136a, 0x451818, 0x452102, 0x452123, 0x452eac, 0x452f32, 0x453111, 0x45e307, 0x45e525, 0x45e91e, 0x45f5f7, 0x45f7cb, 0x4607f9, 0x460989, 0x46098f, 0x4609c0, 0x4609f1, 0x460a06, 0x460e9c, 0x460f26, 0x460fb0, 0x4611e3, 0x461479, 0x461982, 0x462154, 0x463eeb, 0x464c22, 0x4699fd, 0x46b691, 0x46b6c1, 0x46bede · tools: hsl_exe_decompile.py · updated: 2026-09-28
+> evidence: static-derived: object-process and STORY VM state machines read from hsl01.exe; runtime-measured: 2026-09-24 recording of the 棄卒 title card (§2); provisional: rows marked 未读 · status: live · functions: 0x401060, 0x401c20, 0x4038a0, 0x406d20, 0x406eb0, 0x408580, 0x409610, 0x4111d0, 0x42c3f0, 0x42d280, 0x42dc50, 0x42dc80, 0x43e270, 0x43e2a0, 0x43e2d0, 0x43e4a0, 0x43e570, 0x4423c0, 0x446c40, 0x44fbd0, 0x44fcf0, 0x4501f0, 0x45136a, 0x451818, 0x452102, 0x452123, 0x452eac, 0x452f32, 0x453111, 0x453b90, 0x45e307, 0x45e525, 0x45e5a6, 0x45e91e, 0x45f5f7, 0x45f7cb, 0x4607f9, 0x460989, 0x46098f, 0x4609c0, 0x4609f1, 0x460a06, 0x460e9c, 0x460f26, 0x460fb0, 0x4611e3, 0x461479, 0x461982, 0x462154, 0x463eeb, 0x464c22, 0x4699fd, 0x46b691, 0x46b6c1, 0x46bede · tools: hsl_exe_decompile.py · updated: 2026-09-28
 
 ## 结论
 
@@ -58,7 +58,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 ### 4. 脚本 `actWalk` 系列：速度参数存入角色 `+0x98`
 
-VM 处理器（opcode 2–7，`0x4508a8` 等）把 `[code][serial][x][y][speed]` 交给 `0x44fcf0`：目标格中心化（`& ~31 + 16`），`+0x4a`／`+0x48` 目标，`word[+0x98] = speed`，`+0x8c = 0x320000`（行走状态 0x32），`+0x50` = 删除／Wait 标志。消费在 `0x453b90` 状态 0x32 sub 2 的跳转表 `0x4543d8`（[original_script_camera_scroll](original_script_camera_scroll.md)）：speed 1 → 1 px/tick、2／3 → 2、0／4／其他 → 4、8 → 8——与 [tick 率包](../runtime_observations/original_tick_rate/README.md) 实测玩家 4 px/tick 一致。重制 `BattleOpeningCoordinator.walk_pixels_per_tick(speed)` 用同一张表，速度 × 62.5 px/s。`actMoveDispWait`（opcode 55）：VM 处理器 `0x45136a` 存 code／serial／dx／dy／speed 并进 VM 状态 0x37；`0x452eac` 调 `0x4501f0(code, serial, dx, dy, speed, Wait 时 VM)`，它把「当前像素＋位移」格心化写进 `+0x4a`／`+0x48`、speed 写 `word[+0x98]`、`+0x80 |= 0x1800`、`+0x8c = 0x320000`——与 actWalkDisp 进同一行走状态，走速走同一张 `0x4543d8` 表。重制 `OpeningStoryObjects._move_disp` 改用 `walk_pixels_per_tick`（static-derived）；`0x1800` 位让 `0x453ba3` 每 tick 调 `0x45e5a6` 推进形态帧，对 `0x4111d0` 路线的影响未读，重制按直线滑（provisional）。
+VM 处理器（opcode 2–7，`0x4508a8` 等）把 `[code][serial][x][y][speed]` 交给 `0x44fcf0`：目标格中心化（`& ~31 + 16`），`+0x4a`／`+0x48` 目标，`word[+0x98] = speed`，`+0x8c = 0x320000`（行走状态 0x32），`+0x50` = 删除／Wait 标志。消费在 `0x453b90` 状态 0x32 sub 2 的跳转表 `0x4543d8`（[original_script_camera_scroll](original_script_camera_scroll.md)）：speed 1 → 1 px/tick、2／3 → 2、0／4／其他 → 4、8 → 8——与 [tick 率包](../runtime_observations/original_tick_rate/README.md) 实测玩家 4 px/tick 一致。重制 `BattleOpeningCoordinator.walk_pixels_per_tick(speed)` 用同一张表，速度 × 62.5 px/s。`actMoveDispWait`（opcode 55）：VM 处理器 `0x45136a` 存 code／serial／dx／dy／speed 并进 VM 状态 0x37；`0x452eac` 调 `0x4501f0(code, serial, dx, dy, speed, Wait 时 VM)`，它把「当前像素＋位移」格心化写进 `+0x4a`／`+0x48`、speed 写 `word[+0x98]`、`+0x80 |= 0x1800`、`+0x8c = 0x320000`——与 actWalkDisp 进同一行走状态，走速走同一张 `0x4543d8` 表。`0x1800` 两位对路线、到位、帧推进与朝向的作用见 §8（static-derived）。
 
 ### 5. `actDarkScreen`（opcode 48）：不等待，交给对象 700
 
@@ -108,12 +108,29 @@ VM 处理器（opcode 2–7，`0x4508a8` 等）把 `[code][serial][x][y][speed]`
 - 模式位（`0x46b691` 显示表消费者）：位 25–26 非零走表 `0x46b6b1`：`0x4000000` → 像素例程种类 8（`0x462154`：`ax = src + dst`，异或检测各通道进位后 `or` 饱和掩码 `0x4bbbec`——**RGB565 饱和加法**），`0xc000000` = 加法 ＋ 缩放（种类 9 `0x462e8b`，同一加法内核的缩放变体）；位 25–26 为零走表 `0x46b691`：`0x20000000` → 种类 4（`0x4699fd`，层级交叉淡化，见 §6）、`0x28000000` → 种类 5（缩放 ＋ 交叉淡化）。
 - 因此：缩放段 24 tick 是光球以加法混合从 1/16（18 px）长到 12.25×（3600 px，屏幕角落只到半径 22%，近白）盖满屏幕；叠层段 32 tick 是同一光球 18×（屏幕只到半径 15%）以层级 16→1 交叉淡化——**白屏淡出**，露出已恢复帧的攻方与刚生成的身份栏（原录像 `12_leonard_normal_attack/frame_001` 的泛白画面即此段）。缩放段之下：init 的 `0x42c3f0(1)` 置 `[0x4c1b20]`，帧体 `0x42d280` 据此跳过地图绘制、改 blit `[0x4c1e00]` 缓冲（行距 0x500 ＝ 640 px）；该缓冲的装入路径未追。缩放段之下是战场地图，不是切入底图 BG051（runtime-measured，[镜头与面板动效 §5](../runtime_observations/camera_panel_motion/README.md#5-切入白光光球在地图之上放大)：2026-09-24 录屏四次普攻切入 113.49–113.78、163.95–164.20、199.66–199.95、353.72–353.97 s，光球都从屏幕中心在**仍可见的战场地图**上长大，直到全白才换成特写；即 `0x4c1e00` 在缩放段装的是地图画面）。身份栏底板在缩放段是否已画未读（文字在叠层切换时才生成）。
 
+### 8. actMoveDispWait 的 `+0x80 |= 0x1800`：同一寻路，保形、无声、按速度换帧
+
+读法：r2 反汇编 `0x453b90`（行动者过程，状态 0x32 分支 `0x453d27`，子状态跳表 `0x4543b8`）、`0x4501f0`、`0x4111d0 → 0x411080 → 0x40f350／0x413900／0x410a50`。`+0x80` 在整个过程里只在三处被读：
+
+| 块 | 地址 | 原版 |
+| --- | --- | --- |
+| 目标 | `0x4501f0` | 目标 = (当前像素 + 位移) `& ~31 + 16`，再经 `0x44fbd0` 修正（与 actWalkWait `0x44fcf0` 同一调用）；写 `+0x4a／+0x48`、速度 `+0x98`、`+0x50`、`+0x80 \|= 0x1800`、`+0x8c = 0x320000` |
+| 路线 | `0x453d44..0x453d71`、`0x454122..0x45412d` | 子状态 0 与途中续算都调 `0x4111d0(actor, dest, 0x12, 0xc)`，与 actWalk 系列完全同路（[剧情走位寻路](original_script_walk_path.md)）；寻路链 `0x4111d0／0x411080／0x40f350／0x40f200／0x411990／0x410a50／0x413900` 不读 `+0x80`，所以 0x1800 不改变路线、不穿墙、不穿单位 |
+| 到位 | `0x4540f0..0x454120` | 路径缓冲走完时比较当前格与目的格（都 `& ~31`），不同则续算，相同则落位进下一子状态；无容差，与 actWalk 相同 |
+| 帧推进 | `0x453ba3..0x453bb2`；`0x453e63..0x453ebf` | 过程入口在分派状态前测 `ah & 0x10` 与 `ah & 8`，两位都置时**每 tick** 调 `0x45e5a6`（循环换帧，延迟 D 时每 D+1 次推进一帧）；子状态 2／6 按速度写延迟 `+0x7c／+0x7e`：1 → 6、2／3 → 4、8 → 1、其他 → 2，即每 7／5／2／3 tick 一帧 |
+| 朝向 | `0x454205..0x454215` | 每步换方向时本应 `0x446c40(obj, 类型, 方向, 延迟)` 换行走形态、到位时 `0x446c40(…, 0, 10)` 回站立；`ch & 0x10`（0x1000）置位时整段跳过——保持当前形态与朝向（如 actChangeShape 换上的绳索形态） |
+| 走步声 | `0x454041..0x45408a` | `ah & 0x10` 置位时跳过相对帧 0／3 的走步声 `0x409610` |
+
+子状态 1／4 的 `0x446c10` 检查与 `0x446c40(…, 5, 6)` 不受这两位控制；按字节模式未找到清除 0x1800 的写入，两位在走完后的去向未读（provisional）。
+
+
 ## 重制接线
 
 provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/static_reverse/original_tick_counts.md`（`BattleCombatCutin.gd` 按 §7 锚点引用）。
 
 - **§1 数字**：`CombatPresentationTiming`：`SHOW_NUMBER_TICKS = 46`、`SHOW_NUMBER_RELEASE_TICKS = 32`、`DAMAGE_NUMBER_BASE_TICKS = 34`＋`DAMAGE_NUMBER_DIGIT_TICKS = 10`／位（kind 0 实际寿命）、`SHOW_NUMBER_RISE_PX_PER_TICK = 0.5`；`BattleTurnEndCue` 以 40 tick 间隔换事件、末事件停留 46 tick；`BattlePresentation`／`MagicImpactPresentation` 的浮字按 kind 取寿命。kind 0 的弹跳绘制见（逐位揭示、2×／1.5×／4× 闪光、不上浮，寿命 10×位数＋34，[地图姿势与飘字包 §3](../runtime_observations/map_pose_floaters/README.md#3-红色伤害数字0x408580-kind-0)），地图、特写与法术的伤害数字由 `DamageNumberFloater` 画，回复／MP／MISS 由 `ResultNumberFloater` 按 kind 2／3／5 画。
 - **§2 章节标题**：`BattleOpeningCoordinator.title_seconds`／`OpeningCinematics`：`OpeningCinematics.section_title_step` 逐 tick 复现子状态 0–7（含 3 tick 计数与"先查后加减"），`_fade_title` 每过一个原版 tick 走一步；`build_section_title_view` 建两层——`SectionTitleBand`（LEVELSEC，`CanvasItemMaterial.BLEND_MODE_SUB`，按原点 (320,104) 放在 (320,240)，`scale = (1, zoom)`，`modulate.a = 层级/16`，即 `dst − src·层级/16`）与 `SectionTitleName`（WORD，1×，`modulate.a = 层级/16`）；层级 0 的层不画。协调器等待 582 tick（`SECTION_TITLE_IN_TICKS 159`＋`HOLD 320`＋`OUT 103`）；停留期间任意键或任意鼠标键（`skip_section_title`，原版按键掩码 `0x600010`／点击掩码 `0x10002` 的重制读法＝任意键／任意键钮）交给下一个停留 tick，等待改为当前 tick 余量＋1＋103，最短 263 tick；进段与出段的输入忽略（只在子状态 4 收输入）。跳过记入 `story_records`（`section_title_skip`：trigger、held_ticks＝含收键那一 tick 的停留数）。标题结束后照旧逐 tick 走完随后的非等待 token 再由 `BattleWinFailBoard` 溶入胜负面板。定向测试 `tests/run_ui_class_contract_tests.gd`（逐 tick 子状态、两层节点、全部注册场景的标题卡资源与唯一处理路径）。未对照：RGB565 饱和减法与 Godot 线性减法混合的逐像素差异；原版一次按住的键也会立即结束停留（掩码是当前按键状态），重制只认按下事件。
+- **§8 actMoveDispWait**：`OpeningStoryObjects._move_disp` 目标格心化后走 `_move_actor`（`ScriptWalkPath.route`，与 actWalkDispWait 同路、同速度表、Wait 居中与跟随）；`ActorRuntime.move_along(..., keep_pose_frame_ticks)` 不换朝向与行走形态、不放走步声、到位不回站立，帧按 `move_disp_frame_ticks`（7／5／2／3 tick）循环；有脚本形态时改写其循环帧率并在走完后保留（0x1800 未见清除）。
 - **§3 边缘滚动**：`BattleCameraController.EDGE_SCROLL_PIXELS_PER_TICK = 12`、`WorldMapRuntime` 同值；键盘平移与鼠标边缘共用（原版键位与边缘同一请求）。修饰键加速未接（重制无对应输入）。
 - **§6 守方受击**：`CombatPresentationTiming`：`TARGET_PAUSE_TICKS = 32`，`hurt_hold_ticks(hit, damage)` = 命中 `HIT_TO_NUMBER_TICKS 40 ＋ damage_number_release_ticks ＋ 1`／落空 `MISS_SLIDE_TICKS 15 ＋ 1 ＋ MISS_HOLD_TICKS 40`；`RECOVERY_TICKS = 16`（变黑期间受击姿态保持，static-derived）、`CLOSING_LIGHTEN_TICKS = 16`（地图上从黑变亮，切入内容已隐藏），只在交换的最后一镜或击杀镜（`closes_exchange`：`last_shot` 或 `defender_hp_after ≤ 0`）播放；`ordinary(actor, strike, first_shot, last_shot)` 返回 `opening／release／target／impact／recovery／darkened／complete`。`BattleCombatCutin` 不回到中立姿态（受击帧保持到镜头结束）。击退 105 px／残影／闪避滑动 150 px 的位移未接（重制仍用 6／24 px 的 reaction 位移，provisional）。
 - **§7 攻方开场**：`BattleCombatCutin._show_opening`、`CombatPresentationTiming.OPENING_*`：交换的第一镜（`first_shot`，`BattlePresentation._show_strike` 按 `CombatSequence.strikes` 顺序传入；反击镜与追加击镜对应位 0x200 → 无开场）先播 24 tick 加法光球（`opening_zoom_ramp()` 复现 `0x401060` 的 24 个 16.16 缩放值，`BLEND_MODE_ADD`，攻方隐藏、身份栏隐藏、特写底图与底色隐藏——光球画在地图之上）再播 32 tick 18× 光球 alpha = 层级/16（`opening_overlay_level`），光球盖住整个 640×480 含身份栏；随后程序第一条指令。缩放段隐藏身份栏底板为 provisional。
@@ -127,4 +144,5 @@ provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/s
 - 本包只给 tick 计数与状态机读法，不证明绘制内容（数字弹跳曲线）等价；切入开场的 `0xc000000`／`0x28000000`、过渡的 `0x20000000` 与章节标题的 `0x2000000`／`0x20000000` 已读到像素例程种类（饱和加法／饱和减法／16 级交叉淡化），像素级等价仍未对照。
 - 系统卷轴展开／收起已读（`0x45e882`／`0x45e91e`，[menus_ui](../runtime_observations/menus_ui/README.md) §6）。
 - 未读（保留 provisional）：`mapobjFlash` 亮度步进（TYPE.H：`objsScore = level, objsHitPoint = delay`，字段尚未导出到 map_objects）、击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。
+- §8：无脚本形态的演员走完后原版仍按移动延迟每 tick 循环当前形态，重制到位即停帧；子状态 1／4 的 `0x446c10`／形态组 5 分支与 `0x44fbd0` 目标修正在重制里未接（与 actWalk 系列相同）。
 - 反编译原文留在 `ignored/static/hsl01/decompiled/`，不入库。

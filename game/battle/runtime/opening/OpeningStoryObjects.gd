@@ -11,7 +11,9 @@ extends RefCounted
 ##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
-##   rules: provisional (follow／slide walk readings)
+##   rules: provisional (follow walk reading)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##     (actMoveDispWait: walk state 0x32 with +0x80 0x1800 keeps pose, loops frames, no footsteps)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_random_position.md
 ##   rules: provisional docs/evidence_packets/static_reverse/original_random_position.md
 ##     (random-position slots in table order instead of the native shuffle)
@@ -571,10 +573,10 @@ func _restore_shape(event: Dictionary) -> void:
 
 func _move_disp(event: Dictionary) -> void:
 	## actMoveDispWait,token,inst,dx,dy,speed (opcode 55 → VM state 0x37 at 0x452eac →
-	## 0x4501f0): the actor enters the same walk state 0x32 with +0x80 |= 0x1800, so the
-	## speed goes through the walk table 0x4543d8 (1／2／2／4／8 px per tick, 0 and others 4)
-	## and the Wait pointer centres the camera first and follows. The remake slides straight
-	## (the 0x1800 route／frame handling is unread).
+	## 0x4501f0): the target is (pixel + d) & ~31 + 16, then the same walk state 0x32 as
+	## actWalkDispWait — same 0x4111d0 route (no +0x80 read on that path), same 0x4543d8
+	## speed, the Wait pointer centres and follows — except +0x80 |= 0x1800: the actor keeps
+	## its shape and facing, makes no footsteps and loops frames per MOVE_DISP_FRAME_TICKS.
 	var args: Array = event.get("args", [])
 	var bound := _bound_actor(event, 0)
 	var unit_id: String = bound[0]
@@ -586,18 +588,26 @@ func _move_disp(event: Dictionary) -> void:
 	var speed_arg := _speed_arg(args, 4)
 	var start_walk := func() -> void:
 		var start: Vector2 = _motion_end(actor)
-		var target: Vector2 = start + delta
-		var pixels_per_tick: float = coordinator.walk_pixels_per_tick(int(speed_arg))
-		var seconds: float = delta.length() / (pixels_per_tick * coordinator.move_pixels_per_frame_hz)
-		actor.move_along([start, target], seconds, true)
-		coordinator.wait_remaining = seconds
-		coordinator._block_on(unit_id)
-		_last_walk = {"start": start, "points": [target], "pixels_per_tick": pixels_per_tick * coordinator.move_pixels_per_frame_hz * OriginalTick.TICK_SECONDS}
+		var cell_size: Vector2 = runtime.map_config.grid_projection["cell_size"] if runtime.map_config != null else Vector2(32, 32)
+		var moved := start + delta
+		var target := Vector2(floorf(moved.x / cell_size.x), floorf(moved.y / cell_size.y)) * cell_size + cell_size * 0.5
+		_move_actor(actor, unit_id, start, target, str(event.get("id", "")), str(event.get("source_token", "")), speed_arg, move_disp_frame_ticks(int(speed_arg)))
 		_camera_follows_last_walk()
-		coordinator.motion_records.append({"kind": "move_disp", "unit_id": unit_id, "source_event_id": str(event.get("id", "")), "source_token": str(event.get("source_token", "")),
-			"start_world": start, "target_world": target, "duration_seconds": seconds, "speed_arg": speed_arg})
+		coordinator._block_on(unit_id)
 	_start_story_walk(unit_id, true, str(event.get("id", "")), start_walk)
 
+
+## 0x453e63 (state 0x32 sub 2／6) sets the shape delay +0x7c／+0x7e from the speed: 1 → 6,
+## 2／3 → 4, 8 → 1, others 2; 0x45e5a6 then advances one frame every delay + 1 ticks.
+static func move_disp_frame_ticks(speed: int) -> int:
+	match speed:
+		1:
+			return 7
+		2, 3:
+			return 5
+		8:
+			return 2
+	return 3
 
 func _show_position_marker(event: Dictionary) -> void:
 	## actInsertShowPosObject,x,y (opcode 58, 0x450d4b → 0x45e307(x,y,702)) inserts
@@ -666,19 +676,19 @@ func _camera_follows_last_walk() -> void:
 ## the coordinator's walk_pixels_per_second is the speed-4 rate. The actor steps cell by
 ## cell along ScriptWalkPath.route over the scene terrain (the original path buffer),
 ## never straight through walls; the duration follows the walked length.
-func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, source_event_id: String, source_token: String, speed_arg: float = 0.0) -> void:
+func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, source_event_id: String, source_token: String, speed_arg: float = 0.0, keep_pose_frame_ticks: int = 0) -> void:
 	var speed: float = coordinator.walk_pixels_per_tick(int(speed_arg))
 	var terrain := _walk_terrain()
 	var route: Dictionary = ScriptWalkPath.route(terrain["tiles"], terrain["map_size"], start, target, terrain["cell_size"], _unit_flies(unit_id))
 	var points: Array = route["points"]
 	var seconds: float = ScriptWalkPath.length(start, points) / (coordinator.walk_pixels_per_second * speed / coordinator.DEFAULT_WALK_SPEED)
-	var result: Dictionary = actor.move_along([start] + points, seconds, true)
+	var result: Dictionary = actor.move_along([start] + points, seconds, true, keep_pose_frame_ticks)
 	# The follow's step covers the same length per tick as the walk (speed px per tick at the
 	# production pacing; a harness that raises walk_pixels_per_second scales both).
 	_last_walk = {"start": start, "points": points, "pixels_per_tick": speed * coordinator.walk_pixels_per_second / coordinator.DEFAULT_WALK_SPEED * OriginalTick.TICK_SECONDS}
 	coordinator.wait_remaining = seconds
 	coordinator.motion_records.append({
-		"kind": "walk",
+		"kind": "move_disp" if keep_pose_frame_ticks > 0 else "walk",
 		"unit_id": unit_id,
 		"source_event_id": source_event_id,
 		"source_token": source_token,

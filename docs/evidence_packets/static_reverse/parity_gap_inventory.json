@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 96,
-    "sources": 529,
+    "sources": 528,
     "sources_by_kind": {
       "provenance": 214,
-      "sentence": 144,
+      "sentence": 143,
       "scope": 73,
       "matrix": 85,
       "video": 13
@@ -778,12 +778,12 @@
     },
     {
       "id": "script-walk-speed",
-      "difference": "剧情 actMoveDispWait 按直线滑动（原版进同一走路状态 0x32，+0x80 置 0x1800 后的寻路与帧处理未读）；剧情走步声按相对帧 0／3；插播恢复语义暂定。走速已照 0x4543d8 表",
-      "original": "opcode 55 → VM 状态 0x37（0x452eac）→ 0x4501f0：目标格心、速度写 +0x98、状态 0x32、+0x80 |= 0x1800；0x1800 位对 0x4111d0 路线与 0x45e5a6 帧推进的影响未读",
+      "difference": "actMoveDispWait 已照原版走同一寻路、保形无声、按速度换帧；无脚本形态时到位即停帧、0x1800 走完后的去向未读；剧情走步声按相对帧 0／3；插播恢复语义暂定",
+      "original": "0x4501f0 目标格心、+0x80 |= 0x1800、状态 0x32；寻路链 0x4111d0 不读 +0x80（同 actWalk 路线）；0x1000 跳过换向形态 0x446c40 与走步声 0x409610；两位同置每 tick 调 0x45e5a6，延迟按速度 6／4／2／1",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "OpeningStoryObjects._move_disp 走速按 walk_pixels_per_tick，路径为起点到终点直线",
+      "remake": "_move_disp 目标格心化后走 ScriptWalkPath.route；move_along keep_pose_frame_ticks 保形、无声、每 7／5／2／3 tick 一帧",
       "remake_code": [
         "game/battle/runtime/opening/OpeningStoryObjects.gd:_move_disp"
       ],
@@ -793,8 +793,7 @@
       "category": "剧情走位",
       "sources": [
         "provenance:game/battle/runtime/ActorRuntime.gd|audio|provisional|",
-        "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|rules|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#f1812c4aa6"
+        "provenance:game/battle/runtime/BattleOpeningCoordinator.gd|rules|provisional|"
       ]
     },
     {

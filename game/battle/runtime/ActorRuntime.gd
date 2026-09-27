@@ -15,6 +15,8 @@ extends Node2D
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##     (idle 6 × 11 ticks, 4 px per tick = 8 ticks per cell, 3 ticks per walk frame, 16 ms tick)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
+##     (actMoveDispWait keep-pose move: 0x45e5a6 every tick, shape delay from the speed)
 ##   timing: provisional
 ##     (actChangeShape sets cycle at the standing cadence — the actor state during a script shape override is unread)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
@@ -472,7 +474,10 @@ func advance_animation_frame() -> Dictionary:
 	return runtime_summary()
 
 
-func move_along(path: Array, duration_seconds: float = 0.0, scripted_walk: bool = false) -> Dictionary:
+## `keep_pose_frame_ticks` > 0 is the actMoveDispWait pose (walk state 0x32 with +0x80 & 0x1800,
+## 0x453b90): no facing／walk-shape change (0x454212 skips 0x446c40), no footsteps (0x454047
+## skips 0x409610), the current shape loops one frame per that many ticks (0x453ba3 → 0x45e5a6).
+func move_along(path: Array, duration_seconds: float = 0.0, scripted_walk: bool = false, keep_pose_frame_ticks: int = 0) -> Dictionary:
 	stop_use_magic()
 	_stop_motion_tweens()
 	last_path = []
@@ -493,8 +498,10 @@ func move_along(path: Array, duration_seconds: float = 0.0, scripted_walk: bool 
 					targets.append(point)
 				previous = point
 			if not targets.is_empty():
-				_scripted_walk_audio = scripted_walk
-				_face_walk_target(targets[0])
+				var keep_pose := keep_pose_frame_ticks > 0
+				_scripted_walk_audio = scripted_walk and not keep_pose
+				if not keep_pose:
+					_face_walk_target(targets[0])
 				_motion_tween = create_tween()
 				# Each segment gets its share of the duration by length (a constant speed):
 				# grid paths are equal 32 px steps, a scripted walk path may end off-centre.
@@ -507,13 +514,18 @@ func move_along(path: Array, duration_seconds: float = 0.0, scripted_walk: bool 
 				for point in targets:
 					var step_duration := duration_seconds * from.distance_to(point) / total_length if total_length > 0.0 else duration_seconds / float(targets.size())
 					from = point
-					_motion_tween.tween_callback(_face_walk_target.bind(point))
+					if not keep_pose:
+						_motion_tween.tween_callback(_face_walk_target.bind(point))
 					_motion_tween.tween_property(self, "position", point, step_duration)
 					if not scripted_walk:
 						# Normal battle walking emits a cue at each completed grid step.
 						_motion_tween.tween_callback(_play_walk_sound)
-				_motion_tween.tween_callback(_finish_walking)
-				frame_advance_steps = _start_frame_sequence_tween(duration_seconds)
+				if keep_pose:
+					_motion_tween.tween_callback(_finish_keep_pose_move)
+					frame_advance_steps = _start_keep_pose_frames(duration_seconds, keep_pose_frame_ticks)
+				else:
+					_motion_tween.tween_callback(_finish_walking)
+					frame_advance_steps = _start_frame_sequence_tween(duration_seconds)
 
 	return {
 		"schema": MOVE_SCHEMA,
@@ -548,6 +560,29 @@ func _finish_walking() -> void:
 		_frame_tween.kill()
 		_frame_tween = null
 	play_state("idle", "0")
+
+
+func _finish_keep_pose_move() -> void:
+	if _frame_tween != null:
+		_frame_tween.kill()
+		_frame_tween = null
+
+
+## A script shape keeps looping at the move's rate (the 0x1800 bits stay set after arrival);
+## the actor's own sequence steps once per `frame_ticks` ticks over the move.
+func _start_keep_pose_frames(duration_seconds: float, frame_ticks: int) -> int:
+	var interval := OriginalTick.TICK_SECONDS * float(frame_ticks)
+	if has_shape_override():
+		_override_fps = 1.0 / interval
+		return 0
+	if _current_sequence.size() <= 1 or duration_seconds <= 0.0:
+		return 0
+	var steps := int(floor(duration_seconds / interval))
+	_frame_tween = create_tween()
+	for _index in range(steps):
+		_frame_tween.tween_interval(interval)
+		_frame_tween.tween_callback(Callable(self, "advance_animation_frame"))
+	return steps
 
 
 func is_moving() -> bool:

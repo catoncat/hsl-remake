@@ -18,7 +18,7 @@ extends Node
 ##   rules: remake-invented
 ##     (confirm outside dialogue fast-forwards walks and scrolls under OPT-PACE 快／極快 only — the original has no skip)
 ##   rules: provisional
-##     (actMoveDispWait slides straight — the +0x80 0x1800 route handling is unread; cutscene resume semantics)
+##     (cutscene resume semantics)
 ##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
@@ -66,9 +66,6 @@ var walk_pixels_per_second := DEFAULT_WALK_SPEED * OriginalTick.TICKS_PER_SECOND
 var delay_token_seconds := OriginalTick.TICK_SECONDS
 var default_step_seconds := OriginalTick.TICK_SECONDS
 var title_seconds := OriginalTick.seconds(SECTION_TITLE_TICKS)
-## actMoveDispWait slides an actor without its walk cycle (STORY053 rope descent);
-## the speed argument is read as pixels per original tick.
-var move_pixels_per_frame_hz := OriginalTick.TICKS_PER_SECOND
 
 
 var runtime: Node
