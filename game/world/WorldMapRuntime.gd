@@ -203,12 +203,19 @@ func handle_input(event: InputEvent) -> void:
 
 
 ## Player choice of a point: travel when one visible track joins it to the current
-## point, re-resolve arrival when it is the current point, otherwise record why.
+## point, otherwise record why. Clicking the current point only re-enters a town:
+## walker 0x427420 sub-state 3 finds no track to itself (0x427070(a,a) = 0), then
+## 0x42779c..0x4277e8 opens the town (event non-zero and Town bit) and every other
+## case clears the click target at 0x4276fd; a Battle / General point is not
+## re-dispatched (static-derived, original_world_town.md).
 func select_point(point_id: int, trigger: String = "select") -> Dictionary:
 	if point_id <= 0:
 		input_records.append({"kind": "miss", "trigger": trigger})
 		return {"status": "miss"}
 	if point_id == current_point():
+		if Rules.point_type(state, world_map, point_id) != Rules.TOWN or Rules.point_event(state, world_map, point_id) == 0:
+			input_records.append({"kind": "current_point_ignored", "trigger": trigger, "point_id": point_id})
+			return {"status": "current_point_ignored", "point_id": point_id}
 		input_records.append({"kind": "reenter", "trigger": trigger, "point_id": point_id})
 		return _resolve_arrival(point_id)
 	var track_id := Rules.track_between(state, world_map, current_point(), point_id)

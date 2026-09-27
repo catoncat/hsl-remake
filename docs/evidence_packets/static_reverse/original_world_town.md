@@ -1,11 +1,12 @@
 # 世界地图与城镇：初始化、bigmap 三字段、到达分支、路线揭示与 te 条件
 
-> evidence: static-derived; resource-derived; negative-evidence: 独立默认 level 表、路线红白插值、买卖 handler 执行回执 · status: live · functions: 0x426b70, 0x426bb0, 0x426bf0, 0x426c70, 0x426ce0, 0x426e40, 0x427200, 0x427420, 0x4280d0, 0x42c1c0, 0x42cc10, 0x42d090, 0x44e0e0, 0x454650, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20, 0x4606a9 · tools: hsltools/data/world_map.py, hsltools/probes/world_town.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived; negative-evidence: 独立默认 level 表、路线红白插值、买卖 handler 执行回执 · status: live · functions: 0x426b70, 0x426bb0, 0x426bf0, 0x426c70, 0x426ce0, 0x426e40, 0x427070, 0x427200, 0x427420, 0x427df0, 0x4280d0, 0x42c1c0, 0x42cc10, 0x42d090, 0x44e0e0, 0x454650, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20, 0x4606a9 · tools: hsltools/data/world_map.py, hsltools/probes/world_town.py · updated: 2026-09-27
 
 ## 结论
 
 - 原版城镇菜单是 `0x454a20` 按 town id 建立的可变 100×264 字节记录，新游戏只有歐姆村／米蘭多／席達鎮有初始树；bigmap 点与路线各有展示阶段、类型位、可变 event 三个独立字段；到达按当前 event 与类型分支，没有独立默认 level 表（static-derived，原指令有界执行；negative-evidence）。
 - 重制 `game/world/WorldMapRuntime.gd`、`WorldMapRules.gd`、`TownRuntime.gd` 与 `game/sim/TownEventRules.gd` 按这些字段、新游戏隐藏点线、到达分支、M_PNT 三帧、命中框 ±16、状态栏与揭示排序实现（static-derived 输入）。
+- 点自己所在的点：点对象过程 `0x427df0` 不比当前点，只写点击目标；行走者子状态 3 找不到自身路线后，仅 event 非 0 且带 Town 位时进城，Battle／General（及 event 0）清掉点击、不分派到达，不会重打该点关卡；重制 `select_point` 当前点分支照此（static-derived）。
 - 差异：旅行速度、揭示触发外的时钟、遭遇抽样比较方向、镜头滑行步长为重制值；差异清单 `town-event-timing`、`town-layout-extras`（provisional）。
 
 ## 证据
@@ -49,6 +50,13 @@
 | Battle | 未访问用 event；已访问加 0..2，不走 encounter 检查 |
 | Town | 仅当它是选定目的点时写城镇 id、进 phase15、标 Visit；路过不进城 |
 
+点自己所在的点（不经 `0x427ab3`）：点对象过程 `0x427df0` 在 `0x427ffc` 见按下位 `0x40000`、点击目标 `0x4c1ab8` 为 −1 且 `0x4c1b00` 无 `0x40000000` 时放音并把本点号写 `0x4c1ab8`，不比较当前点 `0x4c1ba4`。行走者 `0x427420` 子状态 3 先调 `0x427070(当前,目标)`，同点在 `0x42708a` 直接返回 0（无路线），随后：
+
+| 当前点类型 | 原分支 |
+| --- | --- |
+| Town，event 非 0 | `0x42779c` 读 event（`0x426ce0`）与类型（`0x426e00`），`0x4277c5` 把 event 写城镇 id `0x4c59c4`、进子状态 15、`0x4277e0` 标 Visit——重新进城 |
+| Town 且 event 0、Battle、General | `0x4277b4`／`0x4277bf` 跳 `0x4276fd`：`0x4c1ab8` 清 −1，不分派到达、不请求关卡、不抽遭遇 |
+
 negative-evidence：raw load→`+8` setter/getter→到达路径中没有第二张缺省 level 表。
 
 ### static-derived＋resource-derived：大地图对象、行走、状态栏
@@ -85,7 +93,7 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 ## 重制接线
 
 - 数据：`tools/hsltools/data/world_map.py` → `content/imported/hsl/global/world_map/`（[结构](world_map_data.md)）；场景 `content/world/world_map_scene.json`（`level_kind: world_map`）。
-- `game/world/WorldMapRuntime.gd`：`_build_status_bar`（(0,412) 整张减法混合，「完成度：」x 6、数字 x 114、时间右对齐 x 634），`_advance_show_sequence`（按上表排序，揭示期间丢弃点击）；`game/world/WorldMapRules.gd`（到达分支）；`game/world/WorldScriptActions.gd`（脚本写入）。
+- `game/world/WorldMapRuntime.gd`：`select_point` 当前点分支只对 Town 且 event 非 0 重新进城，其余记 `current_point_ignored`；`_build_status_bar`（(0,412) 整张减法混合，「完成度：」x 6、数字 x 114、时间右对齐 x 634），`_advance_show_sequence`（按上表排序，揭示期间丢弃点击）；`game/world/WorldMapRules.gd`（到达分支）；`game/world/WorldScriptActions.gd`（脚本写入）。
 - 城镇：`game/world/TownRuntime.gd`、`TownShopScreen.gd`、`game/sim/TownEventRules.gd`（[读法表](town_event_semantics.md)）、`game/world/WorldPartyRules.gd`（买卖）；文字／头像／货表由 `tools/hsltools/assets/town_assets.py` 生成；初始根菜单 `content/world/town_initial_trees.json`。
 - 重制值：旅行速度 96 px/s、揭示动画节奏、遭遇抽样比较方向、镜头滑行步长 32、Leonard 贴图作队伍标记、TOWNDEF if_wait=0 仍逐句等确认、`teDelay`／`tePlaySound` 只记录（provisional）。
 
