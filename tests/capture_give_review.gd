@@ -36,37 +36,43 @@ func run() -> void:
 	await fixture([241,241,246,281,0,0,0,0], [246,0,0,0,0,0,0,0])
 	var initial: Dictionary = scene.play_loop.duplicate(true)
 	await open_give()
-	await shot("give-target-choice")
-	await click(scene.item_panel.target_buttons["enemy023_1"])
-	await proposal(0,1)
-	await shot("give-confirmation")
+	await pick_source(0)
+	await hold_at(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"enemy023_1")["coord"]))
+	await shot("give-held")
+	scene.item_panel.set_process(true)
 	var preview: Dictionary = scene.play_loop.duplicate(true)
-	await click(button(scene.item_panel.page_root, "取消"))
-	check(scene.play_loop == preview, "mouse proposal cancellation preserves all battle state")
-	await click(scene.item_panel.give_view.destination_buttons[1])
-	await click(scene.item_panel.confirm_button)
-	check(scene.item_panel.page == "give_inventory" and not scene.ai_playback_active, "first give keeps same session open")
-	await proposal(0,2)
-	await click(scene.item_panel.confirm_button)
+	await click_point(Vector2(320,240), MOUSE_BUTTON_RIGHT)
+	await create_timer(0.4).timeout
+	check(scene.item_panel.page == "inventory" and scene.play_loop == preview, "right click in the target pick returns to the giver's window unchanged")
+	await pick_source(0)
+	await pick_target()
+	await hold_at(row(1).get_global_rect().get_center())
+	await shot("give-recipient-window")
+	scene.item_panel.set_process(true)
+	await click(row(1))
+	check(scene.item_panel.page == "inventory" and not scene.ai_playback_active, "first give returns to the giver's window, session open")
+	await pick_source(0)
+	await pick_target()
+	await click(row(2))
 	await shot("give-two-items")
 	check(BattlePlayLoop.unit(scene.play_loop,"leonard")["inventory"] == [246,281,0,0,0,0,0,0], "two gives remove exactly two source slots")
 	check(BattlePlayLoop.unit(scene.play_loop,"enemy023_1")["inventory"] == [246,241,241,0,0,0,0,0], "recipient retains separate duplicate slots")
 	check(scene.play_loop["turn_queue"] == initial["turn_queue"], "two gives do not advance before session end")
 	observations["continuous"] = bags()
-	await click(button(scene.item_panel.give_view, "結束給予"))
+	await click_point(Vector2(320,240), MOUSE_BUTTON_RIGHT)
 	check(scene.play_loop["turn_queue"] != initial["turn_queue"] and not scene.item_panel.visible, "ending changed session advances once")
 
 	await fixture([241,241,241,241,241,241,241,241], [246,241,241,241,241,241,241,241])
 	await open_give()
-	check(not scene.item_panel.target_buttons["enemy023_1"].disabled, "full recipient remains selectable for exchange")
-	await click(scene.item_panel.target_buttons["enemy023_1"])
-	await proposal(0,0)
-	await shot("full-exchange-confirmation")
+	await pick_source(0)
+	await pick_target()
+	check(scene.item_panel.page == "give_inventory", "full recipient remains selectable for exchange")
 	preview = scene.play_loop.duplicate(true)
-	await click(button(scene.item_panel.page_root,"取消"))
-	check(scene.play_loop == preview, "full exchange cancellation loses nothing")
-	await click(scene.item_panel.give_view.destination_buttons[0])
-	await click(scene.item_panel.confirm_button)
+	await click_point(Vector2(320,240), MOUSE_BUTTON_RIGHT)
+	check(scene.item_panel.page == "inventory" and scene.play_loop == preview, "closing the recipient's window loses nothing")
+	await pick_source(0)
+	await pick_target()
+	await click(row(0))
 	await shot("full-exchange-result")
 	check(BattlePlayLoop.unit(scene.play_loop,"leonard")["inventory"] == [241,241,241,241,241,241,241,246], "full source receives returned item in freed slot")
 	check(BattlePlayLoop.unit(scene.play_loop,"enemy023_1")["inventory"] == [241,241,241,241,241,241,241,241], "full receiver compacts then inserts incoming item")
@@ -88,11 +94,11 @@ func run() -> void:
 		scene.apply_loop(scene.play_loop, "test")
 		var before_give: Dictionary = scene.play_loop.duplicate(true)
 		await open_give()
-		await click(scene.item_panel.target_buttons["enemy023_1"])
-		await proposal(0,1)
-		await click(button(scene.item_panel.page_root,"取消"))
-		await click(button(scene.item_panel.give_view,"選擇同伴"))
-		await click(button(scene.item_panel.page_root,"結束給予"))
+		await pick_source(0)
+		await pick_target()
+		await click_point(Vector2(320,240), MOUSE_BUTTON_RIGHT)
+		await create_timer(0.4).timeout
+		await click_point(Vector2(320,240), MOUSE_BUTTON_RIGHT)
 		check(scene.play_loop["pending_move"] and scene.play_loop["turn_queue"] == before_give["turn_queue"], "unconfirmed Give exit preserves pending movement and actor")
 		check(BattlePlayLoop.unit(scene.play_loop,"leonard")["inventory"] == [241,246,0,0,0,0,0,0], "cancelled Give preserves exact inventory order")
 		await click_point(Vector2(320,240), MOUSE_BUTTON_RIGHT)
@@ -135,10 +141,10 @@ func handoff_review() -> void:
 				await click(scene.item_panel.target_buttons["leonard"])
 			else:
 				await click(scene.item_panel.menu.get_node("GiveCommand"))
-				await click(scene.item_panel.target_buttons["enemy023_1"])
-				await proposal(0,0)
-				await click(scene.item_panel.confirm_button)
-				await click(button(scene.item_panel.give_view,"結束給予"))
+				await pick_source(0)
+				await pick_target()
+				await click(row(0))
+				await click_point(Vector2(320,240),MOUSE_BUTTON_RIGHT)
 		await create_timer(0.3).timeout
 		check(scene.selected_unit_id == "enemy023_1" and not scene.ai_playback_active,"mouse " + operation + " selects the immediate player successor")
 		check(scene.play_loop["turn_queue"]["index"] == 1 and scene.play_loop["turn_queue"]["round"] == 0,"mouse " + operation + " advances only one slot")
@@ -205,11 +211,11 @@ func action_state_review() -> void:
 			await click(scene.action_menu.get_node("ItemCommand"))
 			await create_timer(0.3).timeout
 			await click(scene.item_panel.menu.get_node("GiveCommand"))
-			await click(scene.item_panel.target_buttons["enemy023_1"])
-			await proposal(0,0)
-			await click(scene.item_panel.confirm_button)
+			await pick_source(0)
+			await pick_target()
+			await click(row(0))
 			check(scene.play_loop["turn_queue"] == initial["turn_queue"], "Give remains within the owner's session before Finish")
-			await click(button(scene.item_panel.give_view,"結束給予"))
+			await click_point(Vector2(320,240),MOUSE_BUTTON_RIGHT)
 		elif route == "wait":
 			await click(scene.action_menu.get_node("WaitCommand"))
 		else:
@@ -434,13 +440,28 @@ func open_give() -> void:
 	scene.menus.choose_command("item")
 	await create_timer(0.3).timeout
 	await click(scene.item_panel.menu.get_node("GiveCommand"))
-	check(scene.item_panel.page == "give_target", "mouse Give reaches target selection")
+	check(scene.item_panel.page == "inventory" and scene.item_panel.operation == "give", "mouse Give opens the giver's window")
 
 
-func proposal(source: int, destination: int) -> void:
-	await click(scene.item_panel.give_view.source_buttons[source])
-	await click(scene.item_panel.give_view.destination_buttons[destination])
-	check(scene.item_panel.page == "give_confirm", "mouse selects source and destination before confirm")
+## The row for bag slot `index` in the item panel's current window.
+func row(index: int) -> Control:
+	for child in scene.item_panel.rows.get_children():
+		if child is Button and int(child.get_meta("inventory_index", -1)) == index:
+			return child
+	check(false, "missing item row %d" % index)
+	return null
+
+
+func pick_source(index: int) -> void:
+	await click(row(index))
+	await create_timer(0.4).timeout
+	check(scene.item_panel.page == "give_target" and scene.item_panel.picking, "picking a giver item starts the map pick")
+
+
+func pick_target() -> void:
+	await click_point(scene.grid_cell_center_to_logical_position(BattlePlayLoop.unit(scene.play_loop,"enemy023_1")["coord"]))
+	await create_timer(0.4).timeout
+	check(scene.item_panel.page == "give_inventory", "clicking the adjacent ally opens its window")
 
 
 func button(parent: Node, title: String) -> Control:
@@ -477,6 +498,20 @@ func shot(name: String) -> void:
 	await process_frame
 	RenderingServer.force_draw(false)
 	check(root.get_texture().get_image().save_png(OUT+name+".png") == OK, "render capture " + name)
+
+
+## The held icon follows the OS pointer, which pushed events do not move; pin it for a shot
+## (the caller turns the panel's process back on after the shot).
+func hold_at(point: Vector2) -> void:
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	root.push_input(motion,true)
+	await process_frame
+	var icon: Control = scene.item_panel.held_icon
+	check(is_instance_valid(icon) and icon.is_visible_in_tree(), "held item icon is up")
+	if is_instance_valid(icon):
+		scene.item_panel.set_process(false)
+		icon.position = point - icon.get_meta("origin", Vector2.ZERO)
 
 
 func check(value: bool, label: String) -> void:

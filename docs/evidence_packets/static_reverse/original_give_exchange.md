@@ -1,12 +1,13 @@
 # 给予与交换：连续给予会话、满包交换与行动消耗
 
-> evidence: static-derived · status: live · functions: 0x407800, 0x40f560, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x43b4e0 · tools: capture_give_review.gd, hsltools/evidence/give.py, run_inventory_equipment_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x407800, 0x40f560, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x43b4e0 · tools: capture_give_review.gd, hsltools/evidence/give.py, run_inventory_equipment_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：Give 是循环会话——每次选源物、选相邻友军、选接收槽；目标格非空就取出该物交换，再把输入物插入目标首空格，所以双方都满也能交换；返回 code 与给出 code 不同即 OR 置使用标记 `0x10000`，结束会话时有标记才走公共结束，否则回物品子菜单（static-derived）。
 - 同 code 交换不置标记，但可能改变双方槽序；取消目标选择把暂持物首空归还给出方，不置标记（static-derived）。
 - 重制：`InventoryRules.exchange` 计算、`game/sim/loop/BattleLoopInventory.gd` 的 `begin_give`／`confirm_give`／`finish_give` 持会话并原子提交，`ActionBudgetRules` 按会话标记结算一次行动（static-derived；确认式预览为 provisional）。
+- 界面：重制逐状态照原版——给出方持物窗点物入手（持物图标随指针、权杖不画）→ 地图标相邻格（移动色，不含本人格）＋格光标＋悬停身份栏 → 点友军以目标开同一持物窗 → 点物品行交换／点空行首空放入，一次点选即提交 → 回给出方持物窗；选格时右键放回手持回持物窗，给出方持物窗右键结束会话（static-derived；目标持物窗右键为 provisional）。
 - 差异：原版取消后首空归还可能改槽序，重制确认前不取物、取消保持原顺序；自动找空位时满包明确失败，不自动挑物交换（provisional）。
 
 ## 证据
@@ -47,11 +48,25 @@
 - `game/sim/InventoryRules.gd` `exchange`：按双方真实八格计算；`target_index=-1, expected_return=0` 满包失败。
 - `game/sim/loop/BattleLoopInventory.gd` `begin_give`／`confirm_give`／`finish_give`：唯一持会话者；每次开始、确认、结束递增 `item_revision`，旧请求与旧按钮被拒；provenance 头 `rules: static-derived docs/evidence_packets/static_reverse/original_give_exchange.md`。
 - `game/sim/ActionBudgetRules.gd`：Give 的 sticky 比较、Use 结束、免费 Drop／Equip。
-- `BattleItemPanel` 管目标与选择，`BattleGiveView` 展示双方槽位并用同一纯规则只读预览；给予期间暂停其他命令与移动撤销，未成交结束保留 pending move（provisional）。
+- 给予期间暂停其他命令与移动撤销，未成交结束保留 pending move（provisional）。
+
+界面状态对应（`game/battle/scene/`）：
+
+| 原版 state | 重制 |
+| --- | --- |
+| 110 `0x444b8a` 给出方持物窗 | `BattleItemPanel.show_give_session` → `_show_list("give")`（page `inventory`，与用药同一持物窗）；每次提交后回到这里 |
+| 选物 `0x438c53..0x438d8d` 入暂持、关窗 | `_select_item` → `_show_targets`：页滑出，`_hold_selected_item` 的 HeldItem 随指针（GameCursor 藏权杖） |
+| 112 `0x444bc7` `0x40f440(user,1,4)` 标格、清本人格 | `BattleSceneMenus._begin_item_pick`：`BattleItemUsePresentation.use_cells` 去掉本人格，`BattleSceneOverlays.show_item_range` 移动色 |
+| 113 `0x444c27` 选格 | `_item_pick_pointer`／`_item_pick_hover`：格光标＋悬停身份栏与用药同；左键须标记格上的 `give_target_ids` 单位 → `BattleItemPanel.select_give_target` |
+| 取消选格 `0x444d3b..0x444d73` | `cancel`（page `give_target`）：回给出方持物窗并滑入，库存不变 |
+| 114 `0x444d9c` 目标持物窗 | `_show_give_inventories` → `_show_list("give", 目标)`（page `give_inventory`），HeldItem 仍随指针；首个空槽画成空行 |
+| 选槽 `0x438c92..0x438d29` | `_place_give_item`：物品行＝`(index, code)` 交换、空行＝`(-1, 0)` 首空放入，`InventoryRules.exchange` 预检后发 `give_requested`；`BattleSceneMenus._confirm_give` 提交 `confirm_give` |
+| 116 `0x444def` 归还、回 110 | `_confirm_give` → `show_give_session`（换回物已由 `exchange` 首空插回给出方） |
+| 结束 `0x444bff..0x444c22` | 给出方持物窗右键／「返回」→ `give_finished` → `_finish_give_session` → `finish_give` |
 
 ## 复现
 
-`python3 tools/hsl.py check give_evidence`；重制侧 `tests/run_inventory_equipment_tests.gd`（逐 code 守恒、顺序、满包、同 code、连续给予、拒绝、移动）。截图驱动 `tests/capture_give_review.gd` 保留（`tools/oss_screenshots.py` 使用）。
+`python3 tools/hsl.py check give_evidence`；重制侧 `tests/run_inventory_equipment_tests.gd`（逐 code 守恒、顺序、满包、同 code、连续给予、拒绝、移动）。截图驱动 `tests/capture_give_review.gd`（需渲染窗口；`tools/oss_screenshots.py` 使用）：默认路线走持物窗→选格→目标持物窗，出 `give-held`（选格＋持物）、`give-recipient-window`、`give-two-items` 等帧。
 
 ## 边界
 
@@ -59,3 +74,5 @@
 - 原版完整移动 flag 与 rollback、攻击后再操作、全部脚本组合见 [original_action_state_machine.md](original_action_state_machine.md)，不由本包概括。
 - 自动整理、跨关存档不在本包。
 - 物品命令入口与用药见 [original_item_actions.md](original_item_actions.md)。
+- 目标持物窗里右键：读法是 mode7 的 `0x1000` 绕过「先放回本窗口背包」、暂持仍为给出物，116 比较相等不置位并归还给出方；重制回给出方持物窗、库存不变（provisional）。
+- 标格滤掉敌对占位格沿用用药选格的 `use_cells`（provisional，见 [original_item_use_presentation.md](original_item_use_presentation.md)）；持物窗外观（无钱框、行样式）沿用重制用药持物窗。

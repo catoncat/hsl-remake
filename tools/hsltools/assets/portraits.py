@@ -1,9 +1,9 @@
 """Extract the shared status-panel portraits bound by PLAYERS.TXT picture fields.
 
-The shared manifest is indexed by actor id from BattleGiveView / BattlePresentation /
+The shared manifest is indexed by actor id from BattlePresentation /
 PartyEquipmentScreen, so every actor that can stand in a registered battle needs a row here:
 the nine party slots, the chapter-1 enemies and the monster codes of the random encounters
-501-578 plus the chapter-2 casts. The row's `name` is the remake's list label (give view,
+501-578 plus the chapter-2 casts. The row's `name` is the remake's list label (
 party screen, defeat line): the PLAYERS.TXT `name` field resolved through RESOURCE.TXT (a
 resource id, or a resource.h `name_N` symbol for the party slots), except that rows whose name
 is the shared placeholder 306 「???」 (nameless soldiers and monsters) are labelled by their

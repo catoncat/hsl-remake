@@ -235,22 +235,6 @@
       "category": "面板与界面"
     },
     {
-      "id": "give-trade-hand-cursor",
-      "difference": "交换道具原版是手形光标拿起物品放下，重制是两个背包并排点选",
-      "original": "原录像 07 的手形光标交换",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_give_exchange.md"
-      ],
-      "remake": "BattleGiveView 两背包排布",
-      "remake_code": [
-        "game/battle/scene/BattleGiveView.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "M",
-      "category": "面板与界面"
-    },
-    {
       "id": "ui-layout-readings",
       "difference": "多个面板的尺寸、排列与样式是重制读法：按钮与标签样式、面板绘制顺序与锚定、装备页说明／确认滚动区、道具目标列表",
       "original": "原窗体 SHP 已导入，部分面板原版录屏未覆盖",
@@ -1975,7 +1959,7 @@
       "item": "unimplemented-abilities"
     },
     "matrix:Status / Item": {
-      "item": "give-trade-hand-cursor"
+      "resolved": "交換照原版：给出方持物窗点物入手→相邻格地图选人→目标持物窗点槽放入→回给出方持物窗（GIVEPICK，original_give_exchange.md 状态表 110／112／113／114／116）"
     },
     "matrix:UI/战斗反馈": {
       "item": "timing-estimates"
@@ -2349,12 +2333,6 @@
     },
     "provenance:game/battle/scene/BattleExtraActionCue.gd|timing|remake-invented|": {
       "item": "extra-action-cue"
-    },
-    "provenance:game/battle/scene/BattleGiveView.gd|layout|remake-invented|": {
-      "item": "give-trade-hand-cursor"
-    },
-    "provenance:game/battle/scene/BattleGiveView.gd|strings|remake-invented|": {
-      "item": "panel-captions"
     },
     "provenance:game/battle/scene/BattleItemPanel.gd|layout|remake-invented|": {
       "item": "ui-layout-readings"

@@ -343,16 +343,18 @@ func _free_shade_ghost() -> void:
 
 func _apply_parts() -> void:
 	for part in _parts:
-		var item: CanvasItem = part["item"]
+		# A page rebuilt mid-motion frees its parts; a typed read of a freed part errors.
+		var item: Variant = part["item"]
 		if is_instance_valid(item):
-			var xform := item.get_transform()
+			var xform: Transform2D = item.get_transform()
 			xform.origin += part["offset"]
 			RenderingServer.canvas_item_set_transform(item.get_canvas_item(), xform)
 
 
 func _restore_parts() -> void:
 	for part in _parts:
-		var item: CanvasItem = part["item"]
+		# A page rebuilt mid-motion frees its parts; a typed read of a freed part errors.
+		var item: Variant = part["item"]
 		if is_instance_valid(item):
 			RenderingServer.canvas_item_set_transform(item.get_canvas_item(), item.get_transform())
 

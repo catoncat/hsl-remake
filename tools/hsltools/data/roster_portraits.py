@@ -5,7 +5,7 @@ content/generated/hsl/roles/actor_portraits.json = the imported chapter-01 portr
 rows (content/imported/hsl/chapter01/portraits/manifest.json, PLAYERS picture fields decoded
 from the PAK) followed by one row per authored character (content/authored/roles/characters.json
 `portrait` = the PNG it is drawn with, `name_text` = its panel name). The status panels, the
-give view and the party equipment screen index this table by the unit's PLAYERS code, so a
+and the party equipment screen index this table by the unit's PLAYERS code, so a
 sequel character needs a row here or the panel fails on it; the imported rows are copied
 unchanged (byte-identical `actors` entries), only the table's home moves.
 """

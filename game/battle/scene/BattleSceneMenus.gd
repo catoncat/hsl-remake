@@ -10,6 +10,8 @@ extends RefCounted
 ##   layout: remake-invented (panel draw order and menu anchoring rules)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
 ##     (the item-use target map pick: move-palette range, cell cursor, hover strip, confirm／cancel)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_give_exchange.md
+##     (the give target pick shares it: 0x444bc7 marks the adjacent cells without the user's own)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
 ##   timing: provisional (that ordering is a static reading; a lost battle offers no window — the conservative choice)
 ##   timing: remake-invented
@@ -291,12 +293,17 @@ func allocate_growth(unit_id: String, allocation: Dictionary) -> void:
 ## side, in range or not) opens its identity strip (0x436490／0x43b4e0 mode 3, 0x4449bb); a left
 ## press confirms only on a marked cell (0x40f560) holding a player-side unit (0x411c40 & 0x10000)
 ## that is not no_attack (0x446b00) — recovery_target_ids — otherwise nothing happens.
+## Give (state 112 0x444bc7 → 113 0x444c27) is the same pick with the user's cell cleared; its
+## left press takes a marked cell whose unit is a give target (0x40f560, 0x411c40 & 0x10000, 0x407800).
 var item_pick_cells: Array = []
 
 
 func _begin_item_pick() -> void:
 	var actor := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
-	item_pick_cells = preload("res://game/battle/scene/BattleItemUsePresentation.gd").use_cells(runtime.play_loop, actor, runtime.unit_grid_coord(runtime.selected_unit_id))
+	var origin: Vector2i = runtime.unit_grid_coord(runtime.selected_unit_id)
+	item_pick_cells = preload("res://game/battle/scene/BattleItemUsePresentation.gd").use_cells(runtime.play_loop, actor, origin)
+	if runtime.item_panel.operation == "give":
+		item_pick_cells.erase(origin)
 	runtime.overlays.show_item_range(item_pick_cells)
 	_item_pick_hover(runtime.pointer_logical_position)
 
@@ -308,7 +315,12 @@ func _item_pick_pointer(viewport_position: Vector2, confirm: bool) -> void:
 		return
 	var cell := _item_pick_cell(logical)
 	var unit_id: String = runtime.scene_input.unit_id_at_grid(cell)
-	if item_pick_cells.has(cell) and unit_id != "" and BattlePlayLoop.recovery_target_ids(runtime.play_loop).has(unit_id):
+	if not item_pick_cells.has(cell) or unit_id == "":
+		return
+	if runtime.item_panel.operation == "give":
+		if BattlePlayLoop.give_target_ids(runtime.play_loop).has(unit_id):
+			runtime.item_panel.select_give_target(unit_id)
+	elif BattlePlayLoop.recovery_target_ids(runtime.play_loop).has(unit_id):
 		use_inventory_item(runtime.item_panel.selected_item, unit_id)
 
 
@@ -398,7 +410,7 @@ func _begin_give_session() -> void:
 
 
 func _confirm_give(target_id: String, index: int, code: int, target_index: int, return_code: int, revision: int) -> void:
-	if not runtime.item_panel.visible or runtime.item_panel.page != "give_confirm" or runtime.item_panel.operation != "give":
+	if not runtime.item_panel.visible or runtime.item_panel.page != "give_inventory" or runtime.item_panel.operation != "give":
 		return
 	if runtime.item_panel.give_revision != revision or runtime.item_panel.give_target_id != target_id or runtime.item_panel.selected_index != index or int(runtime.item_panel.selected_item) != code or runtime.item_panel.give_target_index != target_index or runtime.item_panel.give_return_code != return_code:
 		return
@@ -407,11 +419,11 @@ func _confirm_give(target_id: String, index: int, code: int, target_index: int, 
 		return
 	runtime.apply_loop(next, "confirm_give")
 	runtime.play_ui_sound("confirm")
-	runtime.item_panel.show_give_session(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), _give_recipients(), int(runtime.play_loop[LoopKeys.ITEM_REVISION]), true)
+	runtime.item_panel.show_give_session(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), _give_recipients(), int(runtime.play_loop[LoopKeys.ITEM_REVISION]))
 
 
 func _finish_give_session(revision: int) -> void:
-	if not runtime.item_panel.visible or runtime.item_panel.operation != "give" or runtime.item_panel.page not in ["give_inventory", "give_target"] or runtime.item_panel.give_revision != revision:
+	if not runtime.item_panel.visible or runtime.item_panel.operation != "give" or runtime.item_panel.page != "inventory" or runtime.item_panel.give_revision != revision:
 		return
 	var used := bool(runtime.play_loop.get(LoopKeys.GIVE_SESSION, {}).get("action_used", false))
 	var next := BattlePlayLoop.finish_give(runtime.play_loop, revision)

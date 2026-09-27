@@ -1,16 +1,16 @@
 # OSS export report
 
-Source: private repository `main` = `68f9ce9796cdfe935f0c6d66ed05e6670729a172` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `d319a6ed5d66418c9609c5ca657b9d3da892f3db` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
-- written: **1473 files, 49.5 MB**
+- written: **1471 files, 49.5 MB**
 - dropped: **19001 files, 610.8 MB**
 - processed (home path / author e-mail / public .gitignore rules): 17 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1101 | 18.7 |
+| B | 1099 | 18.7 |
 | C | 372 | 30.8 |
 
 ## Dropped (by reason)

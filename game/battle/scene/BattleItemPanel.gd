@@ -1,15 +1,17 @@
 extends Control
-## One modal stack: item commands -> inventory -> recipient/confirmation.
+## One modal stack: item commands -> inventory -> map pick／give recipient window／confirmation.
 ## Draft selection is presentation-only; all item mutations return to PlayLoop.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
 ##     (the use target is a map cell pick, not a window: the page gives way, BattleSceneMenus draws the range)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_give_exchange.md
+##     (give: giver's window → held item → adjacent-cell map pick → recipient's window → back to the giver's)
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#07
 ##     (item sub-menu, target selection)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md
 ##     (the picked item's icon rides the pointer while its use target is chosen)
-##   layout: remake-invented (give recipient page, scrollable lists, preview rows)
+##   layout: remake-invented (scrollable lists, preview rows)
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
 ##   strings: resource-derived content/imported/hsl/chapter01/consumables.json
 ##   strings: remake-invented (captions and refusals)
@@ -31,7 +33,6 @@ const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
-const BattleGiveView = preload("res://game/battle/scene/BattleGiveView.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 var rows: VBoxContainer
 var menu: Control
@@ -51,7 +52,6 @@ var selected_slot := ""
 var equipment_view: Control
 var target_buttons: Dictionary = {}
 var confirm_button: Button
-var give_view: Control
 var give_revision := -1
 var give_target_id := ""
 var give_target_index := -1
@@ -110,15 +110,19 @@ func _show_commands() -> void:
 	menu.show()
 
 
-func _show_list(command: String) -> void:
+## `owner` set: the give recipient's window (state 114 0x444d9c opens the same mode-7 window on the
+## target); its slots take the held item (_place_give_item) and the held icon stays on the pointer.
+func _show_list(command: String, owner: Dictionary = {}) -> void:
 	_clear_page()
 	operation = command
-	page = "inventory"
+	var placing := not owner.is_empty()
+	var unit: Dictionary = owner if placing else source_unit
+	page = "give_inventory" if placing else "inventory"
 	BattleUISkin.clear_panel(page_root)
 	var vitals := BattleVitals.new()
 	vitals.position = Vector2(0, 14)
 	page_root.add_child(vitals)
-	vitals.show_unit(source_unit)
+	vitals.show_unit(unit)
 	var equipment := BattleEquipmentView.new()
 	equipment_view = equipment
 	equipment.interactive = operation == "equip"
@@ -127,7 +131,7 @@ func _show_list(command: String) -> void:
 		selected_index = -1
 		_show_equipment_confirmation(slot))
 	page_root.add_child(equipment)
-	equipment.show_unit(source_unit)
+	equipment.show_unit(unit)
 	BattleUISkin.board(page_root, "WINDOW20", Vector2(12, 174))
 	var scroll := ScrollContainer.new()
 	scroll.position = Vector2(20, 180)
@@ -139,9 +143,12 @@ func _show_list(command: String) -> void:
 	rows.add_theme_constant_override("separation", 0)
 	scroll.add_child(rows)
 	var catalog := EquipmentCatalog.items()
-	for index in range(source_unit["inventory"].size()):
-		var code := str(int(source_unit["inventory"][index]))
+	for index in range(unit["inventory"].size()):
+		var code := str(int(unit["inventory"][index]))
 		if code == "0":
+			# 0x438cbf..0x438d0c: a pick on an empty slot inserts into the first empty slot.
+			if placing and index == unit["inventory"].find(0):
+				rows.add_child(_empty_slot_button(index))
 			continue
 		var details: Dictionary = catalog[code]
 		if operation == "equip" and int(details["type_code"]) not in range(2, 7):
@@ -170,7 +177,7 @@ func _show_list(command: String) -> void:
 		if operation == "drop" and InventoryRules.discard_error(int(code), catalog) != "":
 			button.disabled = true
 			button.tooltip_text = "重要道具不可丟棄"
-		button.pressed.connect(_select_item.bind(code, index))
+		button.pressed.connect(_place_give_item.bind(index, int(code)) if placing else _select_item.bind(code, index))
 		rows.add_child(button)
 	if rows.get_child_count() == 0:
 		var empty := Label.new()
@@ -180,7 +187,9 @@ func _show_list(command: String) -> void:
 	var back := BattleUISkin.button(page_root, "返回", Vector2(502, 442), Vector2(113, 30))
 	back.pressed.connect(cancel)
 	var capacity := BattleUISkin.label(page_root, Vector2(20, 440), 15)
-	capacity.text = "道具 %d / 8" % (8 - source_unit["inventory"].count(0))
+	capacity.text = "道具 %d / 8" % (8 - unit["inventory"].count(0))
+	if placing:
+		_hold_selected_item()
 	if operation == "equip":
 		var hint := BattleUISkin.label(page_root, Vector2(252, 444), 12)
 		hint.text = "點選裝備卸下；空手不能攻擊"
@@ -206,37 +215,30 @@ func _select_item(code: String, index: int = -1) -> void:
 			_show_equipment_confirmation(EquipmentRules.SLOTS[kind - 2])
 
 
+## Give target pick (state 112 0x444bc7 → 113 0x444c27): the picked item is already held
+## (0x438c53..0x438d8d store it in 0x4c1ce4 and close the window); 0x40f440(user, 1, 4) marks the
+## adjacent cells and clears the user's own; the cell cursor and hover strip are the use pick's.
+## BattleSceneMenus draws the range and confirms a marked cell holding a give target.
 func _show_targets() -> void:
+	BattlePanelMotion.attach(self).slide_out()
 	_clear_page()
 	page = "give_target"
-	var vitals := BattleVitals.new()
-	vitals.position = Vector2(0, 322)
-	page_root.add_child(vitals)
-	vitals.hide()
-	for target in targets:
-		if target["id"] == source_unit["id"]:
-			continue
-		var point: Vector2 = target.get("screen_position", anchor)
-		var button := Button.new()
-		button.position = point - Vector2(16, 16)
-		button.size = Vector2(32, 32)
-		button.set_meta("target_id", str(target["id"]))
-		button.tooltip_text = str(BattleUISkin.data()["actors"][str(target["actor_id"])]["title"])
-		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
-			var style := StyleBoxFlat.new()
-			style.bg_color = Color(0.0, 0.15, 1.0, 0.14)
-			style.border_color = Color.YELLOW if state in ["hover", "pressed"] else Color(0.1, 0.25, 1.0)
-			style.set_border_width_all(2)
-			button.add_theme_stylebox_override(state, style)
-		button.mouse_entered.connect(func(): vitals.show_unit(target); vitals.show())
-		button.mouse_exited.connect(vitals.hide)
-		button.pressed.connect(_select_give_target.bind(str(target["id"])))
-		page_root.add_child(button)
-		target_buttons[str(target["id"])] = button
-	if target_buttons.is_empty():
-		var hint := BattleUISkin.label(page_root, Vector2(172, 412), 17)
-		hint.text = "附近沒有可交換的同伴"
-	BattleUISkin.button(page_root, "結束給予", Vector2(474, 438), Vector2(148, 34)).pressed.connect(cancel)
+	picking = true
+	_hold_selected_item()
+	use_pick_started.emit()
+
+
+## An empty-slot row of the recipient's window (no caption; the original slot is blank).
+func _empty_slot_button(index: int) -> Button:
+	var button := Button.new()
+	button.name = "Item_0_%d" % index
+	button.set_meta("item_code", "0")
+	button.set_meta("inventory_index", index)
+	button.custom_minimum_size = Vector2(195, 32)
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+	button.pressed.connect(_place_give_item.bind(-1, 0))
+	return button
 
 
 ## Original: picking the item in the use window moves it into the held slot [0x4c1ce4]
@@ -286,7 +288,8 @@ func _follow_pointer() -> void:
 	held_icon.position = page_root.get_local_mouse_position() - held_icon.get_meta("origin", Vector2.ZERO)
 
 
-func show_give_session(unit: Dictionary, recipients: Array, revision: int, keep_target: bool = false) -> void:
+## Every give session step lands on the giver's window (state 110 0x444b8a; 116 returns there).
+func show_give_session(unit: Dictionary, recipients: Array, revision: int) -> void:
 	source_unit = unit.duplicate(true)
 	targets = recipients.duplicate(true)
 	give_revision = revision
@@ -294,12 +297,9 @@ func show_give_session(unit: Dictionary, recipients: Array, revision: int, keep_
 	selected_item = ""
 	selected_index = -1
 	give_target_index = -1
+	give_target_id = ""
 	show()
-	if keep_target and not _give_target().is_empty():
-		_show_give_inventories()
-	else:
-		give_target_id = ""
-		_show_targets()
+	_show_list("give")
 
 
 func _give_target() -> Dictionary:
@@ -309,65 +309,30 @@ func _give_target() -> Dictionary:
 	return {}
 
 
-func _select_give_target(id: String) -> void:
-	if page != "give_target":
+## BattleSceneMenus: a left press on a marked cell holding a give target.
+func select_give_target(id: String) -> void:
+	if page != "give_target" or not targets.any(func(target): return str(target["id"]) == id):
 		return
 	give_target_id = id
-	selected_index = -1
-	selected_item = ""
 	_show_give_inventories()
 
 
 func _show_give_inventories() -> void:
-	_clear_page()
-	page = "give_inventory"
-	give_view = BattleGiveView.new()
-	page_root.add_child(give_view)
-	give_view.show_inventories(source_unit, _give_target(), EquipmentCatalog.items(), selected_index)
-	var view := give_view
-	give_view.source_selected.connect(func(index, code):
-		if page != "give_inventory" or give_view != view: return
-		selected_index = index
-		selected_item = str(code)
-		_show_give_inventories())
-	give_view.destination_selected.connect(func(index, code):
-		if page == "give_inventory" and give_view == view: _show_give_confirmation(index, code))
-	give_view.back_requested.connect(func():
-		if page == "give_inventory" and give_view == view: _show_targets())
-	var revision := give_revision
-	give_view.finish_requested.connect(func():
-		if page == "give_inventory" and give_view == view: give_finished.emit(revision))
+	_show_list("give", _give_target())
+	BattlePanelMotion.attach(self).slide_in()
 
 
-func _show_give_confirmation(target_index: int, return_code: int) -> void:
+## One pick in the recipient's window is the whole transfer (0x438c92 → 0x438d29 closes it): a
+## held slot is swapped out, an empty one takes the item first-empty; PlayLoop checks and commits.
+func _place_give_item(target_index: int, return_code: int) -> void:
 	if page != "give_inventory" or selected_index < 0:
 		return
-	_clear_page()
-	page = "give_confirm"
+	var target := _give_target()
+	if not InventoryRules.exchange(source_unit["inventory"], selected_index, int(selected_item), target["inventory"], target_index, return_code)["ok"]:
+		return
 	give_target_index = target_index
 	give_return_code = return_code
-	var catalog := EquipmentCatalog.items()
-	var target := _give_target()
-	var result := InventoryRules.exchange(source_unit["inventory"], selected_index, int(selected_item), target["inventory"], target_index, return_code)
-	BattleGiveView.fitted_board(page_root, Vector2(112, 140), Vector2(416, 224))
-	var title := BattleUISkin.label(page_root, Vector2(132, 158), 19)
-	title.text = "確認交換" if return_code > 0 else "確認給予"
-	var description := BattleUISkin.label(page_root, Vector2(132, 201), 17)
-	description.size = Vector2(376, 85)
-	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var summary := "%s → %s" % [catalog[selected_item]["name"], BattleGiveView.unit_name(target)]
-	if return_code > 0:
-		summary += "\n換回：%s" % catalog[str(return_code)]["name"]
-	BattleUISkin.set_wrapped_text(description, summary)
-	confirm_button = BattleUISkin.button(page_root, "確定", Vector2(132, 306), Vector2(158, 36))
-	confirm_button.disabled = not result["ok"]
-	# Capture this exact proposal: an old Button signal cannot authorize a newer selection.
-	var request := [give_target_id, selected_index, int(selected_item), target_index, return_code, give_revision]
-	var proposal_button := confirm_button
-	confirm_button.pressed.connect(func():
-		if page == "give_confirm" and confirm_button == proposal_button:
-			give_requested.emit(request[0], request[1], request[2], request[3], request[4], request[5]))
-	BattleUISkin.button(page_root, "取消", Vector2(350, 306), Vector2(158, 36)).pressed.connect(cancel)
+	give_requested.emit(give_target_id, selected_index, int(selected_item), target_index, return_code, give_revision)
 
 
 func _show_drop_confirmation() -> void:
@@ -560,11 +525,15 @@ func handle_input(event: InputEvent) -> bool:
 
 
 func cancel() -> void:
-	if page == "give_confirm":
-		_show_give_inventories()
-	elif page == "give_inventory":
-		_show_targets()
+	if page == "give_inventory":
+		# Closing the recipient's window keeps the held item, which 116 returns to the giver (provisional).
+		_show_list("give")
 	elif page == "give_target":
+		# 0x444d3b..0x444d73: the held item goes back and the giver's window reopens (state 110).
+		_show_list("give")
+		BattlePanelMotion.attach(self).slide_in()
+	elif page == "inventory" and operation == "give":
+		# 0x444bff: right click on the giver's window ends the session.
 		give_finished.emit(give_revision)
 	elif page == "target":
 		# 0x444a5c: right click returns the held item (0x436e30) and reopens the use window (state 102).
