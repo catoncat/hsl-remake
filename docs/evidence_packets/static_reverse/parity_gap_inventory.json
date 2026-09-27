@@ -15,8 +15,8 @@
     "layout_timing_modules": 62,
     "items_by_original_status": {
       "read_complete": 16,
-      "read_partial": 60,
-      "unread": 13,
+      "read_partial": 61,
+      "unread": 12,
       "no_original_code": 17
     },
     "items_by_visibility": {
@@ -1891,6 +1891,29 @@
       ]
     },
     {
+      "id": "memoir-list",
+      "difference": "回憶錄列表（战斗卷轴与大地图卷轴共用）的位置、槽标签与「空的回憶錄」提示是重制值；战斗卷轴 儲存戰場記錄 以外各项与选格读取前的確定／取消是重制读法",
+      "original": "战斗卷轴过程 0x4253f0 项 2 调 0x423bd0(…, 0) 开 Title031 读取列表（与大地图卷轴项 2 同一调用），Wine 帧已拍；列表过程的逐槽布局与标签格式未读",
+      "original_evidence": [
+        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
+        "docs/evidence_packets/static_reverse/original_storage_window.md"
+      ],
+      "remake": "BattleSystemMenu 的读法",
+      "remake_code": [
+        "game/battle/scene/BattleSystemMenu.gd:_show_memoir_list"
+      ],
+      "original_status": "read_partial",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "面板与界面",
+      "sources": [
+        "provenance:game/battle/scene/BattleSystemMenu.gd|layout|provisional|",
+        "provenance:game/battle/scene/BattleSystemMenu.gd|rules|provisional|",
+        "provenance:game/battle/scene/BattleSystemMenu.gd|timing|remake-invented|",
+        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）"
+      ]
+    },
+    {
       "id": "missing-clip-fallback",
       "difference": "缺切入素材的合成切入借用氣刃斬演出（兜底）",
       "original": "原版每个角色有自己的 ANIMAL 程序",
@@ -2407,29 +2430,6 @@
         "matrix:Camera curve",
         "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#35c5395ff4",
         "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91"
-      ]
-    },
-    {
-      "id": "memoir-list",
-      "difference": "战斗卷轴的「讀取回憶錄」读作回到战役位置，回憶錄列表位置与「沒有戰場記錄」提示是重制值",
-      "original": "原作系统卷轴 handler 与回憶錄列表未定位、无录像",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
-        "docs/evidence_packets/static_reverse/original_storage_window.md"
-      ],
-      "remake": "BattleSystemMenu 的读法",
-      "remake_code": [
-        "game/battle/scene/BattleSystemMenu.gd:_show_memoir_list"
-      ],
-      "original_status": "unread",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "面板与界面",
-      "sources": [
-        "provenance:game/battle/scene/BattleSystemMenu.gd|layout|provisional|",
-        "provenance:game/battle/scene/BattleSystemMenu.gd|rules|provisional|",
-        "provenance:game/battle/scene/BattleSystemMenu.gd|timing|remake-invented|",
-        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）"
       ]
     },
     {

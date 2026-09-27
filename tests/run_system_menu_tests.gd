@@ -3,8 +3,8 @@ extends SceneTree
 ## In-battle system menu (BattleSystemMenu): Esc at a quiet action-phase boundary
 ## scrolls the Title041 panel in from the bottom edge; keyboard/mouse selection lights the
 ## Title042-047 item; 任務說明 shows the objective board; 儲存／讀取戰場記錄 go through the
-## settlement controller's checkpoint; 讀取回憶錄 resumes the saved campaign position or
-## says 沒有回憶錄; 設定選項 is a not-remade hint; 回主選單 asks 確定／取消 then leaves for
+## settlement controller's checkpoint; 讀取回憶錄 opens the 回憶錄 load list shared with the
+## world scroll; 設定選項 is a not-remade hint; 回主選單 asks 確定／取消 then leaves for
 ## the title screen.
 
 const RuntimeScene = preload("res://game/battle/scene/BattleSceneRuntime.tscn")
@@ -61,7 +61,7 @@ func _run() -> void:
 func _run_confirm_class_inventory() -> void:
 	var SystemMenu = load("res://game/battle/scene/BattleSystemMenu.gd")
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(SystemMenu.MANIFEST_PATH))
-	var opens_without_prompt := {"system_items": ["mission", "options"], "world_items": ["arrange_equipment", "save_memoir", "load_memoir", "options"]}
+	var opens_without_prompt := {"system_items": ["mission", "load_memoir", "options"], "world_items": ["arrange_equipment", "save_memoir", "load_memoir", "options"]}
 	for key in opens_without_prompt:
 		var table: Dictionary = SystemMenu.WORLD_CONFIRM_ACTIONS if key == "world_items" else SystemMenu.CONFIRM_ACTIONS
 		for item in manifest[key]:
@@ -245,26 +245,23 @@ func _run_records_and_memoir() -> void:
 	_assert_eq(result.get("status", ""), "loaded", "確定 loads the checkpoint through the settlement controller")
 	await create_timer(menu.SCROLL_SECONDS + 0.2).timeout
 	await process_frame
-	# 讀取回憶錄 without a saved campaign position.
-	CampaignProgress.clear_progress()
+	# 讀取回憶錄 opens the Title031 load list like the world scroll (0x425842 → 0x423bd0(…, 0));
+	# an occupied slot asks, then leaves the battle for that memoir.
+	var saved := {"scenario_path": "res://content/battles/story_002.json", "carry": {"gold": 275}, "world": {"current_point": 2}, "play_seconds": 12.0}
+	_assert_true(CampaignProgress.save_memoir(0, saved, "test"), "a memoir can be saved for the test")
 	await _open(scene)
 	menu.select(2)
 	result = menu.activate()
-	_assert_eq(result.get("status", ""), "confirm", "讀取回憶錄 asks for confirmation")
+	_assert_eq(result.get("status", ""), "memoir_list", "讀取回憶錄 opens the 回憶錄 list")
+	_assert_eq(menu.summary().get("memoir_mode", ""), "load", "the list is in load mode")
+	menu.select_memoir(0)
+	menu.activate_memoir()
 	result = menu.confirm(true)
-	_assert_eq(result.get("status", ""), "no_memoir", "without a saved position the menu says so")
-	_assert_true(menu._hint.visible and menu._hint.text == "沒有回憶錄", "the hint reads 沒有回憶錄")
-	_assert_true(not CampaignProgress.has_pending(), "no hand-off is armed without a memoir")
-	# 讀取回憶錄 with a saved campaign position arms the resume hand-off.
-	var saved := {"scenario_path": "res://content/battles/story_002.json", "carry": {"gold": 275}, "world": {"current_point": 2}, "play_seconds": 12.0}
-	_assert_true(CampaignProgress.save_progress(saved), "a campaign position can be saved for the test")
-	menu.select(2)
-	menu.activate()
-	result = menu.confirm(true)
-	_assert_eq(result.get("status", ""), "memoir_resumed", "with a saved position 讀取回憶錄 resumes it")
-	_assert_eq(result.get("scenario_path", ""), "res://content/battles/story_002.json", "the resumed scenario is the saved one")
-	_assert_true(CampaignProgress.has_pending(), "the saved position is armed as the pending hand-off")
+	_assert_eq(result.get("status", ""), "memoir_resumed", "確定 on an occupied slot resumes that memoir")
+	_assert_eq(result.get("scenario_path", ""), "res://content/battles/story_002.json", "the resumed scenario is the memoir's")
+	_assert_true(CampaignProgress.has_pending(), "the memoir is armed as the pending hand-off")
 	CampaignProgress.consume_pending()
+	CampaignProgress.clear_memoir(0)
 	CampaignProgress.clear_progress()
 	if FileAccess.file_exists(checkpoint_path):
 		DirAccess.remove_absolute(checkpoint_path)

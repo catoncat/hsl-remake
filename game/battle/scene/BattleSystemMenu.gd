@@ -1,7 +1,7 @@
 extends Control
 ## System scroll in two variants read from content/imported/hsl/global/title/manifest.json:
 ## "battle" = Title041 (任務說明／儲存戰場記錄／讀取回憶錄／讀取戰場記錄／設定選項／回主選單, lit
-## Title042-047) raised by Esc in the player action phase; "world" = Title051 (整理裝備／
+## Title042-047) raised by Esc or right click on a fresh player action ring; "world" = Title051 (整理裝備／
 ## 儲存回憶錄／讀取回憶錄／讀取戰場記錄／設定選項／回主選單, lit Title052-057) raised by Esc on
 ## the big map, with the Title031 回憶錄 eight-slot list for saving/loading memoirs. Both use
 ## the Title061-063 確定／取消 pair. Presentation only: every action goes through the runtime's
@@ -14,14 +14,15 @@ extends Control
 ## recording 2026-09-24 (docs/evidence_packets/runtime_observations/menus_ui/README.md) shows
 ## 儲存戰場記錄 and 回主選單 asking 確定／取消 with Title061 over the centre of the open scroll,
 ## 「進度儲存完成」 on the BOARD02 message board (no portrait, centred) at the bottom while the scroll stays open, and 任務說明
-## dissolving the win／fail board (BattleWinFailBoard) in over the scroll. 讀取回憶錄 is read as "resume the saved campaign position" (the remake's
-## between-battle save); 整理裝備 hands off to the host's PartyEquipmentScreen.
+## dissolving the win／fail board (BattleWinFailBoard) in over the scroll. 讀取回憶錄 opens the Title031
+## eight-slot load list in both variants (battle proc 0x4253f0 item 2 → 0x423bd0(…, 0), Wine frame
+## menus_ui §3); 整理裝備 hands off to the host's PartyEquipmentScreen.
 ## Under the untouched Title039 panel a 重製選項 entry (remake) opens RemakeOptionsPage, the
 ## second page of the remake's own options (docs/OPTIONS.md); Down past 音樂音量 reaches it.
 ## provenance:
-##   rules: provisional
-##     (讀取回憶錄 read as resume-campaign-position; input handler not located —
-##     docs/evidence_packets/static_reverse/original_storage_window.md covers only the storage window)
+##   rules: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (battle scroll opened by defProcBattleBOSS 0x4082ab; 讀取回憶錄 → load list 0x425842)
+##   rules: provisional (確定／取消 on the other battle items, memoir slot confirm)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#05
 ##     (scroll rests at (190,67))
@@ -62,7 +63,6 @@ const HINT_SECONDS := 1.6
 ## question text is the remake's.
 const CONFIRM_ACTIONS := {
 	"save_record": "儲存戰場記錄？",
-	"load_memoir": "讀取回憶錄，放棄目前戰鬥？",
 	"load_record": "讀取戰場記錄，覆蓋目前進度？",
 	"main_menu": "回主選單，放棄目前戰鬥？",
 }
@@ -321,16 +321,25 @@ func active() -> bool:
 	return phase != "closed"
 
 
-## Scroll in from the bottom edge (recording 05, frames 001-003). Refused unless the
-## runtime is at a quiet action-phase boundary (the checkpoint controller's rule).
+## Scroll in from the bottom edge (recording 05, frames 001-003). The battle variant opens
+## only on a freshly opened player action ring: defProcBattleBOSS 0x4082ab needs
+## [0x4c1b00] & 0x7e000000 clear (0x2000000 is set by a ring-icon press 0x43e91a and at
+## battle setup 0x42c6b4, cleared only when a new ring opens 0x443a52 — so move／target
+## selection, the ring after a move, enemy turns and the wait before the first ring are shut;
+## 0x4000000 story chain, 0x8000000／0x10000000 battle end) and the extra-action counter
+## [0x4c1cf0] zero (0x4082b7).
 func open() -> Dictionary:
 	if phase != "closed":
 		return {"ok": false, "reason": "already_open"}
-	if variant == "battle":
-		if runtime != null and runtime.settlement_controller != null and not runtime.settlement_controller.quiet():
+	if variant == "battle" and runtime != null:
+		if runtime.settlement_controller != null and not runtime.settlement_controller.quiet():
 			return {"ok": false, "reason": "not_quiet"}
-		if runtime != null and runtime.interaction_state != Interaction.ACTION_MENU:
+		if runtime.interaction_state != Interaction.ACTION_MENU:
 			return {"ok": false, "reason": "interaction_" + str(runtime.interaction_state)}
+		if runtime.pending_move_revert:
+			return {"ok": false, "reason": "after_move"}
+		if bool((runtime.play_loop.get("extra_action", {}) as Dictionary).get("pending", false)):
+			return {"ok": false, "reason": "extra_action"}
 	phase = "opening"
 	visible = true
 	selected = 0
@@ -797,14 +806,10 @@ func _perform(action: String) -> Dictionary:
 			result["detail"] = loaded
 			close()
 		"load_memoir":
-			var saved_progress: Dictionary = CampaignProgress.load_progress()
-			if saved_progress.is_empty():
-				result["status"] = "no_memoir"
-				_show_hint("沒有回憶錄")
-			else:
-				result["status"] = "memoir_resumed"
-				result["scenario_path"] = str(saved_progress.get("scenario_path", ""))
-				runtime.campaign_progress.resume_saved_progress(saved_progress)
+			# Battle item 2 opens the same Title031 load list as the world scroll (0x425842
+			# calls 0x423bd0(…, 0), the world item-2 call); a chosen slot leaves the battle.
+			_show_memoir_list("load")
+			result["status"] = "memoir_list"
 		"options":
 			_show_options()
 			result["status"] = "options_shown"

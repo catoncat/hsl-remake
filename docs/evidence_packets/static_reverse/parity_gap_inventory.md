@@ -15,8 +15,8 @@
 | 原版状态 | 条数 |
 | --- | --- |
 | 已读完只差照做 | 16 |
-| 读了一部分 | 60 |
-| 未读 | 13 |
+| 读了一部分 | 61 |
+| 未读 | 12 |
 | 原版无对应代码 | 17 |
 
 | 可见度 | 条数 |
@@ -110,9 +110,9 @@
 | `hover-strip-rule` | 选武器／魔法／绝技目标时，光标下任何存活单位都显示身份栏（重制取舍），原版逐状态规则未读<br>待定：保留重制做法 | 原版各选择状态何时显示身份栏未读<br>[original_cast_overlays.md](../../../docs/evidence_packets/static_reverse/original_cast_overlays.md) | BattlePresentation 对光标下任何存活单位都显示<br>[BattlePresentation.gd](../../../game/battle/scene/BattlePresentation.gd) `preview_hovered_unit` | 未读 | 每场都看得到 | S | provenance 1 |
 | `cast-overlay-rules` | 施法时魔法／绝技选单窗何时关、浏览态何时画移动范围、I_RECT02..08 其他配色何时用——原版未读 | 施法覆盖层调用点已读，选单窗关闭与浏览态触发条件未读<br>[original_cast_overlays.md](../../../docs/evidence_packets/static_reverse/original_cast_overlays.md)、[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | 按已读部分画，未读部分用重制现状<br>[BattleSceneOverlays.gd](../../../game/battle/scene/BattleSceneOverlays.gd) | 读了一部分 | 少见 | S | sentence 5、scope 1 |
 | `identity-bar-bits` | 身份栏：位 0x100（印数字）的置位者未读，未知单位在切入栏是否印数字不确定；气力条是重制自创 | 0x434d10 的 ??? 规则与已知字节写入者已读；位 0x100 置位者、条的画法未读<br>[original_identity_bar.md](../../../docs/evidence_packets/static_reverse/original_identity_bar.md) | 按悬停样本处理未知单位，气力条未知时留空；未交手的敌人原版路径照原版印 ???，OPT-INFO=公開 时恢复改良：悬停／选目标／切入栏／状态页一律视为已知、数值始终可见（OPTIONS-S2）<br>[BattleVitals.gd](../../../game/battle/scene/BattleVitals.gd)、[BattlePresentation.gd](../../../game/battle/scene/BattlePresentation.gd) `_strip_known`、[BattleStatusPanel.gd](../../../game/battle/scene/BattleStatusPanel.gd) `show_unit` | 读了一部分 | 少见 | S | provenance 2、sentence 4、scope 2、matrix 1 |
+| `memoir-list` | 回憶錄列表（战斗卷轴与大地图卷轴共用）的位置、槽标签与「空的回憶錄」提示是重制值；战斗卷轴 儲存戰場記錄 以外各项与选格读取前的確定／取消是重制读法 | 战斗卷轴过程 0x4253f0 项 2 调 0x423bd0(…, 0) 开 Title031 读取列表（与大地图卷轴项 2 同一调用），Wine 帧已拍；列表过程的逐槽布局与标签格式未读<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_storage_window.md](../../../docs/evidence_packets/static_reverse/original_storage_window.md) | BattleSystemMenu 的读法<br>[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `_show_memoir_list` | 读了一部分 | 少见 | S | provenance 3、scope 1 |
 | `panel-slide-formula` | 面板滑入的减速曲线是按录屏拟合的（每 tick 去 1/8），部件左／右／上的分边是按矩形位置猜的；面板底下的压暗层级 9／16 与每 3 tick 一级的淡入淡出也是按录屏亮度拟合的 | 未找到面板滑动的 EXE 常数（系统卷轴 0x45e80d 消费者未读）；压暗过程也未读，录屏每边 8 个亮度台阶、终态亮度比 0.46<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattlePanelMotion 按拟合公式与分边规则滑动，压暗按拟合层级淡入淡出<br>[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `side_of`、[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `open_step`、[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `shade_step` | 读了一部分 | 少见 | S | provenance 2、sentence 2、video 1 |
 | `give-trade-hand-cursor` | 交换道具原版是手形光标拿起物品放下，重制是两个背包并排点选 | 原录像 07 的手形光标交换<br>[original_give_exchange.md](../../../docs/evidence_packets/static_reverse/original_give_exchange.md) | BattleGiveView 两背包排布<br>[BattleGiveView.gd](../../../game/battle/scene/BattleGiveView.gd) | 读了一部分 | 少见 | M | provenance 1、matrix 1 |
-| `memoir-list` | 战斗卷轴的「讀取回憶錄」读作回到战役位置，回憶錄列表位置与「沒有戰場記錄」提示是重制值 | 原作系统卷轴 handler 与回憶錄列表未定位、无录像<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_storage_window.md](../../../docs/evidence_packets/static_reverse/original_storage_window.md) | BattleSystemMenu 的读法<br>[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `_show_memoir_list` | 未读 | 少见 | S | provenance 3、scope 1 |
 | `system-scroll-speed` | 系统卷轴（Esc）展开 0.25 s 是估值；原版卷轴每 tick 步进未读 | 0x45e80d 的卷轴消费者未读<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md)、[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | BattleSystemMenu 固定 0.25 s 卷出<br>[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `_slide` | 未读 | 少见 | S | provenance 1、sentence 2、scope 1 |
 
 ### 战斗规则（13）

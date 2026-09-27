@@ -380,8 +380,8 @@
     },
     {
       "id": "memoir-list",
-      "difference": "战斗卷轴的「讀取回憶錄」读作回到战役位置，回憶錄列表位置与「沒有戰場記錄」提示是重制值",
-      "original": "原作系统卷轴 handler 与回憶錄列表未定位、无录像",
+      "difference": "回憶錄列表（战斗卷轴与大地图卷轴共用）的位置、槽标签与「空的回憶錄」提示是重制值；战斗卷轴 儲存戰場記錄 以外各项与选格读取前的確定／取消是重制读法",
+      "original": "战斗卷轴过程 0x4253f0 项 2 调 0x423bd0(…, 0) 开 Title031 读取列表（与大地图卷轴项 2 同一调用），Wine 帧已拍；列表过程的逐槽布局与标签格式未读",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_storage_window.md"
@@ -390,7 +390,7 @@
       "remake_code": [
         "game/battle/scene/BattleSystemMenu.gd:_show_memoir_list"
       ],
-      "original_status": "unread",
+      "original_status": "read_partial",
       "visibility": "rare",
       "effort": "S",
       "category": "面板与界面"

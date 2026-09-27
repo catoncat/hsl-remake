@@ -93,17 +93,24 @@ func handle_input(event: InputEvent) -> void:
 			else:
 				handle_pointer_left_released(logical_position)
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			handle_pointer_cancel(logical_position)
+			if not _raise_system_scroll():
+				handle_pointer_cancel(logical_position)
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_HOME and runtime.interaction_state in Interaction.PLAYER_CONTROL and not runtime.has_actor_motion():
 			runtime.center_camera_on_grid(runtime.unit_grid_coords[runtime.selected_unit_id])
 			update_pointer_hit(runtime.pointer_logical_position)
 		elif event.keycode == KEY_ESCAPE:
-			if runtime.interaction_state == Interaction.ACTION_MENU and not runtime.pending_move_revert and not runtime.has_actor_motion():
-				# Nothing to cancel: Esc raises the original system scroll (remake key binding).
-				runtime.system_menu.open()
-			else:
+			if not _raise_system_scroll():
 				handle_pointer_cancel(runtime.pointer_logical_position)
+
+
+## Esc and right click both raise the battle scroll (defProcBattleBOSS 0x4082c4 reads
+## [0x4c6390] & 0x100000 or [0x4c6398] & 0x20000) on a fresh ring; otherwise they cancel.
+## BattleSystemMenu.open holds the original gate.
+func _raise_system_scroll() -> bool:
+	if runtime.system_menu == null or runtime.has_actor_motion() or runtime.held_command_id != "":
+		return false
+	return bool(runtime.system_menu.open().get("ok", false))
 
 
 func command_id_at_logical_position(logical_position: Vector2) -> String:

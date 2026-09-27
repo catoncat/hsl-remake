@@ -1,10 +1,10 @@
 # 菜单与界面：标题、目标光标、系统卷轴、状态页与技能页的原版测量
 
-> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）的逐帧像素、SHP 模板匹配与音轨互相关，2026-09-26 Wine 原版实拍技能页三帧（§5，cnc-ddraw 游戏窗截图）; resource-derived: I_RECT01.SHP、BOARD02.SHP、WINDOW60.SHP、Title039／Title061、WAV 表; static-derived: 状态窗 mode 10 与 WINDOW20／21 的既有读法（static_reverse/original_growth_window.md）、状态页 mode 0／1 板与页按钮 `0x43ac10`／`0x43a640`／`0x443cfa`（§4）、技能页 `0x43b4e0`／`0x438160`／`0x434d10`／`0x433a90`／`0x4331b0`、滚动条 `0x446060`／`0x445860`／`0x445d70`、悬停脉冲 `0x42c110`／`0x42c130` 的读法（§5）、預備動作 开关 `0x424590`／`0x401e74`（§預備動作）; provisional: 只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6） · status: live · functions: 0x401c20, 0x401e74, 0x4030f7, 0x403199, 0x4031c7, 0x424560, 0x424590, 0x424680 · tools: hsl_original_control.py, hsl_video_events.py, run_battle_scene_runtime_tests.gd, run_presentation_contract_tests.gd, run_skill_resolution_tests.gd, run_system_menu_tests.gd, run_title_screen_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）的逐帧像素、SHP 模板匹配与音轨互相关，2026-09-26 Wine 原版实拍技能页三帧（§5，cnc-ddraw 游戏窗截图），2026-09-28 Wine 战斗卷轴开启与回憶錄列表四帧及 `0x4c1b00` 读数（§3）; resource-derived: I_RECT01.SHP、BOARD02.SHP、WINDOW60.SHP、Title039／Title061、WAV 表; static-derived: 状态窗 mode 10 与 WINDOW20／21 的既有读法（static_reverse/original_growth_window.md）、状态页 mode 0／1 板与页按钮 `0x43ac10`／`0x43a640`／`0x443cfa`（§4）、技能页 `0x43b4e0`／`0x438160`／`0x434d10`／`0x433a90`／`0x4331b0`、滚动条 `0x446060`／`0x445860`／`0x445d70`、悬停脉冲 `0x42c110`／`0x42c130` 的读法（§5）、預備動作 开关 `0x424590`／`0x401e74`（§預備動作）、战斗卷轴开启条件 `0x4082ab` 与 讀取回憶錄 去向 `0x425842`（§3）; provisional: 只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6） · status: live · functions: 0x401c20, 0x401e74, 0x4030f7, 0x403199, 0x4031c7, 0x4081c0, 0x423c10, 0x424560, 0x424590, 0x424680, 0x4253f0 · tools: hsl_original_control.py, hsl_video_events.py, run_battle_scene_runtime_tests.gd, run_presentation_contract_tests.gd, run_skill_resolution_tests.gd, run_system_menu_tests.gd, run_title_screen_tests.gd · updated: 2026-09-28
 
 ## 结论
 
-- 原版：标题版本号「V1.06」常驻左下，確認「開始新故事」亮起停 0.75 s 再 0.55 s 淡黑；目标格光标（玩家选目标与敌方预告）都是 `I_RECT01.SHP` 黄框；系统卷轴的確定／取消压在卷轴中央 (256,217)、不压暗，存档完成提示在 BOARD02 (75,320)；状态页开页总是属性页，状态页页按钮排在 y 387；技能页是状态窗 root mode 8／9，十行起才有滚动条（runtime-measured；static-derived）。
+- 原版：标题版本号「V1.06」常驻左下，確認「開始新故事」亮起停 0.75 s 再 0.55 s 淡黑；目标格光标（玩家选目标与敌方预告）都是 `I_RECT01.SHP` 黄框；系统卷轴的確定／取消压在卷轴中央 (256,217)、不压暗，存档完成提示在 BOARD02 (75,320)；战斗卷轴只在刚打开的玩家行动环上按 Esc／右键才开（选格、移动后的环、敌方回合、首个行动环之前、额外行动都不开），其 讀取回憶錄 开 Title031 八格读取列表；状态页开页总是属性页，状态页页按钮排在 y 387；技能页是状态窗 root mode 8／9，十行起才有滚动条（runtime-measured；static-derived）。
 - 重制：`BattleSelectionCursor`／`BattleAttackCue` 画 I_RECT01，`BattleSystemMenu` 照原版位置与时长出確定／取消与完成提示，`BattleStatusPanel`／`BattleMagicPanel` 按 mode 0／1 与技能页读法落地；預備動作 开关做在 設定選項 第二行（`GameSettings.ready_action`）（runtime-measured）。
 - 差异：状态页页按钮排未做（差异清单 `status-left-column`）；卷轴卷动、回憶錄列表、標題语义与 GAME OVER 位置时长是重制读法；只有一份录屏样本的时长与未命中的声音保持 provisional（provisional）。
 
@@ -47,8 +47,10 @@
 | 存档声音 | 582.28 s 起点（確定 点击）最高 NCC Walk0010 0.73；582.8 s 第二个起点 Put00003 0.52 | provisional | 无声 | 无声（单一样本，未认定） |
 | 任務說明 | 577.55–579.48 s：卷轴上方淡入与开场同一块 WINDOW60 胜负条件面板 (136,108)，绿色「勝利條件」「失敗條件」标题各带一行条件，停到按键 | runtime-measured | WINDOW60 居中卡片、表现侧文案 | 同一 `BattleWinFailBoard`（开场用的那块）在 (136,108) 淡入，等输入；Esc 淡出回卷轴 |
 | 設定選項 | Title039 居中 (142,90)，588.0 s 模板差 21.4 | runtime-measured | 同位置（provisional） | 不改，证据等级升为 runtime-measured |
+| 开启时机 | 关卡控制对象 defProcBattleBOSS（`0x4081c0`，过程表第 6 项）每 tick：`[0x4c1b00] & 0x7e000000` 为 0 且额外行动计数 `[0x4c1cf0]` 为 0（`0x4082ab`／`0x4082b7`）时，Esc（`[0x4c6390] & 0x100000`）或右键（`[0x4c6398] & 0x20000`）即置 `0xc0000000`、放 ACCEPT01（RESOURCE 398）、`0x423c10` 建对象 787（Battle Menu，TITLE041，defProcBattleMenu 49）。`0x2000000` 在开战 `0x42c6b4` 与按下行动环图标 `0x43e91a` 时置位，只在新行动环打开 `0x443a52` 时清除；`0x4000000` 剧情／状态链，`0x8000000`／`0x10000000`／`0x20000000` 结束与转场。Wine：环刚打开时读数 0、Esc 开卷轴后 `0xc0000000`；移动选格读数 `0x02000000`，Esc 退回行动环；敌方回合 `0x02c00000`／`0x02100000`，Esc 无卷轴 | static-derived＋runtime-measured | `action_menu` 且检查点控制器 `quiet()` 时 Esc 开，右键不开 | 同门槛再加：移动后的环（`pending_move_revert`）与额外行动（`extra_action.pending`）不开；Esc 与右键都开，否则照旧取消 |
+| 讀取回憶錄 | 战斗卷轴过程 `0x4253f0` 项 2（`0x42583c`）调 `0x423bd0(…, 0)`——与大地图卷轴项 2 同一调用——直接开「读取回忆录」八格列表，不先问確定／取消（Wine 帧：三格有记录、五格「无记录」） | static-derived＋runtime-measured | 直接读自动记下的战役位置，没有就提示「沒有回憶錄」；先问確定／取消 | 开同一张回憶錄列表（`_show_memoir_list("load")`），选有记录的格问確定／取消后经 `_resume_memoir_slot` 放弃本场读入 |
 
-同类盘点（`run_system_menu_tests._run_confirm_class_inventory`）：两种卷轴里写记录或离开当前游戏的项——战斗卷轴 儲存戰場記錄／讀取回憶錄／讀取戰場記錄／回主選單，大地图卷轴 讀取戰場記錄／回主選單——都走同一个 Title061 提示；回憶錄列表里覆盖已有格与读取已有格也用同一提示。未纳入：状态页的保存／读取按钮（OPT-GUIDE＝提示 才有）与 F5／F9 快捷键（重制补充），仍即时执行并用顶部横幅。
+同类盘点（`run_system_menu_tests._run_confirm_class_inventory`）：两种卷轴里写记录或离开当前游戏的项——战斗卷轴 儲存戰場記錄／讀取戰場記錄／回主選單，大地图卷轴 讀取戰場記錄／回主選單——都走同一个 Title061 提示；回憶錄列表里覆盖已有格与读取已有格也用同一提示。未纳入：状态页的保存／读取按钮（OPT-GUIDE＝提示 才有）与 F5／F9 快捷键（重制补充），仍即时执行并用顶部横幅。
 
 ### 4. 状态页（左栏默认就是属性页；钱框只在行动环 狀態 页）
 
@@ -94,10 +96,10 @@
 | GAME OVER | 原版败北无结果页（`0x42cbd0`），160 tick 无输入自回标题（`0x42aea0`）；重制败北约 0.2 s 淡黑后显示 Title011＋Title012（居中）、淡入 0.9 s、任意键淡出 0.6 s 回标题；原版败北画面无录像 | static-derived；provisional：位置与时长 |
 | 系统卷轴 | Esc 后自底边卷入停在 (190,67)（对原版 `05_system_scroll_menu` 帧 003 模板差 10.6）；亮起框中心对齐字行中心 (128,56)；卷动 0.25 s、键盘选择也亮起、確定／取消预选取消 | runtime-measured；provisional：卷动与预选 |
 | 战间卷轴 | Title051 位置沿用 (190,67)；讀取戰場記錄 恢复修改时间最新的战斗检查点 | provisional |
-| 回憶錄列表 | Title031 居中 (87,44)，Title033 抬头，八条槽带 x 63–407、首带 y 80、间距 33，存 `user://memoir_NN.json`（槽数依 Title031，文件布局与标签为重制值）；原版无录像 | provisional |
+| 回憶錄列表 | Title031 居中 (87,44)，Title033 抬头，八条槽带 x 63–407、首带 y 80、间距 33，存 `user://memoir_NN.json`（槽数依 Title031，文件布局与标签为重制值）；战斗与大地图卷轴共用（§3 有原版帧，未逐像素对位） | provisional |
 | 設定選項 | Title039 居中 (142,90)，宝珠 Title027 作旋钮；場景效果＝剧情特效物件（雨／闪电／火焰／光环）是否绘制，音效音量＝Master，音樂音量＝Music 总线；原混音器未定位 | provisional：行语义 |
 
-标题 handler 未在 EXE 定位；参考帧是 638×480 简体版录像，PAK 标题字形亦为简体，重制文字沿用 RESOURCE 繁体。系统卷轴只在 `play_loop.interaction == action_menu` 且检查点控制器 `quiet()` 时打开，不改战斗真相。
+标题 handler 未在 EXE 定位；参考帧是 638×480 简体版录像，PAK 标题字形亦为简体，重制文字沿用 RESOURCE 繁体。战斗卷轴的开启条件见 §3「开启时机」；卷轴不改战斗真相。
 
 ### 預備動作（0x477c14 bit1）
 
@@ -128,6 +130,7 @@ static-derived（hsl01.exe v1.06）。預備動作 是原版的施法／绝技�
 
 ## 边界
 
+- 战斗卷轴开启条件：开场剧情中与首个行动环之前只有静态读法（`0x4000000`／`0x2000000`），Wine 只拍了行动环、移动选格与敌方回合三态；消息框打开期间 `0x413bce` 也置 `0x2000000`，重制由 `quiet()` 覆盖。
 - 版本号的点阵字形与颜色梯度没有导入；只对齐了墨迹外框。
 - 標題 戰場記錄 的亮起停留与淡黑只量了 開始新故事 一次，戰場記錄 沿用。
 - 完成提示的淡入淡出只有一次样本；右下角小方块（录屏里 BOARD02 旁的指示）未识别，重制不画。

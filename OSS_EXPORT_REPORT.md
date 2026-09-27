@@ -1,6 +1,6 @@
 # OSS export report
 
-Source: private repository `main` = `16e76758cfc12f6fa3ca2b1e47254f1e94dfba27` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `0c6f8d96337a007109f5494586f63304cf568820` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
 - written: **1473 files, 49.5 MB**
