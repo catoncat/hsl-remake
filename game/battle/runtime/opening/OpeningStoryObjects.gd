@@ -443,9 +443,13 @@ func _walk_relative(event: Dictionary, blocking: bool) -> void:
 
 
 func _walk_follow(event: Dictionary, blocking: bool) -> void:
-	## actWalkFollow(follower, inst, leader, inst, offset): the follower walks to the
-	## leader's destination keeping its offset from the leader's start (remake reading;
-	## the original follow rule is unresolved).
+	## actWalkFollow(follower, inst, leader, inst, speed): the follower walks to the
+	## leader's destination keeping its offset from the leader (0x44ff50; the remake routes
+	## its own path where the original copies the leader's path buffer). The Wait form
+	## enters 0x453b90 state 0x32 at sub 1 (+0x8c = 0x320001) with +0x50 = VM: 0x43bf30
+	## centres on the follower first (0x453de6) and sub 3／6 follow the walk (0x454039),
+	## the camera of actWalkWait; the plain form (+0x50 = 0) leaves the camera alone.
+	var args: Array = event.get("args", [])
 	var follower := _bound_actor(event, 0)
 	var leader := _bound_actor(event, 2)
 	var follower_actor: Node = follower[1]
@@ -456,12 +460,16 @@ func _walk_follow(event: Dictionary, blocking: bool) -> void:
 	var leader_start: Vector2 = leader_actor.last_path[0] if leader_actor.is_moving() and not leader_actor.last_path.is_empty() else leader_actor.position
 	var offset: Vector2 = _motion_end(follower_actor) - leader_start
 	var target: Vector2 = _motion_end(leader_actor) + offset
-	_move_actor(follower_actor, follower[0], _motion_end(follower_actor), target, str(event.get("id", "")), str(event.get("source_token", "")))
-	if blocking:
-		coordinator._block_on(str(follower[0]))
-	else:
-		coordinator.wait_remaining = coordinator.default_step_seconds
-		coordinator._blocking_motion = false
+	var unit_id := str(follower[0])
+	var start_walk := func() -> void:
+		_move_actor(follower_actor, unit_id, _motion_end(follower_actor), target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4))
+		if blocking:
+			_camera_follows_last_walk()
+			coordinator._block_on(unit_id)
+		else:
+			coordinator.wait_remaining = coordinator.default_step_seconds
+			coordinator._blocking_motion = false
+	_start_story_walk(unit_id, blocking, str(event.get("id", "")), start_walk)
 
 
 func _insert_story_object(event: Dictionary) -> void:

@@ -1614,18 +1614,18 @@
     },
     {
       "id": "cam-script-walk-variants",
-      "difference": "actWalkFollow(Wait) 跟随行走的镜头规则未读，重制不动镜头；其余剧情行走镜头已照原版（不带 Wait 不动、Wait 先缓动居中再开走并跟随）",
-      "original": "0x453b90 状态 0x32 sub 0（0x453d44）与跟随（0x454039）都查 +0x50；actWalkAndDelete(Wait) 0x450450 状态 0x36 sub 0x63→0 走同一组 sub（0x453d27）；actMoveDispWait 0x4501f0 也进状态 0x32；actWalkFollow* 的对象状态未读",
+      "difference": "剧情行走镜头已全部照原版（不带 Wait 不动、Wait 先缓动居中再开走并跟随，含 actWalkFollowWait）；剩 actWalkFollow(Wait) 的走法：原版复制领队路径缓冲同形平移，重制按目的格自算路径",
+      "original": "0x44ff50 置 +0x8c = 0x320001（状态 0x32 sub 1）、复制领队 +0x4c 路径缓冲、+0x50 = Wait 时 VM；sub 1 居中（0x453de6）与跟随（0x454039）都查 +0x50",
       "original_evidence": [
-        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
+        "docs/evidence_packets/static_reverse/original_script_camera_scroll.md"
       ],
-      "remake": "OpeningStoryObjects._walk_follow 不请求镜头",
+      "remake": "OpeningStoryObjects._walk_follow：Wait 形式先居中到跟随者再开走并跟随；路径由 ScriptWalkPath.route 自算",
       "remake_code": [
         "game/battle/runtime/opening/OpeningStoryObjects.gd:_walk_follow"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "some_levels",
-      "effort": "M",
+      "effort": "S",
       "category": "镜头"
     },
     {
@@ -2836,6 +2836,10 @@
       "item": "cam-random-scroll",
       "text": "脚本语料（`content/imported/hsl/story_corpus/scripts/`，resource-derived）：actScrollBGToPos 出现于 56 个脚本、actScrollBGToObject 22、actScrollBGToPosSpeed 18、actScrollBGToRandomPos 1（STORY037，未读）、actWalkDisp／DispWait 34／33。"
     },
+    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91": {
+      "item": "cam-random-scroll",
+      "text": "actScrollBGToRandomPos 未读。"
+    },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#1e230aa201": {
       "item": "closeup-object-timing",
       "text": "未读"
@@ -3469,17 +3473,6 @@
     "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5287ca512d": {
       "item": "cam-script-walk-variants",
       "text": "actWalkFollow(Wait) 的镜头规则未读（`cam-script-walk-variants`）。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#cfd2b4b4db": {
-      "item": "cam-script-walk-variants",
-      "text": "actWalkFollow(Wait) 的对象状态与镜头规则未读，重制不动镜头；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#d01089a754": {
-      "item": [
-        "cam-script-walk-variants",
-        "cam-random-scroll"
-      ],
-      "text": "actWalkFollow(Wait) 的镜头规则与 actScrollBGToRandomPos 未读。"
     },
     "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|docs/OPTIONS.md": {
       "item": "learning-notice"

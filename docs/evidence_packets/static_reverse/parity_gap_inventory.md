@@ -10,12 +10,12 @@
 
 ## 总数
 
-共 **93** 条差异（其中 0 条本轮有 lane 进行中），来自 527 个来源条目：provenance 204、sentence 151、scope 74、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 53 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
+共 **93** 条差异（其中 0 条本轮有 lane 进行中），来自 526 个来源条目：provenance 204、sentence 150、scope 74、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 53 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 22 |
-| 读了一部分 | 48 |
+| 已读完只差照做 | 23 |
+| 读了一部分 | 47 |
 | 未读 | 6 |
 | 原版无对应代码 | 17 |
 
@@ -56,22 +56,22 @@
 | 2 | 对白擦出与上卷期间重制即时响应确认；原版擦出（状态 1）与上卷（状态 4）时不读确认键，要等这一屏停下 （`dialogue-timing`） | 已读完只差照做 | 每场都看得到 | S | 对白 | 有意偏离（重制改善）：保留即时确认，OPT-PACE 三档都即时整屏，不改所有对白宿主的输入 |
 | 3 | 已实机核实一致：升级加点窗在阵亡台词与 EXP／金钱／LEVEL UP 浮字之后弹，停等关窗后才交接；胜利一击、反击升级、跨多级与掉落并发的先后仍是静态读法 （`growth-window-timing`） | 已读完只差照做 | 每场都看得到 | S | 面板与界面 | — |
 | 4 | 特殊技／魔法页照原版状态页布局（SKILLPAGE、SKILLPAGE2）：四块板、行、宝石、红行、说明框与 2026-09-26 Wine 实拍一致；九行以上画原版滚动条（箭头、翻页、拖动、↑↓／PgUp PgDn，无滚轮）；列表照 0x434d10 按类型、magicCode 位排；悬停名是 0x42c130 脉冲绿。名字换原版 FONT.24 点阵后墨迹与 Wine 帧一致（水剎 x 45–91 y 187–202，氣刃斬 宽 71）。剩：滚动条只有静态读法，本机存档里没有十个以上技能的角色可拍 （`special-skill-page`） | 已读完只差照做 | 每场都看得到 | S | 面板与界面 | 照原版；SKILLPAGE 重做布局，SKILLPAGE2 补原版实拍核对、滚动条、列表顺序、悬停脉冲；名字用 FONT.24 点阵（lane FONT） |
-| 5 | 原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标点道具当帧出现、确认后多留一 tick 已照原版（ITEMFX2） （`cursor-hide-item-icon`） | 已读完只差照做 | 部分关卡 | S | 光标与字体 | — |
-| 6 | 剧情压黑每级按黑层 alpha n／16 画，与原版每分量 ⌊c·(16−n)／16⌋ 同一线性比例，只差原版 5／6 位分量截断的末位；节拍照原版（每 3 tick 一级、16 级、不等待） （`dark-screen-fade`） | 已读完只差照做 | 部分关卡 | S | 标题与过场 | — |
-| 7 | 打人閃電（LEVEL010）落雷的规则与演出已照原版（镜头滚到雷点、AIR14 两帧之一 2 倍加色画 11 帧再淡出 15 帧、FireBomb 162／165 在雷点、第 27 tick 受击者浮红色伤害数字并左右抖 60 tick、停 80／20 tick 后剧本往下走）；闪电画在 FireBomb 之上是按平面号推定 （`drop-lightning-presentation`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
-| 8 | 已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剩开局快照报告待重生成 （`level-specific-placement`） | 已读完只差照做 | 部分关卡 | S | 剧情走位 | — |
-| 9 | 地图物件闪烁已照原版逐 tick 步进与加色＋层级画法，只剩层级表逐项值与通道舍入未逐像素对照 （`map-object-flash`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
-| 10 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
-| 11 | 没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势；002 s_shape 绝技条带未导入 （`cast-strip-missing`） | 已读完只差照做 | 部分关卡 | M | 特写与施法演出 | — |
-| 12 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
-| 13 | 战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN：拿起、点槽装上旧装备进手、空手卸下进手、丟棄钮只清非重要持物、右键先放回再关窗）；剩重制读法：持物是草稿，提交前背包不删格；满包时不能把卸下的装备拿在手上（规则拒绝）；满包持物点格的互换顺序未做；持物移上装备板时左窗改显属性未做；窗内「返回」钮与「道具 n／8」为共用排布 （`battle-equip-drop-hand`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
-| 14 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。剩：对白名字后冒号仍全角（原版半角）；FONT.15 行高按 16（字格 15＋1）；四个函数（0x4264a0／0x42b2b0／0x423c90／0x42d3f0）与资料页 0x4384d5／0x438a92 两行未对上界面；法术受者条旁文字位置为重制画法 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
-| 15 | 地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 16 | 法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出 （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
-| 17 | 原版预设已照原版：移动选格只画范围与选格角括号；OPT-GUIDE=提示 时显示路径线、「移動 3 / 5」费用栏、「可通過，不能停留」「飛行」「無法到達」提示与 AI 走位路径线（重制改良） （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 18 | 各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签与装备说明框的效果解释行两条路径都有 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 19 | 原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良） （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 20 | 原版预设已照原版：AI 待机／守候／麻痺不显示提示、不停顿；OPT-GUIDE=提示 时显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」并停 0.55 s（重制改良） （`wait-cue`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 5 | 剧情行走镜头已全部照原版（不带 Wait 不动、Wait 先缓动居中再开走并跟随，含 actWalkFollowWait）；剩 actWalkFollow(Wait) 的走法：原版复制领队路径缓冲同形平移，重制按目的格自算路径 （`cam-script-walk-variants`） | 已读完只差照做 | 部分关卡 | S | 镜头 | — |
+| 6 | 原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标点道具当帧出现、确认后多留一 tick 已照原版（ITEMFX2） （`cursor-hide-item-icon`） | 已读完只差照做 | 部分关卡 | S | 光标与字体 | — |
+| 7 | 剧情压黑每级按黑层 alpha n／16 画，与原版每分量 ⌊c·(16−n)／16⌋ 同一线性比例，只差原版 5／6 位分量截断的末位；节拍照原版（每 3 tick 一级、16 级、不等待） （`dark-screen-fade`） | 已读完只差照做 | 部分关卡 | S | 标题与过场 | — |
+| 8 | 打人閃電（LEVEL010）落雷的规则与演出已照原版（镜头滚到雷点、AIR14 两帧之一 2 倍加色画 11 帧再淡出 15 帧、FireBomb 162／165 在雷点、第 27 tick 受击者浮红色伤害数字并左右抖 60 tick、停 80／20 tick 后剧本往下走）；闪电画在 FireBomb 之上是按平面号推定 （`drop-lightning-presentation`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
+| 9 | 已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剩开局快照报告待重生成 （`level-specific-placement`） | 已读完只差照做 | 部分关卡 | S | 剧情走位 | — |
+| 10 | 地图物件闪烁已照原版逐 tick 步进与加色＋层级画法，只剩层级表逐项值与通道舍入未逐像素对照 （`map-object-flash`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
+| 11 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
+| 12 | 没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势；002 s_shape 绝技条带未导入 （`cast-strip-missing`） | 已读完只差照做 | 部分关卡 | M | 特写与施法演出 | — |
+| 13 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
+| 14 | 战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN：拿起、点槽装上旧装备进手、空手卸下进手、丟棄钮只清非重要持物、右键先放回再关窗）；剩重制读法：持物是草稿，提交前背包不删格；满包时不能把卸下的装备拿在手上（规则拒绝）；满包持物点格的互换顺序未做；持物移上装备板时左窗改显属性未做；窗内「返回」钮与「道具 n／8」为共用排布 （`battle-equip-drop-hand`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
+| 15 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。剩：对白名字后冒号仍全角（原版半角）；FONT.15 行高按 16（字格 15＋1）；四个函数（0x4264a0／0x42b2b0／0x423c90／0x42d3f0）与资料页 0x4384d5／0x438a92 两行未对上界面；法术受者条旁文字位置为重制画法 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
+| 16 | 地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 17 | 法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出 （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
+| 18 | 原版预设已照原版：移动选格只画范围与选格角括号；OPT-GUIDE=提示 时显示路径线、「移動 3 / 5」费用栏、「可通過，不能停留」「飛行」「無法到達」提示与 AI 走位路径线（重制改良） （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 19 | 各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签与装备说明框的效果解释行两条路径都有 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 20 | 原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良） （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
 
 ## 全量（按类）
 
@@ -222,7 +222,7 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `cam-script-walk-variants` | actWalkFollow(Wait) 跟随行走的镜头规则未读，重制不动镜头；其余剧情行走镜头已照原版（不带 Wait 不动、Wait 先缓动居中再开走并跟随） | 0x453b90 状态 0x32 sub 0（0x453d44）与跟随（0x454039）都查 +0x50；actWalkAndDelete(Wait) 0x450450 状态 0x36 sub 0x63→0 走同一组 sub（0x453d27）；actMoveDispWait 0x4501f0 也进状态 0x32；actWalkFollow* 的对象状态未读<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | OpeningStoryObjects._walk_follow 不请求镜头<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_walk_follow` | 读了一部分 | 部分关卡 | M | sentence 4 |
+| `cam-script-walk-variants` | 剧情行走镜头已全部照原版（不带 Wait 不动、Wait 先缓动居中再开走并跟随，含 actWalkFollowWait）；剩 actWalkFollow(Wait) 的走法：原版复制领队路径缓冲同形平移，重制按目的格自算路径 | 0x44ff50 置 +0x8c = 0x320001（状态 0x32 sub 1）、复制领队 +0x4c 路径缓冲、+0x50 = Wait 时 VM；sub 1 居中（0x453de6）与跟随（0x454039）都查 +0x50<br>[original_script_camera_scroll.md](../../../docs/evidence_packets/static_reverse/original_script_camera_scroll.md) | OpeningStoryObjects._walk_follow：Wait 形式先居中到跟随者再开走并跟随；路径由 ScriptWalkPath.route 自算<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_walk_follow` | 已读完只差照做 | 部分关卡 | S | sentence 2 |
 | `camera-return-pan` | 开环前与移动起步前镜头已照原版先滑回行动者、到位才开环／起步；滑回期间重制不接边缘／方向键平移，原版边缘滚动是否同时生效未读 | state 0 0x443a1d→0x43bf30 未到位返回 0、0x443a3c 才开环（取消选格 100／移动 9、关窗 71、右键 99 都经此）；移动 1 0x443e34 同式；边缘滚动 0x43e4a0 与之的先后未读<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattleSceneMenus._ring_camera_ready 在环打开那一拍滑回、未到位不显示环；BattleSceneRuntime.move_selected_actor_to_grid 记 pending_walk_grid 待落位起步；两段期间不平移<br>[BattleSceneMenus.gd](../../../game/battle/scene/BattleSceneMenus.gd) `_ring_camera_ready`、[BattleSceneRuntime.gd](../../../game/battle/scene/BattleSceneRuntime.gd) `move_selected_actor_to_grid` | 读了一部分 | 少见 | S | sentence 1 |
 | `cam-random-scroll` | STORY037 的 actScrollBGToRandomPos（随机镜头位置）未读 | 语料里只出现 1 次，handler 未读<br>[original_script_camera_scroll.md](../../../docs/evidence_packets/static_reverse/original_script_camera_scroll.md) | 按已读的滚动 token 处理<br>[OpeningCinematics.gd](../../../game/battle/runtime/opening/OpeningCinematics.gd) | 未读 | 少见 | S | sentence 2、matrix 1 |
 
