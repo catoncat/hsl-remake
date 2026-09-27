@@ -15,6 +15,7 @@ Checked: 2026-09-15
 | 设置页选项的三层口径（原版／体验改良／开发）与首批候选 | [OPTIONS](OPTIONS.md)（已拍板；B1／S1／S2 已做） |
 | 每条 lane 的步骤时间与门禁耗时（效率审计依据） | [LANE_TIMELOG](LANE_TIMELOG.md) |
 | 战斗怎么称呼：玩家第几场 · 场景名（文件号）对照表 | [BATTLE_NAMES](BATTLE_NAMES.md) |
+| 基于本仓库改出自己的游戏：换素材、改规则、加关卡、去掉原版依赖 | [MODDING](MODDING.md) |
 | 某类改动要跑什么、如何判断通过 | [测试路由](../tests/README.md)、[工具说明](../tools/README.md) |
 | 当前文件认领、跨线请求与确认 | [PARALLEL_WORK](../PARALLEL_WORK.md)；留言不是产品状态 |
 | 资源、静态包、原图与具体来源 | [KNOWLEDGE_INDEX](KNOWLEDGE_INDEX.md) |

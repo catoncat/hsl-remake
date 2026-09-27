@@ -24,7 +24,7 @@ tools/play.sh                               # 先检查资源导入，再开游�
 
 从空仓库一键导入原版资源的命令正在建设（[开源计划 §6](docs/OPEN_SOURCE_PLAN.md)）；准备细节见 [CONTRIBUTING](CONTRIBUTING.md)。
 
-操作：左键选命令和目标，右键／Esc 取消；鼠标靠边或方向键卷动战场，Home 回到角色；对白点击或空格继续；Tab 开关「重製選項」，P 停格。人工验收某一关用 `tools/playtest.sh N`（独立存档直进第 N 关）。
+操作：左键选命令和目标，右键／Esc 取消；鼠标靠边或方向键卷动战场，Home 回到角色；对白点击或空格继续；Tab 开关「重製選項」，P 停格。人工验收某一关用 `tools/playtest.sh N` 装入第 N 个试玩存档格位（1–8），标题选「戰場記錄」进入。
 
 ## 怎么验证
 
@@ -51,6 +51,7 @@ python3 tools/hsl.py check docs           # 只改文档时
 | 原版资源、静态分析与观测资料在哪 | [KNOWLEDGE_INDEX](docs/KNOWLEDGE_INDEX.md) |
 | 每个机制的证据等级 | [机制矩阵](docs/MECHANICS_EVIDENCE_MATRIX.md)、证据用语 [CONTEXT](CONTEXT.md) |
 | 加关卡、换配乐、写续集数据 | [EXTENDING](docs/EXTENDING.md)、[AUTHORING](docs/AUTHORING.md) |
+| 基于本仓库做自己的游戏（换素材、改规则、去掉原版依赖） | [MODDING](docs/MODDING.md) |
 | 开源计划与合规 | [OPEN_SOURCE_PLAN](docs/OPEN_SOURCE_PLAN.md)、[NOTICE](NOTICE.md) |
 
 ## 许可
