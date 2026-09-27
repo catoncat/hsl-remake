@@ -281,6 +281,7 @@ func _process(delta: float) -> void:
 	if maybe_start_script_cutscene():
 		return
 	$BattlePresentation.refresh(play_loop, map_config, interaction_state != Interaction.OPENING_TIMELINE, not has_actor_motion(), delta)
+	if stage != null: stage.sync_cast_depth(play_loop, $BattlePresentation.cutin)
 	ScriptPresentation.hold_controls(self)
 	if treasure_view != null and treasure_view.tick(delta):
 		menus.set_action_menu_visible(false)

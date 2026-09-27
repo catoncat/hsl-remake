@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 97,
-    "sources": 532,
+    "sources": 530,
     "sources_by_kind": {
       "provenance": 214,
-      "sentence": 147,
+      "sentence": 145,
       "scope": 73,
       "matrix": 85,
       "video": 13
@@ -656,15 +656,16 @@
     },
     {
       "id": "draw-depth-states",
-      "difference": "单位与建筑的遮挡顺序：原版两段全局状态分支（深度封顶 22／再加 23）与同桶建立顺序未读透；planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模",
-      "original": "32 px 行排序已读；defProcObjectMove 固定 obj_Plane 已读；两段全局状态分支与其余效果过程未读透",
+      "difference": "单位与建筑的遮挡顺序：魔法效果阶段施法者与脚印内单位 +23 已照做；飞行单位封顶 22、32 px 同桶先后、planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模",
+      "original": "32 px 行排序、同桶先后、两段全局状态分支（0x400000 特写／窗口、0x1000000 魔法效果阶段）已读；其余效果过程是否改 +0xc 未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_draw_order.md"
       ],
-      "remake": "ActorRuntime.depth_index 按像素行排序，不建模状态分支；fixed_plane_depth 只覆盖最低／最高固定 plane",
+      "remake": "ActorRuntime.depth_index 按像素行排序，魔法切入期间 cast_lift 抬起脚印内与施法姿势单位；fixed_plane_depth 只覆盖最低／最高固定 plane",
       "remake_code": [
         "game/battle/runtime/ActorRuntime.gd:depth_index",
-        "game/battle/runtime/ActorRuntime.gd:fixed_plane_depth"
+        "game/battle/runtime/ActorRuntime.gd:fixed_plane_depth",
+        "game/battle/scene/BattleSceneStage.gd:sync_cast_depth"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -672,10 +673,8 @@
       "category": "地图人物演出",
       "sources": [
         "provenance:game/battle/runtime/ActorRuntime.gd|layout|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#1efdba0f01",
-        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#7f08a9d8b3",
-        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#bd9b3b702a",
-        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#e0a801182e"
+        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#0ad5773b45",
+        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#bd9b3b702a"
       ]
     },
     {

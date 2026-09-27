@@ -703,15 +703,16 @@
     },
     {
       "id": "draw-depth-states",
-      "difference": "单位与建筑的遮挡顺序：原版两段全局状态分支（深度封顶 22／再加 23）与同桶建立顺序未读透；planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模",
-      "original": "32 px 行排序已读；defProcObjectMove 固定 obj_Plane 已读；两段全局状态分支与其余效果过程未读透",
+      "difference": "单位与建筑的遮挡顺序：魔法效果阶段施法者与脚印内单位 +23 已照做；飞行单位封顶 22、32 px 同桶先后、planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模",
+      "original": "32 px 行排序、同桶先后、两段全局状态分支（0x400000 特写／窗口、0x1000000 魔法效果阶段）已读；其余效果过程是否改 +0xc 未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_draw_order.md"
       ],
-      "remake": "ActorRuntime.depth_index 按像素行排序，不建模状态分支；fixed_plane_depth 只覆盖最低／最高固定 plane",
+      "remake": "ActorRuntime.depth_index 按像素行排序，魔法切入期间 cast_lift 抬起脚印内与施法姿势单位；fixed_plane_depth 只覆盖最低／最高固定 plane",
       "remake_code": [
         "game/battle/runtime/ActorRuntime.gd:depth_index",
-        "game/battle/runtime/ActorRuntime.gd:fixed_plane_depth"
+        "game/battle/runtime/ActorRuntime.gd:fixed_plane_depth",
+        "game/battle/scene/BattleSceneStage.gd:sync_cast_depth"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -2881,17 +2882,13 @@
       "item": "script-removal-death",
       "text": "原版脚本删除路径未读（未证明原版也不播）"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#1efdba0f01": {
+    "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#0ad5773b45": {
       "item": "draw-depth-states",
-      "text": "深度封顶到 22／再加 23 的两段全局状态分支未读透：推测与选中或演出状态有关，未建模。"
+      "text": "`0x43db60`（`[0x4c1b2c]` 非 0 时对脚印内单位）与字节 +0x34 未读。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#bd9b3b702a": {
       "item": "draw-depth-states",
       "text": "defProcEffectProcess1／defProcDropRain／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#e0a801182e": {
-      "item": "draw-depth-states",
-      "text": "之后的两段全局状态分支会把深度封顶到 22 或再加 23（`0x4c1b00 & 0x1400000`／`0x1000000`，未读透）"
     },
     "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#02cf79451c": {
       "item": "special-object-motion",
@@ -3402,10 +3399,6 @@
     "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#88c3799049": {
       "item": "closeup-object-timing",
       "text": "ANIMAL.TXT loader 的 token 编译、隐式结束符、m/s 资源选择与缺省未读（线索：入口对 `0x4c1b6c` 表记录与多个通道字段的选择）。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#7f08a9d8b3": {
-      "item": "draw-depth-states",
-      "text": "深度封顶 22／+23 的全局状态分支未读透。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_identity_bar.md#62fdc3fe42": {
       "item": "identity-bar-bits",

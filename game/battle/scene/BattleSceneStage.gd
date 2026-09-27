@@ -11,6 +11,8 @@ extends RefCounted
 ##   layout: resource-derived content/imported/hsl/chapter01/map_object_alignment.json
 ##   layout: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
 ##     (highlight side word 0x40ba20 → colour)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
+##     (map spell effect phase lifts footprint and posing actors, sync_cast_depth)
 ##   layout: provisional (combined-placement child offsets, layer hints; story-scene cast without a
 ##     side is lit as a player)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
@@ -21,6 +23,8 @@ extends RefCounted
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
@@ -138,6 +142,29 @@ func highlight_side(unit: Dictionary) -> int:
 ## PlayLoop unit's traversal, which actSetPlayerFly can change mid-battle.
 func sync_actor_depth(actor: Node, unit: Dictionary) -> void:
 	actor.flying_depth = bool((unit.get("traversal", {}) as Dictionary).get("flying", false))
+
+
+## The map spell effect phase ([0x4c1b00] & 0x1000000, cast routine 0x442a90, magic and
+## support magic alike) lifts the actors inside the cast's effect cells (the footprint 0x4100e0
+## writes to *0x4c1b4c, read by 0x410670) and any actor in the use_magic pose
+## (ActorRuntime.CAST_LIFT_Z). The remake's phase is a map `magic:` clip on the cut-in queue.
+func sync_cast_depth(loop: Dictionary, cutin: Node) -> void:
+	var lifted := {}
+	var phase: bool = cutin != null and cutin.busy() and str(cutin.clips[0]["strike"].get("skill_id", "")).begins_with("magic:")
+	if phase:
+		var strike: Dictionary = cutin.clips[0]["strike"]
+		var caster := BattlePlayLoop.unit(loop, str(strike.get("attacker_id", "")))
+		var defender := BattlePlayLoop.unit(loop, str(strike.get("defender_id", "")))
+		if not caster.is_empty() and not defender.is_empty():
+			var fields: Dictionary = BattlePlayLoop.skill_fields(loop, str(strike["skill_id"]))
+			var cells: Array = BattlePlayLoop.SkillTargetRules.effect_cells(strike.get("cast_center", defender["coord"]), fields, loop[LoopKeys.SKILL_TARGET_DATA], loop[LoopKeys.MAP_SIZE], caster["coord"])
+			for unit in loop.get(LoopKeys.UNITS, []):
+				if cells.has(unit.get("coord")):
+					lifted[str(unit["id"])] = true
+	for unit in loop.get(LoopKeys.UNITS, []):
+		var actor = runtime.actor_node_for_unit(str(unit["id"]))
+		if actor != null:
+			actor.cast_lift = phase and (lifted.has(str(unit["id"])) or actor.is_posing())
 
 
 ## Lookup order: the scenario's own manifest, then the shared up-title manifest. An

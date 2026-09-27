@@ -48,6 +48,12 @@ const FIXED_PLANE_BELOW_Z := 0
 const FIXED_PLANE_ABOVE_Z := 3900
 const FIXED_PLANE_EFFECT_Z := 4000
 const CELL_PIXELS := 32
+## While a map spell's effect plays ([0x4c1b00] & 0x1000000, set and cleared only by the cast
+## routine 0x442a90), a unit inside the target footprint (0x410670 reads *0x4c1b4c) or in the
+## use_magic pose (+0x80 & 0x1000, set by 0x4071e0) draws 23 buckets deeper — over every
+## y-sorted unit and stand object (enemy 0x43f375, player 0x4438a4). The remake lifts such an
+## actor into a band over every foot y and under FIXED_PLANE_ABOVE_Z, keeping foot order.
+const CAST_LIFT_Z := 2400
 ## The map-actor highlight (static-derived, 0x43db70 → 0x43dcb9; frames in
 ## docs/evidence_packets/runtime_observations/dialogue_death/README.md §5). The original lights
 ## an actor when its +0x80 has 0x100 (the dialogue board sets it on the speaker every tick,
@@ -100,6 +106,8 @@ var unresolved_semantics: Array = []
 var last_path: Array[Vector2] = []
 ## Set from the PlayLoop unit's traversal (BattleSceneStage.sync_actor_depth).
 var flying_depth := false
+## Set by BattleSceneStage.sync_cast_depth for the map spell effect phase (CAST_LIFT_Z).
+var cast_lift := false
 
 var _sprite: Sprite2D = null
 var _frame_textures: Dictionary = {}
@@ -225,7 +233,7 @@ func _process(delta: float) -> void:
 		_apply_highlight()
 	# Match the map objects' native anchor-depth domain, including during a walk.
 	# A constant zero put every actor behind every tree, even after walking in front.
-	z_index = depth_index(position.y, flying_depth)
+	z_index = depth_index(position.y, flying_depth, cast_lift)
 	if is_posing():
 		_magic_pose_ticks += OriginalTick.ticks(maxf(delta, 0.0))
 		_apply_magic_pose_frame()
@@ -249,7 +257,9 @@ func _process(delta: float) -> void:
 
 
 ## z_index for a foot at world Y (the map objects' z_index is their EVEF anchor Y).
-static func depth_index(foot_y: float, flying: bool) -> int:
+static func depth_index(foot_y: float, flying: bool, lifted: bool = false) -> int:
+	if lifted:
+		return clampi(CAST_LIFT_Z + roundi(foot_y) / 2, CAST_LIFT_Z, FIXED_PLANE_ABOVE_Z - 1)
 	return clampi(roundi(foot_y) + (FLYING_DEPTH_ROWS * CELL_PIXELS if flying else 0), -4096, 4080)
 
 
