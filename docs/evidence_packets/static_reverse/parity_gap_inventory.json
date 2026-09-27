@@ -227,14 +227,15 @@
     },
     {
       "id": "level-specific-placement",
-      "difference": "已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剩开局快照报告待重生成",
+      "difference": "已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剧情插入的替代抽数已排在 NPC 出生之前；剩开局快照报告待重生成、开局生成器替代不抽随机（等距取行主序靠后格）",
       "original": "0x44fbd0 在这两格无候选；0x453b90 走完在链停格 0x411a30 登记（0x4541a1），原指令实跑登记格即快照格",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_entry.md"
       ],
-      "remake": "生成器 script_landing 无候选时 script_walk_stop 跑同一条链，记 story_walk_stop_from",
+      "remake": "生成器 script_landing 无候选时 script_walk_stop 跑同一条链，记 story_walk_stop_from；运行期 ScriptActorCreationRules 整条链先落点、后按安装顺序做 NPC 出生",
       "remake_code": [
-        "tools/hsltools/levels/battle.py"
+        "tools/hsltools/levels/battle.py",
+        "game/sim/ScriptActorCreationRules.gd"
       ],
       "original_status": "read_complete",
       "visibility": "some_levels",
@@ -1066,8 +1067,8 @@
     },
     {
       "id": "script-entry-paths",
-      "difference": "落点只在事件末对最终格检查一次（原版每个安装／行走 token 当时检查）；替代抽数排在出生抽数之后；最终走位的停格照原版链",
-      "original": "安装无入场态，直接出现在 0x44fbd0 修过的格；替代＝洪泛 12＋行主序曼哈顿最近＋等距硬币；离场末格 engMIX 16 级逐 tick 淡出后注销",
+      "difference": "落点只在事件末对最终格检查一次（原版每个安装／行走 token 当时检查）；替代抽数已照原版排在 NPC 出生抽数之前（链中 Wait 之后的落点与出生的交错未照做）；最终走位的停格照原版链",
+      "original": "安装无入场态，直接出现在 0x44fbd0 修过的格；替代＝洪泛 12＋行主序曼哈顿最近＋等距硬币，在插入 token 当时抽；SID_ENEMY 对象第一次 tick 才出生（0x43eed1→0x407cc0→0x40e870），SID_PLAYERn 在构造 0x40809e 里出生；离场末格 engMIX 16 级逐 tick 淡出后注销",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_entry.md",
         "docs/evidence_packets/static_reverse/original_script_departure.md"
@@ -1092,7 +1093,7 @@
         "provenance:game/sim/loop/BattleLoopScript.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
         "scope:docs/evidence_packets/runtime_observations/first_scene_opening_choreography_packet.md|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_script_entry.md|provisional|洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、抽数与出生抽数的先后",
+        "scope:docs/evidence_packets/static_reverse/original_script_entry.md|provisional|洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、链中有 Wait 时出生与后续落点的交错",
         "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#9e4d6087d9"
       ]
     },

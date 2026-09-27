@@ -105,6 +105,7 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 	for actor in loop["units"]: positions[actor["id"]] = TacticalGridRules.cell_pixel(actor["coord"])
 	var departed: Array = []
 	var touched: Array = []
+	var births: Array = []
 	var previous := ""
 	var insert_number := 0
 	var requests: Array = runtime["inserts"].filter(func(row): return row.get("key") == status["key"] and int(row.get("firing_index", -1)) == firing)
@@ -147,6 +148,7 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 			var installed := _install_row(loop, spec, symbol, firing, action_index, insert_request, random_insert, args, receipt, positions, touched, departed, row)
 			if not installed["ok"]: return installed
 			previous = installed["unit_id"]
+			if installed.get("birth_pending", false): births.append({"unit_id": previous, "request": insert_request})
 		elif name in ["actWalkPrevInsertObject", "actWalkPrevInsertObjectWait"] and args.size() >= 2 and previous != "":
 			_move(positions, touched, row, previous, Vector2i(int(args[0]), int(args[1])))
 		elif name == "actChangePrevInsertObjectID" and not args.is_empty() and str(args[0]).is_valid_int() and previous != "":
@@ -176,13 +178,19 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 		receipt["actions"].append(row)
 	var placed := _place_touched(loop, runtime, receipt, positions, touched, departed)
 	if not placed["ok"]: return placed
+	# An NPC (SID_ENEMY, +0xa0 >= 0x14) is born on its first object tick, after the VM has run
+	# the chain's tokens and their 0x44fbd0 landings; only SID < 0x14 players are born inside
+	# the constructor (0x407ec0 calls the process at 0x40809e), and their birth draws nothing here.
+	for pending in births:
+		var born := _npc_birth(loop, pending["unit_id"], pending["request"])
+		if not born["ok"]: return born
 	return {"ok": true, "receipt": receipt}
 
 
 ## An installing insert: installs the template actor and records the row; a created
 ## unit takes its insert pixel and joins `touched`. Returns install_actor's result.
 static func _install_row(loop: Dictionary, spec: Dictionary, symbol: String, firing: int, action_index: int, insert_request: Dictionary, random_insert: bool, args: Array, receipt: Dictionary, positions: Dictionary, touched: Array, departed: Array, row: Dictionary) -> Dictionary:
-	var installed := install_actor(loop, spec, symbol, firing, action_index, insert_request)
+	var installed := install_actor(loop, spec, symbol, firing, action_index, insert_request, true)
 	if not installed["ok"]: return installed
 	var id: String = installed["unit_id"]
 	if installed["created"]:
@@ -267,7 +275,9 @@ static func _place_touched(loop: Dictionary, runtime: Dictionary, receipt: Dicti
 	return {"ok": true}
 
 
-static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, firing: int, action: int, request: Dictionary) -> Dictionary:
+## `defer_birth` leaves an NPC's birth draws (carry, level adjustment) to `_npc_birth`, which
+## the chain runs after its landings (the result carries "birth_pending").
+static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, firing: int, action: int, request: Dictionary, defer_birth := false) -> Dictionary:
 	var actor: Dictionary = spec["actor"].duplicate(true)
 	var registered: bool = spec["kind"] == "registered_player"
 	var id := str(actor["id"]) if registered else "%s_script_%d_%d" % [actor["class_id"], firing, action]
@@ -294,13 +304,6 @@ static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, fi
 			record["reserve_record"] = true
 	else:
 		if request.is_empty(): return {"ok": false, "reason": "missing_npc_script_insert"}
-		# The birth 0x407cc0 rolls a pmEnemy's carry (0x407c40) on the global stream before the
-		# level adjustment 0x40e870 draws.
-		if BattleRewardRules.install_carry(loop, actor) != "": return {"ok": false, "reason": "script_carry_inventory_full"}
-		var grown := ReinforcementGrowthRules.prepare(loop, actor, request)
-		if not grown["ok"]: return grown
-		actor = grown["actor"]
-		loop[GlobalRandomStream.LOOP_KEY] = grown["rng"]
 		request["unit_id"] = id
 		if request.get("wait_round_set", false): actor["ai_wait_remaining"] = int(request["wait_round"])
 	actor["script_creation"] = record
@@ -309,7 +312,25 @@ static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, fi
 		var all: Array = WinfailConditions.units_for_token(loop, token)
 		var serial := 1 if registered else all.size()
 		loop["winfail_runtime"]["actor_bindings"]["%s/%d" % [token, serial]] = id
+	if not registered and defer_birth: return {"ok": true, "unit_id": id, "created": true, "birth_pending": true}
+	if not registered:
+		var born := _npc_birth(loop, id, request)
+		if not born["ok"]: return born
 	return {"ok": true, "unit_id": id, "created": true}
+
+
+## An NPC's birth draws: 0x407cc0 rolls a pmEnemy's carry (0x407c40) on the global stream
+## before the level adjustment 0x40e870 draws. The grown record replaces the live one in place.
+static func _npc_birth(loop: Dictionary, id: String, request: Dictionary) -> Dictionary:
+	var index := 0
+	while str(loop["units"][index]["id"]) != id: index += 1
+	var actor: Dictionary = loop["units"][index]
+	if BattleRewardRules.install_carry(loop, actor) != "": return {"ok": false, "reason": "script_carry_inventory_full"}
+	var grown := ReinforcementGrowthRules.prepare(loop, actor, request)
+	if not grown["ok"]: return grown
+	loop["units"][index] = grown["actor"]
+	loop[GlobalRandomStream.LOOP_KEY] = grown["rng"]
+	return {"ok": true}
 
 
 static func _complete_departure_request(runtime: Dictionary, key: String, firing: int, name: String, args: Array, id: String) -> void:
