@@ -28,7 +28,10 @@ git -C "${PUB}" add -A
 if git -C "${PUB}" diff --cached --quiet; then echo "OSS_SYNC_OK ref=${head} (public tree unchanged)"; exit 0; fi
 # Public commit message: every source commit since the previously synced source commit (read back from
 # the public HEAD's trailer), bookkeeping commits dropped, so the public history says what changed.
-prev="$(git -C "${PUB}" log -1 --format=%B 2>/dev/null | sed -n 's/^Source: hsl-fork \([0-9a-f]*\).*/\1/p' | head -1)"
+# The previous source commit: the `Source:` trailer, else the older `sync: hsl-fork main <sha>` subject,
+# else HSL_OSS_SYNC_PREV (manual override for a one-off catch-up).
+prev="$(git -C "${PUB}" log -1 --format=%B 2>/dev/null | sed -n -e 's/^Source: hsl-fork \([0-9a-f]*\).*/\1/p' -e 's/^sync: hsl-fork main \([0-9a-f]*\).*/\1/p' | head -1)"
+prev="${HSL_OSS_SYNC_PREV:-${prev}}"
 msgfile="$(mktemp /tmp/oss-sync-msg.XXXXXX)"
 python3 - "${ROOT}" "${REF}" "${prev}" "${head}" >"${msgfile}" <<'PY'
 import subprocess, sys, re
