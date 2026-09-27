@@ -31,6 +31,7 @@ const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
 const MapObjectDrift = preload("res://game/battle/runtime/MapObjectDrift.gd")
 const MapObjectFlash = preload("res://game/battle/runtime/MapObjectFlash.gd")
+const GameSettings = preload("res://game/settings/GameSettings.gd")
 const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresentation.gd")
 const ScriptActorsPresentation = preload("res://game/battle/scene/BattleScriptActorPresentation.gd")
 
@@ -300,6 +301,19 @@ func _map_object_record(record: Dictionary, shape_id: String, texture: Texture2D
 	}
 
 
+## The original's cloud hold (0x43ceba, original_map_object_drift.md): 場景效果 off ([0x477c14]
+## bit0), a map magic effect (0x1000000) or a close-up／status window (0x400000). The remake's
+## magic effect and close-ups are both clips on the cut-in queue.
+func _clouds_hidden() -> bool:
+	if not GameSettings.scene_effects_enabled():
+		return true
+	var presentation := runtime.get_node_or_null("BattlePresentation")
+	if presentation != null and presentation.get("cutin") != null and presentation.cutin.busy():
+		return true
+	var panel = runtime.get("status_panel")
+	return panel is CanvasItem and panel.visible
+
+
 ## The runtime's one MapObjectDrift, emptied for a fresh placement. A child of the runtime,
 ## so it runs after the runtime's own _process has moved the camera this frame.
 func _map_object_drift() -> MapObjectDrift:
@@ -311,6 +325,7 @@ func _map_object_drift() -> MapObjectDrift:
 	drift.clear()
 	drift.map_size = runtime.map_config.world_size if runtime.map_config != null else Vector2i.ZERO
 	drift.camera_top_left = func() -> Vector2: return runtime.camera_controller.logical_to_world(Vector2.ZERO) if runtime.camera_controller != null else Vector2.ZERO
+	drift.clouds_hidden = _clouds_hidden
 	return drift
 
 

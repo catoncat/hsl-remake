@@ -708,7 +708,8 @@ func cast_lead_program() -> void:
 	_assert_eq(int(lead["complete_tick"]), 139, "雷歐納德's 氣刃斬 lead is 139 ticks")
 	# Phase by phase.
 	for call in range(1 + AnimalCastLead.SHADOW_BG_CALLS):
-		_assert_true(states[call]["shadow"] and states[call]["banner"] == banner_start and int(states[call]["inset"]) < 0, "call %d: shadow background, banner still displaced, no inset" % call)
+		# 0x4035ef: the shadow level is min(+0x90, 8), from the call after aniShadowBG (0x402499).
+		_assert_true(int(states[call]["shadow"]) == call and states[call]["banner"] == banner_start and int(states[call]["inset"]) < 0, "call %d: shadow level %d, banner still displaced, no inset" % [call, call])
 	var at := 1 + AnimalCastLead.SHADOW_BG_CALLS
 	_assert_eq(states[at]["banner"], banner_start, "the aniMoveToCenter call itself does not move")
 	_assert_eq(states[at + 1]["banner"], banner_start + Vector2i(AnimalCastLead.SLIDE_STEP, 0), "the first slide call steps 32 px")
@@ -726,8 +727,9 @@ func cast_lead_program() -> void:
 	_assert_true(states[at]["portrait_anchor"].x >= AnimalCastLead.SCREEN_WIDTH, "the portrait starts off-screen on the far side")
 	at += portrait_calls
 	_assert_true(states[at - 1]["portrait_anchor"] != portrait_target and states[at]["portrait_anchor"] == portrait_target, "the portrait stands with its right edge at 540 and bottom at 480 from the call after its slide")
-	_assert_eq(states[at + portrait_hold - 1]["fade"], 0.0, "the portrait holds delay2 + 20 = %d calls before the fade" % portrait_hold)
-	_assert_eq(states[at + portrait_hold + AnimalCastLead.FADE_CALLS - 1]["fade"], 1.0, "the fade completes over 16 calls")
+	_assert_eq(states[at + portrait_hold - 1]["fade"], 0.0, "the portrait holds delay2 + 20 = %d calls before sub-state 4" % portrait_hold)
+	# 0x402e55: sub-state 4's 16 calls draw both panels at mode 0 (opaque), not a crossfade.
+	_assert_eq(states[at + portrait_hold + AnimalCastLead.FADE_CALLS - 1]["fade"], 0.0, "the panels stay opaque through the 16 calls")
 	_assert_eq(states.size() - (at + portrait_hold + AnimalCastLead.FADE_CALLS), AnimalCastLead.HOLD_CALLS, "then the 10-call hold ends the lead")
 	# The special presenter plays the lead first, then the attack script: 氣刃斬's 60-tick
 	# attack script releases at lead + 60.

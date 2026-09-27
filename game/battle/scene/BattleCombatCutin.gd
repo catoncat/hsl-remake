@@ -103,8 +103,8 @@ var cue_manifest: Dictionary
 ## The cast lead's inset and portrait panels (the banner is the attacker sprite itself).
 var cast_inset: Sprite2D
 var cast_portrait: Sprite2D
-## The cast lead's afterimages (AnimalCastLead `afterimages`), created on demand under the
-## live inset and portrait.
+## The cast lead's afterimages (AnimalCastLead `afterimages`), created on demand: a banner copy
+## (panel 0) under the banner, an inset copy over the live inset and portrait.
 var cast_afterimages: Array[Sprite2D] = []
 ## Compiled AnimalCastLead per combat manifest row (deterministic: program × panel sizes).
 var cast_leads: Dictionary = {}
@@ -336,10 +336,15 @@ func cast_lead(clip: Dictionary, channel: String = "special") -> Dictionary:
 	return {}
 
 
-## Draws the cast lead's state at `tick` (whole original ticks since the clip began): the
-## shadowed map shows through the 640×480 stage (no backdrop, no vitals), the banner (panel 0)
-## is the attacker sprite (x zoom −1 when mirrored), the inset and portrait panels their own
-## sprites, each afterimage a copy at level／16 (engMIX: src × level/16 + dst × (16 − level)/16).
+## Draws the cast lead's state at `tick` (whole original ticks since the clip began): the map
+## shows through the 640×480 stage (a spell or 絶技 object sets +0x80 0x100 at 0x401e66, so the
+## black backdrop of 0x4034c6 is skipped), under a black layer at shadow level／16 (0x4035ef:
+## [0x4bbb4e] crossfaded into bucket 0x17 — each map component × (16 − level)／16); the banner
+## (panel 0) is the attacker sprite (x zoom −1 when mirrored), the inset and portrait panels
+## their own opaque sprites (mode 0), each afterimage a copy at level／16 (engMIX: src ×
+## level/16 + dst × (16 − level)/16). Order as the buckets give it: banner afterimage
+## (planeEffect2) < banner (0x32) < inset, portrait (0x33, submitted by the process in the first
+## pass) < inset afterimages (0x33, object 179 submitted in the second pass of 0x45f5f7).
 func show_cast_lead(clip: Dictionary, lead: Dictionary, tick: float) -> void:
 	var states: Array = lead["states"]
 	var state: Dictionary = states[clampi(int(tick), 0, states.size() - 1)]
@@ -347,8 +352,9 @@ func show_cast_lead(clip: Dictionary, lead: Dictionary, tick: float) -> void:
 	stage.size = Vector2(640, 480)
 	scenery.visible = false
 	vitals.visible = false
-	background.visible = bool(state["shadow"])
-	background.color = Color(0, 0, 0, 0.35)
+	var shadow := int(state["shadow"])
+	background.visible = shadow > 0
+	background.color = Color(0, 0, 0, float(shadow) / AnimalCastLead.LEVELS)
 	defender_sprite.hide()
 	blade.hide()
 	flash_sprite.hide()
@@ -364,6 +370,11 @@ func show_cast_lead(clip: Dictionary, lead: Dictionary, tick: float) -> void:
 	for index in range(ghosts.size()):
 		var ghost: Dictionary = ghosts[index]
 		var sprite := _cast_afterimage(index)
+		if int(ghost["panel"]) == 0:
+			if sprite.get_index() > attacker_sprite.get_index():
+				stage.move_child(sprite, attacker_sprite.get_index())
+		elif sprite.get_index() < cast_portrait.get_index():
+			stage.move_child(sprite, cast_portrait.get_index())
 		_apply_source_frame(sprite, strip[int(ghost["panel"])])
 		sprite.position = Vector2(ghost["anchor"])
 		sprite.scale = Vector2(-1, 1) if bool(ghost["mirrored"]) else Vector2.ONE
@@ -379,13 +390,12 @@ func show_cast_lead(clip: Dictionary, lead: Dictionary, tick: float) -> void:
 			sprite.modulate = Color(1, 1, 1, faded)
 
 
-## The `index`-th afterimage sprite, created under the live inset on first use.
+## The `index`-th afterimage sprite, created on first use (show_cast_lead places it).
 func _cast_afterimage(index: int) -> Sprite2D:
 	while cast_afterimages.size() <= index:
 		var sprite := Sprite2D.new()
 		sprite.hide()
 		stage.add_child(sprite)
-		stage.move_child(sprite, cast_inset.get_index())
 		cast_afterimages.append(sprite)
 	return cast_afterimages[index]
 

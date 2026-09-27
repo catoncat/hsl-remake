@@ -15,8 +15,9 @@ extends Control
 ##   layout: static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md
 ##     (the picked item's icon rides the pointer while its use target is chosen)
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#7
-##     (使用／交換 window: boards, 32 px rows, icon and name cells, pulse-green hover, description box, gold box)
-##   layout: remake-invented (equip／drop window's scrollable list)
+##     (使用／交換／裝備／丟棄 windows: boards, 32 px rows, icon and name cells, pulse-green hover, description, gold)
+##   strings: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#7
+##     (裝備 row colour: 0x434d10 @2 red for a consumable or a piece outside the job mask)
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
 ##   strings: resource-derived content/imported/hsl/chapter01/consumables.json
 ##   strings: remake-invented (返回, 沒有道具, 道具 N / 8 — OPT-GUIDE＝提示 only)
@@ -33,6 +34,7 @@ signal equipment_requested(slot: String, inventory_index: int, item_code: int)
 ## take_up (399) when an item comes into the hand, put_down (400) when the hand places it.
 signal ui_sound_requested(event: String)
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
+const JobStatsRules = preload("res://game/sim/JobStatsRules.gd")
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
 const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
@@ -165,24 +167,7 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 	equipment_view = equipment
 	page_root.add_child(equipment)
 	equipment.show_unit(unit)
-	BattleUISkin.board(page_root, "WINDOW20", LIST_BOARD_AT)
-	BattleUISkin.board(page_root, "WINDOW40", GOLD_AT)
-	var gold_label := BattleUISkin.text(page_root, GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
-	gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	gold_label.text = str(gold)
-	detail_box = Control.new()
-	detail_box.name = "ItemDescription"
-	detail_box.position = DETAIL_AT
-	detail_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	BattleUISkin.board(detail_box, "WINDOW50", Vector2.ZERO)
-	detail_box.hide()
-	page_root.add_child(detail_box)
-	# Eight fixed 32 px bag rows (the status page's 道具 page geometry); the window never scrolls.
-	rows = Control.new()
-	rows.name = "Rows"
-	rows.position = LIST_BOARD_AT + LIST_ROW_ORIGIN
-	rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	page_root.add_child(rows)
+	_list_frame()
 	var catalog := EquipmentCatalog.items()
 	for index in range(unit["inventory"].size()):
 		var code := str(int(unit["inventory"][index]))
@@ -195,19 +180,8 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 				rows.add_child(empty_slot)
 			continue
 		var details: Dictionary = catalog[code]
-		var button := Button.new()
-		button.name = "Item_%s_%d" % [code, index]
-		button.set_meta("item_code", code)
-		button.set_meta("inventory_index", index)
-		button.position = Vector2(0, index * LIST_ROW_HEIGHT)
-		button.size = LIST_ROW_SIZE
-		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
-			button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
-		var art := BattleUISkin.anchored_asset(button, str(details["icon"]), LIST_ICON_ANCHOR)
-		art.name = "OriginalConsumable"
-		var caption := BattleUISkin.text(button, Vector2(LIST_NAME_DX, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(LIST_ROW_SIZE.x - LIST_NAME_DX, 24))
-		caption.name = "Caption"
-		caption.text = str(details["name"])
+		var button := _bag_button(details, code, index, index, BattleUISkin.TEXT_WHITE)
+		var caption: Label = button.get_node("Caption")
 		button.disabled = operation == "use" and ItemUseRules.definition_error(items.get(code, {})) != ""
 		button.mouse_entered.connect(_hover_row.bind(caption, _item_lines(details, code)))
 		button.mouse_exited.connect(_hover_row.bind(null, []))
@@ -227,6 +201,49 @@ func _show_list(command: String, owner: Dictionary = {}) -> void:
 		_hold_selected_item()
 
 
+
+## WINDOW20 with the eight fixed row slots, WINDOW40 `$:` and the hidden WINDOW50 description
+## box: the 使用／交換 (mode 6／7) and 裝備／丟棄 (mode 4／5) windows share them (menus_ui §7).
+func _list_frame() -> void:
+	BattleUISkin.board(page_root, "WINDOW20", LIST_BOARD_AT)
+	BattleUISkin.board(page_root, "WINDOW40", GOLD_AT)
+	var gold_label := BattleUISkin.text(page_root, GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
+	gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	gold_label.text = str(gold)
+	detail_box = Control.new()
+	detail_box.name = "ItemDescription"
+	detail_box.position = DETAIL_AT
+	detail_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	BattleUISkin.board(detail_box, "WINDOW50", Vector2.ZERO)
+	detail_box.hide()
+	page_root.add_child(detail_box)
+	# Eight fixed 32 px bag rows (the status page's 道具 page geometry); the window never scrolls.
+	rows = Control.new()
+	rows.name = "Rows"
+	rows.position = LIST_BOARD_AT + LIST_ROW_ORIGIN
+	rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	page_root.add_child(rows)
+
+
+## One bag row at slot `row`: icon anchored at (x+24, y+8), the FONT.24 name cell at x+48.
+func _bag_button(details: Dictionary, code: String, index: int, row: int, colour: Color) -> Button:
+	var button := Button.new()
+	button.name = "Item_%s_%d" % [code, index]
+	button.set_meta("item_code", code)
+	button.set_meta("inventory_index", index)
+	button.position = Vector2(0, row * LIST_ROW_HEIGHT)
+	button.size = LIST_ROW_SIZE
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+	var art := BattleUISkin.anchored_asset(button, str(details["icon"]), LIST_ICON_ANCHOR)
+	art.name = "OriginalConsumable"
+	var caption := BattleUISkin.text(button, Vector2(LIST_NAME_DX, 0), colour, BattleUISkin.FONT_BODY, Vector2(LIST_ROW_SIZE.x - LIST_NAME_DX, 24))
+	caption.name = "Caption"
+	caption.set_meta("colour", colour)
+	caption.text = str(details["name"])
+	return button
+
+
 ## Description lines of a bag row: equipment as the equipment board's, a consumable as its name,
 ## 可使用 and its effect (the frame's 回復藥／可使用／生命+40).
 func _item_lines(details: Dictionary, code: String) -> Array:
@@ -244,7 +261,7 @@ func _item_lines(details: Dictionary, code: String) -> Array:
 ## up to four FONT.15 rows at (x+8, y+12+16i), 360 px centred, the first @3 green (0x436d70).
 func _hover_row(caption: Label, lines: Array) -> void:
 	if is_instance_valid(hover_caption):
-		hover_caption.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
+		hover_caption.add_theme_color_override("font_color", hover_caption.get_meta("colour", BattleUISkin.TEXT_WHITE))
 	hover_caption = caption
 	for child in detail_box.get_children():
 		if child is Label:
@@ -433,54 +450,54 @@ func _show_hand_window(command: String) -> void:
 	equipment.slot_requested.connect(_hand_slot)
 	page_root.add_child(equipment)
 	equipment.show_unit(source_unit)
-	BattleUISkin.board(page_root, "WINDOW20", Vector2(12, 174))
-	var scroll := ScrollContainer.new()
-	scroll.position = Vector2(20, 180)
-	scroll.size = Vector2(207, 250)
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	page_root.add_child(scroll)
-	rows = VBoxContainer.new()
-	rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	rows.add_theme_constant_override("separation", 0)
-	scroll.add_child(rows)
+	_list_frame()
 	var catalog := EquipmentCatalog.items()
-	# The picked item left its slot (0x436e80 deletes and compacts); the rows show what remains.
+	# The picked item left its slot (0x436e80 deletes and compacts); the rows show what remains,
+	# packed from row 0 on the use window's eight fixed slots.
 	for index in range(source_unit["inventory"].size()):
 		var code := int(source_unit["inventory"][index])
 		if index == held_index or code == 0:
 			continue
 		var details: Dictionary = catalog[str(code)]
-		var button := Button.new()
-		button.name = "Item_%d_%d" % [code, index]
-		button.text = str(details["name"])
-		button.set_meta("item_code", str(code))
-		button.set_meta("inventory_index", index)
-		button.custom_minimum_size = Vector2(195, 32)
-		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.add_theme_font_size_override("font_size", 18)
-		button.add_theme_color_override("font_hover_color", Color.YELLOW)
-		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
-			var style := StyleBoxEmpty.new()
-			style.content_margin_left = 43
-			button.add_theme_stylebox_override(state, style)
-		BattleUISkin.asset(button, str(details["icon"]), Vector2(3, 0)).name = "OriginalConsumable"
+		var button := _bag_button(details, str(code), index, rows.get_child_count(), _hand_colour(details))
+		var caption: Label = button.get_node("Caption")
+		button.mouse_entered.connect(_hover_row.bind(caption, _item_lines(details, str(code))))
+		button.mouse_exited.connect(_hover_row.bind(null, []))
 		button.pressed.connect(_hand_row.bind(index, code))
 		rows.add_child(button)
 	# 0x438c84: with an item held a pick on any row puts it back (first empty, 0x436e30).
 	for index in range(8 - rows.get_child_count()):
 		var empty := _empty_slot_button(-1, true)
 		empty.name = "Empty_%d" % index
+		empty.position = Vector2(0, rows.get_child_count() * LIST_ROW_HEIGHT)
+		empty.size = LIST_ROW_SIZE
 		rows.add_child(empty)
-	var back := BattleUISkin.button(page_root, "返回", Vector2(502, 442), Vector2(113, 30))
+	# Remake-only, as on the use window: back button and count, OPT-GUIDE＝提示 only.
+	var back := BattleUISkin.button(page_root, "返回", Vector2(252, 442), Vector2(113, 30))
 	back.pressed.connect(cancel)
+	back.visible = not GameOptions.is_original("OPT-GUIDE")
 	var capacity := BattleUISkin.label(page_root, Vector2(20, 440), 15)
 	capacity.text = "道具 %d / 8" % (8 - source_unit["inventory"].count(0))
-	capacity.visible = not GameOptions.is_original("OPT-GUIDE")
+	capacity.visible = back.visible
 	if operation == "drop":
 		drop_button = _drop_icon_button()
 	if held_code != 0:
 		selected_item = str(held_code)
 		_hold_selected_item()
+
+
+## Name colour of a hand-window row (0x434d10 bag rows, 0x4c1cf8 == 1 in 裝備): a consumable, or
+## a piece outside the unit's job mask (+0xa8), prints @2 red; anything else @1 white. 丟棄 takes
+## the white branch for every row. Important items (@6) are not coloured here.
+func _hand_colour(details: Dictionary) -> Color:
+	if operation != "equip" or bool(details.get("important", false)):
+		return BattleUISkin.TEXT_WHITE
+	if not int(details["type_code"]) in range(2, 7):
+		return BattleUISkin.TEXT_RED
+	var job := int(source_unit.get("growth_profile", {}).get("job_code", -1))
+	if job == 1000 or (JobStatsRules.has_job(job) and (int(details.get("job_mask", 0)) & JobStatsRules.job_mask_bit(job)) != 0):
+		return BattleUISkin.TEXT_WHITE
+	return BattleUISkin.TEXT_RED
 
 
 ## Mode 5's 丟棄 (template 148 BCMD08_1, 42×42, origin (21,21)) centred at (285,387): x 0x11d,

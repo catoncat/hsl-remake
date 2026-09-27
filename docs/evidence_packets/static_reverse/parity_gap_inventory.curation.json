@@ -201,18 +201,20 @@
     },
     {
       "id": "ui-layout-readings",
-      "difference": "战斗 使用／交換 道具窗已按原版实拍核对：板、行、图标、字、悬停脉冲绿、说明框、金钱框偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区、裝備／丟棄 持物窗的行排布与滚动区、道具说明第三行措辞（原版「生命+40」，重制「回復 40 HP」）",
-      "original": "原窗体 SHP 已导入；使用／交換 窗 Wine 实拍三帧（runtime-measured）；其余面板原版录屏未覆盖",
+      "difference": "战斗 使用／交換／裝備／丟棄 道具窗已按原版实拍核对：板、行、图标、字、行色、悬停脉冲绿、说明框（回复行「生命+40」）、金钱框、WINDOW10 字段字库偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区、WINDOW10 抗性行 x 与数值斜线空格",
+      "original": "原窗体 SHP 已导入；使用／交換 窗与 裝備／丟棄 窗 Wine 实拍各三帧（runtime-measured）；其余面板原版录屏未覆盖",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md"
       ],
-      "remake": "BattleItemPanel 使用／交換 窗照原版读数；BattleUISkin／BattleEquipmentView 与持物窗的其余排布是重制读法",
+      "remake": "BattleItemPanel 四种道具窗、BattleItemText 回复行与 BattleVitals 字段字库照原版读数；BattleUISkin／BattleEquipmentView 其余排布是重制读法",
       "remake_code": [
         "game/common/BattleUISkin.gd",
         "game/battle/scene/BattleSceneMenus.gd",
         "game/battle/scene/BattleEquipmentView.gd",
-        "game/battle/scene/BattleItemPanel.gd"
+        "game/battle/scene/BattleItemPanel.gd",
+        "game/battle/scene/BattleItemText.gd",
+        "game/battle/scene/BattleVitals.gd"
       ],
       "original_status": "read_partial",
       "visibility": "every_battle",
@@ -479,18 +481,19 @@
     },
     {
       "id": "cast-lead-compositing",
-      "difference": "施法引导的阴影底用压暗 0.35 的地图近似；引导残影与活动面板的先后、16 级交叉淡化用普通透明近似",
-      "original": "aniShadowBG（0x402499／0x402752）只读了计数，阴影底画法未读；残影 0x401220 与面板同层（0x33）的链表先后未读",
+      "difference": "施法引导阴影底、面板与残影照原版画；只差与阴影同桶（0x17）的单位原版画在阴影之上、重制压在下面，以及 8 位 alpha 与原版 5／6 位分量截断的末位",
+      "original": "0x4035ef：消息字带 0x1000 时全黑屏形状以操作 4 画进桶 0x17，级 min(+0x90, 8)，aniShadowBG 次 call 起 1..8；施法对象置 0x100 不画 0x4034c6 黑底；面板桶 0x33 模式 0，子状态 4 前 16 call 不淡化；残影对象 179 级 6→1，局部图残影桶 0x33 第二遍提交、在面板之上",
       "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_cast_overlays.md",
         "docs/evidence_packets/static_reverse/animal_program_execution.md",
         "docs/evidence_packets/static_reverse/original_effect_motion.md"
       ],
-      "remake": "BattleCombatCutin.show_cast_lead 的 0.35 压暗底与残影精灵",
+      "remake": "BattleCombatCutin.show_cast_lead 黑层 alpha＝阴影级／16，面板不透明，横幅残影在横幅下、局部图残影在面板上",
       "remake_code": [
         "game/battle/scene/AnimalCastLead.gd",
         "game/battle/scene/BattleCombatCutin.gd"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "every_battle",
       "effort": "S",
       "category": "特写与施法演出"
@@ -783,8 +786,8 @@
     },
     {
       "id": "stage-placement",
-      "difference": "组合物件子偏移与图层、engGLASS 透明度、世界大小取自贴图是重制读法；云漂移与移動背景视差已照原版（云逐 tick 按角度／速度 16.16 走、出界按地图＋图尺寸逐轴回绕，移動背景随镜头走 obj_Score/640、obj_HitPoint/480），只差原版在效果演出期间与选项位关闭时把云藏起并停住未接，移動背景按显示帧而非逐 tick 取镜头",
-      "original": "原完整物件放置公式未恢复；云漂移／回绕与移動背景视差已读完并整镜像实测（0x43ccf0 的 mapobjCloud／mapobjMoveBG 分支）",
+      "difference": "组合物件子偏移与图层、engGLASS 透明度、世界大小取自贴图是重制读法；云漂移与移動背景视差已照原版（云逐 tick 按角度／速度 16.16 走、出界按地图＋图尺寸逐轴回绕，移動背景随镜头走 obj_Score/640、obj_HitPoint/480），魔法效果／特写／状态面板期间与 場景效果 关时云藏起并停住、相位保留，移動背景每 tick 取镜头；原仓库窗置位不在战斗里，移動背景与滚镜头对象的先后未读",
+      "original": "原完整物件放置公式未恢复；云漂移／回绕与移動背景视差已读完并整镜像实测，藏起条件 [0x4c1b00]&0x1400000 或 [0x477c14] bit0 关（0x43ceba，移動背景不藏）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_object_drift.md",
         "docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md",
@@ -2166,9 +2169,6 @@
     "provenance:game/battle/scene/BattleExtraActionCue.gd|timing|remake-invented|": {
       "item": "extra-action-cue"
     },
-    "provenance:game/battle/scene/BattleItemPanel.gd|layout|remake-invented|": {
-      "item": "ui-layout-readings"
-    },
     "provenance:game/battle/scene/BattleItemPanel.gd|strings|remake-invented|": {
       "item": "panel-captions"
     },
@@ -3091,9 +3091,6 @@
       "item": "cursor-hide-item-icon"
     },
     "provenance:game/battle/runtime/MapObjectDrift.gd|timing|provisional|": {
-      "item": "stage-placement"
-    },
-    "provenance:game/battle/runtime/MapObjectDrift.gd|timing|remake-invented|": {
       "item": "stage-placement"
     },
     "provenance:game/battle/scene/BattlePoisonGasPresentation.gd|layout|remake-invented|": {

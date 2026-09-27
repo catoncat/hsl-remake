@@ -11,6 +11,8 @@ extends Control
 ##     (frame_006 value x positions)
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##     (resist row: gems at (138 + 48·i, 450) in the close-up, value glyphs from x 149 + 48·i)
+##   layout: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#7
+##     (FONT.24 identity cells: 姓名／稱號／種族／狀態 ink boxes on the Wine frames)
 ##   layout: resource-derived content/imported/hsl/chapter01/portraits/manifest.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_stamina.md
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_identity_bar.md
@@ -52,10 +54,15 @@ const ST_BAR_AT := Vector2(154, 102)
 ## centred on the baked label glyph row of WINDOW10 (resource-derived rows 12-28, 42-56,
 ## 73-88 on the left, 14-28, 48-62, 83-96, 116-128 on the right) — in frame_006 every value
 ## centre equals its label's row centre.
+## Every value prints in FONT.24: the WINDOW10 text block is one 0x4123b0 call in 0x438160
+## (+0xac 0 draw branch, 0x4123b0 at x+8) and the Wine frames of 玩家第 2 场 · 惡夢的終曲（LEVEL052）
+## show 雷欧纳德／剑士 at 24 px a glyph (menus_ui/README.md#7); only the resist row is FONT.15
+## (0x411d70 in the same branch). The right column's cells sit where those frames put the ink
+## (x 461; 20／54／88／122 centre the 24 px cells).
 const VALUE_CELLS := {
-	"level": [Vector2(197, 20), 17], "exp": [Vector2(279, 20), 17],
-	"hp": [Vector2(231, 49), 17], "mp": [Vector2(231, 80), 17], "st": [Vector2(231, 111), 17],
-	"name": [Vector2(463, 21), 16], "role": [Vector2(463, 55), 16], "race": [Vector2(463, 89), 16], "state": [Vector2(463, 122), 16],
+	"level": [Vector2(197, 20), UISkin.FONT_BODY], "exp": [Vector2(279, 20), UISkin.FONT_BODY],
+	"hp": [Vector2(231, 49), UISkin.FONT_BODY], "mp": [Vector2(231, 80), UISkin.FONT_BODY], "st": [Vector2(231, 111), UISkin.FONT_BODY],
+	"name": [Vector2(461, 20), UISkin.FONT_BODY], "role": [Vector2(461, 54), UISkin.FONT_BODY], "race": [Vector2(461, 88), UISkin.FONT_BODY], "state": [Vector2(461, 122), UISkin.FONT_BODY],
 }
 const VALUE_CELL_HEIGHT := 24
 ## Resist row: five element gems (panels magicon1..5 = earth, water, wind, fire, mind — the

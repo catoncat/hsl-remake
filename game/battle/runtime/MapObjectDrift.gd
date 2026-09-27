@@ -12,16 +12,12 @@ extends Node
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
 ##     (obj_Data7／obj_Data8／obj_Score／obj_HitPoint)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
-##     (0x45eb9d／0x45ebdc 16.16 step per tick)
+##     (0x45eb9d／0x45ebdc 16.16 step per tick; 0x43ceba hold on 0x4c1b00 & 0x1400000 or 場景效果 off)
 ##   timing: runtime-measured docs/evidence_packets/static_reverse/original_map_object_drift.md
 ##     (level 1: +265,+265 in 1499 ticks)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   timing: remake-invented
-##     (moving backgrounds are placed every display frame from the current camera, the original once per tick before
-##     that frame's scroll)
 ##   timing: provisional
-##     (the original hides and holds clouds while [0x4c1b00] & 0x1400000 or its options bit 0x477c14 & 1 is clear; not
-##     wired)
+##     (0x1400000 read as a busy cut-in queue or the open status panel; scroll order not read)
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
@@ -38,6 +34,10 @@ const PIN_TO_VIEW := -1
 var map_size := Vector2i.ZERO
 ## View top-left in map pixels (the original's [0x4c091c]／[0x4c0920]).
 var camera_top_left: Callable
+## True while the original would hide the clouds: 0x43ceba writes the hold counter +0xae = 2 while
+## [0x4c1b00] & 0x1400000 (map magic effect 0x1000000, close-up／status window 0x400000) or while
+## [0x477c14] bit0 (設定選項 場景效果) is clear. Moving backgrounds jump past it (0x43d573).
+var clouds_hidden: Callable
 var clouds: Array[Dictionary] = []
 var backgrounds: Array[Dictionary] = []
 var _clock := 0.0
@@ -74,16 +74,26 @@ func add_background(sprite: Node2D, point: Vector2, score: int, hit_point: int, 
 	_place_background(backgrounds.back())
 
 
+## Once per original tick like the object executor 0x45f5f7: a cloud steps unless held; a held
+## cloud (0x43d76a: counter still non-zero → 0x43d202 sets +0x80 0x10000000, which 0x45f716 skips
+## drawing) keeps its point and fractions and walks on from there the first tick the condition is
+## gone; a moving background takes the camera of that tick.
 func _process(delta: float) -> void:
-	if not clouds.is_empty():
-		_clock += delta
-		var steps := floori(_clock / OriginalTick.TICK_SECONDS)
-		if steps > 0:
-			_clock -= float(steps) * OriginalTick.TICK_SECONDS
-			for cloud in clouds:
-				for _i in steps:
-					step_cloud(cloud, map_size)
-				_draw_cloud(cloud)
+	if clouds.is_empty() and backgrounds.is_empty():
+		return
+	_clock += delta
+	var steps := floori(_clock / OriginalTick.TICK_SECONDS)
+	if steps <= 0:
+		return
+	_clock -= float(steps) * OriginalTick.TICK_SECONDS
+	var hidden := clouds_hidden.is_valid() and bool(clouds_hidden.call())
+	for cloud in clouds:
+		(cloud["sprite"] as Node2D).visible = not hidden
+		if hidden:
+			continue
+		for _i in steps:
+			step_cloud(cloud, map_size)
+		_draw_cloud(cloud)
 	for background in backgrounds:
 		_place_background(background)
 
