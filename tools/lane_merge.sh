@@ -110,7 +110,7 @@ case "${cmd}" in
       # Asset importers (tools/hsltools/assets/) only write content/imported/ and never count (2026-09-26: the
       # music importer sent a pure asset merge through the 128-battle sweep).
       # game/sim/ covers the rule core (game/sim/loop/: BattlePlayLoop and the BattleLoop* modules).
-      OUTCOME_PATHS='^(game/sim/|game/battle/runtime/(Battle|Campaign|Growth|Actor)|content/(battles|generated/hsl/(chapter|treasures|autoplay|static))|tests/support/|tests/run_battle_sweep|tools/verify|tools/hsltools/)'
+      OUTCOME_PATHS='^(game/sim/|game/battle/runtime/(Battle|Campaign|Growth|Actor)|content/(battles|generated/hsl/(chapter|treasures|autoplay|static))|tests/support/|tests/run_battle_sweep|tools/verify|tools/hsltools/(data|levels|assets|model|native|schema|sources)/|tools/hsltools/original_content\.py)'
       changed="$(git diff --name-only main HEAD -- 2>/dev/null || true)"
       outcome_changed="$(printf '%s\n' "${changed}" | grep -Ev '^tools/hsltools/assets/' | grep -E "${OUTCOME_PATHS}" || true)"
       if [ -n "${outcome_changed}" ]; then mode="fast"; else mode="affected"; fi
