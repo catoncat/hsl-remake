@@ -24,7 +24,7 @@ static func prepare(loop: Dictionary, actor: Dictionary) -> Dictionary:
 	# heal buckets; the SPECIAL rows come from the same 0x40c620 bucket fill (expend*20 <= stamina).
 	for id in book["skills"]:
 		var entry: Dictionary = book["skills"][id]
-		if entry["damage_policy"] not in ["native_magic_support", "native_special_support"] or SkillResolutionRules.ownership_error(actor, id, book) != "": continue
+		if not SkillResolutionRules.is_kind(entry["damage_policy"], ["support"]) or SkillResolutionRules.ownership_error(actor, id, book) != "": continue
 		var fields: Dictionary = entry["fields"]
 		var rate := SkillResourceRules._integer(fields.get("use_ratio"), true)
 		var order := SkillResourceRules._integer(entry.get("source_order"))

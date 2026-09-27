@@ -21,7 +21,7 @@ const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
 ## RANGE row 1 (range1Cell), the range 0x40d530 hands 0x40fa80 round the patient: its four
 ## orthogonal neighbours.
 const ITEM_REACH := [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, 1)]
-const SUPPORT_POLICIES := ["native_magic_support", "native_magic_stat", "native_special_support", "native_special_stat"]
+const SUPPORT_KINDS := ["support", "stat"]
 
 
 static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, rows: Array, owner_index: int, profile: Dictionary, healing_slot: int = -1) -> Dictionary:
@@ -33,7 +33,7 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 	# then offer both channels.
 	for id in book["skills"]:
 		var entry: Dictionary = book["skills"][id]
-		if entry["damage_policy"] in SUPPORT_POLICIES and SkillTargetRules.is_support(entry["fields"], loop["skill_target_data"]) and SkillResolutionRules.ownership_error(actor, id, book) == "": ids.append(id)
+		if SkillResolutionRules.is_kind(entry["damage_policy"], SUPPORT_KINDS) and SkillTargetRules.is_support(entry["fields"], loop["skill_target_data"]) and SkillResolutionRules.ownership_error(actor, id, book) == "": ids.append(id)
 	var curing := ItemUseRules.first_status_slot(actor["inventory"], loop["consumables"], 15)
 	if not curing["ok"]: return curing
 	if ids.is_empty() and healing_slot < 0 and curing["index"] < 0: return result

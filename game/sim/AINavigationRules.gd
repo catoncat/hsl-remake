@@ -190,7 +190,7 @@ static func approach_goals(loop: Dictionary, actor: Dictionary, foes: Array, fie
 					goals[point - Vector2i(int(offset[0]), int(offset[1]))] = true
 		for skill in available:
 			var fields: Dictionary = skill["fields"]
-			if loop["skill_book"]["skills"][skill["id"]]["damage_policy"] == "native_magic_status":
+			if SkillResolutionRules.is_kind(loop["skill_book"]["skills"][skill["id"]]["damage_policy"], ["status"], "magic"):
 				var effect := SkillResolutionRules.StatusApplication.prepare(actor, target, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])
 				if not effect["ok"]: return effect
 				if AISkillPlanning.useful_ids({"targets": [target], "prepared": [{"status": effect}]}).is_empty(): continue

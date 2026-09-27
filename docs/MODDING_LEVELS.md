@@ -201,7 +201,7 @@ action = actWalkPrevInsertObject,512,288,4
 | --- | --- |
 | 新的 winfail 条件或动作 | 先在 `game/sim/WinfailCompiler.gd` 加词表（token 行尾的 `# 语义` 注释就是 WINFAIL_TOKENS 的语义列，缺了 `python3 tools/hsl.py check winfail_token_table` 失败），再在 `WinfailConditions.condition_holds`／`WinfailActions.apply_actions` 加分支，然后 `python3 tools/hsl.py generate winfail_coverage winfail_token_table`（前者需要原版 PAK） |
 | 新的开场 opcode 演出 | 在 `tools/hsltools/levels/timeline.py` 的 `ACTION_KIND` 映射 kind，再在 `game/battle/runtime/BattleOpeningCoordinator.gd` 的 `_apply_event` 加分支 |
-| 新的技能效果族（治疗、状态、增益、特殊行动） | 你的招式目前只收两个通道的原版伤害（`authored_skills.py` 的 `DAMAGE_POLICIES`）；要先在运行时决定哪些原版分支可以由数据驱动 |
+| 新的技能效果族（治疗、状态、增益、特殊行动） | 规则侧：在 `game/sim/` 写一个模块，按 `SkillResolutionRules.EFFECTS` 表头的签名提供 descriptor_error／prepare／resolve，再在 `EFFECTS` 登记一行新的 `damage_policy`；生成侧：你的招式目前只收两个通道的原版伤害（`authored_skills.py` 的 `DAMAGE_POLICIES`），要让它放行新值 |
 | 新的特效 opcode | `SkillEffectScriptPlayer.IMPLEMENTED_OPCODES` 及其播放分支 |
 | 新的切入打击程序（不借 `program_of`）、切入 s_shape／m_shape 条带 | 不在作者格式的约定内（绝技切入目前显示站立的施法者） |
 | 手写层的新音效、新界面美术、覆盖原版已有的表行 | 没有入口，见 [MODDING「现在做不到的」](MODDING.md#现在做不到的需要先改代码或工具) |

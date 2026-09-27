@@ -100,7 +100,7 @@ static func definition_error(fields: Dictionary, data: Dictionary) -> String:
 	# no source row casts with one, and 0x4100e0's line branch needs a caster direction.
 	if is_line(data["ranges"][fields["range"]]):
 		return "unsupported_line_cast_range"
-	# Effect-area support belongs to the selected resolver: every AREA_POLICIES
+	# Effect-area support belongs to the selected resolver: every area row of SkillResolutionRules.EFFECTS
 	# resolver (native magic, native special damage/poison) prepares each living
 	# target inside the effect footprint through the shared cast transaction.
 	return ""

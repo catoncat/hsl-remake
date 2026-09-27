@@ -16,13 +16,85 @@ const PoisonArrowRules = preload("res://game/sim/PoisonArrowRules.gd")
 const OtherMagicRules = preload("res://game/sim/OtherMagicRules.gd")
 const SpecialStatusRules = preload("res://game/sim/SpecialStatusRules.gd")
 const SpecialUtilityRules = preload("res://game/sim/SpecialUtilityRules.gd")
-const AREA_POLICIES := ["native_magic_status", "native_magic_support", "native_magic_damage", "native_magic_stat", "native_special_poison", "native_special_damage", "native_special_status", "native_special_support", "native_special_stat", "native_special_utility"]
 const PositionCapabilityRules = preload("res://game/sim/PositionCapabilityRules.gd")
 ## Stateless preparation and resolution shared by player and AI. Cost/target
 ## evidence remains independent from whole-engine initialization and global RNG.
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
 const Combat = preload("res://game/sim/CoreCombatRules.gd")
+## 技能效果族登记表：技能书每行的 damage_policy 对应这里一行，五个入口（descriptor_error／prepare／
+## resolve／prepare_cast／resolve_cast）只查表分派。加一种效果族：写一个规则模块提供下面三个函数，
+## 在这里登记一行（Callable 指向模块函数，如 Callable(FooRules, "prepare")），再让生成器输出这个 policy。
+##   descriptor_error  func(entry, fields, targeting, skill_id) -> String, after the shared identity/cost/
+##                     range/damage/hit gates ("" accepts the descriptor).
+##   prepare           func(caster, target, descriptor, fields, book, targeting, equipment, context) -> Dictionary:
+##                     one target's RNG-free proposal ({"ok": false, "reason"} rejects the whole cast).
+##   resolve           func(caster, target, skill_id, descriptor, ready, rng, equipment) -> Dictionary:
+##                     {"ok", "caster_changes", "target_changes", "receipt"} for one target.
+##   ready_key         key the proposal travels under in ready (resolve reads ready[ready_key]).
+##   area              true: every living unit inside the effect footprint is a target, in roster order;
+##                     false: the clicked target only.
+##   hit_bonus_input   area casts copy the running hit_bonus_accum into ready[ready_key][this] before each
+##                     target ("": resolve reads the caster's hit_bonus_accum itself).
+##   subset            (optional) area casts keep only useful units, and the centre must be one of them.
+##   caster_effects    (optional) resolve may change the caster's HP and carries turn/gold/item effects.
+##   kind, channel     what AI planners ask: damage／status／support／stat／arrow／utility／sequence; magic／special.
+##   prepare_cast, resolve_cast  (optional) the family owns the whole cast (連續技).
+static var EFFECTS := {
+	# NativeMagicRollRules proc0 through StatusApplicationRules (magic_key "other": OtherMagicRules).
+	"native_magic_damage": {"kind": "damage", "channel": "magic", "area": true, "ready_key": "status", "hit_bonus_input": "roll_input",
+		"descriptor_error": _magic_damage_descriptor_error, "prepare": _prepare_magic, "resolve": _resolve_magic_damage},
+	# StatusApplicationRules: 0x40aa80 status branches.
+	"native_magic_status": {"kind": "status", "channel": "magic", "area": true, "ready_key": "status", "hit_bonus_input": "roll_input",
+		"descriptor_error": _magic_status_descriptor_error, "prepare": _prepare_magic, "resolve": _resolve_status},
+	# SupportMagicRules.
+	"native_magic_support": {"kind": "support", "channel": "magic", "area": true, "ready_key": "support", "hit_bonus_input": "",
+		"descriptor_error": _magic_support_descriptor_error, "prepare": _prepare_support, "resolve": _resolve_support},
+	# StatMagicRules.
+	"native_magic_stat": {"kind": "stat", "channel": "magic", "area": true, "ready_key": "stat_effect", "hit_bonus_input": "",
+		"descriptor_error": _magic_stat_descriptor_error, "prepare": _prepare_stat, "resolve": _resolve_stat_magic},
+	# SpecialDamageRules.
+	"native_special_damage": {"kind": "damage", "channel": "special", "area": true, "ready_key": "special", "hit_bonus_input": "input",
+		"descriptor_error": _special_damage_descriptor_error, "prepare": _prepare_special_damage, "resolve": _resolve_special_damage},
+	# SpecialStatusRules.
+	"native_special_status": {"kind": "status", "channel": "special", "area": true, "ready_key": "status", "hit_bonus_input": "roll_input",
+		"descriptor_error": _special_status_descriptor_error, "prepare": _prepare_special_status, "resolve": _resolve_special_status},
+	# SupportMagicRules (channel1).
+	"native_special_support": {"kind": "support", "channel": "special", "area": true, "ready_key": "support", "hit_bonus_input": "",
+		"descriptor_error": _special_support_descriptor_error, "prepare": _prepare_support, "resolve": _resolve_support},
+	# StatMagicRules (channel1).
+	"native_special_stat": {"kind": "stat", "channel": "special", "area": true, "ready_key": "stat_effect", "hit_bonus_input": "",
+		"descriptor_error": _special_stat_descriptor_error, "prepare": _prepare_stat, "resolve": _resolve_stat_magic},
+	# SpecialUtilityRules.
+	"native_special_utility": {"kind": "utility", "channel": "special", "area": true, "ready_key": "utility", "hit_bonus_input": "input",
+		"subset": true, "caster_effects": true,
+		"descriptor_error": _special_utility_descriptor_error, "prepare": _prepare_utility, "resolve": _resolve_utility},
+	# PoisonArrowRules.
+	"native_special_poison": {"kind": "arrow", "channel": "special", "area": true, "ready_key": "arrow", "hit_bonus_input": "input",
+		"descriptor_error": _arrow_descriptor_error, "prepare": _prepare_arrow, "resolve": _resolve_arrow},
+	# RepeatedSpecialRules owns the cast; a lone prepare/resolve takes the special-damage path.
+	"native_special_sequence": {"kind": "sequence", "channel": "special", "area": false, "ready_key": "special", "hit_bonus_input": "input",
+		"descriptor_error": _sequence_descriptor_error, "prepare": _prepare_special_damage, "resolve": _resolve_special_damage,
+		"prepare_cast": Callable(RepeatedSpecialRules, "prepare"), "resolve_cast": Callable(RepeatedSpecialRules, "resolve")},
+}
+## A policy without a row never passes descriptor_error (function-mask 1 and effect-range gates, then
+## unsupported_skill_formula), so prepare/resolve never reach its special-damage fallback.
+static var UNLISTED := {"kind": "", "channel": "", "area": false, "ready_key": "special", "hit_bonus_input": "input",
+	"descriptor_error": _unlisted_descriptor_error, "prepare": _prepare_special_damage, "resolve": _resolve_special_damage}
+
+
+static func effect_for(policy: String) -> Dictionary:
+	return EFFECTS.get(policy, UNLISTED)
+
+
+## True when the policy's row is one of `kinds` (and on `channel` when given).
+static func is_kind(policy: String, kinds: Array, channel: String = "") -> bool:
+	var row := effect_for(policy)
+	return row["kind"] in kinds and (channel == "" or row["channel"] == channel)
+
+
+static func _effect_of(descriptor: Dictionary) -> Dictionary:
+	return effect_for(str(descriptor.get("damage_policy", "")))
 
 
 static func descriptor_error(skill_id: String, fields: Dictionary, book: Dictionary, targeting: Dictionary) -> String:
@@ -55,43 +127,74 @@ static func descriptor_error(skill_id: String, fields: Dictionary, book: Diction
 	var hit := SkillResourceRules._integer(fields.get("hit_ratio"), true)
 	if hit < 0 or hit > 100:
 		return "invalid_skill_hit_ratio"
-	var policy: String = entry.get("damage_policy", "")
-	if policy == "native_special_sequence": return RepeatedSpecialRules.definition_error(entry, fields)
-	if policy == "native_special_poison":
-		if skill_id != PoisonArrowRules.ID or entry["channel"] != "special" or entry.get("fields") != fields or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
-		return "" if SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]) == 9 else "unsupported_skill_function"
-	if policy == "native_magic_damage":
-		if entry["channel"] != "magic" or entry.get("magic_key") not in ["wind", "fire", "water", "earth", "mind", "other"] or entry.get("damage_bounds") != "native_triangular":
-			return "skill_identity_mismatch"
-		return "" if SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]) == 1 else "unsupported_skill_function"
-	if policy in ["native_magic_status", "native_magic_support", "native_magic_stat"]:
-		if entry["channel"] != "magic" or entry.get("damage_bounds") != "native_triangular" or entry.get("fields") != fields:
-			return "skill_identity_mismatch"
-		var mask := SkillTargetRules.function_mask(fields["function"], targeting["function_bits"])
-		if policy == "native_magic_support": return "" if SupportMagicRules.accepted(mask) else "unsupported_skill_formula"
-		var accepted: Array = StatusApplication.ACCEPTED_MASKS.filter(func(bit): return bit != 1) if policy == "native_magic_status" else [0x20, 0x40, 0x100, 0x4000]
-		return "" if mask in accepted else "unsupported_skill_formula"
-	if policy == "native_special_status": return _special_status_descriptor_error(entry, fields, targeting)
-	if policy == "native_special_support": return _special_support_descriptor_error(entry, fields, targeting)
-	if policy == "native_special_stat": return _special_stat_descriptor_error(entry, fields, targeting)
-	if policy == "native_special_utility": return _special_utility_descriptor_error(entry, fields, targeting)
-	var function_mask := SkillTargetRules.function_mask(fields["function"], targeting["function_bits"])
-	if function_mask != 1 and not (policy == "native_magic_status" and function_mask in [4, 5, 8, 17]):
+	var check: Callable = _effect_of(entry)["descriptor_error"]
+	return check.call(entry, fields, targeting, skill_id)
+
+
+static func _unlisted_descriptor_error(_entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
+	if SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]) != 1:
 		return "unsupported_skill_function"
-	if policy == "native_special_damage":
-		# Identity is the type/code pair already checked by descriptor_error; the live
-		# source fields may legitimately differ from the book copy (fixtures, refreshes).
-		if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
-		var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
-		if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
-		return ""
 	var effect: Dictionary = targeting["ranges"][fields["effect_range"]]
 	if int(effect["size"]) != 1 or int(effect["data"][0][0]) <= 0: return "unsupported_skill_effect_range"
 	return "unsupported_skill_formula"
 
 
+static func _sequence_descriptor_error(entry: Dictionary, fields: Dictionary, _targeting: Dictionary, _skill_id: String = "") -> String:
+	return RepeatedSpecialRules.definition_error(entry, fields)
+
+
+static func _arrow_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, skill_id: String = "") -> String:
+	if skill_id != PoisonArrowRules.ID or entry["channel"] != "special" or entry.get("fields") != fields or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
+	return "" if SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]) == 9 else "unsupported_skill_function"
+
+
+static func _magic_damage_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
+	if entry["channel"] != "magic" or entry.get("magic_key") not in ["wind", "fire", "water", "earth", "mind", "other"] or entry.get("damage_bounds") != "native_triangular":
+		return "skill_identity_mismatch"
+	return "" if SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]) == 1 else "unsupported_skill_function"
+
+
+## Magic status／support／stat share this identity gate; each then accepts its own function masks.
+static func _magic_identity_error(entry: Dictionary, fields: Dictionary) -> String:
+	if entry["channel"] != "magic" or entry.get("damage_bounds") != "native_triangular" or entry.get("fields") != fields:
+		return "skill_identity_mismatch"
+	return ""
+
+
+static func _magic_status_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
+	var error := _magic_identity_error(entry, fields)
+	if error != "": return error
+	var mask := SkillTargetRules.function_mask(fields["function"], targeting["function_bits"])
+	return "" if mask in StatusApplication.ACCEPTED_MASKS.filter(func(bit): return bit != 1) else "unsupported_skill_formula"
+
+
+static func _magic_support_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
+	var error := _magic_identity_error(entry, fields)
+	if error != "": return error
+	var mask := SkillTargetRules.function_mask(fields["function"], targeting["function_bits"])
+	return "" if SupportMagicRules.accepted(mask) else "unsupported_skill_formula"
+
+
+static func _magic_stat_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
+	var error := _magic_identity_error(entry, fields)
+	if error != "": return error
+	var mask := SkillTargetRules.function_mask(fields["function"], targeting["function_bits"])
+	return "" if mask in [0x20, 0x40, 0x100, 0x4000] else "unsupported_skill_formula"
+
+
+static func _special_damage_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
+	if SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]) != 1:
+		return "unsupported_skill_function"
+	# Identity is the type/code pair already checked by descriptor_error; the live
+	# source fields may legitimately differ from the book copy (fixtures, refreshes).
+	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
+	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
+	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
+	return ""
+
+
 ## 弱體箭 / 獸神怒號 (Attack+Weaken) and 影纏 (Paralysis): channel1 status branches of 0x40aa80.
-static func _special_status_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary) -> String:
+static func _special_status_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
 	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
@@ -99,7 +202,7 @@ static func _special_status_descriptor_error(entry: Dictionary, fields: Dictiona
 
 
 ## 萬息集氣法 (Heal) / 萬息降靈法 (HealMP) / 萬息臨界法 (Heal+HealMP) / 萬息秘孔術 (four cures): channel1 support.
-static func _special_support_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary) -> String:
+static func _special_support_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
 	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
@@ -107,7 +210,7 @@ static func _special_support_descriptor_error(entry: Dictionary, fields: Diction
 
 
 ## 千羽風靈壁 (DefUp) / 激怒 (AttUp) / 精神統一 (DefUp+AttUp): channel1 buffs on the shared stat applicator.
-static func _special_stat_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary) -> String:
+static func _special_stat_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
 	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
@@ -115,7 +218,7 @@ static func _special_stat_descriptor_error(entry: Dictionary, fields: Dictionary
 
 
 ## 天鳴覺醒 (ActiveAgain) / 獅子吼 (CancelActive) / 吸血劍 (Attack+StealHP): channel1 queue and drain effects.
-static func _special_utility_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary) -> String:
+static func _special_utility_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
 	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
@@ -158,32 +261,40 @@ static func prepare(caster: Dictionary, target: Dictionary, skill_id: String, fi
 	if SkillResourceRules._integer(target.get("hp")) <= 0:
 		return {"ok": false, "reason": "invalid_skill_target_hp"}
 	var descriptor: Dictionary = book["skills"][skill_id]
-	if descriptor["damage_policy"] == "native_special_utility":
-		var utility := SpecialUtilityRules.prepare(caster, target, fields, book, targeting, equipment, context)
-		if not utility["ok"]: return utility
-		return {"ok": true, "resource_payment": payment, "utility": utility}
-	if descriptor["damage_policy"] == "native_special_poison":
-		var arrow := PoisonArrowRules.prepare(caster, target, fields, book, equipment)
-		if not arrow["ok"]: return arrow
-		return {"ok": true, "resource_payment": payment, "arrow": arrow}
-	if descriptor["damage_policy"] in ["native_magic_stat", "native_special_stat"]:
-		var stat_effect := StatMagic.prepare(caster, target, fields, book, targeting, equipment, descriptor["channel"])
-		if not stat_effect["ok"]: return stat_effect
-		return {"ok": true, "resource_payment": payment, "stat_effect": stat_effect}
-	if descriptor["damage_policy"] in ["native_magic_support", "native_special_support"]:
-		var support := SupportMagicRules.prepare(caster, target, fields, book, targeting, equipment, descriptor["channel"])
-		if not support["ok"]: return support
-		return {"ok": true, "resource_payment": payment, "support": support}
-	if descriptor["damage_policy"] in ["native_magic_status", "native_magic_damage", "native_special_status"]:
-		var status: Dictionary
-		if descriptor["damage_policy"] == "native_special_status": status = SpecialStatusRules.prepare(caster, target, fields, book, targeting, equipment)
-		elif descriptor.get("magic_key") == "other": status = OtherMagicRules.prepare(caster, target, fields, book, targeting, equipment)
-		else: status = StatusApplication.prepare(caster, target, fields, book, targeting, equipment)
-		if not status["ok"]: return status
-		return {"ok": true, "resource_payment": payment, "status": status}
-	var special := Special.prepare(caster, target, fields, book, equipment)
-	if not special["ok"]: return special
-	return {"ok": true, "resource_payment": payment, "special": special}
+	var effect := _effect_of(descriptor)
+	var prepare_target: Callable = effect["prepare"]
+	var proposal: Dictionary = prepare_target.call(caster, target, descriptor, fields, book, targeting, equipment, context)
+	if not proposal["ok"]: return proposal
+	return {"ok": true, "resource_payment": payment, effect["ready_key"]: proposal}
+
+
+static func _prepare_utility(caster: Dictionary, target: Dictionary, _descriptor: Dictionary, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary, context: Dictionary) -> Dictionary:
+	return SpecialUtilityRules.prepare(caster, target, fields, book, targeting, equipment, context)
+
+
+static func _prepare_arrow(caster: Dictionary, target: Dictionary, _descriptor: Dictionary, fields: Dictionary, book: Dictionary, _targeting: Dictionary, equipment: Dictionary, _context: Dictionary) -> Dictionary:
+	return PoisonArrowRules.prepare(caster, target, fields, book, equipment)
+
+
+static func _prepare_stat(caster: Dictionary, target: Dictionary, descriptor: Dictionary, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary, _context: Dictionary) -> Dictionary:
+	return StatMagic.prepare(caster, target, fields, book, targeting, equipment, descriptor["channel"])
+
+
+static func _prepare_support(caster: Dictionary, target: Dictionary, descriptor: Dictionary, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary, _context: Dictionary) -> Dictionary:
+	return SupportMagicRules.prepare(caster, target, fields, book, targeting, equipment, descriptor["channel"])
+
+
+static func _prepare_special_status(caster: Dictionary, target: Dictionary, _descriptor: Dictionary, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary, _context: Dictionary) -> Dictionary:
+	return SpecialStatusRules.prepare(caster, target, fields, book, targeting, equipment)
+
+
+static func _prepare_magic(caster: Dictionary, target: Dictionary, descriptor: Dictionary, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary, _context: Dictionary) -> Dictionary:
+	if descriptor.get("magic_key") == "other": return OtherMagicRules.prepare(caster, target, fields, book, targeting, equipment)
+	return StatusApplication.prepare(caster, target, fields, book, targeting, equipment)
+
+
+static func _prepare_special_damage(caster: Dictionary, target: Dictionary, _descriptor: Dictionary, fields: Dictionary, book: Dictionary, _targeting: Dictionary, equipment: Dictionary, _context: Dictionary) -> Dictionary:
+	return Special.prepare(caster, target, fields, book, equipment)
 
 
 static func resolve(caster: Dictionary, target: Dictionary, skill_id: String, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary, origin: Vector2i, map_size: Vector2i, rng: Variant = null, context: Dictionary = {}) -> Dictionary:
@@ -199,24 +310,48 @@ static func resolve(caster: Dictionary, target: Dictionary, skill_id: String, fi
 		source = RandomNumberGenerator.new()
 		source.randomize()
 	var descriptor: Dictionary = book["skills"][skill_id]
-	if descriptor["damage_policy"] == "native_special_utility":
-		return _resolve_utility(caster, target, skill_id, descriptor, ready, source)
-	if descriptor["damage_policy"] in ["native_magic_stat", "native_special_stat"]:
-		return _resolve_stat_magic(caster, target, skill_id, descriptor, ready, equipment, source)
-	if descriptor["damage_policy"] in ["native_magic_support", "native_special_support"]:
-		return _resolve_support(caster, target, skill_id, descriptor, ready, source, equipment)
-	if descriptor["damage_policy"] in ["native_magic_status", "native_magic_damage", "native_special_poison", "native_special_status"]:
-		return _resolve_status(caster, target, skill_id, descriptor, ready, source, equipment)
-	return _resolve_special_damage(caster, target, skill_id, descriptor, ready, source)
+	var resolve_target: Callable = _effect_of(descriptor)["resolve"]
+	return resolve_target.call(caster, target, skill_id, descriptor, ready, source, equipment)
 
 
+## native_magic_status: 0x40aa80 status branches on the StatusApplicationRules proposal.
 static func _resolve_status(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant, equipment: Dictionary = {}) -> Dictionary:
-	var arrow: bool = descriptor["damage_policy"] == "native_special_poison"
-	var special_status: bool = descriptor["damage_policy"] == "native_special_status"
-	var resolved: Dictionary
-	if arrow: resolved = PoisonArrowRules.resolve(ready["arrow"], target, rng)
-	elif special_status: resolved = SpecialStatusRules.resolve(ready["status"], target, rng, equipment)
-	else: resolved = StatusApplication.resolve(ready["status"], target, rng, Callable(), equipment)
+	return _status_result(caster, target, skill_id, descriptor, ready, StatusApplication.resolve(ready["status"], target, rng, Callable(), equipment))
+
+
+## native_magic_damage: the same applicator; the receipt's hit is the 0x40a7b0 proc0 hit check.
+static func _resolve_magic_damage(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant, equipment: Dictionary = {}) -> Dictionary:
+	var result := _resolve_status(caster, target, skill_id, descriptor, ready, rng, equipment)
+	var receipt: Dictionary = result["receipt"]
+	receipt["hit"] = bool(receipt["native_damage_roll"]["hit_check_passed"])
+	receipt["formula_source"] = "0x40a7b0_proc0_and_0x40ab55_hp_cap"
+	return result
+
+
+## native_special_poison (毒箭).
+static func _resolve_arrow(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant, _equipment: Dictionary = {}) -> Dictionary:
+	var resolved: Dictionary = PoisonArrowRules.resolve(ready["arrow"], target, rng)
+	var result := _status_result(caster, target, skill_id, descriptor, ready, resolved)
+	var receipt: Dictionary = result["receipt"]
+	receipt.erase("magic_key")
+	receipt.erase("magic_name")
+	receipt.merge({"special_key": "poison_arrow", "skill_name": descriptor["name"], "native_poison_rolls": resolved["native_poison_rolls"],
+		"formula_source": "0x40a7b0_channel1_and_0x40aa80_to_0x40b831"}, true)
+	return result
+
+
+## native_special_status: channel1 status branches.
+static func _resolve_special_status(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant, equipment: Dictionary = {}) -> Dictionary:
+	var result := _status_result(caster, target, skill_id, descriptor, ready, SpecialStatusRules.resolve(ready["status"], target, rng, equipment))
+	var receipt: Dictionary = result["receipt"]
+	receipt.erase("magic_key")
+	receipt.erase("magic_name")
+	receipt.merge({"special_key": "special_status", "skill_name": descriptor["name"],
+		"formula_source": "0x40aa80_channel1_status_branches_and_0x40a7b0_channel1"}, true)
+	return result
+
+
+static func _status_result(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, resolved: Dictionary) -> Dictionary:
 	var payment: Dictionary = ready["resource_payment"]
 	var hit := int(resolved["damage"]) > 0
 	for effect in resolved["effects"]:
@@ -229,26 +364,13 @@ static func _resolve_status(caster: Dictionary, target: Dictionary, skill_id: St
 		"native_damage_roll": resolved["native_damage_roll"],
 		"attacker_before": Combat.receipt_vitals(caster), "defender_before": Combat.receipt_vitals(target),
 		"formula_source": "native_magic_roll_and_status_applicator"}
-	if arrow:
-		receipt.erase("magic_key")
-		receipt.erase("magic_name")
-		receipt.merge({"special_key": "poison_arrow", "skill_name": descriptor["name"], "native_poison_rolls": resolved["native_poison_rolls"],
-			"formula_source": "0x40a7b0_channel1_and_0x40aa80_to_0x40b831"}, true)
-	if special_status:
-		receipt.erase("magic_key")
-		receipt.erase("magic_name")
-		receipt.merge({"special_key": "special_status", "skill_name": descriptor["name"],
-			"formula_source": "0x40aa80_channel1_status_branches_and_0x40a7b0_channel1"}, true)
-	if descriptor["damage_policy"] == "native_magic_damage":
-		receipt["hit"] = bool(resolved["native_damage_roll"]["hit_check_passed"])
-		receipt["formula_source"] = "0x40a7b0_proc0_and_0x40ab55_hp_cap"
 	return {"ok": true, "caster_changes": {payment["resource"]: payment["after"], "hit_bonus_accum": resolved["hit_bonus_after"]},
 		"target_changes": resolved["target_changes"], "receipt": receipt}
 
 
 ## One special-damage target (氣刃斬 alone, or each unit inside an area special's
 ## effect footprint): original 0x40a7b0 channel1/proc0 roll and capped HP application.
-static func _resolve_special_damage(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant) -> Dictionary:
+static func _resolve_special_damage(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant, _equipment: Dictionary = {}) -> Dictionary:
 	var rolled := Special.roll(ready["special"]["input"], rng)
 	var hp_before := int(target["hp"])
 	var damage := mini(hp_before, int(rolled["value"]))
@@ -266,7 +388,7 @@ static func _resolve_special_damage(caster: Dictionary, target: Dictionary, skil
 		"target_changes": {"hp": hp_after, "defeated": hp_after == 0}, "receipt": receipt}
 
 
-static func _resolve_utility(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant) -> Dictionary:
+static func _resolve_utility(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant, _equipment: Dictionary = {}) -> Dictionary:
 	var resolved := SpecialUtilityRules.resolve(ready["utility"], caster, target, rng)
 	var payment: Dictionary = ready["resource_payment"]
 	var hp_after: int = int(resolved["target_changes"].get("hp", target["hp"]))
@@ -305,7 +427,7 @@ static func _resolve_support(caster: Dictionary, target: Dictionary, skill_id: S
 		"target_changes": resolved["target_changes"], "receipt": receipt}
 
 
-static func _resolve_stat_magic(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, equipment: Dictionary, rng: Variant) -> Dictionary:
+static func _resolve_stat_magic(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant, equipment: Dictionary = {}) -> Dictionary:
 	var result := StatMagic.resolve(ready["stat_effect"], target, int(caster["hit_bonus_accum"]), equipment, rng)
 	var payment: Dictionary = ready["resource_payment"]
 	var before := Combat.receipt_vitals(target)
@@ -346,9 +468,12 @@ static func prepare_cast(caster: Dictionary, center: Dictionary, units: Array, s
 	# `range_terrain` (RangePropagationRules.player_skill_terrain): the original 0x4000／occupant
 	# propagation of the cast range (and of the area when it carries `area_modes`).
 	var terrain: Dictionary = context.get("range_terrain", {})
-	if book["skills"][skill_id]["damage_policy"] == "native_special_sequence":
-		return RepeatedSpecialRules.prepare(caster, center, units, fields, book, targeting, equipment, origin, map_size, payment, center_coord, terrain)
-	if book["skills"][skill_id]["damage_policy"] not in AREA_POLICIES:
+	var descriptor: Dictionary = book["skills"][skill_id]
+	var effect := _effect_of(descriptor)
+	if effect.has("prepare_cast"):
+		var whole: Callable = effect["prepare_cast"]
+		return whole.call(caster, center, units, fields, book, targeting, equipment, origin, map_size, payment, center_coord, terrain)
+	if not effect["area"]:
 		if center_coord != null and (not center_coord is Vector2i or not SkillTargetRules.Footprint.contains(center,center_coord)): return {"ok": false, "reason": "unsupported_skill_center"}
 		var primary := prepare(caster, center, skill_id, fields, book, targeting, equipment, origin, map_size, context)
 		if not primary["ok"]: return primary
@@ -363,12 +488,9 @@ static func prepare_cast(caster: Dictionary, center: Dictionary, units: Array, s
 	var targets: Array = []
 	var prepared: Array = []
 	var seen := {}
-	var support: bool = book["skills"][skill_id]["damage_policy"] in ["native_magic_support", "native_special_support"]
-	var stat: bool = book["skills"][skill_id]["damage_policy"] in ["native_magic_stat", "native_special_stat"]
-	var arrow: bool = book["skills"][skill_id]["damage_policy"] == "native_special_poison"
-	var special_damage: bool = book["skills"][skill_id]["damage_policy"] == "native_special_damage"
-	var special_status: bool = book["skills"][skill_id]["damage_policy"] == "native_special_status"
-	var utility: bool = book["skills"][skill_id]["damage_policy"] == "native_special_utility"
+	var prepare_target: Callable = effect["prepare"]
+	var ready_key: String = effect["ready_key"]
+	var subset: bool = effect.get("subset", false)
 	var useful := false
 	# Stable roster order is the current adapter policy; the original engine's
 	# cross-object visitation order is not inferred from RANGE occupancy values.
@@ -384,23 +506,15 @@ static func prepare_cast(caster: Dictionary, center: Dictionary, units: Array, s
 		seen[id] = true
 		var exp_error := ExperienceRules.actor_error(unit)
 		if exp_error != "": return {"ok": false, "reason": exp_error}
-		var status: Dictionary
-		if arrow: status = PoisonArrowRules.prepare(caster, unit, fields, book, equipment)
-		elif stat: status = StatMagic.prepare(caster, unit, fields, book, targeting, equipment, book["skills"][skill_id]["channel"])
-		elif support: status = SupportMagicRules.prepare(caster, unit, fields, book, targeting, equipment, book["skills"][skill_id]["channel"])
-		elif special_damage: status = Special.prepare(caster, unit, fields, book, equipment)
-		elif special_status: status = SpecialStatusRules.prepare(caster, unit, fields, book, targeting, equipment)
-		elif utility: status = SpecialUtilityRules.prepare(caster, unit, fields, book, targeting, equipment, context)
-		elif book["skills"][skill_id].get("magic_key") == "other": status = OtherMagicRules.prepare(caster, unit, fields, book, targeting, equipment)
-		else: status = StatusApplication.prepare(caster, unit, fields, book, targeting, equipment)
+		var status: Dictionary = prepare_target.call(caster, unit, descriptor, fields, book, targeting, equipment, context)
 		if not status["ok"]: return status
 		useful = useful or bool(status.get("useful", true))
-		if utility and not bool(status["useful"]): continue # 0x4075a0/0x407550 would return 0 for this unit
+		if subset and not bool(status["useful"]): continue # 0x4075a0/0x407550 would return 0 for this unit
 		targets.append(unit)
-		prepared.append({"ok": true, "resource_payment": payment, ("arrow" if arrow else "stat_effect" if stat else "support" if support else "special" if special_damage else "utility" if utility else "status"): status})
+		prepared.append({"ok": true, "resource_payment": payment, ready_key: status})
 	if not seen.has(str(center["id"])): return {"ok": false, "reason": "missing_skill_center"}
 	if not useful: return {"ok": false, "reason": "skill_has_no_effect"}
-	if utility and not targets.any(func(unit): return unit["id"] == center["id"]): return {"ok": false, "reason": "skill_has_no_effect"}
+	if subset and not targets.any(func(unit): return unit["id"] == center["id"]): return {"ok": false, "reason": "skill_has_no_effect"}
 	return {"ok": true, "targets": targets, "prepared": prepared, "cast_center": cast_center}
 
 
@@ -411,9 +525,12 @@ static func resolve_cast(caster: Dictionary, center: Dictionary, units: Array, s
 	if source == null:
 		source = RandomNumberGenerator.new()
 		source.randomize()
-	if book["skills"][skill_id]["damage_policy"] == "native_special_sequence":
-		return RepeatedSpecialRules.resolve(caster, ready, book["skills"][skill_id], source)
-	if book["skills"][skill_id]["damage_policy"] not in AREA_POLICIES:
+	var descriptor: Dictionary = book["skills"][skill_id]
+	var effect := _effect_of(descriptor)
+	if effect.has("resolve_cast"):
+		var whole: Callable = effect["resolve_cast"]
+		return whole.call(caster, ready, descriptor, source)
+	if not effect["area"]:
 		var one := resolve(caster, center, skill_id, fields, book, targeting, equipment, origin, map_size, source, context)
 		var basis := ExperienceRules.record(caster, center, one["receipt"], source)
 		one["receipt"]["experience_basis"] = basis
@@ -425,11 +542,10 @@ static func resolve_cast(caster: Dictionary, center: Dictionary, units: Array, s
 	var receipts: Array = []
 	var primary: Dictionary = {}
 	var payment: Dictionary = ready["prepared"][0]["resource_payment"]
-	var support: bool = book["skills"][skill_id]["damage_policy"] in ["native_magic_support", "native_special_support"]
-	var stat: bool = book["skills"][skill_id]["damage_policy"] in ["native_magic_stat", "native_special_stat"]
-	var arrow: bool = book["skills"][skill_id]["damage_policy"] == "native_special_poison"
-	var special_damage: bool = book["skills"][skill_id]["damage_policy"] == "native_special_damage"
-	var utility: bool = book["skills"][skill_id]["damage_policy"] == "native_special_utility"
+	var resolve_target: Callable = effect["resolve"]
+	var ready_key: String = effect["ready_key"]
+	var hit_input: String = effect["hit_bonus_input"]
+	var caster_effects: bool = effect.get("caster_effects", false)
 	var turn_effects: Array = []
 	var gold_effects: Array = []
 	var stolen_items: Array = []
@@ -437,27 +553,15 @@ static func resolve_cast(caster: Dictionary, center: Dictionary, units: Array, s
 	for index in range(ready["targets"].size()):
 		var target: Dictionary = ready["targets"][index]
 		var prepared: Dictionary = ready["prepared"][index].duplicate(true)
-		var result: Dictionary
-		if stat:
-			result = _resolve_stat_magic(working_caster, target, skill_id, book["skills"][skill_id], prepared, equipment, source)
-		elif support:
-			result = _resolve_support(working_caster, target, skill_id, book["skills"][skill_id], prepared, source, equipment)
-		elif special_damage:
-			# Like the status/arrow rolls: a miss on an earlier footprint target raises
-			# the compensation the next target's hit check reads within this cast.
-			prepared["special"]["input"]["hit_bonus"] = working_caster["hit_bonus_accum"]
-			result = _resolve_special_damage(working_caster, target, skill_id, book["skills"][skill_id], prepared, source)
-		elif utility:
-			prepared["utility"]["input"]["hit_bonus"] = working_caster["hit_bonus_accum"]
-			result = _resolve_utility(working_caster, target, skill_id, book["skills"][skill_id], prepared, source)
+		# A miss on an earlier footprint target raises the compensation the next
+		# target's hit check reads within this cast.
+		if hit_input != "": prepared[ready_key][hit_input]["hit_bonus"] = working_caster["hit_bonus_accum"]
+		var result: Dictionary = resolve_target.call(working_caster, target, skill_id, descriptor, prepared, source, equipment)
+		if caster_effects:
 			if result["caster_changes"].has("hp"): working_caster["hp"] = result["caster_changes"]["hp"]
 			turn_effects.append_array(result["turn_effects"])
 			gold_effects.append_array(result["gold_effects"])
 			stolen_items.append_array(result["receipt"]["stolen_items"])
-		else:
-			if arrow: prepared["arrow"]["input"]["hit_bonus"] = working_caster["hit_bonus_accum"]
-			else: prepared["status"]["roll_input"]["hit_bonus"] = working_caster["hit_bonus_accum"]
-			result = _resolve_status(working_caster, target, skill_id, book["skills"][skill_id], prepared, source, equipment)
 		working_caster["hit_bonus_accum"] = result["caster_changes"]["hit_bonus_accum"]
 		# Native effect -> this target's EXP -> next target. No growth or extra
 		# MP debit can change a later target's caster profile within this cast.
@@ -480,7 +584,7 @@ static func resolve_cast(caster: Dictionary, center: Dictionary, units: Array, s
 		if change["id"] == center["id"]: center_changes = change["changes"]
 	var caster_changes := {payment["resource"]: payment["after"], "hit_bonus_accum": working_caster["hit_bonus_accum"],
 		"kill_chain_word": working_caster["kill_chain_word"], "kill_count": working_caster["kill_count"]}
-	if utility:
+	if caster_effects:
 		if int(working_caster["hp"]) != int(caster["hp"]): caster_changes["hp"] = working_caster["hp"]
 		primary["turn_effects"] = turn_effects
 		primary["gold_effects"] = gold_effects
