@@ -11,6 +11,8 @@ const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
+const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 var failures: Array[String] = []
 
 
@@ -41,9 +43,9 @@ func dialogue_contracts() -> void:
 	var text := "首行\n第二行\n第三行\n第四行\n第五行\n第六行\n末行。"
 	dialogue.show_message("long", "雷歐納德", text, "001")
 	check(dialogue.body_label.get_line_count() == 7 and dialogue.row_count() == 8, "the source's hard breaks are the body rows, under the name row")
-	check(dialogue.window_rows() == PackedStringArray(["雷歐納德：", "首行", "第二行", "第三行"]), "the first page is the name row and three body rows")
+	check(RuntimeReadback.window_rows(dialogue) == PackedStringArray(["雷歐納德：", "首行", "第二行", "第三行"]), "the first page is the name row and three body rows")
 	check(dialogue.advance_page(), "a long message offers another page")
-	check(dialogue.top_row == 4 and dialogue.window_rows() == PackedStringArray(["第四行", "第五行", "第六行", "末行。"]), "a confirm scrolls four rows up: the name scrolls away, four body rows fill the window")
+	check(dialogue.top_row == 4 and RuntimeReadback.window_rows(dialogue) == PackedStringArray(["第四行", "第五行", "第六行", "末行。"]), "a confirm scrolls four rows up: the name scrolls away, four body rows fill the window")
 	dialogue.show_message("long", "雷歐納德", text, "001")
 	check(dialogue.top_row == 4, "per-frame refresh cannot reset a reader's current page")
 	check(not dialogue.advance_page(), "the last page is retained until its caller accepts the next message")
@@ -58,15 +60,15 @@ func dialogue_contracts() -> void:
 	# Message 369 on the 2026-09-24 original recording (398.6–400.6 s): 19-glyph rows with 「！」
 	# opening row 2, then a four-row scroll to body rows 4–7.
 	dialogue.show_message("369", "雷歐納德", messages["369"], "001")
-	check(dialogue.window_rows() == PackedStringArray(["雷歐納德：", "..............原來..............弟兄們", "！你們也聽到了，我們已經被捨棄了，沒有", "人會來幫助我們，也沒有人會來解救我們。"]), "369 breaks into rows exactly as the recording shows: %s" % str(dialogue.window_rows()))
-	check(dialogue.advance_page() and dialogue.window_rows() == PackedStringArray(["看看地上，這些因此而犧牲的同伴，為了他", "們，也為了我們自己，我們絕不能就此放棄", "，現在只有一條路可走，想活命的就跟著我", "!!"]), "369's confirm scrolls four rows to the recording's last page: %s" % str(dialogue.window_rows()))
+	check(RuntimeReadback.window_rows(dialogue) == PackedStringArray(["雷歐納德：", "..............原來..............弟兄們", "！你們也聽到了，我們已經被捨棄了，沒有", "人會來幫助我們，也沒有人會來解救我們。"]), "369 breaks into rows exactly as the recording shows: %s" % str(RuntimeReadback.window_rows(dialogue)))
+	check(dialogue.advance_page() and RuntimeReadback.window_rows(dialogue) == PackedStringArray(["看看地上，這些因此而犧牲的同伴，為了他", "們，也為了我們自己，我們絕不能就此放棄", "，現在只有一條路可走，想活命的就跟著我", "!!"]), "369's confirm scrolls four rows to the recording's last page: %s" % str(RuntimeReadback.window_rows(dialogue)))
 	check(not dialogue.advance_page(), "369 has two pages")
 	for id in ["363", "369", "370"]:
 		var body: String = messages[id]
 		dialogue.show_message(id, "雷歐納德", body, "001")
 		var seen := {}
 		for _guard in range(20):
-			check(dialogue.window_rows().size() <= dialogue.WINDOW_ROWS, "source speech stays inside the four-row window")
+			check(RuntimeReadback.window_rows(dialogue).size() <= dialogue.WINDOW_ROWS, "source speech stays inside the four-row window")
 			for row in range(dialogue.top_row, mini(dialogue.row_count(), dialogue.top_row + dialogue.WINDOW_ROWS)):
 				seen[row] = true
 			var before: int = dialogue.top_row
@@ -76,9 +78,9 @@ func dialogue_contracts() -> void:
 		dialogue.clear_message()
 	# A shorter scroll keeps earlier rows in view (the original scrolls only the rows left).
 	dialogue.show_message("short", "雷歐納德", "一\n二\n三\n四\n五", "001")
-	check(dialogue.advance_page() and dialogue.window_rows() == PackedStringArray(["二", "三", "四", "五"]), "two rows left: the scroll moves two rows and 二／三 stay in view")
+	check(dialogue.advance_page() and RuntimeReadback.window_rows(dialogue) == PackedStringArray(["二", "三", "四", "五"]), "two rows left: the scroll moves two rows and 二／三 stay in view")
 	dialogue.show_narration("narr", "一\n二\n三\n四\n五")
-	check(dialogue.window_rows() == PackedStringArray(["一", "二", "三", "四"]) and not dialogue.speaker_label.visible, "narration has no name row: four body rows in view")
+	check(RuntimeReadback.window_rows(dialogue) == PackedStringArray(["一", "二", "三", "四"]) and not dialogue.speaker_label.visible, "narration has no name row: four body rows in view")
 	dialogue.clear_message()
 	check(not dialogue.visible and dialogue.body_label.text == "", "closing removes stale dialogue content")
 	# Board placement (dialogue handler 0x414280 init): a cast member's line sits at (144,320),
@@ -151,22 +153,22 @@ func dialogue_contracts() -> void:
 	root.add_child(speaker_b)
 	dialogue.set_speaker_actor(speaker_a)
 	dialogue.show_message("spk1", "雷歐納德", "首行", "001")
-	check(speaker_a.highlight_kind() == "speaker", "the speaker is lit while its message is up")
+	check(RuntimeReadback.highlight_kind(speaker_a) == "speaker", "the speaker is lit while its message is up")
 	dialogue.show_message("spk1", "雷歐納德", "首行", "001")
-	check(speaker_a.highlight_kind() == "speaker", "a per-frame refresh of the same message keeps the speaker lit")
+	check(RuntimeReadback.highlight_kind(speaker_a) == "speaker", "a per-frame refresh of the same message keeps the speaker lit")
 	dialogue.set_speaker_actor(speaker_b)
 	dialogue.show_message("spk2", "拉爾斯帝國兵", "報告。", "021")
-	check(speaker_a.highlight_kind() == "" and speaker_b.highlight_kind() == "speaker", "the light moves with the speaker change")
+	check(RuntimeReadback.highlight_kind(speaker_a) == "" and RuntimeReadback.highlight_kind(speaker_b) == "speaker", "the light moves with the speaker change")
 	dialogue.show_narration("spk3", "旁白。")
-	check(speaker_b.highlight_kind() == "", "narration has no speaker to light")
+	check(RuntimeReadback.highlight_kind(speaker_b) == "", "narration has no speaker to light")
 	dialogue.set_speaker_actor(speaker_a)
 	dialogue.show_message("spk4", "雷歐納德", "首行", "001")
 	dialogue.clear_message()
-	check(speaker_a.highlight_kind() == "", "closing the board releases the speaker")
+	check(RuntimeReadback.highlight_kind(speaker_a) == "", "closing the board releases the speaker")
 	var sprite: Sprite2D = speaker_a.get_node("Sprite2D")
 	speaker_a.set_highlight("target", true)
 	speaker_a.set_highlight("speaker", true)
-	check(speaker_a.highlight_kind() == "speaker", "speaker outranks target (one highlight at a time)")
+	check(RuntimeReadback.highlight_kind(speaker_a) == "speaker", "speaker outranks target (one highlight at a time)")
 	var low: Color = sprite.self_modulate
 	speaker_a._process(Actor.HIGHLIGHTS["speaker"]["period"] / 2.0)
 	var high: Color = sprite.self_modulate
@@ -174,9 +176,9 @@ func dialogue_contracts() -> void:
 	speaker_a._process(Actor.HIGHLIGHTS["speaker"]["period"] / 2.0)
 	check(is_equal_approx(sprite.self_modulate.b, low.b), "and back within one period: a periodic pulse")
 	speaker_a.set_highlight("speaker", false)
-	check(speaker_a.highlight_kind() == "target" and sprite.self_modulate.r > 1.0, "releasing the speaker reveals the target tint beneath")
+	check(RuntimeReadback.highlight_kind(speaker_a) == "target" and sprite.self_modulate.r > 1.0, "releasing the speaker reveals the target tint beneath")
 	speaker_a.clear_highlight()
-	check(speaker_a.highlight_kind() == "" and sprite.self_modulate == Color.WHITE, "clearing restores the untinted sprite")
+	check(RuntimeReadback.highlight_kind(speaker_a) == "" and sprite.self_modulate == Color.WHITE, "clearing restores the untinted sprite")
 	speaker_a.free()
 	speaker_b.free()
 	dialogue.free()
@@ -277,7 +279,7 @@ func run() -> void:
 				guard += 1
 				if not cutin.busy():
 					break
-				var phase := cutin.Timing.phase_at(schedule, cutin.elapsed)
+				var phase := RulesReadback.phase_at(schedule, cutin.elapsed)
 				counts[phase] += 1
 				if phase == "opening":
 					var zoom_stage: bool = cutin.elapsed < cutin.OriginalTick.seconds(cutin.Timing.OPENING_ZOOM_TICKS)
@@ -518,7 +520,7 @@ func skill_effect_contracts() -> void:
 				var tick: int = frames - lead_ticks + (int(cutin.skill_effects.EMPTY_ATTACK_LEAD_TICKS) if bool(timeline["empty_attack"]) else 0)  # the script's own clock, one tick per 16 ms step
 				if frames < lead_ticks and (cutin.scenery.visible or cutin.vitals.visible or cutin.stage.size != Vector2(640, 480) or not cutin.attacker_sprite.visible or not cutin.attacker_sprite.texture.resource_path.ends_with("001/special-0.png") or cutin.result.visible): lead_shot = false
 				if tick < int(timeline["result_tick"]) and cutin.result.visible: untitled_before_result = false
-				if tick > int(timeline["result_tick"]) and cutin.result.visible and cutin.result.position.y == 264 and cutin.result_text() == ("9" if hit else BattleCombatCutin.MISS_TEXT): result_shown = true
+				if tick > int(timeline["result_tick"]) and cutin.result.visible and cutin.result.position.y == 264 and RuntimeReadback.result_text(cutin) == ("9" if hit else BattleCombatCutin.MISS_TEXT): result_shown = true
 				if cutin.skill_effects.sprites.any(func(sprite): return sprite.visible): objects_seen = true
 			var expected_frames: int = int(timeline["complete_tick"]) + lead_ticks - (int(cutin.skill_effects.EMPTY_ATTACK_LEAD_TICKS) if bool(timeline["empty_attack"]) else 0)
 			check(lead_ticks == 139 and lead_shot, "%s hit=%s opens with 001's 139-tick cast lead: banner P001_201 over the map shot, no backdrop or vitals (%s)" % [skill_id, str(hit), str(lead_shot)])
@@ -609,7 +611,7 @@ func skill_effect_contracts() -> void:
 	var heal_result := ""
 	while cutin.busy():
 		cutin._process(1.0 / 60.0)
-		if cutin.busy() and cutin.result.position.y == 264: heal_result = cutin.result_text()
+		if cutin.busy() and cutin.result.position.y == 264: heal_result = RuntimeReadback.result_text(cutin)
 	check(heal_result == "27", "the scripted special heal cut-in shows the healed amount alone at aniShowHitResult, no skill-name head or HP suffix (UI6) (%s)" % heal_result)
 	# Stat-buff specials (千羽風靈壁／激怒／精神統一) carry damage 0 and stat_effects: 0x404643 shows no
 	# number for a zero HP／MP change, so the line names each buff (power · turns) as the map does.

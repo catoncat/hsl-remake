@@ -148,6 +148,7 @@ static func load_memoir(slot: int) -> Dictionary:
 	return load_progress(memoir_path(slot))
 
 
+## test hook
 static func clear_memoir(slot: int) -> void:
 	clear_progress(memoir_path(slot))
 

@@ -8,6 +8,7 @@ extends SceneTree
 ## (visual review input, not parity proof; the shop compares with original_world_town
 ## frames 08–14).
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/town-review/"
 var scene: Node
 var failures: Array[String] = []
@@ -55,7 +56,7 @@ func run() -> void:
 	await wait_for(func(): return not bool(map.summary().get("reveal_busy", false)) and int(map.summary().get("revealing_track_count", 0)) == 0, 3.0)
 	await create_timer(0.3).timeout
 	# Click the current point (歐姆村) to enter the town.
-	var home: Vector2 = scene.logical_to_viewport_position(scene.world_to_logical_position(Vector2(910, 527)))
+	var home: Vector2 = RuntimeReadback.logical_to_viewport_position(scene, scene.world_to_logical_position(Vector2(910, 527)))
 	await move_mouse(home)
 	await click(home)
 	await wait_for(func(): return map.town_runtime != null)

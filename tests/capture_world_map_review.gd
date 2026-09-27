@@ -4,6 +4,7 @@ extends SceneTree
 ## track 1 to 戈爾山道 into the level-2 battle. Output: ignored/world-map-review/*.png + manifest.json
 ## (visual review input, not parity proof — no original big-map frames exist).
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/world-map-review/"
 var scene: Node
 var failures: Array[String] = []
@@ -49,7 +50,7 @@ func run() -> void:
 	check(int(map.summary().get("completion_percent", 0)) == 4, "the status bar reads 完成度 4%")
 	await shot("01-ohm-village-start")
 	# 歐姆村 first: the town screen (TownBG01 beside its menu) opens on a click; Escape leaves it.
-	var home: Vector2 = scene.logical_to_viewport_position(scene.world_to_logical_position(Vector2(910, 527)))
+	var home: Vector2 = RuntimeReadback.logical_to_viewport_position(scene, scene.world_to_logical_position(Vector2(910, 527)))
 	await move_mouse(home)
 	await click(home)
 	await create_timer(0.3).timeout
@@ -71,7 +72,7 @@ func run() -> void:
 	await move_mouse(Vector2(320, 240) * root.size.x / 640.0)
 	await create_timer(0.3).timeout
 	# Hover 戈爾山道 (point 2 at map (862,474)) so its label shows, then click it.
-	var target: Vector2 = scene.logical_to_viewport_position(scene.world_to_logical_position(Vector2(862, 474)))
+	var target: Vector2 = RuntimeReadback.logical_to_viewport_position(scene, scene.world_to_logical_position(Vector2(862, 474)))
 	await move_mouse(target)
 	await shot("02-hover-gorl-pass")
 	# The arrival may reload the scene before the travelling shot: keep the map's id first.

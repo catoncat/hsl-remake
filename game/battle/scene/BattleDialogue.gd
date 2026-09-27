@@ -392,15 +392,6 @@ func row_count() -> int:
 	return (1 if _name_row else 0) + body_label.get_line_count()
 
 
-## The rows in view on the current page (the name row as its label text).
-func window_rows() -> PackedStringArray:
-	var rows := PackedStringArray()
-	if _name_row:
-		rows.append(speaker_label.text)
-	rows.append_array(body_label.text.split("\n"))
-	return rows.slice(top_row, top_row + WINDOW_ROWS)
-
-
 ## A confirm: scroll the next rows up — as many as are left below the window, at most
 ## SCROLL_ROWS — or false on the last page. Earlier rows stay in view when fewer than
 ## four scroll in, as in the original.

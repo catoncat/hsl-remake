@@ -9,11 +9,11 @@ extends Node2D
 ## provenance:
 ##   layout: resource-derived content/imported/hsl/shared/range_cells/manifest.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
-##   layout: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured
+##   layout: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#证据
 ##     (border pixels and averaged fill match the sampled original frame)
 ##   layout: remake-invented (add_marked_cells: the caller-styled outlined cells of the skill footprint preview)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
-##   timing: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured
+##   timing: runtime-measured docs/evidence_packets/static_reverse/original_range_cells.md#证据
 ##     (pulse counter 0x4c1a7c walks the 17-value triangle live)
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")

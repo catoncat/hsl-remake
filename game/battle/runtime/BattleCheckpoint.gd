@@ -127,6 +127,30 @@ static func validate(snapshot: Variant, current: Dictionary) -> String:
 	var expected := configuration(current)
 	if expected == "" or snapshot.get("configuration") != expected: return "incompatible_save_configuration"
 	var loop := restored(saved, current)
+	var shape_error := _loop_shape_error(loop)
+	if shape_error != "": return shape_error
+	var ids: Array = []
+	var actor_error := _actors_error(loop, ids)
+	if actor_error != "": return actor_error
+	var reward_error := BattlePlayLoop.reward_input_error(loop)
+	for receipt in [loop.get(LoopKeys.LAST_ATTACK, {}), loop.get(LoopKeys.LAST_COMBAT, {})]:
+		var sequence_error := BattlePlayLoop.SkillResolutionRules.RepeatedSpecialRules.receipt_error(receipt)
+		if sequence_error != "": return sequence_error
+		var stat_error := BattlePlayLoop.SkillResolutionRules.StatMagic.receipt_error(receipt,loop[LoopKeys.SKILL_BOOK])
+		if stat_error != "": return stat_error
+	if not ids.has(loop.get("player_unit_id")): return "invalid_saved_primary_actor"
+	for known_id in loop[LoopKeys.KNOWN_UNIT_IDS]:
+		if not known_id is String or not ids.has(known_id) or loop[LoopKeys.KNOWN_UNIT_IDS].count(known_id) != 1: return "invalid_saved_known_units"
+	if reward_error != "": return reward_error
+	var queue_error := _queue_error(loop, ids)
+	if queue_error != "": return queue_error
+	var settlement_error := _settlement_error(loop, ids)
+	if settlement_error != "": return settlement_error
+	return _view_error(loop, view, ids)
+
+
+## The restored loop's schema, containers, boundary, counters, random streams and action flags.
+static func _loop_shape_error(loop: Dictionary) -> String:
 	if loop.get("schema") != "hsl_first_scene_play_loop.v1" or loop.get("scenario_ok") != true: return "invalid_saved_battle"
 	for key in ["turn_queue", "command_menu", "give_session", "settlement"]:
 		if not loop.get(key) is Dictionary: return "missing_saved_dictionary"
@@ -146,7 +170,11 @@ static func validate(snapshot: Variant, current: Dictionary) -> String:
 	if not loop.get("action_attacker_id", "") is String: return "invalid_saved_action"
 	if not loop.get(LoopKeys.PENDING_MOVE_FROM) is Vector2i or not loop.get(LoopKeys.SELECTED_UNIT_ID) is String: return "invalid_saved_action"
 	if BattleOutcome.error(loop.get(LoopKeys.BATTLE_OUTCOME)) != "": return "invalid_saved_outcome"
-	var ids: Array = []
+	return ""
+
+
+## Every saved actor in roster order (identity, vitals, rule inputs, placement); fills `ids`.
+static func _actors_error(loop: Dictionary, ids: Array) -> String:
 	for actor in loop[LoopKeys.UNITS]:
 		if not actor is Dictionary or not actor.get("id") is String or actor["id"] == "" or ids.has(actor["id"]): return "invalid_saved_identity"
 		ids.append(actor["id"])
@@ -170,16 +198,11 @@ static func validate(snapshot: Variant, current: Dictionary) -> String:
 		if actor.has("growth_profile") and BattlePlayLoop.ProgressionRules.refresh_input_error(actor, loop["equipment_items"]) != "": return "invalid_saved_growth"
 		var learning_error := BattlePlayLoop.ProgressionRules.Learning.input_error(actor, loop[LoopKeys.SKILL_BOOK].get("learning", {}))
 		if learning_error != "": return learning_error
-	var reward_error := BattlePlayLoop.reward_input_error(loop)
-	for receipt in [loop.get(LoopKeys.LAST_ATTACK, {}), loop.get(LoopKeys.LAST_COMBAT, {})]:
-		var sequence_error := BattlePlayLoop.SkillResolutionRules.RepeatedSpecialRules.receipt_error(receipt)
-		if sequence_error != "": return sequence_error
-		var stat_error := BattlePlayLoop.SkillResolutionRules.StatMagic.receipt_error(receipt,loop[LoopKeys.SKILL_BOOK])
-		if stat_error != "": return stat_error
-	if not ids.has(loop.get("player_unit_id")): return "invalid_saved_primary_actor"
-	for known_id in loop[LoopKeys.KNOWN_UNIT_IDS]:
-		if not known_id is String or not ids.has(known_id) or loop[LoopKeys.KNOWN_UNIT_IDS].count(known_id) != 1: return "invalid_saved_known_units"
-	if reward_error != "": return reward_error
+	return ""
+
+
+## The turn queue, the scripted-roster states and the current actor at an action menu.
+static func _queue_error(loop: Dictionary, ids: Array) -> String:
 	var queue: Dictionary = loop["turn_queue"]
 	if not queue.get("slots") is Array or not Values.is_integer_in(queue.get("index"), 0, queue["slots"].size()) or not Values.is_integer_in(queue.get("round"), 0, Values.MAX_SIGNED): return "invalid_saved_queue"
 	if BattlePlayLoop.CoreTurnQueue.cancellation_input_error(queue) != "": return "invalid_saved_queue_eligibility"
@@ -200,6 +223,11 @@ static func validate(snapshot: Variant, current: Dictionary) -> String:
 		queued_ids.append(slot["id"])
 	if loop[LoopKeys.INTERACTION] == Interaction.ACTION_MENU and (not ids.has(loop[LoopKeys.SELECTED_UNIT_ID]) or BattlePlayLoop.CoreTurnQueue.current(queue).get("id") != loop[LoopKeys.SELECTED_UNIT_ID]): return "invalid_saved_current_actor"
 	if loop[LoopKeys.INTERACTION] == Interaction.ACTION_MENU and BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(loop, loop[LoopKeys.SELECTED_UNIT_ID])): return "invalid_saved_paralysis_phase"
+	return ""
+
+
+## The open settlement's loot ledger and the death (reward) ledger.
+static func _settlement_error(loop: Dictionary, ids: Array) -> String:
 	var settled: Dictionary = loop[LoopKeys.SETTLEMENT]
 	if not settled.is_empty():
 		if not Values.is_integer_in(settled.get("sequence"), 1, Values.MAX_SIGNED) or not Values.is_integer_in(settled.get("revision"), 0, Values.MAX_SIGNED) or not settled.get("closed") is bool: return "invalid_saved_settlement"
@@ -215,6 +243,11 @@ static func validate(snapshot: Variant, current: Dictionary) -> String:
 	for id in loop["rewarded_unit_ids"]:
 		if not ids.has(id) or rewarded.has(id) or not BattlePlayLoop.unit(loop, id)["defeated"]: return "invalid_saved_death_ledger"
 		rewarded.append(id)
+	return ""
+
+
+## The saved presentation view: camera, growth offers, treasure and script cursors.
+static func _view_error(loop: Dictionary, view: Dictionary, ids: Array) -> String:
 	if not view.get("camera") is Vector2 or not view.get("shown_story_events") is Array: return "invalid_saved_presentation"
 	if view.has("growth_offered_levels"):
 		if not view["growth_offered_levels"] is Dictionary: return "invalid_saved_presentation"

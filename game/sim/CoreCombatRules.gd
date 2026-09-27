@@ -74,33 +74,6 @@ static func input_error(unit: Dictionary) -> String:
 	return ""
 
 
-static func packet_summary() -> Dictionary:
-	return {
-		"schema": "hsl_core_combat_rules_surface.v1",
-		"packet_path": PACKET_PATH,
-		"evidence_doc": EVIDENCE_DOC,
-		"hit_function": HIT_ADDR,
-		"damage_function": DAMAGE_ADDR,
-		"equip_function": EQUIP_ADDR,
-		"resolve_function": RESOLVE_ADDR,
-		"stat_refresh_function": REFRESH_ADDR,
-		"resolved_fields": {
-			"str": "0x4c",
-			"dex": "0x50",
-			"mind": "0x54",
-			"con": "0x58",
-		},
-		"unresolved_semantics": [
-			"Whole native actor/weapon initialization and display clock remain separate from numeric helpers",
-			"Full actor initial ST and whole exchange RNG; gain helper is in StaminaRules",
-			"BCMD post-select handlers; see CoreTurnQueue for queue/menu surface",
-		],
-		"related_surfaces": {
-			"turn_queue": "res://game/sim/CoreTurnQueue.gd",
-		},
-	}
-
-
 ## Build a combat profile from mixed fixture/table fields without claiming full actor init.
 static func combat_profile_from_unit(unit: Dictionary) -> Dictionary:
 	var stats: Dictionary = unit.get("stats", {})
@@ -237,23 +210,6 @@ static func preview_damage(attacker_profile: Dictionary, defender_profile: Dicti
 		"unresolved_semantics": [
 			"Positive-domain scalar inputs; original full actor initialization and global RNG state are separate",
 		],
-	}
-
-
-static func preview_attack(attacker: Dictionary, defender: Dictionary, rng: Variant = null) -> Dictionary:
-	var atk := combat_profile_from_unit(attacker)
-	var dfn := combat_profile_from_unit(defender)
-	var hit := hit_chance(atk, dfn)
-	var dmg := preview_damage(atk, dfn, rng)
-	return {
-		"schema": "hsl_core_attack_preview.v1",
-		"damage": int(dmg.get("damage", 1)),
-		"hit_rate": int(hit.get("hit_chance", 10)),
-		"would_kill": int(dmg.get("damage", 1)) >= int(defender.get("hp", 0)),
-		"hit": hit,
-		"damage_detail": dmg,
-		"packet": packet_summary(),
-		"formula_source": "core_logic_packet",
 	}
 
 

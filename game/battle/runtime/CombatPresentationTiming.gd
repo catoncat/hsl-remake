@@ -207,10 +207,3 @@ static func ordinary(actor: Dictionary, strike: Dictionary = {}, first_shot: boo
 	var darkened := impact_time + hold + (RECOVERY if closing else 0.0)
 	return {"opening": opening, "release": release_time, "target": duration, "impact": impact_time,
 		"recovery": impact_time + hold, "darkened": darkened, "complete": darkened + (CLOSING_LIGHTEN if closing else 0.0)}
-
-
-static func phase_at(schedule: Dictionary, elapsed: float) -> String:
-	for phase in ["opening", "release", "target", "impact", "recovery", "darkened", "complete"]:
-		if elapsed < float(schedule[phase]):
-			return {"opening": "opening", "release": "windup", "target": "release", "impact": "target_pause", "recovery": "hurt", "darkened": "recovery", "complete": "closing"}[phase]
-	return "complete"

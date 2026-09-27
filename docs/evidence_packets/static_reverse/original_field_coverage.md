@@ -116,7 +116,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `resist_air` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 43；声明行 45 | 风抗基值 | — |
 | `resist_fire` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 39；声明行 45 | 火抗基值 | — |
 | `resist_mind` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 39；声明行 45 | 心抗基值 | — |
-| `move_point` | consumed | `game/sim/TacticalGridRules.gd:movement_range` | 非默认行 62；声明行 64 | 移动力 | — |
+| `move_point` | consumed | `game/sim/TacticalGridRules.gd:movement_reachability_envelope` | 非默认行 62；声明行 64 | 移动力 | — |
 | `item1` | consumed | `tools/hsltools/data/consumables.py:build` | 非默认行 15；声明行 16 | 初始背包槽 1 | — |
 | `item2` | consumed | `tools/hsltools/data/consumables.py:build` | 非默认行 6；声明行 12 | 初始背包槽 2 | — |
 | `item3` | consumed | `tools/hsltools/data/consumables.py:build` | 非默认行 2；声明行 12 | 初始背包槽 3 | — |

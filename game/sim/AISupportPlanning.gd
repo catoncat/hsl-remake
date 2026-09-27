@@ -29,13 +29,7 @@ const SUPPORT_KINDS := ["support", "stat"]
 static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, rows: Array, owner_index: int, profile: Dictionary, healing_slot: int = -1) -> Dictionary:
 	var result := {"ok": true, "heal": {}, "status": {}, "buff": {}, "buff_masks": [], "items": {}, "status_items": {}, "rows": rows, "owner_index": owner_index}
 	var book: Dictionary = loop["skill_book"]
-	var ids: Array = []
-	# 0x40c620 fills the SPECIAL buckets (+0x38..) next to the MAGIC ones with the same 0x407010
-	# classifier; the ally checks 0x40c570(actor, magic=0x40dc50/0x40dc70/0x40dcf0, special=0x40e0e0/0x40e100/0x40e180)
-	# then offer both channels.
-	for id in book["skills"]:
-		var entry: Dictionary = book["skills"][id]
-		if SkillResolutionRules.is_kind(entry["damage_policy"], SUPPORT_KINDS) and SkillTargetRules.is_support(entry["fields"], loop["skill_target_data"]) and SkillResolutionRules.ownership_error(actor, id, book) == "": ids.append(id)
+	var ids := _support_ids(loop, actor, book)
 	var curing := ItemUseRules.first_status_slot(actor["inventory"], loop["consumables"], 15)
 	if not curing["ok"]: return curing
 	if ids.is_empty() and healing_slot < 0 and curing["index"] < 0: return result
@@ -44,6 +38,42 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 	var error := Rules.profile_error(profile, true)
 	if error != "": return {"ok": false, "reason": error}
 	if Values.non_negative_int(profile.get("ai_magic_multi_first")) not in [0,1]: return {"ok": false, "reason": "missing_ai_magic_multi_first"}
+	var sides := _support_sides(loop, actor)
+	if not sides["ok"]: return sides
+	var primaries: Array = sides["primaries"]
+	# The buff check also plans the caster itself: 0x43fce1..0x43fd46 falls back to it (see choose).
+	if primaries.is_empty() and ids.is_empty(): return result
+	var cells: Array = [actor["coord"]]
+	for cell in envelope["reachable_coords"]:
+		if not cells.has(cell): cells.append(cell)
+	cells.sort_custom(AISkillPlanning.cell_before)
+	var ctx := {"loop": loop, "actor": actor, "envelope": envelope, "profile": profile, "book": book, "capability": capability,
+		"primaries": primaries, "foes": sides["foes"], "cells": cells, "result": result}
+	if healing_slot >= 0:
+		var failed := _plan_healing_items(ctx, healing_slot)
+		if not failed.is_empty(): return failed
+	if curing["index"] >= 0:
+		var failed := _plan_curing_items(ctx)
+		if not failed.is_empty(): return failed
+	for id in ids:
+		var failed := _plan_support_skill(ctx, id)
+		if not failed.is_empty(): return failed
+	return result
+
+
+## The support rows the actor owns: 0x40c620 fills the SPECIAL buckets (+0x38..) next to the
+## MAGIC ones with the same 0x407010 classifier; the ally checks 0x40c570(actor,
+## magic=0x40dc50/0x40dc70/0x40dcf0, special=0x40e0e0/0x40e100/0x40e180) then offer both channels.
+static func _support_ids(loop: Dictionary, actor: Dictionary, book: Dictionary) -> Array:
+	var ids: Array = []
+	for id in book["skills"]:
+		var entry: Dictionary = book["skills"][id]
+		if SkillResolutionRules.is_kind(entry["damage_policy"], SUPPORT_KINDS) and SkillTargetRules.is_support(entry["fields"], loop["skill_target_data"]) and SkillResolutionRules.ownership_error(actor, id, book) == "": ids.append(id)
+	return ids
+
+
+## Living units split into the patients in search range (primaries) and the foes, cell-ordered.
+static func _support_sides(loop: Dictionary, actor: Dictionary) -> Dictionary:
 	var primaries: Array = []
 	var foes: Array = []
 	for unit in loop["units"]:
@@ -52,86 +82,115 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 		if SkillTargetRules.ActorRoleRules.hostile(actor, unit):
 			foes.append(unit)
 			continue
-		error = StatusEffectRules.input_error(unit)
+		var error := StatusEffectRules.input_error(unit)
 		if error != "": return {"ok": false, "reason": error}
 		if unit["id"] != actor["id"] and Rules.AIPriorityRules.within_square(unit["coord"], actor["coord"], Rules.SEARCH_RADIUS): primaries.append(unit)
 	foes.sort_custom(func(a, b): return AISkillPlanning.cell_before(a["coord"], b["coord"]))
-	# The buff check also plans the caster itself: 0x43fce1..0x43fd46 falls back to it (see choose).
-	if primaries.is_empty() and ids.is_empty(): return result
-	var cells: Array = [actor["coord"]]
-	for cell in envelope["reachable_coords"]:
-		if not cells.has(cell): cells.append(cell)
-	cells.sort_custom(AISkillPlanning.cell_before)
-	if healing_slot >= 0:
-		var code := str(int(actor["inventory"][healing_slot]))
-		for primary in primaries:
-			var effect := ItemUseRules.prepare(primary,loop["consumables"][code])
-			if not effect["ok"]:
-				if effect["reason"] == "item_has_no_effect": continue
-				return effect
-			var selected := _item_intent(actor, primary, envelope, healing_slot, code)
-			if selected.is_empty(): continue
-			result["items"][primary["id"]] = selected
-			result["heal"][primary["id"]] = AISkillPlanning.target_plan(primary["id"],"magic",profile,actor,foes)
-	if curing["index"] >= 0:
-		for primary in primaries:
-			var slot := ItemUseRules.first_status_slot(actor["inventory"], loop["consumables"], int(primary["status_flags"]))
-			if not slot["ok"]: return slot
-			if slot["index"] < 0: continue
-			var code := str(int(actor["inventory"][int(slot["index"])]))
-			var effect := ItemUseRules.prepare(primary, loop["consumables"][code])
-			if not effect["ok"]: continue
-			var selected := _item_intent(actor, primary, envelope, int(slot["index"]), code)
-			if selected.is_empty(): continue
-			result["status_items"][primary["id"]] = selected
-			result["status"][primary["id"]] = AISkillPlanning.target_plan(primary["id"], "magic", profile, actor, foes)
-	for id in ids:
-		var entry: Dictionary = book["skills"][id]
-		var fields: Dictionary = entry["fields"]
-		var rate := Values.non_negative_int(fields.get("use_ratio"), true)
-		var source_order := Values.non_negative_int(entry.get("source_order"))
-		if rate < 0 or rate > 100 or source_order < 0 or source_order > 223: return {"ok": false, "reason": "invalid_support_ai_definition"}
-		var available := SkillResolutionRules.available(actor, id, fields, book, loop["skill_target_data"], loop["equipment_items"])
-		if not available["ok"]:
-			if available["reason"] in ["insufficient_mp", "insufficient_stamina", "magic_disabled_by_status", "caster_unavailable"]: continue
-			return available
-		var mask := SkillTargetRules.function_mask(fields["function"], loop["skill_target_data"]["function_bits"])
-		var area: bool = int(loop["skill_target_data"]["ranges"][fields["effect_range"]]["size"]) > 1
-		# 0x407010 buckets: heal 1 (area) / 2, buff 5, cure 7. A row without one (萬息降靈法, pure HealMP) is never dispatched.
-		var buckets := AISkillDecisionRules.buckets(mask, area)
-		var bucket := 1 if buckets.has(1) else 2 if buckets.has(2) else 5 if buckets.has(5) else 7 if buckets.has(7) else -1
-		if bucket < 0: continue
-		var kind := "heal" if bucket in [1, 2] else "buff" if bucket == 5 else "status"
-		var recipients: Array = primaries + [actor] if kind == "buff" else primaries
-		if kind == "buff":
-			result["buff_masks"].append(mask)
-		elif not primaries.any(func(unit): return int(unit["hp"]) < int(unit["max_hp"]) if kind == "heal" else SkillResolutionRules.SupportMagicRules.cures_something(unit, mask)): continue
-		var by_primary := {}
-		for cell in cells:
-			if cell != actor["coord"] and entry["channel"] == "magic" and not capability["effects"]["move_magic_use"]: continue
-			var cast_cells := SkillTargetRules.cells(cell, fields, loop["skill_target_data"], loop["map_size"])
-			for coord in SkillTargetRules.candidate_centers(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell):
-				if not cast_cells.has(coord): continue
-				var center := AISkillPlanning.target_for_center(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell, coord)
-				var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, book, loop["skill_target_data"], loop["equipment_items"], cell, loop["map_size"], coord)
-				if not ready["ok"]:
-					if ready["reason"] in ["out_of_range", "skill_has_no_effect"]: continue
-					return ready
-				var useful := AISkillPlanning.useful_ids(ready)
-				var affected: Array = ready["targets"].map(func(target): return str(target["id"]))
-				for primary in recipients:
-					if not useful.has(primary["id"]): continue
-					if not by_primary.has(primary["id"]): by_primary[primary["id"]] = []
-					var route: Dictionary = envelope["reachable_by_coord"].get(cell, {})
-					by_primary[primary["id"]].append({"skill_id": id, "target_id": str(center["id"]), "cast_center": coord,
-						"primary_target_id": str(primary["id"]), "center_is_primary": SkillTargetRules.Footprint.contains(primary,coord), "destination": cell, "affected_ids": affected,
-						"useful_ids": useful, "score": useful.size(), "movement_cost": 0 if cell == actor["coord"] else int(route["cost"]),
-						"path": [] if cell == actor["coord"] else route["path"]})
-		for primary_id in by_primary:
-			if not result[kind].has(primary_id): result[kind][primary_id] = AISkillPlanning.target_plan(primary_id, "magic", profile, actor, foes)
-			result[kind][primary_id]["skills"].append({"skill_id": id, "source_order": source_order, "use_ratio": rate,
-				"bucket": bucket, "channel": entry["channel"], "intents": by_primary[primary_id]})
-	return result
+	return {"ok": true, "primaries": primaries, "foes": foes}
+
+
+## Healing-item intents per patient ({} or the failing receipt).
+static func _plan_healing_items(ctx: Dictionary, healing_slot: int) -> Dictionary:
+	var loop: Dictionary = ctx["loop"]
+	var actor: Dictionary = ctx["actor"]
+	var result: Dictionary = ctx["result"]
+	var code := str(int(actor["inventory"][healing_slot]))
+	for primary in ctx["primaries"]:
+		var effect := ItemUseRules.prepare(primary,loop["consumables"][code])
+		if not effect["ok"]:
+			if effect["reason"] == "item_has_no_effect": continue
+			return effect
+		var selected := _item_intent(actor, primary, ctx["envelope"], healing_slot, code)
+		if selected.is_empty(): continue
+		result["items"][primary["id"]] = selected
+		result["heal"][primary["id"]] = AISkillPlanning.target_plan(primary["id"],"magic",ctx["profile"],actor,ctx["foes"])
+	return {}
+
+
+## Status-curing item intents per patient ({} or the failing receipt).
+static func _plan_curing_items(ctx: Dictionary) -> Dictionary:
+	var loop: Dictionary = ctx["loop"]
+	var actor: Dictionary = ctx["actor"]
+	var result: Dictionary = ctx["result"]
+	for primary in ctx["primaries"]:
+		var slot := ItemUseRules.first_status_slot(actor["inventory"], loop["consumables"], int(primary["status_flags"]))
+		if not slot["ok"]: return slot
+		if slot["index"] < 0: continue
+		var code := str(int(actor["inventory"][int(slot["index"])]))
+		var effect := ItemUseRules.prepare(primary, loop["consumables"][code])
+		if not effect["ok"]: continue
+		var selected := _item_intent(actor, primary, ctx["envelope"], int(slot["index"]), code)
+		if selected.is_empty(): continue
+		result["status_items"][primary["id"]] = selected
+		result["status"][primary["id"]] = AISkillPlanning.target_plan(primary["id"], "magic", ctx["profile"], actor, ctx["foes"])
+	return {}
+
+
+## One support row's intents filed under its bucket kind ({} or the failing receipt).
+static func _plan_support_skill(ctx: Dictionary, id: Variant) -> Dictionary:
+	var loop: Dictionary = ctx["loop"]
+	var actor: Dictionary = ctx["actor"]
+	var book: Dictionary = ctx["book"]
+	var result: Dictionary = ctx["result"]
+	var primaries: Array = ctx["primaries"]
+	var entry: Dictionary = book["skills"][id]
+	var fields: Dictionary = entry["fields"]
+	var rate := Values.non_negative_int(fields.get("use_ratio"), true)
+	var source_order := Values.non_negative_int(entry.get("source_order"))
+	if rate < 0 or rate > 100 or source_order < 0 or source_order > 223: return {"ok": false, "reason": "invalid_support_ai_definition"}
+	var available := SkillResolutionRules.available(actor, id, fields, book, loop["skill_target_data"], loop["equipment_items"])
+	if not available["ok"]:
+		if available["reason"] in ["insufficient_mp", "insufficient_stamina", "magic_disabled_by_status", "caster_unavailable"]: return {}
+		return available
+	var mask := SkillTargetRules.function_mask(fields["function"], loop["skill_target_data"]["function_bits"])
+	var area: bool = int(loop["skill_target_data"]["ranges"][fields["effect_range"]]["size"]) > 1
+	# 0x407010 buckets: heal 1 (area) / 2, buff 5, cure 7. A row without one (萬息降靈法, pure HealMP) is never dispatched.
+	var buckets := AISkillDecisionRules.buckets(mask, area)
+	var bucket := 1 if buckets.has(1) else 2 if buckets.has(2) else 5 if buckets.has(5) else 7 if buckets.has(7) else -1
+	if bucket < 0: return {}
+	var kind := "heal" if bucket in [1, 2] else "buff" if bucket == 5 else "status"
+	var recipients: Array = primaries + [actor] if kind == "buff" else primaries
+	if kind == "buff":
+		result["buff_masks"].append(mask)
+	elif not primaries.any(func(unit): return int(unit["hp"]) < int(unit["max_hp"]) if kind == "heal" else SkillResolutionRules.SupportMagicRules.cures_something(unit, mask)): return {}
+	var by_primary := {}
+	var failed := _collect_support_intents(ctx, id, entry, recipients, by_primary)
+	if not failed.is_empty(): return failed
+	for primary_id in by_primary:
+		if not result[kind].has(primary_id): result[kind][primary_id] = AISkillPlanning.target_plan(primary_id, "magic", ctx["profile"], actor, ctx["foes"])
+		result[kind][primary_id]["skills"].append({"skill_id": id, "source_order": source_order, "use_ratio": rate,
+			"bucket": bucket, "channel": entry["channel"], "intents": by_primary[primary_id]})
+	return {}
+
+
+## Every (station cell, cast centre) of one support row that helps a recipient, appended to
+## `by_primary[recipient id]` ({} or the failing receipt).
+static func _collect_support_intents(ctx: Dictionary, id: Variant, entry: Dictionary, recipients: Array, by_primary: Dictionary) -> Dictionary:
+	var loop: Dictionary = ctx["loop"]
+	var actor: Dictionary = ctx["actor"]
+	var envelope: Dictionary = ctx["envelope"]
+	var fields: Dictionary = entry["fields"]
+	for cell in ctx["cells"]:
+		if cell != actor["coord"] and entry["channel"] == "magic" and not ctx["capability"]["effects"]["move_magic_use"]: continue
+		var cast_cells := SkillTargetRules.cells(cell, fields, loop["skill_target_data"], loop["map_size"])
+		for coord in SkillTargetRules.candidate_centers(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell):
+			if not cast_cells.has(coord): continue
+			var center := AISkillPlanning.target_for_center(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell, coord)
+			var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, ctx["book"], loop["skill_target_data"], loop["equipment_items"], cell, loop["map_size"], coord)
+			if not ready["ok"]:
+				if ready["reason"] in ["out_of_range", "skill_has_no_effect"]: continue
+				return ready
+			var useful := AISkillPlanning.useful_ids(ready)
+			var affected: Array = ready["targets"].map(func(target): return str(target["id"]))
+			for primary in recipients:
+				if not useful.has(primary["id"]): continue
+				if not by_primary.has(primary["id"]): by_primary[primary["id"]] = []
+				var route: Dictionary = envelope["reachable_by_coord"].get(cell, {})
+				by_primary[primary["id"]].append({"skill_id": id, "target_id": str(center["id"]), "cast_center": coord,
+					"primary_target_id": str(primary["id"]), "center_is_primary": SkillTargetRules.Footprint.contains(primary,coord), "destination": cell, "affected_ids": affected,
+					"useful_ids": useful, "score": useful.size(), "movement_cost": 0 if cell == actor["coord"] else int(route["cost"]),
+					"path": [] if cell == actor["coord"] else route["path"]})
+	return {}
 
 
 ## The medicine walk 0x40d530(actor, patient, 1): the actor's move flood (0x40f440; its own

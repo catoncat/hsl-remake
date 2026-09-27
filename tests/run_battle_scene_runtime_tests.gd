@@ -364,15 +364,15 @@ func _test_battle_scene_pointer_input_hit_test_loop() -> void:
 
 	_assert_true(scene.has_method("start_dev_first_control_harness"), "BattleSceneRuntime should expose an explicit dev first-control harness")
 	_assert_true(scene.has_method("grid_cell_center_to_logical_position"), "BattleSceneRuntime should expose grid-to-logical click points")
-	_assert_true(scene.scene_input.has_method("command_center_logical_position"), "BattleSceneRuntime should expose command click points")
-	_assert_true(scene.has_method("logical_to_viewport_position"), "BattleSceneRuntime should expose logical-to-viewport conversion for input events")
+	_assert_true(scene.scene_input.has_method("command_id_for_control"), "BattleSceneRuntime should expose command click points")
+	_assert_true(scene.camera_controller != null, "BattleSceneRuntime should expose logical-to-viewport conversion for input events")
 	_assert_true(scene.has_method("unit_grid_coord"), "BattleSceneRuntime should expose unit grid coordinates for input tests")
 	if scene.has_method("start_dev_first_control_harness"):
 		scene.call("start_dev_first_control_harness")
 		await process_frame
 		var harness_summary: Dictionary = RuntimeReadback.runtime_contract_summary(scene)
 		_assert_eq(harness_summary.get("runtime_entrypoint", ""), "dev_first_control_harness", "pointer input test must use the dev first-control harness explicitly")
-	if not scene.has_method("grid_cell_center_to_logical_position") or not scene.scene_input.has_method("command_center_logical_position") or not scene.has_method("unit_grid_coord"):
+	if not scene.has_method("grid_cell_center_to_logical_position") or not scene.scene_input.has_method("command_id_for_control") or not scene.has_method("unit_grid_coord"):
 		scene.queue_free()
 		await process_frame
 		return
@@ -392,7 +392,7 @@ func _test_battle_scene_pointer_input_hit_test_loop() -> void:
 
 	_assert_true(scene.action_menu.is_expanding(), "new selection must expose the native menu opening before accepting commands")
 	scene.action_menu._process(0.25)
-	var move_command_click: Vector2 = scene.scene_input.command_center_logical_position("move")
+	var move_command_click: Vector2 = RuntimeReadback.command_center_logical_position(scene.scene_input, "move")
 	_dispatch_mouse_button(scene, move_command_click, MOUSE_BUTTON_LEFT, true)
 	var command_down_input: Dictionary = RuntimeReadback.input_summary(scene)
 	_assert_eq(command_down_input.get("held_command_id", ""), "move", "left press on Move command should hold the command until release")
@@ -443,7 +443,7 @@ func _dispatch_mouse_button(scene: Node, logical_position: Vector2, button_index
 	var event := InputEventMouseButton.new()
 	event.button_index = button_index
 	event.pressed = pressed
-	event.position = scene.call("logical_to_viewport_position", logical_position)
+	event.position = RuntimeReadback.logical_to_viewport_position(scene, logical_position)
 	scene.call("_input", event)
 
 
@@ -988,7 +988,7 @@ func _test_camera_pan_spatial_contract() -> void:
 	Input.action_release("ui_up")
 	_assert_eq(scene.camera.position, camera_before, "inspection modal should suspend camera panning")
 	var pointer := InputEventMouseMotion.new()
-	pointer.position = scene.logical_to_viewport_position(Vector2(9, 240))
+	pointer.position = RuntimeReadback.logical_to_viewport_position(scene, Vector2(9, 240))
 	scene._input(pointer)
 	_assert_true(scene.pointer_inside_window, "real pointer motion must arm edge browsing even while a panel is open")
 	scene._process(0.2)

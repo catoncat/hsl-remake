@@ -106,22 +106,6 @@ func handle_input(event: InputEvent) -> void:
 				handle_pointer_cancel(runtime.pointer_logical_position)
 
 
-func command_center_logical_position(command_id: String) -> Vector2:
-	var rect := command_logical_rect(command_id)
-	if rect.size == Vector2.ZERO:
-		return Vector2.ZERO
-	return rect.position + rect.size * 0.5
-
-
-func command_logical_rect(command_id: String) -> Rect2:
-	if runtime.action_menu == null:
-		return Rect2()
-	for child in runtime.action_menu.get_children():
-		if child is Control and command_id_for_control(child) == command_id:
-			return Rect2(runtime.action_menu.position + child.position, child.size)
-	return Rect2()
-
-
 func command_id_at_logical_position(logical_position: Vector2) -> String:
 	if runtime.action_menu == null or not runtime.action_menu.visible or runtime.action_menu.is_expanding():
 		return ""

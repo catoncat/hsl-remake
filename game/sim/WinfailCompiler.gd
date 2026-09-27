@@ -231,85 +231,7 @@ static func rules_from_seed(seed: Dictionary, cell_size: int = DEFAULT_CELL_SIZE
 		var kind := str(section.get("name", ""))
 		if STATUS_KINDS.find(kind) == -1:
 			continue
-		var codes: Array = section.get("codes", [])
-		var code := int(str(codes[0])) if not codes.is_empty() else 0
-		var status := {
-			"kind": kind,
-			"code": code,
-			"key": "%s_%d" % [kind, code],
-			"result_message": _result_message(section.get("messages", [])),
-			"conditions": [],
-			"actions": [],
-			"unsupported": [],
-			"inserts": [],
-		}
-		var in_prefix := true
-		var pending_insert: Dictionary = {}
-		for action_value in section.get("actions", []):
-			if typeof(action_value) != TYPE_DICTIONARY:
-				continue
-			for command_value in (action_value as Dictionary).get("chain", []):
-				if typeof(command_value) != TYPE_DICTIONARY:
-					continue
-				var command: Dictionary = command_value
-				var name := canonical_action(str(command.get("name", "")))
-				var args: Array = string_args(command.get("args", []))
-				if name == "":
-					continue
-				token_counts[name] = int(token_counts.get(name, 0)) + 1
-				var is_condition := SUPPORTED_CONDITIONS.find(name) != -1 or KNOWN_UNSUPPORTED_CONDITIONS.find(name) != -1
-				if in_prefix and is_condition:
-					(status["conditions"] as Array).append({"name": name, "args": args, "supported": SUPPORTED_CONDITIONS.find(name) != -1})
-					if SUPPORTED_CONDITIONS.find(name) == -1:
-						_append_unique(status["unsupported"], name)
-						_append_unique(unsupported, name)
-					continue
-				in_prefix = false
-				var record := {"name": name, "args": args, "supported": action_supported(name) or CHAIN_GATE_CONDITIONS.has(name)}
-				if CHAIN_GATE_CONDITIONS.has(name):
-					record["chain_gate"] = true
-				(status["actions"] as Array).append(record)
-				if not record["supported"]:
-					_append_unique(status["unsupported"], name)
-					_append_unique(unsupported, name)
-				match name:
-					"actInsertObject", "actInsertObjectRandomPos", "actInsertStoryObjectRandomPos":
-						pending_insert = {
-							"object_symbol": arg(args, 0),
-							"class_id": _insert_class_id(seed, arg(args, 0)),
-							"insert_xy": [int(arg(args, 1)), int(arg(args, 2))] if args.size() >= 3 else [],
-							"random_position": name != "actInsertObject",
-							"position_slot": int_arg(args, 3) if name != "actInsertObject" else 0,
-							"walk_xy": [],
-							"walk_cell": [],
-							"speed_arg": 0,
-							"wait_round": 0,
-							"adjust_level": [],
-							"fly": -1,
-							"stamina": -1,
-							"equip": [],
-						}
-						(status["inserts"] as Array).append(pending_insert)
-					"actWalkPrevInsertObject", "actWalkPrevInsertObjectWait":
-						if not pending_insert.is_empty() and args.size() >= 2:
-							pending_insert["walk_xy"] = [int(arg(args, 0)), int(arg(args, 1))]
-							pending_insert["walk_cell"] = [int(arg(args, 0)) / cell_size, int(arg(args, 1)) / cell_size]
-							pending_insert["speed_arg"] = int(arg(args, 2))
-					"actSetPrevInsertObjectWaitRound":
-						if not pending_insert.is_empty() and args.size() >= 1:
-							pending_insert["wait_round"] = int(arg(args, 0))
-					"actSetPrevInsertObjectAdjustLevel":
-						if not pending_insert.is_empty() and args.size() >= 2:
-							pending_insert["adjust_level"] = [int(arg(args, 0)), int(arg(args, 1))]
-					"actSetPrevInsertObjectFly":
-						if not pending_insert.is_empty() and args.size() >= 1:
-							pending_insert["fly"] = int(arg(args, 0))
-					"actSetPrevInsertObjectST":
-						if not pending_insert.is_empty() and args.size() >= 1:
-							pending_insert["stamina"] = int(arg(args, 0))
-					"actSetPrevInsertObjectEquip":
-						if not pending_insert.is_empty() and args.size() >= 2:
-							(pending_insert["equip"] as Array).append([int(arg(args, 0)), int(arg(args, 1))])
+		var status := _compile_section(seed, section, kind, cell_size, token_counts, unsupported)
 		(statuses[kind] as Array).append(status)
 		section_order.append(status["key"])
 	unsupported.sort()
@@ -331,6 +253,100 @@ static func rules_from_seed(seed: Dictionary, cell_size: int = DEFAULT_CELL_SIZE
 		"fully_supported": unsupported.is_empty(),
 		"claim_limits": CLAIM_LIMIT_IDS.duplicate(),
 	}
+
+
+## One win／fail／event section compiled to its status: the condition prefix, the action
+## chain and the inserts its follow-up actions refine; counts tokens and records
+## unsupported names into `token_counts`／`unsupported`.
+static func _compile_section(seed: Dictionary, section: Dictionary, kind: String, cell_size: int, token_counts: Dictionary, unsupported: Array) -> Dictionary:
+	var codes: Array = section.get("codes", [])
+	var code := int(str(codes[0])) if not codes.is_empty() else 0
+	var status := {
+		"kind": kind,
+		"code": code,
+		"key": "%s_%d" % [kind, code],
+		"result_message": _result_message(section.get("messages", [])),
+		"conditions": [],
+		"actions": [],
+		"unsupported": [],
+		"inserts": [],
+	}
+	var in_prefix := true
+	var pending_insert: Dictionary = {}
+	for action_value in section.get("actions", []):
+		if typeof(action_value) != TYPE_DICTIONARY:
+			continue
+		for command_value in (action_value as Dictionary).get("chain", []):
+			if typeof(command_value) != TYPE_DICTIONARY:
+				continue
+			var command: Dictionary = command_value
+			var name := canonical_action(str(command.get("name", "")))
+			var args: Array = string_args(command.get("args", []))
+			if name == "":
+				continue
+			token_counts[name] = int(token_counts.get(name, 0)) + 1
+			var is_condition := SUPPORTED_CONDITIONS.find(name) != -1 or KNOWN_UNSUPPORTED_CONDITIONS.find(name) != -1
+			if in_prefix and is_condition:
+				(status["conditions"] as Array).append({"name": name, "args": args, "supported": SUPPORTED_CONDITIONS.find(name) != -1})
+				if SUPPORTED_CONDITIONS.find(name) == -1:
+					_append_unique(status["unsupported"], name)
+					_append_unique(unsupported, name)
+				continue
+			in_prefix = false
+			var record := {"name": name, "args": args, "supported": action_supported(name) or CHAIN_GATE_CONDITIONS.has(name)}
+			if CHAIN_GATE_CONDITIONS.has(name):
+				record["chain_gate"] = true
+			(status["actions"] as Array).append(record)
+			if not record["supported"]:
+				_append_unique(status["unsupported"], name)
+				_append_unique(unsupported, name)
+			pending_insert = _record_insert_action(seed, status, pending_insert, name, args, cell_size)
+	return status
+
+
+## An insert action starts a new pending insert (appended to the status); the
+## actSetPrevInsertObject*／actWalkPrevInsertObject* actions refine the pending one.
+## Returns the pending insert after `name`.
+static func _record_insert_action(seed: Dictionary, status: Dictionary, pending_insert: Dictionary, name: String, args: Array, cell_size: int) -> Dictionary:
+	match name:
+		"actInsertObject", "actInsertObjectRandomPos", "actInsertStoryObjectRandomPos":
+			pending_insert = {
+				"object_symbol": arg(args, 0),
+				"class_id": _insert_class_id(seed, arg(args, 0)),
+				"insert_xy": [int(arg(args, 1)), int(arg(args, 2))] if args.size() >= 3 else [],
+				"random_position": name != "actInsertObject",
+				"position_slot": int_arg(args, 3) if name != "actInsertObject" else 0,
+				"walk_xy": [],
+				"walk_cell": [],
+				"speed_arg": 0,
+				"wait_round": 0,
+				"adjust_level": [],
+				"fly": -1,
+				"stamina": -1,
+				"equip": [],
+			}
+			(status["inserts"] as Array).append(pending_insert)
+		"actWalkPrevInsertObject", "actWalkPrevInsertObjectWait":
+			if not pending_insert.is_empty() and args.size() >= 2:
+				pending_insert["walk_xy"] = [int(arg(args, 0)), int(arg(args, 1))]
+				pending_insert["walk_cell"] = [int(arg(args, 0)) / cell_size, int(arg(args, 1)) / cell_size]
+				pending_insert["speed_arg"] = int(arg(args, 2))
+		"actSetPrevInsertObjectWaitRound":
+			if not pending_insert.is_empty() and args.size() >= 1:
+				pending_insert["wait_round"] = int(arg(args, 0))
+		"actSetPrevInsertObjectAdjustLevel":
+			if not pending_insert.is_empty() and args.size() >= 2:
+				pending_insert["adjust_level"] = [int(arg(args, 0)), int(arg(args, 1))]
+		"actSetPrevInsertObjectFly":
+			if not pending_insert.is_empty() and args.size() >= 1:
+				pending_insert["fly"] = int(arg(args, 0))
+		"actSetPrevInsertObjectST":
+			if not pending_insert.is_empty() and args.size() >= 1:
+				pending_insert["stamina"] = int(arg(args, 0))
+		"actSetPrevInsertObjectEquip":
+			if not pending_insert.is_empty() and args.size() >= 2:
+				(pending_insert["equip"] as Array).append([int(arg(args, 0)), int(arg(args, 1))])
+	return pending_insert
 
 
 static func insert_walk_cells(rules: Dictionary) -> Array:

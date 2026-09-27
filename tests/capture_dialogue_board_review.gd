@@ -11,6 +11,7 @@ extends SceneTree
 ##   tools/godot.sh --script res://tests/capture_dialogue_board_review.gd
 const BattleDialogue = preload("res://game/battle/scene/BattleDialogue.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/r7-dialogue-board-review/"
 var failures: Array[String] = []
 
@@ -49,14 +50,14 @@ func run() -> void:
 	# The markers blink 10 ticks on / 10 off (0x4146e0); step into an on phase before each shot.
 	_step_until_visible(board, board.continue_label)
 	await shot("02-369-first-page-marker")
-	_check(board.window_rows().size() == 4 and board.continue_label.visible, "369's first page is still, with ▼")
+	_check(RuntimeReadback.window_rows(board).size() == 4 and board.continue_label.visible, "369's first page is still, with ▼")
 	board.advance_page()
 	_step(board, 15)
 	await shot("03-369-scrolling-tick15")
 	_step(board, 30)
 	_step_until_visible(board, board.end_marker)
 	await shot("04-369-last-page-square")
-	_check(board.end_marker.visible and board.window_rows()[3] == "!!", "369's last page ends on !! with □")
+	_check(board.end_marker.visible and RuntimeReadback.window_rows(board)[3] == "!!", "369's last page ends on !! with □")
 	board.clear_message()
 	# The closed board leaves a dissolving copy on the scene clock; let it go before the next shot.
 	await create_timer(BattleDialogue.DISSOLVE_OUT_SECONDS + 0.1).timeout

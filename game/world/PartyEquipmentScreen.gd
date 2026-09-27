@@ -127,30 +127,6 @@ static func _slot_for(unit: Dictionary, kind: int) -> String:
 	return "accessory2" if EquipmentRules.equipped_code(unit.get("equipment", []), "accessory1") > 0 and EquipmentRules.equipped_code(unit.get("equipment", []), "accessory2") == 0 else "accessory1"
 
 
-## The player's gesture in one call: 裝備 page, pick bag item `inventory_index` up, click the
-## equipment board.
-func request_equip(inventory_index: int, code: int) -> Dictionary:
-	if not active or error != "" or str(window.unit_id) == "":
-		return {"ok": false, "reason": "inactive"}
-	window.set_page(StatusWindow.PAGE_EQUIP)
-	window.pick_up(inventory_index)
-	if not window.holding():
-		last_result = {"ok": false, "action": "equip", "reason": "inventory_selection_changed"}
-		return last_result
-	window.click_equipment("weapon")
-	return last_result
-
-
-## 裝備 page, empty hand, click the equipped slot.
-func request_unequip(slot: String) -> Dictionary:
-	if not active or error != "" or str(window.unit_id) == "":
-		return {"ok": false, "reason": "inactive"}
-	window.set_page(StatusWindow.PAGE_EQUIP)
-	last_result = {"ok": false, "action": "unequip", "reason": "equipment_unchanged"}
-	window.click_equipment(slot)
-	return last_result
-
-
 func _on_equip_requested(unit_id: String, inventory_index: int, code: int) -> void:
 	var unit := BattlePlayLoop.unit(loop, unit_id)
 	var item: Dictionary = loop["equipment_items"].get(str(code), {})

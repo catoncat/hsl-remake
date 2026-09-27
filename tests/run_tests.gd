@@ -16,6 +16,7 @@ const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 
 
 func _init() -> void:
@@ -69,7 +70,7 @@ func _test_movement_respects_terrain_and_blocking() -> void:
 		unit,
 		{"id": "ally", "team": "ally", "battle_actor_role": "friendly_ai", "traversal": {"flying": false, "no_block": false, "size_type": 0}, "coord": Vector2i(1, 2), "move_point": 3, "hp": 20},
 	]
-	var reachable: Array = TacticalGridRules.movement_range(unit, units, _sample_tiles(), Vector2i(5, 4))
+	var reachable: Array = RulesReadback.movement_range(unit, units, _sample_tiles(), Vector2i(5, 4))
 	_assert_true(_has_coord(reachable, Vector2i(0, 1)), "road tile inside range should be reachable")
 	_assert_true(not _has_coord(reachable, Vector2i(1, 2)), "occupied ally tile should block movement")
 	_assert_true(not _has_coord(reachable, Vector2i(3, 1)), "blocked terrain should not be reachable")
@@ -88,7 +89,7 @@ func _test_attack_range() -> void:
 	var mage := {"id": "mage", "team": "enemy", "coord": Vector2i(4, 1), "stats": {"str": 4, "agi": 7, "mind": 11, "vit": 4}}
 	var leonard := {"id": "leonard", "team": "player", "coord": Vector2i(1, 1), "hp": 22, "stats": {"str": 12, "agi": 8, "mind": 4, "vit": 9}}
 	var skill := {"id": "arcane_bolt", "damage_type": "magic", "power": 5, "multiplier": 1.0, "base_hit": 82, "min_range": 1, "max_range": 3}
-	var attack_tiles: Array = TacticalGridRules.attack_range(mage["coord"], 1, 3, Vector2i(6, 4))
+	var attack_tiles: Array = RulesReadback.attack_range(mage["coord"], 1, 3, Vector2i(6, 4))
 	_assert_true(_has_coord(attack_tiles, Vector2i(1, 1)), "range 3 mage should threaten Leonard")
 
 
@@ -99,7 +100,7 @@ func _stable_half_rng(n: int) -> int:
 
 
 func _test_core_turn_queue_speed_sort_and_bcmd_icons() -> void:
-	var summary: Dictionary = CoreTurnQueue.packet_summary()
+	var summary: Dictionary = RulesReadback.turn_queue_packet_summary()
 	_assert_eq(summary.get("schema", ""), "hsl_core_turn_queue_surface.v1", "turn queue surface should expose stable schema")
 	_assert_eq(summary.get("rebuild_function", ""), "0x407340", "turn queue should cite rebuild address")
 	_assert_eq(summary.get("advance_function", ""), "0x407510", "turn queue should cite advance address")
@@ -442,7 +443,7 @@ func _test_live_counter_exchange() -> void:
 
 
 func _test_core_combat_rules_hit_and_damage_packet() -> void:
-	var summary: Dictionary = CoreCombatRules.packet_summary()
+	var summary: Dictionary = RulesReadback.combat_packet_summary()
 	_assert_eq(summary.get("schema", ""), "hsl_core_combat_rules_surface.v1", "core combat surface should expose stable schema")
 	_assert_eq(summary.get("hit_function", ""), "0x409a60", "core combat surface should cite hit address")
 	_assert_eq(summary.get("damage_function", ""), "0x409be0", "core combat surface cites the actual entry, not preceding padding")
@@ -477,7 +478,7 @@ func _test_core_combat_rules_hit_and_damage_packet() -> void:
 
 	var attacker := {"id": "leonard", "hp": 32, "level": 1, "combat_profile": leonard_profile}
 	var defender := {"id": "enemy021", "hp": 18, "level": 1, "combat_profile": enemy_profile}
-	var core_preview: Dictionary = CoreCombatRules.preview_attack(attacker, defender, Callable(self, "_stable_half_rng"))
+	var core_preview: Dictionary = RulesReadback.preview_attack(attacker, defender, Callable(self, "_stable_half_rng"))
 	_assert_eq(core_preview.get("formula_source", ""), "core_logic_packet", "opt-in preview should use core logic packet")
 	_assert_eq(int(core_preview.get("hit_rate", 0)), 98, "opt-in core preview hit rate should match hit_chance")
 	_assert_true(int(core_preview.get("damage", 0)) >= 1, "opt-in core preview should expose positive damage")
@@ -541,8 +542,8 @@ func _test_job_up_rule_check() -> void:
 		"required_items": ["class_token_alpha"],
 		"required_flags": {"chapter_one_survived": true},
 	}
-	_assert_true(ProgressionRules.can_job_up(unit, rule, ["class_token_alpha"], {"chapter_one_survived": true}), "matching unit should qualify for class change")
-	_assert_true(not ProgressionRules.can_job_up(unit, rule, [], {"chapter_one_survived": true}), "missing item should block class change")
+	_assert_true(RulesReadback.can_job_up(unit, rule, ["class_token_alpha"], {"chapter_one_survived": true}), "matching unit should qualify for class change")
+	_assert_true(not RulesReadback.can_job_up(unit, rule, [], {"chapter_one_survived": true}), "missing item should block class change")
 
 
 func _test_battle_actor_roles_gate_player_control_and_targets() -> void:
@@ -550,8 +551,8 @@ func _test_battle_actor_roles_gate_player_control_and_targets() -> void:
 	var role_model: Dictionary = scenario.get("role_evidence", {})
 	var rules := ActorRoleRules.new()
 	_assert_true(rules.has_method("battle_actor_role"), "battle actor role should be explicit in ActorRoleRules")
-	_assert_true(rules.has_method("can_player_control_actor"), "player control should be gated through ActorRoleRules")
-	_assert_true(rules.has_method("can_player_attack_actor"), "player target filtering should be gated through ActorRoleRules")
+	_assert_true(rules.has_method("battle_actor_role"), "player control should be gated through ActorRoleRules")
+	_assert_true(rules.has_method("hostile"), "player target filtering should be gated through ActorRoleRules")
 	if not rules.has_method("battle_actor_role"):
 		return
 
@@ -566,15 +567,15 @@ func _test_battle_actor_roles_gate_player_control_and_targets() -> void:
 	_assert_eq(rules.call("battle_actor_role", ally, role_model), "friendly_ai", "ally team should resolve to friendly_ai")
 	_assert_eq(rules.call("battle_actor_role", map_object, role_model), "map_object", "map object fixture role should stay non-combat")
 	_assert_eq(rules.call("battle_actor_role", manager, role_model), "battle_manager", "battle manager fixture role should stay non-combat")
-	_assert_true(rules.call("can_player_control_actor", leonard, role_model), "Leonard should be player-controllable in this slice")
-	_assert_true(not rules.call("can_player_control_actor", ally, role_model), "friendly AI should not be directly player-controllable")
-	_assert_true(rules.call("can_player_attack_actor", leonard, enemy, role_model), "player-controlled actor should be allowed to target enemy AI")
-	_assert_true(not rules.call("can_player_attack_actor", leonard, ally, role_model), "player-controlled actor should not target friendly AI as an enemy")
-	_assert_true(not rules.call("can_player_attack_actor", leonard, map_object, role_model), "map objects should not become enemy targets without explicit evidence")
+	_assert_true(RulesReadback.can_player_control_actor(leonard, role_model), "Leonard should be player-controllable in this slice")
+	_assert_true(not RulesReadback.can_player_control_actor(ally, role_model), "friendly AI should not be directly player-controllable")
+	_assert_true(RulesReadback.can_player_attack_actor(leonard, enemy, role_model), "player-controlled actor should be allowed to target enemy AI")
+	_assert_true(not RulesReadback.can_player_attack_actor(leonard, ally, role_model), "player-controlled actor should not target friendly AI as an enemy")
+	_assert_true(not RulesReadback.can_player_attack_actor(leonard, map_object, role_model), "map objects should not become enemy targets without explicit evidence")
 
-	var annotated: Dictionary = rules.call("annotate_actor_role", enemy, role_model)
+	var annotated: Dictionary = RulesReadback.annotate_actor_role(enemy, role_model)
 	_assert_eq(annotated.get("battle_actor_role", ""), "enemy_ai", "annotation should write the resolved role")
-	var summary: Dictionary = rules.call("battle_actor_role_summary", [leonard, enemy, ally, map_object, manager], role_model)
+	var summary: Dictionary = RulesReadback.battle_actor_role_summary([leonard, enemy, ally, map_object, manager], role_model)
 	_assert_eq(int(summary.get("counts", {}).get("player_controlled", 0)), 1, "role summary should count player-controlled actors")
 	_assert_eq(int(summary.get("counts", {}).get("enemy_ai", 0)), 1, "role summary should count enemy AI actors")
 	_assert_eq(int(summary.get("counts", {}).get("map_object", 0)), 1, "role summary should count map objects separately")
@@ -1034,11 +1035,11 @@ func _test_counters_follow_register_side_rule() -> void:
 
 func _test_player_attack_gate_and_skill_side() -> void:
 	var player := _unit("player_controlled", PM_PLAYER, "p")
-	check(ActorRoleRules.can_player_attack_actor(player, _unit("enemy_ai", PM_NPC, "n")), "the player may attack a pmNPC unit")
-	check(not ActorRoleRules.can_player_attack_actor(player, _unit("friendly_ai", PM_PLAYER_ENEMY, "v")), "the player may not attack a pmPlayerEnemy villager (0x40f8b0 mode 2 skips pmPlayer cells)")
+	check(RulesReadback.can_player_attack_actor(player, _unit("enemy_ai", PM_NPC, "n")), "the player may attack a pmNPC unit")
+	check(not RulesReadback.can_player_attack_actor(player, _unit("friendly_ai", PM_PLAYER_ENEMY, "v")), "the player may not attack a pmPlayerEnemy villager (0x40f8b0 mode 2 skips pmPlayer cells)")
 	var dead := _unit("enemy_ai", PM_ENEMY, "d")
 	dead["hp"] = 0
-	check(not ActorRoleRules.can_player_attack_actor(player, dead), "a fallen unit is no target")
+	check(not RulesReadback.can_player_attack_actor(player, dead), "a fallen unit is no target")
 	var skill_data := {"skills": {}}
 	var offensive := {"function_bits": 0, "range": "range1Cell", "effect_range": "range0Cell"}
 	check(BattlePlayLoop.SkillTargetRules.side_matches(player, _unit("enemy_ai", PM_NPC, "n"), offensive, skill_data), "an offensive skill reaches a pmNPC unit")

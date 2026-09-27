@@ -162,43 +162,7 @@ func spawn_map_objects() -> void:
 			continue
 		var top_left_world: Vector2 = placement["top_left_world"]
 		var runtime_layer := _map_object_runtime_layer(record)
-		var animated := map_object_field_value(record, "obj_Data9") == "mapobjNextShape"
-		var flashing := map_object_field_value(record, "obj_Data9") == "mapobjFlash"
-		var additive := map_object_field_value(record, "obj_Mode").begins_with("engADDCOLOR")
-		var glass := map_object_field_value(record, "obj_Mode").begins_with("engGLASS")
-		var sprite: Sprite2D
-		if animated:
-			sprite = MapObjectAnimation.new()
-		elif flashing:
-			sprite = MapObjectFlash.new()
-		else:
-			sprite = Sprite2D.new()
-		sprite.name = map_object_node_name(record)
-		sprite.texture = texture
-		sprite.centered = false
-		sprite.position = top_left_world
-		if animated:
-			sprite.configure(animation_manifest, anchor_world)
-		elif flashing:
-			sprite.configure(top_left_world, additive)
-		elif additive:
-			var blend := CanvasItemMaterial.new()
-			blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-			sprite.material = blend
-		if map_object_field_value(record, "obj_Data9") == "mapobjShadow":
-			# Source shadow token; the alpha is a remake presentation value.
-			sprite.modulate = Color(1, 1, 1, 0.55)
-		elif glass:
-			# engGLASS (level-1 cloud shadows, opaque black silhouettes in the SHP):
-			# read as a translucent overlay; the alpha is a remake presentation value.
-			sprite.modulate = Color(1, 1, 1, 0.4)
-		sprite.z_index = int(anchor_world.y)
-		sprite.set_meta("record_index", record.get("record_index", -1))
-		sprite.set_meta("shape_resource_id", shape_id)
-		sprite.set_meta("candidate_anchor_world", candidate_anchor_world)
-		sprite.set_meta("render_anchor_world", anchor_world)
-		sprite.set_meta("process_code", str(record.get("process", "")))
-		sprite.set_meta("runtime_layer", runtime_layer)
+		var sprite := _new_map_object_sprite(record, shape_id, texture, animation_manifest, candidate_anchor_world, anchor_world, top_left_world, runtime_layer)
 		_map_object_layer_node(runtime_layer).add_child(sprite)
 		if runtime_layer == "backdrop":
 			# mapobjMoveBG (level 2's 移動背景01): the picture shows through the map's
@@ -216,31 +180,79 @@ func spawn_map_objects() -> void:
 			"mapobjMoveBG":
 				drift.add_background(sprite, anchor_world, MapObjectDrift.field_int(map_object_field_value(record, "obj_Score")),
 					MapObjectDrift.field_int(map_object_field_value(record, "obj_HitPoint")), origin)
-		runtime.map_object_records.append({
-			"record_index": int(record.get("record_index", -1)),
-			"object_code": int(record.get("object_code", -1)),
-			"object_name": str(record.get("object_name", "")),
-			"shape_resource_id": shape_id,
-			"shape_resource": str(record.get("shape_resource", "")),
-			"preview_res_path": _map_object_preview_path(shape_id),
-			"candidate_anchor_world": candidate_anchor_world,
-			"render_anchor_world": anchor_world,
-			"anchor_delta_from_candidate": placement.get("anchor_delta_from_candidate", anchor_world - candidate_anchor_world),
-			"anchor_source": str(placement.get("anchor_source", "evef_candidate_xy_provisional")),
-			"anchor_evidence_ids": placement.get("anchor_evidence_ids", []),
-			"anchor_source_files": placement.get("anchor_source_files", []),
-			"anchor_alignment_note": str(placement.get("anchor_alignment_note", "")),
-			"matched_original_logical_bbox": placement.get("matched_original_logical_bbox", {}),
-			"anchor_not_proven": placement.get("anchor_not_proven", []),
-			"top_left_world": top_left_world,
-			"texture_size": Vector2i(texture.get_width(), texture.get_height()),
-			"object_plane": map_object_field_value(record, "obj_plane"),
-			"process": str(record.get("process", "")),
-			"runtime_layer": runtime_layer,
-			"role_claim": _map_object_role_claim(record),
-			"coordinate_interpretation": record.get("coordinate_interpretation", {}).duplicate(true),
-			"provisional": true,
-		})
+		runtime.map_object_records.append(_map_object_record(record, shape_id, texture, placement, candidate_anchor_world, anchor_world, top_left_world, runtime_layer))
+
+
+## spawn_map_objects: one stand object's sprite — animated／flashing／plain by obj_Data9,
+## additive／shadow／glass look, z by anchor, and its record metadata.
+func _new_map_object_sprite(record: Dictionary, shape_id: String, texture: Texture2D, animation_manifest: Dictionary, candidate_anchor_world: Vector2, anchor_world: Vector2, top_left_world: Vector2, runtime_layer: String) -> Sprite2D:
+	var animated := map_object_field_value(record, "obj_Data9") == "mapobjNextShape"
+	var flashing := map_object_field_value(record, "obj_Data9") == "mapobjFlash"
+	var additive := map_object_field_value(record, "obj_Mode").begins_with("engADDCOLOR")
+	var glass := map_object_field_value(record, "obj_Mode").begins_with("engGLASS")
+	var sprite: Sprite2D
+	if animated:
+		sprite = MapObjectAnimation.new()
+	elif flashing:
+		sprite = MapObjectFlash.new()
+	else:
+		sprite = Sprite2D.new()
+	sprite.name = map_object_node_name(record)
+	sprite.texture = texture
+	sprite.centered = false
+	sprite.position = top_left_world
+	if animated:
+		sprite.configure(animation_manifest, anchor_world)
+	elif flashing:
+		sprite.configure(top_left_world, additive)
+	elif additive:
+		var blend := CanvasItemMaterial.new()
+		blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		sprite.material = blend
+	if map_object_field_value(record, "obj_Data9") == "mapobjShadow":
+		# Source shadow token; the alpha is a remake presentation value.
+		sprite.modulate = Color(1, 1, 1, 0.55)
+	elif glass:
+		# engGLASS (level-1 cloud shadows, opaque black silhouettes in the SHP):
+		# read as a translucent overlay; the alpha is a remake presentation value.
+		sprite.modulate = Color(1, 1, 1, 0.4)
+	sprite.z_index = int(anchor_world.y)
+	sprite.set_meta("record_index", record.get("record_index", -1))
+	sprite.set_meta("shape_resource_id", shape_id)
+	sprite.set_meta("candidate_anchor_world", candidate_anchor_world)
+	sprite.set_meta("render_anchor_world", anchor_world)
+	sprite.set_meta("process_code", str(record.get("process", "")))
+	sprite.set_meta("runtime_layer", runtime_layer)
+	return sprite
+
+
+## spawn_map_objects: the placement receipt kept in runtime.map_object_records.
+func _map_object_record(record: Dictionary, shape_id: String, texture: Texture2D, placement: Dictionary, candidate_anchor_world: Vector2, anchor_world: Vector2, top_left_world: Vector2, runtime_layer: String) -> Dictionary:
+	return {
+		"record_index": int(record.get("record_index", -1)),
+		"object_code": int(record.get("object_code", -1)),
+		"object_name": str(record.get("object_name", "")),
+		"shape_resource_id": shape_id,
+		"shape_resource": str(record.get("shape_resource", "")),
+		"preview_res_path": _map_object_preview_path(shape_id),
+		"candidate_anchor_world": candidate_anchor_world,
+		"render_anchor_world": anchor_world,
+		"anchor_delta_from_candidate": placement.get("anchor_delta_from_candidate", anchor_world - candidate_anchor_world),
+		"anchor_source": str(placement.get("anchor_source", "evef_candidate_xy_provisional")),
+		"anchor_evidence_ids": placement.get("anchor_evidence_ids", []),
+		"anchor_source_files": placement.get("anchor_source_files", []),
+		"anchor_alignment_note": str(placement.get("anchor_alignment_note", "")),
+		"matched_original_logical_bbox": placement.get("matched_original_logical_bbox", {}),
+		"anchor_not_proven": placement.get("anchor_not_proven", []),
+		"top_left_world": top_left_world,
+		"texture_size": Vector2i(texture.get_width(), texture.get_height()),
+		"object_plane": map_object_field_value(record, "obj_plane"),
+		"process": str(record.get("process", "")),
+		"runtime_layer": runtime_layer,
+		"role_claim": _map_object_role_claim(record),
+		"coordinate_interpretation": record.get("coordinate_interpretation", {}).duplicate(true),
+		"provisional": true,
+	}
 
 
 ## The runtime's one MapObjectDrift, emptied for a fresh placement. A child of the runtime,

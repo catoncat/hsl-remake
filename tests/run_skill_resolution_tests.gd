@@ -3,6 +3,7 @@ const SkillResolutionRules = preload("res://game/sim/SkillResolutionRules.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
+const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 
 
 func _init() -> void:
@@ -1072,7 +1073,7 @@ func run_skill_target() -> void:
 	for name in native["source_function_modes"]:
 		var mask := SkillTargetRules.function_mask(name,data["function_bits"])
 		for channel in ["magic","special"]:
-			check(SkillTargetRules.native_target_mode(channel,mask) == int(native["source_function_modes"][name][channel]),"separate native mode mapping: "+name+"/"+channel)
+			check(RulesReadback.native_target_mode(channel,mask) == int(native["source_function_modes"][name][channel]),"separate native mode mapping: "+name+"/"+channel)
 	for code in data["ranges"]:
 		if SkillTargetRules.is_line(data["ranges"][code]): continue # line shapes are effect-only; covered below
 		var local := fields.duplicate(true)

@@ -370,97 +370,7 @@ func _show_equipment_confirmation(slot: String) -> void:
 	preview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	preview.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if result["ok"]:
-		proposed = ProgressionRules.refresh_growth_stats(proposed, catalog)
-		var before: Dictionary = source_unit["combat_profile"]
-		var after: Dictionary = proposed["combat_profile"]
-		preview.text = "移動力  %d → %d\n攻擊  %d → %d\n防禦  %d → %d\n魔擊  %d → %d\n敏捷  %d → %d" % [source_unit["move_point"], proposed["move_point"], before["live_attack_damage"], after["live_attack_damage"], before["live_defense"], after["live_defense"], before["live_magic_attack"], after["live_magic_attack"], source_unit["live_speed"], proposed["live_speed"]]
-		for key in ["attack_damagex2", "attack_back", "avoid_hit_ratio"]:
-			if before[key] != after[key]: preview.text += "\n%s  %d%% → %d%%" % [{"attack_damagex2": "暴擊", "attack_back": "反擊", "avoid_hit_ratio": "迴避"}[key], before[key], after[key]]
-		if before["weapon_magic_attack_type"] != after["weapon_magic_attack_type"] or before["weapon_damage_variance_lo"] != after["weapon_damage_variance_lo"] or before["weapon_damage_variance_hi"] != after["weapon_damage_variance_hi"]:
-			var names := ["無附加", "地", "水", "風", "火", "心", "無屬性"]
-			preview.text += "\n武器附加  %s → %s" % [names[int(before["weapon_magic_attack_type"]) + 1], names[int(after["weapon_magic_attack_type"]) + 1]]
-		var stamina = preload("res://game/sim/StaminaRules.gd")
-		var previous := stamina.equipment_caption(source_unit, catalog)
-		var current := stamina.equipment_caption(proposed, catalog)
-		if previous != current: preview.text += "\n氣力累積  %s → %s" % [previous, current]
-		var sequence = preload("res://game/sim/CombatSequenceRules.gd")
-		var old_count: Dictionary = sequence.attack_count(source_unit, attack_source, catalog)
-		var new_count: Dictionary = sequence.attack_count(proposed, attack_source, catalog)
-		if old_count["ok"] and new_count["ok"] and old_count["count"] != new_count["count"]:
-			preview.text += "\n普通攻擊與反擊  %d擊 → %d擊" % [old_count["count"], new_count["count"]]
-		if not old_count["ok"] or not new_count["ok"]:
-			result = {"ok": false, "reason": "invalid_extra_attack_source"}
-			preview.text = "攻擊資料異常，無法更換這件裝備。"
-		var extra = preload("res://game/sim/ExtraActionRules.gd")
-		var old_actions: Dictionary = extra.equipment(source_unit, catalog)
-		var new_actions: Dictionary = extra.equipment(proposed, catalog)
-		if old_actions["ok"] and new_actions["ok"] and old_actions["count"] != new_actions["count"]:
-			preview.text += "\n輪到時連續行動  %d次 → %d次" % [old_actions["count"], new_actions["count"]]
-		if not old_actions["ok"] or not new_actions["ok"]:
-			result = {"ok": false, "reason": "invalid_extra_action_source"}
-			preview.text = "行動資料異常，無法更換這件裝備。"
-		var experience = preload("res://game/sim/ExperienceRules.gd")
-		var recovery = preload("res://game/sim/ResourceRecoveryRules.gd")
-		var old_resources: Dictionary = recovery.effects(source_unit, catalog)
-		var new_resources: Dictionary = recovery.effects(proposed, catalog)
-		if old_resources["ok"] and new_resources["ok"]:
-			for key in recovery.KEYS:
-				if old_resources["effects"][key] != new_resources["effects"][key]:
-					var title_text: String = {"mp_use_half": "魔法減耗", "hp_auto_restore": "末次行動回血", "mp_auto_restore": "末次行動回魔", "hp_transfer_mp": "末次行動生命轉魔力"}[key]
-					preview.text += "\n%s  %s → %s" % [title_text, "有" if old_resources["effects"][key] else "無", "有" if new_resources["effects"][key] else "無"]
-			if new_resources["effects"]["hp_transfer_mp"]:
-				preview.text += "\n魔力已滿仍耗生命，最低保留1HP。"
-		else:
-			result = {"ok": false, "reason": "invalid_resource_effect"}
-			preview.text = "資源效果資料異常，無法更換這件裝備。"
-		var status = preload("res://game/sim/StatusApplicationRules.gd")
-		var casting_source := {"actors": {str(source_unit["actor_id"]): attack_source}}
-		var position_rules = preload("res://game/sim/PositionCapabilityRules.gd")
-		var old_position: Dictionary = position_rules.effects(source_unit, casting_source, catalog)
-		var new_position: Dictionary = position_rules.effects(proposed, casting_source, catalog)
-		if old_position["ok"] and new_position["ok"]:
-			for key in ["move_magic_use", "add_attack_range"]:
-				if old_position["effects"][key] != new_position["effects"][key]:
-					preview.text += "\n%s  %s → %s" % ["移動後施法" if key == "move_magic_use" else "攻擊範圍加成", "有" if old_position["effects"][key] else "無", "有" if new_position["effects"][key] else "無"]
-			if new_position["effects"]["add_attack_range"]: preview.text += "\n攻擊／反擊提升一檔；魔法範圍不變。"
-		else:
-			result = {"ok": false, "reason": "invalid_position_capability"}
-			preview.text = "範圍或行動資料異常，無法更換這件裝備。"
-		var old_casting: Dictionary = status.modifiers(source_unit, casting_source, catalog)
-		var weapon = preload("res://game/sim/WeaponEffectRules.gd")
-		var old_weapon: Dictionary = weapon.effects(source_unit, catalog)
-		var new_weapon: Dictionary = weapon.effects(proposed, catalog)
-		if old_weapon["ok"] and new_weapon["ok"]:
-			for bit in [weapon.POISON, weapon.CANCEL, weapon.MANA]:
-				if (int(old_weapon["flags"]) & bit) != (int(new_weapon["flags"]) & bit):
-					preview.text += "\n%s  %s → %s" % [{weapon.POISON:"末擊附毒25%",weapon.CANCEL:"末擊取消行動10%",weapon.MANA:"末擊削減魔力"}[bit], "有" if int(old_weapon["flags"]) & bit else "無", "有" if int(new_weapon["flags"]) & bit else "無"]
-			if int(new_weapon["flags"]) & weapon.MANA: preview.text += "\n削減目標魔力＝末擊實際傷害的三分之一；自身不回魔。"
-		else:
-			result = {"ok": false, "reason": "invalid_weapon_effect_source"}
-			preview.text = "武器效果資料異常，無法更換這件裝備。"
-		var new_casting: Dictionary = status.modifiers(proposed, casting_source, catalog)
-		if old_casting["ok"] and new_casting["ok"]:
-			for key in status.IMMUNITY:
-				var before_protected: bool = (int(old_casting["effects"]) & (int(status.IMMUNITY[key]) | 0x80)) != 0
-				var after_protected: bool = (int(new_casting["effects"]) & (int(status.IMMUNITY[key]) | 0x80)) != 0
-				if before_protected != after_protected:
-					preview.text += "\n%s  %s → %s" % ["防止" + preload("res://game/sim/StatusCatalog.gd").name_of(key), "有" if before_protected else "無", "有" if after_protected else "無"]
-					if after_protected: preview.text += "（不解除已有狀態）"
-			if old_casting["magic_hit_bonus"] != new_casting["magic_hit_bonus"]:
-				preview.text += "\n魔法命中修正  +%d → +%d" % [old_casting["magic_hit_bonus"], new_casting["magic_hit_bonus"]]
-		else:
-			result = {"ok": false, "reason": "invalid_casting_equipment"}
-			preview.text = "施法裝備資料異常，無法更換這件裝備。"
-		var old_exp: Dictionary = experience.multiplier(source_unit, catalog)
-		var new_exp: Dictionary = experience.multiplier(proposed, catalog)
-		if old_exp["ok"] and new_exp["ok"] and old_exp["value"] != new_exp["value"]:
-			preview.text += "\n獲得經驗  ×%d → ×%d" % [old_exp["value"], new_exp["value"]]
-		if not old_exp["ok"] or not new_exp["ok"]:
-			result = {"ok": false, "reason": "invalid_experience_equipment_effect"}
-			preview.text = "經驗資料異常，無法更換這件裝備。"
-		if stamina.input_error(source_unit, catalog) != "" or not stamina.effects(proposed, catalog)["ok"]:
-			result = {"ok": false, "reason": "invalid_stamina_equipment_effect"}
-			preview.text = "氣力資料異常，無法更換這件裝備。"
+		result = _preview_equipment_change(proposed, catalog, preview, result)
 	else:
 		var messages := {"inventory_full": "背包已滿，無法收回裝備。", "wrong_job": "目前職業無法使用這件裝備。", "equipment_cannot_be_removed": "這件裝備無法卸下。", "equipment_unchanged": "已裝備相同道具。", "unsupported_equipment": "此裝備效果尚未開放。"}
 		preview.text = messages.get(result["reason"], "目前無法更換這件裝備。")
@@ -468,6 +378,110 @@ func _show_equipment_confirmation(slot: String) -> void:
 	confirm_button.disabled = not result["ok"]
 	confirm_button.pressed.connect(func(): equipment_requested.emit(selected_slot, selected_index, int(selected_item)))
 	BattleUISkin.button(page_root, "取消", Vector2(338, 334), Vector2(150, 36)).pressed.connect(cancel)
+
+
+## _show_equipment_confirmation: the before → after lines of a legal change (stats,
+## 氣力, attack count, extra actions); returns `result`, replaced when source data is bad.
+func _preview_equipment_change(proposed: Dictionary, catalog: Dictionary, preview: Label, result: Dictionary) -> Dictionary:
+	proposed = ProgressionRules.refresh_growth_stats(proposed, catalog)
+	var before: Dictionary = source_unit["combat_profile"]
+	var after: Dictionary = proposed["combat_profile"]
+	preview.text = "移動力  %d → %d\n攻擊  %d → %d\n防禦  %d → %d\n魔擊  %d → %d\n敏捷  %d → %d" % [source_unit["move_point"], proposed["move_point"], before["live_attack_damage"], after["live_attack_damage"], before["live_defense"], after["live_defense"], before["live_magic_attack"], after["live_magic_attack"], source_unit["live_speed"], proposed["live_speed"]]
+	for key in ["attack_damagex2", "attack_back", "avoid_hit_ratio"]:
+		if before[key] != after[key]: preview.text += "\n%s  %d%% → %d%%" % [{"attack_damagex2": "暴擊", "attack_back": "反擊", "avoid_hit_ratio": "迴避"}[key], before[key], after[key]]
+	if before["weapon_magic_attack_type"] != after["weapon_magic_attack_type"] or before["weapon_damage_variance_lo"] != after["weapon_damage_variance_lo"] or before["weapon_damage_variance_hi"] != after["weapon_damage_variance_hi"]:
+		var names := ["無附加", "地", "水", "風", "火", "心", "無屬性"]
+		preview.text += "\n武器附加  %s → %s" % [names[int(before["weapon_magic_attack_type"]) + 1], names[int(after["weapon_magic_attack_type"]) + 1]]
+	var stamina = preload("res://game/sim/StaminaRules.gd")
+	var previous := stamina.equipment_caption(source_unit, catalog)
+	var current := stamina.equipment_caption(proposed, catalog)
+	if previous != current: preview.text += "\n氣力累積  %s → %s" % [previous, current]
+	var sequence = preload("res://game/sim/CombatSequenceRules.gd")
+	var old_count: Dictionary = sequence.attack_count(source_unit, attack_source, catalog)
+	var new_count: Dictionary = sequence.attack_count(proposed, attack_source, catalog)
+	if old_count["ok"] and new_count["ok"] and old_count["count"] != new_count["count"]:
+		preview.text += "\n普通攻擊與反擊  %d擊 → %d擊" % [old_count["count"], new_count["count"]]
+	if not old_count["ok"] or not new_count["ok"]:
+		result = {"ok": false, "reason": "invalid_extra_attack_source"}
+		preview.text = "攻擊資料異常，無法更換這件裝備。"
+	var extra = preload("res://game/sim/ExtraActionRules.gd")
+	var old_actions: Dictionary = extra.equipment(source_unit, catalog)
+	var new_actions: Dictionary = extra.equipment(proposed, catalog)
+	if old_actions["ok"] and new_actions["ok"] and old_actions["count"] != new_actions["count"]:
+		preview.text += "\n輪到時連續行動  %d次 → %d次" % [old_actions["count"], new_actions["count"]]
+	if not old_actions["ok"] or not new_actions["ok"]:
+		result = {"ok": false, "reason": "invalid_extra_action_source"}
+		preview.text = "行動資料異常，無法更換這件裝備。"
+	return _preview_equipment_effects(proposed, catalog, preview, result)
+
+
+## _preview_equipment_change, continued: resource, position, weapon, casting, experience
+## and stamina effects.
+func _preview_equipment_effects(proposed: Dictionary, catalog: Dictionary, preview: Label, result: Dictionary) -> Dictionary:
+	var stamina = preload("res://game/sim/StaminaRules.gd")
+	var experience = preload("res://game/sim/ExperienceRules.gd")
+	var recovery = preload("res://game/sim/ResourceRecoveryRules.gd")
+	var old_resources: Dictionary = recovery.effects(source_unit, catalog)
+	var new_resources: Dictionary = recovery.effects(proposed, catalog)
+	if old_resources["ok"] and new_resources["ok"]:
+		for key in recovery.KEYS:
+			if old_resources["effects"][key] != new_resources["effects"][key]:
+				var title_text: String = {"mp_use_half": "魔法減耗", "hp_auto_restore": "末次行動回血", "mp_auto_restore": "末次行動回魔", "hp_transfer_mp": "末次行動生命轉魔力"}[key]
+				preview.text += "\n%s  %s → %s" % [title_text, "有" if old_resources["effects"][key] else "無", "有" if new_resources["effects"][key] else "無"]
+		if new_resources["effects"]["hp_transfer_mp"]:
+			preview.text += "\n魔力已滿仍耗生命，最低保留1HP。"
+	else:
+		result = {"ok": false, "reason": "invalid_resource_effect"}
+		preview.text = "資源效果資料異常，無法更換這件裝備。"
+	var status = preload("res://game/sim/StatusApplicationRules.gd")
+	var casting_source := {"actors": {str(source_unit["actor_id"]): attack_source}}
+	var position_rules = preload("res://game/sim/PositionCapabilityRules.gd")
+	var old_position: Dictionary = position_rules.effects(source_unit, casting_source, catalog)
+	var new_position: Dictionary = position_rules.effects(proposed, casting_source, catalog)
+	if old_position["ok"] and new_position["ok"]:
+		for key in ["move_magic_use", "add_attack_range"]:
+			if old_position["effects"][key] != new_position["effects"][key]:
+				preview.text += "\n%s  %s → %s" % ["移動後施法" if key == "move_magic_use" else "攻擊範圍加成", "有" if old_position["effects"][key] else "無", "有" if new_position["effects"][key] else "無"]
+		if new_position["effects"]["add_attack_range"]: preview.text += "\n攻擊／反擊提升一檔；魔法範圍不變。"
+	else:
+		result = {"ok": false, "reason": "invalid_position_capability"}
+		preview.text = "範圍或行動資料異常，無法更換這件裝備。"
+	var old_casting: Dictionary = status.modifiers(source_unit, casting_source, catalog)
+	var weapon = preload("res://game/sim/WeaponEffectRules.gd")
+	var old_weapon: Dictionary = weapon.effects(source_unit, catalog)
+	var new_weapon: Dictionary = weapon.effects(proposed, catalog)
+	if old_weapon["ok"] and new_weapon["ok"]:
+		for bit in [weapon.POISON, weapon.CANCEL, weapon.MANA]:
+			if (int(old_weapon["flags"]) & bit) != (int(new_weapon["flags"]) & bit):
+				preview.text += "\n%s  %s → %s" % [{weapon.POISON:"末擊附毒25%",weapon.CANCEL:"末擊取消行動10%",weapon.MANA:"末擊削減魔力"}[bit], "有" if int(old_weapon["flags"]) & bit else "無", "有" if int(new_weapon["flags"]) & bit else "無"]
+		if int(new_weapon["flags"]) & weapon.MANA: preview.text += "\n削減目標魔力＝末擊實際傷害的三分之一；自身不回魔。"
+	else:
+		result = {"ok": false, "reason": "invalid_weapon_effect_source"}
+		preview.text = "武器效果資料異常，無法更換這件裝備。"
+	var new_casting: Dictionary = status.modifiers(proposed, casting_source, catalog)
+	if old_casting["ok"] and new_casting["ok"]:
+		for key in status.IMMUNITY:
+			var before_protected: bool = (int(old_casting["effects"]) & (int(status.IMMUNITY[key]) | 0x80)) != 0
+			var after_protected: bool = (int(new_casting["effects"]) & (int(status.IMMUNITY[key]) | 0x80)) != 0
+			if before_protected != after_protected:
+				preview.text += "\n%s  %s → %s" % ["防止" + preload("res://game/sim/StatusCatalog.gd").name_of(key), "有" if before_protected else "無", "有" if after_protected else "無"]
+				if after_protected: preview.text += "（不解除已有狀態）"
+		if old_casting["magic_hit_bonus"] != new_casting["magic_hit_bonus"]:
+			preview.text += "\n魔法命中修正  +%d → +%d" % [old_casting["magic_hit_bonus"], new_casting["magic_hit_bonus"]]
+	else:
+		result = {"ok": false, "reason": "invalid_casting_equipment"}
+		preview.text = "施法裝備資料異常，無法更換這件裝備。"
+	var old_exp: Dictionary = experience.multiplier(source_unit, catalog)
+	var new_exp: Dictionary = experience.multiplier(proposed, catalog)
+	if old_exp["ok"] and new_exp["ok"] and old_exp["value"] != new_exp["value"]:
+		preview.text += "\n獲得經驗  ×%d → ×%d" % [old_exp["value"], new_exp["value"]]
+	if not old_exp["ok"] or not new_exp["ok"]:
+		result = {"ok": false, "reason": "invalid_experience_equipment_effect"}
+		preview.text = "經驗資料異常，無法更換這件裝備。"
+	if stamina.input_error(source_unit, catalog) != "" or not stamina.effects(proposed, catalog)["ok"]:
+		result = {"ok": false, "reason": "invalid_stamina_equipment_effect"}
+		preview.text = "氣力資料異常，無法更換這件裝備。"
+	return result
 
 
 ## Modal input while the stack is up: right click / Esc step back one page (`cancel`)

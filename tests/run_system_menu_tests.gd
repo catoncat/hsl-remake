@@ -13,6 +13,7 @@ const WORLD_SCENE_PATH := "res://content/world/world_map_scene.json"
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 
 var failures: Array[String] = []
 
@@ -218,11 +219,11 @@ func _run_records_and_memoir() -> void:
 	_assert_true(FileAccess.file_exists(checkpoint_path), "the checkpoint file exists afterwards")
 	# The scroll stays open under 「進度儲存完成」 on the bottom BOARD02 message board (582.53–583.87 s).
 	_assert_eq(menu.summary().get("phase", ""), "menu", "saving leaves the scroll open")
-	_assert_true(menu.save_notice_visible(), "the 進度儲存完成 notice is shown")
+	_assert_true(RuntimeReadback.save_notice_visible(menu), "the 進度儲存完成 notice is shown")
 	await create_timer(menu.SAVE_NOTICE_IN_SECONDS + menu.SAVE_NOTICE_HOLD_SECONDS * 0.5).timeout
-	_assert_true(menu.save_notice_visible() and menu.get_node("SaveNotice").modulate.a > 0.9, "the notice holds after its fade-in")
+	_assert_true(RuntimeReadback.save_notice_visible(menu) and menu.get_node("SaveNotice").modulate.a > 0.9, "the notice holds after its fade-in")
 	await create_timer(menu.SAVE_NOTICE_HOLD_SECONDS * 0.5 + menu.SAVE_NOTICE_OUT_SECONDS + 0.2).timeout
-	_assert_true(not menu.save_notice_visible(), "the notice is gone after about 1.35 s")
+	_assert_true(not RuntimeReadback.save_notice_visible(menu), "the notice is gone after about 1.35 s")
 	menu.handle_input(_key(KEY_ESCAPE))
 	await create_timer(menu.SCROLL_SECONDS + 0.2).timeout
 	await process_frame

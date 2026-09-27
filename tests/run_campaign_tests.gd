@@ -351,7 +351,7 @@ func _test_separate_party_loot_gate() -> void:
 	_assert_true(not view.battle_finished, "the finished state leaves while the window is open")
 	# Take the important item into 緼娜's bag, 放棄 whatever else dropped.
 	controller.panel.rows[0].pressed.emit()
-	controller.panel.slots[controller.panel.first_empty_slot()].pressed.emit()
+	controller.panel.slots[RuntimeReadback.first_empty_slot(controller.panel)].pressed.emit()
 	await process_frame
 	_assert_true(_unit(scene.play_loop, "tina")["inventory"].has(281), "the taken item lands in the separate party member's bag")
 	if scene.play_loop["settlement"]["pending"].is_empty():

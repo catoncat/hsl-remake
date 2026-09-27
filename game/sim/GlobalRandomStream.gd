@@ -93,6 +93,7 @@ static func remember(loop: Dictionary) -> void:
 
 
 ## One draw straight on the process stream (world map and town rolls, outside a battle loop).
+## test hook
 static func session_draw(bound: int) -> int:
 	var state := session()
 	var step := raw(state) if bound < 0 else rand(state, bound)
@@ -102,5 +103,6 @@ static func session_draw(bound: int) -> int:
 
 ## Forget the process stream: the next use seeds it again (test harness: one battle's
 ## stream must not depend on the battles an earlier suite played in the same process).
+## test hook
 static func reset_session() -> void:
 	_session = []

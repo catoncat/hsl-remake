@@ -234,80 +234,101 @@ static func compile(attack_lines: Array, defense_lines: Array, hit: bool, seed: 
 		for instruction in instructions:
 			var op: String = instruction["op"]
 			var args: Array = instruction["args"]
-			match op:
-				"aniDelay":
-					cursor += number(args[0])
-				"aniPlaySound", "aniPlayHitSound":
-					if hit or op == "aniPlaySound":
-						timeline["events"].append({"tick": cursor, "kind": "sound", "member": str(args[0]), "phase": phase})
-				"aniInsertObject":
-					_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor)
-				"aniInsertRandomObject", "aniInsertHitRandomObject":
-					if hit or op == "aniInsertRandomObject":
-						_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, 0, number(args[5]), false, number(args[6]))
-				"aniInsertHitRandomObjectDisp":
-					if hit:
-						_insert_random(timeline, data, rng, phase, args, TARGET_CENTRE + Vector2(number(args[1]), number(args[2])), cursor, 0, number(args[5]), false, number(args[6]))
-				"aniInsertRandomObjectDelay":
-					_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, number(args[5]), number(args[6]), false, number(args[7]))
-				"aniInsertRandomObjectFixDelay", "aniInsertHitRandomObjectFixDelay":
-					if hit or op == "aniInsertRandomObjectFixDelay":
-						_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, number(args[5]), number(args[6]), true, number(args[7]))
-				"aniInsertDistanceObjectFixDelay":
-					var step := Vector2(number(args[3]), number(args[4]))
-					for index in range(number(args[7])):
-						_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])) + step * index, cursor + number(args[5]) + number(args[6]) * index)
-				"aniInsertAngleObject", "aniInsertAngleObjectMakeShape":
-					var count := number(args[3])
-					for index in range(count):
-						var angle := TAU * index / float(maxi(count, 1))
-						var event := _insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor + number(args[4]) + number(args[5]) * index)
-						if event.is_empty(): continue
-						event["motion"] = "radial"
-						event["direction"] = Vector2(cos(angle), sin(angle))
-						event["expire"] = event["tick"] + maxi(event["expire"] - event["tick"], ANGLE_LIFETIME_TICKS)
-						if op == "aniInsertAngleObject" and event["frames"].size() >= count:
-							event["fixed_frame"] = index
-						else:
-							event["rotation"] = angle
-				"aniInsertRoundRandomObject":
-					var radius := fixed16(args[3])
-					var radii := Vector2(radius / float(1 << number(args[4])), radius / float(1 << number(args[5])))
-					var count := number(args[8])
-					for index in range(count):
-						var angle := TAU * (number(args[7]) / 256.0 + index / float(maxi(count, 1)))
-						_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])) + Vector2(cos(angle) * radii.x, sin(angle) * radii.y), cursor + number(args[6]) * index)
-				"aniInsertTornadoObject":
-					for index in range(number(args[10])):
-						var centre := Vector2(number(args[1]), number(args[2]) + number(args[3]) * index)
-						var event := _insert(timeline, data, phase, str(args[0]), centre, cursor)
-						if event.is_empty(): continue
-						event["motion"] = "spin"
-						event["centre"] = centre
-						event["radius"] = fixed16(args[4]) + fixed16(args[5]) * index
-						event["angle"] = (number(args[6]) + number(args[7]) * index) / 256.0
-						event["zoom"] = maxf(0.05, fixed16(args[8]) + fixed16(args[9]) * index)
-						event["expire"] = event["tick"] + maxi(event["expire"] - event["tick"], TORNADO_LIFETIME_TICKS)
-				"aniInsertSpecialBG":
-					timeline[phase + "_background"] = str(args[0])
-				"aniProcessHitMiss", "aniProcessHitMissMulti":
-					timeline["hit_ticks"].append(cursor)
-				"aniShowHitResult", "aniShowHitResultNoWait":
-					timeline["result_ticks"].append(cursor)
-				"aniDoublePageMode":
-					if int(timeline["double_page_tick"]) < 0:
-						timeline["double_page_tick"] = cursor
-				"aniNoSpecialDarkBG":
-					timeline["no_dark_bg"] = true
-				"aniShowAttacker":
-					timeline["show_attacker"] = true
-				"aniSetXYDisp":
-					timeline["xy_disp"] = Vector2(number(args[0]), number(args[1]))
-				_:
-					if not timeline["unimplemented"].has(op):
-						timeline["unimplemented"].append(op)
+			cursor = _compile_instruction(timeline, data, rng, phase, hit, cursor, op, args)
 		if phase == "attack":
 			timeline["release_tick"] = cursor
+	_finish_timeline(timeline, cursor)
+	return timeline
+
+
+## One special-script instruction at tick `cursor` into `timeline`; returns the next cursor.
+static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: RandomNumberGenerator, phase: String, hit: bool, cursor: int, op: String, args: Array) -> int:
+	if _insert_pattern(timeline, data, phase, op, args, cursor): return cursor
+	match op:
+		"aniDelay":
+			cursor += number(args[0])
+		"aniPlaySound", "aniPlayHitSound":
+			if hit or op == "aniPlaySound":
+				timeline["events"].append({"tick": cursor, "kind": "sound", "member": str(args[0]), "phase": phase})
+		"aniInsertObject":
+			_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor)
+		"aniInsertRandomObject", "aniInsertHitRandomObject":
+			if hit or op == "aniInsertRandomObject":
+				_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, 0, number(args[5]), false, number(args[6]))
+		"aniInsertHitRandomObjectDisp":
+			if hit:
+				_insert_random(timeline, data, rng, phase, args, TARGET_CENTRE + Vector2(number(args[1]), number(args[2])), cursor, 0, number(args[5]), false, number(args[6]))
+		"aniInsertRandomObjectDelay":
+			_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, number(args[5]), number(args[6]), false, number(args[7]))
+		"aniInsertRandomObjectFixDelay", "aniInsertHitRandomObjectFixDelay":
+			if hit or op == "aniInsertRandomObjectFixDelay":
+				_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, number(args[5]), number(args[6]), true, number(args[7]))
+		"aniInsertSpecialBG":
+			timeline[phase + "_background"] = str(args[0])
+		"aniProcessHitMiss", "aniProcessHitMissMulti":
+			timeline["hit_ticks"].append(cursor)
+		"aniShowHitResult", "aniShowHitResultNoWait":
+			timeline["result_ticks"].append(cursor)
+		"aniDoublePageMode":
+			if int(timeline["double_page_tick"]) < 0:
+				timeline["double_page_tick"] = cursor
+		"aniNoSpecialDarkBG":
+			timeline["no_dark_bg"] = true
+		"aniShowAttacker":
+			timeline["show_attacker"] = true
+		"aniSetXYDisp":
+			timeline["xy_disp"] = Vector2(number(args[0]), number(args[1]))
+		_:
+			if not timeline["unimplemented"].has(op):
+				timeline["unimplemented"].append(op)
+	return cursor
+
+
+## The patterned multi-object inserts (line, ring, oval, tornado); false for any other op.
+static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: String, op: String, args: Array, cursor: int) -> bool:
+	match op:
+		"aniInsertDistanceObjectFixDelay":
+			var step := Vector2(number(args[3]), number(args[4]))
+			for index in range(number(args[7])):
+				_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])) + step * index, cursor + number(args[5]) + number(args[6]) * index)
+		"aniInsertAngleObject", "aniInsertAngleObjectMakeShape":
+			var count := number(args[3])
+			for index in range(count):
+				var angle := TAU * index / float(maxi(count, 1))
+				var event := _insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor + number(args[4]) + number(args[5]) * index)
+				if event.is_empty(): continue
+				event["motion"] = "radial"
+				event["direction"] = Vector2(cos(angle), sin(angle))
+				event["expire"] = event["tick"] + maxi(event["expire"] - event["tick"], ANGLE_LIFETIME_TICKS)
+				if op == "aniInsertAngleObject" and event["frames"].size() >= count:
+					event["fixed_frame"] = index
+				else:
+					event["rotation"] = angle
+		"aniInsertRoundRandomObject":
+			var radius := fixed16(args[3])
+			var radii := Vector2(radius / float(1 << number(args[4])), radius / float(1 << number(args[5])))
+			var count := number(args[8])
+			for index in range(count):
+				var angle := TAU * (number(args[7]) / 256.0 + index / float(maxi(count, 1)))
+				_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])) + Vector2(cos(angle) * radii.x, sin(angle) * radii.y), cursor + number(args[6]) * index)
+		"aniInsertTornadoObject":
+			for index in range(number(args[10])):
+				var centre := Vector2(number(args[1]), number(args[2]) + number(args[3]) * index)
+				var event := _insert(timeline, data, phase, str(args[0]), centre, cursor)
+				if event.is_empty(): continue
+				event["motion"] = "spin"
+				event["centre"] = centre
+				event["radius"] = fixed16(args[4]) + fixed16(args[5]) * index
+				event["angle"] = (number(args[6]) + number(args[7]) * index) / 256.0
+				event["zoom"] = maxf(0.05, fixed16(args[8]) + fixed16(args[9]) * index)
+				event["expire"] = event["tick"] + maxi(event["expire"] - event["tick"], TORNADO_LIFETIME_TICKS)
+		_:
+			return false
+	return true
+
+
+## Impact／result marks, flight arrivals and the completion tick of a compiled special timeline.
+static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 	timeline["impact_tick"] = int(timeline["hit_ticks"][0]) if not timeline["hit_ticks"].is_empty() else int(timeline["release_tick"])
 	timeline["result_tick"] = int(timeline["result_ticks"][0]) if not timeline["result_ticks"].is_empty() else int(timeline["impact_tick"])
 	# Off-stage objects fly to the target centre, arriving at the phase's next hit mark
@@ -329,7 +350,6 @@ static func compile(attack_lines: Array, defense_lines: Array, hit: bool, seed: 
 		complete = maxi(complete, int(event.get("expire", event["tick"])))
 	timeline["complete_tick"] = complete
 	timeline.erase("sound_cues")
-	return timeline
 
 
 ## The tick timeline of one MAGIC effCode script. Object positions are displacements from

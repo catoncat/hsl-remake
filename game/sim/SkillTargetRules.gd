@@ -35,13 +35,6 @@ static func function_mask(expression: Variant, symbols: Dictionary) -> int:
 	return mask
 
 
-static func native_target_mode(channel: String, mask: int) -> int:
-	if mask <= 0 or channel not in ["magic", "special"]:
-		return -1
-	var support := MAGIC_SUPPORT_MASK if channel == "magic" else SPECIAL_SUPPORT_MASK
-	return 3 if (mask & support) != 0 else 2
-
-
 static func is_line(pattern: Variant) -> bool:
 	## RANGE.H "N Line"/"E Line" (range3CellDir/range4CellDir): hsl_skill_target_data marks
 	## them shape=line; 0x4100e0 indices 21..23 never read the rows, only the size.

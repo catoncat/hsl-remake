@@ -149,19 +149,6 @@ static func _title_counter_expired(state: Dictionary) -> bool:
 	return true
 
 
-## The card's state after `tick` ticks when a key／click reaches the hold on hold tick
-## `skip_hold_tick` (0 = never; the hold then runs its 320 ticks).
-static func section_title_state_at(tick: int, skip_hold_tick: int = 0) -> Dictionary:
-	var state := section_title_new_state()
-	var hold_ticks := 0
-	while int(state["tick"]) < tick and int(state["sub"]) != TITLE_SUB_DONE:
-		var holding := int(state["sub"]) == 4
-		if holding:
-			hold_ticks += 1
-		section_title_step(state, holding and hold_ticks == skip_hold_tick)
-	return state
-
-
 ## Per-tick section title card (coordinator.tick): steps 0x452f32 once per elapsed original
 ## tick and shows the result.
 func _fade_title(delta: float) -> void:

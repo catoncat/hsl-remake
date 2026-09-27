@@ -151,57 +151,7 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 		var stamina: int = unfielded[unit_id]
 		unfielded.erase(unit_id)
 		var record: Dictionary = carried_units[unit_id]
-		if str(record.get("actor_id", "")) != str(unit.get("actor_id", "")):
-			receipt["skipped_unit_ids"].append(unit_id)
-			receipt["errors"].append("actor_mismatch:" + unit_id)
-			continue
-		var candidate := unit.duplicate(true)
-		# A town job-up (命運神殿) lives in the carry as a history of merged target
-		# templates; the scenario unit is the base template, so replay it first.
-		var history: Array = record.get("job_up_history", []) if typeof(record.get("job_up_history")) == TYPE_ARRAY else []
-		if not history.is_empty():
-			var replayed := JobUpRules.replay_history(candidate, history)
-			if not replayed["ok"]:
-				receipt["skipped_unit_ids"].append(unit_id)
-				receipt["errors"].append("job_up_replay_" + str(replayed["reason"]) + ":" + unit_id)
-				continue
-			candidate = replayed["actor"]
-			receipt["job_up_replayed_unit_ids"] = (receipt.get("job_up_replayed_unit_ids", []) as Array) + [unit_id]
-		if stamina < 0 or stamina > StaminaRules.CAP:
-			receipt["skipped_unit_ids"].append(unit_id)
-			receipt["errors"].append("invalid_carry_stamina:" + unit_id)
-			continue
-		candidate["stamina"] = stamina
-		for key in record.keys():
-			if key in ["actor_id", "attributes", "stamina"]:
-				continue
-			if not history.is_empty() and key in ["job_up_flags", "job_up_target_actor_id", "job_up_history"]:
-				continue  # the replay already produced them from the live template
-			candidate[key] = _copy(record[key])
-		var profile: Dictionary = candidate.get("combat_profile", {}).duplicate(true)
-		for key in record.get("attributes", {}).keys():
-			profile[key] = int(record["attributes"][key])
-		candidate["combat_profile"] = profile
-		if candidate.has("inventory") and not InventoryRules.valid(candidate["inventory"]):
-			receipt["skipped_unit_ids"].append(unit_id)
-			receipt["errors"].append("invalid_inventory:" + unit_id)
-			continue
-		# JSON stores integral item codes as floats. Validate before conversion,
-		# then restore the same canonical runtime slots used by initialization.
-		if candidate.has("inventory"): candidate["inventory"] = candidate["inventory"].map(func(value): return int(value))
-		var error := ProgressionRules.refresh_input_error(candidate, equipment_items)
-		if error == "": error = ProgressionRules.Learning.input_error(candidate, next.get("skill_book", {}).get("learning", {}))
-		if error != "":
-			receipt["skipped_unit_ids"].append(unit_id)
-			receipt["errors"].append(error + ":" + unit_id)
-			continue
-		var refreshed := ProgressionRules.refresh_growth_stats(candidate, equipment_items)
-		if bool(carry.get("restore_vitals", true)):
-			refreshed["hp"] = int(refreshed["max_hp"])
-			refreshed["mp"] = int(refreshed["max_mp"])
-		for key in refreshed.keys():
-			unit[key] = refreshed[key]
-		receipt["applied_unit_ids"].append(unit_id)
+		_apply_carried_unit(next, carry, unit, unit_id, record, stamina, equipment_items, receipt)
 	for key in carry.get("loop", {}).keys():
 		next[key] = _copy(carry["loop"][key])
 		receipt["loop_keys"].append(key)
@@ -224,6 +174,63 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 		next["settlement"] = BattleRewardRules.settle({}, "campaign", 0, int(next["gold"]), 0, retained, [])
 	next["campaign_carry_receipt"] = receipt
 	return next
+
+
+## One carried member onto its scenario unit: the job-up replay, carried keys and
+## attributes, stamina, inventory and a growth refresh written into `unit`; a record that
+## fails a check skips the unit with its error in `receipt`.
+static func _apply_carried_unit(next: Dictionary, carry: Dictionary, unit: Dictionary, unit_id: String, record: Dictionary, stamina: int, equipment_items: Dictionary, receipt: Dictionary) -> void:
+	if str(record.get("actor_id", "")) != str(unit.get("actor_id", "")):
+		receipt["skipped_unit_ids"].append(unit_id)
+		receipt["errors"].append("actor_mismatch:" + unit_id)
+		return
+	var candidate := unit.duplicate(true)
+	# A town job-up (命運神殿) lives in the carry as a history of merged target
+	# templates; the scenario unit is the base template, so replay it first.
+	var history: Array = record.get("job_up_history", []) if typeof(record.get("job_up_history")) == TYPE_ARRAY else []
+	if not history.is_empty():
+		var replayed := JobUpRules.replay_history(candidate, history)
+		if not replayed["ok"]:
+			receipt["skipped_unit_ids"].append(unit_id)
+			receipt["errors"].append("job_up_replay_" + str(replayed["reason"]) + ":" + unit_id)
+			return
+		candidate = replayed["actor"]
+		receipt["job_up_replayed_unit_ids"] = (receipt.get("job_up_replayed_unit_ids", []) as Array) + [unit_id]
+	if stamina < 0 or stamina > StaminaRules.CAP:
+		receipt["skipped_unit_ids"].append(unit_id)
+		receipt["errors"].append("invalid_carry_stamina:" + unit_id)
+		return
+	candidate["stamina"] = stamina
+	for key in record.keys():
+		if key in ["actor_id", "attributes", "stamina"]:
+			continue
+		if not history.is_empty() and key in ["job_up_flags", "job_up_target_actor_id", "job_up_history"]:
+			continue  # the replay already produced them from the live template
+		candidate[key] = _copy(record[key])
+	var profile: Dictionary = candidate.get("combat_profile", {}).duplicate(true)
+	for key in record.get("attributes", {}).keys():
+		profile[key] = int(record["attributes"][key])
+	candidate["combat_profile"] = profile
+	if candidate.has("inventory") and not InventoryRules.valid(candidate["inventory"]):
+		receipt["skipped_unit_ids"].append(unit_id)
+		receipt["errors"].append("invalid_inventory:" + unit_id)
+		return
+	# JSON stores integral item codes as floats. Validate before conversion,
+	# then restore the same canonical runtime slots used by initialization.
+	if candidate.has("inventory"): candidate["inventory"] = candidate["inventory"].map(func(value): return int(value))
+	var error := ProgressionRules.refresh_input_error(candidate, equipment_items)
+	if error == "": error = ProgressionRules.Learning.input_error(candidate, next.get("skill_book", {}).get("learning", {}))
+	if error != "":
+		receipt["skipped_unit_ids"].append(unit_id)
+		receipt["errors"].append(error + ":" + unit_id)
+		return
+	var refreshed := ProgressionRules.refresh_growth_stats(candidate, equipment_items)
+	if bool(carry.get("restore_vitals", true)):
+		refreshed["hp"] = int(refreshed["max_hp"])
+		refreshed["mp"] = int(refreshed["max_mp"])
+	for key in refreshed.keys():
+		unit[key] = refreshed[key]
+	receipt["applied_unit_ids"].append(unit_id)
 
 
 static func initialization_only(carry: Dictionary) -> Dictionary:

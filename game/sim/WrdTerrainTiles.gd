@@ -25,27 +25,11 @@ const WRD_MAP_FLAG_MASK := 0x974000
 static func load_tiles(path: String = DEFAULT_PATH, overrides: Array = []) -> Dictionary:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		return {
-			"schema": "hsl_wrd_terrain_tiles.v1",
-			"ok": false,
-			"error": "missing_terrain_json",
-			"path": path,
-			"map_size": Vector2i.ZERO,
-			"tiles": {},
-			"blocking_count": 0,
-		}
+		return _invalid(path, "missing_terrain_json")
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
-		return {
-			"schema": "hsl_wrd_terrain_tiles.v1",
-			"ok": false,
-			"error": "invalid_json",
-			"path": path,
-			"map_size": Vector2i.ZERO,
-			"tiles": {},
-			"blocking_count": 0,
-		}
+		return _invalid(path, "invalid_json")
 	var root: Dictionary = parsed
 	if root.get("schema") != "hsl_wrd_terrain.v2": return _invalid(path, "missing_source_heights")
 	if not root.get("grid") is Array: return _invalid(path, "invalid_terrain_grid")
@@ -80,21 +64,9 @@ static func load_tiles(path: String = DEFAULT_PATH, overrides: Array = []) -> Di
 				"move_cost": 1,
 				"source": path,
 			}
-	for override_value in overrides:
-		if not override_value is Dictionary or not (override_value as Dictionary).get("cell") is Array or (override_value["cell"] as Array).size() != 2:
-			return _invalid(path, "invalid_terrain_override")
-		var cell := Vector2i(int(override_value["cell"][0]), int(override_value["cell"][1]))
-		if not tiles.has(cell):
-			return _invalid(path, "terrain_override_outside_map")
-		var tile: Dictionary = tiles[cell]
-		if override_value.has("height"):
-			var was_blocked: bool = tile["blocks_movement"]
-			tile["elevation"] = int(override_value["height"])
-			tile["blocks_movement"] = tile["elevation"] == 255
-			blocking_count += int(tile["blocks_movement"]) - int(was_blocked)
-		if override_value.has("clear_flags"):
-			tile["movement_flags"] = int(tile["movement_flags"]) & ~int(override_value["clear_flags"])
-		tile["override_source"] = str(override_value.get("source", ""))
+	var applied := _apply_overrides(path, tiles, overrides)
+	if not applied["ok"]: return applied
+	blocking_count += int(applied["blocking_delta"])
 	return {
 		"schema": "hsl_wrd_terrain_tiles.v1",
 		"ok": true,
@@ -109,6 +81,27 @@ static func load_tiles(path: String = DEFAULT_PATH, overrides: Array = []) -> Di
 		],
 	}
 
+
+## Applies the scenario's terrain overrides to `tiles` in place: {ok, blocking_delta} or the
+## invalid receipt.
+static func _apply_overrides(path: String, tiles: Dictionary, overrides: Array) -> Dictionary:
+	var blocking_delta := 0
+	for override_value in overrides:
+		if not override_value is Dictionary or not (override_value as Dictionary).get("cell") is Array or (override_value["cell"] as Array).size() != 2:
+			return _invalid(path, "invalid_terrain_override")
+		var cell := Vector2i(int(override_value["cell"][0]), int(override_value["cell"][1]))
+		if not tiles.has(cell):
+			return _invalid(path, "terrain_override_outside_map")
+		var tile: Dictionary = tiles[cell]
+		if override_value.has("height"):
+			var was_blocked: bool = tile["blocks_movement"]
+			tile["elevation"] = int(override_value["height"])
+			tile["blocks_movement"] = tile["elevation"] == 255
+			blocking_delta += int(tile["blocks_movement"]) - int(was_blocked)
+		if override_value.has("clear_flags"):
+			tile["movement_flags"] = int(tile["movement_flags"]) & ~int(override_value["clear_flags"])
+		tile["override_source"] = str(override_value.get("source", ""))
+	return {"ok": true, "blocking_delta": blocking_delta}
 
 static func _invalid(path: String, error: String) -> Dictionary:
 	return {"schema": "hsl_wrd_terrain_tiles.v1", "ok": false, "error": error, "path": path,

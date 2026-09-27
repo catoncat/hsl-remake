@@ -345,6 +345,7 @@ func _on_intro_finished(reason: String, scene_path: String) -> void:
 
 
 ## Skips the intro film (tests and any key / click while it plays).
+## test hook
 func skip_intro() -> Dictionary:
 	if intro_player == null:
 		return {}

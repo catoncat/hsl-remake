@@ -7,6 +7,7 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -149,14 +150,14 @@ func lethal_case(command: String, fps: int) -> void:
 	tail.level_up_presented.connect(func(growth): level_ups.append(growth))
 	BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["exp"] = 99
 	scene._process(0)
-	check(scene.actor_node_for_unit("leonard").highlight_kind() == "actor" and scene.actor_node_for_unit("enemy021_1").highlight_kind() == "", "the unit choosing its command carries the actor highlight")
+	check(RuntimeReadback.highlight_kind(scene.actor_node_for_unit("leonard")) == "actor" and RuntimeReadback.highlight_kind(scene.actor_node_for_unit("enemy021_1")) == "", "the unit choosing its command carries the actor highlight")
 	scene.menus.choose_command(command)
 	if command == "special": scene.menus._choose_magic("special:magicOTHER:magicCode01")
 	scene.hovered_unit_id = "enemy021_1"
 	scene.hovered_grid_cell = BattlePlayLoop.unit(scene.play_loop, "enemy021_1")["coord"]
 	scene._process(0)
 	scene._process(0)
-	check(scene.interaction_state == "attack_select" and scene.actor_node_for_unit("enemy021_1").highlight_kind() == "target", "the legal target under the target cursor carries the target highlight (%s, %s)" % [scene.interaction_state, scene.actor_node_for_unit("enemy021_1").highlight_kind()])
+	check(scene.interaction_state == "attack_select" and RuntimeReadback.highlight_kind(scene.actor_node_for_unit("enemy021_1")) == "target", "the legal target under the target cursor carries the target highlight (%s, %s)" % [scene.interaction_state, RuntimeReadback.highlight_kind(scene.actor_node_for_unit("enemy021_1"))])
 	attack(scene, command)
 	var settled: Dictionary = scene.play_loop.duplicate(true)
 	var actor: Node2D = scene.actor_node_for_unit("enemy021_1")
@@ -172,7 +173,7 @@ func lethal_case(command: String, fps: int) -> void:
 	check(scene.play_loop == settled and not scene.growth_panel.visible, "last words cannot change HP/EXP or open allocation early")
 	# 0x446c40(actor, facing, 6, 2) at the death entry: state 6 is the SHAPEDEF hit frame (021-P).
 	check(sprite_path(actor).ends_with("/021-P.png"), "the fallen actor shows its SHAPEDEF hit pose through its last words (%s)" % sprite_path(actor))
-	check(actor.highlight_kind() == "" and scene.actor_node_for_unit("leonard").highlight_kind() == "", "no target／actor highlight while the last words are up")
+	check(RuntimeReadback.highlight_kind(actor) == "" and RuntimeReadback.highlight_kind(scene.actor_node_for_unit("leonard")) == "", "no target／actor highlight while the last words are up")
 	for _frame in range(fps): scene._process(1.0 / fps)
 	check(tail.dialogue_active() and deaths.is_empty() and death_sounds(scene, "enemy021_1") == 0 and rewards.is_empty(), "refresh waits for confirmation; the death sound waits for the last words")
 	scene.menus.choose_command("wait")

@@ -165,6 +165,12 @@ func _ready() -> void:
 	transition_shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	transition_shade.hide()
 	panel.add_child(transition_shade)
+	_build_skill_layers()
+
+
+## _ready, continued: cue／skill manifests, the blade, sparks and ability sound, the additive
+## light material, and the skill presenters (dedicated modules, then the script player).
+func _build_skill_layers() -> void:
 	cue_manifest = ContentPaths.read_json(ContentPaths.INTERFACE_AUDIO)
 	skill = ContentPaths.read_json(ContentPaths.FIRST_SKILL)
 	blade = Sprite2D.new()
@@ -458,6 +464,11 @@ func _process(delta: float) -> void:
 		_show_opening(OriginalTick.ticks(elapsed))
 	elif elapsed >= float(schedule["recovery"]):
 		_show_closing_darken(OriginalTick.ticks(elapsed - float(schedule["recovery"])))
+	_show_ordinary_shot(clip, actor, schedule, strike_time, impact_time)
+
+
+## _process, ordinary strike: attacker pose and motion, defender reaction, flash and result.
+func _show_ordinary_shot(clip: Dictionary, actor: Dictionary, schedule: Dictionary, strike_time: float, impact_time: float) -> void:
 	var update := maxf(0.0, OriginalTick.ticks(elapsed - float(schedule["opening"])))
 	var dispatch: Dictionary = actor["dispatch"]
 	var frame := int(dispatch["initial_frame"])
@@ -624,18 +635,6 @@ func show_result(strike: Dictionary, age_ticks: float, point: Vector2 = SCRIPT_N
 	result_number.show()
 	for number in result_number.get_children():
 		number.draw_at(age_ticks)
-
-
-## What the result shows: the numbers' texts (spawn order, " · "), then the caption line.
-func result_text() -> String:
-	var numbers: Array[String] = []
-	if result_number.visible:
-		for number in result_number.get_children():
-			if number.showing(): numbers.append(number.text)
-	var lines: Array[String] = []
-	if not numbers.is_empty(): lines.append(" · ".join(numbers))
-	if result.visible and result.text != "": lines.append(result.text)
-	return "\n".join(lines)
 
 
 ## The numbers aniShowHitResult (0x404643) spawns for a strike (ResultNumberFloater.spawns): the

@@ -49,25 +49,6 @@ const BCMD_BY_ID := {
 }
 
 
-static func packet_summary() -> Dictionary:
-	return {
-		"schema": "hsl_core_turn_queue_surface.v1",
-		"packet_path": PACKET_PATH,
-		"evidence_doc": EVIDENCE_DOC,
-		"rebuild_function": REBUILD_ADDR,
-		"current_object_function": CURRENT_ADDR,
-		"advance_function": ADVANCE_ADDR,
-		"status_tickdown_function": STATUS_TICK_ADDR,
-		"menu_builder_function": MENU_BUILDER_ADDR,
-		"sort_key": "live_speed",
-		"sort_order": "descending",
-		"unresolved_semantics": [
-			"NPC registration follows roster (creation) order; native free-slot reuse after the 200-slot wrap is not modelled",
-			"BCMD post-select handler mapping",
-		],
-	}
-
-
 ## Registration slot of one roster unit in the native object array 0x4c34c0: a registered
 ## player (the growth registry's manual allocation, object word +0xa2 < 20) takes its
 ## reserved slot +0xa0 = PLAYERS code − 1 (0x407665..0x407678); every other actor takes

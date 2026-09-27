@@ -94,6 +94,23 @@ static func initialize_script_state(battle: Dictionary, scenario: Dictionary, se
 			next["%s_statuses" % kind] = normalized
 	next["event_log"] = next.get("event_log", []).duplicate()
 	next["script_flags"] = (next.get("script_flags", {}) as Dictionary).duplicate(true)
+	var initial_ids := _initial_class_unit_ids(next, rules)
+	var bindings := _opening_actor_bindings(next, opening)
+	next["winfail_runtime"] = _new_winfail_runtime(next, rules, opening, config, bindings, initial_ids)
+	next["next_level_event"] = WinfailCompiler.first_next_level_event(rules)
+	# Which fired status actually wrote next_level_event ("" for the win-section
+	# default above). The runtime ends an undecided battle only from the cutscene
+	# of that status (WINFAIL073 event_2 / WINFAIL078 event_3 / WINFAIL900 event_4);
+	# a dialogue-only event (WINFAIL010 event_6) must never hand off on the default.
+	next["next_level_event_status"] = ""
+	_record_token_resolution(next)
+	WinfailActions.apply_story_player_state(next, seed)
+	_refresh_objective(next)
+	return next
+
+
+## The ids of the opening units of each class a status inserts (class id -> unit ids).
+static func _initial_class_unit_ids(next: Dictionary, rules: Dictionary) -> Dictionary:
 	var initial_ids := {}
 	for status in WinfailCompiler.all_statuses(rules):
 		for insert_value in (status as Dictionary).get("inserts", []):
@@ -105,6 +122,12 @@ static func initialize_script_state(battle: Dictionary, scenario: Dictionary, se
 				if typeof(unit_value) == TYPE_DICTIONARY and str((unit_value as Dictionary).get("class_id", "")) == class_id:
 					ids.append(str((unit_value as Dictionary).get("id", "")))
 			initial_ids[class_id] = ids
+	return initial_ids
+
+
+## Token -> unit id: the opening's actor bindings, then every registered-player template
+## token and alias as `<token>/1`.
+static func _opening_actor_bindings(next: Dictionary, opening: Dictionary) -> Dictionary:
 	var bindings := {}
 	for key in (opening.get("actor_bindings", {}) as Dictionary).keys():
 		var binding: Variant = opening["actor_bindings"][key]
@@ -116,7 +139,12 @@ static func initialize_script_state(battle: Dictionary, scenario: Dictionary, se
 		if spec["kind"] != "registered_player": continue
 		for token in [spec["token"]] + spec["aliases"]:
 			bindings[str(token) + "/1"] = str(spec["actor"]["id"])
-	next["winfail_runtime"] = {
+	return bindings
+
+
+## The fresh script interpreter runtime of a battle (hsl_winfail_runtime.v1).
+static func _new_winfail_runtime(next: Dictionary, rules: Dictionary, opening: Dictionary, config: Dictionary, bindings: Dictionary, initial_ids: Dictionary) -> Dictionary:
+	return {
 		"schema": "hsl_winfail_runtime.v1",
 		"actor_bindings": bindings,
 		"speaker_resource_ids": (opening.get("speaker_resource_ids", {}) as Dictionary).duplicate(true),
@@ -164,16 +192,6 @@ static func initialize_script_state(battle: Dictionary, scenario: Dictionary, se
 		"resolved": {},
 		"pass_limit_hit": false,
 	}
-	next["next_level_event"] = WinfailCompiler.first_next_level_event(rules)
-	# Which fired status actually wrote next_level_event ("" for the win-section
-	# default above). The runtime ends an undecided battle only from the cutscene
-	# of that status (WINFAIL073 event_2 / WINFAIL078 event_3 / WINFAIL900 event_4);
-	# a dialogue-only event (WINFAIL010 event_6) must never hand off on the default.
-	next["next_level_event_status"] = ""
-	_record_token_resolution(next)
-	WinfailActions.apply_story_player_state(next, seed)
-	_refresh_objective(next)
-	return next
 
 
 static func run_event_hooks(battle: Dictionary, attacked: bool = false) -> Dictionary:

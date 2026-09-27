@@ -934,6 +934,7 @@ static func _ai_skill_plans(loop: Dictionary, actor: Dictionary, foes: Array, ch
 	return AISkillPlanning.prepare(loop, actor, foes, channel, fields_by_id, envelope)
 
 
+## test hook
 static func try_skill_turn(loop: Dictionary, actor_id: String, foes: Array, rng: Variant, channel: String = "magic") -> Dictionary:
 	var prepared := ai_skill_candidates(loop, actor_id, foes, channel)
 	if not prepared["ok"]: return {"kind": "invalid_skill_input", "reason": prepared["reason"]}

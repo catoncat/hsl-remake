@@ -33,7 +33,7 @@ def build():
     assert len(actors)==65
     # The stamina word (+0xe8) every actor is constructed with: 0x44cb10 copies the whole PLAYERS
     # template record (0x44cb41 for a first registration, 0x44cb88 for an NPC); an undeclared
-    # field is 0 (only 001 20 and 006 8 declare one). original_stamina.md#开场实测.
+    # field is 0 (only 001 20 and 006 8 declare one). original_stamina.md#证据.
     rows={b['code'].zfill(3):b for b in blocks(raw,'character')}
     for code,row in actors.items(): row['stamina']=int(rows[code].get('stamina',0))
     return {'schema':'hsl_progression_templates.v1','evidence_tier':'resource-derived','source_sha256':digest(raw),'actors':actors,'note':'Unadjusted source template fields; undeclared NPC level1/EXP0 are construction inputs, not final encounter levels. InitialRosterGrowth/EntryGrowth apply the reviewed native adjustment. Final EXP is resolved separately by ExperienceRules. stamina is the PLAYERS template word an actor is constructed with (first registration / NPC); a carried player enters at 0 unless the previous script ran actKeepPlayerST (CampaignCarryRules).'}

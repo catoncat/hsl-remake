@@ -6,6 +6,7 @@ extends SceneTree
 ## Output: ignored/system-menu-review/*.png + manifest.json (visual review input, not parity proof).
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/system-menu-review/"
 var scene: Node
 var menu: Node
@@ -67,7 +68,7 @@ func run() -> void:
 	menu.confirm(true)
 	await create_timer(menu.SAVE_NOTICE_IN_SECONDS + 0.2).timeout
 	await shot("05c-save-notice")
-	check(menu.save_notice_visible() and menu.active(), "the save notice shows over the open scroll")
+	check(RuntimeReadback.save_notice_visible(menu) and menu.active(), "the save notice shows over the open scroll")
 	if not had_checkpoint:
 		DirAccess.remove_absolute(checkpoint_path)
 	menu.close()

@@ -6,6 +6,7 @@ const run_gol_road_tests = preload("res://tests/run_gol_road_tests.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -197,7 +198,7 @@ func presentation_and_restore() -> void:
 	check(not nodes[0].visible and panel.visible and panel._recipient == "hu", "after the cue, opened source box disappears and real collection controls select its actor")
 	var before: Dictionary = runtime.play_loop.duplicate(true)
 	panel.rows[0].pressed.emit()
-	var stale: Button = panel.slots[panel.first_empty_slot()]
+	var stale: Button = panel.slots[RuntimeReadback.first_empty_slot(panel)]
 	panel.cancel(); stale.pressed.emit()
 	check(runtime.play_loop == before, "returning the held item to the list leaves the bag-slot click inert")
 	var controller: Node = runtime.settlement_controller
@@ -209,7 +210,7 @@ func presentation_and_restore() -> void:
 	var json_actors: Array=JSON.parse_string(JSON.stringify(panel._actors))
 	panel.close(); panel.show_rewards(before["settlement"],json_actors,before["equipment_items"],int(before["gold"]))
 	panel.rows[0].pressed.emit()
-	check(panel.holding() and panel.first_empty_slot() >= 0 and runtime.play_loop==before,"old integral-float inventory still offers a legal free slot to the held item without committing a pickup")
+	check(panel.holding() and RuntimeReadback.first_empty_slot(panel) >= 0 and runtime.play_loop==before,"old integral-float inventory still offers a legal free slot to the held item without committing a pickup")
 	check(controller.load_battle()["ok"],"restoring cancels the legacy-slot preview without a transfer")
 	var presentation: Node = runtime.get_node("BattlePresentation")
 	presentation._dialogue_messages.append({"speaker_id":"2", "message_id":"743", "text":runtime.message_text_evidence["messages"]["743"]})

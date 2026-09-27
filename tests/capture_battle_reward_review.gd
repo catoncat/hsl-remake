@@ -8,6 +8,7 @@ const run_battle_reward_tests = preload("res://tests/run_battle_reward_tests.gd"
 const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/battle-reward-review/"
 const PATH := OUT + "partial.save"
 var scene: Node
@@ -57,7 +58,7 @@ func run() -> void:
 		check(not FileAccess.file_exists(PATH), "F5 is refused while loot is still pending (Loop.loot_waiting is not a quiet boundary)")
 		await shot("partial-save-refused")
 		await click(panel.rows[0])
-		await click(panel.slots[panel.first_empty_slot()])
+		await click(panel.slots[RuntimeReadback.first_empty_slot(panel)])
 		await shot("fully-claimed")
 		await click(panel.finish_button)
 		for _attempt in range(400): # the LEVEL UP float plays first (in-process: no restore skip)
@@ -141,7 +142,7 @@ func full_inventory() -> void:
 	var panel = scene.settlement_controller.panel
 	var before: Dictionary = scene.play_loop.duplicate(true)
 	await click(panel.rows[0])
-	check(panel.holding() and panel.first_empty_slot() < 0, "full bag leaves the picked item in hand with no free slot")
+	check(panel.holding() and RuntimeReadback.first_empty_slot(panel) < 0, "full bag leaves the picked item in hand with no free slot")
 	await key(KEY_ESCAPE)
 	check(scene.play_loop == before and panel.holding(), "Esc cannot auto-place into a full bag; the item stays in hand")
 	await click(panel.storage_button)
@@ -189,7 +190,7 @@ func terminal_loot() -> void:
 	var panel = scene.settlement_controller.panel
 	while not panel.rows.is_empty():
 		await click(panel.rows[0])
-		await click(panel.slots[panel.first_empty_slot()])
+		await click(panel.slots[RuntimeReadback.first_empty_slot(panel)])
 	await click(panel.finish_button)
 	for _attempt in range(600):
 		await create_timer(0.025).timeout

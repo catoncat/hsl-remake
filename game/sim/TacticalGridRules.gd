@@ -15,10 +15,6 @@ const Traversal = preload("res://game/sim/ActorTraversalRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 
 
-static func movement_range(unit: Dictionary, units: Array, tiles: Dictionary, map_size: Vector2i) -> Array:
-	return movement_reachability_envelope(unit, units, tiles, map_size).get("reachable_coords", [])
-
-
 ## `traversal` is an accepted `Traversal.prepare(unit, units, tiles)` context the caller
 ## already holds for this unit and board (several floods of one AI turn); empty prepares one.
 ## `route_cells` (a set of cells) resolves only those cells after the same flood: routes,
@@ -30,6 +26,31 @@ static func movement_reachability_envelope(unit: Dictionary, units: Array, tiles
 	var context: Dictionary = traversal if not traversal.is_empty() else Traversal.prepare(unit, units, tiles, {}, map_size)
 	if not context["ok"]:
 		return {"ok": false, "reason": context["reason"], "reachable_coords": [], "reachable_by_coord": {}, "transit_by_coord": {}, "blocked_coords": {}}
+	var flood := _reachability_flood(start, move_budget, context, units, tiles, map_size)
+	var routes := _reachability_routes(flood, start, context, units, tiles, map_size.x, route_cells)
+	return {
+		"ok": true,
+		"schema": "hsl_movement_reachability.v1",
+		"actor_id": str(unit.get("id", "")),
+		"start_coord": start,
+		"move_budget": move_budget,
+		"reachable_coords": routes["reachable"],
+		"reachable_by_coord": routes["reachable_by_coord"],
+		"transit_by_coord": routes["transit_by_coord"],
+		"blocked_coords": flood["blocked_coords"],
+		"cost_source": "0x40ed50/0x40eb80",
+		"unresolved_semantics": [
+			"original equal-cost path tie-break ordering",
+			"full native map-flag lifecycle; body occupancy is derived from current actors",
+			"runtime-confirmed movement budget for every actor",
+		],
+	}
+
+
+## The flood of movement_reachability_envelope: the cheapest cost and parent of every
+## (cell, incoming direction) state within `move_budget`, each cell's best state in
+## first-reached order, and the cells a transition was refused into.
+static func _reachability_flood(start: Vector2i, move_budget: int, context: Dictionary, units: Array, tiles: Dictionary, map_size: Vector2i) -> Dictionary:
 	# Incoming direction matters when a no-block actor was crossed: native
 	# clearance excludes the previous cell. These states live only in this query: state
 	# `(y * width + x) * 4 + incoming direction` for an in-map cell, one extra slot for the
@@ -52,9 +73,6 @@ static func movement_reachability_envelope(unit: Dictionary, units: Array, tiles
 	best_state.resize(cell_count)
 	best_state.fill(-1)
 	var best := {start: initial}
-	var reachable: Array = []
-	var reachable_by_coord := {}
-	var transit_by_coord := {}
 	var blocked_coords := {}
 	# A cell blocked from several neighbours keeps the last transition's reason; its
 	# blocker receipt depends only on the cell, so it is built once per flood over one
@@ -94,13 +112,7 @@ static func movement_reachability_envelope(unit: Dictionary, units: Array, tiles
 		var state_cost := costs[state]
 		var penalty := 0
 		if current != previous and not flying:
-			for delta in DIRECTIONS:
-				var point: Vector2i = current + delta
-				if point == previous: continue
-				var point_flags := cell_flags[point.y * width + point.x] if point.x >= 0 and point.y >= 0 and point.x < map_size.x and point.y < map_size.y else int(flags.get(point, 0))
-				if point_flags & mask:
-					penalty = 1
-					break
+			penalty = _leaving_penalty(current, previous, cell_flags, flags, mask, map_size)
 		for direction in range(4):
 			var next: Vector2i = current + DIRECTIONS[direction]
 			if next == start or next.x < 0 or next.y < 0 or next.x >= map_size.x or next.y >= map_size.y: continue
@@ -132,6 +144,34 @@ static func movement_reachability_envelope(unit: Dictionary, units: Array, tiles
 			if held < 0 or candidate < costs[held]:
 				best_state[next_cell] = next_state
 				best[next] = next_state
+	return {"initial": initial, "costs": costs, "parents": parents, "best": best, "blocked_coords": blocked_coords, "occupants": occupants}
+
+
+## 1 when leaving `current` (entered from `previous`) costs a step more: a neighbour other
+## than the previous cell carries a flag of the unit's `mask`.
+static func _leaving_penalty(current: Vector2i, previous: Vector2i, cell_flags: PackedInt32Array, flags: Dictionary, mask: int, map_size: Vector2i) -> int:
+	var width := map_size.x
+	for delta in DIRECTIONS:
+		var point: Vector2i = current + delta
+		if point == previous: continue
+		var point_flags := cell_flags[point.y * width + point.x] if point.x >= 0 and point.y >= 0 and point.x < map_size.x and point.y < map_size.y else int(flags.get(point, 0))
+		if point_flags & mask:
+			return 1
+	return 0
+
+
+## The route phase of movement_reachability_envelope: each reached cell's cheapest path,
+## costs and stop verdicts; stoppable cells become reachable, the rest transit only.
+static func _reachability_routes(flood: Dictionary, start: Vector2i, context: Dictionary, units: Array, tiles: Dictionary, width: int, route_cells: Variant) -> Dictionary:
+	var initial: int = flood["initial"]
+	var costs: PackedInt32Array = flood["costs"]
+	var parents: PackedInt32Array = flood["parents"]
+	var best: Dictionary = flood["best"]
+	var blocked_coords: Dictionary = flood["blocked_coords"]
+	var occupants: Dictionary = flood["occupants"]
+	var reachable: Array = []
+	var reachable_by_coord := {}
+	var transit_by_coord := {}
 	# Each best state's path／costs／stops are its parent's arrays plus one cell: a state on
 	# several best paths is built once (`routes_by_state`) and each cell's stop verdict is
 	# asked once (`stop_errors`); every route keeps its own arrays.
@@ -171,23 +211,7 @@ static func movement_reachability_envelope(unit: Dictionary, units: Array, tiles
 			transit_by_coord[coord] = route
 			if occupants.is_empty(): occupants = Traversal.Footprint.occupants(units)
 			blocked_coords[coord] = {"reason": error, "transit": true, "blockers": _move_target_blockers(occupants.get(coord, {}), coord, tiles)}
-	return {
-		"ok": true,
-		"schema": "hsl_movement_reachability.v1",
-		"actor_id": str(unit.get("id", "")),
-		"start_coord": start,
-		"move_budget": move_budget,
-		"reachable_coords": reachable,
-		"reachable_by_coord": reachable_by_coord,
-		"transit_by_coord": transit_by_coord,
-		"blocked_coords": blocked_coords,
-		"cost_source": "0x40ed50/0x40eb80",
-		"unresolved_semantics": [
-			"original equal-cost path tie-break ordering",
-			"full native map-flag lifecycle; body occupancy is derived from current actors",
-			"runtime-confirmed movement budget for every actor",
-		],
-	}
+	return {"reachable": reachable, "reachable_by_coord": reachable_by_coord, "transit_by_coord": transit_by_coord}
 
 
 ## The flood's row-major tables for a context prepared without this `map_size` (e.g. by a
@@ -227,19 +251,6 @@ static func path_costs(path: Array, units: Array, tiles: Dictionary, actor_id: S
 		if manhattan(path[index - 1], path[index]) != 1 or Traversal.transition_error(path[index - 1], path[index], context, tiles) != "": return []
 		costs.append(int(costs.back()) + Traversal.step_cost(path[index - 1], path[index], path[maxi(0, index - 2)], context, tiles))
 	return costs
-
-
-static func attack_range(origin: Vector2i, min_range: int, max_range: int, map_size: Vector2i) -> Array:
-	var lower := maxi(min_range, 0)
-	var upper := maxi(max_range, lower)
-	var coords: Array = []
-	for y in range(map_size.y):
-		for x in range(map_size.x):
-			var coord := Vector2i(x, y)
-			var distance := manhattan(origin, coord)
-			if distance >= lower and distance <= upper:
-				coords.append(coord)
-	return coords
 
 
 static func attack_pattern_cells(origin: Vector2i, offsets: Array, map_size: Vector2i) -> Array:

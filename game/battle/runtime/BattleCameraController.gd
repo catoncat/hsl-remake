@@ -90,15 +90,6 @@ func viewport_to_logical(position: Vector2, viewport_size: Vector2) -> Vector2:
 	)
 
 
-func logical_to_viewport(logical_position: Vector2, viewport_size: Vector2) -> Vector2:
-	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
-		return logical_position
-	return Vector2(
-		logical_position.x * viewport_size.x / float(logical_viewport_size.x),
-		logical_position.y * viewport_size.y / float(logical_viewport_size.y)
-	)
-
-
 func logical_to_world(logical_position: Vector2) -> Vector2:
 	if camera == null:
 		return logical_position

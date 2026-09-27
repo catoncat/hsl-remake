@@ -1,5 +1,6 @@
 extends SceneTree
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 ## Normal-clock input review; synthetic resources/positions only in selection cases.
 const OUT := "res://ignored/dialogue-selection-review/"
 var scene: Node
@@ -84,7 +85,7 @@ func run() -> void:
 	var page := 0
 	while view.dialogue_active():
 		var top_row: int = view.dialogue_view.top_row
-		var rows: PackedStringArray = view.dialogue_view.window_rows()
+		var rows: PackedStringArray = RuntimeReadback.window_rows(view.dialogue_view)
 		records.append({"case": "rally_page", "page": page, "top_row": top_row, "window_rows": Array(rows)})
 		await shot("story-%d" % page)
 		check(not view.selection_cursor.visible and not scene.action_menu.visible, "dialogue pauses map controls and selection")
@@ -110,7 +111,7 @@ func run() -> void:
 
 func command(id: String) -> void:
 	await create_timer(0.35).timeout
-	var point: Vector2 = scene.scene_input.command_center_logical_position(id)
+	var point: Vector2 = RuntimeReadback.command_center_logical_position(scene.scene_input, id)
 	check(scene.action_menu.is_visible_in_tree() and scene.scene_input.command_id_at_logical_position(point) == id, "visible command can be selected: " + id)
 	await motion(point)
 	var event := InputEventMouseButton.new()

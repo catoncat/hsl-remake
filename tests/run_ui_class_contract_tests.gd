@@ -31,6 +31,7 @@ extends "res://tests/support/TestSuite.gd"
 
 const BattleSystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 
 
 func _init() -> void:
@@ -546,7 +547,7 @@ func run_section_title() -> void:
 
 
 func _state(tick: int, skip_hold_tick: int = 0) -> Dictionary:
-	return OpeningCinematics.section_title_state_at(tick, skip_hold_tick)
+	return RulesReadback.section_title_state_at(tick, skip_hold_tick)
 
 
 func _expect(tick: int, sub: int, band: int, name_level: int, zoom: int, label: String, skip_hold_tick: int = 0) -> void:

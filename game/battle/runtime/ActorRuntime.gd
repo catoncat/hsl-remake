@@ -137,10 +137,6 @@ func clear_highlight() -> void:
 	_refresh_highlight()
 
 
-func highlight_kind() -> String:
-	return _highlight_kind
-
-
 ## The pulse level (low..1.0) `clock` seconds into a highlight: starts at low, peaks mid-period.
 static func highlight_level(kind: String, clock: float) -> float:
 	var spec: Dictionary = HIGHLIGHTS[kind]

@@ -132,17 +132,9 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 				row["skipped"] = str(spec["insert_skip"])
 				receipt["actions"].append(row)
 				continue
-			var installed := install_actor(loop, spec, symbol, firing, action_index, insert_request)
+			var installed := _install_row(loop, spec, symbol, firing, action_index, insert_request, random_insert, args, receipt, positions, touched, departed, row)
 			if not installed["ok"]: return installed
-			var id: String = installed["unit_id"]
-			previous = id
-			if installed["created"]:
-				receipt["created_ids"].append(id)
-				positions[id] = Vector2i(int(insert_request["position_xy"][0]), int(insert_request["position_xy"][1])) if random_insert else Vector2i(int(args[1]), int(args[2]))
-				if not touched.has(id): touched.append(id)
-			row["install"] = {"unit_id": id, "actor_id": spec["actor"]["actor_id"], "symbol": symbol,
-				"position": positions[id], "created": installed["created"]}
-			row["bindings"] = _bindings(loop, departed)
+			previous = installed["unit_id"]
 		elif name in ["actWalkPrevInsertObject", "actWalkPrevInsertObjectWait"] and args.size() >= 2 and previous != "":
 			_move(positions, touched, row, previous, Vector2i(int(args[0]), int(args[1])))
 		elif name == "actChangePrevInsertObjectID" and not args.is_empty() and str(args[0]).is_valid_int() and previous != "":
@@ -155,28 +147,8 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 			row["object_id_binding"] = {"unit_id": previous, "token": str(args[0])}
 			row["bindings"] = _bindings(loop, departed)
 		elif name in MOVE_ABSOLUTE + MOVE_RELATIVE + MOVE_TO_ACTOR + DEPART:
-			var id := _actor_id(loop, str(args[0]) if not args.is_empty() else "", int(args[1]) if args.size() >= 2 else 1, departed)
-			row["bindings"] = _bindings(loop, departed)
-			if id != "":
-				if name in DEPART:
-					row["departure"] = {"unit_id": id}
-					if args.size() >= 4: row["motion"] = {"unit_id": id, "from": positions[id], "to": Vector2i(int(args[2]), int(args[3]))}
-					departed.append(id)
-					if receipt["created_ids"].has(id):
-						# The interpreter resolved this delete before the unit existed (it is
-						# inserted by the same chain: WINFAIL051's messenger); the transaction
-						# completes its departure request so the PlayLoop retires the unit too.
-						_complete_departure_request(runtime, status["key"], firing, name, args, id)
-				elif args.size() >= 4 and name in MOVE_ABSOLUTE + MOVE_RELATIVE:
-					var target := Vector2i(int(args[2]), int(args[3]))
-					if name in MOVE_RELATIVE: target += positions[id]
-					_move(positions, touched, row, id, target)
-				elif args.size() >= 6 and name in MOVE_TO_ACTOR:
-					var leader := _actor_id(loop, str(args[2]), int(args[3]), departed)
-					if leader == "": return {"ok": false, "reason": "missing_script_relative_actor"}
-					_move(positions, touched, row, id, positions[leader] + Vector2i(int(args[4]), int(args[5])))
-			else:
-				row["missing_actor"] = true
+			var moved := _motion_row(loop, runtime, status, firing, receipt, positions, touched, departed, row, name, args)
+			if not moved["ok"]: return moved
 		elif name == "actSetDeadMessage" and WinfailActions.dead_message_args_valid(args):
 			# 0x452197 addresses the object like the walks above: a same-chain insert (level 6's
 			# second 隊長 969, the party members WINFAIL007／010／017／019 install) already exists here.
@@ -190,6 +162,58 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 		else:
 			row["bindings"] = _bindings(loop, departed)
 		receipt["actions"].append(row)
+	var placed := _place_touched(loop, runtime, receipt, positions, touched, departed)
+	if not placed["ok"]: return placed
+	return {"ok": true, "receipt": receipt}
+
+
+## An installing insert: installs the template actor and records the row; a created
+## unit takes its insert pixel and joins `touched`. Returns install_actor's result.
+static func _install_row(loop: Dictionary, spec: Dictionary, symbol: String, firing: int, action_index: int, insert_request: Dictionary, random_insert: bool, args: Array, receipt: Dictionary, positions: Dictionary, touched: Array, departed: Array, row: Dictionary) -> Dictionary:
+	var installed := install_actor(loop, spec, symbol, firing, action_index, insert_request)
+	if not installed["ok"]: return installed
+	var id: String = installed["unit_id"]
+	if installed["created"]:
+		receipt["created_ids"].append(id)
+		positions[id] = Vector2i(int(insert_request["position_xy"][0]), int(insert_request["position_xy"][1])) if random_insert else Vector2i(int(args[1]), int(args[2]))
+		if not touched.has(id): touched.append(id)
+	row["install"] = {"unit_id": id, "actor_id": spec["actor"]["actor_id"], "symbol": symbol,
+		"position": positions[id], "created": installed["created"]}
+	row["bindings"] = _bindings(loop, departed)
+	return installed
+
+
+## A move／depart action on a bound actor: records its departure or motion (moves also
+## update `positions`／`touched`), or marks the row missing_actor.
+static func _motion_row(loop: Dictionary, runtime: Dictionary, status: Dictionary, firing: int, receipt: Dictionary, positions: Dictionary, touched: Array, departed: Array, row: Dictionary, name: String, args: Array) -> Dictionary:
+	var id := _actor_id(loop, str(args[0]) if not args.is_empty() else "", int(args[1]) if args.size() >= 2 else 1, departed)
+	row["bindings"] = _bindings(loop, departed)
+	if id != "":
+		if name in DEPART:
+			row["departure"] = {"unit_id": id}
+			if args.size() >= 4: row["motion"] = {"unit_id": id, "from": positions[id], "to": Vector2i(int(args[2]), int(args[3]))}
+			departed.append(id)
+			if receipt["created_ids"].has(id):
+				# The interpreter resolved this delete before the unit existed (it is
+				# inserted by the same chain: WINFAIL051's messenger); the transaction
+				# completes its departure request so the PlayLoop retires the unit too.
+				_complete_departure_request(runtime, status["key"], firing, name, args, id)
+		elif args.size() >= 4 and name in MOVE_ABSOLUTE + MOVE_RELATIVE:
+			var target := Vector2i(int(args[2]), int(args[3]))
+			if name in MOVE_RELATIVE: target += positions[id]
+			_move(positions, touched, row, id, target)
+		elif args.size() >= 6 and name in MOVE_TO_ACTOR:
+			var leader := _actor_id(loop, str(args[2]), int(args[3]), departed)
+			if leader == "": return {"ok": false, "reason": "missing_script_relative_actor"}
+			_move(positions, touched, row, id, positions[leader] + Vector2i(int(args[4]), int(args[5])))
+	else:
+		row["missing_actor"] = true
+	return {"ok": true}
+
+
+## Commits every touched, not departed actor to its nearest legal landing cell and ends
+## its last visual move there. Returns {"ok": true} or the failed landing.
+static func _place_touched(loop: Dictionary, runtime: Dictionary, receipt: Dictionary, positions: Dictionary, touched: Array, departed: Array) -> Dictionary:
 	# Temporary insertion pixels and cinematic overlaps are not occupancy. Blocked
 	# final source cells use a recorded nearest legal landing (a remake policy).
 	var occupants: Array = loop["units"].filter(func(a): return not touched.has(a["id"]) and not runtime["departed_unit_ids"].has(a["id"]))
@@ -214,7 +238,7 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 			if row.get("install", {}).get("unit_id") == id:
 				row["install"]["position"] = TacticalGridRules.cell_pixel(actor["coord"])
 				break
-	return {"ok": true, "receipt": receipt}
+	return {"ok": true}
 
 
 static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, firing: int, action: int, request: Dictionary) -> Dictionary:

@@ -2,6 +2,7 @@ extends SceneTree
 ## Real rendered frames and normal input; all fixture grants are listed in the receipt.
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const OUT := "res://ignored/combat-aftermath-review/"
 var scene: Node
 var view: Node
@@ -30,7 +31,7 @@ func run() -> void:
 		current_case = command
 		fixture()
 		await create_timer(0.4).timeout
-		var point: Vector2 = scene.scene_input.command_center_logical_position(command)
+		var point: Vector2 = RuntimeReadback.command_center_logical_position(scene.scene_input, command)
 		check(scene.action_menu.is_visible_in_tree() and scene.scene_input.command_id_at_logical_position(point) == command, "visible command: " + command)
 		await click(point)
 		if command == "special":

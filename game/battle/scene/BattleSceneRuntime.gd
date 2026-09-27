@@ -369,12 +369,6 @@ func viewport_to_logical_position(position: Vector2) -> Vector2:
 	return camera_controller.viewport_to_logical(position, get_viewport_rect().size)
 
 
-func logical_to_viewport_position(logical_position: Vector2) -> Vector2:
-	if camera_controller == null:
-		return logical_position
-	return camera_controller.logical_to_viewport(logical_position, get_viewport_rect().size)
-
-
 func logical_to_world_position(logical_position: Vector2) -> Vector2:
 	if camera_controller == null:
 		return logical_position
@@ -488,13 +482,6 @@ func cancel_pending_move() -> void:
 	menus.rebuild_action_menu_buttons()
 	menus.set_action_menu_visible(interaction_state == Interaction.ACTION_MENU)
 	focus_camera_on_grid(restored)
-
-
-func attack_selected_target(target_unit_id: String) -> void:
-	if selected_unit_id == "" or play_loop.is_empty():
-		return
-	apply_loop(BattlePlayLoop.attack_target(play_loop, target_unit_id), "attack_target")
-	finish_attack_attempt()
 
 
 func attack_selected_coord(coord: Vector2i) -> void:
@@ -783,6 +770,7 @@ func _finish_ai_presentation() -> void:
 
 
 ## Headless/tests: resolve remaining AI turns immediately while still syncing actor positions.
+## test hook
 func flush_ai_playback() -> void:
 	var guard := 0
 	while ai_playback_active and guard < 24:
@@ -935,7 +923,7 @@ func apply_loop(next: Dictionary, reason: String) -> void:
 ## opening coordinator sets a state the loop does not know (Interaction.OPENING_TIMELINE).
 ## Called on a loop apply_loop has just written, so the key is present.
 func mirror_interaction() -> void:
-	interaction_state = str(play_loop[LoopKeys.INTERACTION])
+	interaction_state = str(play_loop.get(LoopKeys.INTERACTION))
 
 
 func _sync_from_play_loop() -> void:
@@ -978,7 +966,7 @@ func _sync_from_play_loop() -> void:
 			unit_grid_coords.erase(unit_id)
 	pending_move_revert = bool(play_loop.get(LoopKeys.PENDING_MOVE, false))
 	if pending_move_revert:
-		pending_move_original_grid = play_loop[LoopKeys.PENDING_MOVE_FROM]
+		pending_move_original_grid = play_loop.get(LoopKeys.PENDING_MOVE_FROM)
 	selected_unit_id = str(play_loop.get(LoopKeys.SELECTED_UNIT_ID, selected_unit_id))
 	last_attack_result = play_loop.get(LoopKeys.LAST_ATTACK, last_attack_result)
 
@@ -1147,14 +1135,15 @@ func focus_camera_on_grid(coord: Vector2i) -> void:
 
 ## The camera's top-left in map pixels is a read-only input of the rules (the original's
 ## 0x4c091c／0x4c0920, which 打人閃電 reads): stamped on the current loop before a rule
-## operation reads it. Not a rule-state write — rules copy it through and never change it.
+## operation reads it, via BattlePlayLoop.stamp_presentation_view — the play loop's own
+## presentation-input entry; not a rule-state write, so it does not go through apply_loop.
 ## Headless runs (autoplay, suites) step rules without playing the camera, so they leave it
 ## unset and the rules centre the ending actor instead.
 func stamp_presentation_view() -> void:
 	if camera_controller == null or map_config == null or play_loop.is_empty() or DisplayServer.get_name() == "headless":
 		return
 	var origin: Vector2 = map_config.grid_projection.get("origin", Vector2.ZERO)
-	play_loop[LoopKeys.PRESENTATION_VIEW] = Vector2i((camera_controller.logical_to_world(Vector2.ZERO) - origin).floor())
+	BattlePlayLoop.stamp_presentation_view(play_loop, Vector2i((camera_controller.logical_to_world(Vector2.ZERO) - origin).floor()))
 
 
 ## Steps a running camera glide; a moved view refreshes the pointer hit and menu anchor.

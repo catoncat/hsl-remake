@@ -1,6 +1,6 @@
 extends Control
 ## The identity strip's 氣力 bar, drawn as the original ST bar object process 0x4368c0 does
-## (docs/evidence_packets/static_reverse/original_stamina.md#氣力条的画法): BAR_ST1 is the
+## (docs/evidence_packets/static_reverse/original_stamina.md#证据): BAR_ST1 is the
 ## empty bar; the red BAR_ST2 fill is clipped to a width taken from the stage the value
 ## has reached — ST ≤ 20 fills value/20 of BAR_ST3's width (the first segment), ≤ 40 fills
 ## value/40 of BAR_ST4's (the first two segments), ≤ 60 fills value/60 of BAR_ST2's — and
@@ -85,12 +85,6 @@ func fill_width() -> int:
 	var reference := int(BattleUISkin.texture(STAGE_SHAPES[stage]).get_width())
 	# 16.16 fixed point as the original: ((st << 16) / (20 × (stage + 1))) × width >> 16.
 	return (((st << 16) / (SEGMENT_POINTS * (stage + 1))) * reference) >> 16
-
-
-## Width of the completed-segment overlay in pixels (0 when no segment is complete).
-func lit_width() -> int:
-	var lit := lit_segments()
-	return 0 if lit == 0 else int(BattleUISkin.texture(LIT_SHAPES[lit - 1]).get_width())
 
 
 ## Blend level of the completed-segment overlay now (12..16 of 16).

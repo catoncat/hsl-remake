@@ -16,6 +16,7 @@ const BattleScenarioRuleAdapter = preload("res://game/sim/BattleScenarioRuleAdap
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const ConditionalPartyRules = preload("res://game/sim/ConditionalPartyRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 
 
 func _init() -> void:
@@ -1520,7 +1521,7 @@ func census(loop: Dictionary, scenario: Dictionary, arrivals: Variant = null) ->
 		fireable[str(status["key"])] = why == ""
 		if why != "":
 			report["blocked_by"][str(status["key"])] = why
-		for token in WinfailConditions.condition_tokens(status):
+		for token in RulesReadback.condition_tokens(status):
 			if WinfailConditions.token_source(cast, str(token)) == "unresolved":
 				report["unresolved"].append("%s condition token %s names no unit" % [status["key"], token])
 			if statics.has(str(token)) and WinfailConditions.units_for_token(cast, str(token)).is_empty() and not report["static_tokens"].has(str(token)):

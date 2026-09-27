@@ -39,6 +39,8 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 	var offensive_targets := {}
 	var any_skills: Array = []
 	var profile: Dictionary = loop["ai_profiles"]["actors"].get(str(actor["actor_id"]), {}).get("profile", {})
+	var ctx := {"loop": loop, "actor": actor, "book": book, "targeting": targeting, "origin": origin, "cells": cells,
+		"primaries": primaries, "envelope": envelope}
 	for id in fields_by_id:
 		var fields: Dictionary = fields_by_id[id]
 		var descriptor: Dictionary = book["skills"][id]
@@ -64,31 +66,8 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 		if offense_bucket < 0: continue
 		var by_primary := {}
 		var every: Array = []
-		for cell in cells:
-			var cast_cells := SkillTargetRules.cells(cell, fields, targeting, loop["map_size"])
-			for coord in SkillTargetRules.candidate_centers(actor, loop["units"], fields, targeting, loop["map_size"], cell):
-				if not cast_cells.has(coord): continue
-				# The shared resolver validates every footprint member before any RNG.
-				var center := target_for_center(actor, loop["units"], fields, targeting, loop["map_size"], cell, coord)
-				var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, book, targeting, loop["equipment_items"], cell, loop["map_size"], coord)
-				if not ready["ok"]:
-					if ready["reason"] not in ["out_of_range", "not_enemy", "target_unavailable", "skill_has_no_effect"]: return ready
-					continue
-				var affected: Array = ready["targets"].map(func(unit): return str(unit["id"]))
-				var useful := useful_ids(ready)
-				if useful.is_empty(): continue
-				var route_any: Dictionary = envelope["reachable_by_coord"].get(cell, {})
-				every.append({"skill_id": id, "target_id": str(center["id"]), "cast_center": coord, "destination": cell,
-					"affected_ids": affected, "useful_ids": useful, "score": useful.size(),
-					"movement_cost": 0 if cell == origin else int(route_any["cost"]), "path": [] if cell == origin else route_any["path"]})
-				for primary in primaries:
-					if not affected.has(str(primary["id"])): continue
-					if not by_primary.has(primary["id"]): by_primary[primary["id"]] = []
-					var route: Dictionary = envelope["reachable_by_coord"].get(cell, {})
-					by_primary[primary["id"]].append({"skill_id": id, "target_id": str(center["id"]), "cast_center": coord,
-						"primary_target_id": str(primary["id"]), "center_is_primary": SkillTargetRules.Footprint.contains(primary,coord), "destination": cell, "affected_ids": affected,
-						"useful_ids": useful, "score": useful.size(), "movement_cost": 0 if cell == origin else int(route["cost"]),
-						"path": [] if cell == origin else route["path"]})
+		var failed := _collect_offense_intents(ctx, id, fields, every, by_primary)
+		if not failed.is_empty(): return failed
 		# 0x40c620 buckets every affordable row whether or not it can land this turn; the
 		# held-target-free planners (0x40d340／0x40df70 with flag 0) pick among all of them.
 		any_skills.append({"skill_id": id, "source_order": source_order, "use_ratio": rate, "bucket": offense_bucket, "intents": every})
@@ -104,6 +83,42 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 	any_target.merge({"skills": any_skills, "available": not any_skills.is_empty(),
 		"move_search": channel != "magic" or bool(capability["effects"]["move_magic_use"])}, true)
 	return {"ok": true, "targets": targets, "offensive_targets": offensive_targets, "any_target": any_target}
+
+
+## Every useful (station cell, cast centre) of one offensive row: all into `every`, and per
+## affected primary into `by_primary[primary id]` ({} or the failing cast receipt).
+static func _collect_offense_intents(ctx: Dictionary, id: Variant, fields: Dictionary, every: Array, by_primary: Dictionary) -> Dictionary:
+	var loop: Dictionary = ctx["loop"]
+	var actor: Dictionary = ctx["actor"]
+	var targeting: Dictionary = ctx["targeting"]
+	var envelope: Dictionary = ctx["envelope"]
+	var origin: Vector2i = ctx["origin"]
+	for cell in ctx["cells"]:
+		var cast_cells := SkillTargetRules.cells(cell, fields, targeting, loop["map_size"])
+		for coord in SkillTargetRules.candidate_centers(actor, loop["units"], fields, targeting, loop["map_size"], cell):
+			if not cast_cells.has(coord): continue
+			# The shared resolver validates every footprint member before any RNG.
+			var center := target_for_center(actor, loop["units"], fields, targeting, loop["map_size"], cell, coord)
+			var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, ctx["book"], targeting, loop["equipment_items"], cell, loop["map_size"], coord)
+			if not ready["ok"]:
+				if ready["reason"] not in ["out_of_range", "not_enemy", "target_unavailable", "skill_has_no_effect"]: return ready
+				continue
+			var affected: Array = ready["targets"].map(func(unit): return str(unit["id"]))
+			var useful := useful_ids(ready)
+			if useful.is_empty(): continue
+			var route_any: Dictionary = envelope["reachable_by_coord"].get(cell, {})
+			every.append({"skill_id": id, "target_id": str(center["id"]), "cast_center": coord, "destination": cell,
+				"affected_ids": affected, "useful_ids": useful, "score": useful.size(),
+				"movement_cost": 0 if cell == origin else int(route_any["cost"]), "path": [] if cell == origin else route_any["path"]})
+			for primary in ctx["primaries"]:
+				if not affected.has(str(primary["id"])): continue
+				if not by_primary.has(primary["id"]): by_primary[primary["id"]] = []
+				var route: Dictionary = envelope["reachable_by_coord"].get(cell, {})
+				by_primary[primary["id"]].append({"skill_id": id, "target_id": str(center["id"]), "cast_center": coord,
+					"primary_target_id": str(primary["id"]), "center_is_primary": SkillTargetRules.Footprint.contains(primary,coord), "destination": cell, "affected_ids": affected,
+					"useful_ids": useful, "score": useful.size(), "movement_cost": 0 if cell == origin else int(route["cost"]),
+					"path": [] if cell == origin else route["path"]})
+	return {}
 
 
 static func target_plan(primary_id: String, channel: String, profile: Dictionary, actor: Dictionary, foes: Array) -> Dictionary:

@@ -137,14 +137,6 @@ func _actor() -> Dictionary:
 	return {}
 
 
-func first_empty_slot() -> int:
-	var actor := _actor()
-	if actor.is_empty(): return -1
-	for index in range(actor["inventory"].size()):
-		if int(actor["inventory"][index]) == 0: return index # JSON-origin bags hold 0.0
-	return -1
-
-
 func _build_bag() -> void:
 	BattleUISkin.board(self, "WINDOW20", BAG_AT)
 	var actor := _actor()

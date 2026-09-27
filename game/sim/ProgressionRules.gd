@@ -257,22 +257,3 @@ static func refreshed_growth_stats(unit: Dictionary, equipment_items: Dictionary
 static func exp_to_next(level: int) -> int:
 	# Native stat refresh 0x44b678..0x44b69e; threshold consumed at 0x43a235.
 	return mini(2000, (maxi(1, level) + 1) * 50)
-
-
-static func can_job_up(unit: Dictionary, rule: Dictionary, inventory: Array, flags: Dictionary) -> bool:
-	if str(unit.get("class_id", "")) != str(rule.get("from_class", "")):
-		return false
-	if int(unit.get("level", 1)) < int(rule.get("min_level", 1)):
-		return false
-
-	var stats: Dictionary = unit.get("stats", {})
-	for stat in rule.get("min_stats", {}).keys():
-		if int(stats.get(stat, 0)) < int(rule["min_stats"][stat]):
-			return false
-	for item in rule.get("required_items", []):
-		if inventory.find(item) == -1:
-			return false
-	for flag in rule.get("required_flags", {}).keys():
-		if flags.get(flag) != rule["required_flags"][flag]:
-			return false
-	return true

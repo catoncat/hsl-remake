@@ -23,13 +23,6 @@ const MAGIC_ONLY_BIT := 0x800000
 const ROLE_SIDES := {"player_controlled": SIDE_PLAYER, "friendly_ai": SIDE_PLAYER, "enemy_ai": SIDE_ENEMY}
 
 
-static func annotate_actor_role(unit: Dictionary, role_model: Dictionary = {}) -> Dictionary:
-	var next_unit := unit.duplicate(true)
-	var role := battle_actor_role(next_unit, role_model)
-	next_unit["battle_actor_role"] = role
-	return next_unit
-
-
 static func battle_actor_role(unit: Dictionary, role_model: Dictionary = {}) -> String:
 	var explicit_role := str(unit.get("battle_actor_role", unit.get("actor_role", "")))
 	if explicit_role != "":
@@ -53,25 +46,6 @@ static func battle_actor_role(unit: Dictionary, role_model: Dictionary = {}) -> 
 		"enemy":
 			return "enemy_ai"
 	return "unknown"
-
-
-static func battle_actor_role_summary(units: Array, role_model: Dictionary = {}) -> Dictionary:
-	var counts := {}
-	for unit in units:
-		if typeof(unit) != TYPE_DICTIONARY:
-			continue
-		var unit_data: Dictionary = unit
-		var role := battle_actor_role(unit_data, role_model)
-		counts[role] = int(counts.get(role, 0)) + 1
-	return {
-		"schema": "hsl_battle_actor_roles.v1",
-		"counts": counts,
-		"semantics": "Explicit battle actor role boundary for player control, friendly AI, enemy AI, map objects, and battle manager records.",
-	}
-
-
-static func can_player_control_actor(unit: Dictionary, role_model: Dictionary = {}) -> bool:
-	return battle_actor_role(unit, role_model) == "player_controlled" and int(unit.get("hp", 0)) > 0
 
 
 ## Side bits of a unit: the installed `player_mode` (the assembler's 0x407ec0 reading or a
@@ -129,7 +103,3 @@ static func player_range_selectable(attacker: Dictionary, target: Dictionary, ma
 	if side_mask(target, role_model) != SIDE_MASK or str(attacker.get("id", "")) == str(target.get("id", "")):
 		return false
 	return magic_range or (int(target.get("player_mode", 0)) & MAGIC_ONLY_BIT) == 0
-
-
-static func can_player_attack_actor(attacker: Dictionary, target: Dictionary, role_model: Dictionary = {}) -> bool:
-	return can_player_control_actor(attacker, role_model) and int(target.get("hp", 0)) > 0 and hostile(attacker, target, role_model)

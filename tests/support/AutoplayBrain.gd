@@ -34,6 +34,7 @@ const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 
 const MODE_GREEDY := "greedy"
 const MODE_SCORED := "scored"
@@ -866,7 +867,7 @@ static func _expected_incoming(loop: Dictionary, unit: Dictionary, foe_ids: Arra
 
 
 static func _expected_strike(attacker: Dictionary, defender: Dictionary) -> float:
-	var preview := CoreCombatRules.preview_attack(attacker, defender, null)
+	var preview := RulesReadback.preview_attack(attacker, defender, null)
 	return float(preview["damage"]) * float(preview["hit_rate"]) / 100.0
 
 
@@ -886,7 +887,7 @@ static func _worst_incoming(loop: Dictionary, unit: Dictionary, foe_ids: Array, 
 		var foe := BattlePlayLoop.unit(loop, str(id))
 		if foe.is_empty():
 			continue
-		var damage := int(CoreCombatRules.preview_attack(foe, unit, null)["damage"])
+		var damage := int(RulesReadback.preview_attack(foe, unit, null)["damage"])
 		total += damage
 		var chance := int(CoreCombatRules.combat_profile_from_unit(foe).get("attack_damagex2", 0))
 		if critical and chance > 0:
@@ -1008,7 +1009,7 @@ static func _counter_numbers(loop: Dictionary, hero: Dictionary, hero_cell: Vect
 	if not BattlePlayLoop.Footprint.overlaps(hero, reach, hero_cell):
 		return none
 	var chance := clampi(int(CoreCombatRules.combat_profile_from_unit(foe).get("attack_back", 0)), 0, 100)
-	var preview := CoreCombatRules.preview_attack(foe, hero, null)
+	var preview := RulesReadback.preview_attack(foe, hero, null)
 	var worst := maxi(1, int(preview["damage"]) * 80 / 100)
 	return {"expected": float(worst) * float(preview["hit_rate"]) / 100.0 * float(chance) / 100.0, "worst": worst if chance > 0 else 0}
 
@@ -2312,7 +2313,7 @@ static func role_weights(loop: Dictionary, board: Dictionary) -> Dictionary:
 			weight = maxf(weight, ROLE_CASTER)
 		weights[id] = weight
 		if not weakest.is_empty() and not bool(unit.get("no_attack", false)):
-			var damage := int(CoreCombatRules.preview_attack(unit, weakest, null)["damage"])
+			var damage := int(RulesReadback.preview_attack(unit, weakest, null)["damage"])
 			if damage > top_damage:
 				top_damage = damage
 				top_id = id

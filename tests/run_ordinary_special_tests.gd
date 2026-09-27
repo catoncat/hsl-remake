@@ -5,6 +5,8 @@ const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const SpecialDamageRules = preload("res://game/sim/SpecialDamageRules.gd")
 const BattleCombatCutin = preload("res://game/battle/scene/BattleCombatCutin.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
+const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 
 
 func _init() -> void:
@@ -196,9 +198,9 @@ func equipment() -> void:
 	check(elemental["turn_queue"] == loop["turn_queue"] and owner["stamina"] == 20 and BattlePlayLoop.unit(loop,"leonard")["weapon_code"] != 6, "equipment is atomic/free and never changes charge or input")
 	var target := BattlePlayLoop.unit(elemental,"enemy021_1")
 	target["combat_profile"]["resist_by_type"]["2"] = 0
-	var low := CoreCombatRules.preview_attack(owner,target,func(_n):return 0)
+	var low := RulesReadback.preview_attack(owner,target,func(_n):return 0)
 	target["combat_profile"]["resist_by_type"]["2"] = 80
-	var high_wind := CoreCombatRules.preview_attack(owner,target,func(_n):return 0)
+	var high_wind := RulesReadback.preview_attack(owner,target,func(_n):return 0)
 	check(low["damage"] - high_wind["damage"] == 4, "same weapon and RNG apply target wind resistance only to its bonus")
 	var critical := BattlePlayLoop.change_equipment(elemental,"weapon",owner["inventory"].find(7),7)
 	owner = BattlePlayLoop.unit(critical,"leonard")
@@ -232,7 +234,7 @@ func presentation() -> void:
 	var timing := view.Timing.ordinary(view.manifest["actors"]["001"], receipt)
 	# 0x404290 spawns the red number 40 ticks after the hit; read it two ticks later.
 	view._process((float(timing["impact"]) + view.Timing.scaled(view.OriginalTick.seconds(view.Timing.HIT_TO_NUMBER_TICKS + 2)) - view.elapsed)/view.Timing.PLAYBACK_SPEED)
-	check(view.result_text() == "1" and not view.result_text().contains(str(receipt["damage"])), "critical feedback shows the actual 1 HP loss alone (unsigned, no 暴擊 caption — UI6) rather than uncapped impact (%s)" % view.result_text())
+	check(RuntimeReadback.result_text(view) == "1" and not RuntimeReadback.result_text(view).contains(str(receipt["damage"])), "critical feedback shows the actual 1 HP loss alone (unsigned, no 暴擊 caption — UI6) rather than uncapped impact (%s)" % RuntimeReadback.result_text(view))
 	view._process(0.01)
 	check(impacts[0] == 1 and loop == before, "repeated display cannot replay critical impact or mutate reward/resource state")
 	view.queue_free()

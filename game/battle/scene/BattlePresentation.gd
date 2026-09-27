@@ -266,43 +266,8 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 	status_label.visible = playable and debug_hud
 	var terminal_growth := _terminal_growth_pending()
 	battle_finished = playable and combat_ready and not combat_busy(loop) and not BattlePlayLoop.loot_waiting(loop) and BattleOutcome.decided(loop) and not terminal_growth
-	var latest: Dictionary = loop.get(LoopKeys.LAST_COMBAT, {})
-	var sequence := int(latest.get("sequence", 0))
-	if playable and combat_ready and sequence > _shown_combat_sequence:
-		aftermath.prepare(latest, loop.get(LoopKeys.UNITS, []), dialogue_manifest.get("messages", {}))
-		if attack_cue.sequence != sequence:
-			var attacker: Dictionary = BattlePlayLoop.unit(loop, str(latest["attacker_id"]))
-			var defender: Dictionary = BattlePlayLoop.unit(loop, str(latest["defender_id"]))
-			if attack_cue.leads(latest, attacker):
-				attack_cue.begin(sequence, latest, BattlePlayLoop.strike_range_cells(loop, latest), attacker["coord"], latest.get("cast_center", defender["coord"]), map_config, get_parent().get("camera_controller"), _strike_area_at(loop, latest, attacker["coord"]))
-			else:
-				attack_cue.skip(sequence)
-		else:
-			attack_cue.advance(delta)
-		if attack_cue.stage() == "complete":
-			attack_cue.hide()
-			_shown_combat_sequence = sequence
-			var strikes: Array = BattlePlayLoop.CombatSequence.strikes(latest)
-			for index in range(strikes.size()):
-				var strike: Dictionary = strikes[index]
-				_show_strike(strike, loop, map_config, bool(strike.get("is_counter", false)), index == 0, index == strikes.size() - 1, latest.get("strip_known_ids"))
-	var had_escape_rects := not escape_rects.is_empty()
-	escape_rects.clear()
-	if playable:
-		var escaping := str(loop.get("objective_phase", "hold")) == "escape"
-		var objective := _objective_board_text(loop)
-		if objective == "":
-			objective = "前往撤離點，待機撤離" if escaping else "消滅所有敵人"
-		status_label.text = "第 %d 回合 · %s" % [int(loop.get("turn", 1)), objective]
-		if escape_marks and escaping and map_config != null and not BattleOutcome.decided(loop):
-			var zone: Array = loop.get("escape_zone", [])
-			if zone.is_empty():
-				zone = loop.get("escape_zone_cells", [])
-			for coord in zone:
-				var cell: Vector2i = coord if coord is Vector2i else Vector2i(int(coord[0]), int(coord[1]))
-				escape_rects.append(Rect2(map_config.grid_to_world(cell), map_config.grid_projection["cell_size"]))
-	if had_escape_rects or not escape_rects.is_empty():
-		queue_redraw()
+	_refresh_combat_cue(loop, map_config, playable, combat_ready, delta)
+	_refresh_objective(loop, map_config, playable)
 	_sync_cast_pose()
 	_sync_cutin_words()
 	if playable and combat_ready and not cutin.busy() and not magic_impact.busy() and not has_pending_combat(loop):
@@ -349,6 +314,52 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 			if child is Node2D and child.get_node_or_null("Damage") != null:
 				child.hide()
 	_sync_defeated_visibility(loop)
+
+
+## refresh: a new combat record — aftermath prepared, the attack cue led／skipped／advanced,
+## and the strikes shown once the cue completes.
+func _refresh_combat_cue(loop: Dictionary, map_config: RefCounted, playable: bool, combat_ready: bool, delta: float) -> void:
+	var latest: Dictionary = loop.get(LoopKeys.LAST_COMBAT, {})
+	var sequence := int(latest.get("sequence", 0))
+	if playable and combat_ready and sequence > _shown_combat_sequence:
+		aftermath.prepare(latest, loop.get(LoopKeys.UNITS, []), dialogue_manifest.get("messages", {}))
+		if attack_cue.sequence != sequence:
+			var attacker: Dictionary = BattlePlayLoop.unit(loop, str(latest["attacker_id"]))
+			var defender: Dictionary = BattlePlayLoop.unit(loop, str(latest["defender_id"]))
+			if attack_cue.leads(latest, attacker):
+				attack_cue.begin(sequence, latest, BattlePlayLoop.strike_range_cells(loop, latest), attacker["coord"], latest.get("cast_center", defender["coord"]), map_config, get_parent().get("camera_controller"), _strike_area_at(loop, latest, attacker["coord"]))
+			else:
+				attack_cue.skip(sequence)
+		else:
+			attack_cue.advance(delta)
+		if attack_cue.stage() == "complete":
+			attack_cue.hide()
+			_shown_combat_sequence = sequence
+			var strikes: Array = BattlePlayLoop.CombatSequence.strikes(latest)
+			for index in range(strikes.size()):
+				var strike: Dictionary = strikes[index]
+				_show_strike(strike, loop, map_config, bool(strike.get("is_counter", false)), index == 0, index == strikes.size() - 1, latest.get("strip_known_ids"))
+
+
+## refresh: the status line objective and the escape-zone marks.
+func _refresh_objective(loop: Dictionary, map_config: RefCounted, playable: bool) -> void:
+	var had_escape_rects := not escape_rects.is_empty()
+	escape_rects.clear()
+	if playable:
+		var escaping := str(loop.get("objective_phase", "hold")) == "escape"
+		var objective := _objective_board_text(loop)
+		if objective == "":
+			objective = "前往撤離點，待機撤離" if escaping else "消滅所有敵人"
+		status_label.text = "第 %d 回合 · %s" % [int(loop.get("turn", 1)), objective]
+		if escape_marks and escaping and map_config != null and not BattleOutcome.decided(loop):
+			var zone: Array = loop.get("escape_zone", [])
+			if zone.is_empty():
+				zone = loop.get("escape_zone_cells", [])
+			for coord in zone:
+				var cell: Vector2i = coord if coord is Vector2i else Vector2i(int(coord[0]), int(coord[1]))
+				escape_rects.append(Rect2(map_config.grid_to_world(cell), map_config.grid_projection["cell_size"]))
+	if had_escape_rects or not escape_rects.is_empty():
+		queue_redraw()
 
 
 func retain_defeated_actor(loop: Dictionary, unit_id: String) -> bool:
@@ -645,6 +656,16 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 		text.modulate = ShowNumberStyle.CAPTION
 		_show_cutin_words(words, strike)
 	effect.add_child(text)
+	_play_weapon_hit_sound(strike, attacker, hit)
+	# The close-up defender's dodge (0x4041ea..0x404247) plays its template's dodge sound
+	# (0x409760, +0xc) on the tick it starts; a magic miss only spawns MISS (0x40aa80).
+	if not hit and not strike.has("magic_key"):
+		_play_sound(defender, "miss")
+	_animate_impact_text(effect, text, digits, miss, words, half)
+
+
+## _present_impact: the weapon's hit sound for an ordinary strike that hit.
+func _play_weapon_hit_sound(strike: Dictionary, attacker: Dictionary, hit: bool) -> void:
 	if hit and not strike.has("skill_name") and not strike.has("magic_key"):
 		var cue_key: String = cutin.cue_manifest["weapon_hit_sounds"][str(int(attacker["weapon_code"]))]
 		if cue_key != "":
@@ -654,10 +675,11 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 			add_child(hit_sound)
 			hit_sound.finished.connect(hit_sound.queue_free)
 			hit_sound.play()
-	# The close-up defender's dodge (0x4041ea..0x404247) plays its template's dodge sound
-	# (0x409760, +0xc) on the tick it starts; a magic miss only spawns MISS (0x40aa80).
-	if not hit and not strike.has("magic_key"):
-		_play_sound(defender, "miss")
+
+
+## _present_impact: how the map number／caption label lives and goes (digits, MISS, or a
+## rising caption).
+func _animate_impact_text(effect: Node2D, text: Label, digits: Node2D, miss: Node2D, words: String, half: float) -> void:
 	var life: float = Timing.SHOW_NUMBER_SECONDS
 	if digits != null:
 		# Kind 0 does not rise; the label (empty unless 公開) follows the digits and fades with their

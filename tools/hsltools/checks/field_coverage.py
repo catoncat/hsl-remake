@@ -128,7 +128,7 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'resist_air': ('consumed', JOBS, '风抗基值', None),
         'resist_fire': ('consumed', JOBS, '火抗基值', None),
         'resist_mind': ('consumed', JOBS, '心抗基值', None),
-        'move_point': ('consumed', 'game/sim/TacticalGridRules.gd:movement_range', '移动力', None),
+        'move_point': ('consumed', 'game/sim/TacticalGridRules.gd:movement_reachability_envelope', '移动力', None),
         'item1': ('consumed', CONS, '初始背包槽 1', None),
         'item2': ('consumed', CONS, '初始背包槽 2', None),
         'item3': ('consumed', CONS, '初始背包槽 3', None),

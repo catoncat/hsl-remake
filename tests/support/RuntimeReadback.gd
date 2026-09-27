@@ -265,3 +265,82 @@ static func _actor_summary(runtime: Node, node_name: String) -> Dictionary:
 	if actor != null and actor.has_method("runtime_summary"):
 		return actor.call("runtime_summary")
 	return {}
+
+
+## ---------------------------------------------------------------------------
+## Node reads the suites and captures ask of scene children (no product path asks them).
+
+## The loot／treasure panel's first empty bag slot of the unit on show, or -1.
+static func first_empty_slot(panel: Node) -> int:
+	var actor: Dictionary = panel._actor()
+	if actor.is_empty(): return -1
+	for index in range(actor["inventory"].size()):
+		if int(actor["inventory"][index]) == 0: return index # JSON-origin bags hold 0.0
+	return -1
+
+
+## The highlight an ActorRuntime shows: "", "actor", "target" or "speaker".
+static func highlight_kind(actor: Node) -> String:
+	return actor._highlight_kind
+
+
+## The dialogue board's rows in view on the current page (the name row as its label text).
+static func window_rows(dialogue: Node) -> PackedStringArray:
+	var rows := PackedStringArray()
+	if dialogue._name_row:
+		rows.append(dialogue.speaker_label.text)
+	rows.append_array(dialogue.body_label.text.split("\n"))
+	return rows.slice(dialogue.top_row, dialogue.top_row + dialogue.WINDOW_ROWS)
+
+
+## What a cut-in's result shows: the numbers' texts (spawn order, " · "), then the caption line.
+static func result_text(cutin: Node) -> String:
+	var numbers: Array[String] = []
+	if cutin.result_number.visible:
+		for number in cutin.result_number.get_children():
+			if number.showing(): numbers.append(number.text)
+	var lines: Array[String] = []
+	if not numbers.is_empty(): lines.append(" · ".join(numbers))
+	if cutin.result.visible and cutin.result.text != "": lines.append(cutin.result.text)
+	return "\n".join(lines)
+
+
+## A logical (640×480) point in viewport pixels under the runtime's camera (input events).
+static func logical_to_viewport_position(runtime: Node, logical_position: Vector2) -> Vector2:
+	var camera: Object = runtime.camera_controller
+	if camera == null:
+		return logical_position
+	var viewport_size: Vector2 = runtime.get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return logical_position
+	return Vector2(
+		logical_position.x * viewport_size.x / float(camera.logical_viewport_size.x),
+		logical_position.y * viewport_size.y / float(camera.logical_viewport_size.y)
+	)
+
+
+## The logical centre of a command button (a click point), or ZERO when it is not laid out.
+static func command_center_logical_position(scene_input: Object, command_id: String) -> Vector2:
+	var rect := command_logical_rect(scene_input, command_id)
+	if rect.size == Vector2.ZERO:
+		return Vector2.ZERO
+	return rect.position + rect.size * 0.5
+
+
+## A command button's rect in logical pixels, or an empty rect when the menu lacks it.
+static func command_logical_rect(scene_input: Object, command_id: String) -> Rect2:
+	var runtime: Node = scene_input.runtime
+	if runtime.action_menu == null:
+		return Rect2()
+	for child in runtime.action_menu.get_children():
+		if child is Control and scene_input.command_id_for_control(child) == command_id:
+			return Rect2(runtime.action_menu.position + child.position, child.size)
+	return Rect2()
+
+static func save_notice_visible(menu: Node) -> bool:
+	return menu._save_notice != null and menu._save_notice.visible
+
+
+## The shade a closing panel leaves in its place (null when none is fading).
+static func shade_ghost(motion: Object) -> ColorRect:
+	return motion._shade_ghost

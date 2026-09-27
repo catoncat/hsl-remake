@@ -159,6 +159,15 @@ func _ready() -> void:
 	_lit.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_lit.visible = false
 	_panel.add_child(_lit)
+	_build_confirm(layout)
+	_build_mission_and_notice()
+	_build_memoir(layout)
+	_build_options(layout)
+	_build_remake_entry_and_hint()
+
+
+## _ready phase: the 確定／取消 prompt.
+func _build_confirm(layout: Dictionary) -> void:
 	# 確定／取消 prompt (Title061 + lit 062/063) over the open scroll, unshaded as in the
 	# original; the remake adds a one-line question under the scroll.
 	_confirm_box = Control.new()
@@ -179,6 +188,10 @@ func _ready() -> void:
 	_confirm_lit.name = "ConfirmLit"
 	_confirm_lit.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_confirm_buttons.add_child(_confirm_lit)
+
+
+## _ready phase: the 任務說明 board and the save notice.
+func _build_mission_and_notice() -> void:
 	# 任務說明: the win／fail board of the opening (WINDOW60 centred, 勝利條件／失敗條件 over
 	# the armed labels) dissolving in over the scroll and waiting for a key or click.
 	_mission_box = Control.new()
@@ -199,6 +212,10 @@ func _ready() -> void:
 	var notice_text := BattleUISkin.text(_save_notice, SAVE_NOTICE_AT + Vector2(0, SAVE_NOTICE_TEXT_Y), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(489, 24))
 	notice_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	notice_text.text = SAVE_NOTICE_TEXT
+
+
+## _ready phase: the 回憶錄 list.
+func _build_memoir(layout: Dictionary) -> void:
 	# 回憶錄 list (Title031) with the mode heading (Title032 讀取／Title033 儲存) over its title.
 	_memoir_box = Control.new()
 	_memoir_box.name = "Memoir"
@@ -228,6 +245,10 @@ func _ready() -> void:
 		row.size = Vector2(float(band[1] - band[0]) - 24.0, float(memoir_layout.get("slot_height", 28)) - 6.0)
 		row.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
 		_memoir_rows.append(row)
+
+
+## _ready phase: the 設定選項 panel.
+func _build_options(layout: Dictionary) -> void:
 	# 設定選項 (Title039): gem knobs on the grooves, a band cursor on the selected row.
 	_options_box = Control.new()
 	_options_box.name = "Options"
@@ -256,6 +277,10 @@ func _ready() -> void:
 		knob.texture = load(str(gem_entry.get("texture", "")))
 		_options_panel.add_child(knob)
 		_options_knobs[str(row.get("id", ""))] = knob
+
+
+## _ready phase: the 重製選項 entry band and page, and the hint line.
+func _build_remake_entry_and_hint() -> void:
 	var entry: Dictionary = GameOptions.page_layout().get("entry", {})
 	var entry_rect: Array = entry.get("rect", [230, 396, 180, 28])
 	_remake_entry_rect = Rect2(float(entry_rect[0]), float(entry_rect[1]), float(entry_rect[2]), float(entry_rect[3]))
@@ -806,10 +831,6 @@ func _show_save_notice() -> void:
 	_save_notice_tween.tween_callback(func() -> void: _save_notice.visible = false)
 
 
-func save_notice_visible() -> bool:
-	return _save_notice != null and _save_notice.visible
-
-
 func _show_hint(text: String) -> void:
 	_hint.text = text
 	_hint.visible = true
@@ -829,90 +850,100 @@ func handle_input(event: InputEvent) -> bool:
 		hover_at(_logical(event.position))
 		return true
 	if event is InputEventMouseButton and event.pressed:
-		var logical: Vector2 = _logical(event.position)
-		if event.button_index == MOUSE_BUTTON_RIGHT:
+		_handle_click(event)
+		return true
+	if event is InputEventKey and event.pressed and not event.echo:
+		_handle_key(event)
+		return true
+	return true
+
+
+## handle_input: a pressed mouse button while the scroll is up.
+func _handle_click(event: InputEventMouseButton) -> void:
+	var logical: Vector2 = _logical(event.position)
+	if event.button_index == MOUSE_BUTTON_RIGHT:
+		_back()
+	elif event.button_index == MOUSE_BUTTON_LEFT:
+		match phase:
+			"menu":
+				if item_at(logical) >= 0:
+					select(item_at(logical))
+					activate()
+			"confirm":
+				var index := confirm_item_at(logical)
+				if index >= 0:
+					confirm(index == 0)
+			"mission":
+				_back()
+			"memoir":
+				if memoir_slot_at(logical) >= 0:
+					select_memoir(memoir_slot_at(logical))
+					activate_memoir()
+			"options":
+				var row := options_row_at(logical)
+				if row == options_rows.size():
+					select_option(row)
+					adjust_option(0)
+				elif row >= 0:
+					select_option(row)
+					var groove_x: Array = options_groove.get("x", [162, 330])
+					var local_x := logical.x - _options_panel.position.x
+					if local_x >= float(groove_x[0]) and local_x <= float(groove_x[1]):
+						var margin := float(options_groove.get("knob_margin", 18))
+						adjust_option(0, clampf((local_x - float(groove_x[0]) - margin) / (float(groove_x[1]) - float(groove_x[0]) - 2.0 * margin), 0.0, 1.0))
+					else:
+						adjust_option(0)
+
+
+## handle_input: a pressed key (no echo) while the scroll is up.
+func _handle_key(event: InputEventKey) -> void:
+	match event.keycode:
+		KEY_ESCAPE:
 			_back()
-		elif event.button_index == MOUSE_BUTTON_LEFT:
+		KEY_UP, KEY_W:
+			if phase == "menu":
+				select(selected - 1)
+			elif phase == "memoir":
+				select_memoir(memoir_selected - 1)
+			elif phase == "options":
+				select_option(options_selected - 1)
+			elif phase == "confirm":
+				confirm_selected = 0
+				_show_confirm_lit(confirm_selected)
+		KEY_DOWN, KEY_S:
+			if phase == "menu":
+				select(selected + 1)
+			elif phase == "memoir":
+				select_memoir(memoir_selected + 1)
+			elif phase == "options":
+				select_option(options_selected + 1)
+			elif phase == "confirm":
+				confirm_selected = 1
+				_show_confirm_lit(confirm_selected)
+		KEY_LEFT, KEY_A:
+			if phase == "confirm":
+				confirm_selected = 0
+				_show_confirm_lit(confirm_selected)
+			elif phase == "options":
+				adjust_option(-1)
+		KEY_RIGHT, KEY_D:
+			if phase == "confirm":
+				confirm_selected = 1
+				_show_confirm_lit(confirm_selected)
+			elif phase == "options":
+				adjust_option(1)
+		KEY_ENTER, KEY_SPACE, KEY_Z:
 			match phase:
 				"menu":
-					if item_at(logical) >= 0:
-						select(item_at(logical))
-						activate()
+					activate()
 				"confirm":
-					var index := confirm_item_at(logical)
-					if index >= 0:
-						confirm(index == 0)
+					confirm(confirm_selected == 0)
 				"mission":
 					_back()
 				"memoir":
-					if memoir_slot_at(logical) >= 0:
-						select_memoir(memoir_slot_at(logical))
-						activate_memoir()
+					activate_memoir()
 				"options":
-					var row := options_row_at(logical)
-					if row == options_rows.size():
-						select_option(row)
-						adjust_option(0)
-					elif row >= 0:
-						select_option(row)
-						var groove_x: Array = options_groove.get("x", [162, 330])
-						var local_x := logical.x - _options_panel.position.x
-						if local_x >= float(groove_x[0]) and local_x <= float(groove_x[1]):
-							var margin := float(options_groove.get("knob_margin", 18))
-							adjust_option(0, clampf((local_x - float(groove_x[0]) - margin) / (float(groove_x[1]) - float(groove_x[0]) - 2.0 * margin), 0.0, 1.0))
-						else:
-							adjust_option(0)
-		return true
-	if event is InputEventKey and event.pressed and not event.echo:
-		match event.keycode:
-			KEY_ESCAPE:
-				_back()
-			KEY_UP, KEY_W:
-				if phase == "menu":
-					select(selected - 1)
-				elif phase == "memoir":
-					select_memoir(memoir_selected - 1)
-				elif phase == "options":
-					select_option(options_selected - 1)
-				elif phase == "confirm":
-					confirm_selected = 0
-					_show_confirm_lit(confirm_selected)
-			KEY_DOWN, KEY_S:
-				if phase == "menu":
-					select(selected + 1)
-				elif phase == "memoir":
-					select_memoir(memoir_selected + 1)
-				elif phase == "options":
-					select_option(options_selected + 1)
-				elif phase == "confirm":
-					confirm_selected = 1
-					_show_confirm_lit(confirm_selected)
-			KEY_LEFT, KEY_A:
-				if phase == "confirm":
-					confirm_selected = 0
-					_show_confirm_lit(confirm_selected)
-				elif phase == "options":
-					adjust_option(-1)
-			KEY_RIGHT, KEY_D:
-				if phase == "confirm":
-					confirm_selected = 1
-					_show_confirm_lit(confirm_selected)
-				elif phase == "options":
-					adjust_option(1)
-			KEY_ENTER, KEY_SPACE, KEY_Z:
-				match phase:
-					"menu":
-						activate()
-					"confirm":
-						confirm(confirm_selected == 0)
-					"mission":
-						_back()
-					"memoir":
-						activate_memoir()
-					"options":
-						adjust_option(0)
-		return true
-	return true
+					adjust_option(0)
 
 
 func _logical(viewport_position: Vector2) -> Vector2:

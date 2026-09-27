@@ -71,56 +71,11 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 			var registered := alive_units_for_token(battle, arg(args, 0)).size() + _static_enemy_count(battle, arg(args, 0))
 			return registered < int(arg(args, 1))
 		"actCheckPlayer", "actCheckEnemy":
-			# [num][id1][id2]...: none of the listed ids is still on the field.
-			# static-derived: hsl01.exe 0x450840 case 0x23/0x26 counts only ids that
-			# lookup_registered_actor_by_code_and_serial (0x44fad0) still finds, so a
-			# listed class with no unit at all counts as fallen (WINFAIL533 lists
-			# 024/027 that its EVEF never places). A token the remake cannot resolve
-			# never counts, so a binding gap cannot decide a battle. A party member the
-			# opening binds but this battle never fielded (a conditional install the
-			# carry lacks: encounters 5NN during the party split, levels 30-34) is
-			# not fallen either — remake rule compensating the carry model: the original
-			# fields every registered slot into 5NN (registration is cleared only by
-			# actDeletePlayerCode), so a registered-but-absent 雷歐納德 cannot occur there
-			# (docs/evidence_packets/static_reverse/original_check_targets.md §R8).
-			if args.size() < 2:
-				return false
-			var needed := mini(int(arg(args, 0)), args.size() - 1)
-			var dead := 0
-			for index in range(1, args.size()):
-				var token := arg(args, index)
-				var source := token_source(battle, token)
-				if source == "unresolved":
-					continue
-				if source == "binding" and units_for_token(battle, token).is_empty():
-					continue
-				if alive_units_for_token(battle, token).is_empty():
-					dead += 1
-			return needed > 0 and dead >= needed
+			return _listed_ids_fallen(battle, args)
 		"actCheckPlayerArriveSysPos":
-			if args.size() < 2:
-				return false
-			var arrival: Dictionary = battle.get("winfail_runtime", {}).get("system_arrival_position", {})
-			var position: Array = arrival.get("position", []) if arrival is Dictionary else []
-			if position.size() < 2:
-				return false
-			for unit_id in alive_units_for_token(battle, arg(args, 0), int(arg(args, 1))):
-				var coord: Variant = unit(battle, unit_id).get("coord", null)
-				if coord is Vector2i and coord.x * cell_size(battle) == int(position[0]) and coord.y * cell_size(battle) == int(position[1]):
-					return true
-			return false
+			return _arrived_at_system_position(battle, args)
 		"actCheckPlayerArrivePos":
-			if args.size() < 6:
-				return false
-			var cells := WinfailCompiler.zone_cells([int(arg(args, 2)), int(arg(args, 3)), int(arg(args, 4)), int(arg(args, 5))], cell_size(battle))
-			for unit_id in alive_units_for_token(battle, arg(args, 0), int(arg(args, 1))):
-				var coord: Variant = unit(battle, unit_id).get("coord", null)
-				if coord is Vector2i:
-					for cell_value in cells:
-						var cell: Array = cell_value
-						if Vector2i(int(cell[0]), int(cell[1])) == coord:
-							return true
-			return false
+			return _token_arrived_in_zone(battle, args)
 		"actCheckPlayerAttacked":
 			# static-derived (original_round_display.md «Attack context»): case 0x2a reads the
 			# attacker global 0x4c1ce8 (skipped for attacker -1) and the attacked list 0x4c29a0,
@@ -150,90 +105,155 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 		"actFALSE":
 			return false
 		"actCheckPlayerHPLow":
-			if args.size() < 3:
-				return false
-			# static-derived (hsl01.exe 0x450840 case 0x41, 0x452885..0x4528f2): threshold =
-			# max HP +0xdc × ratio / 100 (truncating), clamped to at least 1; holds when live HP
-			# +0xd8 is not above it. The clamp is what lets `ratio 0` fire on an undead boss,
-			# which revives at 1 HP instead of dying (WINFAIL030–041／059／075–079). A defeated
-			# unit reads as HP 0 (provisional: the original's lookup no longer finds an
-			# unregistered object; the remake keeps the fallen target satisfying the check).
-			var ratio := int(arg(args, 2))
-			var serial := int_arg(args, 1)
-			for unit_id in units_for_token(battle, arg(args, 0), serial):
-				var unit := unit(battle, unit_id)
-				var hp := int(unit.get("hp", 0))
-				if bool(unit.get("defeated", false)):
-					hp = 0
-				if hp <= hp_low_threshold(int(unit.get("max_hp", 0)), ratio):
-					return true
-			return false
+			return _token_hp_low(battle, args)
 		"actCheckPlayerTotalNumber":
 			return args.size() >= 1 and alive_player_side_total(battle) <= int(arg(args, 0))
 		"actCheckAnyPlayerArrivePos":
-			if args.size() < 4:
-				return false
-			var any_cells := WinfailCompiler.zone_cells([int(arg(args, 0)), int(arg(args, 1)), int(arg(args, 2)), int(arg(args, 3))], cell_size(battle))
-			for unit_value in battle.get("units", []):
-				if typeof(unit_value) != TYPE_DICTIONARY:
-					continue
-				var unit: Dictionary = unit_value
-				if not unit_alive(battle, str(unit.get("id", ""))) or not player_side(unit):
-					continue
-				var coord: Variant = unit.get("coord", null)
-				if coord is Vector2i:
-					for cell_value in any_cells:
-						var cell: Array = cell_value
-						if Vector2i(int(cell[0]), int(cell[1])) == coord:
-							return true
-			return false
+			return _any_player_arrived_in_zone(battle, args)
 		"actCheckNextSerialNumber":
-			# static-derived (original_poison_gas.md, 0x4525e0..0x45260b): a timer on the
-			# handoff counter word 0x4c1ad4 (0x407510 bumps it after its scan). A zero deadline
-			# word 0x4c1ad6 is armed to counter + num (u16); the condition holds once the
-			# counter reaches it and clears the deadline. The only condition that writes: it
-			# is read in event scans (_evaluate owns a copy), never by the win／fail readers.
-			if not arg(args, 0).is_valid_int():
-				return false
-			var runtime: Dictionary = battle.get("winfail_runtime", {})
-			var counter := int(runtime.get("handoff_counter", 0)) & 0xffff
-			var deadline := int(runtime.get("serial_deadline", 0)) & 0xffff
-			if deadline == 0:
-				deadline = (int_arg(args, 0) + counter) & 0xffff
-			var holds := deadline <= counter
-			runtime["serial_deadline"] = 0 if holds else deadline
-			return holds
+			return _serial_deadline_reached(battle, args)
 		"actCheckEventNotExist":
-			if args.size() < 2:
-				return false
-			var statuses: Array = battle.get("event_statuses", [])
-			var count := mini(int(arg(args, 0)), args.size() - 1)
-			for index in range(1, 1 + count):
-				if statuses.find(int(arg(args, index))) != -1:
-					return false
-			return true
+			return _events_absent(battle, args)
 		_:
 			return false
+
+
+## None of the listed ids is still on the field (actCheckPlayer／actCheckEnemy).
+static func _listed_ids_fallen(battle: Dictionary, args: Array) -> bool:
+	# [num][id1][id2]...: none of the listed ids is still on the field.
+	# static-derived: hsl01.exe 0x450840 case 0x23/0x26 counts only ids that
+	# lookup_registered_actor_by_code_and_serial (0x44fad0) still finds, so a
+	# listed class with no unit at all counts as fallen (WINFAIL533 lists
+	# 024/027 that its EVEF never places). A token the remake cannot resolve
+	# never counts, so a binding gap cannot decide a battle. A party member the
+	# opening binds but this battle never fielded (a conditional install the
+	# carry lacks: encounters 5NN during the party split, levels 30-34) is
+	# not fallen either — remake rule compensating the carry model: the original
+	# fields every registered slot into 5NN (registration is cleared only by
+	# actDeletePlayerCode), so a registered-but-absent 雷歐納德 cannot occur there
+	# (docs/evidence_packets/static_reverse/original_check_targets.md §R8).
+	if args.size() < 2:
+		return false
+	var needed := mini(int(arg(args, 0)), args.size() - 1)
+	var dead := 0
+	for index in range(1, args.size()):
+		var token := arg(args, index)
+		var source := token_source(battle, token)
+		if source == "unresolved":
+			continue
+		if source == "binding" and units_for_token(battle, token).is_empty():
+			continue
+		if alive_units_for_token(battle, token).is_empty():
+			dead += 1
+	return needed > 0 and dead >= needed
+
+
+## A live unit of the token stands on the recorded system arrival pixel.
+static func _arrived_at_system_position(battle: Dictionary, args: Array) -> bool:
+	if args.size() < 2:
+		return false
+	var arrival: Dictionary = battle.get("winfail_runtime", {}).get("system_arrival_position", {})
+	var position: Array = arrival.get("position", []) if arrival is Dictionary else []
+	if position.size() < 2:
+		return false
+	for unit_id in alive_units_for_token(battle, arg(args, 0), int(arg(args, 1))):
+		var coord: Variant = unit(battle, unit_id).get("coord", null)
+		if coord is Vector2i and coord.x * cell_size(battle) == int(position[0]) and coord.y * cell_size(battle) == int(position[1]):
+			return true
+	return false
+
+
+## A live unit of the token stands in the zone args[2..5].
+static func _token_arrived_in_zone(battle: Dictionary, args: Array) -> bool:
+	if args.size() < 6:
+		return false
+	var cells := WinfailCompiler.zone_cells([int(arg(args, 2)), int(arg(args, 3)), int(arg(args, 4)), int(arg(args, 5))], cell_size(battle))
+	for unit_id in alive_units_for_token(battle, arg(args, 0), int(arg(args, 1))):
+		var coord: Variant = unit(battle, unit_id).get("coord", null)
+		if coord is Vector2i:
+			for cell_value in cells:
+				var cell: Array = cell_value
+				if Vector2i(int(cell[0]), int(cell[1])) == coord:
+					return true
+	return false
+
+
+## A unit of the token is at or below the HP-ratio threshold.
+static func _token_hp_low(battle: Dictionary, args: Array) -> bool:
+	if args.size() < 3:
+		return false
+	# static-derived (hsl01.exe 0x450840 case 0x41, 0x452885..0x4528f2): threshold =
+	# max HP +0xdc × ratio / 100 (truncating), clamped to at least 1; holds when live HP
+	# +0xd8 is not above it. The clamp is what lets `ratio 0` fire on an undead boss,
+	# which revives at 1 HP instead of dying (WINFAIL030–041／059／075–079). A defeated
+	# unit reads as HP 0 (provisional: the original's lookup no longer finds an
+	# unregistered object; the remake keeps the fallen target satisfying the check).
+	var ratio := int(arg(args, 2))
+	var serial := int_arg(args, 1)
+	for unit_id in units_for_token(battle, arg(args, 0), serial):
+		var unit := unit(battle, unit_id)
+		var hp := int(unit.get("hp", 0))
+		if bool(unit.get("defeated", false)):
+			hp = 0
+		if hp <= hp_low_threshold(int(unit.get("max_hp", 0)), ratio):
+			return true
+	return false
+
+
+## Any live player-side unit stands in the zone args[0..3].
+static func _any_player_arrived_in_zone(battle: Dictionary, args: Array) -> bool:
+	if args.size() < 4:
+		return false
+	var any_cells := WinfailCompiler.zone_cells([int(arg(args, 0)), int(arg(args, 1)), int(arg(args, 2)), int(arg(args, 3))], cell_size(battle))
+	for unit_value in battle.get("units", []):
+		if typeof(unit_value) != TYPE_DICTIONARY:
+			continue
+		var unit: Dictionary = unit_value
+		if not unit_alive(battle, str(unit.get("id", ""))) or not player_side(unit):
+			continue
+		var coord: Variant = unit.get("coord", null)
+		if coord is Vector2i:
+			for cell_value in any_cells:
+				var cell: Array = cell_value
+				if Vector2i(int(cell[0]), int(cell[1])) == coord:
+					return true
+	return false
+
+
+## The handoff-counter timer: arms the deadline, holds once the counter reaches it.
+static func _serial_deadline_reached(battle: Dictionary, args: Array) -> bool:
+	# static-derived (original_poison_gas.md, 0x4525e0..0x45260b): a timer on the
+	# handoff counter word 0x4c1ad4 (0x407510 bumps it after its scan). A zero deadline
+	# word 0x4c1ad6 is armed to counter + num (u16); the condition holds once the
+	# counter reaches it and clears the deadline. The only condition that writes: it
+	# is read in event scans (_evaluate owns a copy), never by the win／fail readers.
+	if not arg(args, 0).is_valid_int():
+		return false
+	var runtime: Dictionary = battle.get("winfail_runtime", {})
+	var counter := int(runtime.get("handoff_counter", 0)) & 0xffff
+	var deadline := int(runtime.get("serial_deadline", 0)) & 0xffff
+	if deadline == 0:
+		deadline = (int_arg(args, 0) + counter) & 0xffff
+	var holds := deadline <= counter
+	runtime["serial_deadline"] = 0 if holds else deadline
+	return holds
+
+
+## None of the listed event statuses has been recorded.
+static func _events_absent(battle: Dictionary, args: Array) -> bool:
+	if args.size() < 2:
+		return false
+	var statuses: Array = battle.get("event_statuses", [])
+	var count := mini(int(arg(args, 0)), args.size() - 1)
+	for index in range(1, 1 + count):
+		if statuses.find(int(arg(args, index))) != -1:
+			return false
+	return true
 
 
 static func hp_low_threshold(max_hp: int, ratio: int) -> int:
 	## actCheckPlayerHPLow's HP threshold (0x450840 case 0x41): max_hp × ratio / 100, at least 1.
 	return maxi(1, max_hp * ratio / 100)
-
-
-static func condition_tokens(status: Dictionary) -> Array:
-	var tokens: Array = []
-	for condition_value in status.get("conditions", []):
-		var condition: Dictionary = condition_value
-		var args: Array = condition["args"]
-		match str(condition["name"]):
-			"actCheckPlayer", "actCheckEnemy":
-				for index in range(1, args.size()):
-					tokens.append(arg(args, index))
-			"actCheckPlayerArrivePos", "actCheckPlayerHPLow", "actCheckEnemyNumber":
-				if args.size() >= 1:
-					tokens.append(arg(args, 0))
-	return tokens
 
 
 ## ---------------------------------------------------------------------------

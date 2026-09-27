@@ -34,6 +34,7 @@ extends RefCounted
 ##     (one-owner transaction ordering, action-budget hand-off and menu surface — docs/architecture/BATTLE_SYSTEMS.md)
 
 const WeaponEffects = preload("res://game/sim/WeaponEffectRules.gd")
+const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const Treasure = preload("res://game/sim/TreasureRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")
@@ -589,6 +590,7 @@ static func magic_target_id_at_coord(loop: Dictionary, coord: Vector2i) -> Strin
 	return fallback
 
 
+## test hook
 static func commit_wait(loop: Dictionary, rng: Variant = null) -> Dictionary:
 	## Instant resolve path (tests / headless). Runtime should prefer begin_wait_resolution + step_ai_turn.
 	var next := begin_wait_resolution(loop)
@@ -1103,6 +1105,14 @@ static func resource_input_error(loop: Dictionary, actor: Dictionary) -> String:
 	var weapon := WeaponEffects.effects(actor, loop["equipment_items"])
 	if not weapon["ok"]: return weapon["reason"]
 	return ResourceRecoveryRules.health_error(actor)
+
+
+## The one presentation input the rules read: the camera's top-left in map pixels (the
+## original's 0x4c091c／0x4c0920, which 打人閃電 reads), stamped in place on the current loop
+## before a rule operation. Not rule state — rules copy it through and never change it — so
+## it bypasses the scene's apply_loop (no rule operation, no mirror sync, same dictionary).
+static func stamp_presentation_view(loop: Dictionary, view: Vector2i) -> void:
+	loop[LoopKeys.PRESENTATION_VIEW] = view
 
 
 ## Settlement (BattleLoopRewards): pending-loot interaction and growth allocation.

@@ -64,6 +64,7 @@ static func freeze(loop: Dictionary) -> void:
 
 ## Re-hashes every configuration block recorded since the registry was last cleared and
 ## returns the keys whose content changed; clears the registry.
+## test hook
 static func thaw() -> Array:
 	var changed: Array = []
 	for entry in _frozen:

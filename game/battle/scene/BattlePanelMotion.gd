@@ -334,11 +334,6 @@ func _apply_shade() -> void:
 		_shade_ghost.color = colour
 
 
-## The shade left in a closed panel's place.
-func shade_ghost() -> ColorRect:
-	return _shade_ghost
-
-
 func _free_shade_ghost() -> void:
 	if _shade_ghost != null:
 		if is_instance_valid(_shade_ghost):

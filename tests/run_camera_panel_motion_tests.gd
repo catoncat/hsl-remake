@@ -13,6 +13,7 @@ const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCine
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
+const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
 const CONTROLLER_PATH := "res://game/battle/runtime/BattleCameraController.gd"
 ## Panels that must open and close through BattlePanelMotion (the modal list and the loot
 ## window; checked in BattleSceneMenus／BattleSettlementController by the attach census).
@@ -282,18 +283,18 @@ func _test_panel_shade_fade() -> void:
 	_assert_eq([opening[0], opening[3], opening[6], opening[18], opening[21], opening[24]], [2, 3, 4, 8, 9, 9], "the shade darkens from level 2 one level per 3 ticks to 9")
 	_assert_true(is_equal_approx(shade.color.a, 9.0 / 16.0), "at rest the shade is 9／16 black (map luma × 0.46 in the recording)")
 	panel.hide()
-	var ghost: ColorRect = motion.shade_ghost()
+	var ghost: ColorRect = RuntimeReadback.shade_ghost(motion)
 	_assert_true(ghost != null and ghost.get_parent() == host and ghost.get_index() < panel.get_index(), "a closed page leaves its shade in its place, under where the panel was")
 	var closing: Array[int] = [motion.shade_level]
 	for tick in range(24):
 		motion._tick()
 		closing.append(motion.shade_level)
 	_assert_eq([closing[0], closing[2], closing[3], closing[21], closing[23], closing[24]], [9, 9, 8, 2, 2, 0], "the shade lightens one level per 3 ticks and drops from 2 to nothing")
-	_assert_true(motion.shade_ghost() == null and not motion.shading(), "the fade ends by itself after 24 ticks")
+	_assert_true(RuntimeReadback.shade_ghost(motion) == null and not motion.shading(), "the fade ends by itself after 24 ticks")
 	panel.show_unit(unit, true)
 	panel.hide()
 	motion.finish()
-	_assert_true(motion.shade_ghost() == null and motion.shade_level == 0, "fast-forward drops a closing shade at once")
+	_assert_true(RuntimeReadback.shade_ghost(motion) == null and motion.shade_level == 0, "fast-forward drops a closing shade at once")
 	host.queue_free()
 	await process_frame
 

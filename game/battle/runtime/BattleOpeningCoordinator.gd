@@ -71,11 +71,6 @@ var title_seconds := OriginalTick.seconds(SECTION_TITLE_TICKS)
 var move_pixels_per_frame_hz := OriginalTick.TICKS_PER_SECOND
 
 
-## px per tick for a script walk speed argument (0x4543d8 table); 0 and unknown values walk
-## at the default 4.
-static func walk_pixels_per_tick(speed_arg: int) -> float:
-	return float(WALK_PIXELS_PER_TICK.get(speed_arg, DEFAULT_WALK_SPEED))
-
 var runtime: Node
 var active := false
 var config: Dictionary = {}
@@ -229,6 +224,12 @@ const EVENT_HANDLERS := {
 	"storage_window_enter": &"_ev_storage_window_enter",
 	"level_up_star_insert": &"_ev_level_up_star_insert",
 }
+
+
+## px per tick for a script walk speed argument (0x4543d8 table); 0 and unknown values walk
+## at the default 4.
+static func walk_pixels_per_tick(speed_arg: int) -> float:
+	return float(WALK_PIXELS_PER_TICK.get(speed_arg, DEFAULT_WALK_SPEED))
 
 
 func _ready() -> void:

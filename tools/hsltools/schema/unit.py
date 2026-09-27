@@ -140,7 +140,7 @@ RUNTIME_PROPERTIES: dict[str, dict[str, dict]] = {'$': {
     'script_creation': OBJECT,
     # game/sim/WinfailActions.gd (actSetPlayerExecMode / actSetPlayerFixPos distance -> live ai_fixed)
     'player_exec_mode': INTEGER, 'player_exec_mode_native': INTEGER, 'ai_fixed_radius': INTEGER,
-    # game/sim/ActorRoleRules.gd annotate_actor_role()
+    # game/sim/ActorRoleRules.gd battle_actor_role()
     'battle_actor_role_evidence_tier': {'type': 'string', 'enum': list(EVIDENCE_TIERS)},
 }, '$.status_counters': {
     # game/sim/StatusEffectRules.gd ALL_FLAGS / StatEnhancementRules.gd FLAGS counter words

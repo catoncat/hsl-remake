@@ -6,6 +6,7 @@ const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
 const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
+const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 const HEAL := "magic:magicWATER:magicCode06"
 const WIND := "magic:magicAIR:magicCode01"
 var failures: Array[String] = []
@@ -40,15 +41,15 @@ func passage_cases() -> void:
 	var route: Dictionary = envelope["reachable_by_coord"].get(Vector2i(3,0), {})
 	check(route.get("path", []).has(ally["coord"]) and route.get("cost") == 3, "same-side passage keeps the native cost and actual route through its cell")
 	ally["battle_actor_role"] = "enemy_ai"
-	check(TacticalGridRules.movement_range(actor, [actor, ally], {}, Vector2i(5,1)).is_empty(), "the same corridor is blocked by an enemy")
+	check(RulesReadback.movement_range(actor, [actor, ally], {}, Vector2i(5,1)).is_empty(), "the same corridor is blocked by an enemy")
 	ally["traversal"]["no_block"] = true
-	check(TacticalGridRules.movement_range(actor, [actor, ally], {}, Vector2i(5,1)).has(Vector2i(2,0)), "an explicit no-block actor permits passage even across sides")
+	check(RulesReadback.movement_range(actor, [actor, ally], {}, Vector2i(5,1)).has(Vector2i(2,0)), "an explicit no-block actor permits passage even across sides")
 	var tiles := {Vector2i(1,0): {"blocks_movement": true, "elevation": 255}}
-	check(TacticalGridRules.movement_range(actor, [actor], tiles, Vector2i(5,1)).is_empty(), "a ground walker cannot enter a cliff")
+	check(RulesReadback.movement_range(actor, [actor], tiles, Vector2i(5,1)).is_empty(), "a ground walker cannot enter a cliff")
 	actor["traversal"]["flying"] = true
-	check(TacticalGridRules.movement_range(actor, [actor], tiles, Vector2i(5,1)).has(Vector2i(3,0)), "a source flying trait traverses the height barrier")
+	check(RulesReadback.movement_range(actor, [actor], tiles, Vector2i(5,1)).has(Vector2i(3,0)), "a source flying trait traverses the height barrier")
 	tiles[Vector2i(1,0)]["movement_flags"] = 0x4000
-	check(TacticalGridRules.movement_range(actor, [actor], tiles, Vector2i(5,1)).is_empty(), "flying cannot cross a hard obstruction")
+	check(RulesReadback.movement_range(actor, [actor], tiles, Vector2i(5,1)).is_empty(), "flying cannot cross a hard obstruction")
 	actor["traversal"]["flying"] = false
 	tiles = {Vector2i(1,0): {"elevation": 2}}
 	route = TacticalGridRules.movement_reachability_envelope(actor, [actor], tiles, Vector2i(5,1))["reachable_by_coord"].get(Vector2i(1,0), {})
