@@ -111,6 +111,18 @@ var cast_leads: Dictionary = {}
 var opening_ball: Sprite2D
 var opening_add_material: CanvasItemMaterial
 var transition_shade: ColorRect
+## The map spell's screen ripple (effProcIconBGSet, SkillEffectScriptPlayer._effect_view): a
+## full-view rect last in the battle World that redraws the map and units already drawn with
+## 0x461687's per-row x offsets. Built on first use; hidden every frame unless re-shown.
+var effect_ripple: ColorRect
+const EFFECT_RIPPLE_SHADER := """shader_type canvas_item;
+uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
+uniform float offsets[480];
+void fragment() {
+	int row = clamp(int(SCREEN_UV.y * 480.0), 0, 479);
+	COLOR = texture(screen_texture, SCREEN_UV - vec2(offsets[row] / 640.0, 0.0));
+}
+"""
 
 
 func _ready() -> void:
@@ -411,6 +423,38 @@ func busy() -> bool:
 	return not clips.is_empty()
 
 
+## The battle's camera controller (BattleSceneRuntime.camera_controller); null outside a battle.
+func battle_camera() -> RefCounted:
+	var runtime: Node = get_parent().get_parent() if get_parent() != null else null
+	return runtime.get("camera_controller") if runtime != null else null
+
+
+## Shows this frame's ripple (EffectObjectMotion.ripple_at parameters) over the battle World's
+## map and units; {} leaves it hidden.
+func show_effect_ripple(params: Dictionary) -> void:
+	var camera := battle_camera()
+	var world: Node = get_parent().get_parent().get_node_or_null("World") if camera != null else null
+	if params.is_empty() or world == null or camera.camera == null:
+		if effect_ripple != null:
+			effect_ripple.hide()
+		return
+	if effect_ripple == null:
+		effect_ripple = ColorRect.new()
+		effect_ripple.name = "EffectRipple"
+		effect_ripple.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var shader := Shader.new()
+		shader.code = EFFECT_RIPPLE_SHADER
+		effect_ripple.material = ShaderMaterial.new()
+		effect_ripple.material.shader = shader
+	if effect_ripple.get_parent() != world:
+		world.add_child(effect_ripple)
+	world.move_child(effect_ripple, -1)
+	effect_ripple.size = Vector2(camera.logical_viewport_size)
+	effect_ripple.position = camera.logical_to_world(Vector2.ZERO)
+	effect_ripple.material.set_shader_parameter("offsets", SkillEffectScriptPlayer.EffectObjectMotion.ripple_rows(params))
+	effect_ripple.show()
+
+
 ## The presenter the manifest routes this clip's strike to; null for an ordinary strike or
 ## the borrowed staging. Remembered on the clip so a queue of clips keeps one route each.
 func _presenter(clip: Dictionary) -> SkillPresenter:
@@ -441,6 +485,8 @@ func _process(delta: float) -> void:
 	delta *= pace
 	for presenter in presenters:
 		presenter.hide()
+	if effect_ripple != null:
+		effect_ripple.hide()
 	cast_inset.hide()
 	cast_portrait.hide()
 	for ghost in cast_afterimages:

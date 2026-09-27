@@ -540,15 +540,16 @@
     },
     {
       "id": "effect-motion",
-      "difference": "法术效果对象全部按原生轨迹运动；剩 OtherBBall1 的镜头跟随与 FireBGSet／IconBGSet1 的屏幕波纹已记入轨迹但重制未画，随机程序用至多 4 个种子变体代替共享随机流，画到 hsl.pak 缺失的帧时按系列循环",
-      "original": "effProc* 程序已逐 tick 原指令执行（144／144 对象、84／84 程序）；合成形状 0x460541＋0x45f141 旋转、自绘 0x4607f9、屏幕波纹 0x46164b／0x461687、镜头跟随 0x43bf30 已读并接入探针",
+      "difference": "法术效果对象全部按原生轨迹运动，OtherBBall1 的镜头跟随与 FireBGSet／IconBGSet1 的屏幕波纹也已照做；随机程序用至多 4 个种子变体代替共享随机流，画到 hsl.pak 缺失的帧时按系列循环；effProcIconBGSet 的整屏换色（obj_Data6 change color mode，[0x4c1cc0] 0x10000000）未画",
+      "original": "effProc* 程序已逐 tick 原指令执行（144／144 对象、84／84 程序）；合成形状 0x460541＋0x45f141 旋转、自绘 0x4607f9、屏幕波纹 0x46164b／0x461687、镜头跟随 0x43bf30 已读并接入探针；波纹由对象自删 0x41d761 清 [0x4c1cc0] 关闭，自删条件 [0x4c1b00] & 0x1000000 清（施法例程 0x442a90）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_effect_motion.md"
       ],
-      "remake": "EffectObjectMotion 回放原生轨迹（合成形状按 angle 列旋转、自绘伪实例、重复插入轮换种子变体）；镜头跟随与屏幕波纹未画",
+      "remake": "EffectObjectMotion 回放原生轨迹（合成形状按 angle 列旋转、自绘伪实例、重复插入轮换种子变体）；SkillEffectScriptPlayer._effect_view 按 camera 行移动战场镜头（结束滑回效果前位置）、按 ripple 参数由 BattleCombatCutin.show_effect_ripple 给地图与单位逐行位移，效果阶段结束时关",
       "remake_code": [
         "game/battle/scene/EffectObjectMotion.gd",
-        "game/battle/scene/SkillEffectScriptPlayer.gd"
+        "game/battle/scene/SkillEffectScriptPlayer.gd",
+        "game/battle/scene/BattleCombatCutin.gd"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -2942,7 +2943,7 @@
     "scope:docs/evidence_packets/runtime_observations/effect_motion/README.md|provisional|六团火的随机位置与落光摆动相位": {
       "item": "effect-motion"
     },
-    "scope:docs/evidence_packets/static_reverse/original_effect_motion.md|provisional|种子变体、±1 帧、缺帧循环、镜头跟随与屏幕波纹未在重制画出": {
+    "scope:docs/evidence_packets/static_reverse/original_effect_motion.md|provisional|种子变体、±1 帧、缺帧循环、效果后镜头滑回的步长、波纹只加在地图与单位层": {
       "item": "effect-motion"
     },
     "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#4bd2900257": {

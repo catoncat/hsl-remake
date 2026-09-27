@@ -1,6 +1,6 @@
 # 法术特效的运动：effProc* 程序逐 tick 原指令执行
 
-> evidence: static-derived: 0x415dc0 效果对象过程、effProc* 跳表 0x4231b0、0x45f5f7 帧循环、0x4237f7 效果脚本解释器、0x401220／0x4010c0 残影的读法与原指令执行; runtime-measured: 2026-09-24 原版录屏 471.7–474.6 s 幻火与原生轨迹的对照; provisional: 种子变体、±1 帧、缺帧循环、镜头跟随与屏幕波纹未在重制画出 · status: live · functions: 0x4010c0, 0x401140, 0x401220, 0x401290, 0x401310, 0x401c20, 0x401dc0, 0x402180, 0x4021df, 0x4038a0, 0x407ec0, 0x415c10, 0x415d20, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x416095, 0x41618a, 0x4162e6, 0x416409, 0x423873, 0x423951, 0x423a20, 0x42dc50, 0x42dcb0, 0x43bf30, 0x446be0, 0x450710, 0x458c10, 0x458c80, 0x45e307, 0x45e3ed, 0x45e575, 0x45e5a6, 0x45e785, 0x45eb75, 0x45eb9d, 0x45ebdc, 0x45f141, 0x45f4b9, 0x45f5f7, 0x45fc01, 0x4602d4, 0x460541, 0x4606a9, 0x46075b, 0x4607f9, 0x46163a, 0x46164b, 0x461687, 0x461982, 0x46b691, 0x46be92, 0x46bede · tools: hsltools/assets/skill_effects.py, hsltools/levels/battle.py, hsltools/probes/effect_motion.py, run_battle_scene_runtime_tests.gd, run_skill_effect_script_tests.gd, run_support_magic_tests.gd · updated: 2026-09-28
+> evidence: static-derived: 0x415dc0 效果对象过程、effProc* 跳表 0x4231b0、0x45f5f7 帧循环、0x4237f7 效果脚本解释器、0x401220／0x4010c0 残影的读法与原指令执行; runtime-measured: 2026-09-24 原版录屏 471.7–474.6 s 幻火与原生轨迹的对照; provisional: 种子变体、±1 帧、缺帧循环、效果后镜头滑回的步长、波纹只加在地图与单位层 · status: live · functions: 0x4010c0, 0x401140, 0x401220, 0x401290, 0x401310, 0x401c20, 0x401dc0, 0x402180, 0x4021df, 0x4038a0, 0x407ec0, 0x415c10, 0x415d20, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x416095, 0x41618a, 0x4162e6, 0x416409, 0x41d6a1, 0x41d761, 0x423873, 0x423951, 0x423a20, 0x42dc50, 0x42dcb0, 0x43bf30, 0x446be0, 0x450710, 0x458c10, 0x458c80, 0x45e307, 0x45e3ed, 0x45e575, 0x45e5a6, 0x45e785, 0x45eb75, 0x45eb9d, 0x45ebdc, 0x45f141, 0x45f4b9, 0x45f5f7, 0x45fc01, 0x4602d4, 0x460541, 0x4606a9, 0x46075b, 0x4607f9, 0x46163a, 0x46164b, 0x461687, 0x461982, 0x46b691, 0x46be92, 0x46bede · tools: hsltools/assets/skill_effects.py, hsltools/levels/battle.py, hsltools/probes/effect_motion.py, run_battle_scene_runtime_tests.gd, run_skill_effect_script_tests.gd, run_support_magic_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -91,6 +91,8 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | `0x46164b(相位, 行相位步, 帧相位步, 每步行数, 振幅)` 屏幕波纹 | 只写 `0x4c08c4..0x4c08d4`（相位为负时不改），`0x4c08d8` 清零（`0x46163a` 置 1、`0x461645` 读）；`0x461687` 每帧 `相位 += 帧相位步`，再对 `[0x4bfc44]` 行逐行写位移表 `0x4bfcc4`：每 `每步行数` 行 `相位 += 行相位步`，位移 = `sin[相位]×振幅 >> 16`（相位 64 取 66）| 原指令执行（行数取 480）；参数变化记 `ripple` 行。IconBGSet 两帧就自删，参数留在全局 |
 | `0x43bf30(对象, 旗)` 镜头跟随 | 旗非 0：`0x46be92(x−320, y−192)` 立即定位；旗 0：首次把目标 `clamp(x−320, 0, [0x4c0958])`／`clamp(y−192, 0, [0x4c095c])` 存到 `+0x86／+0x84` 并置 `+0x80` 的 0x8000 位，之后每次以 `0x45e80d` 朝目标走 32 px（`[0x4c1b00]&0x4000000` 时 16，`[0x4c6390]&0x600` 或 `[0x4c1d78]` 时再 +12），差量经 `0x42dc50` 加进滚动累加；到位返回 1 并清位。帧体 `0x42d600` 在 `0x45f5f7` 之后以 `0x46bede` 把累加加到镜头并夹在地图内 | 原指令执行；镜头起点居中于原点 (0, 48)、边界 4000；每帧镜头相对起点与累加记 `camera` 行（OtherBBall1 266 行）|
 
+**波纹的开与关**（static-derived，`effProcIconBGSet` `0x41d68f..0x41d819`）：obj_Data5（change X mode）选参数——1（IconBGSet1）每 call `0x46164b(−1, 24＋[+0x9e], 4, 4, 幅)`、2（FireBGSet）`0x46164b(−1, 4＋[+0x9e], 4, 1, 幅)`，幅＝`+0x92` 自增前的值、分别封顶 4（`0x41d716`）／24（`0x41d6c4`）；相位参数是 `0x415dc0` 的 ebp＝−1，所以相位不重置、每 call 加帧相位步；`+0x9e` 在 `0x41d708` 写回原值，行相位步不变。创建那 call（`+0x8c`＝0，`0x41d77c`）若 `[0x4c1cc0]` 已非零就不接管；否则写 `[0x4c1cc0]`＝0x10000000（换色，obj_Data6）并在 obj_Data5 非零时再或 0x400000（波纹位，地图物件过程 `0x43d888` 据此给物件模式加 0x400000，由 `0x46170c` 按行表 `0x4bfcc4` 画）。每 call 末 `+0x7c`（obj_Shape_Delay 30000）减一，仍为正且 `[0x4c1b00] & 0x1000000`（魔法效果阶段，施法例程 `0x442a90` 置／清）才留下；否则 `0x41d761` 把 `[0x4c1cc0]`／`[0x4c1cc4]` 清零并自删——波纹与换色就在这里关。`0x46163a` 的三处调用（`0x43cd64`／`0x43d2c6`／`0x43d34f`）在地图物件过程里，是带自身波纹参数的物件自用，与法术效果无关。探针没有置 0x1000000，所以对象第二 call 就删、`ripple` 只记到第一 call。
+
 复原状态（原先未复原的 13 个对象）：
 
 | 对象 | 程序 | 卡在 | 现状 |
@@ -104,8 +106,8 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | OtherWord3 | effProcOtherWord3 | `0x460541` | 原生（旋转列）|
 | EarthRoundBall | effProcEarthRoundBall | `0x4607f9` | 原生，含 2 个自绘伪实例 |
 | EarthUpBall | effProcEarthUpBall | `0x4607f9` | 原生，含 4 个自绘伪实例 |
-| FireBGSet／IconBGSet1 | effProcIconBGSet | `0x46164b` | 原生（两帧、不画）；波纹参数已记，重制未画波纹 |
-| OtherBBall1 | effProcOtherBig | `0x43bf30` | 原生（anchored）；镜头轨迹已记，重制未移动战场镜头 |
+| FireBGSet／IconBGSet1 | effProcIconBGSet | `0x46164b` | 原生（探针里两帧、不画）；重制按 ripple 参数给地图与单位逐行位移 |
+| OtherBBall1 | effProcOtherBig | `0x43bf30` | 原生（anchored）；重制按 camera 行移动战场镜头 |
 
 ### 找到／复原／剩余
 
@@ -116,7 +118,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | 部分复原 | 0 | — |
 | 未复原 | 0 | — |
 
-重制里已没有走"静帧＋最短 48 tick＋24 tick 淡出"的法术效果对象；剩下的是轨迹已记、重制未画的镜头跟随与屏幕波纹（边界）。
+重制里已没有走"静帧＋最短 48 tick＋24 tick 淡出"的法术效果对象；镜头跟随与屏幕波纹也已接上（见「重制接线」）。
 
 ### 声音：原生结果与静态计数
 
@@ -125,6 +127,8 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 ## 重制接线
 
 - `game/battle/scene/EffectObjectMotion.gd` 读原生轨迹并给出某帧的精灵（成员、偏移、加法／减法／普通、层级透明度、缩放）；`SkillEffectScriptPlayer.compile_effect` 给有轨迹的对象标 `native`，同一对象重复插入时轮换种子变体，寿命 = 所选变体的轨迹帧数，合成形状按 `angle` 列旋转（`sprites_at` 的 `rotation`），`_draw_native` 在插入 tick 起逐帧画整棵树；effInsertRandomObject 改为 §2 的折叠偏移与累加延迟。
+- 镜头跟随：`SkillEffectScriptPlayer._effect_view` 在效果播放中逐帧取 `EffectObjectMotion.camera_at`（`camera` 行的镜头相对起点），把战场镜头放到效果开始时的位置＋该量（`clamped_position` 夹在地图内，同 `0x46bede`），效果精灵按镜头实际移动量反向平移（原版效果对象固定在地图上）；剪辑结束时以战斗步长滑回效果前位置。
+- 屏幕波纹：同一函数取 `EffectObjectMotion.ripple_at`（首 call 参数＋上文外推），`ripple_rows` 照 `0x461687` 算 480 行位移表，`BattleCombatCutin.show_effect_ripple` 把一块读屏幕纹理的全屏 ColorRect 放在战场 World 最末（地图、物件、单位之后，界面之前）逐行横移；从对象第一 call 起到剪辑结束（效果阶段结束）关。
 - `skill_effects` 导入同时收下轨迹画到的成员（新导入 53 张子对象帧；hsl.pak 没有的 11 个列入 `missing_members`，与原有缺帧一样按系列循环，provisional）。
 - 定向测试：`run_skill_effect_script_tests`（`native_motion_tracks`／`native_motion_drawing`／`effect_random_insertion`、改写的旧断言）、`run_support_magic_tests`（创建帧不画）、`run_battle_scene_runtime_tests._test_local_spell_layers`（風刃按原生存活区间取样）。消融：`tracked()` 恒假 → 2291 条失败；延迟改回独立随机 → 40 个种子的顺序断言失败；轨迹帧 +1 → "创建 tick 不画"失败。
 - `game/battle/scene/EffectObjectMotion.gd` layout：native execution of 0x415dc0／0x4010c0 and the effProc* jump table 0x4231b0: positions, members, draw modes, levels, zooms; frame model of 0x45f5f7 — docs/evidence_packets/static_reverse/original_effect_motion.md
@@ -138,7 +142,8 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 ## 边界
 
 - **随机样本**：每个根对象至多 4 个种子变体，重复插入轮换；原版所有实例共用一条 RNG 流，变体只是分布里的样本。
-- **镜头跟随与屏幕波纹**：OtherBBall1 的 `camera` 行、FireBGSet／IconBGSet1 的 `ripple` 行已由原指令算出，重制不移动战场镜头、不画逐行波纹；波纹参数在对象自删后由谁关闭（`0x46163a` 的调用方）未读。
+- **镜头跟随与屏幕波纹**：效果后镜头滑回效果前位置是重制替代（原版由施法例程 `0x442a90` 滚回施法者）；波纹只加在地图与单位层（原版按物件模式 0x400000 逐个画，效果对象自己是否带该位未读）；超过探针第一 call 的参数按上文读法外推。
+- **换色**：effProcIconBGSet 的 obj_Data6（change color mode）写 `[0x4c1cc0]` 0x10000000 与颜色 `[0x4c1cc4]`（`+0xa1..0xa3` 渐变），重制未画。
 - **合成形状的画法**：重制把合成槽画成源 SHP 加 Sprite 旋转（先缩放后旋转）；原版先转位图再缩放，只在非等比缩放时有差，旋转取样的像素误差不证明。
 - **特效原点**：已读（[地图普攻与受击包 §1](original_map_strike.md#1-结论)）：eff_proc_Local 取目标对象 `(+4, +8)`（`0x443087`），即目标格中心、无 y 偏移；eff_proc_Global 取光标格中心（`0x442d81`）。录屏"高约 14 px"量的是脚下，换算到锚点约 2 px。
 - **±1 帧**：真实平面链顺序与探针不同时，子对象首帧可能早／晚一帧；有插入延迟的对象在原版里首个可见帧比根对象早一帧（创建帧的跳画位在等待期间已清）。

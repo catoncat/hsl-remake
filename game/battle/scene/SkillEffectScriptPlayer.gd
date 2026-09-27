@@ -771,12 +771,53 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	var complete := mark(host, clip, elapsed, {"release": lead_end,
 		"impact": lead_in + float(timeline["impact_tick"]) * scale,
 		"complete": lead_in + float(timeline["complete_tick"]) * scale})
-	var used := draw(clip, seconds, [clip["map_target"]] if bool(timeline["global"]) else clip["affected_positions"])
-	_draw_cast_stars(clip["cast_stars"], star_tick, star_origin, used)
+	var shift := _effect_view(host, clip, seconds * TICKS_PER_SECOND, complete)
+	var origins: Array = []
+	for origin in ([clip["map_target"]] if bool(timeline["global"]) else clip["affected_positions"]):
+		origins.append(origin - shift)
+	var used := draw(clip, seconds, origins)
+	_draw_cast_stars(clip["cast_stars"], star_tick, star_origin - shift, used)
 	if complete:
 		clear()
 		return true
 	return false
+
+
+## The two effect objects that act on the whole view. effProcOtherBig (OtherBBall1) moves the
+## battle camera by its 0x43bf30 track (EffectObjectMotion.camera_at), clamped to the map as
+## 0x46bede does; the effect sprites, fixed on the map in the original, are drawn shifted
+## back by the camera's actual move (the return value). As the clip completes the camera
+## glides back to where the effect found it at the battle step (the cast routine 0x442a90
+## scrolls back after the effect phase; the remake has no separate return glide).
+## effProcIconBGSet (IconBGSet1／FireBGSet) lays its 0x461687 row offsets over the map and
+## units (host.show_effect_ripple) from its first call until the effect phase ends: the object
+## only deletes itself — and clears the ripple bit 0x400000 of [0x4c1cc0] (0x41d761) — once
+## [0x4c1b00] & 0x1000000 is clear, which the cast routine clears after the effect.
+func _effect_view(host: CanvasLayer, clip: Dictionary, tick: float, complete: bool) -> Vector2:
+	var timeline: Dictionary = clip["effect_timeline"]
+	var offset := Vector2.ZERO
+	var ripple := {}
+	for event in timeline["events"]:
+		if event["kind"] != "object" or event.get("motion", "") != "native" or event.get("source", "") == "objcomd" or tick < float(event["tick"]):
+			continue
+		var frame := int(tick - float(event["tick"]))
+		offset += EffectObjectMotion.camera_at(str(event["object"]), frame)
+		var params := EffectObjectMotion.ripple_at(str(event["object"]), frame)
+		if not params.is_empty():
+			ripple = params
+	host.show_effect_ripple({} if complete else ripple)
+	var camera: RefCounted = host.battle_camera()
+	if camera == null or camera.camera == null or (offset == Vector2.ZERO and not clip.has("effect_camera_base")):
+		return Vector2.ZERO
+	if not clip.has("effect_camera_base"):
+		clip["effect_camera_base"] = camera.camera.position
+	var base: Vector2 = clip["effect_camera_base"]
+	if complete:
+		camera.scroll_to(base)
+		return Vector2.ZERO
+	camera.stop_scroll()
+	camera.camera.position = camera.clamped_position(base + offset)
+	return camera.camera.position - base
 
 
 ## 0x408b20 case 4 (0x408bb4): two 0x401390 calls of object 399 Cast_Star at the burst point,

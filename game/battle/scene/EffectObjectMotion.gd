@@ -111,3 +111,64 @@ static func sprites_at(decoded: Dictionary, frame: int) -> Array:
 		sprites.append({"member": str(members[member]), "offset": Vector2(instance["x"][index], instance["y"][index]),
 			"scale": scale, "alpha": alpha, "blend": blend, "rotation": rotation})
 	return sprites
+
+
+## effProcOtherBig's 0x43bf30 camera follow as the probe ran it: the battle camera relative
+## to where it stood at the object's creation, at `frame` (0x46bede adds the frame's scroll
+## accumulator after 0x45f5f7). Before the first row it has not moved; after the last row it
+## stays — the object restores nothing. Zero for an object without `camera` rows.
+static func camera_at(object_name: String, frame: int) -> Vector2:
+	var offset := Vector2.ZERO
+	for row in packet()["objects"].get(object_name, {}).get("camera", []):
+		if int(row[0]) > frame:
+			break
+		offset = Vector2(int(row[1]), int(row[2]))
+	return offset
+
+
+## effProcIconBGSet's 0x46164b parameters at `frame`. The probe's `ripple` row is the first
+## call (it deleted the object right after: [0x4c1b00] & 0x1000000 was clear). Every call passes
+## phase −1 (ebp of 0x415dc0, so 0x461687 keeps accumulating the frame step) and the amplitude
+## counter +0x92 before its increment, capped per change-X mode (obj_Data5 1 → 4 at 0x41d716,
+## 2 → 24 at 0x41d6c4); the row step stays (0x41d708 writes +0x9e back unchanged).
+## {} before the first call or for an object without `ripple` rows.
+const RIPPLE_AMPLITUDE_CAP := {"obj_Effect_IconBGSet1": 4, "obj_Effect_FireBGSet": 24}
+
+
+static func ripple_at(object_name: String, frame: int) -> Dictionary:
+	var rows: Array = packet()["objects"].get(object_name, {}).get("ripple", [])
+	if rows.is_empty() or frame < int(rows[0][0]):
+		return {}
+	var row: Array = rows[0]
+	var calls := frame - int(row[0])
+	return {"phase": (int(row[1]) + int(row[4]) * calls) & 0xff, "row_phase_step": int(row[2]), "rows_per_step": maxi(1, int(row[3])),
+		"amplitude": mini(int(row[5]) + calls, int(RIPPLE_AMPLITUDE_CAP.get(object_name, int(row[5]))))}
+
+
+## 0x461687's per-row x offsets for one frame (`phase` already advanced by the frame step):
+## every `rows_per_step` rows the running phase adds `row_phase_step`; offset =
+## sin[phase] × amplitude >> 16 (table 0x4a39fc = 65536·sin(2π i/256)); a running phase of
+## exactly 64 becomes 66 (0x4616bb／0x4616e7).
+static func ripple_rows(params: Dictionary, rows: int = 480) -> PackedFloat32Array:
+	var offsets := PackedFloat32Array()
+	offsets.resize(rows)
+	var amplitude: int = params["amplitude"]
+	var phase: int = int(params["phase"]) & 0xff
+	if phase == 64:
+		phase = 66
+	var value := _ripple_offset(phase, amplitude)
+	var count: int = params["rows_per_step"]
+	for index in range(rows):
+		count -= 1
+		if count <= 0:
+			count = params["rows_per_step"]
+			phase = (phase + int(params["row_phase_step"])) & 0xff
+			if phase == 64:
+				phase = 66
+			value = _ripple_offset(phase, amplitude)
+		offsets[index] = value
+	return offsets
+
+
+static func _ripple_offset(phase: int, amplitude: int) -> int:
+	return (int(roundf(FIXED_ONE * sin(TAU * float(phase) / 256.0))) * amplitude) >> 16
