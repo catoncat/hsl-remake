@@ -1,6 +1,6 @@
 # Original actor placement initialization
 
-> evidence: static-derived; runtime-measured: 第 6 关 061_1 装在 0xff 格 · status: live · functions: 0x407cc0, 0x4080b0, 0x411a30, 0x45e307, 0x45fa1e, 0x46be17 · tools: hsl_map_object_origins.py, hsltools/data/first_battle_formation.py, hsltools/levels/battle.py, test_hsl_opening_positions.py · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 第 6 关 061_1 装在 0xff 格 · status: live · functions: 0x407cc0, 0x4080b0, 0x411a30, 0x45e307, 0x45fa1e, 0x46be17 · tools: hsl_map_object_origins.py, hsltools/data/first_battle_formation.py, hsltools/levels/battle.py, test_hsl_opening_positions.py · updated: 2026-09-28
 
 ## 结论
 
@@ -27,7 +27,7 @@ The old `(192,64)` display calibration must not be added to native map coordinat
 
 ### Install has no terrain test
 
-After the rounding, enemy initialization continues `0x446c40` (shape), `0x458c80(0x18)` (stamina jitter), `0x40ba20` (live side) and `0x411a30(actor, side)`, which takes `(+4 >> 5, +8 >> 5)` and ORs the side into the map word through `0x411900` (for a large actor, over its 3×3). No branch reads the cell's height or flags and none searches for another cell: **an actor is installed on its EVEF (or insert) cell whatever the terrain there**. Runtime-measured confirmation: level 6's villager 061_1 is live on the 0xff cell (25,15) at the 宣戰 card ([battle_006 原版开局](../runtime_observations/battle_006/README.md)). Whether such a ground actor can leave its 0xff cell is answered by the movement flood: it can cross only adjacent 0xff／253／254 cells and never steps down ([actor traversal](original_actor_traversal.md), static-derived with original instructions executed). A STORY walker whose endpoint is blocked stands on the endpoint too (runtime-measured: the opening snapshot at the original's round-1 halt, [opening_snapshot_diff](../../../content/generated/hsl/development/opening_snapshot_diff.md), 53 one-cell walkers).
+After the rounding, enemy initialization continues `0x446c40` (shape), `0x458c80(0x18)` (stamina jitter), `0x40ba20` (live side) and `0x411a30(actor, side)`, which takes `(+4 >> 5, +8 >> 5)` and ORs the side into the map word through `0x411900` (for a large actor, over its 3×3). No branch reads the cell's height or flags and none searches for another cell: **an actor is installed on its EVEF (or insert) cell whatever the terrain there**. Runtime-measured confirmation: level 6's villager 061_1 is live on the 0xff cell (25,15) at the 宣戰 card ([battle_006 原版开局](../runtime_observations/battle_006/README.md)). Whether such a ground actor can leave its 0xff cell is answered by the movement flood: it can cross only adjacent 0xff／253／254 cells and never steps down ([actor traversal](original_actor_traversal.md), static-derived with original instructions executed). A flying STORY walker whose endpoint is a 0xff cell stands on the endpoint (runtime-measured: the opening snapshot at the original's round-1 halt, [opening_snapshot_diff](../../../content/generated/hsl/development/opening_snapshot_diff.md)); a ground walker's endpoint goes through the walk-destination fix 0x44fbd0 ([original_script_entry](original_script_entry.md)).
 
 ### SHP draw origin (`0x45fa1e`)
 

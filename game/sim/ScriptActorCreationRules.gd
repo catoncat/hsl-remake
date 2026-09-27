@@ -338,7 +338,8 @@ static func _bindings(loop: Dictionary, departed: Array) -> Dictionary:
 
 ## 0x44fbd0(obj, &x, &y), called on every install (0x450ee2) and walk destination: the
 ## requested cell is kept unless its word carries a unit or the hard block (& 0x74000) or it
-## is a 0xff cell for a walker. Then a copy of the actor stands on it, floods 12 (0x40f440,
+## is a 0xff cell for a walker. Then a copy of the actor stands on it with that cell's word
+## cleared to its low 12 bits (0x411940: height 0, no flags), floods 12 (0x40f440,
 ## mode 1 walking with terrain and height only, no unit blocks; mode 6 flying), the
 ## centre is cleared (0x40f520(0)) and 0x413900 takes the flooded unoccupied cell nearest
 ## (Manhattan) in row-major order, an equal one replacing the held one on rand() & 1, a
@@ -355,7 +356,17 @@ static func nearest_landing(actor: Dictionary, requested: Vector2i, occupants: A
 	var flying := bool(actor.get("traversal", {}).get("flying", false))
 	var blocked: bool = taken.has(origin) or (int(tile.get("movement_flags", 0)) & AINavigationRules.HARD_BLOCK_FLAG) != 0 or (not flying and ActorTraversalRules.elevation(tile) == 255)
 	if not blocked: return {"ok": true, "coord": origin, "draws": []}
-	var flood := TacticalGridRules.movement_reachability_envelope(candidate, [], tiles, size, LANDING_FLOOD_RADIUS)
+	# 0x4119d0(x, y, 0) → 0x411940 keeps only the low 12 bits of the requested cell's word for
+	# the flood: height 0, no flags, so a walker on a 0xff cell steps only onto neighbours
+	# within the height rule and never onto the surrounding 0xff cells (static-derived, original
+	# instructions executed on LEVEL034／038／080, original_script_entry.md).
+	var flood_tiles := tiles.duplicate()
+	var cleared: Dictionary = tile.duplicate()
+	cleared["movement_flags"] = 0
+	cleared["elevation"] = 0
+	cleared["blocks_movement"] = false
+	flood_tiles[origin] = cleared
+	var flood := TacticalGridRules.movement_reachability_envelope(candidate, [], flood_tiles, size, LANDING_FLOOD_RADIUS)
 	if not flood["ok"]: return {"ok": false, "reason": flood["reason"]}
 	var large := int(actor.get("traversal", {}).get("size_type", 0)) != 0
 	var cells: Array = []

@@ -3,12 +3,12 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 95,
+    "items": 94,
     "sources": 526,
     "sources_by_kind": {
       "provenance": 206,
-      "sentence": 147,
-      "scope": 75,
+      "sentence": 148,
+      "scope": 74,
       "matrix": 85,
       "video": 13
     },
@@ -16,13 +16,13 @@
     "items_by_original_status": {
       "read_complete": 17,
       "read_partial": 54,
-      "unread": 7,
+      "unread": 6,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 16,
       "some_levels": 34,
-      "rare": 40,
+      "rare": 39,
       "invisible": 5
     },
     "items_by_category": {
@@ -31,7 +31,7 @@
       "剧情走位": 4,
       "原版调度与随机流": 3,
       "地图与物件": 7,
-      "地图人物演出": 7,
+      "地图人物演出": 6,
       "城镇与大地图": 6,
       "存档与流程": 1,
       "对白": 2,
@@ -734,6 +734,28 @@
       ]
     },
     {
+      "id": "level-specific-placement",
+      "difference": "两名地面走位单位终点四邻全是 0xff：沙羅尼亞近郊（LEVEL034）037_2、禁忌之魂・墳場地下（LEVEL080）嚎 重制留在终点，原版站到行走起点一侧最近的可达格",
+      "original": "0x44fbd0 在这两格无候选（原指令实跑），原版停点来自行走寻路本身，未读",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_script_entry.md"
+      ],
+      "remake": "生成器 script_landing 无候选时留在终点",
+      "remake_code": [
+        "tools/hsltools/levels/battle.py"
+      ],
+      "original_status": "read_partial",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "剧情走位",
+      "sources": [
+        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
+        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md",
+        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#366880ce24",
+        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#c405918b68"
+      ]
+    },
+    {
       "id": "poison-gas-presentation",
       "difference": "噴人沼氣（拉格納沼地 LEVEL032 的 WINFAIL event 9）喷毒的规则与演出已照原版（镜头滚到喷点、中心 ±38 px 3 团 SMOKE001 烟上飘、淡入 16 tick 再每 3–7 tick 淡一级、中毒者左右抖 60 tick、停 90／40 tick 后剧本往下走）；烟的 4 次随机抽取（保持、偏移、速度）由 PoisonGasRules 在同一次结算里抽全局流写进回执（原版在下一 tick 抽，其间可能插进别的对象的抽取），加法层级按 Godot 加色合成×透明度画",
       "original": "过程 0x43c7c0 各状态、0x407230 抖动（行动者过程 0x43f288）、烟对象 defProcFireSmoke 0x43c260（运动、层级、寿命、4 次全局流抽取）已读",
@@ -1001,28 +1023,6 @@
         "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#c69f8f3f04",
         "sentence:docs/evidence_packets/static_reverse/original_field_coverage.md#77614f92b7",
         "sentence:docs/evidence_packets/static_reverse/original_water_strike.md#a893bce200"
-      ]
-    },
-    {
-      "id": "level-specific-placement",
-      "difference": "个别关卡的单位／物件与原版不同：80 关 怨念體 暂放 (25,9)、18 关城门未建成单位、随机位置的洗牌随机源、部分走位终点挪格",
-      "original": "原格压墙、城门对象缺 PLAYERS 预置读法等",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_story_object_terrain.md",
-        "docs/evidence_packets/static_reverse/original_random_position.md"
-      ],
-      "remake": "生成器的落点读法",
-      "remake_code": [
-        "game/sim/ScriptActorCreationRules.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "M",
-      "category": "剧情走位",
-      "sources": [
-        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
-        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md",
-        "scope:docs/evidence_packets/static_reverse/original_story_object_terrain.md|provisional|第 80 关怨念體起始格为重制落点"
       ]
     },
     {
@@ -2254,25 +2254,6 @@
         "matrix:Camera curve",
         "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#35c5395ff4",
         "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#d01089a754"
-      ]
-    },
-    {
-      "id": "script-removal-death",
-      "difference": "脚本删除单位时原版是否播阵亡演出未读，重制不播",
-      "original": "原版脚本删除路径未读（未证明原版也不播）",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_death_disposal.md"
-      ],
-      "remake": "脚本离场不走阵亡演出",
-      "remake_code": [
-        "game/battle/scene/BattleScriptPresentation.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "地图人物演出",
-      "sources": [
-        "sentence:docs/evidence_packets/static_reverse/original_death_disposal.md#d011b4de2f"
       ]
     },
     {

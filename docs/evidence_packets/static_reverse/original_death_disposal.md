@@ -1,6 +1,6 @@
 # 阵亡：遗言后 16 tick 拉伸淡出、尸格释放时序、当前行动者阵亡的队列两步
 
-> evidence: static-derived: the dead branches of the battle-actor processes read from hsl01.exe, including when a corpse's map-cell bits are cleared relative to the next actor after attack and counter kills, and the double queue step when the current actor dies, and the 0x2c000000 draw mode as kind 9 of the pixel-kind table (map_pose_floaters §4); runtime-measured: 505 s1 queue trace · status: live · functions: 0x4072b0, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407720, 0x407800, 0x409700, 0x40ba20, 0x411b90, 0x43bf30, 0x43ede0, 0x441594, 0x442720, 0x442a90, 0x446c40 · tools: run_actor_traversal_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-27
+> evidence: static-derived: the dead branches of the battle-actor processes read from hsl01.exe, including when a corpse's map-cell bits are cleared relative to the next actor after attack and counter kills, and the double queue step when the current actor dies, and the 0x2c000000 draw mode as kind 9 of the pixel-kind table (map_pose_floaters §4); runtime-measured: 505 s1 queue trace · status: live · functions: 0x4072b0, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407720, 0x407800, 0x409700, 0x40ba20, 0x411b90, 0x43bf30, 0x43ede0, 0x441594, 0x442720, 0x442a90, 0x446c40 · tools: run_actor_traversal_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -52,7 +52,7 @@
 ## 重制接线
 
 - `game/battle/scene/BattleAftermath.gd`：`DEATH_TICKS = 16`、`DEATH_STRETCH_PER_TICK = 0.25`、`FADE_SECONDS = 16 × 16 ms`；`scale.y = 1 + 0.25 × tick`、`modulate.a = 1 − tick／16`、加法混合；`_dispose` 复原缩放与材质。`_begin_disposal` 是进入 `fade` 的唯一入口，发 `disposal_started(unit)`，`BattlePresentation._play_sound(unit, "dead")` 放死亡音；开发快进 `finish` 不补放。provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_death_disposal.md`。
-- 死亡演出只从回执 `CombatSequence.outcomes` 中 `defender_hp_before > 0 且 defender_hp_after ≤ 0` 的目标建立：普通攻击、绝技、反击、地图法术、多目标逐个都播；中毒不致死（`StatusEffectRules`）；undead 复活回执非 lethal；脚本删除不产生回执、不播。
+- 死亡演出只从回执 `CombatSequence.outcomes` 中 `defender_hp_before > 0 且 defender_hp_after ≤ 0` 的目标建立：普通攻击、绝技、反击、地图法术、多目标逐个都播；中毒不致死（`StatusEffectRules`）；undead 复活回执非 lethal；脚本删除不产生回执、不播；原版 `actDeleteObject`（状态 0x35）与 `actWalkAndDelete`（0x36）同样只走 16 级 engMIX 淡出后注销，不进阵亡演出（static-derived，见 [original_script_entry](original_script_entry.md)、[original_script_departure](original_script_departure.md)）。
 - `game/sim/ActorTraversalRules.gd`：`prepare` 只把 `BattlePresence.living` 写进占格（一死即放）。
 - `game/sim/loop/BattlePlayLoop.gd`：`_step_past_dead_actor` 对应 `0x407720` 这一步（换轮时先加回合数再跑完成扫描），之后 `CoreTurnQueue.end_turn` 对应第二步；重制保留死者队列槽，故连续跳过已死槽。
 
@@ -62,6 +62,5 @@
 
 ## 边界
 
-- 原版脚本删除路径未读（未证明原版也不播）
 - 法术击杀后下一名行动者寻路时受害者格位是否已清，取决于遗言、镜头 `0x43bf30` 与浮字各自的 tick 数，静态读无定论；替换证据为从法术击杀那一 tick 起逐 tick 读受害者 +0x8c、脚下格字与施法者调 `0x407510` 的时刻。
 - 脚本离场的当前行动者两步语义见 [initial_battle_initiative.md](initial_battle_initiative.md)，未实测。

@@ -451,6 +451,53 @@ INSTALL_ON_BLOCKED_NOTE = ('Source placement is a blocked cell in the WRD readin
 STORY_ENDPOINT_ON_BLOCKED_NOTE = ('STORY walk endpoint is a blocked cell in the WRD reading; the original leaves the walker on its endpoint '
                                   '(opening snapshot at the round-1 halt, runtime-measured), so the unit starts on it.')
 
+SCRIPT_LANDING_NOTE = ('STORY walk endpoint is a 0xff cell for a ground walker; the original walk-destination fix 0x44fbd0 moves it to the nearest '
+                       'cell its mode-1 flood reaches (docs/evidence_packets/static_reverse/original_script_entry.md).')
+
+
+def script_landing(grid: list, cell: tuple[int, int], taken: set) -> tuple[int, int] | None:
+    """0x44fbd0 for a ground walker whose STORY endpoint is a 0xff／hard-block cell: the cell's
+    word is cleared to its low 12 bits for the flood (0x411940: height 0, no flags), a mode-1
+    flood of 12 (0x40f440 → 0x40f02a: only 0x4000 and a height step of 3 or more block, each
+    step costs 1 plus the climb, units do not block) runs from it, and 0x413740 takes the
+    flooded cell without a unit nearest by Manhattan distance in row-major order. None when
+    no cell is reached (the walker stays on its endpoint). The original breaks an equal
+    distance with rand() & 1 (0x413862); this static opening takes the later cell, as the
+    original's four LEVEL038 snapshots show (provisional), and skips the 0x40d800 rejection."""
+    height, width = len(grid), len(grid[0])
+    x0, y0 = cell
+    best = {cell: 12}
+    frontier = [(12, x0, y0, 0)]
+    while frontier:
+        frontier.sort(key=lambda row: -row[0])
+        left, x, y, level = frontier.pop(0)
+        if best.get((x, y), -1) > left:
+            continue
+        for dx, dy in ((0, -1), (-1, 0), (1, 0), (0, 1)):
+            nx, ny = x + dx, y + dy
+            if not (0 <= nx < width and 0 <= ny < height) or (nx, ny) == cell:
+                continue
+            target = grid[ny][nx]
+            if int(target['t']) & 0x4000:
+                continue
+            new_level = 255 if target['b'] else int(target['h'])
+            step = new_level - level
+            if abs(step) >= 3:
+                continue
+            remaining = left - 1 - max(0, step)
+            if remaining > 0 and remaining > best.get((nx, ny), 0):
+                best[(nx, ny)] = remaining
+                frontier.append((remaining, nx, ny, new_level))
+    pick, distance = None, None
+    for y in range(height):
+        for x in range(width):
+            if (x, y) == cell or (x, y) not in best or (x, y) in taken:
+                continue
+            d = abs(x - x0) + abs(y - y0)
+            if distance is None or d <= distance:
+                pick, distance = (x, y), d
+    return pick
+
 
 def nearest_free(grid: list, cell: tuple[int, int], taken: set, footprint_radius: int = 0) -> tuple[int, int]:
     """Nearest legal center whose complete actor footprint is free."""
@@ -1030,14 +1077,24 @@ def build(level: int) -> dict:
         footprint = _footprint_cells(cell, footprint_radius)
         outside = any(not (0 <= y < len(grid) and 0 <= x < len(grid[0])) for x, y in footprint)
         on_blocked = not outside and any(impassable(grid[y][x]) for x, y in footprint)
-        # The original never moves an actor off blocked terrain: a unit with no STORY movement
-        # starts on its install pixel (STORY037's gems sit on their pillars), a STORY walker on
-        # its walk endpoint (the opening snapshot: 53 walkers the remake used to move stand on
-        # their endpoint at the original's round-1 halt, runtime-measured).
+        # The original installs without a terrain test: a unit with no STORY movement starts on
+        # its install pixel (STORY037's gems sit on their pillars), a flying STORY walker on its
+        # 0xff walk endpoint (the opening snapshot at the original's round-1 halt, runtime-measured).
         install_start = all(step['action'] in INSERT_OBJECT for step in traces.get(unit_id, []))
         # A large footprint keeps it too (13 關 051 ×4, 59 關 060, 80 關 068 at the original's round-1
         # halt); ActorTraversalRules.placement_error checks only occupancy for a standing actor.
-        if on_blocked and not any(point in taken for point in footprint):
+        # A ground walker's endpoint goes through the original walk-destination fix 0x44fbd0;
+        # a flying one keeps its 0xff endpoint (0xff only triggers it for ground, 0x44fc19).
+        flying = bool(int(players[object_rows[unit_id]].get('move_fly', 0) or 0))
+        landed = (script_landing(grid, cell, taken) if on_blocked and not install_start and not flying and not footprint_radius
+                  and not any(point in taken for point in footprint) else None)
+        if landed:
+            actor['coord'] = [landed[0], landed[1]]
+            footprint = _footprint_cells(landed, footprint_radius)
+            actor['position_evidence_tier'] = 'static-derived'
+            actor['position_source']['story_endpoint_landing_from'] = [cell[0], cell[1]]
+            actor['position_note'] = SCRIPT_LANDING_NOTE
+        elif on_blocked and not any(point in taken for point in footprint):
             if install_start:
                 actor['position_source']['install_on_blocked_cell'] = True
                 actor['position_note'] = INSTALL_ON_BLOCKED_NOTE

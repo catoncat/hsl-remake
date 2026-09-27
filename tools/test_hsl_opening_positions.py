@@ -44,7 +44,7 @@ BUILDING_SHAPES = ('HOUSE', 'WELL', 'DOOR')
 # (docs/evidence_packets/static_reverse/original_draw_order.md): the ground units stand
 # behind it as in the original; 雷特 in 576–578 flies and is drawn over it.
 SPRITE_OVERLAP_ALLOWED = {
-    ('battle_038.json', 'actor034_1'), ('battle_038.json', 'actor034_2'), ('battle_059.json', 'hu'), ('battle_576.json', 'rett'), ('battle_577.json', 'rett'), ('battle_578.json', 'rett'),
+    ('battle_038.json', 'actor034_1'), ('battle_059.json', 'hu'), ('battle_576.json', 'rett'), ('battle_577.json', 'rett'), ('battle_578.json', 'rett'),
     ('battle_059.json', 'claudie'), ('battle_075.json', 'actor049_2'),
     ('battle_900.json', 'hanks'), ('battle_900.json', 'actor062_3'), ('battle_900.json', 'actor062_4'), ('battle_900.json', 'actor031_2'), ('battle_900.json', 'actor030_2'),
     ('ohm_village_battle.json', 'actor061_3'),
@@ -165,10 +165,6 @@ class OpeningPositionTests(unittest.TestCase):
         self.assertEqual(set(details), SPRITE_OVERLAP_ALLOWED)
         original_front, ablated = set(), set()
         for key, (unit, anchor_y) in details.items():
-            if key == ('battle_038.json', 'actor034_2'):
-                # OPENFIX: kept on its 0xff STORY endpoint [14,11] inside the building; the original
-                # stands it on [13,11] (opening_snapshot_diff, cell row), so this cell has no original order.
-                continue
             flying = unit['actor_id'] in FLYING_ACTORS
             foot_y = unit['coord'][1] * CELL + CELL // 2
             original_behind = unit['coord'][1] + 1 + (10 if flying else 0) < (anchor_y + 16) >> 5

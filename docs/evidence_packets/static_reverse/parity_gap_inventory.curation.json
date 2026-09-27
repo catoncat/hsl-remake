@@ -656,22 +656,6 @@
       "category": "特写与施法演出"
     },
     {
-      "id": "script-removal-death",
-      "difference": "脚本删除单位时原版是否播阵亡演出未读，重制不播",
-      "original": "原版脚本删除路径未读（未证明原版也不播）",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_death_disposal.md"
-      ],
-      "remake": "脚本离场不走阵亡演出",
-      "remake_code": [
-        "game/battle/scene/BattleScriptPresentation.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "地图人物演出"
-    },
-    {
       "id": "highlight-colours",
       "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定",
       "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
@@ -995,19 +979,18 @@
     },
     {
       "id": "level-specific-placement",
-      "difference": "个别关卡的单位／物件与原版不同：80 关 怨念體 暂放 (25,9)、18 关城门未建成单位、随机位置的洗牌随机源、部分走位终点挪格",
-      "original": "原格压墙、城门对象缺 PLAYERS 预置读法等",
+      "difference": "两名地面走位单位终点四邻全是 0xff：沙羅尼亞近郊（LEVEL034）037_2、禁忌之魂・墳場地下（LEVEL080）嚎 重制留在终点，原版站到行走起点一侧最近的可达格",
+      "original": "0x44fbd0 在这两格无候选（原指令实跑），原版停点来自行走寻路本身，未读",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_story_object_terrain.md",
-        "docs/evidence_packets/static_reverse/original_random_position.md"
+        "docs/evidence_packets/static_reverse/original_script_entry.md"
       ],
-      "remake": "生成器的落点读法",
+      "remake": "生成器 script_landing 无候选时留在终点",
       "remake_code": [
-        "game/sim/ScriptActorCreationRules.gd"
+        "tools/hsltools/levels/battle.py"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
-      "effort": "M",
+      "effort": "S",
       "category": "剧情走位"
     },
     {
@@ -2731,9 +2714,6 @@
     "scope:docs/evidence_packets/static_reverse/original_skill_function_bits.md|provisional|": {
       "item": "skill-area-policies"
     },
-    "scope:docs/evidence_packets/static_reverse/original_story_object_terrain.md|provisional|第 80 关怨念體起始格为重制落点": {
-      "item": "level-specific-placement"
-    },
     "scope:docs/evidence_packets/static_reverse/original_support_magic.md|provisional|AI 自救组合顺序与粒子／时钟": {
       "item": [
         "ai-skill-buckets",
@@ -2830,10 +2810,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#8caf94691b": {
       "item": "cast-overlay-rules",
       "text": "原版 P（选单窗何时关未读）"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_death_disposal.md#d011b4de2f": {
-      "item": "script-removal-death",
-      "text": "原版脚本删除路径未读（未证明原版也不播）"
     },
     "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#0ad5773b45": {
       "item": "draw-depth-states",
@@ -3579,6 +3555,14 @@
         "cast-lead-phase"
       ],
       "text": "未读（保留 provisional）：击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、施法对象 phase 102 子状态 4 的过渡／停留 cadence 与外部释放 `0x4c1408`（s_action 引导的其余 call 数已读，[ANIMAL 程序包 §8](animal_program_execution.md#8-施法引导程序m_actions_action的解释)）、对象 700 渐暗、攻方 phase 100 子 2 等的挂起标志由谁请求（普攻首镜时通常已为 0）、`0x4c1e00` 切入底图缓冲的装入路径。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#366880ce24": {
+      "item": "level-specific-placement",
+      "text": "行走过程本身的寻路停点未读，重制留在终点。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#c405918b68": {
+      "item": "level-specific-placement",
+      "text": "未读：沙羅尼亞近郊（LEVEL034）037_2 终点 (36,17)、禁忌之魂・墳場地下（LEVEL080）嚎 终点 (5,22) 四邻全是 0xff，`0x44fbd0` 原指令留在原格，原版却分别站 (34,17)、(5,19)（离行走起点一侧最近的可达格）；"
     }
   }
 }

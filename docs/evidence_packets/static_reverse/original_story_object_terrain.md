@@ -1,12 +1,12 @@
 # 剧情物件改地形：mapobjBlock 与 mapobjClearWall
 
-> evidence: static-derived; resource-derived: 脚本 token、OBJ 字段与 WRD 格字; provisional: 第 80 关怨念體起始格为重制落点 · status: live · functions: 0x40ed50, 0x411900, 0x411990, 0x4119f0, 0x411a10, 0x42eb70, 0x43ccf0, 0x44fa80, 0x44fad0, 0x450840 · tools: hsltools/levels/scenario.py, run_story_object_terrain_tests.gd, test_hsl_story_object_terrain.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived: 脚本 token、OBJ 字段与 WRD 格字; runtime-measured: 第 80 关怨念體开局格（开局快照） · status: live · functions: 0x40ed50, 0x411900, 0x411990, 0x4119f0, 0x411a10, 0x42eb70, 0x43ccf0, 0x44fa80, 0x44fad0, 0x450840 · tools: hsltools/levels/scenario.py, run_story_object_terrain_tests.gd, test_hsl_story_object_terrain.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版剧情物件在安装时改地图格字：`mapobjBlock` 把格高度字节置 0xff（悬崖），`mapobjClearWall` 清硬阻挡位 0x4000；因此第 53 关开场后格 (20,21) 是悬崖，緹娜 回不到窗台竖井；第 28 关四道门、第 80 关一道墙在事件触发时打开；第 39 关第 7 回合塌陷区成悬崖（static-derived＋resource-derived，r2 只读反汇编）。
 - 重制：开场插入由 `terrain_overrides` 写进 battle JSON，战中插入由 `WinfailActions` 经 `game/sim/TerrainEditRules.gd` 追加到 loop 状态 `terrain_edits`，全部通行读者经 `TerrainEditRules.tiles(loop)` 读改后的地图（static-derived 输入）。
-- 差异：第 80 关怨念體按大型单位落点规则放在 (25,9)，原版源格 (23,11)（provisional）。
+- 第 80 关怨念體照原版站在 EVEF 源格 (23,11)，3×3 身体压住墙格 (22,12)：原版安装不查地形，开局快照里它就在该格；重制生成器写 `install_on_blocked_cell`，`ActorTraversalRules.placement_error` 对已站定的大型单位只查占位（static-derived；runtime-measured）。
 
 ## 证据
 
@@ -51,6 +51,6 @@
 
 ## 边界
 
-- provisional：怨念體 3×3 身体在源格 (23,11) 盖住墙格 (22,12)（0x4000），重制落点规则要求身体可停留，放到最近可停留的 (25,9)；原版安装不做地形检查，替换证据是原版它站在墙上时的碰撞／选取读法。
+- 不声明：怨念體压墙时的碰撞与选取细节（它 move 0，不会移动）。
 - 不声明：`NULL.SHP` 物件与 `DisappearRock`／烟雾的画面、门扇动画、怨念體 `obj_Mode engADDCOLOR` 画法。
 - 不声明：`mapobjBlock` 对已站在该格单位的处理（53 关无人站在 (20,21)，39 关脚本先删单位）；飞行单位照高度规则可停在塌陷格。

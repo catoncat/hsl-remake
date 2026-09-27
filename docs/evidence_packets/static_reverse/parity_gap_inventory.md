@@ -10,20 +10,20 @@
 
 ## 总数
 
-共 **95** 条差异（其中 0 条本轮有 lane 进行中），来自 526 个来源条目：provenance 206、sentence 147、scope 75、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 52 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
+共 **94** 条差异（其中 0 条本轮有 lane 进行中），来自 526 个来源条目：provenance 206、sentence 148、scope 74、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 52 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
 | 已读完只差照做 | 17 |
 | 读了一部分 | 54 |
-| 未读 | 7 |
+| 未读 | 6 |
 | 原版无对应代码 | 17 |
 
 | 可见度 | 条数 |
 | --- | --- |
 | 每场都看得到 | 16 |
 | 部分关卡 | 34 |
-| 少见 | 40 |
+| 少见 | 39 |
 | 看不见 | 5 |
 
 | 建议归入的类 | 条数 |
@@ -33,7 +33,7 @@
 | 特写与施法演出 | 10 |
 | 面板与界面 | 9 |
 | 地图与物件 | 7 |
-| 地图人物演出 | 7 |
+| 地图人物演出 | 6 |
 | 城镇与大地图 | 6 |
 | 剧情走位 | 4 |
 | 标题与过场 | 4 |
@@ -154,7 +154,7 @@
 | `unconsumed-display-flags` | 三个原版显示标志没接：不画影子（1 名角色）、不显示形体、施法者侧特效（8 行） | 字段有值，表现层读法未读<br>[original_field_coverage.md](../../../docs/evidence_packets/static_reverse/original_field_coverage.md) | 表现层不消费这些位<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) | 读了一部分 | 少见 | S | sentence 2 |
 | `story-effect-objects` | 雨／闪电／燃树等剧情特效的寿命、密度、速度是读法，运动程序未读 | mapobjDropRain／defProcObjectMove 未读<br>[story_scene_010_preview/README.md](../../../docs/evidence_packets/runtime_observations/story_scene_010_preview/README.md) | StoryEffectObjects 的发射器与闪光读法<br>[StoryEffectObjects.gd](../../../game/battle/runtime/StoryEffectObjects.gd) | 未读 | 部分关卡 | M | provenance 2 |
 
-### 地图人物演出（7）
+### 地图人物演出（6）
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -164,7 +164,6 @@
 | `ai-move-preview-timing` | 敌方移动预告已照原版分追击 12／站位 24 tick，起步动作数据下不可达已照；只剩录屏范围消失后约 0.18 s 才起步的来源未读 | 0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 查 SHAPEDEF prepare，66 条均无，恒直接走<br>[original_action_state_machine.md](../../../docs/evidence_packets/static_reverse/original_action_state_machine.md)、[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattleAiMovePreview.preview_ticks 按 purpose 取 12／24，预告结束即起步（与原版无 prepare 时一致）<br>[BattleAiMovePreview.gd](../../../game/battle/scene/BattleAiMovePreview.gd) `preview_ticks` | 已读完只差照做 | 少见 | S | sentence 4、video 1 |
 | `job-018-frames` | 018 形态原版没有 SHAPEDEF 行，重制沿用 009 的帧 | 018 无 SHAPEDEF 行（negative-evidence）<br>[original_town_job_up.md](../../../docs/evidence_packets/static_reverse/original_town_job_up.md) | 转职到 018 时保留 009 帧<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) | 读了一部分 | 少见 | S | scope 2、matrix 1 |
 | `shape-override-cadence` | 剧情换形（actChangeShape）期间的动画节拍按站立节拍，原版此状态未读 | 脚本换形期间的演员状态未读<br>[actor_animation_groups.md](../../../docs/evidence_packets/static_reverse/actor_animation_groups.md) | ActorRuntime 按站立周期<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `set_shape_override` | 未读 | 部分关卡 | S | provenance 1 |
-| `script-removal-death` | 脚本删除单位时原版是否播阵亡演出未读，重制不播 | 原版脚本删除路径未读（未证明原版也不播）<br>[original_death_disposal.md](../../../docs/evidence_packets/static_reverse/original_death_disposal.md) | 脚本离场不走阵亡演出<br>[BattleScriptPresentation.gd](../../../game/battle/scene/BattleScriptPresentation.gd) | 未读 | 少见 | S | sentence 1 |
 
 ### 城镇与大地图（6）
 
@@ -181,8 +180,8 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| `level-specific-placement` | 两名地面走位单位终点四邻全是 0xff：沙羅尼亞近郊（LEVEL034）037_2、禁忌之魂・墳場地下（LEVEL080）嚎 重制留在终点，原版站到行走起点一侧最近的可达格 | 0x44fbd0 在这两格无候选（原指令实跑），原版停点来自行走寻路本身，未读<br>[original_script_entry.md](../../../docs/evidence_packets/static_reverse/original_script_entry.md) | 生成器 script_landing 无候选时留在终点<br>[battle.py](../../../tools/hsltools/levels/battle.py) | 读了一部分 | 部分关卡 | S | provenance 2、sentence 2 |
 | `script-walk-speed` | actMoveDispWait 已照原版走同一寻路、保形无声、按速度换帧；无脚本形态时到位即停帧、0x1800 走完后的去向未读；剧情走步声按相对帧 0／3；插播恢复语义暂定 | 0x4501f0 目标格心、+0x80 \|= 0x1800、状态 0x32；寻路链 0x4111d0 不读 +0x80（同 actWalk 路线）；0x1000 跳过换向形态 0x446c40 与走步声 0x409610；两位同置每 tick 调 0x45e5a6，延迟按速度 6／4／2／1<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | _move_disp 目标格心化后走 ScriptWalkPath.route；move_along keep_pose_frame_ticks 保形、无声、每 7／5／2／3 tick 一帧<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_move_disp` | 读了一部分 | 部分关卡 | S | provenance 2 |
-| `level-specific-placement` | 个别关卡的单位／物件与原版不同：80 关 怨念體 暂放 (25,9)、18 关城门未建成单位、随机位置的洗牌随机源、部分走位终点挪格 | 原格压墙、城门对象缺 PLAYERS 预置读法等<br>[original_story_object_terrain.md](../../../docs/evidence_packets/static_reverse/original_story_object_terrain.md)、[original_random_position.md](../../../docs/evidence_packets/static_reverse/original_random_position.md) | 生成器的落点读法<br>[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd) | 读了一部分 | 部分关卡 | M | provenance 2、scope 1 |
 | `script-entry-paths` | 落点只在事件末对最终格检查一次（原版每个安装／行走 token 当时检查）；替代抽数排在出生抽数之后 | 安装无入场态，直接出现在 0x44fbd0 修过的格；替代＝洪泛 12＋行主序曼哈顿最近＋等距硬币；离场末格 engMIX 16 级逐 tick 淡出后注销<br>[original_script_entry.md](../../../docs/evidence_packets/static_reverse/original_script_entry.md)、[original_script_departure.md](../../../docs/evidence_packets/static_reverse/original_script_departure.md) | BattleScriptActorPresentation／ScriptActorCreationRules／BattleDepartureView<br>[BattleScriptActorPresentation.gd](../../../game/battle/scene/BattleScriptActorPresentation.gd)、[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd)、[BattleDepartureView.gd](../../../game/battle/scene/BattleDepartureView.gd) | 读了一部分 | 部分关卡 | M | provenance 3、sentence 1、scope 3、matrix 4 |
 | `script-walk-path` | 剧情走位的同距平局次序、围死时的最近格度量、起点推算、地图外能走多远是重制读法 | 原寻路 0x4111d0 读法；洪泛缓冲尺寸未读<br>[original_script_walk_path.md](../../../docs/evidence_packets/static_reverse/original_script_walk_path.md) | ScriptWalkPath 广度优先上下左右次序<br>[ScriptWalkPath.gd](../../../game/battle/runtime/opening/ScriptWalkPath.gd)、[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) | 读了一部分 | 部分关卡 | M | provenance 3、sentence 2、scope 2、matrix 2 |
 

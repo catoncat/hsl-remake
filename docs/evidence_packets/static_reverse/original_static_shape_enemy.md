@@ -1,6 +1,6 @@
 # 站立型敌方精灵来源
 
-> evidence: static-derived · status: live · tools: hsl_actor_walk_manifest.py · updated: 2026-09-27
+> evidence: static-derived · status: live · tools: hsl_actor_walk_manifest.py · updated: 2026-09-28
 
 ## Source
 
@@ -24,6 +24,6 @@ The original `defProcEnemy` object registration, native collision rectangle, sta
 
 ## Level 37／80 additions
 
-- `SID_ENEMY068` (level 80 怨念體): `stand = SHAPE\68-001.SHP`, all walk fields repeat it — the same standing-only path, one frame `68-001.SHP` (77×76 px), decoded into the level-80 actor manifest. The EVEF record 45 object (`obj_Data7 = 68`, `obj_Mode engADDCOLOR`) is a PlayLoop unit because PLAYERS 68 now has a generated template (`hsltools.sources.actor_walk_frames.standing_actor_code`); an EVEF standing enemy without a template (level 18's 門 Enemy100, the 12／26 hull pieces) stays a stand sprite. The additive blend is not reproduced (`provisional`).
+- `SID_ENEMY068` (level 80 怨念體): `stand = SHAPE\68-001.SHP`, all walk fields repeat it — the same standing-only path, one frame `68-001.SHP` (77×76 px), decoded into the level-80 actor manifest. The EVEF record 45 object (`obj_Data7 = 68`, `obj_Mode engADDCOLOR`) is a PlayLoop unit because PLAYERS 68 now has a generated template (`hsltools.sources.actor_walk_frames.standing_actor_code`); level 18's 門 Enemy100 and the 12／26 hull pieces (Enemy101) now have templates too and are PlayLoop units, registered like the original's (see [original_player_mode_sides](original_player_mode_sides.md)). The additive blend is not reproduced (`provisional`).
 - `SID_ENEMY067` (level 37 gem): `stand = MAGIC\MIN12_11.SHP` (`stand_num 3`), walk fields `MAGIC\MIN12_21.SHP` (the switched-off look `actSetPlayerWalkShape` selects). The actor manifest takes the declared standing frame only (13×13 px); `actSetPlayerWalkShape`／`actRestoreShape` stay presentation requests without a frame swap (`provisional`).
 - `SID_ENEMY066` (level 37 guardian): the SHAPEDEF block for its own SID declares 050's five walk groups (`SHAPE\050-[0-4]0001.SHP`), so `_shape_fields` falls back to `code = SID_ENEMY066` when no stand prefix carries the number and the walk manifest entry `066` holds 050's frames.

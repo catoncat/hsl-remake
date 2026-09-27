@@ -174,9 +174,10 @@ const LABEL_ROW_GAP := 4
 ## WINDOW21's stone texture has caption-coloured specks between rows (single pixels at
 ## rows 120／122／198-203): its scanlines need this many hits to count as glyph.
 const WINDOW21_MIN_HITS := 3
-## The baked labels themselves drift ±2 px from a regular row pitch, so a value counts as
-## centred on its label within this tolerance.
-const LABEL_CENTRE_TOLERANCE := 2.5
+## The baked labels themselves drift ±2 px from a regular row pitch, and the original draws
+## WINDOW10's FONT.24 values 3 px above the caption row centre (姓名 ink y 27–42 against the
+## caption row centred at 37, menus_ui §7), so a value counts as centred within this tolerance.
+const LABEL_CENTRE_TOLERANCE := 3.0
 
 
 func _label_rows(image: Image, band: Rect2i, min_hits: int = 1) -> Array:
