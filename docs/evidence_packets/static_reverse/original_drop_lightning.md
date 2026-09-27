@@ -1,6 +1,6 @@
 # 打人閃電（defProcDropLightn）：第 10 关的落雷
 
-> evidence: static-derived; runtime-measured: 整镜像进 10 关跑 2 回合（8 次：种子 1–6 与三次改盘）的落雷时刻、镜头、落点、九格取人与伤害，42 处按抽前随机字逐值重算全对; resource-derived: PROCESS.DEF defProcDropLightn=67、OBJ-010 码 25、WINFAIL010 event 6／7; provisional: 落雷时的镜头：重制有窗口时取表现层当时的镜头（presentation_view），但在行动提交时读、原版在交接扫描时读；无窗口（headless 自动对局、套件）按刚结束行动者居中（0x43bf30 同式）取 · status: live · functions: 0x407230, 0x407800, 0x4084e0, 0x415dc0, 0x43bf30, 0x43c9d0, 0x43ca70, 0x43f288, 0x458c80, 0x45e307, 0x45e3ed · tools: hsltools/probes/_drop_lightning.py · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 整镜像进 10 关跑 2 回合（8 次：种子 1–6 与三次改盘）的落雷时刻、镜头、落点、九格取人与伤害，42 处按抽前随机字逐值重算全对; resource-derived: PROCESS.DEF defProcDropLightn=67、OBJ-010 码 25、WINFAIL010 event 6／7; provisional: 落雷时的镜头：重制有窗口时取表现层当时的镜头（presentation_view），但在行动提交时读、原版在交接扫描时读；无窗口（headless 自动对局、套件）按刚结束行动者居中（0x43bf30 同式）取 · status: live · functions: 0x407230, 0x407800, 0x4084e0, 0x415dc0, 0x43bf30, 0x43c9d0, 0x43ca70, 0x43f288, 0x458c80, 0x45e307, 0x45e3ed · tools: hsltools/probes/_drop_lightning.py · updated: 2026-09-28
 
 ## 结论
 
@@ -34,7 +34,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | 状态 0（`0x43cb2a`） | 每 tick `0x43bf30(obj, 0)` 把镜头滚向落点（x − 320、y − 192）；到位那一 tick：`+0x30 = +0x32 + rand(+0x7a)`（AIR14_01 或 AIR14_02；即回执的 `frame`）、状态 1，并在落点 `0x45e307(x, y, 0xa2, 0)`、`0x45e307(x, y, 0xa5, 0)` 装 obj_Effect_FireBomb（162）与 obj_Effect_FireBomb2（165）——两者都挂链尾、同一点；新对象当 tick 不画、下一 tick 起由 defProcEffectProcess1 走（运动、帧与寿命见 [效果对象运动包](original_effect_motion.md)：FireBomb 78 帧、FireBomb2 80 帧；前导 `0x415e1a` 放模板 obj_X1 `WAV\BOMB0004.WAV`） |
 | 状态 1（`0x43cb8e`） | `+0x90` 每 tick 减一，到 0 那一 tick 置 `+0 |= 0x20000000`（engMIX，与加色合成 engADDCOLOR_MIX：`dst + src × 层级/16`，层级字 `+0x28`）并转状态 2。连同到位 tick，闪电以满层级画 **11 帧** |
 | 状态 2（`0x43cbbd`） | `+0x28` 每 tick 减一（层级 15..1 各画一帧），到 0 那一 tick 形状字置 `0xffff`、转状态 3：闪电**淡出 15 帧**后消失 |
-| 状态 3（`0x43cbe1`） | 到位后第 27 tick：九格 `0x43c9d0`（顺序、伤害见上）。每个伤害非 0 的单位：`0x4084e0(单位 x, 单位 y − 48, 伤害, 0, 0, 0)`——kind 0 红色伤害数字、hold 0、无等待者（[数字对象](original_tick_counts.md)）；再 `0x407230(单位)`——`+0x92 = 60`、`+0x98 = 0x300`，行动者过程 `0x43f288` 让它左右抖 ±1 px 60 tick（与 [噴人沼氣](original_poison_gas.md) 同一函数）。九格返回值和非 0 时 `+0x90 = 80`、否则 20，状态 4，并在同一 tick 先减一 |
+| 状态 3（`0x43cbe1`） | 到位后第 27 tick：九格 `0x43c9d0`（顺序、伤害见上）。每个伤害非 0 的单位：`0x4084e0(单位 x, 单位 y − 48, 伤害, 0, 0, 0)`——kind 0 红色伤害数字、hold 0、无等待者（[数字对象](original_tick_counts.md)）；再 `0x407230(单位)`——`+0x92 = 60`、`+0x98 = 0x300`，受击态：行动者过程 `0x43f288` 让它左右抖 ±1 px 60 tick，过程收尾 `0x4420ba` 期间换 SHAPEDEF `hit` 单帧、第 60 tick 回站立（读法见 [original_map_strike.md](original_map_strike.md)；与 [噴人沼氣](original_poison_gas.md) 同一函数）。九格返回值和非 0 时 `+0x90 = 80`、否则 20，状态 4，并在同一 tick 先减一 |
 | 状态 4（`0x43cca7`） | `+0x90` 减到 0：`*(+0xac) = 0`（放开 `actInsertStoryObjectWait` 的脚本等待）、`0x45e3ed` 删除自己。所以从到位算起，剧本在第 27 + 80 − 1 = **106**（有命中）／27 + 20 − 1 = **46** tick 往下走；FireBomb 与抖动各按自己的寿命继续 |
 
 过程本身不调放声函数；平面：闪电 planeEffect6、FireBomb planeEffect2。
@@ -62,7 +62,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 ## 重制接线
 
 - `game/sim/DropLightningRules.gd`（rules：static-derived／runtime-measured 本包）：同一次扫描里连抽落点与伤害。
-- `game/battle/scene/BattleDropLightningPresentation.gd`（layout／timing／audio：static-derived 本包）消费 `winfail_runtime.presentation_requests[].drop_lightning` 回执，规则已先提交。
+- `game/battle/scene/BattleDropLightningPresentation.gd`（layout／timing／audio：static-derived 本包）消费 `winfail_runtime.presentation_requests[].drop_lightning` 回执，规则已先提交；受击者经 `BattlePoisonGasPresentation.shake` → `MapHitState.begin` 换 hit 帧并抖 60 tick。
 - 镜头：场景每帧（及每次 `step_ai_turn` 前）把 `BattleCameraController.logical_to_world(0,0)` 减网格原点写进 loop 的只读输入 `presentation_view`，`DropLightningRules.strike` 有它就当镜头（仍钳在地图内），回执记 `view_source: presentation`；headless 不写（自动对局不播镜头，写了只是停在开场的陈旧值：第 1 道 5 个种子全是 `[112,0]`），回退为刚结束行动者居中，回执记 `actor_centre`——LEVEL010 自动对局 5 种子 25 道全是 `actor_centre`、落点都在画面内，对应原版的多数情形。有窗口时取的是行动提交那一刻的镜头：玩家行动在走完之后提交，与原版交接时相近；AI 行动由 `step_ai_turn` 一次结算，此刻镜头停在上一名行动者的演出末尾，未原生对照。
 
 ## 复现

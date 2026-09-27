@@ -1,6 +1,6 @@
 # 噴人沼氣（defProcPoisonGas）、地形毒与剧情 VM 的 actCheckNextSerialNumber／actUseItem／actInsertStoryObjectWaitPos／actSetPlayerNoAttack
 
-> evidence: static-derived; runtime-measured: 整镜像进 32 关跑 1–3 回合（5 个种子）的喷气时刻、落点、中毒对象与状态字，43 处按抽前随机字逐值重算全对；进 15 关的地形毒 5 处中毒字逐值重算全对; resource-derived: PROCESS.DEF defProcPoisonGas=71、OBJ-032.OBS 码 20、WINFAIL032 event 9、ACTION.H token 值; provisional: 0x407230 写的三个显示字（+0x92=60、+0x98=0x300、+0x80 置 0x800）＝受击态：hit 帧＋60 tick 抖动，读法见 original_map_strike.md（STRIKEFX）；烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；0x407230 抖动期间行动者过程写的局部状态 6 的消费者未追 · status: live · functions: 0x406fe0, 0x407230, 0x407510, 0x407800, 0x409140, 0x409e40, 0x40e240, 0x411c40, 0x42c780, 0x43bf30, 0x43c260, 0x43c760, 0x43c7c0, 0x43f1c6, 0x441eb8, 0x4436f9, 0x4454a5, 0x446ad0, 0x446b90, 0x44fad0, 0x450390, 0x450840, 0x4525e0, 0x458c80, 0x45e307, 0x45eb9d, 0x45ebdc · tools: hsltools/data/winfail_coverage.py, hsltools/probes/_poison_gas.py · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 整镜像进 32 关跑 1–3 回合（5 个种子）的喷气时刻、落点、中毒对象与状态字，43 处按抽前随机字逐值重算全对；进 15 关的地形毒 5 处中毒字逐值重算全对; resource-derived: PROCESS.DEF defProcPoisonGas=71、OBJ-032.OBS 码 20、WINFAIL032 event 9、ACTION.H token 值; provisional: 烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；地形毒的 0x407230 受击态重制表现层未接 · status: live · functions: 0x406fe0, 0x407230, 0x407510, 0x407800, 0x409140, 0x409e40, 0x40e240, 0x411c40, 0x42c780, 0x43bf30, 0x43c260, 0x43c760, 0x43c7c0, 0x43f1c6, 0x441eb8, 0x4436f9, 0x4454a5, 0x446ad0, 0x446b90, 0x44fad0, 0x450390, 0x450840, 0x4525e0, 0x458c80, 0x45e307, 0x45eb9d, 0x45ebdc · tools: hsltools/data/winfail_coverage.py, hsltools/probes/_poison_gas.py · updated: 2026-09-28
 
 ## 结论
 
@@ -35,7 +35,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | 烟对象（defProcFireSmoke） | PROCESS.DEF 70 → 过程表 `0x477d44` → `0x43c260`，与噴人沼氣无关联（噴人沼氣删自己时烟照走）。**初始化**（首次调用）：清 0x20000000、模式 `+0 \|= 0x24000000`（engADDCOLOR_MIX，[效果运动包](original_effect_motion.md)）、层级 `+0x28 = 0`；全局流依次抽 `rand(5)` → 保持 `P = +0x7c（obj_Shape_Delay 3）+ r` 存进 `+0x90`／`+0x92`；`rand(77)` 两次，大于 38 的折成 `38 − r`（−38..38 均匀），加到 x、y；`+0xc = 0x4300f0(y)`；`rand(0x8000) + 0x4000` 作速度，`0x45eb9d(0xc0, 速度, +0x98)`——角 0xc0 查表 cos 0、sin −65536，即 `vx = 0`、`vy = −速度`（16.16，0.25..0.75 px/tick 正上）。**每 tick**：`[0x4c1b00] & 0x400000` 或 設定選項 場景效果（`[0x477c14]` bit0）关时 `+0x30 = 0xffff`（不画），否则 `+0x30 = +0x32`（SMOKE001）；状态 0 层级 +1，到 16 进状态 1；状态 1 `+0x90` 减 1，到 ≤0 重装 P、层级 −1，到 0 即 `0x45e3ed` 删除（本 tick 不移动）；其余每次调用 `0x45ebdc` 走一步（小数累积，y 已移 `floor(−(k−1)·速度/65536)`，k 为创建后 tick）。可见：创建后第 2 tick 起层级 1..16 淡入（16 tick），再每 P tick 减一淡出，创建后第 `17 + 16P` tick 删除——P＝3..7 即 65..129 tick，常比 90／40 tick 的剧本停顿长 |
 | 状态 1：等待 | 九次 `0x43c760` 返回值相加：非 0（有人中毒）→ `+0x98 = 0x5a`（90），否则 `0x28`（40）；进状态 2 |
 | 状态 2：放行 | 每 tick `+0x98` 减 1，到 ≤0 时清脚本等待指针 `*(+0xac) = 0`（`actInsertStoryObjectWaitPos` 挂的等待，WINFAIL 链才往下走）并 `0x45e3ed` 删除自己。剧本共停：镜头 tick ＋ 1 ＋ 90／40 tick |
-| 中毒者 | `0x43c760` 对站上的每名中毒者调 `0x407230(actor)`：`+0x92 = 60`、`+0x98 = 0x300`（低字节相位 0、高字节幅度 3）、`+0x80` 清 0x1000 置 0x800。行动者过程（敌 `0x43f288..0x43f2f4`，玩家 `0x4437bd..` 同构）在 `+0x80` 有 0x800 且无 0x1000 时每 tick：`+0x92` 减 1，到 ≤0 清 0x800 并把 x 放回 `(x & ~31) + 16`；否则相位 +1、大于幅度则变 −幅度，相位 ≥0 时 `x = (x & ~31) + 15`，否则 `+ 17`。即 60 tick 的**左右抖动**：相位 1,2,3,−3,−2,−1,0,… 周期 7 tick，4 tick 在格心左 1 px、3 tick 在右 1 px，第 60 tick 回格心。两分支都把局部量写成 6（消费者未追）。没有变色／闪白 |
+| 中毒者 | `0x43c760` 对站上的每名中毒者调 `0x407230(actor)`：`+0x92 = 60`、`+0x98 = 0x300`（低字节相位 0、高字节幅度 3）、`+0x80` 清 0x1000 置 0x800。行动者过程（敌 `0x43f288..0x43f2f4`，玩家 `0x4437bd..` 同构）在 `+0x80` 有 0x800 且无 0x1000 时每 tick：`+0x92` 减 1，到 ≤0 清 0x800 并把 x 放回 `(x & ~31) + 16`；否则相位 +1、大于幅度则变 −幅度，相位 ≥0 时 `x = (x & ~31) + 15`，否则 `+ 17`。即 60 tick 的**左右抖动**：相位 1,2,3,−3,−2,−1,0,… 周期 7 tick，4 tick 在格心左 1 px、3 tick 在右 1 px，第 60 tick 回格心。两分支都把本 tick 姿势量写成 6，过程收尾 `0x4420ba` 据此换 SHAPEDEF `hit` 单帧、0x800 清掉后回站立（[original_map_strike.md](original_map_strike.md)）——即受击态：hit 帧＋抖动。没有变色／闪白 |
 | 音效 | 本过程与 `0x407230` 都不放音效 |
 
 另：`0x409140` 还有两个调用者 `0x441f00`（AI 过程）与 `0x4454ef`（玩家过程），即下节地形毒，与噴人沼氣无关。
@@ -88,7 +88,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 - `game/sim/PoisonGasRules.gd`：落点、九格施毒与合并；`game/sim/WinfailConditions.gd`：交接计数定时器（`0x4525e0..0x45260b`）；`game/sim/WinfailActions.gd`：`actInsertStoryObjectWaitPos` 在 loop 的全局流 `global_rng`（`GlobalRandomStream`，原版 `0x4795d4`／`0x4795d8`）抽一次 `rand(count)` 选位置，收据记全局流前后两个字；`game/sim/WinfailCompiler.gd`：OBS 过程识别。
 - `actUseItem` 解析唯一 `[SID, serial]` actor，调 `ItemResolutionRules.prepare`，提交到同一 loop 的 HP／status／inventory，记录 `item_requests`；缺 actor、catalog、inventory 或 item 显式记拒绝原因。
 - `actSetPlayerNoAttack` 写单位字典 `no_attack`：玩家普通攻击命令与直接攻击结算都拒绝；魔法／特殊技与 AI 策略是独立能力。
-- `game/battle/scene/BattlePoisonGasPresentation.gd`：镜头、烟团、停顿与抖动；`game/sim/loop/BattlePlayLoop.gd`：地形毒收尾顺序。
+- `game/battle/scene/BattlePoisonGasPresentation.gd`：镜头、烟团、停顿，中毒者经 `shake` → `MapHitState.begin` 换 hit 帧并抖 60 tick；`game/sim/loop/BattlePlayLoop.gd`：地形毒收尾顺序。
 
 ## 复现
 
@@ -97,6 +97,6 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 ## 边界
 
 - 烟对象初始化的 12 次全局流抽取在原版发生于下一 tick，其间可能插进别的对象的抽取；重制在喷气那次结算里紧接连抽。
-- `0x407230` 抖动期间行动者过程写的局部状态 6 的消费者未追。
+- 地形毒（深淵之沼 LEVEL015）的 `0x407230` 受击态：规则回执 `loop.terrain_poison` 已写，表现层不消费，踩毒者不换 hit 帧不抖。
 - 道具等待时序、安装对象渲染、packed serial 的完整边界与 no-attack 的全部 AI 分支未读。
 - 552／553／554 关的 OBS 也有噴人沼氣模板，但全部剧本只有 WINFAIL032 插入它。
