@@ -1556,22 +1556,6 @@
       "category": "重制新增（原版没有）"
     },
     {
-      "id": "background-sound-attenuation",
-      "difference": "地图背景音全图 −8 dB 播放，原版衰减未定位",
-      "original": "原生衰减未定位",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/first_battle_audio.md"
-      ],
-      "remake": "BattleSceneStage 全图播放",
-      "remake_code": [
-        "game/battle/scene/BattleSceneStage.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "音频"
-    },
-    {
       "id": "effect-sound-timing",
       "difference": "特效声音：运动等待按 0 计（运动没跑），8 个声部、同 tick 叠声通道未读；9 个声音时刻为估计",
       "original": "效果对象命令程序已读，运动等待与混音通道未读",
@@ -2273,9 +2257,6 @@
     },
     "provenance:game/battle/scene/BattleSceneRuntime.gd|rules|remake-invented|": {
       "no_visible_effect": "场景编排、开发接缝与输入门控，是重制内部结构"
-    },
-    "provenance:game/battle/scene/BattleSceneStage.gd|audio|provisional|": {
-      "item": "background-sound-attenuation"
     },
     "provenance:game/battle/scene/BattleSceneStage.gd|layout|provisional|": {
       "item": "stage-placement"

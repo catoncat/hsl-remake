@@ -19,7 +19,8 @@ extends RefCounted
 ##     (mapobjCloud drift and mapobjMoveBG parallax, run by MapObjectDrift)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: resource-derived content/imported/hsl/chapter01/scripts
-##   audio: provisional (background sounds play map-wide at −8 dB; native attenuation not located)
+##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
+##     (mapobjPlayBGSound: one map-wide loop per object at full volume, no attenuation or pan)
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
@@ -323,8 +324,10 @@ func _clear_map_object_layer(layer: Node2D) -> void:
 ## EVEF background-sound objects (mapobjPlayBGSound; tools/hsltools/levels/map_objects.py
 ## exports them as role background_sound instead of drawing their I_RECT01 marker):
 ## the obj_Data2 WAV, decoded by tools/hsltools/levels/sounds.py into the scenario's
-## script_sounds manifest, loops for the whole scene at a remake -8 dB. Placement
-## position is not used (the original plays it map-wide as far as is known).
+## script_sounds manifest, loops for the whole scene at 0 dB. The original stand-object
+## handler 0x43ccf0 (obj_Data9 = 9) starts it once on the init message through 0x42c180
+## (volume 255 -> DirectSound 0 dB, loop flag, no SetPan) and never re-computes it from
+## the object or camera position, so placement position is not used.
 func _start_background_sounds() -> void:
 	for record in runtime.background_sound_records:
 		var node_path := str(record.get("node_path", ""))
@@ -347,7 +350,7 @@ func _start_background_sounds() -> void:
 				var player := AudioStreamPlayer.new()
 				player.name = "MapBackgroundSound_%d" % int(record.get("record_index", 0))
 				player.stream = stream
-				player.volume_db = -8.0
+				player.volume_db = 0.0
 				runtime.add_child(player)
 				player.finished.connect(player.play)
 				player.play()

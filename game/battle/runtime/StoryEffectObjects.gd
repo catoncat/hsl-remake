@@ -22,6 +22,8 @@ extends RefCounted
 ##     (obj_Data7 read as a flash lifetime, glow swell, rain drop frame cadence and spawn band — the
 ##     mapobjDropRain／defProcObjectMove processes are unread)
 ##   audio: resource-derived content/imported/hsl/chapter01/scripts
+##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
+##     (mapobjPlayBGSound loop at full volume, 0 dB)
 
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
@@ -148,7 +150,7 @@ func _start_background_sound(coordinator: Node, resource_token: String, symbol: 
 	var player := AudioStreamPlayer.new()
 	player.name = "StoryEffectSound_%s_%d" % [symbol, index]
 	player.stream = stream
-	player.volume_db = -8.0
+	player.volume_db = 0.0
 	coordinator.add_child(player)
 	# Loop by restarting on finish; the decoded WAV is not re-tagged as a looping stream.
 	player.finished.connect(player.play)

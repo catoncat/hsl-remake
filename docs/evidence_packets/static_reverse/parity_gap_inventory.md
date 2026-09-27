@@ -10,19 +10,19 @@
 
 ## 总数
 
-共 **96** 条差异（其中 0 条本轮有 lane 进行中），来自 528 个来源条目：provenance 214、sentence 143、scope 73、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 58 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
+共 **95** 条差异（其中 0 条本轮有 lane 进行中），来自 527 个来源条目：provenance 213、sentence 143、scope 73、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 58 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
 | 已读完只差照做 | 13 |
 | 读了一部分 | 58 |
-| 未读 | 8 |
+| 未读 | 7 |
 | 原版无对应代码 | 17 |
 
 | 可见度 | 条数 |
 | --- | --- |
 | 每场都看得到 | 16 |
-| 部分关卡 | 35 |
+| 部分关卡 | 34 |
 | 少见 | 40 |
 | 看不见 | 5 |
 
@@ -41,9 +41,9 @@
 | 光标与字体 | 3 |
 | 原版调度与随机流 | 3 |
 | 镜头 | 3 |
-| 音频 | 3 |
 | AI 行为 | 2 |
 | 对白 | 2 |
+| 音频 | 2 |
 | 存档与流程 | 1 |
 
 ## 前 20 条（按可见度 × 只差照做排序）
@@ -228,14 +228,6 @@
 | `camera-return-pan` | 开环前与移动起步前镜头已照原版先滑回行动者、到位才开环／起步；滑回期间重制不接边缘／方向键平移，原版边缘滚动是否同时生效未读 | state 0 0x443a1d→0x43bf30 未到位返回 0、0x443a3c 才开环（取消选格 100／移动 9、关窗 71、右键 99 都经此）；移动 1 0x443e34 同式；边缘滚动 0x43e4a0 与之的先后未读<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattleSceneMenus._ring_camera_ready 在环打开那一拍滑回、未到位不显示环；BattleSceneRuntime.move_selected_actor_to_grid 记 pending_walk_grid 待落位起步；两段期间不平移<br>[BattleSceneMenus.gd](../../../game/battle/scene/BattleSceneMenus.gd) `_ring_camera_ready`、[BattleSceneRuntime.gd](../../../game/battle/scene/BattleSceneRuntime.gd) `move_selected_actor_to_grid` | 读了一部分 | 少见 | S | sentence 1 |
 | `cam-random-scroll` | STORY037 的 actScrollBGToRandomPos（随机镜头位置）未读 | 语料里只出现 1 次，handler 未读<br>[original_script_camera_scroll.md](../../../docs/evidence_packets/static_reverse/original_script_camera_scroll.md) | 按已读的滚动 token 处理<br>[OpeningCinematics.gd](../../../game/battle/runtime/opening/OpeningCinematics.gd) | 未读 | 少见 | S | sentence 2、matrix 1 |
 
-### 音频（3）
-
-| id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `effect-sound-timing` | 特效声音：运动等待按 0 计（运动没跑），8 个声部、同 tick 叠声通道未读；9 个声音时刻为估计 | 效果对象命令程序已读，运动等待与混音通道未读<br>[original_effect_object_sounds.md](../../../docs/evidence_packets/static_reverse/original_effect_object_sounds.md) | SkillEffectScriptPlayer 的 program_sounds<br>[SkillEffectScriptPlayer.gd](../../../game/battle/scene/SkillEffectScriptPlayer.gd) | 读了一部分 | 少见 | S | provenance 1、sentence 5、scope 1 |
-| `settings-volume-mixer` | 設定選項 的 音效音量／音樂音量 走重制的 Master／Music 总线与音量曲线（0 静音、改了立刻生效），場景效果 只管剧情特效物件（雨／闪电／火焰／光环）是否绘制；原版混音器未定位，場景效果 位的读者是地图云等背景物件过程 | Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者是地图物件过程（0x43c337／0x43c63f／0x43cecd／0x43d13e／0x43d758，关时云不画不走）；第三行滑杆 0x4245c0 → [0x477c20]＝档×15 封顶 255；混音器未定位<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_map_object_drift.md](../../../docs/evidence_packets/static_reverse/original_map_object_drift.md) | GameSettings：sfx_volume 驱动 Master、music_volume 由补偿过的 Music 总线单独决定；scene_effects 由 StoryEffectObjects.insert 读（关云未接，见 stage-placement）<br>[GameSettings.gd](../../../game/settings/GameSettings.gd) | 读了一部分 | 少见 | S | provenance 1 |
-| `background-sound-attenuation` | 地图背景音全图 −8 dB 播放，原版衰减未定位 | 原生衰减未定位<br>[first_battle_audio.md](../../../docs/evidence_packets/static_reverse/first_battle_audio.md) | BattleSceneStage 全图播放<br>[BattleSceneStage.gd](../../../game/battle/scene/BattleSceneStage.gd) | 未读 | 部分关卡 | S | provenance 1 |
-
 ### AI 行为（2）
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
@@ -249,6 +241,13 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `dialogue-timing` | 对白擦出与上卷期间重制即时响应确认；原版擦出（状态 1）与上卷（状态 4）时不读确认键，要等这一屏停下<br>待定：有意偏离（重制改善）：保留即时确认，OPT-PACE 三档都即时整屏，不改所有对白宿主的输入 | 对白框过程 0x414280 已读完：淡入淡出 16 tick、擦出 17 px 起 3 px/tick、上卷 3 px/tick（10 tick／行）；只有状态 2 读确认<br>[original_dialogue_board.md](../../../docs/evidence_packets/static_reverse/original_dialogue_board.md) | 节奏照原版画出，但确认立即翻屏或进下一句（画面只是追上逻辑页）<br>[BattleDialogue.gd](../../../game/battle/scene/BattleDialogue.gd) `advance_page` | 已读完只差照做 | 每场都看得到 | S | provenance 1、matrix 1 |
 | `dialogue-line-breaks` | 对白断点切开专名时重制把断点前移到名字前；原版 0x413960 按 38 字节硬断，会把名字拆到两行（语料 17 句，如「雪｜拉」「通行｜證」）<br>待定：有意偏离（重制改善）：原版硬断会拆开专名，保留专名保护，不设选项 | 行断规则已读完：每行 38 字节（全角 19 字），无禁则、无专名保护；录屏 369 逐行相符<br>[original_dialogue_board.md](../../../docs/evidence_packets/static_reverse/original_dialogue_board.md) | BattleUISkin.message_rows 照 38 字节断行，只在断点落进专名时前移<br>[BattleUISkin.gd](../../../game/common/BattleUISkin.gd) `message_rows` | 已读完只差照做 | 少见 | S | provenance 2、matrix 1 |
+
+### 音频（2）
+
+| id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `effect-sound-timing` | 特效声音：运动等待按 0 计（运动没跑），8 个声部、同 tick 叠声通道未读；9 个声音时刻为估计 | 效果对象命令程序已读，运动等待与混音通道未读<br>[original_effect_object_sounds.md](../../../docs/evidence_packets/static_reverse/original_effect_object_sounds.md) | SkillEffectScriptPlayer 的 program_sounds<br>[SkillEffectScriptPlayer.gd](../../../game/battle/scene/SkillEffectScriptPlayer.gd) | 读了一部分 | 少见 | S | provenance 1、sentence 5、scope 1 |
+| `settings-volume-mixer` | 設定選項 的 音效音量／音樂音量 走重制的 Master／Music 总线与音量曲线（0 静音、改了立刻生效），場景效果 只管剧情特效物件（雨／闪电／火焰／光环）是否绘制；原版混音器未定位，場景效果 位的读者是地图云等背景物件过程 | Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者是地图物件过程（0x43c337／0x43c63f／0x43cecd／0x43d13e／0x43d758，关时云不画不走）；第三行滑杆 0x4245c0 → [0x477c20]＝档×15 封顶 255；混音器未定位<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_map_object_drift.md](../../../docs/evidence_packets/static_reverse/original_map_object_drift.md) | GameSettings：sfx_volume 驱动 Master、music_volume 由补偿过的 Music 总线单独决定；scene_effects 由 StoryEffectObjects.insert 读（关云未接，见 stage-placement）<br>[GameSettings.gd](../../../game/settings/GameSettings.gd) | 读了一部分 | 少见 | S | provenance 1 |
 
 ### 存档与流程（1）
 

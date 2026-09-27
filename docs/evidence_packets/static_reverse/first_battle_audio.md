@@ -1,11 +1,12 @@
-# Battle sound sources: actor sounds, footsteps, interface, GAME OVER, level-up
+# Battle sound sources: actor sounds, footsteps, interface, GAME OVER, level-up, map background sounds
 
-> evidence: static-derived; resource-derived: PLAYERS.TXT sound fields, resource.h／RESOURCE.TXT sound bindings, PAK WAV members; runtime-measured: remake Master-bus recordings · status: live · functions: 0x409610, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x43de90, 0x43dec0, 0x4477b0, 0x459990, 0x45a0b0, 0x45a390 · tools: hsltools/assets/actor_audio.py, hsltools/assets/interface_audio.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived: PLAYERS.TXT sound fields, resource.h／RESOURCE.TXT sound bindings, PAK WAV members; runtime-measured: remake Master-bus recordings · status: live · functions: 0x409610, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x43ccf0, 0x43de90, 0x43dec0, 0x4477b0, 0x459990, 0x459d70, 0x45a0b0, 0x45a330, 0x45a390 · tools: hsltools/assets/actor_audio.py, hsltools/assets/interface_audio.py · updated: 2026-09-28
 
 ## 结论
 
 - Original: actor sounds come from explicit PLAYERS.TXT `sound_*` fields; the walk sound plays every eight 4-pixel steps on the two battle movement paths and on scripted frames 0／3; confirmation (398), item use (402), level-up (401) and GAME OVER (628) are pushed by named call sites to the shared wrapper `0x42c180` (static-derived; resource-derived).
 - Remake: `hsltools/assets/actor_audio.py` and `hsltools/assets/interface_audio.py` extract and normalise exactly the named PAK WAVs; `ActorRuntime` emits the per-cell and scripted-frame walk cues, the interface player plays confirmation／item use／level-up, `GameOverScreen` plays GAMEOVER.WAV (resource-derived; static-derived).
+- Original: map background sounds (EVEF／script `mapobjPlayBGSound`, e.g. 雨聲 RAIN001, 夜晚聲 NIGHT001) are one DirectSound loop per object, started once at full volume (0 dB) with no pan and no distance or camera attenuation (static-derived). Remake: `BattleSceneStage`／`StoryEffectObjects` loop the obj_Data2 WAV map-wide at 0 dB (static-derived).
 - Differences: trigger timing within an event, relative volume, overlap and the per-cell walk tempo are remake choices (provisional); terrain footstep variants (`0x43dec0`／`0x43de90`) are not connected. Music is in [original_music.md](original_music.md).
 
 ## 证据
@@ -33,6 +34,18 @@ Explicit table associations from PLAYERS.TXT, not filename guesses. The native t
 | The wrapper checks audio enable, resolves the id and calls the mixer with volume 255 | `0x42c180` → `0x45a390` |
 | Environment-dependent alternatives | `0x43dec0`, `0x43de90` |
 
+### Map background sounds (static-derived)
+
+| Fact | Address |
+| --- | --- |
+| Stand-object procedure `0x43ccf0` dispatches obj_Data9 − 1 through `0x43d8c0`; entry 8 (obj_Data9 = 9, the only branch of the table that calls the audio wrapper) is the background-sound branch | `0x43ce83..0x43ce8d` → `0x43d3ac` |
+| Only on the init call (message bit `0x20000000`, kept in `edi` at `0x43cdc8`) it sets shape word `+0x30 = 0xffff` (nothing drawn) and pushes flags 1 with the sound handle `+0x90` (obj_Data2, the WAV) to `0x42c180`; every later tick returns at `0x43d3ae` without touching the sound | `0x43d3ac..0x43d3d2` |
+| Message −3 replays the same call (flags 1, handle `+0x90`) through table `0x43d8a0` entry 1 | `0x43cd71..0x43cd89` |
+| The wrapper passes volume 255; flag bit 0 skips the "sound slider = 0" early-out `[0x477c20]` (the slider itself sets the wave device volume, `0x4245dd` → `0x458220`) | `0x42c180..0x42c1b7` |
+| Mixer `0x45a330`: `0x459d70` sets volume `(⌊v·60/255⌋ − 60)·40` hundredths of dB, clamped at −10000 — 255 → 0 dB; `SetCurrentPosition(0)`, then `Play(0, 0, flags & 1)` = DSBPLAY_LOOPING. No `SetPan` (vtable +0x40) call on this path | `0x459d70..0x459dbd`, `0x45a345..0x45a373` |
+
+So each object is its own looping buffer (flags 1 leaves bit 2 clear, so `0x45a390` skips its same-name reuse search at `0x45a3ba` and takes a new slot from `0x4593a0`), at the same full volume as every other `0x42c180` cue; nothing re-reads the object or camera position (negative-evidence for distance attenuation and pan on this path).
+
 ### Interface, GAME OVER and level-up (resource-derived; static-derived)
 
 | Cue | resource.h → RESOURCE | PCM | Call site |
@@ -52,17 +65,19 @@ Non-headless Godot runs recorded the Master bus through `AudioEffectRecord`: wal
 - `tools/hsltools/assets/interface_audio.py` extracts ACCEPT01／MHEAL001／GAMEOVER／LEVELUP2, decodes the XOR-A8 header and records source and decoded hashes.
 - `game/battle/runtime/ActorRuntime.gd` owns one walk `AudioStreamPlayer`: per completed grid segment on player and AI paths, frames 0／3 on scripted walks; cancel, zero-duration correction and node exit stop it.
 - One interface `AudioStreamPlayer` at −6 dB: confirmation on releasing an enabled command, item use on a successful application (rejected use is silent; `game/battle/scene/BattleItemUsePresentation.gd` `audio:` provenance), level-up only when the settled receipt shows `level_after > level_before`.
+- `BattleSceneStage._start_background_sounds` (EVEF placements) and `StoryEffectObjects` (script inserts) loop each `mapobjPlayBGSound` object's obj_Data2 WAV at 0 dB, map-wide, restarting on finish.
 - `game/title/GameOverScreen.gd` plays GAMEOVER.WAV as the GAME OVER screen fades in (`rules:` provenance).
 - provenance 写法：`static-derived docs/evidence_packets/static_reverse/first_battle_audio.md`.
 - provisional: the per-cell walk tempo and every trigger moment inside an event; replacement points are the tick clock ([original_tick_rate](../runtime_observations/original_tick_rate/README.md)) and the named call sites above.
 
 ## 复现
 
-`python3 tools/hsl.py check actor_audio interface_audio`（no original installation needed）；static call sites: `r2 -e scr.color=0 -q -c 'pd 12 @ 0x43e920; pd 12 @ 0x40a349; pd 10 @ 0x40854d; pd 20 @ 0x42aea0' "$HSL_ORIGINAL_DIR/hsl01.exe"`.
+`python3 tools/hsl.py check actor_audio interface_audio`（no original installation needed）；static call sites: `r2 -e scr.color=0 -q -c 'pd 12 @ 0x43e920; pd 12 @ 0x40a349; pd 10 @ 0x40854d; pd 20 @ 0x42aea0; pxw 60 @ 0x43d8c0; pd 12 @ 0x43d3ac; pd 30 @ 0x42c180; pd 20 @ 0x459d70; pd 30 @ 0x45a330' "$HSL_ORIGINAL_DIR/hsl01.exe"`.
 
 ## 边界
 
 - Complete scenario-unit-to-character initialisation, repeated playback cadence, relative volume, panning and original overlap flags are not established; PCM validation does not prove auditory equivalence.
+- Background sounds: who sends message −3 (the replay) and whether the loop is stopped explicitly on level exit are not traced; the remake starts once and frees the players with the scene.
 - Only the default actor walking sounds are connected; the terrain variants of `0x409610` are not claimed.
 - Not every original UI trigger has been recovered; no unproven cancel cue is substituted.
 - Exact subframe delay of scripted footsteps depends on the unresolved native tick／frame clock.
