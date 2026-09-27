@@ -30,6 +30,8 @@ extends Control
 ##     (right click／Esc close the shop and leave the town, frames 13–14)
 ##   rules: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
 ##     (messages wait for their board to close; teDelay／teMenuMoveOut holds)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_storage_window.md
+##     (shop 裝備／倉庫 pages and 丟棄 through PartyEquipmentRules.hand_action, frames 18–23)
 ##   rules: provisional (tePlaySound recorded only; a scripted confirm() cuts a hold)
 ##   layout: resource-derived content/imported/hsl/global/world_map/town_portraits.json
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
@@ -56,6 +58,10 @@ const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const TownShopScreen = preload("res://game/world/TownShopScreen.gd")
 const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
+const PartyStorageRules = preload("res://game/sim/PartyStorageRules.gd")
+const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 
 const SUMMARY_SCHEMA := "hsl_town_runtime.v1"
@@ -515,6 +521,8 @@ func _open_shop(pending: Dictionary) -> void:
 	shop_screen.buy_requested.connect(func(item_id: int, unit_id: String): shop_buy(item_id, unit_id))
 	shop_screen.sell_requested.connect(func(unit_id: String, slot: int): shop_sell(unit_id, slot))
 	shop_screen.close_requested.connect(shop_close)
+	shop_screen.hand_requested.connect(func(action: String, args: Dictionary, held: Dictionary): shop_hand(action, args, held))
+	shop_screen.unequip_requested.connect(func(unit_id: String, slot: String): shop_unequip(unit_id, slot))
 	add_child(shop_screen)
 	shop_screen.open(message_text(int(pending.get("shop_name_id", 0))).strip_edges(), shop_goods(), carry, speakers, shop_catalog, _shop_scenario_path())
 
@@ -587,6 +595,49 @@ func shop_sell(unit_id: String, slot: int) -> Dictionary:
 		board = shop_message
 	_show_shop_carry(board, str(result.get("reason", "")))
 	return result
+
+
+## The shop's hand gestures (裝備 page, 倉庫 page, 丟棄, bag to bag across members) run on a
+## sandbox of the carry through PartyEquipmentRules.hand_action — the 整理裝備 path — and the
+## result is projected back into the carry with the storage (carry.loop.party_storage).
+func shop_hand(action: String, args: Dictionary, held: Dictionary) -> Dictionary:
+	if mode != "shop":
+		return {"ok": false, "reason": "not_in_shop"}
+	var box := _shop_sandbox()
+	if not bool(box["ok"]):
+		return {"ok": false, "reason": str(box["error"])}
+	var storage := PartyStorageRules.of_carry(carry)
+	var result := PartyEquipmentRules.hand_action(box["loop"], storage, held, action, args, EquipmentCatalog.items())
+	records.append({"kind": "shop_hand", "action": action, "ok": bool(result["ok"]), "reason": str(result.get("reason", ""))})
+	if not bool(result["ok"]):
+		shop_screen.refuse(str(result["reason"]))
+		return {"ok": false, "reason": str(result["reason"])}
+	carry = PartyStorageRules.with_carry(PartyEquipmentRules.project(carry, result["loop"]), result["storage"])
+	party_changed.emit(state, carry)
+	shop_screen.show_state(carry, {}, result["storage"], result["hand"])
+	return {"ok": true}
+
+
+## 裝備 page, empty hand on a worn slot: off into the bag (the rules' unequip).
+func shop_unequip(unit_id: String, slot: String) -> Dictionary:
+	var box := _shop_sandbox()
+	if mode != "shop" or not bool(box["ok"]):
+		return {"ok": false, "reason": "no_sandbox"}
+	var result := PartyEquipmentRules.change(box["loop"], unit_id, slot, -1, 0)
+	if not bool(result["ok"]):
+		shop_screen.refuse(str(result["error"]))
+		return {"ok": false, "reason": str(result["error"])}
+	carry = PartyEquipmentRules.project(carry, result["loop"])
+	party_changed.emit(state, carry)
+	shop_screen.show_state(carry, {}, PartyStorageRules.of_carry(carry), {})
+	return {"ok": true}
+
+
+func _shop_sandbox() -> Dictionary:
+	var path := _shop_scenario_path()
+	if path == "":
+		return {"ok": false, "error": "unknown_source_scenario"}
+	return PartyEquipmentRules.sandbox(BattlePlayLoop.create([], "", BattleScenario.load_file(path)), carry)
 
 
 ## Only refusals raise the shop's message board, as in the original (a sale or purchase just

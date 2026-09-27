@@ -1,12 +1,12 @@
 # 原版大地图与城镇画面：状态栏、系统卷轴、城镇根菜单、对白板位置、商店窗、整理裝備
 
-> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框） · status: live · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-27
+> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框） · status: live · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-27
 
 ## 结论
 
 - 原版进城不压暗大地图，TownBG 约在 (160,148)，石纹菜单板叠在其左上，菜单无「離開」项、画面无金钱／同伴栏，右键／Esc 离城；shape 台词在上、队员台词在下；商店窗是战后「獲得物品」窗的商店分支，買賣 钮暗着（runtime-measured；negative-evidence）。
 - 重制 `game/world/TownRuntime.gd`、`TownShopScreen.gd`、`WorldMapRuntime.gd`、`BattleSystemMenu.gd` 按下表对齐；对白板上下分工由 [original_dialogue_board](../../static_reverse/original_dialogue_board.md) 的 `0x414220` 顶槽位静态确认（static-derived）。
-- 差异：买入后物品直接入所显示成员首空格（原版先到手上）、商店里 裝備／倉庫／丟棄 暗着、不画红色 ↓；差异清单 `town-layout-extras`（provisional）。
+- 差异：买入后物品直接入所显示成员首空格（原版先到手上）、不画红色 ↓；差异清单 `town-layout-extras`（provisional）。
 
 ## 证据
 
@@ -15,6 +15,7 @@
 - 2026-09-24 三趟原版（`tools/hsl_original_control.py` 单步输入并截 cnc-ddraw 画面）：帧 03／05／06 读回憶錄预设 `level06_pre_battle`（席達鎮，完成度 13%）；帧 01／02 与 04／07 读 兩栖族部落 附近的存档（完成度 31%），只读，结束后 `--restore` 恢复存档（sha1 核对）。
 - 2026-09-24 另三趟 `level06_pre_battle`（席達鎮，金钱 70）：武器店与右键、护甲店与 Esc、道具店卖出／买入，得帧 08–14；存档 sha1 前后一致。
 - 2026-09-27 一趟：「戰場記錄」进战斗 → 卷轴「讀取回憶錄」第 1 行（席達鎮，只读）→ 城镇 Esc 回大地图 → 卷轴「整理裝備」，得帧 15–17。
+- 2026-09-27 另一趟：同一只读回憶錄进 席達鎮 道具店 → 拿起背包物按 下一位 → 裝備 页 → 倉庫 页放入两次、取出一次 → 离店 → 卷轴「整理裝備」倉庫页取出后按 下一位，得帧 18–24；存档 sha1 前后一致。
 - 原始帧在仓库外 `ignored/original-control/`；入库帧压成 256 色。坐标为 640×480 帧上的目测近似值。带「重制画面」的链接是重制同一画面的截图，原版帧见私有档案。
 
 ### runtime-measured：大地图、城镇根菜单与对白板（帧 01–07）
@@ -55,6 +56,18 @@
 | 16-arrange-equip-page.png（原版帧见私有档案：`runtime_observations/original_world_town/16-arrange-equip-page.png`） | 点「裝備」 | 左板换成背包（回復藥 一行红字，帧 17 同一件白字），右板不变；裝備 画暗、狀態 恢复。 |
 | 17-arrange-storage-page.png（原版帧见私有档案：`runtime_observations/original_world_town/17-arrange-storage-page.png`） | 点「倉庫」 | 右板换成 WINDOW90「倉庫」列表（空，右缘上下箭头）；底部 上一位／下一位／丟棄（389）／使用（437）／裝備／魔法／特殊技，倉庫 与 狀態 消失；再右键窗关掉，回到仍开着的卷轴。 |
 
+### runtime-measured：商店 裝備／倉庫 页与换人手持（帧 18–24）
+
+| 帧 | 画面 | 读到的事实 |
+| --- | --- | --- |
+| 18-shop-next-member-hand-kept.png（原版帧见私有档案：`runtime_observations/original_world_town/18-shop-next-member-hand-kept.png`） | 道具店拿起背包里的 回復藥 后点 下一位 | 成员换成 緹娜，回復藥 仍在光标上；底部六钮 上一位／下一位／裝備／買賣／倉庫／丟棄，買賣 画暗。 |
+| 19-shop-equip-page.png（原版帧见私有档案：`runtime_observations/original_world_town/19-shop-equip-page.png`） | 点「裝備」 | 右板从货表换成六个装备槽（与整理裝備同一块板），左板仍是背包；裝備 画暗，買賣 与 倉庫 常显。 |
+| 20-shop-storage-put.png（原版帧见私有档案：`runtime_observations/original_world_town/20-shop-storage-put.png`） | 点「倉庫」，手持 回復藥 点列表 | 右板换成 WINDOW90「倉庫」，一行 回復藥 数量 1（数字右对齐）；手空。 |
+| 21-shop-storage-stack2.png（原版帧见私有档案：`runtime_observations/original_world_town/21-shop-storage-stack2.png`） | 再放一瓶 | 同一行数量变 2，不另起一行；倉庫 画暗。 |
+| 22-shop-storage-take.png（原版帧见私有档案：`runtime_observations/original_world_town/22-shop-storage-take.png`） | 空手点该行 | 一瓶到手上，行数量回到 1，下方出该物说明框。 |
+| 23-arrange-storage-after-shop.png（原版帧见私有档案：`runtime_observations/original_world_town/23-arrange-storage-after-shop.png`） | 离店离城，卷轴「整理裝備」→ 倉庫 | 商店里放入的 回復藥 1 仍在列表里：商店 倉庫 与 整理裝備 倉庫 是同一份存储。 |
+| 24-arrange-next-member-hand-kept.png（原版帧见私有档案：`runtime_observations/original_world_town/24-arrange-next-member-hand-kept.png`） | 从列表取出后点 下一位 | 成员换人，回復藥 仍在光标上，列表空。 |
+
 ## 重制接线
 
 | 项 | 重制 | 与原版 |
@@ -65,7 +78,7 @@
 | TownBG、菜单 | TownBG (158,148)；WINDOW70.SHP (60,60) 叠在其上，白字行 x 72、行距 32 | 同 |
 | 离城、金钱栏 | 右键／Esc 离城、退子菜单、取消选人；根画面无点名与金钱／同伴条 | 同 |
 | 对白板 | `TownRuntime`：上 y 20、下 y 320；转职结果与获得金钱／物品的重制旁白放下方 | 同 |
-| 商店窗 | `TownShopScreen`：同一套 WINDOW10／20／90／40 板与六钮、价格右缘 x 594、悬停说明框、BOARD02 拒绝消息；红字按物品职业掩码 | 同；裝備／倉庫／丟棄 暗着、不画 ↓ |
+| 商店窗 | `TownShopScreen`：同一套 WINDOW10／20／90／40 板与六钮、价格右缘 x 594、悬停说明框、BOARD02 拒绝消息；红字按物品职业掩码 | 同；不画 ↓ |
 | 卖出 | 手上物 → 货表，`WorldPartyRules.sell` 半价，重要物品拒卖 | 同 |
 | 买入 | 点货行扣钱，直接放进所显示成员首个空格 | 异，见 [original_shop_transaction](../../static_reverse/original_shop_transaction.md) |
 | 退店 | 右键／Esc 先关消息、再放回手上物、再退店；告别话照该店事件 te 脚本 | 同（告别话是否由退店触发未单独核对） |

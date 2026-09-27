@@ -20,9 +20,9 @@ extends Control
 ## Remake readings: a goods click buys straight into the shown member's first empty slot (the
 ## original puts the paid item on the cursor for the player to place — WorldPartyRules'
 ## remake policy); selling follows the original gesture (pick a bag item up, click the goods
-## list). 裝備／倉庫／丟棄 stay dimmed (no town equip mode, party storage or town discard in the
-## remake); as in the original the window has no 離開 button — right click／Esc leave it (frame
-## 13). The ↓ mark the original draws after some goods names is not drawn —
+## list). 裝備 (page 10) shows the member's six slots and takes the hand like mode 0; 倉庫
+## (page 7) shows the party storage; 丟棄 throws a non-important held item away; as in the
+## original the window has no 離開 button — right click／Esc leave it (frame 13). The ↓ mark the original draws after some goods names is not drawn —
 ## what it compares is not read.
 ##
 ## Mode 0 (整理裝備, docs/evidence_packets/static_reverse/original_storage_window.md): the same
@@ -31,12 +31,14 @@ extends Control
 ## 狀態 attributes (page 4), the bag (裝備 10／倉庫 7), the magic or special list (2／3); the
 ## right board is the six equipment slots on every page but 倉庫. Only on the 裝備 page do the
 ## slots take the hand: an empty hand takes an item off, a held bag item goes on by its kind.
-## The window keeps no rules: equip／unequip go to the host (equip_requested／
-## unequip_requested → PartyEquipmentRules.change) and come back through show_loop. Remake
-## readings: 倉庫 stays dimmed (no party storage), so 丟棄／使用 (storage page only) never
-## show; a taken-off item goes to the bag (the rules' unequip) instead of the hand; a refused
-## item stays in the hand silently as in the original (0x436f30 returns −1) and the reason
-## is only kept for summary(). Original frames of the 狀態／裝備／倉庫 pages:
+## The window keeps no rules: every hand gesture goes to the host (hand_requested →
+## PartyEquipmentRules.hand_action; unequip_requested → change) and comes back through
+## show_loop／show_state. The hand survives 上一位／下一位 (0x4282c0 never writes 0x4c1ce4) and
+## page changes; on the 倉庫 page (7) the right board is the storage list (WINDOW90「倉庫」,
+## rows with counts) and 丟棄／使用 act on the hand. Remake readings: a taken-off item goes to
+## the bag (the rules' unequip) instead of the hand; a held bag item stays in its slot until it
+## lands; a refused item stays in the hand silently as in the original (0x436f30 returns −1)
+## and the reason is only kept for summary(). Original frames of the 狀態／裝備／倉庫 pages:
 ## docs/evidence_packets/runtime_observations/original_world_town/README.md (15–17).
 ## provenance:
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
@@ -46,17 +48,17 @@ extends Control
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
 ##     (boards over the undimmed big map; buttons at y 429; price right edge x 594; hover description)
 ##   layout: remake-invented
-##     (dimmed 裝備／倉庫／丟棄; no ↓ mark; mode 0: dimmed 倉庫, magic／special lists on the plain WINDOW20 board — the original's
-##     shape-table boards 5／10 are not read)
+##     (no ↓ mark; magic／special lists on the plain WINDOW20 board — the original's shape-table boards 5／10 are
+##     not read)
 ##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
-##   strings: remake-invented (tooltips of the dimmed buttons)
 signal buy_requested(item_id: int, unit_id: String)
 signal sell_requested(unit_id: String, slot: int)
 signal close_requested
 ## Mode 0: the host runs PartyEquipmentRules.change and answers with show_loop or refuse.
-signal equip_requested(unit_id: String, inventory_index: int, code: int)
 signal unequip_requested(unit_id: String, slot: String)
+## Both modes: a hand gesture (PartyEquipmentRules.hand_action action／args) on the current hand.
+signal hand_requested(action: String, args: Dictionary, hand: Dictionary)
 
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleLootPanel = preload("res://game/battle/scene/BattleLootPanel.gd")
@@ -72,6 +74,7 @@ const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const BattleGrowthPanel = preload("res://game/battle/scene/BattleGrowthPanel.gd")
+const PartyStorageRules = preload("res://game/sim/PartyStorageRules.gd")
 
 ## 0x42ab40 param_1; the page is the root's +0x94 (Data6 of the button that set it).
 const MODE_ARRANGE := 0
@@ -114,17 +117,11 @@ const ARRANGE_BUTTONS := [
 	["special", "BCMD10_1", "特殊技", 601, -1],
 ]
 const ARRANGE_PAGES := {"storage": PAGE_STORAGE, "status": PAGE_STATUS, "equip": PAGE_EQUIP, "magic": PAGE_MAGIC, "special": PAGE_SPECIAL}
-const DIMMED_BUTTONS := {
-	"equip": "重製版商店不切換到裝備畫面；請用大地圖的「整理裝備」",
-	"trade": "",
-	"storage": "重製版沒有隊伍倉庫",
-	"drop": "重製版商店不丟棄物品",
-}
-const ARRANGE_DIMMED := {
-	"storage": "重製版沒有隊伍倉庫",
-	"drop": "重製版沒有隊伍倉庫",
-	"use": "重製版沒有隊伍倉庫",
-}
+## The button whose Data6 is the page (drawn dark, 0x42a330 +0x10000000; frames 08 and the
+## 2026-09-27 shop 裝備／倉庫 frames).
+const SHOP_PAGES := {"equip": PAGE_EQUIP, "trade": PAGE_TRADE, "storage": PAGE_STORAGE}
+## RESOURCE 309, the storage list's title (0x428410 case 6, +0xa0 = 0x135).
+const STORAGE_TITLE := "倉庫"
 ## Mode 0 right board: WINDOW30 at (252,168) (0x428410 case 3); the slot rows are the status
 ## page's (BattleEquipmentView, board at y 174) moved up with the board.
 const EQUIPMENT_AT := Vector2(252, 168)
@@ -154,6 +151,9 @@ var bag_slots: Array[Button] = []
 var description_box: Control
 var hand_icon: TextureRect
 var _hand: Dictionary = {}
+## The party storage shown on page 7 (PartyStorageRules form; the host's).
+var storage: Dictionary = {}
+var storage_rows: Array[Button] = []
 var _scroll := 0
 var _loop: Dictionary = {}
 var _items: Dictionary = {}
@@ -186,18 +186,9 @@ func open(shop_title: String, shop_goods: Array[int], next_carry: Dictionary, sh
 	_items = EquipmentCatalog.items()
 	_scroll = 0
 	unit_id = ""
-	# The strip, the row colours (job) and the consumable texts do not change with a purchase
-	# or a sale: one sandbox per opening.
 	_loop = {}
-	vitals_error = ""
-	if scenario_path == "":
-		vitals_error = "unknown_source_scenario"
-	else:
-		var box := PartyEquipmentRules.sandbox(BattlePlayLoop.create([], "", BattleScenario.load_file(scenario_path)), next_carry)
-		if bool(box["ok"]):
-			_loop = box["loop"]
-		else:
-			vitals_error = str(box["error"])
+	vitals_error = "" if scenario_path != "" else "unknown_source_scenario"
+	_shop_scenario = scenario_path
 	show_carry(next_carry, "")
 
 
@@ -208,15 +199,49 @@ func show_carry(next_carry: Dictionary, next_message: String, next_color: Color 
 	message = next_message
 	message_color = next_color
 	_hand = {}
+	storage = PartyStorageRules.of_carry(carry)
+	_refresh_shop_loop()
 	var ids := member_ids()
 	if not ids.has(unit_id):
 		unit_id = "" if ids.is_empty() else str(ids[0])
 	_rebuild()
 
 
+## Shop mode: the vitals and the 裝備 page read a sandbox of the current carry (rebuilt after
+## every transaction; the scenario path is the opening's).
+var _shop_scenario := ""
+
+
+func _refresh_shop_loop() -> void:
+	if mode != MODE_SHOP or _shop_scenario == "":
+		return
+	var box := PartyEquipmentRules.sandbox(BattlePlayLoop.create([], "", BattleScenario.load_file(_shop_scenario)), carry)
+	if bool(box["ok"]):
+		_loop = box["loop"]
+		vitals_error = ""
+	else:
+		vitals_error = str(box["error"])
+
+
+## Both modes: redraw after a hand gesture — the host's new carry (shop) or sandbox (mode 0),
+## storage and hand; the page and the shown member stay.
+func show_state(next_carry: Dictionary, loop: Dictionary, next_storage: Dictionary, next_hand: Dictionary) -> void:
+	carry = next_carry.duplicate(true)
+	storage = next_storage.duplicate(true)
+	if mode == MODE_SHOP:
+		_refresh_shop_loop()
+	else:
+		_loop = loop
+	message = ""
+	last_refusal = ""
+	_hand = next_hand.duplicate()
+	_rebuild()
+
+
 ## Mode 0 over the host's sandbox `loop` (PartyEquipmentScreen); `next_carry` only feeds the
 ## gold box; `next_message` is the host's failure line (no sandbox). Opens on page 4.
-func open_arrange(next_carry: Dictionary, loop: Dictionary, next_message: String = "") -> void:
+func open_arrange(next_carry: Dictionary, loop: Dictionary, next_message: String = "", next_storage: Dictionary = {}) -> void:
+	storage = next_storage.duplicate(true) if not next_storage.is_empty() else PartyStorageRules.empty()
 	mode = MODE_ARRANGE
 	page = PAGE_STATUS
 	title = ""
@@ -249,10 +274,9 @@ func set_page(next_page: int) -> void:
 	_rebuild()
 
 
-## Mode 0: show `next_unit_id` (the host's select_member).
+## Mode 0: show `next_unit_id` (the host's select_member); the hand stays.
 func show_member(next_unit_id: String) -> void:
 	if member_ids().has(next_unit_id):
-		_hand = {}
 		unit_id = next_unit_id
 		_rebuild()
 
@@ -260,10 +284,10 @@ func show_member(next_unit_id: String) -> void:
 ## Mode 0, 裝備 page: a click on equipment slot `slot` — a held bag item goes on (its kind picks
 ## the slot, 0x436f30), an empty hand takes the slot's item off (0x437020).
 func click_equipment(slot: String) -> void:
-	if mode != MODE_ARRANGE or page != PAGE_EQUIP or message_visible() or unit_id == "":
+	if page != PAGE_EQUIP or message_visible() or unit_id == "":
 		return
 	if holding():
-		equip_requested.emit(unit_id, int(_hand["slot"]), int(_hand["code"]))
+		hand_requested.emit("equip", {"unit_id": unit_id, "slot": _slot_for_hand(slot)}, _hand.duplicate())
 	elif _worn_code(slot) > 0:
 		unequip_requested.emit(unit_id, slot)
 
@@ -271,6 +295,17 @@ func click_equipment(slot: String) -> void:
 ## Mode 0: the host refused the held item; it stays in the hand (no board, no sound).
 func refuse(reason: String) -> void:
 	last_refusal = reason
+
+
+## The held item's kind picks its slot (0x436f30); accessories go to the clicked accessory slot
+## when it is one, else the first empty accessory slot.
+func _slot_for_hand(clicked: String) -> String:
+	var kind := int((_items.get(str(int(_hand.get("code", 0))), {}) as Dictionary).get("type_code", 0))
+	if kind >= 2 and kind <= 5:
+		return str(BattleEquipmentView.SLOTS[kind - 2])
+	if clicked.begins_with("accessory"):
+		return clicked
+	return "accessory2" if _worn_code("accessory1") > 0 and _worn_code("accessory2") == 0 else "accessory1"
 
 
 func _worn_code(slot: String) -> int:
@@ -302,12 +337,12 @@ func message_visible() -> bool:
 	return message != ""
 
 
-## 上一位／下一位 (step -1／+1) cycle the shown member; a held item goes back first.
+## 上一位／下一位 (step -1／+1) cycle the shown member; the hand stays (0x42a76e／0x42a77a call
+## 0x4282c0, which reloads the member and never touches 0x4c1ce4).
 func step_member(step: int) -> void:
 	var ids := member_ids()
 	if ids.is_empty():
 		return
-	_hand = {}
 	unit_id = str(ids[posmod(ids.find(unit_id) + step, ids.size())])
 	_rebuild()
 
@@ -328,6 +363,11 @@ func dismiss_message() -> void:
 
 
 func put_back() -> void:
+	if holding() and (bool(_hand.get("loose", false)) or str(_hand.get("unit_id", "")) != unit_id):
+		# 0x436e30: into the shown member's first empty slot (the host decides; a full bag keeps
+		# nothing lost — see PartyEquipmentRules.hand_action back).
+		hand_requested.emit("back", {"unit_id": unit_id}, _hand.duplicate())
+		return
 	_hand = {}
 	_rebuild()
 
@@ -341,8 +381,11 @@ func pick_up(slot: int) -> void:
 	_rebuild()
 
 
-## Dropping the held item on the goods list sells it (0x414c00 shop branch).
+## Dropping the held item on the goods list sells it (0x414c00 shop branch); a loose item
+## (from the storage or a full bag) goes back to the storage first — the remake sells bag items.
 func drop_on_list() -> void:
+	if holding() and bool(_hand.get("loose", false)):
+		return
 	if holding():
 		var hand := _hand
 		_hand = {}
@@ -377,9 +420,13 @@ func _rebuild() -> void:
 	vitals.visible = not actor.is_empty()
 	if not actor.is_empty():
 		vitals.show_unit(actor)
+	storage_rows.clear()
 	if mode == MODE_SHOP:
 		_build_bag()
-		_build_goods()
+		match page:
+			PAGE_EQUIP: _build_equipment()
+			PAGE_STORAGE: _build_storage()
+			_: _build_goods()
 	else:
 		match page:
 			PAGE_STATUS: _build_attributes()
@@ -387,6 +434,8 @@ func _rebuild() -> void:
 			_: _build_bag()
 		if page != PAGE_STORAGE:
 			_build_equipment()
+		else:
+			_build_storage()
 	BattleUISkin.board(self, "WINDOW40", BattleLootPanel.GOLD_AT).name = "GoldBoard"
 	var amount := BattleUISkin.text(self, BattleLootPanel.GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))
 	amount.name = "Gold"
@@ -412,7 +461,7 @@ func _rebuild() -> void:
 	hand_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hand_icon.hide()
 	add_child(hand_icon)
-	if holding():
+	if holding() and _items.has(str(int(_hand["code"]))):
 		var key := str(_items[str(int(_hand["code"]))]["icon"])
 		var origin: Array = BattleUISkin.data()["assets"][key]["draw_origin"]
 		BattleUISkin.show_shape(hand_icon, BattleUISkin.texture(key))
@@ -426,7 +475,7 @@ func _build_bag() -> void:
 	var inventory: Array = _member().get("inventory", [])
 	for index in range(inventory.size()):
 		var code := int(inventory[index])
-		var shown := code > 0 and not (holding() and int(_hand["slot"]) == index)
+		var shown := code > 0 and not (holding() and not bool(_hand.get("loose", false)) and str(_hand.get("unit_id", "")) == unit_id and int(_hand["slot"]) == index)
 		var button := _row_button(BattleLootPanel.BAG_AT + Vector2(8, 8 + index * BattleLootPanel.BAG_ROW), Vector2(208, BattleLootPanel.BAG_ROW))
 		button.name = "Bag_%d" % index
 		if shown:
@@ -438,9 +487,67 @@ func _build_bag() -> void:
 			button.mouse_exited.connect(_hide_description.bind(label))
 		button.pressed.connect(func():
 			if message_visible(): return
-			if holding(): put_back()
+			if holding(): click_bag_with_hand(index)
 			elif shown: pick_up(index))
 		bag_slots.append(button)
+
+
+## The hand on bag slot `index` of the shown member: its own slot takes it back; anything else
+## is the host's place (first empty slot, a full bag swaps — 0x42923b).
+func click_bag_with_hand(index: int) -> void:
+	if not holding() or message_visible():
+		return
+	if not bool(_hand.get("loose", false)) and str(_hand.get("unit_id", "")) == unit_id:
+		_hand = {}
+		_rebuild()
+		return
+	hand_requested.emit("place", {"unit_id": unit_id, "slot": index}, _hand.duplicate())
+
+
+## Page 7: the storage list (WINDOW90「倉庫」, the loot list's rows: icon, name, count).
+## A click with the hand stores it (0x44f2d0); an empty-handed click on a row takes one
+## (important rows stay, 0x4154cd).
+func _build_storage() -> void:
+	BattleUISkin.board(self, "WINDOW90", BattleLootPanel.LIST_AT).name = "StorageBoard"
+	var heading := BattleUISkin.text(self, BattleLootPanel.LIST_AT + Vector2(0, 10), BattleUISkin.TEXT_IVORY, BattleUISkin.FONT_BODY, Vector2(375, 24))
+	heading.name = "StorageTitle"
+	heading.text = STORAGE_TITLE
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var drop_area := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP), Vector2(340, BattleLootPanel.LIST_ROW * BattleLootPanel.VISIBLE_ROWS))
+	drop_area.name = "StorageDrop"
+	drop_area.pressed.connect(func(): if not message_visible() and holding(): hand_requested.emit("store", {}, _hand.duplicate()))
+	var rows := PartyStorageRules.entries(storage)
+	_scroll = clampi(_scroll, 0, maxi(0, rows.size() - BattleLootPanel.VISIBLE_ROWS))
+	var job := int(_actor().get("growth_profile", {}).get("job_code", -1))
+	for index in range(mini(BattleLootPanel.VISIBLE_ROWS, rows.size() - _scroll)):
+		var row_index := _scroll + index
+		var code := int(rows[row_index]["code"])
+		var details: Dictionary = _items.get(str(code), {"icon": "", "name": str(code), "important": false, "job_mask": 0})
+		var button := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP + index * BattleLootPanel.LIST_ROW), Vector2(340, BattleLootPanel.LIST_ROW))
+		button.name = "Storage_%d" % row_index
+		if str(details["icon"]) != "":
+			BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
+		var color := _row_color(details, job)
+		var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, BattleLootPanel.LIST_ROW))
+		label.text = str(details["name"])
+		label.set_meta("base_color", color)
+		var count := BattleUISkin.text(button, Vector2(BattleLootPanel.COUNT_RIGHT - BattleLootPanel.LIST_AT.x - 8 - 108, 0), color, BattleUISkin.FONT_BODY, Vector2(108, BattleLootPanel.LIST_ROW))
+		count.text = str(int(rows[row_index]["qty"]))
+		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		button.mouse_entered.connect(_show_description.bind(code, label))
+		button.mouse_exited.connect(_hide_description.bind(label))
+		button.pressed.connect(func():
+			if message_visible(): return
+			if holding(): hand_requested.emit("store", {}, _hand.duplicate())
+			else: hand_requested.emit("retrieve", {"index": row_index}, {}))
+		storage_rows.append(button)
+	if rows.size() > BattleLootPanel.VISIBLE_ROWS:
+		for step in [-1, 1]:
+			var arrow := _row_button(BattleLootPanel.LIST_AT + Vector2(351, 0 if step < 0 else 200), Vector2(24, 20))
+			arrow.name = "Scroll_up" if step < 0 else "Scroll_down"
+			arrow.pressed.connect(func():
+				_scroll = clampi(_scroll + step, 0, rows.size() - BattleLootPanel.VISIBLE_ROWS)
+				_rebuild())
 
 
 func _build_goods() -> void:
@@ -564,23 +671,21 @@ func _status_button(key: String, resource: String, caption: String, centre_x: in
 	label.name = "Caption_" + key
 	label.text = caption
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var dimmed_table: Dictionary = DIMMED_BUTTONS if mode == MODE_SHOP else ARRANGE_DIMMED
-	var dimmed := dimmed_table.has(key)
+	var pages: Dictionary = SHOP_PAGES if mode == MODE_SHOP else ARRANGE_PAGES
 	# 0x42a330 marks the button whose Data6 is the current page (+0x10000000); the original
 	# frames draw it dark (mode 0 狀態／裝備 pages, 2026-09-27; the shop's 買賣, frame 08).
-	var current := mode == MODE_ARRANGE and int(ARRANGE_PAGES.get(key, -1)) == page
-	button.disabled = dimmed
-	button.self_modulate = Color(0.45, 0.45, 0.45) if dimmed or current else Color.WHITE
-	button.tooltip_text = str(dimmed_table.get(key, ""))
-	if not dimmed:
-		button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
-		button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
+	var current := int(pages.get(key, -1)) == page
+	button.self_modulate = Color(0.45, 0.45, 0.45) if current else Color.WHITE
+	button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
+	button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
 	match key:
 		"prev": button.pressed.connect(func(): if not message_visible(): step_member(-1))
 		"next": button.pressed.connect(func(): if not message_visible(): step_member(1))
+		"drop": button.pressed.connect(func(): if not message_visible() and holding(): hand_requested.emit("drop", {}, _hand.duplicate()))
+		"use": button.pressed.connect(func(): if not message_visible() and holding(): hand_requested.emit("use", {"unit_id": unit_id}, _hand.duplicate()))
 		_:
-			if mode == MODE_ARRANGE and ARRANGE_PAGES.has(key) and not dimmed:
-				button.pressed.connect(func(): if not message_visible(): set_page(int(ARRANGE_PAGES[key])))
+			if pages.has(key):
+				button.pressed.connect(func(): if not message_visible(): set_page(int(pages[key])))
 	buttons[key] = button
 
 
@@ -661,4 +766,5 @@ func summary() -> Dictionary:
 		"message": message,
 		"vitals_error": vitals_error,
 		"scroll": _scroll,
+		"storage": PartyStorageRules.entries(storage),
 	}

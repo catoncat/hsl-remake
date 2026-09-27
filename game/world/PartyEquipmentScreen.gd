@@ -4,9 +4,11 @@ extends CanvasLayer
 ## 57／81, winfail 045／078) — both hosts call open() here. The window itself is
 ## TownShopScreen in MODE_ARRANGE (the shop's boards and button strip, nine buttons by page;
 ## docs/evidence_packets/static_reverse/original_storage_window.md). This node owns the
-## sandbox PlayLoop built from the carry's source scenario, runs every equip／unequip through
-## PartyEquipmentRules.change (the in-battle validation order), and on close projects the
-## sandbox back into the carry and emits closed(next_carry, changes) for the host to persist.
+## sandbox PlayLoop built from the carry's source scenario and the party storage
+## (carry.loop.party_storage, PartyStorageRules), runs every hand gesture through
+## PartyEquipmentRules.hand_action and every unequip through change (the in-battle validation
+## order), and on close projects the sandbox and the storage back into the carry and emits
+## closed(next_carry, changes) for the host to persist.
 ## Presentation only: no second copy of the carry is kept after close.
 ## provenance:
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_storage_window.md
@@ -21,6 +23,8 @@ const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const StatusWindow = preload("res://game/world/TownShopScreen.gd")
+const StorageRules = preload("res://game/sim/PartyStorageRules.gd")
+const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
 const REASONS := {
 	"wrong_job": "職業不符", "wrong_equipment_slot": "部位不符", "inventory_full": "背包已滿",
 	"equipment_cannot_be_removed": "無法卸下", "equipment_unchanged": "已裝備", "unsupported_equipment": "效果未開放",
@@ -36,6 +40,8 @@ var changes := 0
 var scenario_path := ""
 var last_result: Dictionary = {}
 var window: Control
+var storage: Dictionary = {}
+var hand: Dictionary = {}
 var _portraits: Dictionary = {}
 
 
@@ -44,7 +50,7 @@ func _ready() -> void:
 	window = StatusWindow.new()
 	add_child(window)
 	window.name = "PartyEquipment"
-	window.equip_requested.connect(_on_equip_requested)
+	window.hand_requested.connect(_on_hand_requested)
 	window.unequip_requested.connect(_on_unequip_requested)
 	window.close_requested.connect(close)
 	_portraits = preload("res://game/sim/ContentPaths.gd").actor_portraits()
@@ -60,6 +66,8 @@ func open(next_carry: Dictionary, campaign: Dictionary, scenario_path_override: 
 	loop = {}
 	error = ""
 	changes = 0
+	hand = {}
+	storage = StorageRules.of_carry(carry)
 	active = true
 	visible = true
 	if carry.is_empty() or str(carry.get("schema", "")) != Rules.CarryRules.SCHEMA:
@@ -77,7 +85,7 @@ func open(next_carry: Dictionary, campaign: Dictionary, scenario_path_override: 
 				if Rules.members(loop).is_empty():
 					error = "no_members"
 					loop = {}
-	window.open_arrange(carry, loop, "" if error == "" else str(ERRORS.get(error, "無法整理裝備：%s" % error)))
+	window.open_arrange(carry, loop, "" if error == "" else str(ERRORS.get(error, "無法整理裝備：%s" % error)), storage)
 	last_result = {"ok": error == "", "error": error}
 	return last_result
 
@@ -127,11 +135,21 @@ static func _slot_for(unit: Dictionary, kind: int) -> String:
 	return "accessory2" if EquipmentRules.equipped_code(unit.get("equipment", []), "accessory1") > 0 and EquipmentRules.equipped_code(unit.get("equipment", []), "accessory2") == 0 else "accessory1"
 
 
-func _on_equip_requested(unit_id: String, inventory_index: int, code: int) -> void:
-	var unit := BattlePlayLoop.unit(loop, unit_id)
-	var item: Dictionary = loop["equipment_items"].get(str(code), {})
-	var slot := _slot_for(unit, int(item.get("type_code", 0))) if not item.is_empty() else "weapon"
-	_change({"kind": "equip", "unit_id": unit_id, "slot": slot, "index": inventory_index, "code": code})
+## A hand gesture from the window (place／store／retrieve／drop／use／equip／back).
+func _on_hand_requested(action: String, args: Dictionary, held: Dictionary) -> void:
+	if error != "":
+		return
+	var result := Rules.hand_action(loop, storage, held, action, args, EquipmentCatalog.items())
+	if not bool(result["ok"]):
+		last_result = {"ok": false, "action": action, "reason": str(result["reason"])}
+		window.refuse(str(result["reason"]))
+		return
+	loop = result["loop"]
+	storage = result["storage"]
+	hand = result["hand"]
+	changes += 1
+	last_result = {"ok": true, "action": action, "status": "changed"}
+	window.show_state(carry, loop, storage, hand)
 
 
 func _on_unequip_requested(unit_id: String, slot: String) -> void:
@@ -154,7 +172,7 @@ func _change(request: Dictionary) -> void:
 func close() -> Dictionary:
 	if not active:
 		return {"ok": false, "reason": "closed"}
-	var next_carry := Rules.project(carry, loop) if error == "" and changes > 0 else carry.duplicate(true)
+	var next_carry := StorageRules.with_carry(Rules.project(carry, loop), storage) if error == "" and changes > 0 else carry.duplicate(true)
 	active = false
 	visible = false
 	last_result = {"ok": true, "action": "close", "changes": changes}
@@ -198,5 +216,6 @@ func summary() -> Dictionary:
 		"bag": bag_entries(),
 		"message": str(shown["message"]),
 		"last_result": last_result.duplicate(true),
-		"claim_limit": "Original mode 0 window layout and buttons (static-derived); the remake has no party storage, so 倉庫／丟棄／使用 stay unavailable.",
+		"storage": StorageRules.entries(storage),
+		"claim_limit": "Original mode 0 window layout, buttons, hand and storage list (static-derived; runtime-measured 2026-09-27); 使用 applies HP／MP／status only.",
 	}

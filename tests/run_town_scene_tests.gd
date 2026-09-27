@@ -168,7 +168,7 @@ func _check_shop_composition(scene: Node, town: Node, screen: Control) -> void:
 		if button != null:
 			original.append(Rect2(button.position, Vector2(42, 42)))
 	for key in ["equip", "trade", "storage", "drop"]:
-		_assert_true(screen.buttons.has(key) and (screen.buttons[key] as TextureButton).disabled, "%s is dimmed (no remake counterpart in the shop)" % key)
+		_assert_true(screen.buttons.has(key) and not (screen.buttons[key] as TextureButton).disabled, "%s acts (0x42a330 mode 1: 裝備／買賣／倉庫 set the page, 丟棄 drops the hand)" % key)
 	for key in ["prev", "next"]:
 		_assert_true(screen.buttons.has(key) and not (screen.buttons[key] as TextureButton).disabled, "%s works" % key)
 	_assert_eq(screen.buttons.size(), 6, "only the original six status buttons (no remake 離開)")
