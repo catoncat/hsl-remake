@@ -2,7 +2,7 @@
 
 > evidence: static-derived · status: live · functions: 0x409090, 0x43ea30, 0x448840, 0x45b554, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45f0d1 · tools: hsl_exe_decompile.py, hsl_native_stats_probe.py, hsltools/assets/combat_animation.py, hsltools/assets/command_frames.py · updated: 2026-09-11
 
-研究日期：2026-09-11。首次核对发生于 15:28–15:33 UTC（台北 23:28–23:33），随后按用户要求补充为可接续的研究文档。
+研究日期：2026-09-11。首次核对发生于 15:28–15:33 UTC（台北 23:28–23:33），随后补充为可接续的研究文档。
 
 本包记录已经实际读取的原版资源、EXE 指令、成功与失败的复跑方法，以及尚未证明的部分。它是长期证据入口，不是新的项目状态表。当前产品进度与交付范围仍看 [PROJECT.md](../../PROJECT.md)。
 

@@ -70,7 +70,7 @@ token 数值来源（resource-derived）：`DATA\EXTRAS.H`（导入为 `content/
 深门 story_mode_explorer 在 34 沙羅尼亞近郊（队伍 hu／tina／hanks／shera，雷歐納德 被囚不在 carry）后于地图点 33 掷中遭遇战 550：`SID_雷歐納德/1` 已绑定，但 `ConditionalPartyRules` 按 carry 未上场 leonard，若按上节读法「找不到即阵亡」则首次控制时立即 `defeat_leonard`。原 `big_map_flow.json` 显示 30–34 点遭遇比例 20／10／10／10／10 非零，原作确实会在雷歐納德缺席段触发 5NN 遭遇。静态读法本身没有歧义——`0x450840 case 0x26` 对 `fcn.0044fad0(code,1) == -1` 直接不计入 count，count==0 即成立；歧义在**原作是否把 registered-but-absent 的槽装进遭遇战**（`conditional_party.claim_limit` 已写明未建模）。两条接入，均标 **provisional**：
 
 1. **未上场 ≠ 阵亡**：`WinfailConditions.condition_holds` 的 `actCheckPlayer`／`actCheckEnemy` 对 `_token_source == "binding"` 且 `_units_for_token` 为空的 token（绑定存在、本战没有该单位）不计入 dead，与 unresolved 同样跳过；`SID_ENEMYnnn` class token 从未放置仍计入（WINFAIL533 读法不变）。替换证据：原生 route——在 30–34 点触发 5NN 遭遇，观察 雷歐納德 是否被装进战场；若不装，让全队阵亡观察是否判负。
-2. **全队阵亡判负（重制显式规则）** `WinfailScenarioRules.party_wiped`／`PARTY_WIPE_POLICY = remake_party_wipe_defeat_v1`：脚本 fail 段、win 段都不成立时，本战上场且仍在场的 `player_controlled` 单位（不含 `departed`、`departed_unit_ids`，不含 friendly_ai）非空且全部 `defeated` → `DEFEAT_OUTCOME`；`commit_outcome` 记 `resolved = {key: party_wiped, kind: fail, code: -1, policy}`，不跑任何脚本 fail 链，`_terminal_status` 对该 resolution 返回空 status（不说缺席成员的死亡台词、无脚本看板标签），结果页走同一败北路径（`BattlePresentation` 主角未上场时标签「隊伍全滅」）。这是用户授权的重制改善，不声称原版等价；效果是 autoplay 的 `party_wiped_no_defeat` 死路在任何战斗都结构性不可达。
+2. **全队阵亡判负（重制显式规则）** `WinfailScenarioRules.party_wiped`／`PARTY_WIPE_POLICY = remake_party_wipe_defeat_v1`：脚本 fail 段、win 段都不成立时，本战上场且仍在场的 `player_controlled` 单位（不含 `departed`、`departed_unit_ids`，不含 friendly_ai）非空且全部 `defeated` → `DEFEAT_OUTCOME`；`commit_outcome` 记 `resolved = {key: party_wiped, kind: fail, code: -1, policy}`，不跑任何脚本 fail 链，`_terminal_status` 对该 resolution 返回空 status（不说缺席成员的死亡台词、无脚本看板标签），结果页走同一败北路径（`BattlePresentation` 主角未上场时标签「隊伍全滅」）。这是项目采纳的重制改善，不声称原版等价；效果是 autoplay 的 `party_wiped_no_defeat` 死路在任何战斗都结构性不可达。
 
 覆盖：`run_winfail_rules_tests.gd _encounter_fail_resolves_player_name_token`（真实 571 ＋ 四人 carry：未上场不判负、全灭判负、脚本撤退不计、win 成立优先、无死亡台词／看板标签）；定向自动对局 `HSL_AUTOPLAY_PARTY=hu,tina,hanks,shera HSL_AUTOPLAY_LEVELS=543,546,549,550,552,555,556,557` 八场全部 `outcome=fail battle_outcome=defeat_leonard result_page=true`（4–7 回合被全灭，非首回合瞬败）。
 
@@ -120,7 +120,7 @@ HSL_AUTOPLAY_PARTY=hu,tina,hanks,shera HSL_AUTOPLAY_LEVELS=550,556 tools/godot.s
 | fail 0 武装，雷歐納德 不在、其余两名在场 | 同上判负——「在场人数」无关 |
 | fail 1 武装、全部玩家带死亡标 | 停在 `0x453ac0`，entry=1 |
 
-结论：原作在「上场玩家全部阵亡但脚本 fail 条件不成立」时**没有任何判负路径**，敌方会在回合调度中无限行动；原作靠剧本不变量避免这个局面（每关 fail 段检查的 id 都是该关上场的领队；5NN 检查 雷歐納德 而 雷歐納德 总在场）。重制 `party_wiped`／`PARTY_WIPE_POLICY` 因此不是原版等价，也不是 provisional 等待替换，而是**用户授权的重制改善规则**，其触发条件（领队因 carry 缺席）本身就是重制独有的状态。
+结论：原作在「上场玩家全部阵亡但脚本 fail 条件不成立」时**没有任何判负路径**，敌方会在回合调度中无限行动；原作靠剧本不变量避免这个局面（每关 fail 段检查的 id 都是该关上场的领队；5NN 检查 雷歐納德 而 雷歐納德 总在场）。重制 `party_wiped`／`PARTY_WIPE_POLICY` 因此不是原版等价，也不是 provisional 等待替换，而是**项目采纳的重制改善规则**，其触发条件（领队因 carry 缺席）本身就是重制独有的状态。
 
 ### 3. 53 关 winfail 台词的脸（D6，static-derived）
 

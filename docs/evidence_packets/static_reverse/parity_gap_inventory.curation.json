@@ -121,7 +121,7 @@
       "visibility": "every_battle",
       "effort": "S",
       "category": "面板与界面",
-      "decision": "用户 2026-09-25 定照原版一直等按键（UI6 已做）；溶解的像素比例近似暂留"
+      "decision": "照原版一直等按键（UI6 已做）；溶解的像素比例近似暂留"
     },
     {
       "id": "special-skill-page",
@@ -144,7 +144,7 @@
       "visibility": "every_battle",
       "effort": "S",
       "category": "面板与界面",
-      "decision": "用户 2026-09-25 定照原版；SKILLPAGE 重做布局，SKILLPAGE2（2026-09-26）补原版实拍核对、滚动条、列表顺序、悬停脉冲；FONT.24 点阵待导入"
+      "decision": "照原版；SKILLPAGE 重做布局，SKILLPAGE2（2026-09-26）补原版实拍核对、滚动条、列表顺序、悬停脉冲；FONT.24 点阵待导入"
     },
     {
       "id": "status-left-column",
@@ -325,7 +325,7 @@
     },
     {
       "id": "hover-strip-rule",
-      "difference": "选武器／魔法／绝技目标时，光标下任何存活单位都显示身份栏（用户要求），原版逐状态规则未读",
+      "difference": "选武器／魔法／绝技目标时，光标下任何存活单位都显示身份栏（重制取舍），原版逐状态规则未读",
       "original": "原版各选择状态何时显示身份栏未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md"
@@ -338,7 +338,7 @@
       "visibility": "every_battle",
       "effort": "S",
       "category": "面板与界面",
-      "decision": "用户 2026-09-23 要求"
+      "decision": "保留重制做法"
     },
     {
       "id": "footprint-preview-style",
@@ -357,7 +357,7 @@
       "visibility": "every_battle",
       "effort": "S",
       "category": "面板与界面",
-      "decision": "用户 2026-09-24 定"
+      "decision": "已定"
     },
     {
       "id": "cast-overlay-rules",
@@ -525,7 +525,7 @@
       "visibility": "some_levels",
       "effort": "S",
       "category": "飘字与数字",
-      "decision": "用户 2026-09-25 定照原版只显示数字（UI6 已去掉数字旁的附加词）；没有数字的说明字暂留（UI6 保守取舍，待负责人定）"
+      "decision": "照原版只显示数字（UI6 已去掉数字旁的附加词）；没有数字的说明字暂留（UI6 保守取舍，待定：产品决定）"
     },
     {
       "id": "floater-lifetimes",

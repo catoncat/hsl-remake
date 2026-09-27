@@ -2,7 +2,7 @@
 
 > evidence: static-derived; provisional: 同距平局次序、围死时的最近格度量、按键快进（remake-invented） · status: live · functions: 0x40eb40, 0x40ed50, 0x40f350, 0x40f440, 0x410a50, 0x411080, 0x4111d0, 0x450840, 0x453b90 · tools: run_script_walk_path_tests.gd, run_script_walk_tests.gd · updated: 2026-09-24
 
-2026-09-24，lane R5-L4。用户实玩第 6 关：队长倒下后"每个小兵撤退的路线都是错的，直接穿过阶梯走掉……为什么是一个一个轮流撤退？"本包回答两件事：原版剧情走位是否按地形走、是否顺序。全部为只读反编译（`hsl01.exe`，r2ghidra 目录 `ignored/static/hsl01/catalog/decompiled`）与 r2 反汇编，未开原作。
+2026-09-24，lane R5-L4。起因：第 6 关实玩反馈——队长倒下后小兵的撤退路线不对，直接穿过阶梯走掉，而且一个一个轮流撤退（复述）。本包回答两件事：原版剧情走位是否按地形走、是否顺序。全部为只读反编译（`hsl01.exe`，r2ghidra 目录 `ignored/static/hsl01/catalog/decompiled`）与 r2 反汇编，未开原作。
 
 ## 原版读法（static-derived）
 

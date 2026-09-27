@@ -1,6 +1,6 @@
 # 原版战斗分出胜负后的流程：没有结果页（static-derived）
 
-> evidence: static-derived; runtime-measured: 用户 2026-09-24 第一战录屏胜利段（509.5–516.9 s） · status: live · functions: 0x42aea0, 0x42afc0, 0x42cb90, 0x42cbd0, 0x42cc10, 0x42dc90, 0x453a80, 0x45e307 · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 2026-09-24 第一战录屏胜利段（509.5–516.9 s） · status: live · functions: 0x42aea0, 0x42afc0, 0x42cb90, 0x42cbd0, 0x42cc10, 0x42dc90, 0x453a80, 0x45e307 · updated: 2026-09-27
 
 ## 结论
 
@@ -18,7 +18,7 @@
 | 字物件 `defProcGameOverWord`：首调缩放 `+0x20/+0x24 = 0x800`（1/32）、透明级 `+0x28 = 0`、半透明位 `0x20000000`、重装计数 4；此后每 tick 缩放 +0x200（到 0x10000 止，约 124 tick），计数每 4 tick 归零时透明级 +1（16 级，到 16 后下一次归零清半透明位）；本 tick 见输入置 `+0x80 \|= 0x10000`：缩放每 tick 再 +0x400、重装计数减半为 2。缩放满且透明级满的同一 tick（不加速时第 128 tick）进自身 phase 1，下一 tick 把 BOSS 阶段 +1 | `0x42afc0` | static-derived |
 | phase 2 把计数置 160；phase 3 计数归零或有输入调 `0x42cb90`：下一关写 0（标题），`\|= 0x88000000`，转场 `0x42dc90(2)`；只有这一条出口 | `0x42aea0`、`0x42cb90` | static-derived |
 
-## 录像（用户 2026-09-24 中午 12.03.22 第一战，胜利段）
+## 录像（2026-09-24 中午 12.03.22 第一战，胜利段）
 
 | 时刻 | 画面 | 等级 |
 | --- | --- | --- |

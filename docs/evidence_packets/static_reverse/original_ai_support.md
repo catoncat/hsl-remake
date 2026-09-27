@@ -62,7 +62,7 @@ python3 -m unittest tools.test_hsl_ai_support
 
 ## 友军用药与模板背包
 
-lane ALLYHEAL，2026-09-26。起因是用户实玩第 51 关的反馈：雷歐納德残血，友军骑士不给他用回復藥。用整镜像裁判 `_enemy_level.py`（[敌方回合包 §11](original_enemy_turn.md#11-任意关卡回合裁判-_enemy_levelpy)）在同一局面跑原版和重制。结论：原版友军会给残血的玩家单位用药。重制之前从不这样做，原因有两个，两个都已照原版改。
+lane ALLYHEAL，2026-09-26。起因：第 51 关实玩反馈——雷歐納德残血，友军骑士不给他用回復藥。用整镜像裁判 `_enemy_level.py`（[敌方回合包 §11](original_enemy_turn.md#11-任意关卡回合裁判-_enemy_levelpy)）在同一局面跑原版和重制。结论：原版友军会给残血的玩家单位用药。重制之前从不这样做，原因有两个，两个都已照原版改。
 
 **背包（runtime-measured）。** 装入演员时 `0x44cb10` 把 PLAYERS 模板整条复制进 live 记录，背包 `+0x138` 八槽也在里面，玩家和 NPC 都一样。之后 EVEF 实例物品（`0x42be2e..0x42be79`）和 pmEnemy 的出生携带（`0x407c40`）再往空槽里填。round-1 停点读各单位 `+0x138`：
 

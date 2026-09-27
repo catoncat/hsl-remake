@@ -2,7 +2,7 @@
 
 > evidence: runtime-measured · status: live · tools: capture_first_battle_review.gd, run_first_battle_playthrough.gd · updated: 2026-09-11
 
-日期：2026-09-11。依据是用户本次六项反馈、同一对话前段实际执行的 Wine 单步路线/窗口录屏、原始表和 SHP，以及本轮 Godot 渲染。用户尚未对修改后的版本做最终接受。
+日期：2026-09-11。依据是六项实玩反馈、此前实际执行的 Wine 单步路线/窗口录屏、原始表和 SHP，以及本轮 Godot 渲染。修改后的版本尚未经最终实玩验收。
 
 ## 原作构图参考
 

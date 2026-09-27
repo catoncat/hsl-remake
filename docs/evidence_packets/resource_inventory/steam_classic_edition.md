@@ -2,7 +2,7 @@
 
 > evidence: resource-derived; static-derived: Steam hsl.exe 选包开关与 hsl01.exe 曲目调用点; negative-evidence: 本机原作目录与 hsl.pak 没有 music 文件; provisional: 两套数据包的先后与差异含义 · status: record-only · functions: 0x42b6b0, 0x42c1c0, 0x42c250, 0x4561d0 · tools: hsl_steam_classic.py · updated: 2026-09-26
 
-**范围。** 用户 2026-09-26 购得 Steam《幻世錄 重製版》（app 4030150，UserJoy，2026-09-10 发售），包里完整收录 1998 年经典版，目录名 `GAME-PAK/`。本包记录怎样取得和核对这份目录、里面有什么、它和本机原作（`$HSL_ORIGINAL_DIR`）差在哪里，以及原曲 `music\NN.wav` 目前已知的用法。它不改变复刻的数据依据：复刻继续以本机原作为准，而本机的 `hsl.pak` 正是 Steam 里的 `hsl-cn.pak`（见下文）。
+**范围。** Steam《幻世錄 重製版》（app 4030150，UserJoy，2026-09-10 发售，2026-09-26 购得），包里完整收录 1998 年经典版，目录名 `GAME-PAK/`。本包记录怎样取得和核对这份目录、里面有什么、它和本机原作（`$HSL_ORIGINAL_DIR`）差在哪里，以及原曲 `music\NN.wav` 目前已知的用法。它不改变复刻的数据依据：复刻继续以本机原作为准，而本机的 `hsl.pak` 正是 Steam 里的 `hsl-cn.pak`（见下文）。
 
 **位置与边界。** 目录放在仓库外：`~/hsl-steam/fancy-realm/GAME-PAK`（环境变量 `HSL_STEAM_CLASSIC`，代码里用 `hsltools.paths.STEAM_CLASSIC_ROOT`）。游戏文件不进仓库，也不要拿它覆盖 `$WINEPREFIX`（现有静态工具按 `hsl01.exe` 的 SHA 锁定）。Steam 账号只由用户本人登录（第一次扫码，之后记住登录），代理不经手账号和密码。
 
@@ -123,4 +123,4 @@ negative-evidence：本机原作目录里没有 `music\` 文件夹，本机 `hsl
 3. `actDEMO` 在台版 52 关启用后的实际效果。
 4. 未解码的二进制差异具体改了什么：字库、5xx 遭遇战地形、level900、四个 obs、标题字图、窗口图。
 5. Steam `hsl.exe` 1.06 与本机 `hsl01.exe` 的代码差异：没有比较，现有静态结论只对 `hsl01.exe` 成立。
-6. 雷特、嚎两套属性值哪套是某个版本的"正式"数值：复刻用的是本机值，要改必须用户拍板。
+6. 雷特、嚎两套属性值哪套是某个版本的"正式"数值：复刻用的是本机值，是否要改待定（产品决定）。

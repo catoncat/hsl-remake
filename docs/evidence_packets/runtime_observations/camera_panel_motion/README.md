@@ -112,7 +112,7 @@ lane R6-P2（2026-09-24）。回答任务书的五个效果「原版怎样」，
 
 **重制前**：`BattleOpeningCoordinator` 的 `winfail_board_refresh` 只写 `status_tokens["board_visible"]`，不显示；时间线在该 token 上只停 0.02 s。
 
-**重制后**：`BattleWinFailBoard`（`game/battle/scene/BattleWinFailBoard.gd`）按上述状态机：32 tick 淡入（期间点击无效）、等按键或点击、34 tick 淡出；协调器在它忙时不推进时间线（开场与 winfail 事件链同一处理），程序化 `advance` 越过它即隐藏。内容取当前已武装状态的 Win Board 标签（开场再并入脚本已插入的状态 token），与 任務說明 同一 `_board_label`。等待按键照原版不设超时（UI6，用户 2026-09-25 定照原版）。**remake-invented**：自动化接缝——进程跑的是 `--script` SceneTree（测试套件、自动对局、capture）时，开场面板等 112 tick 后自己淡出（取录像里最长一次面板 2.85 s 减两段淡入淡出），机器人不必按键；游戏本身无超时。`run_battle_scene_runtime_tests._test_first_battle_opening_through_coordinator` 核对开场出现、淡入期点击无效、等待期按键开始淡出、行内容与首控前隐藏。
+**重制后**：`BattleWinFailBoard`（`game/battle/scene/BattleWinFailBoard.gd`）按上述状态机：32 tick 淡入（期间点击无效）、等按键或点击、34 tick 淡出；协调器在它忙时不推进时间线（开场与 winfail 事件链同一处理），程序化 `advance` 越过它即隐藏。内容取当前已武装状态的 Win Board 标签（开场再并入脚本已插入的状态 token），与 任務說明 同一 `_board_label`。等待按键照原版不设超时（UI6，照原版）。**remake-invented**：自动化接缝——进程跑的是 `--script` SceneTree（测试套件、自动对局、capture）时，开场面板等 112 tick 后自己淡出（取录像里最长一次面板 2.85 s 减两段淡入淡出），机器人不必按键；游戏本身无超时。`run_battle_scene_runtime_tests._test_first_battle_opening_through_coordinator` 核对开场出现、淡入期点击无效、等待期按键开始淡出、行内容与首控前隐藏。
 
 ## 4. 敌方移动预告：先铺蓝色移动范围再走
 

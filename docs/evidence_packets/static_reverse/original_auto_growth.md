@@ -1,6 +1,6 @@
 # 入场调级、自动属性分配与脚本增援成长
 
-> evidence: static-derived; runtime-measured: 用户 2026-09-24 第一战录屏 023_2 L3 41/41，lane TINA53 模拟器 129 关玩家出生 0x44346e · status: live · functions: 0x407cc0, 0x40e7a0, 0x40e800, 0x40e870, 0x439f80, 0x43eed1, 0x43f3a5, 0x4438d4, 0x44ca5c, 0x450840, 0x452408, 0x45f5f7 · tools: capture_entry_growth_review.gd, hsltools/data/entry_growth.py, hsltools/probes/auto_growth.py, run_entry_growth_tests.gd · updated: 2026-09-26
+> evidence: static-derived; runtime-measured: 2026-09-24 第一战录屏 023_2 L3 41/41，lane TINA53 模拟器 129 关玩家出生 0x44346e · status: live · functions: 0x407cc0, 0x40e7a0, 0x40e800, 0x40e870, 0x439f80, 0x43eed1, 0x43f3a5, 0x4438d4, 0x44ca5c, 0x450840, 0x452408, 0x45f5f7 · tools: capture_entry_growth_review.gd, hsltools/data/entry_growth.py, hsltools/probes/auto_growth.py, run_entry_growth_tests.gd · updated: 2026-09-26
 
 SR-071从`4014828b8874965eba14901b6d3829a138818f58`接续；实施期间presentation合并到`c78cd78`，其世界／城镇和过场文件保持不动。入口由确定性调用引用和原反汇编定位，没有调用Jev。[机器回执](original_auto_growth.json)包含128组数值函数与16组VM序列的正常返回、逐次随机调用、十个源角色资料、固定原指令和来源哈希。原文件始终只读。
 

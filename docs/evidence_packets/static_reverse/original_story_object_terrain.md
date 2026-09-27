@@ -2,7 +2,7 @@
 
 > evidence: static-derived; resource-derived: 脚本 token、OBJ 字段与 WRD 格字; provisional: 第 80 关怨念體起始格为重制落点 · status: live · functions: 0x40ed50, 0x411900, 0x411990, 0x4119f0, 0x411a10, 0x42eb70, 0x43ccf0, 0x44fa80, 0x44fad0, 0x450840 · tools: TerrainEditRules.gd, hsltools/levels/scenario.py, run_story_object_terrain_tests.gd, test_hsl_story_object_terrain.py · updated: 2026-09-25
 
-2026-09-24，lane R5-L4。用户实玩第 53 关："緹娜 还能走回 2 楼窗台，有点奇怪，不过我不记得原版了。"用户不记得不是原版证据；本包从脚本与 EXE 读出原版答案。只读 r2 反汇编 `hsl01.exe`，未开原作。
+2026-09-24，lane R5-L4。起因：第 53 关实玩反馈——緹娜 还能走回 2 楼窗台，原版是否如此记不清（复述）；记忆不是原版证据，本包从脚本与 EXE 读出原版答案。只读 r2 反汇编 `hsl01.exe`，未开原作。
 
 ## 原版读法
 

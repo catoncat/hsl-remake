@@ -51,8 +51,8 @@ Actor id、sprite id、object process 名或 `team` 字段不能单独证明最�
 | `resource-derived` | 直接来自原版资源、脚本、表格或可重复解析结果 | 资源存在、字段值、脚本 token/order |
 | `static-derived` | 来自 EXE 静态分析、反编译和明确 call/data join | 函数行为、字段含义、公式或调度候选 |
 | `runtime-measured` | 来自本机原作的窄问题、可追溯窗口采样 | 具体画面、位置、状态转换或标量观测 |
-| `user-confirmed` | 用户对原作内容作出的明确确认 | 用户确认的身份、文字或行为，仍与其他来源分开记录 |
-| `user-hypothesis` | 用户记忆或推测 | 研究方向，不能直接驱动原版等价实现 |
+| `user-confirmed` | 原版知情者对原作内容作出的明确确认 | 原版知情者确认的身份、文字或行为，仍与其他来源分开记录 |
+| `user-hypothesis` | 玩家记忆或推测 | 研究方向，不能直接驱动原版等价实现 |
 | `provisional` | 为工程推进暂定，等待更强证据替换 | 可玩 scaffold；必须列出 unresolved boundary |
 | `negative-evidence` | 已检查某个来源但未找到支持 | 阻止错误声明，不证明相反机制必然成立 |
 

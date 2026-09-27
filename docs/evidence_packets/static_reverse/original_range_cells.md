@@ -2,7 +2,7 @@
 
 > evidence: static-derived; resource-derived; runtime-measured · status: live · functions: 0x411200, 0x411480, 0x4116a0, 0x4504d0, 0x450d4b, 0x450d69, 0x4684b6 · tools: hsl_original_control.py, hsl_win32_memread.c, hsltools/assets/range_cells.py · updated: 2026-09-26
 
-Checked: 2026-09-22。用户指出原版范围格"会闪"，重制版（旧 `BattleSceneOverlays` 的 Line2D＋Polygon2D）不闪。本包恢复三个范围绘制函数画什么、用哪几个 PAK 资源、颜色怎样随 tick 变化，并以一次受控 Wine 采样核对像素与计数器。几何（32 px 轴对齐格、格原点）不在本包改动范围，仍是空间合同的一部分。导入器 `hsl generate range_cells` 产出 `content/imported/hsl/shared/range_cells/`（四张 256×32 边框 sprite sheet ＋ `manifest.json` 内的颜色表／计时字段），运行时入口 `game/battle/runtime/RangeCellOverlay.gd`。
+Checked: 2026-09-22。起因：实玩反馈——原版范围格会闪烁（复述），重制版（旧 `BattleSceneOverlays` 的 Line2D＋Polygon2D）不闪。本包恢复三个范围绘制函数画什么、用哪几个 PAK 资源、颜色怎样随 tick 变化，并以一次受控 Wine 采样核对像素与计数器。几何（32 px 轴对齐格、格原点）不在本包改动范围，仍是空间合同的一部分。导入器 `hsl generate range_cells` 产出 `content/imported/hsl/shared/range_cells/`（四张 256×32 边框 sprite sheet ＋ `manifest.json` 内的颜色表／计时字段），运行时入口 `game/battle/runtime/RangeCellOverlay.gd`。
 
 ## 三个绘制函数（static-derived，EXE SHA-256 `f0b5f835…70f7`）
 
@@ -39,7 +39,7 @@ Checked: 2026-09-26（同一 EXE）。开场与胜负脚本的 `actInsertShowPos
   2. 绘制格原点 `([obj+4] & ~31, [obj+8] & ~31)`：脚本像素不对齐时也画它所在的整格。先以标志 `0x40000000` blit `*0x4c1b30`（ICONBOX），颜色 `0x479344[abs(0x4c1d50)]`；`0x479344` 的 9 项与魔法 ramp `0x476c1c` 逐字相同（`0xffea…0xd6a5`）。再 blit `[0x4c1b34]+0x18+frame`，与 `0x4116a0` param_4=0 的 `[0x4c1b34]+frame+0x18` 是同一组 `I_rect31..38`。
   3. 只有领头标记推进：`0x479358` 减 1，到 0 时重装为 6，帧＋1 mod 8（每 6 tick 换帧，48 tick 一圈）；`0x4c1d50` 走与范围格相同的 17 tick 三角脉动。
 - **结论**：过场标记＝黄 ramp 半透明填充＋`I_rect31..38` 边框，与魔法目标格同一外观。区别只有两点：换帧间隔 6 tick（范围格是 8），以及用自己的一套计时器。
-- **录屏（runtime-reference）**：用户 2026-09-24 录屏（60 fps，游戏窗口 2×，第 51 关撤退切换，脚本 `(267,209)`）约 402.1 s 时标记画在格 (8,6)，即世界 (256,192)–(288,224) 整格，是黄色脉动填充加动画边框。约 401.8–405.4 s 可见（胜负板显示于 402.8–405.0 s），405.6 s 已消失；之后的玩家回合（抽帧 406 s、415 s 及 405–465 s）地图上没有常驻的目的地格。抽帧存于 `ignored/escapemark/orig/`（不入库）。
+- **录屏（runtime-reference）**：2026-09-24 录屏（60 fps，游戏窗口 2×，第 51 关撤退切换，脚本 `(267,209)`）约 402.1 s 时标记画在格 (8,6)，即世界 (256,192)–(288,224) 整格，是黄色脉动填充加动画边框。约 401.8–405.4 s 可见（胜负板显示于 402.8–405.0 s），405.6 s 已消失；之后的玩家回合（抽帧 406 s、415 s 及 405–465 s）地图上没有常驻的目的地格。抽帧存于 `ignored/escapemark/orig/`（不入库）。
 
 ## 资源（resource-derived）
 

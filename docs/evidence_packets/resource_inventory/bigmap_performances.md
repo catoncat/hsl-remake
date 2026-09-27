@@ -2,7 +2,7 @@
 
 > evidence: resource-derived; negative-evidence: 无 STORY／WINFAIL 关卡以大地图为底图; provisional: 原版画面构图待 runtime 实录 · status: record-only · tools: hsltools/checks/source_map_binding.py, hsltools/data/big_map_flow.py · updated: 2026-09-23
 
-回答用户 2026-09-23 的问题：“大地图上是会有对话发生的……不知道我们有没有这些东西。”本包只盘点**原版数据里**在大地图（level 49）上发生的对白／走位／演出，并逐条对照重制现在的处理。原版画面长什么样（城镇窗、对白板、状态栏的构图）见[原版大地图与城镇画面实录](../runtime_observations/original_world_town/README.md)（runtime-measured，lane R5-L6）。
+起因：实玩反馈——大地图上会有对话发生，重制是否已有这些内容（复述）。本包只盘点**原版数据里**在大地图（level 49）上发生的对白／走位／演出，并逐条对照重制现在的处理。原版画面长什么样（城镇窗、对白板、状态栏的构图）见[原版大地图与城镇画面实录](../runtime_observations/original_world_town/README.md)（runtime-measured，lane R5-L6）。
 
 ## 结论
 

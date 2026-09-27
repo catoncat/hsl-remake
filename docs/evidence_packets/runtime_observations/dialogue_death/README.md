@@ -1,8 +1,8 @@
 # 对白与阵亡演出：原版三路测量与重制落地（lane R6-P1）
 
-> evidence: runtime-measured: 用户 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）按源帧率量的像素轨迹与音轨互相关; static-derived: 死亡入口姿势 0x446c40 状态 6、遗言选句 0x43ef91..0x43efcb 的 r2 读法; resource-derived: SHAPEDEF hit 帧、dead0003.wav; provisional: 说话人／目标／行动者高亮的颜色与脉动只来自这一份录屏 · status: live · functions: 0x43ef91, 0x446c40, 0x458c10 · tools: hsl_video_events.py, run_combat_aftermath_tests.gd · updated: 2026-09-24
+> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）按源帧率量的像素轨迹与音轨互相关; static-derived: 死亡入口姿势 0x446c40 状态 6、遗言选句 0x43ef91..0x43efcb 的 r2 读法; resource-derived: SHAPEDEF hit 帧、dead0003.wav; provisional: 说话人／目标／行动者高亮的颜色与脉动只来自这一份录屏 · status: live · functions: 0x43ef91, 0x446c40, 0x458c10 · tools: hsl_video_events.py, run_combat_aftermath_tests.gd · updated: 2026-09-24
 
-起因：R6-V2 录屏对账漏掉了用户确认的"灵魂飞升"与"咻"声（Gemini 把它说成"闪烁后消失"，声音未进流程）。本包对每个效果先量原版三路（像素／声音／资源或静态），再写重制前后。Gemini（agy）本轮不可用（`FAILED_PRECONDITION: User location is not supported`），本包没有任何模型命名，全部是量值。
+起因：R6-V2 录屏对账漏掉了原版知情者确认（user-confirmed）的"灵魂飞升"与"咻"声（Gemini 把它说成"闪烁后消失"，声音未进流程）。本包对每个效果先量原版三路（像素／声音／资源或静态），再写重制前后。Gemini（agy）本轮不可用（`FAILED_PRECONDITION: User location is not supported`），本包没有任何模型命名，全部是量值。
 
 ## 方法
 
@@ -69,7 +69,7 @@ R7-DLG 起节奏改按静态读法（[对白框包](../../static_reverse/origina
 
 ## 6. 仍未做／边界
 
-- 对白框"说话人靠下时放到顶部"保持重制现状（待用户决定）。
+- 对白框"说话人靠下时放到顶部"保持重制现状，待定（产品决定）。
 - 原版 `hit` 帧在阵亡以外也用：法术通道等 `0x407230` 受击态 60 tick（[地图普攻与受击包](../../static_reverse/original_map_strike.md)），重制由 `MapHitState` 接上。
 - 两个跳过条件：no_showshape 由 `ActorRuntime.hide_shape` 常隐精灵满足；已在受击态时重制的 hit 帧已在身上。
 - 灵魂时长保留静态读出的 16 tick（0.256 s）；录屏量到 0.27–0.32 s。

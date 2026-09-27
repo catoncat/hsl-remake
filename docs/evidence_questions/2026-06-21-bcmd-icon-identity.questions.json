@@ -3,7 +3,7 @@
   "title": "BCMD 图标中文标签纠错",
   "project": "hsl-fork",
   "created_at": "2026-06-21T00:00:00+08:00",
-  "purpose": "用一张带中文猜测标签的总览图复核 BCMD01..15 的命令身份。用户只需要指出哪里错了或补充不确定项，不需要从零映射。",
+  "purpose": "用一张带中文猜测标签的总览图复核 BCMD01..15 的命令身份。原版知情者只需要指出哪里错了或补充不确定项，不需要从零映射。",
   "evidence_checked": [
     "content/imported/hsl/chapter01/shape_preview_index.json",
     "content/imported/hsl/chapter01/ui_preview_index.json",
@@ -20,7 +20,7 @@
       "why_it_matters": "当前 Godot 已能显示 BCMD 图标，但命令身份仍是占位。这里由 Agent 先给一版中文猜测，用户只纠错；不确定项后续再靠静态 handler 或小样本验证。",
       "evidence": [
         {
-          "label": "BCMD01..15 contact sheet with agent guesses; BCMD10/11/12 have identical file hashes and user said they should be special-tech related",
+          "label": "BCMD01..15 contact sheet with agent guesses; BCMD10/11/12 have identical file hashes and the original-game informant marks them as special-tech related",
           "source": "docs/evidence_questions/2026-06-21-bcmd-icon-contact-sheet.png",
           "tier": "static-derived + user-hypothesis"
         }

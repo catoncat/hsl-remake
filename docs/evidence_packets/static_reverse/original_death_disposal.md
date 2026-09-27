@@ -2,7 +2,7 @@
 
 > evidence: static-derived: the dead branches of the battle-actor processes read from hsl01.exe, including when a corpse's map-cell bits are cleared relative to the next actor after attack and counter kills, and the double queue step when the current actor dies; runtime-measured: 505 s1 queue trace; provisional: the 0x2c000000 draw mode's blend · status: live · functions: 0x4072b0, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407720, 0x407800, 0x409700, 0x40ba20, 0x411b90, 0x43bf30, 0x43ede0, 0x441594, 0x442720, 0x442a90, 0x446c40 · tools: run_actor_traversal_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-27
 
-lane R5-L2（2026-09-27）。起因：用户记忆"原版角色死了之后有一个类似灵魂飞出、飞起的演出……把人物拉高，向上下拉伸，然后透明化消失"（user-hypothesis，用户也说"影响不大"）。本包是一次有界静态读（r2 反汇编 `hsl01.exe`，SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`，未执行原程序），从 `BattleAftermath` 已注明的死亡分支（遗言读取点 `0x43ef91`／`0x4434b2`）往下读。录像侧：[原版画面参考](../runtime_observations/original_gameplay_reference/README.md) `12_leonard_normal_attack` 的击杀→遗言→KILL 帧未截到该段（用户确认），本包不依赖录像。
+lane R5-L2（2026-09-27）。起因：玩家记忆（user-hypothesis）——原版角色阵亡后有类似灵魂飞出的演出：人物被拉高、上下拉伸，然后透明化消失（影响不大）。本包是一次有界静态读（r2 反汇编 `hsl01.exe`，SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`，未执行原程序），从 `BattleAftermath` 已注明的死亡分支（遗言读取点 `0x43ef91`／`0x4434b2`）往下读。录像侧：[原版画面参考](../runtime_observations/original_gameplay_reference/README.md) `12_leonard_normal_attack` 的击杀→遗言→KILL 帧未截到该段（原版知情者确认），本包不依赖录像。
 
 ## 读法（static-derived）
 
@@ -18,7 +18,7 @@ lane R5-L2（2026-09-27）。起因：用户记忆"原版角色死了之后有�
 | 子状态 3 `0x43f13f` | `0x442720` 奖励浮字（EXP／KILL／$，见 [tick 计数](original_tick_counts.md)） |
 | 子状态 4 `0x43f190` | 移出队列、`0x45e3ed` 删除对象 |
 
-结论：遗言关闭后，死者以 16 tick（0.256 s，62.5 tick/s）从缩放 1.0 纵向拉到 5.0，同时层级 16→0 淡出，然后隐去——与用户记忆的"向上下拉伸、透明化消失"一致。缩放锚点是对象坐标，即 SHP 脚点（[演员绘制原点](actor_shp_draw_origin.md)），所以画面上是从脚下往上拉高。
+结论：遗言关闭后，死者以 16 tick（0.256 s，62.5 tick/s）从缩放 1.0 纵向拉到 5.0，同时层级 16→0 淡出，然后隐去——与上述玩家记忆（上下拉伸、透明化消失）一致。缩放锚点是对象坐标，即 SHP 脚点（[演员绘制原点](actor_shp_draw_origin.md)），所以画面上是从脚下往上拉高。
 
 ## 重制落地
 
@@ -26,7 +26,7 @@ lane R5-L2（2026-09-27）。起因：用户记忆"原版角色死了之后有�
 
 **provisional**：`0x2c000000` 含 `0x04000000`／`0x08000000`（`0x46b6b1` 表的饱和加法种类）与层级位，重制读作"加法混合、alpha＝层级／16"；该组合的像素例程未读。替换证据：`0x46b6b1` 对 `0x2c000000` 的像素种类静态读，或原作单帧对照。
 
-**死亡音时刻（lane R5-L7，2026-09-24 用户决定"照原版：遗言之后响"）**：`BattleAftermath._begin_disposal` 是进入 `fade` 阶段的唯一入口，遗言关闭（`advance_dialogue`）或没有遗言时死亡 job 一开始就进入，在那一刻发 `disposal_started(unit)`，`BattlePresentation._play_sound(unit, "dead")` 放该角色的死亡音——对应子状态 0 的 `0x409700`。所有死亡来源都走这一处；开发快进 `finish` 不补放。检查：`run_combat_aftermath_tests` 在 `lethal_case`（攻击／绝技 × 30／144 fps）、`map_magic`（fire／wind）、`multi_target`（逐个受害者）断言遗言期间零个死亡音播放器、确认后恰一个，`counter_defeat` 断言无遗言的 雷歐納德 在拉伸开始时即响。消融：把发信号挪回 job 开始 → 10 条失败。
+**死亡音时刻（lane R5-L7：照原版，遗言之后响）**：`BattleAftermath._begin_disposal` 是进入 `fade` 阶段的唯一入口，遗言关闭（`advance_dialogue`）或没有遗言时死亡 job 一开始就进入，在那一刻发 `disposal_started(unit)`，`BattlePresentation._play_sound(unit, "dead")` 放该角色的死亡音——对应子状态 0 的 `0x409700`。所有死亡来源都走这一处；开发快进 `finish` 不补放。检查：`run_combat_aftermath_tests` 在 `lethal_case`（攻击／绝技 × 30／144 fps）、`map_magic`（fire／wind）、`multi_target`（逐个受害者）断言遗言期间零个死亡音播放器、确认后恰一个，`counter_defeat` 断言无遗言的 雷歐納德 在拉伸开始时即响。消融：把发信号挪回 job 开始 → 10 条失败。
 
 ## 阵亡来源盘点
 

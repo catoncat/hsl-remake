@@ -1,8 +1,8 @@
 # 第一战（level 51 棄卒）AI 走位：原版录屏逐回合对照
 
-> evidence: runtime-measured: 用户 2026-09-24 原版录屏（34–513 s 第一战全程）逐帧读出的行动顺序、第 1–3 回合每个 AI 落点与行动、第 3 回合后行动清单; static-derived: 普通追击 0x440d5c → 0x4111a0 → 0x411080 → 0x413740 精化走法（lane R28 已读，本包接入）、0x407340／0x407660 速度排序与注册顺序、0x40d800 候选过滤、0x40d8b0／0x413390 攻击站位（lane R7-NPC）; provisional: 精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流 · status: live · functions: 0x407340, 0x407660, 0x40d800, 0x40d8b0, 0x40e870, 0x411080, 0x4111a0, 0x413390, 0x413740, 0x43ede0, 0x440d5c · tools: export_enemy_turns.gd, probe_battle051_ai_state.gd, run_ai_navigation_tests.gd, run_entry_growth_tests.gd, run_tests.gd, trace_battle051_ai.gd · updated: 2026-09-25
+> evidence: runtime-measured: 2026-09-24 原版录屏（34–513 s 第一战全程）逐帧读出的行动顺序、第 1–3 回合每个 AI 落点与行动、第 3 回合后行动清单; static-derived: 普通追击 0x440d5c → 0x4111a0 → 0x411080 → 0x413740 精化走法（lane R28 已读，本包接入）、0x407340／0x407660 速度排序与注册顺序、0x40d800 候选过滤、0x40d8b0／0x413390 攻击站位（lane R7-NPC）; provisional: 精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流 · status: live · functions: 0x407340, 0x407660, 0x40d800, 0x40d8b0, 0x40e870, 0x411080, 0x4111a0, 0x413390, 0x413740, 0x43ede0, 0x440d5c · tools: export_enemy_turns.gd, probe_battle051_ai_state.gd, run_ai_navigation_tests.gd, run_entry_growth_tests.gd, run_tests.gd, trace_battle051_ai.gd · updated: 2026-09-25
 
-用户原话「我发现第一关走位都不一样」。本包把原版录屏里第一战的 AI 行动逐个读出来，放进重制的同一局面里问重制 AI 会怎么走，按原因分类，并修掉查到原函数证据的一类。
+起因：实玩反馈——第一关重制的走位与原版不一样（复述）。本包把原版录屏里第一战的 AI 行动逐个读出来，放进重制的同一局面里问重制 AI 会怎么走，按原因分类，并修掉查到原函数证据的一类。
 
 ## 结论（人话）
 

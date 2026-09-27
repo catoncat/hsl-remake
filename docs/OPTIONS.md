@@ -1,6 +1,6 @@
 # 参数与选项系统
 
-> 状态：**现行**。2026-09-26 起草（lane OPTIONS-DESIGN），§5 三件事用户 09-26 按推荐拍板；底座与八张选项卡已实现（OPTIONS-B1、S1–S4，见 §9），注册表在 `content/authored/options/remake_options.json`。§5、§9 保留当时的设计与实施记录。文中 `id` 指 [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md) 的条目。
+> 状态：**现行**。2026-09-26 起草（lane OPTIONS-DESIGN）；底座与八张选项卡已实现（OPTIONS-B1、S1–S4，见 §9），注册表在 `content/authored/options/remake_options.json`。§5、§9 保留当时的设计与实施记录。文中 `id` 指 [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md) 的条目。
 
 一句话：玩家可以在"照原版"和"少量讲得清的改良"之间选；门禁和裁判永远只看原版。
 
@@ -49,14 +49,14 @@
 | OPT-RETRY ★ | 败北后重来 | 原版败北 → GAME OVER → 回标题，没有重新挑战 → GAME OVER 画面加「重新挑战本战」，用进入本战时的队伍重进 | 没存档就得从回憶錄重走；这相当于原版在首次行动时存一份戰場記錄，不给新能力 | 演出 | S | [原版胜负收尾](evidence_packets/static_reverse/original_battle_end_flow.md)、`game-over-screen`、RESULTPAGE `a6963e2c` |
 | OPT-CURSOR | 光标 | 原版红宝石权杖画进 640×480 画面，跟着窗口放大 → 用系统硬件光标显示同一支权杖（不放大、不晚一帧） | 软件画的光标比鼠标晚至少一帧，大窗口下权杖被放大发糊 | 外观 | S | [游戏光标](evidence_packets/runtime_observations/game_cursor/README.md)、`cursor-hide-item-icon`、CURSOR `84eb5465` |
 | OPT-FONT | 字体 | 原版 FONT.24／FONT.15 位图字 → 系统字 | 高分屏下系统字更清楚。**已接**（lane FONT）：读点 `OriginalBitmapFont.install`（自动加载 SimplifiedDisplay 启动时、重製選項页关闭且有值变了再读）换默认主题字体，新开的界面用新字体 | 外观 | S（字体导入本身 L，另算） | `bitmap-font` |
-| OPT-DEV | 开发开关（③层，不进设置页） | 保留环境变量和命令行：`HSL_RNG_SEED`、`HSL_AUTOPLAY_BRAIN`、`HSL_CUTIN_PLAYBACK_SPEED`、`--debug-hud`、`tests/diagnostics/export_enemy_turns.gd`；新增 `HSL_OPTIONS_PRESET` 供冒烟用；**P 停格／N 单步现在是常驻 autoload，谁都能按**：用户 09-24 为实玩验收要的，改成开发开关、由 `tools/play.sh` 默认打开 | 正式玩家不该误触调试功能，实玩验收照常可用 | — | S | `debug-pause` |
+| OPT-DEV | 开发开关（③层，不进设置页） | 保留环境变量和命令行：`HSL_RNG_SEED`、`HSL_AUTOPLAY_BRAIN`、`HSL_CUTIN_PLAYBACK_SPEED`、`--debug-hud`、`tests/diagnostics/export_enemy_turns.gd`；新增 `HSL_OPTIONS_PRESET` 供冒烟用；**P 停格／N 单步现在是常驻 autoload，谁都能按**：为实玩验收而设，改成开发开关、由 `tools/play.sh` 默认打开 | 正式玩家不该误触调试功能，实玩验收照常可用 | — | S | `debug-pause` |
 
 ## 4. 不做成选项的
 
 | 项 | 理由 |
 | --- | --- |
 | OPT-STAMINA 开场气力 | 不做成选项——原版规则已照做（STAMINA-RULE）：原版裁判实测首次登记取 PLAYERS 气力（第 51 关雷歐納德 20、雷特首次登记那场 8，其余 0），携带进关清 0，上一段脚本执行过 actKeepPlayerST 才保留余气；"每场从 0 开始"随之取消（[开场实测](evidence_packets/static_reverse/original_stamina.md#开场实测)） |
-| AI 集火／AI 难度 | 规则改动。目标定义是 AI「规则等价＋分布等价」（用户 09-25）；再开一档 AI 就是第二套规则，裁判管不到。自动对局胜率低是原版难度，不是回归（PROJECT 第八轮）。嫌难的玩家用 OPT-INFO／OPT-RETRY，不改规则 |
+| AI 集火／AI 难度 | 规则改动。目标定义是 AI「规则等价＋分布等价」；再开一档 AI 就是第二套规则，裁判管不到。自动对局胜率低是原版难度，不是回归（PROJECT 第八轮）。嫌难的玩家用 OPT-INFO／OPT-RETRY，不改规则 |
 | 伤害／经验／金钱倍率、敌人等级 | 平衡滑杆，非目标 |
 | 战斗结果页 | 原版没有（RESULTPAGE 已删）；战绩页不帮玩家做任何决定，真正有用的"重来"由 OPT-RETRY 提供 |
 | 胜负条件板自动淡出 | 只省开场一次按键，不值得一个开关；`--script` 驱动用的自动淡出接缝保留在开发层（`winfail-board-dissolve`） |
@@ -68,12 +68,10 @@
 | 重制自有界面与流程的文字 | 面板说明、续玩提示、预览关结束卡、学技提示、Home 回中：原版没有对应的东西可切换，保留（`panel-captions`、`campaign-flow-extras`、`title-flow-extras`、`opening-end-card`、`learning-notice`、`home-recenter`） |
 | 玩家技能脚印的洋红样式、悬停身份栏规则 | 原版画法／规则还没读完，先查（`footprint-preview-style`、`hover-strip-rule`） |
 
-## 5. 需要用户拍板的三件事
+## 5. 三件已定的事
 
-（已拍板：用户 2026-09-26 三件都按推荐。）
-
-1. **默认改成原版后，下面这些今天默认开着的重制行为会默认关掉**（选「舒适」一键找回）：飘字里的状态说明字（UI6 暂留的那部分）、行动环说明、移动路径与费用栏、待機／再次行動提示、法术命中血条、对白擦出中按键立即整屏、剧情走位快进、一次升多级合成一个窗。推荐：同意，理由是和"默认原版"一致；差异清单对应条目随之改为已做（原版成为默认），改良记为 OPT-XXX。
-2. **开场气力**：已决，不做成选项。原版裁判实测后（STAMINA-MEASURE）负责人按"查清原版就照原版"定为直接照原版（STAMINA-RULE，见 §4），规则类选项与 B2 底座因此暂无用户。
+1. **默认改成原版**：下面这些今天默认开着的重制行为默认关掉（选「舒适」一键找回）：飘字里的状态说明字（UI6 暂留的那部分）、行动环说明、移动路径与费用栏、待機／再次行動提示、法术命中血条、对白擦出中按键立即整屏、剧情走位快进、一次升多级合成一个窗；差异清单对应条目随之改为已做（原版成为默认），改良记为 OPT-XXX。
+2. **开场气力**：不做成选项，原版裁判实测（STAMINA-MEASURE）后直接照原版（STAMINA-RULE，见 §4），规则类选项与 B2 底座因此暂无用户。
 3. **预设名**：第一章叫「原版」「舒适」「自定」；续集里同一个默认预设显示为「作者默认」（见 §8）。
 
 ## 6. 存档与承接口径
@@ -98,16 +96,15 @@ campaign.json 可选两个键：`option_defaults`（这个战役默认预设的�
 
 | 步 | 内容 | 量 | 前置 |
 | --- | --- | --- | --- |
-| 0 | 用户拍板 §5 三件事 | — | — |
-| B1 底座（**已做**，lane OPTIONS-B1） | 选项注册表（卡片字段即数据：id、层级、影响层、取值、原版值、舒适值、读点）和取值顺序；`GameSettings` 加 `preset`／`presentation`；campaign.json `option_defaults`／`option_hidden` 读取；设置页：原版 設定選項 窗保持原样，旁边加「重製選項」入口进二级页（三个预设钮＋每项一行说明与层级标记，布局是重制设计）；`HSL_OPTIONS_PRESET` 开发缝＋快门舒适冒烟；P／N 停格改为开发开关（`tools/play.sh` 默认开）。**落地**：注册表 [`content/authored/options/remake_options.json`](../content/authored/options/remake_options.json)（八张演出／外观卡，`read_points` 全空；`page` 块是设置页版面，改数据即可调）；取值与读点接口 [`GameOptions`](../game/settings/GameOptions.gd)（`value(id)`／`is_original(id)`）；设置页入口＝设定选项窗下一条「重製選項 ›」（键盘从 音樂音量 再按下），二级页 [`RemakeOptionsPage`](../game/settings/RemakeOptionsPage.gd)；另有 Tab 入口（用户 09-26，lane OPTIONS-HOTKEY）：任何画面按 Tab 开关同一页，开着时整棵树暂停（自动加载 [`RemakeOptionsHotkey`](../game/settings/RemakeOptionsHotkey.gd)），关页且值变了通知场景重读（OPT-TREASURE 当场重画宝箱）；规则分组本期不放（开场气力改为照原版实现，不做成选项）；停格开关 `HSL_DEBUG_PAUSE`（不设时无窗口开、有窗口关）；快门接入舒适冒烟由负责人做 | M（1 条 lane） | 0 |
+| B1 底座（**已做**，lane OPTIONS-B1） | 选项注册表（卡片字段即数据：id、层级、影响层、取值、原版值、舒适值、读点）和取值顺序；`GameSettings` 加 `preset`／`presentation`；campaign.json `option_defaults`／`option_hidden` 读取；设置页：原版 設定選項 窗保持原样，旁边加「重製選項」入口进二级页（三个预设钮＋每项一行说明与层级标记，布局是重制设计）；`HSL_OPTIONS_PRESET` 开发缝＋快门舒适冒烟；P／N 停格改为开发开关（`tools/play.sh` 默认开）。**落地**：注册表 [`content/authored/options/remake_options.json`](../content/authored/options/remake_options.json)（八张演出／外观卡，`read_points` 全空；`page` 块是设置页版面，改数据即可调）；取值与读点接口 [`GameOptions`](../game/settings/GameOptions.gd)（`value(id)`／`is_original(id)`）；设置页入口＝设定选项窗下一条「重製選項 ›」（键盘从 音樂音量 再按下），二级页 [`RemakeOptionsPage`](../game/settings/RemakeOptionsPage.gd)；另有 Tab 入口（lane OPTIONS-HOTKEY）：任何画面按 Tab 开关同一页，开着时整棵树暂停（自动加载 [`RemakeOptionsHotkey`](../game/settings/RemakeOptionsHotkey.gd)），关页且值变了通知场景重读（OPT-TREASURE 当场重画宝箱）；规则分组本期不放（开场气力改为照原版实现，不做成选项）；停格开关 `HSL_DEBUG_PAUSE`（不设时无窗口开、有窗口关）；快门接入舒适冒烟由负责人做 | M（1 条 lane） | — |
 | S1（**已做**，负责人直接接在合并树，2026-09-26） | OPT-TREASURE：HIDDENCHEST 合并后原版＝隐藏；读点 `BattleSceneRuntime._ready` 设 `treasure_view.reveal_all_chests = not GameOptions.is_original("OPT-TREASURE")`，全部畫出＝画闭箱＋悬停提示＋确认音。原版预设第 1 关隐藏宝箱不画、踩上响发现音；两边领到的东西相同 | S | B1、HIDDENCHEST |
 | S2（**已做**，lane OPTIONS-S2） | OPT-INFO：从 UI6 `ea45f5b4` 之前取回头顶命中率／击数和飘字附加词，敌人面板在读已知字节处加"公开"分支。验收：原版预设无头顶行、未交手敌人 ???；舒适预设都可见。**落地**：读点见注册表 `read_points`（选格画面进入时、每一击、每次命中、状态页打开、回合末回执各读一次）；原版分支即现行代码、逐字不变；特写结果行的说明字由表现层在切入层之上另立一行，不改 `BattleCombatCutin`。**法术受者血条不归本卡**：原录像 V08 frame_041（原版帧见私有档案：`runtime_observations/original_gameplay_reference/14_tactical_map_magic_aoe/frame_041.png`） 原版就在受者旁画 HP 24/43、MP 0/0 两条再出数字 19，血条是原版行为（只有 0.45 s 是重制估值），两边都保留；`magic-impact-bar` 条目「原版直接出数字」与此冲突，待更正 | S–M | B1 |
-| B2 规则底座 | 只在第一条规则类选项获批时做：`rule_options` 只读键、摘要并入、战斗存档明文副本与读档先建局、进度记录／回憶錄携带、设置页锁定；加 §7 那一个用例 | M | 0 第 2 项获批 |
+| B2 规则底座 | 只在第一条规则类选项获批时做：`rule_options` 只读键、摘要并入、战斗存档明文副本与读档先建局、进度记录／回憶錄携带、设置页锁定；加 §7 那一个用例 | M | 规则类选项获批 |
 | S3a（**已做**，lane OPTIONS-S3） | OPT-GROWTH：读点 `BattleGrowthPanel.show_unit`（升級窗每次打开读一次，含状态页「成長點」重开）设 `postpone_allowed`；原版分支即 GROWTHWIN 现行代码（右键／Esc 被吞、点满才出 OK）；合成一窗，可暫緩 时恢复 GROWTHWIN 之前的写法：右键／Esc 关窗、点数留着，状态页「成長點」随时再分，读档后／下一场首个安静时刻再弹。一次升多级：原版分支每级一个窗（GROWTHWIN2 照原版，`growth-point-reserve`），合成一窗 分支一个窗给全部点数，最终属性相同 | S | B1 |
 | S3b（**已做**，lane OPTIONS-S3） | OPT-RETRY：读点 `GameOverScreen._ready`（GAME OVER 画面建好时读一次）设 `retry_offered`；原版分支即 RESULTPAGE 现行代码（任意键或 160 tick 淡出回标题）；可重新挑戰本戰 时画面下方加「重新挑戰本戰／回到標題」两行（上下键／Enter／鼠标），不自动离开；重新挑战把进入本战的交接 `CampaignProgress.last_entry`（戰場記錄读档去掉 `load_checkpoint`，从本战开头打）重设为 pending 再进战斗场景——与 RESULTPAGE 之前「重新挑戰」的 reload 同一条重进路径，开场演出照放 | S | B1 |
 | S3c（**已做**，lane OPTIONS-S3） | OPT-CURSOR：读点 `GameCursor._read_cursor_option`（自动加载启动时读一次；重製選項页关闭且有值变了经 `remake_options_changed` 再读）设 `hardware`；原版分支即 CURSOR 现行代码（权杖画进 640×480 画面随窗口放大）；系統硬體游標 时不画进画面、系统指针常显，`Input.set_custom_mouse_cursor` 用同一张 CURSOR01..10 图与热点（原尺寸、不晚一帧，翅膀随原版 6 tick 一帧照转）。舒适预设不开它（注册表 comfort_value＝原版） | S | B1 |
 | S4a（**已做**，lane OPTIONS-S4） | OPT-GUIDE：读点见注册表 `read_points`（行动环每次打开、进入移动选格、建场景／关页、每个 AI 行动、每次第二次行动各读一次）。原版分支：行动环只画图标、移动选格只画范围与选格、撤离格只有剧本插入的 obj_Story_Show_Pos、AI 待机与再次行动无提示不停顿；**注意**这几项在本卡之前是默认开着的重制写法（§5 第 1 项预告的"默认关掉"），UI6／ESCAPEMARK 只去掉了飘字附加词与常驻金格。提示 分支恢复：图标下说明字（悬停放大后仍在图标下方）、路径线与「移動 3 / 5」费用栏及可通過／無法到達说明、撤离格常驻金格（ESCAPEMARK 644178ea 之前）、「待機」「守候」「麻痺」与「再次行動」各停 0.55 s | M | B1 |
-| S4b（**已做**，lane OPTIONS-S4） | OPT-PACE：先查清「預備動作」＝原版 設定選項 第二行开关（[0x477c14] bit1，默认开），只管施法／绝技攻方的起手动作（m_action／s_action），关掉时起手不播、普攻不受影响——它不跳过切入，所以"跳过切入"仍是本卡的改良，照原版实现 預備動作 另起一项（原版层 設定選項，不是选项卡；[查证](evidence_packets/runtime_observations/system_menu/README.md#預備動作0x477c14-bit1)）。读点见注册表 `read_points`：切入每次交锋第一段入队、地图起手与法术血条每次 begin、对白外每次确认各读一次。原版分支：切入与地图演出原速（× 1.0，逐字即现行代码）、对白外确认不快进走位（**注意**：快进在本卡之前默认开着）；快：切入与地图演出 2 倍、确认快进走位；極快：地图 2 倍、切入层不上画面按 16 倍跑完（信号与数字照序），直接看到地图结果数字。**未接**：对白擦出／上卷中不收确认（`dialogue-timing` 负责人 09-25 批准保留即时确认、不改所有对白宿主，且 37 处测试直接调用翻页），三档现在都即时整屏，卡上说明已不再声称原版值不收确认 | M | B1 |
+| S4b（**已做**，lane OPTIONS-S4） | OPT-PACE：先查清「預備動作」＝原版 設定選項 第二行开关（[0x477c14] bit1，默认开），只管施法／绝技攻方的起手动作（m_action／s_action），关掉时起手不播、普攻不受影响——它不跳过切入，所以"跳过切入"仍是本卡的改良，照原版实现 預備動作 另起一项（原版层 設定選項，不是选项卡；[查证](evidence_packets/runtime_observations/system_menu/README.md#預備動作0x477c14-bit1)）。读点见注册表 `read_points`：切入每次交锋第一段入队、地图起手与法术血条每次 begin、对白外每次确认各读一次。原版分支：切入与地图演出原速（× 1.0，逐字即现行代码）、对白外确认不快进走位（**注意**：快进在本卡之前默认开着）；快：切入与地图演出 2 倍、确认快进走位；極快：地图 2 倍、切入层不上画面按 16 倍跑完（信号与数字照序），直接看到地图结果数字。**未接**：对白擦出／上卷中不收确认（`dialogue-timing` 已定保留即时确认、不改所有对白宿主，且 37 处测试直接调用翻页），三档现在都即时整屏，卡上说明已不再声称原版值不收确认 | M | B1 |
 | 后续 | 預備動作 照原版实现（設定選項 第二行加旋钮，关时 BattleCombatCutin 跳过 cast_lead 起手）、OPT-FONT（**已做**，lane FONT） | S | — |
 
 顺序：B1 → S1＋S2（一条 lane 合做，先打演出类的通路）→ 其余演出类 → B2（仅在有规则类选项获批时；OPT-STAMINA 已照原版，不再排队）。首批合计约 4–5 条 lane；规则类通路没有用户就不先建。

@@ -2,7 +2,7 @@
 
 > evidence: resource-derived: objcomd.txt／OBJCOMD.H／global.obs／effects.txt／PROCESS.DEF from hsl.pak; static-derived: object-process handlers read from hsl01.exe; provisional: rows marked provisional · status: live · functions: 0x4038a0, 0x4051d0, 0x406d20, 0x406eb0, 0x409610, 0x409760, 0x409790, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x42c180 · tools: hsltools/assets/skill_effects.py, hsltools/data/first_skill.py, hsltools/data/special_effect_scripts.py, run_skill_effect_script_tests.gd · updated: 2026-09-27
 
-lane R5-L2（2026-09-27）。起因：用户实玩报"氣刃斬 打到敌人身上原版有一个音效，现在最后这一个音效没了"（开头那声有）。本包回答"原版在命中那一刻播的声音从哪里来"，并按类盘点全部绝技／法术同一来源的声音。r2 反汇编阅读 `hsl01.exe`（SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`），未执行原程序；raw 反汇编只在 `ignored/`。
+lane R5-L2（2026-09-27）。起因：实玩反馈——氣刃斬 打到敌人身上时原版的最后一声音效在重制里没了，开头那声有（复述）。本包回答"原版在命中那一刻播的声音从哪里来"，并按类盘点全部绝技／法术同一来源的声音。r2 反汇编阅读 `hsl01.exe`（SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`），未执行原程序；raw 反汇编只在 `ignored/`。
 
 ## 1. 根因
 

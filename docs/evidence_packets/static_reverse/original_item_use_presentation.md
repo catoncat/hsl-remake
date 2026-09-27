@@ -2,7 +2,7 @@
 
 > evidence: static-derived; resource-derived; provisional: 0x401390 发射器（气力／永久／临时加成三类效果的画面）未读，重制只按它们的等待时长；0x43b3f0 小条的 cur/max 文字（位 0x100，0x411d70）未画；AI 引导的射程格按"自身格＋四邻无敌对占位"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x408b20, 0x408df0, 0x409e40, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x444ab2, 0x444ac9, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-27
 
-lane ITEMFX（2026-09-27）。用户实玩线索："敌人或 AI 吃药、给队友吃药，动作几乎看不清就完成了；缺一个像攻击一样的移动光标，有时不知道给谁吃的。"本包只记原版事实：r2 静态读 `hsl01.exe`（SHA-256 `f0b5f835…70f7`），对象定义读原 PAK `obj-051.obs`，过程号读 `PROCESS.DEF`（`defProcShowMagicStar = 27` → 过程表 `0x477c2c` 第 27 项 `0x408df0`）。没有运行原游戏；原版录屏参考里没有 AI 用药段。前序规则（谁用、给谁、消耗）见[物品命令包](original_item_actions.md#用药目标范围满值使用与一次消耗)，姿势见[地图姿势包 §1](../runtime_observations/map_pose_floaters/README.md#1-use_magic-姿势0x4071e0)。
+lane ITEMFX（2026-09-27）。起因：实玩反馈——敌人或 AI 用药（含给队友用药）动作几乎看不清就完成，缺少像攻击那样的移动光标，有时看不出用在谁身上（复述）。本包只记原版事实：r2 静态读 `hsl01.exe`（SHA-256 `f0b5f835…70f7`），对象定义读原 PAK `obj-051.obs`，过程号读 `PROCESS.DEF`（`defProcShowMagicStar = 27` → 过程表 `0x477c2c` 第 27 项 `0x408df0`）。没有运行原游戏；原版录屏参考里没有 AI 用药段。前序规则（谁用、给谁、消耗）见[物品命令包](original_item_actions.md#用药目标范围满值使用与一次消耗)，姿势见[地图姿势包 §1](../runtime_observations/map_pose_floaters/README.md#1-use_magic-姿势0x4071e0)。
 
 ## 1. AI 用药的状态序列
 

@@ -1,6 +1,6 @@
 # First-control formation and queue input order
 
-> evidence: resource-derived; static-derived: 0x407660 注册槽与 0x407340 收集顺序; runtime-measured: 用户 2026-09-24 第一战录屏行动顺序 · status: live · functions: 0x407287, 0x407340, 0x407660 · tools: hsltools/checks/registration_order.py, hsltools/data/first_battle_formation.py, run_tests.gd · updated: 2026-09-25
+> evidence: resource-derived; static-derived: 0x407660 注册槽与 0x407340 收集顺序; runtime-measured: 2026-09-24 第一战录屏行动顺序 · status: live · functions: 0x407287, 0x407340, 0x407660 · tools: hsltools/checks/registration_order.py, hsltools/data/first_battle_formation.py, run_tests.gd · updated: 2026-09-25
 
 2026-09-05；2026-09-25 lane R7-NPC 取代同速次序一节；同日 lane SLOTORDER 把首版与更正矛盾的段落标为作废。
 
