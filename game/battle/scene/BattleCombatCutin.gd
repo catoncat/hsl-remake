@@ -330,7 +330,7 @@ func cast_lead(clip: Dictionary, channel: String = "special") -> Dictionary:
 			var textures: Array = []
 			for frame in strip:
 				textures.append(load(frame["res_path"]))
-			cast_leads[key] = AnimalCastLead.compile(program, AnimalCastLead.panel_metrics(strip, textures), mirrored)
+			cast_leads[key] = AnimalCastLead.compile(program, AnimalCastLead.panel_metrics(strip, textures), mirrored, channel == "magic")
 			cast_leads[key]["row"] = row
 			cast_leads[key]["strip"] = strip
 		return cast_leads[key]
@@ -345,7 +345,9 @@ func cast_lead(clip: Dictionary, channel: String = "special") -> Dictionary:
 ## their own opaque sprites (mode 0), each afterimage a copy at level／16 (engMIX: src ×
 ## level/16 + dst × (16 − level)/16). Order as the buckets give it: banner afterimage
 ## (planeEffect2) < banner (0x32) < inset, portrait (0x33, submitted by the process in the first
-## pass) < inset afterimages (0x33, object 179 submitted in the second pass of 0x45f5f7).
+## pass) < inset afterimages (0x33, object 179 submitted in the second pass of 0x45f5f7). Sub-state
+## 4's centred glow (`glow`, 0x403052) is the opening ball at AnimalCastLead.GLOW_ZOOM added at
+## level／16, submitted after the panels in the same bucket.
 func show_cast_lead(clip: Dictionary, lead: Dictionary, tick: float) -> void:
 	var states: Array = lead["states"]
 	var state: Dictionary = states[clampi(int(tick), 0, states.size() - 1)]
@@ -389,6 +391,13 @@ func show_cast_lead(clip: Dictionary, lead: Dictionary, tick: float) -> void:
 			_apply_source_frame(sprite, strip[panel])
 			sprite.position = Vector2(state[entry[1] + "_anchor"])
 			sprite.modulate = Color(1, 1, 1, faded)
+	var glow := int(state.get("glow", 0))
+	if glow > 0:
+		opening_ball.material = opening_add_material
+		opening_ball.scale = Vector2.ONE * AnimalCastLead.GLOW_ZOOM
+		var level := float(glow) / AnimalCastLead.LEVELS
+		opening_ball.modulate = Color(level, level, level, 1)
+		opening_ball.show()
 
 
 ## The `index`-th afterimage sprite, created on first use (show_cast_lead places it).

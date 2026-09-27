@@ -14,8 +14,8 @@
     },
     "layout_timing_modules": 52,
     "items_by_original_status": {
-      "read_complete": 16,
-      "read_partial": 55,
+      "read_complete": 17,
+      "read_partial": 54,
       "unread": 7,
       "no_original_code": 17
     },
@@ -2209,6 +2209,33 @@
       ]
     },
     {
+      "id": "cast-lead-phase",
+      "difference": "施法引导子状态 5 那 1 call 没单独留（效果早 1 tick 起），子状态 6 在效果结束后 8 call 的阴影淡出未播，无引导的法术仍用 0.2 暗层",
+      "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_cast_overlays.md",
+        "docs/evidence_packets/static_reverse/original_tick_counts.md"
+      ],
+      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；有引导的法术效果期间黑层 8/16",
+      "remake_code": [
+        "game/battle/scene/AnimalCastLead.gd",
+        "game/battle/scene/BattleCombatCutin.gd",
+        "game/battle/scene/SkillEffectScriptPlayer.gd"
+      ],
+      "original_status": "read_complete",
+      "visibility": "invisible",
+      "effort": "S",
+      "category": "特写与施法演出",
+      "sources": [
+        "provenance:game/battle/scene/AnimalCastLead.gd|timing|provisional|",
+        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#1151c8fef7",
+        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9",
+        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#5f27f2029e",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#73a76a3778"
+      ]
+    },
+    {
       "id": "cam-random-scroll",
       "difference": "STORY037 的 actScrollBGToRandomPos（随机镜头位置）未读",
       "original": "语料里只出现 1 次，handler 未读",
@@ -2297,30 +2324,6 @@
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f2b15754a0",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f854695a12",
         "sentence:docs/evidence_packets/static_reverse/original_extra_action.md#dd086872a0"
-      ]
-    },
-    {
-      "id": "cast-lead-phase",
-      "difference": "施法对象 phase 102 子状态 4 的淡入／停留节拍只读了轮廓，重制淡入＋停留后就结束",
-      "original": "phase 102 子状态 4 与外部释放 0x4c1408 只读轮廓",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md"
-      ],
-      "remake": "AnimalCastLead 固定淡入＋停留",
-      "remake_code": [
-        "game/battle/scene/AnimalCastLead.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "invisible",
-      "effort": "S",
-      "category": "特写与施法演出",
-      "sources": [
-        "provenance:game/battle/scene/AnimalCastLead.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#1151c8fef7",
-        "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#370142d9d9",
-        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#5f27f2029e",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#73a76a3778"
       ]
     },
     {

@@ -23,9 +23,7 @@ extends RefCounted
 ##   timing: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md (預備動作 off)
 ##   timing: resource-derived content/generated/hsl/animation/animal_programs.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
-##   timing: provisional
-##     (phase 102 sub-state 4 ends on 0x4c1408: a 絶技 enters phase 103, a spell plays the crossfade —
-##     the remake ends after 16＋10 calls; ±1 call where the afterimage order differs)
+##   timing: provisional (±1 call where the afterimage order differs)
 const CommandPresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
 ## The same spelling as the importer's cast-program validation (combat_animation.CAST_OPCODES).
 const CAST_OPCODES := ["aniSetXYDisp", "aniShadowBG", "aniMoveToCenter", "aniInsertCastObject"]
@@ -50,9 +48,21 @@ const SCREEN_WIDTH := 640
 ## 0x402517／0x402e30: the last portrait frame holds delay2 + 20.
 const LAST_PORTRAIT_BONUS := 20
 ## 0x402e49 (+0x84 counts to 16; mode 0, the panels stay opaque — 0x402e55) and
-## 0x402d3a／0x402ef5 (+0xa0 = 10).
+## 0x402d3a／0x402ef5 (+0xa0 = 10 calls counted down, then the 11th call reads 0x4c1408 at
+## 0x402f0b: a 絶技 leaves for phase 103 after it, a spell steps +0x84 to 17).
 const FADE_CALLS := 16
-const HOLD_CALLS := 10
+const HOLD_CALLS := 11
+## A spell's crossfade tail (0x402f5e): mode 0x20000000 at level +0x28 (16 from 0x402d44);
+## 0x4c6f70 = 0x20002 (0x402d4b) takes one level and steps +0x84 every 2 calls, so +0x84
+## 17..31 hold 2 calls each at level 33 − +0x84 (16 → 2) and +0x84 = 32 draws level 1 in
+## the one call that enters sub-state 5 (0x402fac: pose 0x4071e0, Cast_Star 0x408b20, sfx
+## 0x193) — the lead ends there and the spell is released.
+const TAIL_CALLS := 31
+## 0x403052: every sub-state-4 call also draws the object's own shape +0x86 (BALL001) at the
+## screen centre, bucket 0x33, mode 0x2c000000 (level-scaled saturating add, zoom — 0x46b6b1
+## kind 9, T[level] on the source at 0x4623e1), zoom 0x48000 on both axes, level = +0x84
+## (0..16) — 32 − +0x84 in the tail (15 → 0).
+const GLOW_ZOOM := 4.5
 ## 0x401220 → object 179 at level 6 (+0x28); defProcShadowLeft (0x4010c0) takes one level
 ## every 4 calls (+0x90 = 0x40004) and destroys the copy at level 0.
 const AFTERIMAGE_LEVEL := 6
@@ -65,6 +75,8 @@ const LEVELS := 16.0
 ## bursting Cast_Star on the 9th call; a 絶技 (kind 2) waits sub-states 8／9 (0x403199／
 ## 0x4031c7): the setup call, the 16-count and the 10-call hold, then releases phase 103.
 const SKIPPED_MAGIC_CALLS := 8
+## Sub-state 9 draws the same centred glow (0x403245／0x403484) and reads 0x4c1408 on its
+## 11th call at +0x84 = 16 (0x403201).
 const SKIPPED_SPECIAL_CALLS := 1 + FADE_CALLS + HOLD_CALLS
 
 
@@ -87,7 +99,8 @@ static func skipped(magic: bool) -> Dictionary:
 		# 0x4030f7); the dispatcher passes the word read before the call, so the shadow shows
 		# from the next call at level min(call + 1, 8).
 		var shadow := mini(call + 1, SHADOW_MAX_LEVEL) if magic and call > 0 else 0
-		states.append({"banner": CENTRE, "hidden": true, "mirrored": false, "shadow": shadow, "inset": -1, "inset_anchor": Vector2i.ZERO, "portrait": -1, "portrait_anchor": Vector2i.ZERO, "fade": 0.0, "afterimages": []})
+		var glow := 0 if magic or call == 0 else mini(call - 1, FADE_CALLS)
+		states.append({"banner": CENTRE, "hidden": true, "mirrored": false, "shadow": shadow, "inset": -1, "inset_anchor": Vector2i.ZERO, "portrait": -1, "portrait_anchor": Vector2i.ZERO, "fade": 0.0, "glow": glow, "afterimages": []})
 	return {"states": states, "complete_tick": states.size(), "strip": []}
 
 
@@ -111,15 +124,17 @@ static func playable(program: Array, panel_count: int) -> bool:
 ## One state per dispatcher call. Keys: `banner` (anchor of panel 0, the caster object),
 ## `mirrored` (the caster object's x zoom is −1), `shadow` (the shadow level 0..8 of 16 over
 ## the map from aniShadowBG on), `inset`／`portrait` (panel index or −1) with
-## `inset_anchor`／`portrait_anchor`, `fade` (0: sub-state 4's 16 calls draw
-## the panels at mode 0) and `afterimages`
+## `inset_anchor`／`portrait_anchor`, `fade` (1 − level／16 of the panels' crossfade: 0 through
+## sub-state 4's opaque calls, rising in a spell's tail), `glow` (the centred BALL001 add
+## level 0..16, sub-state 4 only) and `afterimages`
 ## ([{panel, anchor, level, mirrored}], level 6 → 1). Anchors are the screen positions of each
 ## panel's SHP draw origin. `complete_tick` is the number of states; the attack script follows.
 ## `mirrored` is the caster's side-swap flag (unit `side_swapped`): 0x401ddf sets the object's
-## x zoom to −1 and aniSetXYDisp (0x4021b8) negates its x displacement.
-static func compile(program: Array, panels: Array, mirrored: bool = false) -> Dictionary:
+## x zoom to −1 and aniSetXYDisp (0x4021b8) negates its x displacement. `magic` (kind 1, an
+## m_action lead) adds the crossfade tail after the hold; a 絶技 (kind 2) ends on the 11th.
+static func compile(program: Array, panels: Array, mirrored: bool = false, magic: bool = false) -> Dictionary:
 	var states: Array = []
-	var state := {"banner": CENTRE, "mirrored": mirrored, "shadow": 0, "inset": -1, "inset_anchor": Vector2i.ZERO, "portrait": -1, "portrait_anchor": Vector2i.ZERO, "fade": 0.0, "ghosts": []}
+	var state := {"banner": CENTRE, "mirrored": mirrored, "shadow": 0, "inset": -1, "inset_anchor": Vector2i.ZERO, "portrait": -1, "portrait_anchor": Vector2i.ZERO, "fade": 0.0, "glow": 0, "ghosts": []}
 	var offset := Vector2i.ZERO
 	for instruction in program:
 		var args: Array = instruction["args"]
@@ -145,14 +160,14 @@ static func compile(program: Array, panels: Array, mirrored: bool = false) -> Di
 					state["banner"] = CommandPresentationRules.opening_step(state["banner"], CENTRE, SLIDE_TOLERANCE, SLIDE_STEP)
 					_emit(states, state, 1)
 			"aniInsertCastObject":
-				_cast_object(states, state, panels, int(args[0]) < 0, int(args[2]), int(args[3]), int(args[4]))
+				_cast_object(states, state, panels, int(args[0]) < 0, int(args[2]), int(args[3]), int(args[4]), magic)
 	return {"states": states, "complete_tick": states.size()}
 
 
 ## aniInsertCastObject [xdisp][ydisp][shp1 disp][delay1][delay2] → phase 102 (0x4024d3): only
 ## the sign of xdisp is read (0x4025bc, the near corner's side); the start panel, delay1 and
 ## delay2 drive the sub-states below.
-static func _cast_object(states: Array, state: Dictionary, panels: Array, from_left: bool, first_inset: int, inset_delay: int, portrait_delay: int) -> void:
+static func _cast_object(states: Array, state: Dictionary, panels: Array, from_left: bool, first_inset: int, inset_delay: int, portrait_delay: int, magic: bool) -> void:
 	# The setup call.
 	_emit(states, state, 1)
 	# Sub-state 0 (0x402a5c): the first inset slides from off-screen to the near corner's
@@ -185,10 +200,21 @@ static func _cast_object(states: Array, state: Dictionary, panels: Array, from_l
 	for panel in range(1, first_inset):
 		state["portrait"] = panel
 		_emit(states, state, portrait_delay + (LAST_PORTRAIT_BONUS if first_inset - panel <= 1 else 0))
-	# Sub-state 4 (0x402e47): 16 calls at mode 0 (both panels opaque, 0x402e55), then a
-	# 10-call hold before the object reads 0x4c1408 (the remake completes here — the
-	# kind-1 crossfade tail 0x402f5e is not played, provisional).
-	_emit(states, state, FADE_CALLS + HOLD_CALLS)
+	# Sub-state 4 (0x402e47): 16 calls at mode 0 (both panels opaque, 0x402e55) with the
+	# centred glow at level +0x84, then 10 calls and the 11th that reads 0x4c1408 at 16.
+	for call in range(FADE_CALLS):
+		state["glow"] = call
+		_emit(states, state, 1)
+	state["glow"] = FADE_CALLS
+	_emit(states, state, HOLD_CALLS)
+	if not magic:
+		return
+	# A spell's tail: the panels crossfade out (level 16 → 1) as the glow fades (15 → 0).
+	for call in range(TAIL_CALLS):
+		var step := 17 + int(call / 2)
+		state["fade"] = 1.0 - float(33 - step) / LEVELS
+		state["glow"] = 32 - step
+		_emit(states, state, 1)
 
 
 static func _slide(states: Array, state: Dictionary, key: String, target: Vector2i) -> void:

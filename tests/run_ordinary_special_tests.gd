@@ -249,7 +249,7 @@ func presentation() -> void:
 	special_view.released.connect(func(_s,_a,_d,_c):events.append("release"))
 	special_view.impact.connect(func(_s,_a,_d,_c):events.append("impact"))
 	special_view.play(special_receipt,BattlePlayLoop.unit(special_loop,"leonard"),BattlePlayLoop.unit(special_loop,"enemy021_1"),false)
-	# 雷歐納德's ANIMAL s_action cast lead (139 ticks, AnimalCastLead) precedes the script.
+	# 雷歐納德's ANIMAL s_action cast lead (140 ticks, AnimalCastLead) precedes the script.
 	var lead_seconds: float = special_view.OriginalTick.seconds(float(special_view.cast_lead(special_view.clips[0])["complete_tick"]))
 	special_view._process(lead_seconds + 2.0)
 	# 氣刃斬 plays its specCode01／02 script (SkillEffectScriptPlayer): its WAV\SP01-001.WAV is

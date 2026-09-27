@@ -32,6 +32,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##   layout: resource-derived content/imported/hsl/global/tables/effects.h
 ##   layout: resource-derived content/imported/hsl/shared/mage_magic/manifest.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
+##   layout: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md#施法引导的合成
 ##   layout: provisional
 ##     (ANIMAL random／angle／round／tornado geometry, off-stage flights, static hold of the objects effect_motion.json
 ##     lists unrestored, eff_proc_Global at screen centre — manifest policy)
@@ -64,6 +65,7 @@ const SCRIPTS_PATH := "res://content/generated/hsl/skills/special_effect_scripts
 const AUTHORED_SCRIPTS_PATH := "res://content/generated/hsl/skills/authored_effect_scripts.json"
 const CASTING_PATH := ContentPaths.MAGE_MAGIC
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const AnimalCastLead = preload("res://game/battle/scene/AnimalCastLead.gd")
 const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
@@ -670,6 +672,12 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 		for index in range(6, sprites.size()):
 			sprites[index].hide()
 		return false
+	# After the lead the attacker object stays: sub-state 5 (0x403089) hands the flow back
+	# (parent +0x8c++) and hides itself, sub-state 6 (0x4030b7) keeps its shadow at +0x90 = 8
+	# while the effect phase holds [0x4c1b00] & 0x1000000, so the map stays at level 8／16.
+	if not lead.is_empty():
+		host.background.visible = true
+		host.background.color = Color(0, 0, 0, float(AnimalCastLead.SHADOW_MAX_LEVEL) / AnimalCastLead.LEVELS)
 	var seconds: float = (elapsed - lead_in) / Timing.PLAYBACK_SPEED
 	var scale: float = Timing.PLAYBACK_SPEED / TICKS_PER_SECOND
 	var complete := mark(host, clip, elapsed, {"release": lead_in,

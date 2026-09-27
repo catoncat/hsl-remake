@@ -501,7 +501,7 @@ func skill_effect_contracts() -> void:
 			var result_shown := false
 			var lead_shot := true
 			var timeline: Dictionary = {}
-			# 001's s_action cast lead (139 ticks: banner over the shadowed map, insets, portrait)
+			# 001's s_action cast lead (140 ticks: banner over the shadowed map, insets, portrait)
 			# precedes the attack script; it replaces the 30-tick stand-in of an empty attack script.
 			var lead: Dictionary = cutin.cast_lead(cutin.clips[0])
 			var lead_ticks := int(lead["complete_tick"])
@@ -516,7 +516,7 @@ func skill_effect_contracts() -> void:
 				if tick > int(timeline["result_tick"]) and cutin.result.visible and cutin.result.position.y == 264 and RuntimeReadback.result_text(cutin) == ("9" if hit else BattleCombatCutin.MISS_TEXT): result_shown = true
 				if cutin.skill_effects.sprites.any(func(sprite): return sprite.visible): objects_seen = true
 			var expected_frames: int = cutin.skill_effects.clip_complete_tick(timeline, cutin.result_spawns(strike)) + lead_ticks - (int(cutin.skill_effects.EMPTY_ATTACK_LEAD_TICKS) if bool(timeline["empty_attack"]) else 0)
-			check(lead_ticks == 139 and lead_shot, "%s hit=%s opens with 001's 139-tick cast lead: banner P001_201 over the map shot, no backdrop or vitals (%s)" % [skill_id, str(hit), str(lead_shot)])
+			check(lead_ticks == 140 and lead_shot, "%s hit=%s opens with 001's 140-tick cast lead: banner P001_201 over the map shot, no backdrop or vitals (%s)" % [skill_id, str(hit), str(lead_shot)])
 			check(not cutin.busy() and frames < 2000 and absi(frames - expected_frames - 1) <= 1, "%s hit=%s completes at its cast lead + clip_complete_tick, ±1 frame of float accumulation (frames=%d expected=%d)" % [skill_id, str(hit), frames, expected_frames])
 			check(events == ["release", "impact"], "%s hit=%s fires one release then one impact (%s)" % [skill_id, str(hit), str(events)])
 			check(objects_seen and untitled_before_result and result_shown, "%s hit=%s draws script objects, shows no name caption before the result, then the result line: the number／MISS alone, no skill-name head (UI6) (%s %s %s)" % [skill_id, str(hit), str(objects_seen), str(untitled_before_result), str(result_shown)])

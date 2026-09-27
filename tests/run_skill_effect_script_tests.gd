@@ -705,7 +705,7 @@ func cast_lead_program() -> void:
 		portrait_hold += portrait_delay + (AnimalCastLead.LAST_PORTRAIT_BONUS if first_inset - panel <= 1 else 0)
 	var expected_total := (1 + AnimalCastLead.SHADOW_BG_CALLS) + (1 + move_calls) + 1 + inset_calls + inset_count * inset_delay + portrait_calls + portrait_hold + AnimalCastLead.FADE_CALLS + AnimalCastLead.HOLD_CALLS
 	_assert_eq(int(lead["complete_tick"]), expected_total, "the lead's call count is the sum the program's numbers give (%d)" % expected_total)
-	_assert_eq(int(lead["complete_tick"]), 139, "雷歐納德's 氣刃斬 lead is 139 ticks")
+	_assert_eq(int(lead["complete_tick"]), 140, "雷歐納德's 氣刃斬 lead is 140 ticks (the 11th hold call reads 0x4c1408, 0x402f0b)")
 	# Phase by phase.
 	for call in range(1 + AnimalCastLead.SHADOW_BG_CALLS):
 		# 0x4035ef: the shadow level is min(+0x90, 8), from the call after aniShadowBG (0x402499).
@@ -730,7 +730,7 @@ func cast_lead_program() -> void:
 	_assert_eq(states[at + portrait_hold - 1]["fade"], 0.0, "the portrait holds delay2 + 20 = %d calls before sub-state 4" % portrait_hold)
 	# 0x402e55: sub-state 4's 16 calls draw both panels at mode 0 (opaque), not a crossfade.
 	_assert_eq(states[at + portrait_hold + AnimalCastLead.FADE_CALLS - 1]["fade"], 0.0, "the panels stay opaque through the 16 calls")
-	_assert_eq(states.size() - (at + portrait_hold + AnimalCastLead.FADE_CALLS), AnimalCastLead.HOLD_CALLS, "then the 10-call hold ends the lead")
+	_assert_eq(states.size() - (at + portrait_hold + AnimalCastLead.FADE_CALLS), AnimalCastLead.HOLD_CALLS, "then 10 calls and the 11th that reads 0x4c1408 end a 絶技 lead")
 	# The special presenter plays the lead first, then the attack script: 氣刃斬's 60-tick
 	# attack script releases at lead + 60.
 	var release_marks: Array[int] = []
@@ -757,7 +757,7 @@ func cast_lead_program() -> void:
 
 ## The expected call count of a cast lead from the program's numbers and the handler
 ## constants (the same sum cast_lead_program checks phase by phase for 雷歐納德).
-func expected_lead_calls(program: Array, panels: Array) -> int:
+func expected_lead_calls(program: Array, panels: Array, magic: bool = false) -> int:
 	var cast_object: Dictionary = program.filter(func(i): return str(i["op"]) == "aniInsertCastObject")[0]
 	var first_inset := int(cast_object["args"][2])
 	var displacement := Vector2i(int(program[0]["args"][0]), int(program[0]["args"][1]))
@@ -770,7 +770,7 @@ func expected_lead_calls(program: Array, panels: Array) -> int:
 	var portrait_hold := 0
 	for panel in range(1, first_inset):
 		portrait_hold += int(cast_object["args"][4]) + (AnimalCastLead.LAST_PORTRAIT_BONUS if first_inset - panel <= 1 else 0)
-	return (1 + AnimalCastLead.SHADOW_BG_CALLS) + (1 + move_calls) + 1 + inset_calls + (panels.size() - first_inset) * int(cast_object["args"][3]) + portrait_calls + portrait_hold + AnimalCastLead.FADE_CALLS + AnimalCastLead.HOLD_CALLS
+	return (1 + AnimalCastLead.SHADOW_BG_CALLS) + (1 + move_calls) + 1 + inset_calls + (panels.size() - first_inset) * int(cast_object["args"][3]) + portrait_calls + portrait_hold + AnimalCastLead.FADE_CALLS + AnimalCastLead.HOLD_CALLS + (AnimalCastLead.TAIL_CALLS if magic else 0)
 
 
 ## The magic cast lead: 緹娜's m_action (SID_PLAYER1: aniSetXYDisp −640,0 · aniShadowBG ·
@@ -796,9 +796,9 @@ func magic_cast_lead_program() -> void:
 	var lead: Dictionary = cutin.cast_lead(cutin.clips[0], "magic")
 	_assert_true(not lead.is_empty() and cutin.cast_lead(cutin.clips[0]).is_empty(), "002 has a magic lead and no special lead (its s_shape strip is not imported)")
 	var panels: Array = AnimalCastLead.panel_metrics(actor["magic_frames"], actor["magic_frames"].map(func(frame): return load(frame["res_path"])))
-	var expected_total := expected_lead_calls(program, panels)
+	var expected_total := expected_lead_calls(program, panels, true)
 	_assert_eq(int(lead["complete_tick"]), expected_total, "the magic lead's call count is the sum the program's numbers give (%d)" % expected_total)
-	_assert_eq(expected_lead_calls(record("SID_PLAYER0")["programs"]["s_action"], AnimalCastLead.panel_metrics(cutin.manifest["actors"]["001"]["special_frames"], cutin.manifest["actors"]["001"]["special_frames"].map(func(frame): return load(frame["res_path"])))), 139, "the same sum gives 雷歐納德's 139")
+	_assert_eq(expected_lead_calls(record("SID_PLAYER0")["programs"]["s_action"], AnimalCastLead.panel_metrics(cutin.manifest["actors"]["001"]["special_frames"], cutin.manifest["actors"]["001"]["special_frames"].map(func(frame): return load(frame["res_path"])))), 140, "the same sum gives 雷歐納德's 140")
 	var cast_object: Dictionary = program.filter(func(i): return str(i["op"]) == "aniInsertCastObject")[0]
 	var first_inset := int(cast_object["args"][2])
 	var release_marks: Array[int] = []
@@ -936,7 +936,7 @@ func cast_lead_afterimages_and_mirror() -> void:
 			_assert_true(states[expiry + 1]["afterimages"].any(func(ghost): return int(ghost["panel"]) == first_inset + index) and int(states[expiry + 1]["inset"]) == first_inset + index + 1, "the next panel shows over the fading copy")
 		else:
 			_assert_true(ghosts.is_empty(), "the last inset panel leaves no afterimage")
-	_assert_eq(int(plain["complete_tick"]), 139, "the afterimages do not change the 139-call lead")
+	_assert_eq(int(plain["complete_tick"]), 140, "the afterimages do not change the 140-call lead")
 	# The mirror: same length, banner from the right, drawn flipped.
 	var mirrored: Dictionary = AnimalCastLead.compile(program, panels, true)
 	_assert_eq(int(mirrored["complete_tick"]), int(plain["complete_tick"]), "a mirrored lead takes the same calls")

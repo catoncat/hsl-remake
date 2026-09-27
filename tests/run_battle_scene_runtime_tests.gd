@@ -1044,7 +1044,7 @@ func _test_special_skill() -> void:
 	var cutin = scene.get_node("BattlePresentation").cutin
 	cutin.set_process(false)
 	cutin.play(fired["last_attack"], player, scene.BattlePlayLoop.unit(fired, target_id), false)
-	# 雷歐納德's ANIMAL s_action cast lead (139 ticks, AnimalCastLead: banner over the shadowed
+	# 雷歐納德's ANIMAL s_action cast lead (140 ticks, AnimalCastLead: banner over the shadowed
 	# map, insets, portrait) plays first; then 氣刃斬's own specCode01／02 scripts
 	# (SkillEffectScriptPlayer, 62.5 ticks/s): the blade object flies during the 60-tick caster
 	# shot, the hit lands on aniProcessHitMiss at script tick 90 and the clip completes at

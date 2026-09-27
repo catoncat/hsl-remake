@@ -14,8 +14,8 @@
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 16 |
-| 读了一部分 | 55 |
+| 已读完只差照做 | 17 |
+| 读了一部分 | 54 |
 | 未读 | 7 |
 | 原版无对应代码 | 17 |
 
@@ -124,7 +124,7 @@
 | `effect-motion` | 13 个法术效果对象（9 个 effProc 程序）仍是静帧＋淡出；有原生轨迹的 131 个对象里，随机程序每法术只回放一个样本（同类对象火花方向相同），画到 hsl.pak 缺失的帧时按系列循环 | effProc* 程序已逐 tick 原指令执行（131／144 对象、73＋2／84 程序）；剩余卡在运行时合成形状 0x460541、自绘 0x4607f9、屏幕波纹 0x46164b、镜头跟随 0x43bf30<br>[original_effect_motion.md](../../../docs/evidence_packets/static_reverse/original_effect_motion.md) | EffectObjectMotion 回放原生轨迹；未复原对象走 SkillEffectScriptPlayer 的静帧＋最短 48 tick＋24 tick 淡出<br>[EffectObjectMotion.gd](../../../game/battle/scene/EffectObjectMotion.gd)、[SkillEffectScriptPlayer.gd](../../../game/battle/scene/SkillEffectScriptPlayer.gd) | 读了一部分 | 部分关卡 | M | provenance 3、sentence 7、scope 3、matrix 1 |
 | `closeup-composition` | 特写窗口的缩放、受击帧绑定、缩放段隐藏身份栏是读法；身份栏底板在缩放段是否已画未读 | 原版在叠层切换时生成条文字，底板自身绘制未读<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | BattleCombatCutin 的构图<br>[BattleCombatCutin.gd](../../../game/battle/scene/BattleCombatCutin.gd) `_show_shot` | 读了一部分 | 少见 | S | provenance 1、sentence 1 |
 | `missing-clip-fallback` | 缺切入素材的合成切入借用氣刃斬演出（兜底） | 原版每个角色有自己的 ANIMAL 程序<br>[animal_program_execution.md](../../../docs/evidence_packets/static_reverse/animal_program_execution.md) | BattleCombatCutin 借用氣刃斬<br>[BattleCombatCutin.gd](../../../game/battle/scene/BattleCombatCutin.gd) `_process_borrowed_skill` | 读了一部分 | 少见 | S | provenance 1 |
-| `cast-lead-phase` | 施法对象 phase 102 子状态 4 的淡入／停留节拍只读了轮廓，重制淡入＋停留后就结束 | phase 102 子状态 4 与外部释放 0x4c1408 只读轮廓<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | AnimalCastLead 固定淡入＋停留<br>[AnimalCastLead.gd](../../../game/battle/scene/AnimalCastLead.gd) | 读了一部分 | 看不见 | S | provenance 1、sentence 5 |
+| `cast-lead-phase` | 施法引导子状态 5 那 1 call 没单独留（效果早 1 tick 起），子状态 6 在效果结束后 8 call 的阴影淡出未播，无引导的法术仍用 0.2 暗层 | phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读<br>[original_cast_overlays.md](../../../docs/evidence_packets/static_reverse/original_cast_overlays.md)、[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；有引导的法术效果期间黑层 8/16<br>[AnimalCastLead.gd](../../../game/battle/scene/AnimalCastLead.gd)、[BattleCombatCutin.gd](../../../game/battle/scene/BattleCombatCutin.gd)、[SkillEffectScriptPlayer.gd](../../../game/battle/scene/SkillEffectScriptPlayer.gd) | 已读完只差照做 | 看不见 | S | provenance 1、sentence 5 |
 | `closeup-object-timing` | 特写里攻守对象的部分子状态与结束后的屏幕过渡长度未读，时长是估值（RECOVERY provisional） | 守方 0x4038a0 已读；攻方子状态 5–9 与屏幕过渡 0x46098f／0x460989 未读<br>[animal_program_execution.md](../../../docs/evidence_packets/static_reverse/animal_program_execution.md)、[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | CombatPresentationTiming 的 RECOVERY 估值<br>[CombatPresentationTiming.gd](../../../game/battle/runtime/CombatPresentationTiming.gd) | 读了一部分 | 看不见 | S | sentence 7 |
 | `attack-flash-hold` | 切入攻击白闪停 0.12 s 是估值，defProcAttackFlash 与击中闪光对象寿命未读 | defProcAttackFlash、0x401310 寿命未读<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | BattleCombatCutin 固定 0.12 s<br>[BattleCombatCutin.gd](../../../game/battle/scene/BattleCombatCutin.gd) | 未读 | 看不见 | S | provenance 1、sentence 2 |
 
