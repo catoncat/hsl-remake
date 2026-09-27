@@ -2,16 +2,22 @@ extends Control
 ## One modal stack: item commands -> inventory -> recipient/confirmation.
 ## Draft selection is presentation-only; all item mutations return to PlayLoop.
 ## provenance:
+##   rules: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
+##     (the use target is a map cell pick, not a window: the page gives way, BattleSceneMenus draws the range)
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#07
 ##     (item sub-menu, target selection)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/game_cursor/README.md
 ##     (the picked item's icon rides the pointer while its use target is chosen)
-##   layout: remake-invented (scrollable target list, recipient／preview rows)
+##   layout: remake-invented (give recipient page, scrollable lists, preview rows)
 ##   strings: resource-derived content/generated/hsl/equipment/items.json
 ##   strings: resource-derived content/imported/hsl/chapter01/consumables.json
 ##   strings: remake-invented (captions and refusals)
 signal use_requested(item_code: String, target_id: String)
+## The use target pick (page "target"): started, every pointer move／left press on the map, left.
+signal use_pick_started
+signal use_pick_pointer(viewport_position: Vector2, confirm: bool)
+signal use_pick_ended
 signal give_started
 signal give_requested(target_id: String, index: int, code: int, target_index: int, return_code: int, revision: int)
 signal give_finished(revision: int)
@@ -26,6 +32,7 @@ const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const BattleGiveView = preload("res://game/battle/scene/BattleGiveView.gd")
+const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 var rows: VBoxContainer
 var menu: Control
 var page_root: Control
@@ -47,8 +54,9 @@ var give_revision := -1
 var give_target_id := ""
 var give_target_index := -1
 var give_return_code := 0
-## The item picked for use rides the pointer while its target is chosen (held_icon; see _show_targets).
+## The item picked for use rides the pointer while its target is chosen (held_icon; see _show_use_pick).
 var held_icon: TextureRect
+var picking := false
 
 
 func _ready() -> void:
@@ -64,6 +72,7 @@ func _ready() -> void:
 	menu.command_selected.connect(func(command):
 		if command == "give": give_started.emit()
 		else: _show_list(command))
+	visibility_changed.connect(func(): if not visible: _end_pick())
 	hide()
 
 
@@ -83,6 +92,7 @@ func show_inventory(unit: Dictionary, definitions: Dictionary, recipients: Array
 
 
 func _clear_page() -> void:
+	_end_pick()
 	for child in page_root.get_children():
 		page_root.remove_child(child)
 		child.queue_free()
@@ -182,7 +192,9 @@ func _select_item(code: String, index: int = -1) -> void:
 	selected_index = index if index >= 0 else source_unit["inventory"].find(int(code))
 	if operation == "drop":
 		_show_drop_confirmation()
-	elif operation in ["use", "give"]:
+	elif operation == "use":
+		_show_use_pick()
+	elif operation == "give":
 		_show_targets()
 	elif operation == "equip":
 		var kind := int(EquipmentCatalog.items()[code]["type_code"])
@@ -194,13 +206,13 @@ func _select_item(code: String, index: int = -1) -> void:
 
 func _show_targets() -> void:
 	_clear_page()
-	page = "give_target" if operation == "give" else "target"
+	page = "give_target"
 	var vitals := BattleVitals.new()
 	vitals.position = Vector2(0, 322)
 	page_root.add_child(vitals)
 	vitals.hide()
 	for target in targets:
-		if operation == "give" and target["id"] == source_unit["id"]:
+		if target["id"] == source_unit["id"]:
 			continue
 		var point: Vector2 = target.get("screen_position", anchor)
 		var button := Button.new()
@@ -214,31 +226,39 @@ func _show_targets() -> void:
 			style.border_color = Color.YELLOW if state in ["hover", "pressed"] else Color(0.1, 0.25, 1.0)
 			style.set_border_width_all(2)
 			button.add_theme_stylebox_override(state, style)
-		if operation == "use":
-			var effect := ItemUseRules.prepare(target, items.get(selected_item, {}), true)
-			button.disabled = not effect["ok"]
-			button.tooltip_text += "：" + preload("res://game/battle/scene/BattleItemText.gd").preview(effect,items.get(selected_item,{}))
 		button.mouse_entered.connect(func(): vitals.show_unit(target); vitals.show())
 		button.mouse_exited.connect(vitals.hide)
-		button.pressed.connect(func():
-			if operation == "use": use_requested.emit(selected_item, str(target["id"]))
-			else: _select_give_target(str(target["id"])))
+		button.pressed.connect(_select_give_target.bind(str(target["id"])))
 		page_root.add_child(button)
 		target_buttons[str(target["id"])] = button
-	if operation == "use":
-		_hold_selected_item()
 	if target_buttons.is_empty():
 		var hint := BattleUISkin.label(page_root, Vector2(172, 412), 17)
 		hint.text = "附近沒有可交換的同伴"
-	if operation == "give":
-		BattleUISkin.button(page_root, "結束給予", Vector2(474, 438), Vector2(148, 34)).pressed.connect(cancel)
+	BattleUISkin.button(page_root, "結束給予", Vector2(474, 438), Vector2(148, 34)).pressed.connect(cancel)
 
 
 ## Original: picking the item in the use window moves it into the held slot [0x4c1ce4]
-## (0x439997 -> 0x437020); through target choice 0x430410 -> 0x430310 draws that item's icon at
-## the mouse and no sceptre, until 0x444aba (used) or 0x444a81 (cancel returns it) clears the slot.
-## The icon lives on the target page, so leaving the page drops it; GameCursor hides the sceptre
-## while it shows (HELD_GROUP).
+## (0x439997 -> 0x437020) and the window closes; state 104 (0x4448f4) marks the range and state
+## 105 (0x44492a..) is a map cell pick, with 0x430410 -> 0x430310 drawing the held item's icon
+## at the mouse and no sceptre. The page slides out as on close and only the icon stays;
+## BattleSceneMenus draws the range, cursor and hover strip and confirms the cell (use_pick_*).
+func _show_use_pick() -> void:
+	BattlePanelMotion.attach(self).slide_out()
+	_clear_page()
+	page = "target"
+	picking = true
+	_hold_selected_item()
+	use_pick_started.emit()
+
+
+func _end_pick() -> void:
+	if picking:
+		picking = false
+		use_pick_ended.emit()
+
+
+## The icon lives on the pick page, so leaving the page drops it (0x444aba clears the slot the
+## tick after the confirm, 0x444a81 on cancel); GameCursor hides the sceptre while it shows.
 func _hold_selected_item() -> void:
 	var icon := str(EquipmentCatalog.items().get(selected_item, {}).get("icon", ""))
 	if icon == "":
@@ -521,8 +541,15 @@ func _preview_equipment_effects(proposed: Dictionary, catalog: Dictionary, previ
 
 
 ## Modal input while the stack is up: right click / Esc step back one page (`cancel`)
-## (BattleSceneRuntime.modal_panels dispatch); every other event is swallowed.
+## (BattleSceneRuntime.modal_panels dispatch); during the use pick pointer moves and left
+## presses go to use_pick_pointer; every other event is swallowed.
 func handle_input(event: InputEvent) -> bool:
+	if picking and event is InputEventMouseMotion:
+		use_pick_pointer.emit(event.position, false)
+	elif picking and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		use_pick_pointer.emit(event.position, true)
+		get_viewport().set_input_as_handled()
+		return true
 	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT) or (event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE):
 		cancel()
 		get_viewport().set_input_as_handled()
@@ -537,7 +564,11 @@ func cancel() -> void:
 		_show_targets()
 	elif page == "give_target":
 		give_finished.emit(give_revision)
-	elif page in ["target", "drop_confirm", "equip_confirm", "equipment_slot"]:
+	elif page == "target":
+		# 0x444a5c: right click returns the held item (0x436e30) and reopens the use window (state 102).
+		_show_list(operation)
+		BattlePanelMotion.attach(self).slide_in()
+	elif page in ["drop_confirm", "equip_confirm", "equipment_slot"]:
 		_show_list(operation)
 	elif page == "inventory":
 		_show_commands()

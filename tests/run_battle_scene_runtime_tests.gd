@@ -937,7 +937,7 @@ func _test_recovery_item() -> void:
 	_assert_true(potion.get_node("OriginalConsumable").texture.resource_path.ends_with("panels/itemIconUse.png"), "inventory retains original category artwork at native size")
 	potion.pressed.emit()
 	_assert_eq(scene.item_panel.page, "target", "item selection enters map recipient selection before spending it")
-	scene.item_panel.target_buttons["leonard"].pressed.emit()
+	scene.menus.use_inventory_item("241", "leonard")
 	_assert_true(scene.ui_audio.playing and scene.ui_audio.stream.resource_path.ends_with("interface_audio/use_item.wav"), "successful potion must play original item-use sound")
 	var player: Dictionary = scene.BattlePlayLoop.unit(scene.play_loop, "leonard")
 	_assert_eq(player["hp"], player["max_hp"], "recovery must cap at max HP")

@@ -8,6 +8,8 @@ extends RefCounted
 ## The available command set is still `BattlePlayLoop.IMPLEMENTED_COMMANDS`.
 ## provenance:
 ##   layout: remake-invented (panel draw order and menu anchoring rules)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
+##     (the item-use target map pick: move-palette range, cell cursor, hover strip, confirm／cancel)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
 ##   timing: provisional (that ordering is a static reading; a lost battle offers no window — the conservative choice)
 ##   timing: remake-invented
@@ -56,6 +58,9 @@ func build_panels() -> void:
 	runtime.party_equipment_screen.closed.connect(_on_party_equipment_closed)
 	runtime.add_child(runtime.party_equipment_screen)
 	runtime.item_panel.use_requested.connect(use_inventory_item)
+	runtime.item_panel.use_pick_started.connect(_begin_item_pick)
+	runtime.item_panel.use_pick_pointer.connect(_item_pick_pointer)
+	runtime.item_panel.use_pick_ended.connect(_end_item_pick)
 	runtime.item_panel.give_started.connect(_begin_give_session)
 	runtime.item_panel.give_requested.connect(_confirm_give)
 	runtime.item_panel.give_finished.connect(_finish_give_session)
@@ -271,6 +276,66 @@ func allocate_growth(unit_id: String, allocation: Dictionary) -> void:
 	rebuild_action_menu_buttons()
 
 
+## The use target is the original's map cell pick (state 104 0x4448f4 → 105 0x44492a):
+## 0x40f440(user, 1 (2 if large), mode 4) marks the range, drawn each tick in the move palette
+## (0x411200) with the cell cursor (0x430230); a unit under the pointer (cell word 0x70000, any
+## side, in range or not) opens its identity strip (0x436490／0x43b4e0 mode 3, 0x4449bb); a left
+## press confirms only on a marked cell (0x40f560) holding a player-side unit (0x411c40 & 0x10000)
+## that is not no_attack (0x446b00) — recovery_target_ids — otherwise nothing happens.
+var item_pick_cells: Array = []
+
+
+func _begin_item_pick() -> void:
+	var actor := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
+	item_pick_cells = preload("res://game/battle/scene/BattleItemUsePresentation.gd").use_cells(runtime.play_loop, actor, runtime.unit_grid_coord(runtime.selected_unit_id))
+	runtime.overlays.show_item_range(item_pick_cells)
+	_item_pick_hover(runtime.pointer_logical_position)
+
+
+func _item_pick_pointer(viewport_position: Vector2, confirm: bool) -> void:
+	var logical: Vector2 = runtime.viewport_to_logical_position(viewport_position)
+	if not confirm:
+		_item_pick_hover(logical)
+		return
+	var cell := _item_pick_cell(logical)
+	var unit_id: String = runtime.scene_input.unit_id_at_grid(cell)
+	if item_pick_cells.has(cell) and unit_id != "" and BattlePlayLoop.recovery_target_ids(runtime.play_loop).has(unit_id):
+		use_inventory_item(runtime.item_panel.selected_item, unit_id)
+
+
+## Per frame while the pick is up (BattlePresentation.refresh hides the cursor and strip each frame).
+func refresh_item_pick() -> void:
+	if runtime.item_panel.picking:
+		_item_pick_hover(runtime.pointer_logical_position)
+
+
+func _item_pick_cell(logical: Vector2) -> Vector2i:
+	return runtime.grid_at_logical_position(logical) if Rect2(Vector2.ZERO, Vector2(runtime.logical_viewport_size)).has_point(logical) else Interaction.NO_CELL
+
+
+func _item_pick_hover(logical: Vector2) -> void:
+	var view: Node = runtime.get_node("BattlePresentation")
+	var cell := _item_pick_cell(logical)
+	view.target_vitals.hide()
+	if cell == Interaction.NO_CELL:
+		view.selection_cursor.hide()
+		return
+	var center: Vector2 = runtime.grid_cell_center_to_logical_position(cell)
+	var size: Vector2 = runtime.grid_cell_size()
+	# 0x430230 is the cell cursor of every pick state; the remake's measured form is I_RECT01.
+	view.selection_cursor.present(Rect2(center - size / 2, size), "", item_pick_cells.has(cell), Rect2(), true)
+	view.preview_hovered_unit(runtime.play_loop, runtime.scene_input.unit_id_at_grid(cell))
+	view.target_vitals.position = Vector2(0, 8 if center.y >= 300 else 322)
+
+
+func _end_item_pick() -> void:
+	item_pick_cells = []
+	runtime.overlays.clear_item_range()
+	var view: Node = runtime.get_node("BattlePresentation")
+	view.selection_cursor.hide()
+	view.target_vitals.hide()
+
+
 func use_inventory_item(item_code: String, target_id: String) -> void:
 	if not runtime.item_panel.visible or runtime.item_panel.page != "target" or runtime.item_panel.operation != "use" or runtime.item_panel.selected_item != item_code:
 		return
@@ -280,9 +345,9 @@ func use_inventory_item(item_code: String, target_id: String) -> void:
 	runtime.apply_loop(next, "use_item")
 	var effect: Dictionary = runtime.play_loop[LoopKeys.LAST_ITEM_USE]
 	runtime.item_panel.hide()
-	# The target page is the original's map cell pick (0x444be4 → 0x44492a..0x4449b6), not a
-	# window: confirming goes straight to the use pose (state 0x69, 0x4449a7), so the target
-	# frames vanish in place — no close snapshot slides out (original_item_use_presentation.md).
+	# Confirming the cell goes straight to the use pose (0x4449a7) and the next tick clears the
+	# held item (0x444aba): the range, cursor, strip and icon vanish in place — the pick page's
+	# held icon must not leave a close snapshot sliding out (original_item_use_presentation.md).
 	BattlePanelMotion.attach(runtime.item_panel).finish()
 	runtime.present_item_effect(effect)
 	runtime.resume_turn_presentation()

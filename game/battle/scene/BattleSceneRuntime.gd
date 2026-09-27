@@ -285,6 +285,7 @@ func _process(delta: float) -> void:
 	if modal_open():
 		$BattlePresentation.status_label.hide()
 		$BattlePresentation.combat_label.hide()
+		menus.refresh_item_pick()
 	if finished:
 		overlays.set_move_overlay_visible(false)
 		if ai_playback_active:

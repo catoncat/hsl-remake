@@ -63,7 +63,7 @@ AI 用药：
 - `game/sim/InventoryRules.gd`：`discard_error`／`discard` 读 catalog important 布尔，缺记录或字段拒绝；provenance 头 `rules: static-derived docs/evidence_packets/static_reverse/original_item_actions.md`。
 - `game/sim/loop/BattleLoopInventory.gd` 的 `discard_item`：只提交库存，保留行动与可撤销移动；面板对重要物品置灰并说明，旧回调被版本检查拒绝。
 - `game/sim/ItemUseRules.gd`、`game/sim/ItemResolutionRules.gd`：用药目标与夹紧；`game/battle/scene/BattleItemText.gd` 浮 0。
-- 确认前不取物、取消保持原槽序、确认后直接关面板为重制交互（provisional；替换点是原暂持物 UI）。
+- 确认前不取物、取消保持原槽序为重制交互（provisional；替换点是原暂持物 UI）；用药选目标照原版地图选格（范围、合法格、悬停与取消见 [用药演出](original_item_use_presentation.md#证据)）。
 
 ## 复现
 

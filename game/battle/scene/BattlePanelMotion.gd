@@ -366,6 +366,16 @@ func _free_ghost() -> void:
 
 
 ## Explicit fast-forward (tests, restore): ends both motions and the shade fade at once.
+## A panel that stays up while its page gives way to a map pick (the item panel's use target):
+## the page leaves as on close (`slide_out`) and comes back as on open (`slide_in`).
+func slide_out() -> void:
+	_begin_close()
+
+
+func slide_in() -> void:
+	_begin_open()
+
+
 func finish() -> void:
 	_restore_parts()
 	_parts.clear()

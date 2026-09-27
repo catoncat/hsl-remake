@@ -92,6 +92,25 @@ func clear_ai_move_preview() -> void:
 		runtime.move_overlay.visible = false
 
 
+## The player's item-use range (0x4448f4 marks it, state 105 draws it with 0x411200, the move
+## palette) while the item panel's use pick is up.
+func show_item_range(cells: Array) -> void:
+	if runtime.move_overlay == null or runtime.map_config == null:
+		return
+	runtime.move_overlay.clear_all_cells()
+	footprint_cells = []
+	runtime.move_overlay.add_cells("ItemCell", _cell_rects(cells.filter(func(cell): return runtime.grid_coord_in_world(cell))), "move")
+	runtime.move_overlay.visible = true
+
+
+func clear_item_range() -> void:
+	if runtime.move_overlay == null:
+		return
+	runtime.move_overlay.clear_cells("ItemCell")
+	if runtime.move_overlay.get_child_count() == 0:
+		runtime.move_overlay.visible = false
+
+
 func set_move_overlay_visible(visible: bool) -> void:
 	if runtime.move_overlay != null:
 		if visible:
