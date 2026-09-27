@@ -12,11 +12,14 @@ Outputs (content/imported/hsl/global/world_map/):
   town_portraits.json  hsl_actor_portraits.v1-compatible {"actors": {"face_0062": {...}}}
                        so BattleDialogue.configure_portraits can load it directly;
                        PNGs under previews/faces/.
+  town_sounds.json     hsl_town_sounds.v1 — every WAV member a tePlaySound argument names
+                       (WAV\\WALK0016.WAV …), decoded from the PAK into town_sounds/*.wav, keyed by the
+                       argument text so the town screen plays what 0x455710 → 0x42c180 plays.
 Resource-derived text and pixels; which portrait the original shows for a player
 speaker is read from PLAYERS.TXT's picture column (its runtime lookup is not proven).
 
 Registry task town_assets (family assets): outputs town_messages / town_portraits /
-town_shop_items.json and previews/faces/ in content/imported/hsl/global/world_map/. Its check
+town_shop_items.json / town_sounds.json, previews/faces/ and town_sounds/ in content/imported/hsl/global/world_map/. Its check
 keeps the script's two modes: rebuild-and-compare when the original install is present
 (ctx.original_exe's directory), offline consistency otherwise. Bodies moved verbatim from the former hsl_town_assets.py (ROOT resolved from this file's depth).
 """
@@ -43,6 +46,9 @@ FACES_DIR = "previews/faces"
 MESSAGE_SCHEMA = "hsl_town_message_text.v1"
 PORTRAITS_SCHEMA = "hsl_actor_portraits.v1"
 PLAYERS_MEMBER = "@:\\data\\PLAYERS.TXT"
+SOUNDS_NAME = "town_sounds.json"
+SOUNDS_SCHEMA = "hsl_town_sounds.v1"
+SOUNDS_DIR = "town_sounds"
 FACE_RE = re.compile(r"^SHAPE\\FACE(\d{4})\.SHP$", re.IGNORECASE)
 
 
@@ -250,6 +256,63 @@ def build(pak_root: Path, output_dir: Path) -> tuple[dict[str, Any], dict[str, A
     return town_messages, town_portraits, previews, town_shop
 
 
+def sound_members(towndef: dict[str, Any]) -> list[str]:
+    found: set[str] = set()
+
+    def walk(node: Any) -> None:
+        if isinstance(node, dict):
+            if node.get("token") == "tePlaySound" and node.get("args"):
+                found.add(str(node["args"][0]))
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+
+    walk(towndef)
+    return sorted(found)
+
+
+def build_sounds(pak_root: Path, output_dir: Path) -> tuple[dict[str, Any], dict[str, bytes]]:
+    import tempfile
+
+    from hsltools.assets.actor_audio import profile
+    from hsltools.sources.pak import decoded_xor_a8_wave_bytes, parse_xor_a8_wave_candidate
+
+    towndef = json.loads((output_dir / "towndef.json").read_text(encoding="utf-8"))
+    reader = PakReader(pak_root)
+    sounds: dict[str, Any] = {}
+    files: dict[str, bytes] = {}
+    for member in sound_members(towndef):
+        raw = reader.read("@:\\" + member)
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source.wav"
+            source.write_bytes(raw)
+            candidate = parse_xor_a8_wave_candidate(source, 0, len(raw))
+            if candidate is None:
+                raise ValueError("unsupported sound format: " + member)
+            audio = decoded_xor_a8_wave_bytes(source, candidate)
+        rel = f"{SOUNDS_DIR}/{Path(member.replace(chr(92), '/')).stem.lower()}.wav"
+        files[rel] = audio
+        sounds[member] = {"res_path": f"res://content/imported/hsl/global/world_map/{rel}", "source_sha256": _sha(raw), "sha256": _sha(audio), "profile": profile(audio)}
+    manifest = {
+        "schema": SOUNDS_SCHEMA,
+        "evidence_tier": "resource-derived",
+        "source_policy": "tePlaySound (TOWNDEF opcode 28) arguments are WAV member paths; hsl01.exe 0x455710 passes the argument to 0x42c180, which loads (0x459a20) and plays it (0x45a390) at volume 255 without waiting. Members decoded from the original PAK.",
+        "sources": {"towndef_json": {"sha256": _sha((output_dir / "towndef.json").read_bytes())}},
+        "sounds": sounds,
+    }
+    return manifest, files
+
+
+def write_sounds(output_dir: Path, manifest: dict[str, Any], files: dict[str, bytes]) -> None:
+    (output_dir / SOUNDS_NAME).write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    for rel, audio in files.items():
+        target = output_dir / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(audio)
+
+
 def write_outputs(output_dir: Path, messages: dict[str, Any], portraits: dict[str, Any], previews: dict[str, bytes], shop: dict[str, Any]) -> None:
     (output_dir / MESSAGES_NAME).write_text(json.dumps(messages, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (output_dir / PORTRAITS_NAME).write_text(json.dumps(portraits, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -301,6 +364,18 @@ def check_offline(output_dir: Path) -> list[str]:
     for token, speaker in messages.get("speakers", {}).items():
         if speaker.get("portrait_key") and speaker["portrait_key"] not in portraits.get("actors", {}):
             issues.append(f"speaker {token} portrait {speaker['portrait_key']} missing")
+    try:
+        sounds = json.loads((output_dir / SOUNDS_NAME).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        return issues + [f"cannot read {SOUNDS_NAME}: {error}"]
+    if sounds.get("schema") != SOUNDS_SCHEMA:
+        issues.append("town_sounds schema mismatch")
+    if sorted(sounds.get("sounds", {})) != sound_members(towndef):
+        issues.append("town_sounds.json members differ from the tePlaySound arguments in towndef.json")
+    for member, entry in sounds.get("sounds", {}).items():
+        wav = output_dir / str(entry.get("res_path", "")).replace("res://content/imported/hsl/global/world_map/", "")
+        if not wav.is_file() or _sha(wav.read_bytes()) != entry.get("sha256"):
+            issues.append(f"town sound missing or sha mismatch: {member}")
     return issues
 
 
@@ -320,6 +395,13 @@ def check(output_dir: Path, pak_root: Path) -> int:
             target = output_dir / rel
             if not target.is_file() or target.read_bytes() != png:
                 issues.append(f"preview differs from a rebuild: {rel}")
+        sound_manifest, sound_files = build_sounds(pak_root, output_dir)
+        if json.loads((output_dir / SOUNDS_NAME).read_text(encoding="utf-8")) != sound_manifest:
+            issues.append("town_sounds.json differs from a rebuild")
+        for rel, audio in sound_files.items():
+            target = output_dir / rel
+            if not target.is_file() or target.read_bytes() != audio:
+                issues.append(f"town sound differs from a rebuild: {rel}")
         mode = "rebuild"
     else:
         mode = "offline"
@@ -337,8 +419,8 @@ class TownAssetsTask(ScriptCheckTask):
     family = 'assets'
     inputs = (ITEM_TXT.relative_to(ROOT).as_posix(), TYPE_H.relative_to(ROOT).as_posix(),
               (DEFAULT_OUTPUT_DIR / 'towndef.json').relative_to(ROOT).as_posix())
-    outputs = tuple((DEFAULT_OUTPUT_DIR / name).relative_to(ROOT).as_posix() for name in (MESSAGES_NAME, PORTRAITS_NAME, SHOP_ITEMS_NAME)) + (
-        (DEFAULT_OUTPUT_DIR / FACES_DIR).relative_to(ROOT).as_posix() + '/',)
+    outputs = tuple((DEFAULT_OUTPUT_DIR / name).relative_to(ROOT).as_posix() for name in (MESSAGES_NAME, PORTRAITS_NAME, SHOP_ITEMS_NAME, SOUNDS_NAME)) + (
+        (DEFAULT_OUTPUT_DIR / FACES_DIR).relative_to(ROOT).as_posix() + '/', (DEFAULT_OUTPUT_DIR / SOUNDS_DIR).relative_to(ROOT).as_posix() + '/')
     replaces = ('tools/hsl_town_assets.py --check',)
     scripts = ('tools/hsltools/assets/town_assets.py', 'tools/hsltools/data/world_map.py')
 
@@ -352,6 +434,7 @@ class TownAssetsTask(ScriptCheckTask):
             raise NotGeneratable(f'{self.name}: original install not found at {pak_root}')
         messages, portraits, previews, shop = build(pak_root, DEFAULT_OUTPUT_DIR)
         write_outputs(DEFAULT_OUTPUT_DIR, messages, portraits, previews, shop)
+        write_sounds(DEFAULT_OUTPUT_DIR, *build_sounds(pak_root, DEFAULT_OUTPUT_DIR))
 
 
 def tasks() -> list[TownAssetsTask]:

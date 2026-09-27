@@ -1088,8 +1088,8 @@
     },
     {
       "id": "town-event-timing",
-      "difference": "城镇事件的消息与延时已照原版（lane TOWNMAP）：每句等关板、teDelay N 无对白板停 N+1 tick、teMenuMoveOut 停 20 tick；剩 tePlaySound 只记录（三个 WAV 未导入）、if_wait 位的作用未读、选择／子菜单的菜单读法暂定",
-      "original": "0x454e20 已读：消息阶段 5／7 等消息标志清零、teDelay 阶段 0xe 每调用减一、teMenuMoveOut 20、tePlaySound 调 0x42c180 即播不等；消息对象 0x2000 位与子菜单重开未读",
+      "difference": "城镇事件的消息与延时已照原版（lane TOWNMAP）：每句等关板、teDelay N 无对白板停 N+1 tick、teMenuMoveOut 停 20 tick；tePlaySound 已照原版当场放声（lane WORLDTOWN：0x455710→0x42c180，三个 WAV 已导入）；剩 if_wait 位的作用未读、选择／子菜单的菜单读法暂定",
+      "original": "0x454e20 已读：消息阶段 5／7 等消息标志清零、teDelay 阶段 0xe 每调用减一、teMenuMoveOut 20、tePlaySound 分支 0x455710 调 0x42c180 即播不等；消息对象 0x2000 位与子菜单重开未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/town_event_semantics.md"
       ],
@@ -1128,7 +1128,7 @@
     },
     {
       "id": "world-map-presentation",
-      "difference": "大地图路线揭示已照原版逐 tick 正方形裁剪、队伍标记已按帧 01 改回战斗尺寸（lane TOWNMAP）；剩点名文字是重制补的（原版帧 01／03／04 没有，悬停是否显示未采）、未重制关卡卡（重制缺关卡的替代）、端点 mode1 的点揭示演出（0x427df0）与行走者用哪名角色未读",
+      "difference": "大地图路线揭示已照原版逐 tick 正方形裁剪、队伍标记已按帧 01 改回战斗尺寸（lane TOWNMAP）；点名文字原版档已不画、只在 OPT-GUIDE=提示 画（lane WORLDTOWN，原版帧 01／03／04 没有）；剩未重制关卡卡（重制缺关卡的替代）、端点 mode1 的点揭示演出（0x427df0）与行走者用哪名角色未读",
       "original": "0x4280d0 已读：子状态 0 取 0x4606a9 边界算计数 max(|w−ox|,|ox|,|h−oy|,|oy|)，子状态 1 每 tick 半边 +1，0x428280 写锚点 ± 半边裁剪；点过程 0x427df0 mode1 与行走者形体未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/world_map_data.md",
@@ -1145,7 +1145,7 @@
     },
     {
       "id": "world-map-rules",
-      "difference": "大地图揭示顺序已照原版（lane TOWNMAP：先揭示脚下路线并等完，再镜头滚到 teBMSetShowTrackPoint 的点揭示、等完、滚回，期间丢弃点击）；点远端点按 0x427070 最短路多跳行走、途中每点跑到达分派已照原版（lane WORLDPATH）；剩脚本行走仍只走直连路线、遭遇骰子的比较方向与请求后的 Visit 写入是暂定读法、镜头滑行步长取战斗的 32",
+      "difference": "大地图揭示顺序已照原版（lane TOWNMAP：先揭示脚下路线并等完，再镜头滚到 teBMSetShowTrackPoint 的点揭示、等完、滚回，期间丢弃点击）；点远端点按 0x427070 最短路多跳行走、途中每点跑到达分派已照原版（lane WORLDPATH）；脚本行走 teSetBMWalkToPoint 已与点击同路（lane WORLDTOWN：0x45543a／0x42f7a4／0x427723，无路线原地不动）；剩遭遇骰子的比较方向与请求后的 Visit 写入是暂定读法、镜头滑行步长取战斗的 32",
       "original": "设 mode 1 的写者已定位：0x426e40 由行走者 0x427420 子状态 0／1 调用（显示请求 0x4c1bb0、镜头 0x43bf30、点击目标 0x4c1ab8 作废）；遭遇抽样比较方向、请求后的 Visit 写入未执行",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/world_map_data.md",
@@ -3187,6 +3187,10 @@
     },
     "provenance:game/battle/scene/BattleDropLightningPresentation.gd|layout|provisional|": {
       "item": "drop-lightning-presentation"
+    },
+    "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#413a7dbce4": {
+      "item": "town-event-timing",
+      "text": "if_wait 位 `0x2000` 在消息对象里的作用未读"
     },
     "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#447abe2193": {
       "item": "town-event-timing",

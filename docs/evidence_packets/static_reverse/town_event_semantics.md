@@ -25,7 +25,7 @@ VM 以 `*param_4` 高半字为阶段、每次过程调用进一次（一次主�
 | tePlayerMessage 5／teShapeMessage 7 | 置消息标志为 1、`0x4072b0` 建消息、`0x414220(msg, 位, if_wait, 头像)`（位：player 0／shape 1 → 消息对象 `+0x80` 的 `0x4000`；if_wait → `0x2000`），阶段 5／7；此后每次调用只查标志，**标志清零（消息关掉）才回阶段 0**，下一次调用才执行下一 token | 每句等确认（与 if_wait 无关，与原版同）；`0x2000` 位在消息对象里的作用未读 |
 | teDelay 14 | `0x4c1d54 = N`、阶段 0xe；阶段 0xe 每次调用减一，减到 ≤0 那次只复位阶段，**下一 token 在 teDelay 后第 N+1 次调用执行** | 无对白板停 (N+1)×16 ms（`TownRuntime._hold`）；玩家输入不跳过，脚本化 `confirm()` 可跳过（测试用） |
 | teMenuMoveOut 40 | 阶段 0xe、`0x4c1d54 = 0x14`，返回 4 | 同 teDelay 停 20 tick |
-| tePlaySound 28 | `0x42c180(wav, 0)`：音效开关 `0x4c1af4` 开且 `0x477c20` 非零时即播，不等待，同一次调用继续 | 只记录：三个 WAV（WALK0016／OPEN0001／MOVE0001）未导入，导入属 `tools/hsltools/assets/town_assets.py` |
+| tePlaySound 28 | `0x42c180(wav, 0)`：音效开关 `0x4c1af4` 开且 `0x477c20` 非零时即播，不等待，同一次调用继续 | 照原版：`0x455710` 调用；三个 WAV（WALK0016／OPEN0001／MOVE0001）由 `tools/hsltools/assets/town_assets.py` 导入 `town_sounds/`，`TownRuntime._play_sound` 当场播放 |
 | teDeletePlayerMessage 6／teDeleteShapeMessage 8 | 把对应消息标志清零 | 只记录（每句已等确认关板） |
 
 ### resource-derived 结构与解释器读法：token 表
@@ -56,7 +56,7 @@ VM 以 `*param_4` 高半字为阶段、每次过程调用进一次（一次主�
 | teBMSetPointEvent／teBMSetPointEventNotVisit | `[id][event][flag]` | 写 `point_events[id]={event,flag}`；NotVisit 区别只在效果里 | `bm_point_event{not_visit}` |
 | teBMSetPointMode／teBMSetTrackMode | `[id][mode]` | 写 `point_modes`／`track_modes`（gameBM* 经 TYPE.H 解析） | `bm_point_mode`／`bm_track_mode` |
 | teBMSetPointEncounterRatio（仅 act 版） | `[id][ratio]` | 写 `encounter_ratios` | `bm_encounter_ratio` |
-| teSetBMWalkToPoint | `[from][to]` | 写 `state.pending_walk {from,to}`；世界地图运行时在离城／进图时执行：有已显示路线则沿路线旅行（薛維斯港 138 送船 11→12、戈黎塔尼港 183 25→26），否则直接到达；`current_point` 仍归运行时 | `bm_walk_to_point` |
+| teSetBMWalkToPoint | `[from][to]` | 写 `state.pending_walk {from,to}`；世界地图运行时在离城／进图时执行：from≠49 先作当前点（`0x45543a`→`0x42cc60`→`0x42f7a4`），再按 `0x427070` 多跳走到 to（与玩家点击同路，薛維斯港 138 送船 11→12、戈黎塔尼港 183 25→26），无路线原地不动 | `bm_walk_to_point` |
 | teAddOverScore | `[id][score]` | 累加 `over_score[id]` | `over_score` |
 | teAppearSecretMan | `[town id][tavern event][mode]` | 机制 **static-derived（0x454db0）**：缓存 0 未决／-1 失败／正数已选；未决时严格 `rand(100)+1 < ratio` 才把 0x479398 表 `[123,113,114,115,116,117,118,119,120]` 的当前索引事件加为 tavern 子项并缓存，相等失败缓存 -1 不再掷，mode≠0 强制。**provisional**：默认 ratio（本包取数据里唯一出现的 8）、表索引（从 0 起＝123）、缓存何时重置（本包随 teDeleteSecretMan 清除） | `secret_man{appear\|absent\|cached}` |
 | teDeleteSecretMan／teSetSecretAppearRatio | —／`[ratio]` | 从 tavern 子项移除已缓存的神秘男子并清 `secret_man`／写当前城镇 `secret_appear_ratio`（0 视为未设） | `secret_man{delete\|ratio}` |
@@ -125,7 +125,7 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | teGetGold | provisional | bit 31 of [number] is the display flag, the low 31 bits the amount |
 | teSetNextPlayLevelEvent | provisional | ends the run (leaving town); the caller consumes next_level_event |
 | teBMSetPointEventNotVisit | provisional | same point_events / type write as teBMSetPointEvent but leaves the Visit bit alone (its handler was not executed; teBMSetPointEvent itself is static-derived 0x426c70) |
-| teSetBMWalkToPoint | provisional | writes state.pending_walk {from, to}; the world-map runtime performs the walk when the town closes or the map opens (current_point stays its own) |
+| teSetBMWalkToPoint | static-derived | writes state.pending_walk {from, to}; the world-map runtime sets from (unless 49) as the current point, then walks the 0x427070 route to to like a click (0x45543a, 0x42f7a4, 0x427723) |
 | teAppearSecretMan | static-derived; provisional | static-derived mechanism (0x454db0): undecided cache → strict rand(100)+1 < ratio adds the table event (`content/generated/hsl/static/hsl01/secret_man_goods.json` rows[index].event, the 0x479398 table) under the tavern event and caches it, a failed roll caches -1 (no re-roll), [mode] != 0 forces; the table index is the purchase counter 0x4c1bd4 (secret_man_index: zeroed by the new-game initialiser 0x42ca70, +1 per teSecretManBuyThing purchase, so 0 → 123 first; original_secret_man.md); provisional: the default ratio (DEFAULT_SECRET_APPEAR_RATIO) is not established |
 | teSetSecretAppearRatio | provisional | stored on the town where the running event lives |
 | teDeleteSecretMan | provisional | removes the cached secret man from the tavern's children and clears the running town's secret_man |
@@ -143,4 +143,4 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | 商店定价／买卖 | 标价买入、卖价 price×50÷100、重要物品拒收与消息 606／607 已由[原作商店交易](original_shop_transaction.md)静态确认；「所选成员首个空格入包」仍是重制交互改写（[城镇回执](../runtime_observations/original_world_town/README.md)） | 手持槽放置流程的有界执行 |
 | teBMSetPointEventNotVisit 与 visited | 与 teBMSetPointEvent 的差别只在名字 | 大地图 handler |
 | 子菜单重开／退出 | 每个子项后是否回到菜单、如何退出 | 菜单 handler 或原作单步采样 |
-| 消息 if_wait 位 | 消息都等关板、teDelay N＝N+1 tick 已读；if_wait 位 `0x2000` 在消息对象里的作用与 tePlaySound 三个 WAV 的导入未做 | 消息对象过程读 `+0x80 & 0x2000` 的分支 |
+| 消息 if_wait 位 | 消息都等关板、teDelay N＝N+1 tick 已读；if_wait 位 `0x2000` 在消息对象里的作用未读 | 消息对象过程读 `+0x80 & 0x2000` 的分支 |

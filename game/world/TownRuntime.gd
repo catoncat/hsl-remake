@@ -21,8 +21,8 @@ extends Control
 ## the VM until its board is closed, whatever the script's if_wait flag, so every message
 ## waits for a confirm; teDelay N holds the chain N + 1 ticks with no board up (counter
 ## 0x4c1d54, one decrement per process call) and teMenuMoveOut holds it 20 ticks; player
-## input does not cut a hold. tePlaySound is recorded only (its three WAVs are not
-## imported); gold and item grants show as narration lines (remake). Shop prices and
+## input does not cut a hold. tePlaySound (0x455710 -> 0x42c180) plays its WAV at once at full
+## volume and the chain goes on without waiting; gold and item grants show as narration lines (remake). Shop prices and
 ## refusals follow the original code (static-derived, original_shop_transaction.md).
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
@@ -32,7 +32,7 @@ extends Control
 ##     (messages wait for their board to close; teDelay／teMenuMoveOut holds)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_storage_window.md
 ##     (shop 裝備／倉庫 pages and 丟棄 through PartyEquipmentRules.hand_action, frames 18–23)
-##   rules: provisional (tePlaySound recorded only; a scripted confirm() cuts a hold)
+##   rules: provisional (a scripted confirm() cuts a hold)
 ##   layout: resource-derived content/imported/hsl/global/world_map/town_portraits.json
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
@@ -47,6 +47,9 @@ extends Control
 ##   timing: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
 ##     (teDelay N → N + 1 ticks, teMenuMoveOut → 20 ticks, through OriginalTick)
 ##   timing: provisional (the menus have no clock of their own)
+##   audio: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
+##     (tePlaySound 0x455710 -> 0x42c180: plays at volume 255, no wait)
+##   audio: resource-derived content/imported/hsl/global/world_map/town_sounds.json
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
 
@@ -95,6 +98,9 @@ var messages: Dictionary = {}
 var speakers: Dictionary = {}
 var shop_catalog: Dictionary = {}
 var portraits_path := ""
+var sounds_path := ""
+var sound_records: Array[Dictionary] = []
+var _sound_table: Dictionary = {}
 var background: Texture2D
 var state: Dictionary = {}
 var carry: Dictionary = {}
@@ -316,7 +322,9 @@ func _play_next_effect() -> void:
 				if ticks > 0:
 					_hold(ticks)
 					return
-			"play_sound", "recorded_only", "delete_player_message", "delete_shape_message":
+			"play_sound":
+				records.append({"kind": "effect", "effect": effect, "status": "applied" if _play_sound(str(effect.get("sound", ""))) else "missing_sound"})
+			"recorded_only", "delete_player_message", "delete_shape_message":
 				records.append({"kind": "effect", "effect": effect, "status": "recorded_only"})
 			_:
 				records.append({"kind": "effect", "effect": effect})
@@ -329,6 +337,28 @@ func _play_next_effect() -> void:
 		_show_pending(pending)
 		return
 	_finish_run()
+
+
+## tePlaySound: 0x455710 hands the WAV member to 0x42c180, which loads (0x459a20) and plays
+## (0x45a390) it at volume 255 and returns; the te chain continues the same call. The sound
+## player hangs off the runtime so leaving the town does not cut it.
+func _play_sound(member: String) -> bool:
+	if _sound_table.is_empty() and sounds_path != "" and FileAccess.file_exists(sounds_path):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(sounds_path))
+		if typeof(parsed) == TYPE_DICTIONARY and typeof((parsed as Dictionary).get("sounds")) == TYPE_DICTIONARY:
+			_sound_table = (parsed as Dictionary)["sounds"]
+	var path := str((_sound_table.get(member, {}) as Dictionary).get("res_path", ""))
+	if path == "" or not ResourceLoader.exists(path):
+		sound_records.append({"sound": member, "status": "missing"})
+		return false
+	var player := AudioStreamPlayer.new()
+	player.name = "TownSound"
+	player.stream = load(path)
+	player.finished.connect(player.queue_free)
+	(runtime if runtime != null else self).add_child(player)
+	player.play()
+	sound_records.append({"sound": member, "status": "played", "stream": path})
+	return true
 
 
 ## `top`: an NPC line (teShapeMessage) on the top board; party lines, job-up results and the

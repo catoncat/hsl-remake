@@ -1,12 +1,15 @@
 # 世界地图与城镇：初始化、bigmap 三字段、到达分支、路线揭示与 te 条件
 
-> evidence: static-derived; resource-derived; runtime-measured: Wine 原版多跳旅行两趟（0x4c59c4／0x4c1ba8／0x4c1bac 读数）; negative-evidence: 独立默认 level 表、路线红白插值、买卖 handler 执行回执 · status: live · functions: 0x426b70, 0x426bb0, 0x426bf0, 0x426c70, 0x426ce0, 0x426e40, 0x426fc0, 0x427070, 0x427200, 0x427420, 0x427df0, 0x4280d0, 0x42c1c0, 0x42cc10, 0x42d090, 0x44de20, 0x44e0e0, 0x4545a0, 0x454650, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20, 0x4606a9 · tools: hsltools/data/world_map.py, hsltools/probes/world_town.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived; runtime-measured: Wine 原版多跳旅行两趟（0x4c59c4／0x4c1ba8／0x4c1bac 读数）; negative-evidence: 独立默认 level 表、路线红白插值、买卖 handler 执行回执 · status: live · functions: 0x426b70, 0x426bb0, 0x426bf0, 0x426c70, 0x426ce0, 0x426e40, 0x426fc0, 0x427070, 0x427200, 0x427420, 0x427df0, 0x4280d0, 0x42c180, 0x42c1c0, 0x42cc10, 0x42cc60, 0x42d090, 0x42f7a4, 0x44de20, 0x44e0e0, 0x4545a0, 0x454650, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20, 0x45543a, 0x455710, 0x4606a9 · tools: hsltools/data/world_map.py, hsltools/probes/world_town.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版城镇菜单是 `0x454a20` 按 town id 建立的可变 100×264 字节记录，新游戏只有歐姆村／米蘭多／席達鎮有初始树；bigmap 点与路线各有展示阶段、类型位、可变 event 三个独立字段；到达按当前 event 与类型分支，没有独立默认 level 表（static-derived，原指令有界执行；negative-evidence）。
 - 重制 `game/world/WorldMapRuntime.gd`、`WorldMapRules.gd`、`TownRuntime.gd` 与 `game/sim/TownEventRules.gd` 按这些字段、新游戏隐藏点线、到达分支、M_PNT 三帧、命中框 ±16、状态栏与揭示排序实现（static-derived 输入）。
 - 寻路与行走：点任何点都由 `0x427070` 在展示阶段 2 的路线上求最短路（代价＝折线 |dx|+|dy|），不查点与路线的 Hidden、不查点的展示阶段；行走者逐段走，每到一个点都跑到达分派 `0x427ab3`（非目的点不进城），途中点的 Battle／General 带 event 就在该点进关并停在那里；路过的点不标 Visit、不揭示路线。Wine 两趟实录印证；重制 `WorldMapRules.route_between` 与 `WorldMapRuntime` 逐段行走照此（static-derived；runtime-measured）。
+- 脚本行走 `teSetBMWalkToPoint` 与玩家点击同路：城镇分支 `0x45543a` 写目标 `0x4c1bb4`、from≠49 时写 `0x477c18`，回大地图 `0x42f7a4` 以 from 作当前点，行走者子状态 2 把目标转成点击、子状态 3 同样调 `0x427070`；无路线时原地不动。重制 `_consume_pending_walk` 照此经 `select_point` 多跳（static-derived）。
+- 大地图不画点名：帧 01／03／04 当前点、可达点、悬停点旁都没有地名；重制点名只在 OPT-GUIDE=提示 画（runtime-measured）。
+- 城镇 `tePlaySound`（opcode 28）分支 `0x455710` 调 `0x42c180(wav, 0)` 即播不等；重制导入三个 WAV 并当场播放（static-derived；resource-derived）。
 - 点自己所在的点：点对象过程 `0x427df0` 不比当前点，只写点击目标；行走者子状态 3 找不到自身路线后，仅 event 非 0 且带 Town 位时进城，Battle／General（及 event 0）清掉点击、不分派到达，不会重打该点关卡；重制 `select_point` 当前点分支照此（static-derived）。
 - 差异：旅行速度、揭示触发外的时钟、遭遇抽样比较方向、镜头滑行步长为重制值；差异清单 `town-event-timing`、`town-layout-extras`（provisional）。
 
@@ -55,6 +58,9 @@
 | 途中点 | event 0 与 Town 路过；General 未访问、Battle（带 event）请求关卡，General 已访问先过 encounter ratio（`0x4545a0` 读 `0x4c27e0` 的 short）与 1..100 抽样，成立再抽 0..2——与目的点同一段代码，抽取按路线顺序每点一次；关卡请求 `0x42cc10(点, level)` 把点记 `0x4c1ba8`，回大地图时 `0x42f7a4` 把它写回当前点 | `0x427ab3..0x427b95`、`0x42cc41`、`0x42f7bf` |
 | 路过不做的事 | 不标 Visit（`0x426d60` 只在分派成立时调）、不揭示路线（`0x426e40` 只在目的点 `0x427d36` 调）、不写 `0x4c1ba4`（子状态 2 才写） | `0x427bb3..0x427bd2` |
 | 目的点 | 分派不成立（event 0、未抽中遭遇）时 `0x427d36` 揭示目的点路线、回子状态 1；随后子状态 2 写当前点 | `0x427d36..0x427d50`、`0x42772a` |
+| 脚本行走写入 | te opcode 41 `teSetBMWalkToPoint(from, to)`：`0x45544e` 写 `0x4c1bb4`＝to；from≠49（`0x455443`）时 `0x42cc60` 写 `0x477c18`＝from；随后 `0x42cc10(49,49)` 请求回大地图 | `0x45543a..0x45546b`、`0x42cc60` |
+| 脚本行走起点 | 回大地图 `0x42f7a4`：`0x477c18`≠−1 就写当前点 `0x4c1ba4` 并复位 −1，否则取 `0x4c1bb8`；只写当前点，不标 Visit、不揭示 | `0x42f7a4..0x42f7c9` |
+| 脚本行走寻路 | 子状态 2 写当前点后，`0x4c1bb4` 非 0 则写点击目标 `0x4c1ab8` 并清 `0x4c1bb4`；子状态 3 与玩家点击同一段：`0x427070(当前, 目标)` 非 0 起步多跳，0 时目标≠当前 `0x427796` 跳 `0x4276fd` 清点击、原地不动，目标＝当前按上节重新进城规则 | `0x427723..0x42775a`、`0x427775..0x427796` |
 
 runtime-measured（2026-09-27，Wine 原版 v1.06，读回憶錄第 3 行 兩棲族部落 完成度 31%，存档 sha 前后一致）：
 
@@ -102,6 +108,10 @@ negative-evidence：raw load→`+8` setter/getter→到达路径中没有第二�
 | 配乐 | `0x42c1c0` 查 `0x477b44`：level 49 → track 6；level ≥100 → −1 | 见 [original_music](original_music.md) |
 | `Status_Bar` | obj12，camera+(0,412)；`0x427200` 算完成度（分子 mode2 且非 Hidden 的点，分母命名点数 −1，上限 100），`0x42d090` 写 `h:mm:ss`；RESOURCE 360「完成度：」；前段生成「完成度： 42%」，止于 `0x427309` | 精确成像与计时来源未执行 |
 
+### runtime-measured：大地图点名
+
+帧 01／03／04（[original_world_town 实录](../runtime_observations/original_world_town/README.md)）大地图上只有点图标、路线与行走者，当前点、可达点与悬停点旁都没有地名文字；悬停是否另显示地名未采。
+
 ### static-derived：te 条件
 
 opcode 按 `TOWNDEF.H`，入口 `0x454e20`；返回 0 继续／等待、1 结束当前事件、2 交给子菜单。
@@ -113,6 +123,7 @@ opcode 按 `TOWNDEF.H`，入口 `0x454e20`；返回 0 继续／等待、1 结束
 | `teCheckItemExecEvent` 29 | `0x454cd0` 查两个共享物品库与当前队员八槽；找到可按 delete 参数消费一份，经 `0x44e0e0` 切到指定 event；未找到继续原程序 |
 | `teCheckTEExist` 33 | `0x455db7` 调 `0x4546c0` 查 town／parent／child：找到且 event 非 0 转指针，event 0 返回 1，未找到继续 |
 | `teCheckJobUp` 31、`teCheckJobUp2` 32 | 无合格角色进 100 号失败提示（止于 `0x455d39`）；提示结束后 fail event=-1 结束、非负转指针 |
+| `tePlaySound` 28 | `0x455710` 取参数（WAV 成员路径）调 `0x42c180(wav, 0)`：音效开关 `0x4c1af4` 开且 `0x477c20` 非 0 时 `0x459a20` 装载、`0x45a390` 以音量 255 播放后返回，不等待，同一次调用继续下一 token |
 | `teAppearSecretMan` 36 | `0x454db0` 用全局缓存 0／-1／正 event 表示未决／失败／已选；未决时 `rand(100)+1 < threshold` 严格成立才加子项，相等失败并缓存 -1；force 可绕过；`0x479398` 的 9 个 short 123,113–120 按当前索引选 event |
 
 negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取得买卖 handler、入包选择与消息输入时钟的执行回执；买入价、卖价 price×50÷100 与重要物品拒收见 [original_shop_transaction](original_shop_transaction.md)。
@@ -123,7 +134,10 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 - `game/world/WorldMapRules.gd` `route_between`／`track_route_cost`：照 `0x427070`／`0x426fc0` 的扫描顺序、阶段 2 条件、严格比较与 |dx|+|dy| 代价给出路线序列；`WorldMapRuntime.gd` `select_point` 走整条路线，`_pass_point` 在每个途中点以 `arrival(selected=false)` 分派，关卡则在该点停下进关（标 Visit、当前点改为该点），否则接着走，目的点才走原有到达。
 - `game/world/WorldMapRuntime.gd`：`select_point` 当前点分支只对 Town 且 event 非 0 重新进城，其余记 `current_point_ignored`；`_build_status_bar`（(0,412) 整张减法混合，「完成度：」x 6、数字 x 114、时间右对齐 x 634），`_advance_show_sequence`（按上表排序，揭示期间丢弃点击）；`game/world/WorldMapRules.gd`（到达分支）；`game/world/WorldScriptActions.gd`（脚本写入）。
 - 城镇：`game/world/TownRuntime.gd`、`TownShopScreen.gd`、`game/sim/TownEventRules.gd`（[读法表](town_event_semantics.md)）、`game/world/WorldPartyRules.gd`（买卖）；文字／头像／货表由 `tools/hsltools/assets/town_assets.py` 生成；初始根菜单 `content/world/town_initial_trees.json`。
-- 重制值：旅行速度 96 px/s、揭示动画节奏、遭遇抽样比较方向、镜头滑行步长 32、Leonard 贴图作队伍标记、TOWNDEF if_wait=0 仍逐句等确认、`teDelay`／`tePlaySound` 只记录（provisional）。
+- 脚本行走：`WorldMapRuntime._consume_pending_walk` 先按 from（≠49）设当前点，再经 `select_point(to, "script_walk")` 走 `route_between` 多跳；无路线记 `unreachable` 原地不动。
+- 点名：`WorldMapRuntime._refresh_labels` 在 OPT-GUIDE=原版 时不画。
+- 音效：`tools/hsltools/assets/town_assets.py` 从 PAK 解出 `tePlaySound` 点名的 WAV（`content/imported/hsl/global/world_map/town_sounds.json`、`town_sounds/*.wav`）；`TownRuntime._play_sound` 当场播放。
+- 重制值：旅行速度 96 px/s、揭示动画节奏、遭遇抽样比较方向、镜头滑行步长 32、Leonard 贴图作队伍标记、TOWNDEF if_wait=0 仍逐句等确认（provisional）。
 
 ## 复现
 
@@ -134,7 +148,8 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 - 探针止于地图新游戏设置、到达请求、失败对白创建、速度设置与状态栏绘制准备等具名边界；关卡加载、UI 与请求后的 Visit 写入未执行。
 - 完整菜单对象创建、焦点／返回导航与后期所有树变更未执行；UI 应从当前城镇／根的现有子项生成，不从 TOWNDEF 注释归类。
 - 大地图上 `0x43bf30` 是否走剧情步长 16 未读；if_wait=0 是否仍需输入、全转职成功链、secret 阈值的所有设定入口未读。
-- 脚本行走 `teSetBMWalkToPoint`（写 `0x4c1bb4`，子状态 2 转成点击目标）同样经 `0x427070` 多跳寻路；重制 `_consume_pending_walk` 仍只走一条直连路线、否则瞬移（未改）。
+- 脚本行走 from 改当前点时，原版回大地图后行走者子状态 0 揭示的是 from 的路线；重制城镇关闭时先揭示原当前点再处理脚本行走（两者只在 from≠所在城镇时不同，TOWNDEF 里两例 from 都等于所在港口）。
+- `tePlaySound` 的音效开关 `0x4c1af4` 与 `0x477c20` 对应重制的音效音量设置，未逐位核对。
 - 目的点分派不成立时原版不标 Visit，重制 `_arrive` 仍总标 Visit；Town 且 event 0 的目的点原版不进城，重制 `arrival` 仍进城（均未改）。
 - 点 16 命運的神殿在 bigmap.dat 没有路线相连，进入方式未读。
 - 夹具的金额、指针、角色与阶段是显式输入，不是实际存档快照。

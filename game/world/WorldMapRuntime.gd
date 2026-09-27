@@ -23,7 +23,7 @@ extends Node2D
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
 ##     (status bar subtracted, text rows, grid lines visible; walker at battle size, frame 01)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
-##   layout: remake-invented (not-remade card, point name labels)
+##   layout: remake-invented (not-remade card; point name labels only under OPT-GUIDE=提示)
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_world_town.md
 ##   strings: remake-invented (card texts)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_world_town.md
@@ -34,6 +34,7 @@ extends Node2D
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
 
 const GameSettings = preload("res://game/settings/GameSettings.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Rules = preload("res://game/world/WorldMapRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const TownRuntime = preload("res://game/world/TownRuntime.gd")
@@ -76,6 +77,8 @@ var track_reveal_tick_seconds := OriginalTick.TICK_SECONDS
 var marker_scale := 1.0
 var marker: Node
 var point_nodes: Dictionary = {}
+## teSetBMWalkToPoint `from` value that keeps the current point (0x455443 cmp eax, 0x31).
+const SCRIPT_WALK_KEEP_POINT := 49
 var label_nodes: Dictionary = {}
 var track_nodes: Dictionary = {}
 var travel_records: Array[Dictionary] = []
@@ -430,6 +433,7 @@ func _open_town(town_id: int) -> void:
 	town.speakers = _town_speakers
 	town.shop_catalog = _shop_catalog
 	town.portraits_path = BattleScenario.resource_path(config, "town_portraits")
+	town.sounds_path = BattleScenario.resource_path(config, "town_sounds")
 	town.background = _town_background(town_id)
 	town.state = state.duplicate(true)
 	town.carry = _carry()
@@ -575,9 +579,14 @@ func _glide_to_point(point_id: int) -> void:
 	runtime.camera_controller.scroll_to(BattleCameraController.focus_centre(Rules.point_position(world_map, point_id)), BattleCameraController.BATTLE_SCROLL_STEP)
 
 
-## teSetBMWalkToPoint / actSetBMWalkToPoint left a walk in the world state: the
-## party travels it now (ship routes such as 薛維斯港 → 巴瀚納海峽), or stands at
-## the destination when no shown track joins the two points.
+## teSetBMWalkToPoint / actSetBMWalkToPoint left a walk in the world state (static-derived,
+## original_world_town.md): the town handler 0x45543a writes `to` into 0x4c1bb4 and, unless
+## `from` is 49, `from` into 0x477c18 (0x42cc60); on the way back to the map 0x42f7a4 makes
+## that the current point 0x4c1ba4 (no Visit, no reveal). The walker's sub-state 2 turns
+## 0x4c1bb4 into the click target (0x427723..0x42774b) and sub-state 3 routes it with 0x427070
+## exactly like a player click, so the party walks the multi-track route (ship routes such as
+## 薛維斯港 → 巴瀚納海峽) through select_point. No route: 0x427796 clears the click at 0x4276fd
+## and the party stays where it is; the target being the current point re-enters a town.
 func _consume_pending_walk() -> void:
 	var walk: Variant = state.get("pending_walk")
 	if typeof(walk) != TYPE_DICTIONARY:
@@ -585,16 +594,17 @@ func _consume_pending_walk() -> void:
 	state.erase("pending_walk")
 	var to_point := int((walk as Dictionary).get("to", 0))
 	var from_point := int((walk as Dictionary).get("from", 0))
-	if to_point <= 0 or to_point == current_point() or Rules.point(world_map, to_point).is_empty():
+	if from_point > 0 and from_point != SCRIPT_WALK_KEEP_POINT and not Rules.point(world_map, from_point).is_empty() and from_point != current_point():
+		state["current_point"] = from_point
+		if marker != null:
+			marker.position = Rules.point_position(world_map, from_point)
+		_refresh_labels()
+	if to_point <= 0 or Rules.point(world_map, to_point).is_empty():
 		_persist_state()
 		return
-	if from_point == current_point():
-		var track_id := Rules.track_between(state, world_map, current_point(), to_point)
-		if track_id > 0:
-			_begin_travel(to_point, track_id, "script_walk")
-			return
-	input_records.append({"kind": "script_walk_teleport", "from_point": from_point, "to_point": to_point})
-	_arrive(to_point, 0)
+	var record := select_point(to_point, "script_walk")
+	if str(record.get("kind", "")) != "travel":
+		_persist_state()
 
 
 func _free_town() -> void:
@@ -915,9 +925,13 @@ func _play_music(key: String) -> void:
 
 
 ## Name labels for the current point and the points one visible track away, plus
-## the hovered point: enough to navigate without covering the map with 45 names.
+## the hovered point: enough to navigate without covering the map with 45 names. The
+## original draws no point names (frames 01／03／04, original_world_town.md), so they are an
+## OPT-GUIDE=提示 addition read on every refresh; 原版 draws none.
 func _refresh_labels() -> void:
 	_clear_labels()
+	if GameOptions.is_original("OPT-GUIDE"):
+		return
 	var wanted: Array[int] = [current_point()]
 	for point_id in reachable_points():
 		wanted.append(point_id)

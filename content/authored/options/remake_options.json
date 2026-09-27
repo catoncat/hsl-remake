@@ -50,7 +50,7 @@
       "comfort_value": "hints",
       "values": [
         {"id": "original", "label": "原版", "text": "原版：移動只畫範圍，撤離格只在劇本插入時畫。"},
-        {"id": "hints", "label": "提示", "text": "改良：移動路徑線與「移動 3/5」費用欄、撤離格常駐、待機與再次行動提示。"}
+        {"id": "hints", "label": "提示", "text": "改良：移動路徑線與「移動 3/5」費用欄、撤離格常駐、待機與再次行動提示、大地圖點名。"}
       ],
       "why": "新手第一次玩看得懂该点哪里、能走到哪",
       "save_effect": "none",
@@ -60,9 +60,10 @@
         "game/battle/scene/BattlePresentation.gd:_ready（建场景读一次；重製選項页关闭且有值变了经 remake_options_changed 再读）→ escape_marks：原版值只画剧本插入的 obj_Story_Show_Pos 标记；提示 时撤离阶段每个撤离格常驻金色半透明格（ESCAPEMARK 644178ea 之前的画法）",
         "game/battle/scene/BattleNavigationCue.gd:begin（每个 AI 行动读一次）→ 原版值无提示、不停顿、不画 AI 走位线；提示 时「待機」「守候 · 尚餘 N 次」「麻痺 · 無法行動」停 0.55 s、AI 走位画路径线",
         "game/battle/scene/BattleExtraActionCue.gd:refresh（每次第二次行动出现时读一次）→ hints：原版值不显示、不停顿；提示 时「再次行動」并停 0.55 s",
-        "game/battle/scene/BattleStatusPanel.gd:show_unit（状态页每次打开读一次）→ hint_buttons：原版值状态页没有按钮条；提示 时底部加「保存 F5」「讀取 F9」「待領物品」「返回」（「成長點」随 OPT-GROWTH 暂缓路径，有点数就显示）"
+        "game/battle/scene/BattleStatusPanel.gd:show_unit（状态页每次打开读一次）→ hint_buttons：原版值状态页没有按钮条；提示 时底部加「保存 F5」「讀取 F9」「待領物品」「返回」（「成長點」随 OPT-GROWTH 暂缓路径，有点数就显示）",
+        "game/world/WorldMapRuntime.gd:_refresh_labels（大地图每次刷新点名读一次：进图、到达、悬停变化、重建图层）→ 原版值不画点名；提示 时当前点、一条已显示路线可达的点与悬停点旁标名"
       ],
-      "evidence": ["move-path-overlay", "wait-cue", "extra-action-cue", "ESCAPEMARK 644178ea"],
+      "evidence": ["move-path-overlay", "wait-cue", "extra-action-cue", "world-map-presentation", "ESCAPEMARK 644178ea"],
       "work": "M"
     },
     {

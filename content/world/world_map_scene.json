@@ -16,6 +16,7 @@
     "town_initial_trees": "res://content/world/town_initial_trees.json",
     "town_messages": "res://content/imported/hsl/global/world_map/town_messages.json",
     "town_portraits": "res://content/imported/hsl/global/world_map/town_portraits.json",
+    "town_sounds": "res://content/imported/hsl/global/world_map/town_sounds.json",
     "town_shop_items": "res://content/imported/hsl/global/world_map/town_shop_items.json",
     "point_marker_textures": {
       "1": "res://content/imported/hsl/global/world_map/previews/m_pnt001.png",
