@@ -1,7 +1,7 @@
 extends SceneTree
 ## Windowed review of the big-map scene at normal remake pacing: the fresh map at
-## 歐姆村, a mouse-driven trip along track 1 to 戈爾山道 (into the level-2 opening
-## preview and back) and home, the town screen, and an edge scroll. Output: ignored/world-map-review/*.png + manifest.json
+## 歐姆村, the town screen, an edge scroll there and back, and a mouse-driven trip along
+## track 1 to 戈爾山道 into the level-2 battle. Output: ignored/world-map-review/*.png + manifest.json
 ## (visual review input, not parity proof — no original big-map frames exist).
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const OUT := "res://ignored/world-map-review/"
@@ -39,76 +39,57 @@ func run() -> void:
 	# A new game shows only 歐姆村; track 1 reveals itself (clip expansion) and 戈爾山道 appears.
 	await create_timer(0.25).timeout
 	await shot("00-ohm-village-track-revealing")
-	await create_timer(1.0).timeout
+	# The reveal runs until reveal_busy clears (clicks meanwhile are dropped_while_revealing).
+	var waited := 0.0
+	while (bool(map.summary().get("reveal_busy", false)) or int(map.summary().get("revealing_track_count", 0)) > 0) and waited < 5.0:
+		await create_timer(0.05).timeout
+		waited += 0.05
+	await create_timer(0.3).timeout
 	check(int(map.summary().get("visible_point_count", 0)) == 2 and int(map.summary().get("revealing_track_count", 0)) == 0, "the first reveal shows 戈爾山道 at the end of track 1")
 	check(int(map.summary().get("completion_percent", 0)) == 4, "the status bar reads 完成度 4%")
 	await shot("01-ohm-village-start")
-	# Hover 戈爾山道 (point 2 at map (862,474)) so its label shows, then click it.
-	var target: Vector2 = scene.logical_to_viewport_position(scene.world_to_logical_position(Vector2(862, 474)))
-	await move_mouse(target)
-	await shot("02-hover-gorl-pass")
-	await click(target)
-	await create_timer(0.35).timeout
-	await shot("03-travelling-track-1")
-	while is_instance_valid(map) and map.traveling:
-		await process_frame
-	# 戈爾山道 is a General point with no scripted event: its own event value opens
-	# level 2, registered as the STORY002 opening preview — the arrival hands off and
-	# the scene reloads into the preview; its end card returns here standing at point 2.
-	var map_id: int = scene.get_instance_id()
-	var preview = await wait_reload(map_id)
-	check(preview != null and str(preview.scenario_path) == "res://content/battles/story_002.json", "arriving at 戈爾山道 enters the level-2 opening preview")
-	if preview == null:
-		finish()
-		return
-	scene = preview
-	await create_timer(0.6).timeout
-	await shot("04-gorl-pass-level-2-preview")
-	var coordinator = preview.opening_coordinator
-	check(coordinator != null and coordinator.active and coordinator.story_mode, "the preview runs through the coordinator in story mode")
-	if coordinator != null:
-		coordinator.walk_pixels_per_second = 3200.0
-		coordinator.delay_token_seconds = 0.002
-		coordinator.default_step_seconds = 0.01
-	var frames := 0
-	while coordinator != null and is_instance_valid(coordinator) and not coordinator.story_finished and frames < 4000:
-		if str(coordinator.summary().get("current_event_kind", "")) == "dialogue_message_id":
-			await key(KEY_SPACE)
-			continue
-		await process_frame
-		frames += 1
-	check(coordinator != null and is_instance_valid(coordinator) and coordinator.story_finished, "the level-2 preview reaches its end card")
-	await create_timer(0.3).timeout
-	await shot("04b-level-2-preview-end-card")
-	await create_timer(1.0).timeout
-	await key(KEY_SPACE)
-	var back = await wait_reload(preview.get_instance_id())
-	check(back != null and back.world_map_runtime != null and back.world_map_runtime.active, "confirming the card returns to the 大地圖")
-	if back == null:
-		finish()
-		return
-	scene = back
-	map = scene.world_map_runtime
-	check(int(map.summary().get("current_point", 0)) == 2 and not bool(map.summary().get("card_visible", false)), "the party stands at 戈爾山道 with no card")
-	await create_timer(1.0).timeout
-	await shot("04c-back-at-gorl-pass")
-	# Back to 歐姆村: the town screen (TownBG01 beside its menu) opens; Escape leaves it.
+	# 歐姆村 first: the town screen (TownBG01 beside its menu) opens on a click; Escape leaves it.
 	var home: Vector2 = scene.logical_to_viewport_position(scene.world_to_logical_position(Vector2(910, 527)))
 	await move_mouse(home)
 	await click(home)
-	while map.traveling:
-		await process_frame
 	await create_timer(0.3).timeout
-	check(bool(map.summary().get("town_open", false)), "arriving at 歐姆村 opens the town screen")
+	check(bool(map.summary().get("town_open", false)), "clicking 歐姆村 opens the town screen")
 	await shot("05-ohm-village-town-screen")
 	await key(KEY_ESCAPE)
 	await create_timer(0.2).timeout
 	check(not bool(map.summary().get("town_open", false)), "Escape leaves the town")
-	# Edge scroll: park the pointer at the right edge for a moment.
+	# Edge scroll: park the pointer at the right edge for a moment, then at the left edge to come back.
 	await move_mouse(Vector2(636, 240) * root.size.x / 640.0)
 	await create_timer(1.2).timeout
 	check(scene.camera.position.x > 911.0, "the right edge scrolls the map")
 	await shot("06-edge-scrolled-east")
+	await move_mouse(Vector2(4, 240) * root.size.x / 640.0)
+	var back_waited := 0.0
+	while scene.camera.position.x > 910.0 and back_waited < 4.0:
+		await create_timer(0.05).timeout
+		back_waited += 0.05
+	await move_mouse(Vector2(320, 240) * root.size.x / 640.0)
+	await create_timer(0.3).timeout
+	# Hover 戈爾山道 (point 2 at map (862,474)) so its label shows, then click it.
+	var target: Vector2 = scene.logical_to_viewport_position(scene.world_to_logical_position(Vector2(862, 474)))
+	await move_mouse(target)
+	await shot("02-hover-gorl-pass")
+	# The arrival may reload the scene before the travelling shot: keep the map's id first.
+	var map_id: int = scene.get_instance_id()
+	await click(target)
+	await create_timer(0.35).timeout
+	if is_instance_valid(scene) and is_instance_valid(map) and map.traveling:
+		await shot("03-travelling-track-1")
+	# 戈爾山道's event value opens level 2: the arrival hands off and the scene reloads into the
+	# level-2 battle (gol_road_battle.json; the STORY002 opening plays inside it).
+	var battle = await wait_reload(map_id)
+	check(battle != null and str(battle.scenario_path) == "res://content/battles/gol_road_battle.json", "arriving at 戈爾山道 enters the level-2 battle")
+	if battle == null:
+		finish()
+		return
+	scene = battle
+	await create_timer(0.6).timeout
+	await shot("04-gorl-pass-level-2-battle")
 	finish()
 
 
@@ -151,6 +132,8 @@ func key(code: Key) -> void:
 
 func shot(label: String) -> void:
 	await create_timer(0.12).timeout
+	if not is_instance_valid(scene):
+		return  # the arrival reloaded the scene meanwhile
 	var summary: Dictionary = scene.world_map_runtime.summary() if scene.world_map_runtime != null else {"scenario_path": str(scene.scenario_path)}
 	records.append({"capture": label, "camera": scene.camera.position, "summary": {
 		"current_point": summary.get("current_point", 0),

@@ -6,7 +6,7 @@
 
 ## 原帧、差异与当前结果
 
-原版 [普通致死接触表](../original_gameplay_reference/12_leonard_normal_attack/contact_sheet.jpg) 显示受击、回到地图及遗言；[地图 EXP 原帧](../original_gameplay_reference/15_post_attack_settlement_floats/frame_006.png) 确认经验提示位于地图上。旧实现直接在近景伤害文字后拼 EXP，致死淡出发生在近景或法术 impact，缺少独立的遗言／地图经验等待段；次要范围目标也没有完整保留。
+原版 普通致死接触表（原版帧见私有档案：`runtime_observations/original_gameplay_reference/12_leonard_normal_attack/contact_sheet.jpg`） 显示受击、回到地图及遗言；[地图 EXP 原帧](../original_gameplay_reference/15_post_attack_settlement_floats/frame_006.png) 确认经验提示位于地图上。旧实现直接在近景伤害文字后拼 EXP，致死淡出发生在近景或法术 impact，缺少独立的遗言／地图经验等待段；次要范围目标也没有完整保留。
 
 | 阶段 | 当前图证及合同 |
 | --- | --- |

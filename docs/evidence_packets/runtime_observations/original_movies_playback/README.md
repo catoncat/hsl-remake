@@ -6,9 +6,9 @@
 
 | 帧 | 场景 | 说明 |
 | --- | --- | --- |
-| ![](01-intro-film-frame29.png) | 標題 開始新故事 → 淡出 → 开场动画约 1 s | `transition.status = movie`；start.ani 第 29 帧（`start_sheet_00.webp`） |
-| ![](02-intro-film-frame301.png) | 开场动画时钟跳到 20 s | 第 301 帧，来自第二张精灵表 `start_sheet_01.webp`（表边界在第 204 帧）——跨表切区与线程预取正确 |
-| ![](03-ending-film-frame227.png) | `MoviePlayer.play("end")` 时钟 15 s | end.ani 第 227 帧（`end_sheet_01.webp`），`audio_playing` 为真 |
+| 01-intro-film-frame29.png（原版帧见私有档案：`runtime_observations/original_movies_playback/01-intro-film-frame29.png`） | 標題 開始新故事 → 淡出 → 开场动画约 1 s | `transition.status = movie`；start.ani 第 29 帧（`start_sheet_00.webp`） |
+| 02-intro-film-frame301.png（原版帧见私有档案：`runtime_observations/original_movies_playback/02-intro-film-frame301.png`） | 开场动画时钟跳到 20 s | 第 301 帧，来自第二张精灵表 `start_sheet_01.webp`（表边界在第 204 帧）——跨表切区与线程预取正确 |
+| 03-ending-film-frame227.png（原版帧见私有档案：`runtime_observations/original_movies_playback/03-ending-film-frame227.png`） | `MoviePlayer.play("end")` 时钟 15 s | end.ani 第 227 帧（`end_sheet_01.webp`），`audio_playing` 为真 |
 
 ## 与解码原帧的比对（runtime-measured）
 

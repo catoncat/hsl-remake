@@ -64,7 +64,7 @@ Content (visual, resource-derived from the decoded frames; interpretation is not
 is a pre-rendered 3D flight through a forest, a winged figure, a castle at sunset and a fortress wall with fires;
 end.ani shows a chained demonic skull with glowing eyes in a stone hall, an explosion and a fade to white.
 
-![start.ani frame 500](original_movies_start_frame_0500.png) ![end.ani frame 120](original_movies_end_frame_0120.png)
+start.ani frame 500（原版帧见私有档案：`resource_inventory/original_movies_start_frame_0500.png`） end.ani frame 120（原版帧见私有档案：`resource_inventory/original_movies_end_frame_0120.png`）
 
 ## `.snd` = RIFF WAVE with a 38-byte XOR 0xA8 prefix (resource-derived + static-derived)
 

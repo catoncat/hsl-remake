@@ -13,7 +13,7 @@
 
 ## 结果
 
-![停在第 1 项：浮到最高、沉到最低；停在第 2 项；停在第 3 项](title-ornaments-4-states.png)
+停在第 1 项：浮到最高、沉到最低；停在第 2 项；停在第 3 项（原版帧见私有档案：`runtime_observations/original_title_ornaments/title-ornaments-4-states.png`）
 
 | 量 | 宝珠 | 书 |
 | --- | --- | --- |

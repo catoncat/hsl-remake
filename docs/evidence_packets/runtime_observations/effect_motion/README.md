@@ -19,7 +19,7 @@ lane R7-SPELL（2026-09-25）。回答：原版幻火（effCode23）在地图上
 | 光球爆散 | 473.83–474.6 s：一个大光团后 10 余颗光球四散、逐渐变暗 | 12 颗 Spray（FIR04，2 倍缩放）匀速四散，七张后 engMIX 淡出 16 级 | 一致 |
 | 特效原点 | 落光首帧中心 y≈101–103 | 首个可见帧在原点上方 88 px | 原点 ≈ (326,190)，比目标脚下（y≈204）高约 14 px；脚下在锚点（格中心）下约 12 px，即比格中心高约 2 px（[地图普攻与受击包 §2](../../static_reverse/original_map_strike.md#2-录屏对照)），与静态读法"目标格中心"一致 |
 
-![录屏（上）与原生轨迹（下）](huanhuo_recording_vs_native.png)
+录屏（上）与原生轨迹（下）（原版帧见私有档案：`runtime_observations/effect_motion/huanhuo_recording_vs_native.png`）
 
 上排录屏、下排原生轨迹（按 19.4 ms/tick 对齐到 471.68 s = tick 0）：tick 2–34 落光摆动下落，52–70 六团火升起并缩小，114–122 FireBomb2 的光球爆散，135–150 光球四散淡出、SprayUpDown 小火花沿抛物线落下。
 

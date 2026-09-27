@@ -1,16 +1,16 @@
 # OSS export report
 
-Source: private repository `main` = `5b1dabe441f3daa9ae5371d1b25a476a98769a1c` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `fec6ad170d2e92cb5fa0cd603799bcc98a2df230` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
-- written: **1902 files, 54.4 MB**
+- written: **1907 files, 55.6 MB**
 - dropped: **19320 files, 733.2 MB**
-- processed (home path / author e-mail / public .gitignore rules): 3 files
+- processed (home path / author e-mail / public .gitignore rules): 15 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1420 | 19.8 |
+| B | 1425 | 21.0 |
 | C | 482 | 34.6 |
 
 ## Dropped (by reason)
@@ -42,3 +42,15 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `.gitignore`
 - `docs/OPEN_SOURCE_PLAN.md`
 - `tools/test_hsl_function_catalog.py`
+- `docs/OPTIONS.md`
+- `docs/PROVENANCE.md`
+- `docs/evidence_packets/resource_inventory/original_movies.md`
+- `docs/evidence_packets/runtime_observations/combat_aftermath/README.md`
+- `docs/evidence_packets/runtime_observations/effect_motion/README.md`
+- `docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md`
+- `docs/evidence_packets/runtime_observations/original_movies_playback/README.md`
+- `docs/evidence_packets/runtime_observations/original_title_ornaments/README.md`
+- `docs/evidence_packets/runtime_observations/system_menu/README.md`
+- `docs/evidence_packets/runtime_observations/title_screen/README.md`
+- `docs/evidence_packets/static_reverse/original_cast_overlays.md`
+- `docs/evidence_packets/static_reverse/original_getitem_window.md`

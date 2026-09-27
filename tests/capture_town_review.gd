@@ -51,6 +51,8 @@ func run() -> void:
 	if map == null:
 		finish()
 		return
+	# A fresh map reveals track 1 first and drops clicks meanwhile (input_records dropped_while_revealing).
+	await wait_for(func(): return not bool(map.summary().get("reveal_busy", false)) and int(map.summary().get("revealing_track_count", 0)) == 0, 3.0)
 	await create_timer(0.3).timeout
 	# Click the current point (歐姆村) to enter the town.
 	var home: Vector2 = scene.logical_to_viewport_position(scene.world_to_logical_position(Vector2(910, 527)))

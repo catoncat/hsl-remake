@@ -84,6 +84,13 @@ func run() -> void:
 func open_antidote(index: int) -> void:
 	scene._process(0.0)
 	await create_timer(0.3).timeout
+	# The scene's own _process is off (set_process(false) above), so the item-use presentation
+	# before the next ally's ring only advances when the harness steps it.
+	var steps := 0
+	while not scene.action_menu.visible and steps < 50:
+		scene._process(0.1)
+		await create_timer(0.1).timeout
+		steps += 1
 	await click(scene.action_menu.get_node("ItemCommand"))
 	await create_timer(0.3).timeout
 	await click(scene.item_panel.menu.get_node("UseCommand"))

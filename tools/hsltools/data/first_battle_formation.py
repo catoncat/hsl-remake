@@ -1,10 +1,13 @@
 """Rebuild/check level-51 actors from EVEF placements; never infer NPC opening paths.
 
-Registry task first_battle_formation (family scenarios): rewrites the playable_units and grid projection of
-content/battles/first_battle.json from the source formation (the rest of the scenario is kept as tracked;
-the former `magic_rules.initial_mp` note was never read by the runtime and is gone) and writes its
-development objective (content/generated/hsl/development/first_battle_objectives.json); check is
-byte-for-byte against the tracked files, which the rewrite reproduces exactly. first_battle.json is the
+Registry task first_battle_formation (family scenarios): writes content/battles/first_battle.json from the
+hand-written base content/authored/battles/first_battle_base.json (everything a person decided: scenario
+rules, resources, notes, and one unit template per actor holding only the reviewed fields — role,
+commandability, class, weapon code, attack-range note — with the imported fields left null so the key
+order is kept) plus the source formation (playable_units and grid projection), and writes its development
+objective (content/generated/hsl/development/first_battle_objectives.json); check is byte-for-byte
+against the tracked files. The generator never reads its own output, so the public repository builds it
+from an empty content tree (docs/OPEN_SOURCE_PLAN.md §8). first_battle.json is the
 reviewed template roster the trial generators and the pure-loop mechanics tests build on (rule_adapter
 development_battle); the playable first battle is content/battles/battle_051.json (level_battle:51).
 actor_templates is shared by the trial generators. Bodies moved verbatim from the former hsl_first_battle_formation.py.
@@ -23,6 +26,7 @@ from hsltools.sources.tables import authored_characters, parse_table
 PLACEMENTS = ROOT / 'content/imported/hsl/chapter01/map_objects.json'
 STORY = ROOT / 'content/imported/hsl/chapter01/source_texts/STORY051.TXT'
 SCENARIO = ROOT / 'content/battles/first_battle.json'
+BASE = ROOT / 'content/authored/battles/first_battle_base.json'
 OBJECTIVES = ROOT / 'content/generated/hsl/development/first_battle_objectives.json'
 # The fixture's development objective: the legacy provisional escape cell the pure-loop tests
 # walk Leonard onto. The playable battle derives its arrival cell from WINFAIL051 instead.
@@ -129,8 +133,8 @@ def formation():
 
 
 def scenario_bytes() -> bytes:
-    """The tracked scenario with the source formation applied (the legacy generation body)."""
-    scenario = json.loads(SCENARIO.read_text())
+    """The hand-written base with the source formation applied."""
+    scenario = json.loads(BASE.read_text())
     expected = formation()
     templates = {}
     for unit in scenario['playable_units']:
@@ -154,7 +158,8 @@ class FirstBattleFormationTask(GeneratedFilesTask):
     family = 'scenarios'
     inputs = ('content/imported/hsl/global/tables/', 'content/imported/hsl/chapter01/source_texts/RESOURCE.TXT',
               PLACEMENTS.relative_to(ROOT).as_posix(), STORY.relative_to(ROOT).as_posix(),
-              'content/generated/hsl/roles/profiles.json', 'content/generated/hsl/equipment/items.json')
+              'content/generated/hsl/roles/profiles.json', 'content/generated/hsl/equipment/items.json',
+              BASE.relative_to(ROOT).as_posix())
     outputs = (SCENARIO.relative_to(ROOT).as_posix(), OBJECTIVES.relative_to(ROOT).as_posix())
     replaces = ('tools/hsl_first_battle_formation.py --check',)
     scripts = ('tools/hsltools/data/first_battle_formation.py',)

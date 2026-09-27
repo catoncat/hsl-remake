@@ -81,11 +81,11 @@ C 类里的具体风险（按量排）：
 | 类 | 链接 | 处置 | 状态 |
 | --- | ---: | --- | --- |
 | remake（包头有 `tests/*.gd` 驱动或自述重制窗口化运行） | 530 | 保留，已是重制画面 | — |
-| original-scene（原版画面状态，重制也有） | 67 | 用 `driver` 列的现有 capture 脚本补拍，`apply` 复制到 `docs/screenshots/remake/` 并改链接，原版帧只留文字 id（"原版帧见私有档案：`…`"） | 样板 9 张换掉 16 处；**待办 51 处**（多数在 `original_gameplay_reference` 03／06–11／15–18、`original_world_town` 03–17、`menus_ui`，`battle_0NN/original_*` 可直接改指同包重制图） |
-| original-measure（接触表、逐帧动画序列、录像对照） | 47 | 公开文档改文字描述＋"原版帧见私有档案"，导出时变换 | 待办 |
-| original-resource（原版影片帧、SHP 预览） | 6 | 同上；玩家可用自己的正版在本地重渲染 | 待办 |
+| original-scene（原版画面状态，重制也有） | 67 | 用 `driver` 列的现有 capture 脚本补拍，`apply` 复制到 `docs/screenshots/remake/` 并改链接，原版帧只留文字 id（"原版帧见私有档案：`…`"） | 样板 9 张换掉 16 处；OSS3 修好 `capture_town_review` 补拍 3 张换掉 4 处（`original_world_town` 03／04／08／09）；**待办 47 处**（多数在 `original_gameplay_reference` 03／06–11／15–18、`original_world_town` 03–17、`menus_ui`，`battle_0NN/original_*` 可直接改指同包重制图） |
+| original-measure（接触表、逐帧动画序列、录像对照） | 47 | 公开文档改文字描述＋"原版帧见私有档案"，导出时变换 | OSS3 已做：`oss_screenshots.py export-text`，`oss_export.sh` 自动调用（12 份 md） |
+| original-resource（原版影片帧、SHP 预览） | 6 | 同上；玩家可用自己的正版在本地重渲染 | OSS3 已做（同上） |
 
-改链接后相邻句子仍按原版帧描述（如"原录像…压缩样本"），全量替换时要逐句改写成重制画面的说法；`capture_town_review`、`capture_status_review`、`capture_battle_reward_review` 在 `pipeline-line` 4d4ecfa3 上跑失败（`capture_world_map_review` 前 6 张可用），补拍城镇／状态页前要先修驱动。
+改链接后相邻句子仍按原版帧描述（如"原录像…压缩样本"），全量替换时要逐句改写成重制画面的说法。驱动现状（OSS3）：`capture_town_review`、`capture_world_map_review` 已修好；`capture_status_review` 后半（下一名友军的环菜单不接点击）与 `capture_battle_reward_review`（战利品期间 F5 被拒，产品行为变化）仍失败，见 §8.1。**剩 47 处**：`battle_0NN/original_*` 8（只有 `battle_005` 首控有同包重制图，其余要改文字）、`original_gameplay_reference` 03／04／06–11／15–18 共 26（状态页截图待修驱动后重拍）、`original_world_town` 10–13／15–17 共 7（重制商店买入直接进背包、没有告别对白与金钱不足板，同构图缺；整理裝備 用 `capture_party_equipment_review`）、`menus_ui` 3、`dialogue_selection` 2、`combat_aftermath` 1。
 
 ### 2.3 公众只有 Steam 版时能重建什么
 
@@ -209,14 +209,49 @@ C 类里的具体风险（按量排）：
 
 **迁移建议**（按收益排）：
 
-1. 4 个原地改写的根拆成"手写底稿（B，移到 `content/authored/`）＋生成部分"，否则公开仓库从空目录起不来。
-2. 原版表 `global/tables`（17）、`source_texts`（5）、`ui_resources.json` 注册成一个"原样导入"任务：按成员名比对，其中 5 个是 PAK 成员原文或只去掉 CR，`PLAYERS.TXT` 等其余要查导入时做过的变换。
-3. `actor_walk_manifest`（698）、`message_text_evidence`（150）补生成路径（现在只有检查）；`shape_previews`（292）、`section_title.png`（48）、`actor_magic_poses` 声明补齐。
-4. 清单对 PNG 改存解码后像素的哈希，或在私有仓库用现在的编码器统一重写一次——否则玩家新导入的 809 个 PNG 会被判"与清单不符"。
+1. ~~4 个原地改写的根拆成"手写底稿（B，移到 `content/authored/`）＋生成部分"~~（OSS3 已做，§8.1）。
+2. 原版表 `global/tables`（17）与 `source_texts` 4 份已由 `original_tables` 导入（OSS3，变换见 §8.1）；`source_texts/README.md`（手写）与 `ui_resources.json` 未做。
+3. `actor_walk_manifest`（698）、`message_text_evidence`（149 关＋`section_title.png` 48）的生成路径 OSS3 已补，chapter01 那份证据仍原地改写；`shape_previews`（292）、`actor_magic_poses` 声明未补。
+4. ~~清单对 PNG 改存解码后像素的哈希~~（OSS3 已做，schema 2）；JSON 里嵌的 PNG 字节哈希（约 190 个文件）还要同样处理。
 5. 证据截图／录像（774＋`gameplay_reference` 81＋`visual_evidence_index` 16）、原版存档 3 份按 §2.2 迁出，不生成。
 6. 占位美术 73 个改成从导入的 003 号帧换色生成（§2.2）。
 
 **维护代价**：清单跟着 A 类走，改了生成物的 lane 要顺手 `hsl generate original_derived_manifest`（一行一条，并行 lane 改不同文件能自动合并）。关卡任务表现在取磁盘目录与清单的并集，清单过期会多出任务而报错，不会静默少跑。
+
+### 8.1 OSS3（2026-09-27）：从空目录起步的最后几块
+
+**做法同 §8 可再生实证**：临时树＝`HEAD` 删掉清单里所有有生成任务的 A 类（无主的 1,437 个留作种子——它们没有生成器可写），用本机原版 `hsl generate` 全部 1,254 个写 A 类的非 packet 任务两轮，再只重跑失败／缺失／不符的任务直到不动点；PNG 另按解码像素比对。
+
+| 结果 | OSS1 | OSS3 | 说明 |
+| --- | ---: | ---: | --- |
+| 逐字节一致 | 15,400（79.7%） | 16,318（84.5%） | |
+| 像素一致、字节不同（PNG 编码器） | 809 | 1,106 | 清单改像素哈希后都算一致（见下），误判 809→0 |
+| 缺失（生成器失败或没有生成路径） | — | 253 | 证据截图 `gameplay_reference` 81／`visual_evidence_index` 16／`actor_walk_contact_sheet` 7（只有检查）、`level_actors:1` 的 028／036 走行帧 60、`stat_magic_data` 47＋`moon_dance_data` 14（`stat_magic/manifest.json` 没人写）、`music_import` 19（缺 soundfile／numpy）、要 `ignored/` 导出的 AI 频率／回放／开场快照 6 |
+| 内容不同 | 2＋229 JSON | 203 | 几乎都是 JSON 里嵌的 PNG 字节哈希：`level_actors` 142（`actor_audio.json`／`portraits/manifest.json`）、`battle_seed` 24（`decoded_png_sha256`）→ 经 `seed_sha256` 连带 `level_battle` 20；真内容不同只有 `FONT15/FONT24` 图集 2 张 |
+
+- **原地改写的根**：真正读自己的只有 `first_battle.json` 与 chapter01 走行清单；`priest_trial.json`／`gol_road_battle.json` 的任务并不读自己，只是读 `first_battle.json`，它一缺就跟着失败。`first_battle.json` 拆成手写底稿 [`content/authored/battles/first_battle_base.json`](../content/authored/battles/first_battle_base.json)（B：剧本规则、资源、注记，每个 actor 一份单位模板只留人工字段——阵营、可否操控、class、武器码、射程注记——导入字段写 `null` 保住键序）＋`first_battle_formation` 从原版编队生成；chapter01 走行清单改由 `actor_walk_manifest:chapter01` 一次解码 12 个 actor（名单写在任务里：7 个章节 actor＋祭司 002＋机动职业 004／006／028／036），`priest_assets`／`mobile_jobs_assets` 只校验；`actor_walk_manifest:shared` 同样补上生成。三者输出与已提交逐字节一致。空目录重跑里这 4 个根与 `priest_data`、两份走行清单（原"只有检查"的 698 个帧）全部生成。
+- **下一道障碍 `message_text_evidence`（150）**：149 关的 `message_text_evidence_check:N` 补上 `generate`（`import_dialogue`：PAK `RESOURCE.TXT`＋该关 seed，连同 48 张 `section_title.png`），与已提交逐字节一致；它原来挡着 `opening_timeline_compile`（149）、`story_scene`（49）和经由 `story_NNN.json` 的 `level_battle`。chapter01 那份仍是纯检查（导入器原地改写它）。
+- **level_actors／level_battle 从空目录**：`level_battle` 172 个全部生成（OSS1：0），152 个逐字节一致，其余 20 个只差上游 seed 里嵌的 PNG 字节哈希；`level_actors` 12,572 个生成 12,512（OSS1：生成不出），逐字节 11,740、按新清单一致 12,370，差的是 `level_actors:1` 的 028／036 走行帧 60 个没写与 142 个 JSON 嵌的 PNG 字节哈希。**剩下的最大一块是"JSON 嵌 PNG 字节哈希"**：生成器改嵌像素哈希，或私有仓库用现在的编码器把 PNG 统一重写一次，约 190 个文件随之一致。
+
+**清单改像素哈希**（`original_derived_manifest` schema 2）：PNG 条目存 `rgba_sha256`＝SHA-256(`b'<宽>x<高>\n'`＋Pillow 转 RGBA 后的字节)，其余文件仍 `sha256`；公开检出导入后的逐条比对按条目的哈希种类算。16,611 个 PNG 条目换键，生成耗时 5→20 秒。上表 1,106 个"像素一致、字节不同"的 PNG 按新清单全部判一致（OSS1 的 809 个误判归零）。
+
+**原版表的导入变换**（新任务 `original_tables`，21 个文件与已提交逐字节一致）：
+
+| 文件 | PAK 成员 | 导入时做了什么 |
+| --- | --- | --- |
+| `ACTION.H`、`ANIMAL.H`、`EXTRAS.H`（成员名小写 `extras.h`）、`SHAPEDEF.TXT`、`source_texts/RESOURCE.TXT` | `@:\data\` 同名 | 原样（保留 CRLF） |
+| `ITEM.TXT`、`MAGIC.TXT`、`OBJ-ALL.H`、`SHAPEDEF.H`、`resource.h`、`source_texts/STORY051.TXT`、`obj-051.h` | 同上 | CRLF→LF |
+| `RANGE.H`、`RANGE.TXT`、`SPECIAL.TXT`、`effects.h` | 同上 | CRLF→LF，去掉文件尾的空行 |
+| `PLAYERS.TXT`、`TYPE.H`、`mag-spc.h`、`source_texts/winfail051.txt` | 同上 | CRLF→LF，去行尾空格／制表（`PLAYERS.TXT` 只一行 `carry_item = 48<TAB>`，`TYPE.H` 一行注释尾空格，`mag-spc.h` 四行，`winfail051.txt` 一行），`TYPE.H` 另去尾部空行 |
+| `carry_items.json` | 无同名成员 | `battle_rewards.curate_carry`：从 `TOWNDEF.TXT` 取 `PLAYERS.TXT` 引用的 27 张携带表 |
+
+统一规则：原样组照抄；其余组＝CRLF→LF＋每行去尾部空格与制表＋去尾部空行＋留一个 LF。**没有转码**（cp950 字节原样）、**没有裁列**。所以 `rewards.json` 等处"PLAYERS 与原版档案不符仍未解决"的说法可以收掉：差别只是空白。
+
+**截图**：
+
+- `capture_town_review` 修好（新开大地图先展开 1 号路线、期间点击被丢，等 `reveal_busy` 清掉再点）：`TOWN_REVIEW_PASS shots=11`。`capture_world_map_review` 同样等展开；戈爾山道现在直接进第 2 关战斗（不再是 STORY002 预览后回地图），后半改成 城镇→Esc→边缘卷动去回→走 1 号路线进战斗：`WORLD_MAP_REVIEW_PASS shots=6`。`capture_status_review`：状态页与第一次解毒已过，治疗后下一名友军的环菜单由驱动步进才出现，但仍不接点击（待查）；状态页截图面板偏出画面，不宜进文档。`capture_battle_reward_review`：现在拿取战利品期间 `combat_busy` 为真，F5 被 `quiet()` 拒绝，"部分领取后存档／新进程续领"整段不再成立——是产品行为变化（`game/`，不在本 lane 写集），战利品窗前三张照常出图。
+- 53 处 original-measure／original-resource 链接改在**导出时**变文字（`oss_screenshots.py export-text`，`oss_export.sh` 自动调用，12 份 md）：私有仓库保留链接供证据审读。
+- 补拍替换 4 处（`original_world_town` 帧 03／04／08／09 → 重制 歐姆村 根菜单、武器店窗、手上的 長劍，标签改写成重制画面内容，表前说明两栏仍是原版记录）。**进度 57／104**（文字 53＋补拍 4）；剩 47 处 original-scene 见 §2.2。
 
 ## 9. Windows／Linux 可移植性（WINPORT，2026-09-27）
 

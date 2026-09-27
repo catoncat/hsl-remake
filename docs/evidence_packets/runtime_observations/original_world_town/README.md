@@ -13,12 +13,14 @@
 
 ## 看到什么
 
+带（重制画面）的链接指向重制版同一画面的窗口化截图（城镇根菜单与商店窗来自 `tests/capture_town_review.gd` 的 歐姆村，大地图与卷轴来自 `capture_world_map_review.gd`／`capture_system_menu_review.gd`，对白板来自 `capture_dialogue_board_review.gd`）；「画面」「读到的事实」两栏仍是原版帧上的记录，原版帧见私有档案。
+
 | 帧 | 画面 | 读到的事实 |
 | --- | --- | --- |
 | [01-bigmap-status-bar.png（重制画面）](../../../screenshots/remake/world-map-status-bar.png)（原版帧见私有档案：`runtime_observations/original_world_town/01-bigmap-status-bar.png`） | 大地图 | 底部一条黑色状态栏：左边黄字「完成度： 31%」、右边白字时间「1:06:15」。地图不压暗；网格线、点（青＝城镇、橙＝战场）与红色路线都画在底图上。 |
 | [02-bigmap-system-menu.png（重制画面）](../../../screenshots/remake/world-system-scroll.png)（原版帧见私有档案：`runtime_observations/original_world_town/02-bigmap-system-menu.png`） | 在大地图按 Esc | 石质卷轴居中，六项：整理装备／储存回忆录／读取回忆录／读取战场记录／设定选项／回主选单。状态栏仍可见。 |
-| [03-town-root-menu-sidazhen.png](03-town-root-menu-sidazhen.png) | 进 席達鎮 | 大地图原样留在底下（不压暗，状态栏仍在）。TownBG 窗约在 (160,148)–(482,330)，金色细框；菜单板是一块石纹板，约 (62,62)–(297,322)，**叠在 TownBG 左上**。菜单是左对齐白字：武器店／护甲店／道具店／酒馆。菜单里**没有**「離開城鎮」项，画面上**没有**金钱或同伴栏。 |
-| [04-town-root-menu-amphibian-tribe.png](04-town-root-menu-amphibian-tribe.png) | 进 兩栖族部落 | 同一构图，四项：武器店／护甲店／道具店／集会场。 |
+| [重制 歐姆村 根菜单（重制画面）](../../../screenshots/remake/town-root-menu.png)（原版帧见私有档案：`runtime_observations/original_world_town/03-town-root-menu-sidazhen.png`） | 进 席達鎮 | 大地图原样留在底下（不压暗，状态栏仍在）。TownBG 窗约在 (160,148)–(482,330)，金色细框；菜单板是一块石纹板，约 (62,62)–(297,322)，**叠在 TownBG 左上**。菜单是左对齐白字：武器店／护甲店／道具店／酒馆。菜单里**没有**「離開城鎮」项，画面上**没有**金钱或同伴栏。 |
+| [重制 歐姆村 根菜单（同一构图）（重制画面）](../../../screenshots/remake/town-root-menu.png)（原版帧见私有档案：`runtime_observations/original_world_town/04-town-root-menu-amphibian-tribe.png`） | 进 兩栖族部落 | 同一构图，四项：武器店／护甲店／道具店／集会场。 |
 | [05-shape-message-top.png（重制画面）](../../../screenshots/remake/dialogue-board-top.png)（原版帧见私有档案：`runtime_observations/original_world_town/05-shape-message-top.png`） | 席達鎮 入城事件 19，消息 912（teShapeMessage FACE0077） | 对白板在**上方**：头像框约 (16,22)–(132,160)，文字板约 (146,22)–(630,160)，第一行是名字（绿），后面是台词（白）。TownBG 窗留在原处。 |
 | [06-player-message-bottom.png（重制画面）](../../../screenshots/remake/dialogue-board-bottom.png)（原版帧见私有档案：`runtime_observations/original_world_town/06-player-message-bottom.png`） | 席達鎮 酒馆事件 23，琥 的 tePlayerMessage | 对白板在**下方**：头像框约 (16,322)–(132,462)，文字板约 (146,322)–(630,462)；状态栏被盖住。 |
 | [07-shopkeeper-message-top.png（重制画面）](../../../screenshots/remake/dialogue-board-top.png)（原版帧见私有档案：`runtime_observations/original_world_town/07-shopkeeper-message-top.png`） | 兩栖族部落 武器店（teShapeMessage，武器店老板） | 对白板在上方；这时的剧情状态下老板只说「你们还在干什麼？快逃命吧！」，没有打开商店。 |
@@ -33,8 +35,8 @@
 
 | 帧 | 画面 | 读到的事实 |
 | --- | --- | --- |
-| [08-weapon-shop-window.png](08-weapon-shop-window.png) | 席達鎮 武器店老板招呼后开窗 | 上述构图；雷歐納德 的背包、红字行与 ↓、六个按钮与暗着的 買賣。 |
-| [09-item-shop-bag-item-picked-up.png](09-item-shop-bag-item-picked-up.png) | 道具店，点背包里的 回復藥 | 物品离开格子、贴在鼠标上（手上物）；金钱不变（70）。 |
+| [重制 歐姆村 武器店窗（重制画面）](../../../screenshots/remake/shop-window.png)（原版帧见私有档案：`runtime_observations/original_world_town/08-weapon-shop-window.png`） | 席達鎮 武器店老板招呼后开窗 | 上述构图；雷歐納德 的背包、红字行与 ↓、六个按钮与暗着的 買賣。 |
+| [重制 武器店，背包里的 長劍 拿在手上（重制画面）](../../../screenshots/remake/shop-holding-bag-item.png)（原版帧见私有档案：`runtime_observations/original_world_town/09-item-shop-bag-item-picked-up.png`） | 道具店，点背包里的 回復藥 | 物品离开格子、贴在鼠标上（手上物）；金钱不变（70）。 |
 | [10-item-shop-sold-hover-description.png](10-item-shop-sold-hover-description.png) | 带着它点货表 | 卖出：物品消失，金钱 70→120（半价 50）；鼠标停在 銀製髮飾 上，说明框「銀製髮飾(劍,弓,拳,賊,法,翼,獸,魔劍)」「防毒　賣價$200」。 |
 | [11-item-shop-bought-in-hand.png](11-item-shop-bought-in-hand.png) | 点货表的 回復藥 | 买入：金钱 120→20，买到的 回復藥 贴在鼠标上，要再点背包格才放进去（下一次点背包第 1 格即放入）。 |
 | [12-armor-shop-not-enough-gold.png](12-armor-shop-not-enough-gold.png) | 护甲店，70 金点 布衣 | BOARD02 石板居中偏下（约 (75,320)–(564,465)），红字「抱歉, 您的金錢不足無法購買。」（消息 606）；点一下关掉。 |

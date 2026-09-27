@@ -63,7 +63,7 @@ static-derived，r2 读同一 EXE。补齐 P6 留下的两件事：起手各段�
 
 ## 原版参考帧（原录像观察）
 
-[录像 14 幻火](../runtime_observations/original_gameplay_reference/14_tactical_map_magic_aoe/contact_sheet.jpg)：源帧 9987（[frame_006](../runtime_observations/original_gameplay_reference/14_tactical_map_magic_aoe/frame_006.png)）红色范围格＋格下方「幻火」字样；源帧 10012 与 10037（[frame_016](../runtime_observations/original_gameplay_reference/14_tactical_map_magic_aoe/frame_016.png)）地图压暗进入施法引导，范围格、光标和字样都已消失；10137 爆破、10162 受击条、10237 下一单位的蓝色移动范围。录像没有标出施法者阵营，只能佐证「效果期间不画范围格」，不能区分玩家和 AI 路径。单次录像，不作计时。
+录像 14 幻火（原版帧见私有档案：`runtime_observations/original_gameplay_reference/14_tactical_map_magic_aoe/contact_sheet.jpg`）：源帧 9987（frame_006（原版帧见私有档案：`runtime_observations/original_gameplay_reference/14_tactical_map_magic_aoe/frame_006.png`））红色范围格＋格下方「幻火」字样；源帧 10012 与 10037（frame_016（原版帧见私有档案：`runtime_observations/original_gameplay_reference/14_tactical_map_magic_aoe/frame_016.png`））地图压暗进入施法引导，范围格、光标和字样都已消失；10137 爆破、10162 受击条、10237 下一单位的蓝色移动范围。录像没有标出施法者阵营，只能佐证「效果期间不画范围格」，不能区分玩家和 AI 路径。单次录像，不作计时。
 
 ## 覆盖层 × 阶段
 

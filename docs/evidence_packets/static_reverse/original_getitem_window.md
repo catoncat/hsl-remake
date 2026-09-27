@@ -95,7 +95,7 @@ WINDOW50（`*0x4c2c98`，376×88）在 getitem 模式画在 **(252,390)**（`0x4
 
 ## 用户验收路线
 
-第一战（`project.godot` → 開始新故事，或直接启动 `BattleSceneRuntime.tscn`）；原帧在 [`16_loot_spoils_screen`](../runtime_observations/original_gameplay_reference/16_loot_spoils_screen/contact_sheet.jpg)（[README](../runtime_observations/original_gameplay_reference/README.md)）。
+第一战（`project.godot` → 開始新故事，或直接启动 `BattleSceneRuntime.tscn`）；原帧在 `16_loot_spoils_screen`（原版帧见私有档案：`runtime_observations/original_gameplay_reference/16_loot_spoils_screen/contact_sheet.jpg`）（[README](../runtime_observations/original_gameplay_reference/README.md)）。
 
 | 步骤 | 操作 | 应看到 | 对照帧 |
 | --- | --- | --- | --- |

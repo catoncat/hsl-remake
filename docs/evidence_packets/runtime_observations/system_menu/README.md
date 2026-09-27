@@ -4,7 +4,7 @@
 
 runtime-measured（重制版窗口化截图，640×480，dev 首控 harness 下的第一战）。视觉评审输入，不是原版等价证明。
 
-来源：`tools/play.sh --script res://tests/capture_system_menu_review.gd --resolution 640x480 --screen 0`（`SYSTEM_MENU_REVIEW_PASS shots=9`；完整输出在 `ignored/system-menu-review/`，此处只提升六帧）。原作对照：[05_system_scroll_menu](../original_gameplay_reference/05_system_scroll_menu/contact_sheet.jpg) 帧 001–005（卷入／卷出与 读取回忆录 悬停亮起）。
+来源：`tools/play.sh --script res://tests/capture_system_menu_review.gd --resolution 640x480 --screen 0`（`SYSTEM_MENU_REVIEW_PASS shots=9`；完整输出在 `ignored/system-menu-review/`，此处只提升六帧）。原作对照：05_system_scroll_menu（原版帧见私有档案：`runtime_observations/original_gameplay_reference/05_system_scroll_menu/contact_sheet.jpg`） 帧 001–005（卷入／卷出与 读取回忆录 悬停亮起）。
 
 1. `01-scroll-open-mission-lit.png`：Esc 后卷轴自底边卷入停在 (190,67)（模板匹配原帧 003 所得，mean diff 10.6），首项 任務說明 以 Title042 亮起（红字盒中心对齐 Title041 字行中心 (128,56)）。
 2. `02-confirm-prompt-ok-lit.png`：讀取戰場記錄 的 確定／取消 提示——Title061 按钮对当时在 (256,300)，Left 键后 確定 以 Title062 亮起 (7,15)；卷轴亮起项在提示期间隐藏。（2026-09-24 起按原版录屏改到卷轴中央 (256,217)、去掉压暗，见 [menus_ui](../menus_ui/README.md)。）

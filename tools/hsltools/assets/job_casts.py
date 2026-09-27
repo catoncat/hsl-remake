@@ -1,6 +1,8 @@
 """Per-cast asset bundles: Ohm village (003/061/062), the priest slot (002) and the four
 mobile jobs (004/006/028/036) — each appends its actors to the shared combat / portrait /
-panel imports and the walk manifest, and its --check re-runs the shared checkers.
+panel imports, and its --check re-runs the shared checkers. The chapter01 walk manifest holding the
+priest and mobile-job actors is written by actor_walk_manifest:chapter01 (all its actors in one pass,
+never read-modify-write); the casts only verify it.
 
 Registry tasks ohm_assets / priest_assets / mobile_jobs_assets (family assets). The scripts'
 composite check_* functions (walk manifest + the three shared checks + the cast's PASS line)
@@ -11,11 +13,10 @@ nine duplicated shared PASS lines the gate used to print (docs/CONSOLIDATION.md 
 build() appends the cast exactly as the former scripts' non-check path did. Statement-for-statement
 from the former hsl_ohm_assets.py / hsl_priest_assets.py / hsl_mobile_jobs_assets.py.
 """
-import json
 from pathlib import Path
 
 from hsltools.probes.mobile_jobs import ACTORS as MOBILE_JOBS_ACTORS
-from hsltools.sources.actor_walk_frames import DEFAULT_OUTPUT_ROOT, build_actor_walk_manifest, collect_actor_walk_records, write_manifest
+from hsltools.sources.actor_walk_frames import DEFAULT_OUTPUT_ROOT
 from hsltools.assets.combat_animation import PROGRAMS, ROOT as COMBAT_ROOT, build as combat, check as check_combat
 from hsltools.assets.panel_assets import build as panels, check as check_panels
 from hsltools.assets.portraits import build as portraits, check as check_portraits
@@ -48,13 +49,7 @@ def check_priest():
 
 
 def build_priest(pak):
-    current = json.loads(SHARED_WALK.read_text())
-    records = collect_actor_walk_records(pak, ['002'])
-    added = build_actor_walk_manifest(['002'], records, DEFAULT_OUTPUT_ROOT)
-    if current['shape_definitions_sha256'] != added['shape_definitions_sha256']: raise ValueError('Cannot merge actors from different source definitions')
-    current['actors']['002'] = added['actors']['002']
-    if '002' not in current['actor_ids']: current['actor_ids'].append('002')
-    write_manifest(current, SHARED_WALK)
+    check_actor_walk_manifest(SHARED_WALK, ['002'])
     combat(pak, ['002']); portraits(pak, ['002']); panels(pak)
     print('PRIEST_ASSETS_PASS actor002 source_binding=SID_PLAYER1')
 
@@ -65,17 +60,14 @@ def check_mobile_jobs():
 
 
 def build_mobile_jobs(pak):
-    current = json.loads(SHARED_WALK.read_text()); records = collect_actor_walk_records(pak, MOBILE_JOBS_ACTORS); added = build_actor_walk_manifest(MOBILE_JOBS_ACTORS, records, DEFAULT_OUTPUT_ROOT)
-    if current['shape_definitions_sha256'] != added['shape_definitions_sha256']: raise ValueError('Different original SHAPEDEF source')
-    for code in MOBILE_JOBS_ACTORS:
-        current['actors'][code] = added['actors'][code]
-        if code not in current['actor_ids']: current['actor_ids'].append(code)
-    write_manifest(current, SHARED_WALK); combat(pak, MOBILE_JOBS_ACTORS); portraits(pak, MOBILE_JOBS_ACTORS); panels(pak)
+    check_actor_walk_manifest(SHARED_WALK, MOBILE_JOBS_ACTORS)
+    combat(pak, MOBILE_JOBS_ACTORS); portraits(pak, MOBILE_JOBS_ACTORS); panels(pak)
     print('MOBILE_JOBS_ASSETS_PASS actors=004,006,028,036')
 
 
 # What a cast appends into: the combat manifest and its own actors' frame directories, the
-# portrait and panel imports, and (priest / mobile jobs) the shared chapter01 walk manifest.
+# portrait and panel imports. The chapter01 walk manifest (priest / mobile jobs) is
+# actor_walk_manifest:chapter01's output, verified here.
 # Reading the current manifests before appending is a read-modify-write of these outputs, not
 # an input another task produces; the cross-task inputs are the compiled ANIMAL programs with
 # their tracked source (what combat_animation.build binds). The Ohm cast only verifies the
@@ -96,8 +88,7 @@ class CastAssetsTask(ScriptCheckTask):
         self.walk = walk
         self.walk_actors = walk_actors
         self.inputs = (PROGRAMS.as_posix(), (COMBAT_ROOT / 'ANIMAL.TXT').as_posix())
-        self.outputs = (SHARED_OUTPUTS + ((walk.as_posix(),) if walk == SHARED_WALK else ())
-                        + tuple(f'{COMBAT_ROOT.as_posix()}/{actor}/' for actor in CAST_ACTORS[name]))
+        self.outputs = (SHARED_OUTPUTS + tuple(f'{COMBAT_ROOT.as_posix()}/{actor}/' for actor in CAST_ACTORS[name]))
         self.replaces = (f'{script} --check',)
         self.scripts = ('tools/hsltools/assets/job_casts.py',)
 

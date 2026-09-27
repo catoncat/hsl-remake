@@ -102,6 +102,12 @@ for path, mode, obj, size, klass, subclass in kept:
 batch.stdin.close()
 batch.wait()
 
+# Original measurement frames / resource renders are not exported: their links become text + archive id
+# (docs/OPEN_SOURCE_PLAN.md §2.2; the private repository keeps the links).
+sys.path.insert(0, str(root / 'tools'))
+from oss_screenshots import export_text  # noqa: E402
+processed += [path for path in export_text(out) if path not in processed]
+
 # Residual scan of what was written: no home path, no author e-mail.
 residual = [path for path, *_ in kept if (out / path).is_file() and not (out / path).is_symlink()
             and (HOME_PATH.search((out / path).read_bytes()) or EMAIL.search((out / path).read_bytes()))]

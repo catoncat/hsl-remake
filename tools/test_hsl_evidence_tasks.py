@@ -43,9 +43,12 @@ class EvidenceFamilyTests(unittest.TestCase):
     def test_pure_checkers_have_no_regeneration_path(self):
         ctx = registry.Context()
         for task in family_tasks():
-            if isinstance(task, registry.ScriptCheckTask):
-                with self.subTest(task=task.name), self.assertRaises(registry.NotGeneratable):
-                    task.generate(ctx)
+            if not isinstance(task, registry.ScriptCheckTask):
+                continue
+            if type(task).build is not registry.ScriptCheckTask.build:
+                continue  # OSS3 (2026-09-27): actor_walk_manifest now rebuilds its manifest from the PAK
+            with self.subTest(task=task.name), self.assertRaises(registry.NotGeneratable):
+                task.generate(ctx)
 
 
 if __name__ == '__main__':

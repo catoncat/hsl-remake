@@ -1,5 +1,8 @@
 """The original-derived manifest (hsltools.original_content.MANIFEST): every tracked A-class file
-as path + SHA-256 + the registry task whose outputs cover it ('' when no generator owns it).
+as path + hash + the registry task whose outputs cover it ('' when no generator owns it). A PNG is
+hashed by its decoded pixels (`rgba_sha256`: SHA-256 of b'<width>x<height>\n' + the RGBA bytes), every
+other file by its bytes (`sha256`): a player's importer may encode the same image with different PNG
+chunks / zlib settings than the tracked file (docs/OPEN_SOURCE_PLAN.md §8).
 
 It carries no original content, so the public repository tracks it in place of the files: a
 player's import is proved equal to ours by `hsl check original_derived_manifest`, and the
@@ -61,11 +64,27 @@ def render_manifest(entries: dict[str, dict[str, str]]) -> bytes:
     """One entry per line (parallel lanes touching different files merge cleanly)."""
     lines = [f'    {json.dumps(path, ensure_ascii=False)}: {json.dumps(entry, ensure_ascii=False, sort_keys=True)}'
              for path, entry in sorted(entries.items())]
-    return ('{\n  "files": {\n' + ',\n'.join(lines) + '\n  },\n  "schema": 1\n}\n').encode('utf-8')
+    return ('{\n  "files": {\n' + ',\n'.join(lines) + '\n  },\n  "schema": 2\n}\n').encode('utf-8')
 
 
 def sha256(path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def rgba_sha256(path) -> str:
+    """SHA-256 of the decoded image: b'<width>x<height>\n' + its RGBA bytes (palette, tRNS and
+    bit depth normalised by Pillow), independent of the PNG encoder."""
+    from PIL import Image
+    with Image.open(path) as image:
+        rgba = image.convert('RGBA')
+        return hashlib.sha256(f'{rgba.width}x{rgba.height}\n'.encode() + rgba.tobytes()).hexdigest()
+
+
+def content_hash(path) -> dict[str, str]:
+    """The manifest's hash field for one file: {'rgba_sha256': ...} for a PNG, else {'sha256': ...}."""
+    if path.suffix.lower() == '.png':
+        return {'rgba_sha256': rgba_sha256(path)}
+    return {'sha256': sha256(path)}
 
 
 class OriginalDerivedManifestTask(GeneratedFilesTask):
@@ -81,7 +100,7 @@ class OriginalDerivedManifestTask(GeneratedFilesTask):
         if not paths:
             raise CheckFailed(f'{self.name}: no tracked original-derived files to list (the manifest is generated in the private repository)')
         owned = owners(paths)
-        entries = {path: {'sha256': sha256(ctx.root / path), 'task': owned[path]} for path in paths}
+        entries = {path: {**content_hash(ctx.root / path), 'task': owned[path]} for path in paths}
         return {OUTPUT: render_manifest(entries)}
 
     def check(self, ctx: Context) -> str:
@@ -97,7 +116,7 @@ class OriginalDerivedManifestTask(GeneratedFilesTask):
                     missing.append(path)
                 else:
                     unowned_absent += 1
-            elif sha256(target) != entry['sha256']:
+            elif content_hash(target) != {key: value for key, value in entry.items() if key != 'task'}:
                 differ.append(path)
         if missing or differ:
             raise CheckFailed(f'{self.name}: local import differs from the manifest: missing={len(missing)} differ={len(differ)}'

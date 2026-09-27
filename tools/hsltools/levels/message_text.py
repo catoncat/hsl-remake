@@ -6,9 +6,11 @@ refreshes the chapter-wide evidence at content/imported/hsl/chapter01/ that the 
 load), and the checker that verifies the tracked evidence against the table
 (message_text_evidence_check:N).
 
-Registry task (tools/hsl.py check message_text_evidence_check:N): a pure checker over the level's tracked
-evidence (message_text_evidence_check:chapter01 = the chapter-wide evidence); regeneration is the
-importer's command line, tools/hsl_chapter_dialogue.py --pak PAK --level N | --chapter, not this task's.
+Registry task (tools/hsl.py check message_text_evidence_check:N): checks the level's tracked evidence;
+`hsl generate message_text_evidence_check:N` runs import_dialogue (the level's evidence and its
+section_title.png from the PAK and the level's battle seed, never reading the evidence it writes).
+message_text_evidence_check:chapter01 (the chapter-wide evidence) stays a pure checker: its importer,
+tools/hsl_chapter_dialogue.py --pak PAK --chapter, rewrites that file in place.
 Importer bodies moved verbatim from that script (its ROOT is CHAPTER_ROOT here).
 """
 from __future__ import annotations
@@ -20,7 +22,7 @@ from pathlib import Path
 from hsltools.legacy import imported_levels
 from hsltools.levels import CHAPTER_SHARED, legacy_failures, profile
 from hsltools.paths import ROOT
-from hsltools.registry import Context, NoRegenerationPath, Task
+from hsltools.registry import Context, NoRegenerationPath, Task, original_archive
 from hsltools.sources.tables import parse_table
 
 DEFAULT_EVIDENCE = Path('content/imported/hsl/chapter01/message_text_evidence.json')
@@ -275,8 +277,12 @@ class MessageTextEvidenceCheckTask(Task):
         paths = chapter_paths() if level is None else level_paths(level)
         self.evidence = evidence or paths['evidence']
         self.name = f'message_text_evidence_check:{CHAPTER_SHARED if level is None else level}'
-        self.outputs = (_repo_relative(self.evidence),)
-        self.inputs = self.outputs + ((_repo_relative(paths['seed']),) if paths['seed'] is not None else ()) + profile.input_path(CHAPTER_SPEAKER_LEVEL if level is None else level)
+        title = _repo_relative(paths['title'])
+        from hsltools.original_content import manifest
+        has_title = level is not None and ((ROOT / title).is_file() or title in manifest())
+        self.outputs = (_repo_relative(self.evidence),) + ((title,) if has_title else ())
+        self.inputs = ((_repo_relative(self.evidence),) if level is None else ()) + ((_repo_relative(paths['seed']),) if paths['seed'] is not None else ()) \
+            + profile.input_path(CHAPTER_SPEAKER_LEVEL if level is None else level) + ('content/imported/hsl/chapter01/source_texts/RESOURCE.TXT',)
         self.replaces = () if evidence is not None else (
             ('tools/hsl_message_text_evidence_check.py',) if level is None
             else (f'tools/hsl_message_text_evidence_check.py --level {level}',))
@@ -288,7 +294,10 @@ class MessageTextEvidenceCheckTask(Task):
         return 'message text evidence ok: ' + str(summary)
 
     def generate(self, ctx: Context) -> str:
-        raise NoRegenerationPath(f'{self.name}: pure checker; the evidence is imported by tools/hsl_chapter_dialogue.py --pak PAK --level N')
+        if self.level is None:
+            raise NoRegenerationPath(f'{self.name}: pure checker; the chapter evidence is refreshed in place by tools/hsl_chapter_dialogue.py --pak PAK --chapter')
+        import_dialogue(original_archive(ctx), self.level)
+        return self.check(ctx)
 
 
 def tasks() -> list[MessageTextEvidenceCheckTask]:

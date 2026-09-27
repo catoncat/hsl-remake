@@ -1,7 +1,11 @@
-"""Validate the actor walk-frame manifest generated from original SHP records.
+"""Build and validate the actor walk-frame manifests generated from original SHP records.
 
-Registry tasks actor_walk_manifest:<chapter01|shared> (family evidence): the two tracked
-manifests and their expected actor lists. Bodies moved verbatim from the former hsl_actor_walk_manifest_check.py.
+Registry tasks actor_walk_manifest:<chapter01|shared> (family evidence): the two tracked manifests,
+the actors each holds (the only hand-decided part, listed in tasks() below) and the subset the check
+requires. generate decodes every listed actor from the original PAK in one pass (manifest + PNGs); it
+never reads the manifest it writes. The priest and mobile-job casts' actors (002, 004/006/028/036) are
+part of the chapter01 list instead of being appended by those casts. Check bodies moved verbatim from
+the former hsl_actor_walk_manifest_check.py.
 """
 
 from __future__ import annotations
@@ -11,7 +15,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from hsltools.registry import Context, ScriptCheckTask
+from hsltools.registry import Context, ScriptCheckTask, original_archive
+from hsltools.sources.actor_walk_frames import build_actor_walk_manifest, collect_actor_walk_records, write_manifest
 
 
 SCHEMA = "hsl_actor_walk_manifest.v1"
@@ -98,14 +103,20 @@ def check_actor_walk_manifest(manifest_path: Path, expected_actors: list[str] | 
 class ActorWalkManifestTask(ScriptCheckTask):
     family = 'evidence'
 
-    def __init__(self, tag: str, manifest: str, actors: tuple[str, ...]) -> None:
+    def __init__(self, tag: str, manifest: str, actors: tuple[str, ...], built: tuple[str, ...] = ()) -> None:
         self.name = f'actor_walk_manifest:{tag}'
         self.manifest = Path(manifest)
         self.actors = list(actors)
-        self.inputs = ()
+        self.built = list(actors + built)
+        self.inputs = ('content/imported/hsl/global/tables/SHAPEDEF.TXT',)
         self.outputs = (manifest, self.manifest.parent.as_posix() + '/')
         self.replaces = (f'tools/hsl_actor_walk_manifest_check.py {manifest} --actors ' + ' '.join(actors),)
         self.scripts = ('tools/hsltools/evidence/actor_walk_manifest.py',)
+
+    def build(self, ctx: Context) -> None:
+        folder = self.manifest.parent
+        records = collect_actor_walk_records(original_archive(ctx), self.built)
+        write_manifest(build_actor_walk_manifest(self.built, records, folder, res_root='res://' + folder.as_posix()), self.manifest)
 
     def verify(self, ctx: Context) -> None:
         summary = check_actor_walk_manifest(self.manifest, self.actors)
@@ -121,7 +132,8 @@ class ActorWalkManifestTask(ScriptCheckTask):
 def tasks() -> list[ActorWalkManifestTask]:
     return [
         ActorWalkManifestTask('chapter01', 'content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json',
-                              ('001', '021', '023', '024', '025', '026', '039')),
+                              ('001', '021', '023', '024', '025', '026', '039'),
+                              ('002', '004', '006', '028', '036')),  # priest cast, mobile-jobs cast
         ActorWalkManifestTask('shared', 'content/imported/hsl/shared/actor_walk_frames/actor_walk_manifest.json',
                               ('010', '011', '012', '013', '014', '015', '016', '017', '019', '020', '052')),
     ]

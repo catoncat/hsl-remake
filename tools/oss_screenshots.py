@@ -15,8 +15,12 @@ the target:
   python3 tools/oss_screenshots.py apply              copy the SAMPLES remake shots from ignored/<review>/ into
                                                       docs/screenshots/remake/ and point those links at them; the
                                                       original frame stays named as text（原版帧见私有档案：`id`）
+  python3 tools/oss_screenshots.py export-text DIR    in an exported tree (tools/oss_export.sh calls this), turn every
+                                                      original-measure / original-resource link into its label plus
+                                                      （原版帧见私有档案：`id`）; the private repository keeps the links
 
-Only `apply` writes (docs/screenshots/remake/*.png and the linking .md files). The shots come from the existing
+Only `apply` (docs/screenshots/remake/*.png and the linking .md files) and `export-text` (the .md files of
+the given exported tree) write. The shots come from the existing
 windowed capture drivers, e.g. `tools/play.sh --script res://tests/capture_title_review.gd --resolution 640x480
 --screen 0`; `apply` refuses to run when a sample shot is missing. Never reads the original game.
 """
@@ -94,6 +98,12 @@ SAMPLES = {
     TOWN + '07-shopkeeper-message-top.png': ('r7-dialogue-board-review/05-shape-message-top-slot.png',
                                              'dialogue-board-top.png'),
     TOWN + '14-town-esc-back-to-map.png': ('world-map-review/01-ohm-village-start.png', 'world-map-status-bar.png'),
+    # lane OSS3 (capture_town_review fixed): the remake shows 歐姆村's menu and weapon shop in the same composition.
+    TOWN + '03-town-root-menu-sidazhen.png': ('town-review/01-ohm-village-root-menu.png', 'town-root-menu.png', '重制 歐姆村 根菜单'),
+    TOWN + '04-town-root-menu-amphibian-tribe.png': ('town-review/01-ohm-village-root-menu.png', 'town-root-menu.png', '重制 歐姆村 根菜单（同一构图）'),
+    TOWN + '08-weapon-shop-window.png': ('town-review/03-shop-window.png', 'shop-window.png', '重制 歐姆村 武器店窗'),
+    TOWN + '09-item-shop-bag-item-picked-up.png': ('town-review/05-shop-holding-bag-item.png', 'shop-holding-bag-item.png',
+                                                   '重制 武器店，背包里的 長劍 拿在手上'),
 }
 
 
@@ -181,17 +191,19 @@ def cmd_list(tsv: str | None) -> int:
 
 
 def cmd_apply() -> int:
-    missing = [src for src, _ in SAMPLES.values() if not (ROOT / 'ignored' / src).exists()]
-    if missing:
-        print('missing capture shots (run the capture drivers first):\n  ' + '\n  '.join(sorted(set(missing))))
-        return 1
-    (ROOT / DEST).mkdir(parents=True, exist_ok=True)
-    for src, name in SAMPLES.values():
-        shutil.copyfile(ROOT / 'ignored' / src, ROOT / DEST / name)
+    """Only the samples that still have an original link are copied and relinked (earlier ones are done)."""
     edits: dict[str, list] = {}
     for md, _, target, m in links():
         if target in SAMPLES:
             edits.setdefault(md, []).append((m.group(0), m.group(1), m.group(2), target))
+    pending = {target for items in edits.values() for *_, target in items}
+    missing = [SAMPLES[t][0] for t in pending if not (ROOT / 'ignored' / SAMPLES[t][0]).exists()]
+    if missing:
+        print('missing capture shots (run the capture drivers first):\n  ' + '\n  '.join(sorted(set(missing))))
+        return 1
+    (ROOT / DEST).mkdir(parents=True, exist_ok=True)
+    for target in pending:
+        shutil.copyfile(ROOT / 'ignored' / SAMPLES[target][0], ROOT / DEST / SAMPLES[target][1])
     rewritten = 0
     for md, items in edits.items():
         path = ROOT / md
@@ -199,13 +211,54 @@ def cmd_apply() -> int:
         for whole, bang, label, target in items:
             rel = os.path.relpath(ROOT / DEST / SAMPLES[target][1], (ROOT / md).parent)
             archive_id = os.path.relpath(target, 'docs/evidence_packets')
+            label = SAMPLES[target][2] if len(SAMPLES[target]) > 2 else label
             new = f'{bang}[{label}{REMAKE_LABEL}]({rel})（{ARCHIVE_NOTE}：`{archive_id}`）'
             if whole in text:
                 text = text.replace(whole, new, 1)
                 rewritten += 1
         path.write_text(text)
-    print(f'OSS_SCREENSHOTS_APPLY shots={len({n for _, n in SAMPLES.values()})} links={rewritten} files={len(edits)}')
+    print(f'OSS_SCREENSHOTS_APPLY shots={len({SAMPLES[t][1] for t in pending})} links={rewritten} files={len(edits)}')
     return 0
+
+
+def textify(md: str, text: str) -> tuple[str, int]:
+    """`text` of repository-relative `md` with its original-measure / original-resource links replaced by
+    the link label and the archive id (fenced code untouched); -> (new text, replaced links)."""
+    out, in_fence, replaced = [], False, 0
+    for line in text.split('\n'):
+        if FENCE.match(line):
+            in_fence = not in_fence
+        if not in_fence:
+            def sub(m: re.Match) -> str:
+                nonlocal replaced
+                url = m.group(3).split('#')[0]
+                if '://' in url or not url.lower().endswith(MEDIA):
+                    return m.group(0)
+                target = os.path.normpath(os.path.join(os.path.dirname(md), url))
+                if classify(target)[0] not in ('original-measure', 'original-resource'):
+                    return m.group(0)
+                replaced += 1
+                label = m.group(2).strip() or Path(target).name
+                archive_id = os.path.relpath(target, 'docs/evidence_packets') if target.startswith('docs/evidence_packets/') else target
+                return f'{label}（{ARCHIVE_NOTE}：`{archive_id}`）'
+            line = LINK.sub(sub, line)
+        out.append(line)
+    return '\n'.join(out), replaced
+
+
+def export_text(tree: Path) -> list[str]:
+    """Apply textify to every .md under an exported tree; -> the changed paths (tree-relative)."""
+    changed, links = [], 0
+    for path in sorted(tree.rglob('*.md')):
+        rel = path.relative_to(tree).as_posix()
+        text = path.read_text(errors='ignore')
+        new, replaced = textify(rel, text)
+        if replaced:
+            path.write_text(new)
+            changed.append(rel)
+            links += replaced
+    print(f'OSS_SCREENSHOTS_EXPORT_TEXT links={links} files={len(changed)}')
+    return changed
 
 
 def main(argv: list[str]) -> int:
@@ -217,6 +270,9 @@ def main(argv: list[str]) -> int:
         return cmd_list(tsv)
     if cmd == 'apply':
         return cmd_apply()
+    if cmd == 'export-text' and len(argv) > 2:
+        export_text(Path(argv[2]))
+        return 0
     print(__doc__)
     return 2
 

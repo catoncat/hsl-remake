@@ -9,7 +9,7 @@
 1. `01-title-framed.png`：Title001 海面断像背景、Title002「幻世錄 ～The Legend of Fancy Realm～」标志（左上 (99,12)）、Title021 圆环菜单（(197,161)）、Title022／023 左右石像（(117,227)／(405,227)）、Title027 宝珠与 Title028 书分居第一项「開始新故事」两侧（(216,257)／(386,243) 为参考帧位置，二者各自竖直浮动，见下）。与参考帧逐 shape 匹配的平均色差 10–22（录像有损）；圆环内三行字位置与参考一致。
 2. `02-hover-battle-record-lit.png`：鼠标悬停「戰場記錄」时该行改用红字带焰的 Title025 亮起版；宝珠与书留在第一项旁，不随选择移动（原版实录 [original_title_ornaments](../original_title_ornaments/README.md)：停在哪一项平均位置差 ≤0.3 px）。
 3. `03-no-record-hint.png`：无存档时选「戰場記錄」不离开标题，底部提示「沒有戰場記錄」约 1.6 秒。
-4. `04-product-opening-after-fade.png`：「開始新故事」清空战役进度、黑场淡出 0.6 秒后进入 `BattleSceneRuntime` 的正式开场（level 51）。参考录像 [01 接触表](../original_gameplay_reference/01_title_and_opening/contact_sheet.jpg) 的 frame_005／009 亦为标题→黑场→开场地图淡入，时长未测。
+4. `04-product-opening-after-fade.png`：「開始新故事」清空战役进度、黑场淡出 0.6 秒后进入 `BattleSceneRuntime` 的正式开场（level 51）。参考录像 01 接触表（原版帧见私有档案：`runtime_observations/original_gameplay_reference/01_title_and_opening/contact_sheet.jpg`） 的 frame_005／009 亦为标题→黑场→开场地图淡入，时长未测。
 5. `05-game-over.png`：败北战斗结束淡黑后的 GAME OVER 画面（重制原先经败北结果页「回主選單 · Esc」进入，结果页已按原版删除，见 [战斗结束流程](../../static_reverse/original_battle_end_flow.md)）——Title011 夕阳底图＋Title012 文字（左上 (55,211)，按其中心原点居中于 640×480，provisional），黑场淡入 0.9 秒后等待任意键，再淡出 0.6 秒回标题。
 
 ## 断言（headless）
